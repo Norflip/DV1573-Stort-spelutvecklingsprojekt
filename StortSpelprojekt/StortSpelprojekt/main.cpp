@@ -1,11 +1,30 @@
 #include "Window.h"
+#include "Log.h"
+
+
+#include "BusNode.h"
 
 int WINAPI wWinMain(HINSTANCE hInstance, HINSTANCE, PWSTR pCmdLine, int nCmdShow)
 {
 	Window window (hInstance);
 	window.Open(800, 800);
-	std::cout << "awdjaiwdjaw" << std::endl;
 
+	Log::Open();
+	Log::Add("Test output");
+
+	MessageBus messageBus;
+	ComponentA compA(&messageBus);
+	ComponentB compB(&messageBus);
+
+	// This is supposed to act like a game loop.
+	for (int ctr = 0; ctr < 10; ctr++) 
+	{
+		compA.Update();
+		compB.Update();
+	
+		messageBus.Notify();
+	}
+	
 	MSG msg;
 	ZeroMemory(&msg, sizeof(MSG));
 

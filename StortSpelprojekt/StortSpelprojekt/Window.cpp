@@ -2,11 +2,7 @@
 
 Window::Window(HINSTANCE hInstance) : hInstance(hInstance)
 {
-	AllocConsole();
-	HANDLE stdHandle = GetStdHandle(STD_OUTPUT_HANDLE);
-	int hConsole = _open_osfhandle((intptr_t)stdHandle, _O_TEXT);
-	FILE* fp = _fdopen(hConsole, "w");
-	freopen_s(&fp, "CONOUT$", "w", stdout);
+
 }
 
 Window::~Window()
