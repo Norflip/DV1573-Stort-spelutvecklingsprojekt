@@ -12,12 +12,11 @@ public:
         this->messageBus->AddReciever(this->getNotifyFunc());
 	}
 
-	virtual void Update() {};
 
     std::function<void(Message)> getNotifyFunc()
     {
         auto messageListener = [=](Message message) -> void {
-            this->onNotify(message);
+            this->OnNotify(message);
         };
         return messageListener;
     }
@@ -27,11 +26,8 @@ public:
         messageBus->Send(message);
     }
 
-    virtual void onNotify(Message message)
-    {
-        // Do something here. Your choice. You could do something like this.
-        std::cout << "Siopao! Siopao! Siopao! (Someone forgot to implement onNotify().)" << std::endl;
-    }
+    virtual void Update() {};
+    virtual void OnNotify(Message message) {}
 
 	MessageBus* GetMessageBus() const { return this->messageBus; }
 
@@ -48,9 +44,9 @@ public:
     ComponentA(MessageBus* messageBus) : BusNode(messageBus) {}
 
 private:
-    void onNotify(Message message)
+    void OnNotify(Message message)
     {
-        std::cout << "A: I received: " << message.GetEvent() << std::endl;
+        Log::Add("A: Received: \"" + message.GetEvent() + "\"");
     }
 };
 
@@ -63,13 +59,6 @@ public:
 
     void Update()
     {
-        Message greeting("B SENDING Hi!");
-        Send(greeting);
-    }
-
-private:
-    void onNotify(Message message)
-    {
-        //std::cout << "B: I received: " << message.GetEvent() << std::endl;
+        Send({ "B sending message" });
     }
 };

@@ -4,11 +4,22 @@
 #include <io.h>
 #include <iostream>
 
+#include <cstring>
+#include <fstream>
+
 #define OPEN_LOG
 
 namespace Log
 {
-	bool m_logOpen = false;
+	static bool m_logOpen = false;
+
+	enum class LogLevel
+	{
+		Info,
+		Warning,
+		Error,
+		Debug
+	};
 
 	inline void Open()
 	{
@@ -22,11 +33,45 @@ namespace Log
 #endif
 	}
 
+	inline void Add(LogLevel level, const std::string& msg)
+	{
+#if defined(OPEN_LOG) && _DEBUG
+
+		std::string prefix = "";
+		switch (level)
+		{
+			case Log::LogLevel::Warning: prefix = "Warning";
+				break;
+			case Log::LogLevel::Error: prefix = "Error";
+				break;
+			case Log::LogLevel::Debug: prefix = "Debug";
+				break;
+			default:
+			case Log::LogLevel::Info: prefix = "INFO";
+				break;
+		}
+
+		std::cout << "[" + prefix + "] " << msg << "\n";
+#endif
+	}
+
 	inline void Add(const std::string& msg)
 	{
 #if defined(OPEN_LOG) && _DEBUG
-		if (m_logOpen)
-			std::cout << msg << std::endl;
+		if (!m_logOpen)
+			Open();
+
+		Add(LogLevel::Info, msg);
+#endif
+	}
+
+	inline void AddRaw(const std::string& msg)
+	{
+#if defined(OPEN_LOG) && _DEBUG
+		if (!m_logOpen)
+			Open();
+
+		std::cout << msg << "\n";
 #endif
 	}
 }
