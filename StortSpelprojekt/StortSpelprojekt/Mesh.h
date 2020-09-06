@@ -1,9 +1,12 @@
 #pragma once
-#include <d3d11.h>  
+#include <d3d11.h>
+
 #include <DirectXMath.h>
 #include <vector>
 #include <map>
 #include <string>
+
+#include "SkeletonAni.h"
 
 struct Mesh
 {
@@ -13,14 +16,31 @@ struct Mesh
 		DirectX::XMFLOAT2 uv;
 		DirectX::XMFLOAT3 normal;
 		DirectX::XMFLOAT3 tangent;
-		Vertex() : position(0, 0, 0), uv(0, 0), normal(0, 0, 0), tangent(0, 0, 0) {}
-		Vertex(DirectX::XMFLOAT3 position, DirectX::XMFLOAT2 uv, DirectX::XMFLOAT3 normal, DirectX::XMFLOAT3 tangent) : position(position), uv(uv), normal(normal), tangent(tangent) {}
+		DirectX::XMFLOAT3 boneID; //The LOD level should not be over 3.
+		DirectX::XMFLOAT3 skinWeight;
+		Vertex() : position(0, 0, 0), uv(0, 0), normal(0, 0, 0), tangent(0, 0, 0), boneID(0,0,0), skinWeight(0,0,0) {}
+		Vertex(DirectX::XMFLOAT3 position, DirectX::XMFLOAT2 uv, DirectX::XMFLOAT3 normal, DirectX::XMFLOAT3 tangent, DirectX::XMFLOAT3 boneID,
+			DirectX::XMFLOAT3 skinWeight) : position(position), uv(uv), normal(normal), tangent(tangent), boneID(boneID),skinWeight(skinWeight){}
+		bool operator==(const Vertex& other)
+		{
+			if (this->position.x == other.position.x && this->position.y == other.position.y && this->position.z == other.position.z) //this is to compare indexed verts.
+			{
+				return true;
+			}
+			else
+			{
+				return false;
+			}
+		}
 	};
 
 	std::vector<Vertex> vertexes;
 	std::vector<unsigned int> indices;
 	ID3D11Buffer* vertexBuffer;
 	ID3D11Buffer* indexBuffer;
+
+	//Added By Emil
+	std::vector<SkeletonAni> skeletonAnis;
 
 	Mesh() : Mesh(std::vector<Vertex>(), std::vector<unsigned int>()) {}
 	Mesh(std::vector<Vertex> vertexes, std::vector<unsigned int> indices) : vertexes(vertexes), indices(indices), vertexBuffer(nullptr), indexBuffer(nullptr)
@@ -29,8 +49,17 @@ struct Mesh
 		this->indices = indices;
 		this->vertexBuffer = nullptr;
 		this->indexBuffer = nullptr;
-	}
 
+		this->skeletonAnis.clear();
+	}
+	void setAnimationTrack(const SkeletonAni& track)
+	{
+		skeletonAnis.push_back(track);
+	}
+	const SkeletonAni& getSkeletonAniTrack(unsigned int trackNr)
+	{
+		return skeletonAnis[trackNr];
+	}
 	void Release()
 	{
 		if (vertexBuffer)

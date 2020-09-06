@@ -1,6 +1,6 @@
 #include "Shader.h"
 
-Shader::Shader() : pixelShader(nullptr), vertexShader(nullptr), inputLayout(nullptr)
+Shader::Shader() : pixelShader(nullptr), vertexShader(nullptr), inputLayout(nullptr),skeletonVertexShader(nullptr),skeletonInputLayout(nullptr)
 {
 	shaderCompilationFlag = D3DCOMPILE_ENABLE_STRICTNESS;
 #ifdef _DEBUG
@@ -8,10 +8,15 @@ Shader::Shader() : pixelShader(nullptr), vertexShader(nullptr), inputLayout(null
 #endif
 
 	SetInputLayoutStructure(4, DEFAULT_INPUT_LAYOUTd);
+	SetSkeletonInputLayoutStructure(6, SKELETON_INPUT_LAYOUTd);
 }
 
 Shader::~Shader()
 {
+	/*skeletonInputLayout->Release();
+	skeletonVertexShader->Release();
+	inputLayoutSkeletonDescription = nullptr;*/
+
 }
 
 void Shader::SetPixelShader(LPCWSTR path, LPCSTR entry)
@@ -26,10 +31,22 @@ void Shader::SetVertexShader(LPCWSTR path, LPCSTR entry)
 	this->vertexEntry = entry;
 }
 
+void Shader::SetSkeletonVertexShader(LPCWSTR path, LPCSTR entry)
+{
+	this->skeletonVertexPath = path;
+	this->skeletonVertexEntry = entry;
+}
+
 void Shader::SetInputLayoutStructure(size_t arraySize, D3D11_INPUT_ELEMENT_DESC* inputLayoutDesc)
 {
 	this->inputLayoutDescription = inputLayoutDesc;
 	this->arraySize = arraySize;
+}
+
+void Shader::SetSkeletonInputLayoutStructure(size_t arraySize, D3D11_INPUT_ELEMENT_DESC* inputLayoutDesc)
+{
+	this->inputLayoutSkeletonDescription = inputLayoutDesc;
+	this->arraySizeSkeleton = arraySize;
 }
 
 void Shader::Compile(ID3D11Device* device)
@@ -46,9 +63,16 @@ void Shader::Compile(ID3D11Device* device)
 		vertexShader = nullptr;
 	}
 
+	if (skeletonVertexShader != nullptr)
+	{
+		delete skeletonVertexShader;
+		skeletonVertexShader = nullptr;
+	}
+
 	ID3DBlob* errorBlob = nullptr;
 	ID3DBlob* PSBlob = nullptr;
 	ID3DBlob* VSBlob = nullptr;
+	ID3DBlob* SkeletonVSBlob = nullptr;
 
 	HRESULT PSCompileResult = D3DCompileFromFile
 	(
@@ -101,6 +125,29 @@ void Shader::Compile(ID3D11Device* device)
 
 	HRESULT createInputLayoutResult = device->CreateInputLayout(inputLayoutDescription, arraySize, VSBlob->GetBufferPointer(), VSBlob->GetBufferSize(), &inputLayout);
 	assert(SUCCEEDED(createInputLayoutResult));
+
+
+	//SkeletonVertexShader
+
+	
+	VSCreateResult = D3DCompileFromFile
+	(
+		skeletonVertexPath,
+		nullptr,
+		D3D_COMPILE_STANDARD_FILE_INCLUDE,
+		skeletonVertexEntry,
+		"vs_5_0",
+		shaderCompilationFlag,
+		0,
+		&SkeletonVSBlob,
+		&errorBlob
+	);
+
+	VSCreateResult = device->CreateVertexShader(SkeletonVSBlob->GetBufferPointer(), SkeletonVSBlob->GetBufferSize(), nullptr, &this->skeletonVertexShader);
+	assert(SUCCEEDED(VSCreateResult));
+
+	VSCreateResult = device->CreateInputLayout(inputLayoutSkeletonDescription, arraySizeSkeleton, SkeletonVSBlob->GetBufferPointer(), SkeletonVSBlob->GetBufferSize(), &skeletonInputLayout);
+	assert(SUCCEEDED(VSCreateResult));
 }
 
 void Shader::BindToContext(ID3D11DeviceContext* context)
@@ -108,6 +155,16 @@ void Shader::BindToContext(ID3D11DeviceContext* context)
 	// sets the vertex shader and layout
 	context->IASetInputLayout(inputLayout);
 	context->VSSetShader(vertexShader, 0, 0);
+
+	//sets the pixel shader	
+	context->PSSetShader(pixelShader, 0, 0);
+}
+
+void Shader::BindSkeletonToContext(ID3D11DeviceContext* context)
+{
+	// sets the vertex shader and layout
+	context->IASetInputLayout(skeletonInputLayout);
+	context->VSSetShader(skeletonVertexShader, 0, 0);
 
 	//sets the pixel shader	
 	context->PSSetShader(pixelShader, 0, 0);
