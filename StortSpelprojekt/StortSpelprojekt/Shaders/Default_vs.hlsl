@@ -6,6 +6,7 @@ struct VS_INPUT
 	float2 uv		: TEXCOORD0;
 	float3 normal	: NORMAL;
 	float3 tangent	: TANGENT;
+	uint id	: SV_InstanceID;
 };
  
 struct VS_OUTPUT
@@ -22,8 +23,13 @@ VS_OUTPUT main(VS_INPUT input)
 	VS_OUTPUT output;
 	output.uv = input.uv;
 
+	
 	output.worldPosition = mul(input.position, world).xyz;
 	output.position = mul(input.position, mvp);
+
+	output.position.x += input.id * 0.2f;
+	output.position.y += input.id * 0.2f;
+
 
 	output.normal = normalize(mul(input.normal, world).xyz);
 	output.tangent = normalize(mul(input.tangent, world).xyz);

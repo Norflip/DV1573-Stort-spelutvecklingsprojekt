@@ -139,6 +139,7 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClCompile Include="Camera.cpp" />
+    <ClCompile Include="DXHandler.cpp" />
     <ClCompile Include="Engine.cpp" />
     <ClCompile Include="main.cpp" />
     <ClCompile Include="Material.cpp" />
@@ -149,6 +150,8 @@
   <ItemGroup>
     <ClInclude Include="BusNode.h" />
     <ClInclude Include="Camera.h" />
+    <ClInclude Include="ConstantBuffer.h" />
+    <ClInclude Include="DXHandler.h" />
     <ClInclude Include="Engine.h" />
     <ClInclude Include="Log.h" />
     <ClInclude Include="Material.h" />
