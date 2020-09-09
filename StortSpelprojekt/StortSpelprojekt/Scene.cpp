@@ -27,9 +27,18 @@ void Scene::Initialize(DXHandler* dxHandler, Renderer* renderer)
 	objects.push_back(tmp_obj);
 }
 
+void Scene::ProcessInput()
+{
+}
+
 void Scene::Update(const float& deltaTime)
 {
 	(*objects.begin()).GetTransform().Rotate(2.0f * deltaTime, 2.0f * deltaTime, 0.0f);
+}
+
+void Scene::FixedUpdate(const float& fixedDeltaTime)
+{
+	Log::Add(std::to_string(fixedDeltaTime));
 }
 
 void Scene::Render()

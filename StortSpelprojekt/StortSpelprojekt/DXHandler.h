@@ -2,13 +2,14 @@
 #include <d3d11_1.h>
 #include <dxgi.h> 
 #include <d3dcompiler.h>
-
 #include <assert.h>
 
 #pragma comment(lib, "gdi32")
 #pragma comment(lib, "d3d11") 
 #pragma comment( lib, "dxgi" )   
 #pragma comment(lib, "d3dcompiler.lib")
+
+#include "Window.h"
 
 enum ShaderTypeFlag
 {
@@ -23,7 +24,7 @@ public:
 	DXHandler();
 	virtual ~DXHandler();
 
-	void Initialize(HWND hwnd, size_t width, size_t height);
+	void Initialize(Window& window);
 	
 	ID3D11DeviceContext*	GetContext()	const { return this->context; }
 	ID3D11Device*			GetDevice()		const { return this->device; }

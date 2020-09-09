@@ -10,7 +10,13 @@ public:
 	virtual ~Scene();
 
 	void Initialize(DXHandler* dxHandler, Renderer* renderer);
+	
+	void OnActivate() {}
+	void OnDeactivate() {}
+	
+	void ProcessInput();
 	void Update(const float& deltaTime);
+	void FixedUpdate(const float& fixedDeltaTime);
 	void Render();
 
 private:	
