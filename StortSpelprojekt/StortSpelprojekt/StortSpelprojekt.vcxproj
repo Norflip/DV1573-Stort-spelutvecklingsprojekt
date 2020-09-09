@@ -148,6 +148,7 @@
     <ClCompile Include="Window.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="Buffers.h" />
     <ClInclude Include="BusNode.h" />
     <ClInclude Include="Camera.h" />
     <ClInclude Include="ConstantBuffer.h" />
@@ -158,6 +159,7 @@
     <ClInclude Include="Mesh.h" />
     <ClInclude Include="Message.h" />
     <ClInclude Include="MessageBus.h" />
+    <ClInclude Include="Object.h" />
     <ClInclude Include="Renderer.h" />
     <ClInclude Include="Shader.h" />
     <ClInclude Include="ShittyOBJLoader.h" />

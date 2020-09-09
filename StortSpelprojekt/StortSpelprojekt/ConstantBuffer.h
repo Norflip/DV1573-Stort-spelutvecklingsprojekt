@@ -1,5 +1,6 @@
 #pragma once
 #include "DXHandler.h"
+#include "Buffers.h"
 
 template <typename T>
 class ConstantBuffer
@@ -19,6 +20,7 @@ private:
 	size_t slot;
 	T data;
 };
+
 
 template<typename T>
 inline ConstantBuffer<T>::ConstantBuffer() {}
@@ -63,3 +65,5 @@ inline void ConstantBuffer<T>::Release()
 	this->buffer->Release();
 	this->buffer = nullptr;
 }
+
+typedef ConstantBuffer<cb_Object> ObjectConstantBuffer;

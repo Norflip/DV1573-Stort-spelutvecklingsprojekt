@@ -3,9 +3,9 @@
 Engine::Engine(Window& window) : window(window), camera(60.0f, window.GetWindowAspect()), material(Shader())
 {
 	dxHandler.Initialize(window.GetHWND(), window.GetWidth(), window.GetHeight());
-	mesh = ShittyOBJLoader::LoadOBJ("Models/cube.obj", dxHandler.GetDevice());
-
 	objectBuffer.Initialize(0, dxHandler.GetDevice());
+
+	mesh = ShittyOBJLoader::LoadOBJ("Models/cube.obj", dxHandler.GetDevice());
 
 	Shader shader;
 	shader.SetPixelShader(L"Shaders/Default_ps.hlsl");
@@ -13,7 +13,7 @@ Engine::Engine(Window& window) : window(window), camera(60.0f, window.GetWindowA
 	shader.Compile(dxHandler.GetDevice());
 
 	this->material = Material(shader);
-	this->transform.position = { 0, 0, 5 };
+	this->transform.SetPosition({ 0, 0, 5 });
 }
 
 Engine::~Engine()
@@ -71,20 +71,16 @@ void Engine::TMP_Update(const float& deltaTime)
 	const FLOAT DEFAULT_BG_COLOR[4] = { 0.3f, 0.1f, 0.2f, 1.0f };
 	dxHandler.GetContext()->ClearRenderTargetView(dxHandler.GetBackbuffer(), DEFAULT_BG_COLOR);
 
-
-
 	transform.Rotate(2.0f * deltaTime, 2.0f * deltaTime, 0.0f);
 	material.BindToContext(dxHandler.GetContext());
 	TMP_DrawMesh(mesh, transform, camera);
-
-
 
 	dxHandler.GetSwapchain()->Present(0, 0);
 }
 
 void Engine::TMP_DrawMesh(const Mesh& mesh, const Transform& transform, const Camera& camera)
 {
-	WorldData* cb_objectData = objectBuffer.GetData();
+	auto cb_objectData = objectBuffer.GetData();
 
 	dx::XMMATRIX world = transform.GetWorldMatrix();
 	cb_objectData->mvp = DirectX::XMMatrixTranspose(DirectX::XMMatrixMultiply(DirectX::XMMatrixMultiply(world, camera.GetViewMatrix()), camera.GetProjectionMatrix()));

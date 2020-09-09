@@ -13,12 +13,7 @@
 
 namespace dx = DirectX;
 
-__declspec(align(16))
-struct WorldData
-{
-	DirectX::XMMATRIX mvp;
-	DirectX::XMMATRIX world;
-};
+
 
 class Engine
 {
@@ -41,5 +36,5 @@ private:
 	Camera camera;
 	Material material;
 
-	ConstantBuffer<WorldData> objectBuffer;
+	ObjectConstantBuffer objectBuffer;
 };
