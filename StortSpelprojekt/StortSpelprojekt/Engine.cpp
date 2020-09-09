@@ -1,19 +1,18 @@
 #include "Engine.h"
 
-Engine::Engine(Window& window) : window(window), camera(60.0f, window.GetWindowAspect()), material(Shader())
+Engine::Engine(Window& window) : window(window), camera(60.0f, window.GetWindowAspect())
 {
 	dxHandler.Initialize(window.GetHWND(), window.GetWidth(), window.GetHeight());
-	objectBuffer.Initialize(0, dxHandler.GetDevice());
-
-	mesh = ShittyOBJLoader::LoadOBJ("Models/cube.obj", dxHandler.GetDevice());
+	renderer.Initialize(dxHandler);
 
 	Shader shader;
 	shader.SetPixelShader(L"Shaders/Default_ps.hlsl");
 	shader.SetVertexShader(L"Shaders/Default_vs.hlsl");
 	shader.Compile(dxHandler.GetDevice());
 
-	this->material = Material(shader);
-	this->transform.SetPosition({ 0, 0, 5 });
+	tmp_obj.SetMesh(ShittyOBJLoader::LoadOBJ("Models/cube.obj", dxHandler.GetDevice()));
+	tmp_obj.SetMaterial(Material(shader));
+	tmp_obj.GetTransform().SetPosition({ 0,0,5 });
 }
 
 Engine::~Engine()
@@ -66,35 +65,11 @@ void Engine::Run()
 
 void Engine::TMP_Update(const float& deltaTime)
 {
-	Log::Add(std::to_string(deltaTime));
+	renderer.BeginFrame();
 
-	const FLOAT DEFAULT_BG_COLOR[4] = { 0.3f, 0.1f, 0.2f, 1.0f };
-	dxHandler.GetContext()->ClearRenderTargetView(dxHandler.GetBackbuffer(), DEFAULT_BG_COLOR);
+	tmp_obj.GetTransform().Rotate(2.0f * deltaTime, 2.0f * deltaTime, 0.0f);
+	tmp_obj.GetMaterial().BindToContext(dxHandler.GetContext());
+	tmp_obj.Draw(&renderer, &camera);
 
-	transform.Rotate(2.0f * deltaTime, 2.0f * deltaTime, 0.0f);
-	material.BindToContext(dxHandler.GetContext());
-	TMP_DrawMesh(mesh, transform, camera);
-
-	dxHandler.GetSwapchain()->Present(0, 0);
-}
-
-void Engine::TMP_DrawMesh(const Mesh& mesh, const Transform& transform, const Camera& camera)
-{
-	auto cb_objectData = objectBuffer.GetData();
-
-	dx::XMMATRIX world = transform.GetWorldMatrix();
-	cb_objectData->mvp = DirectX::XMMatrixTranspose(DirectX::XMMatrixMultiply(DirectX::XMMatrixMultiply(world, camera.GetViewMatrix()), camera.GetProjectionMatrix()));
-	cb_objectData->world = DirectX::XMMatrixTranspose(world);
-	objectBuffer.Bind(dxHandler.GetContext());
-
-	UINT stride = sizeof(Mesh::Vertex);
-	UINT offset = 0;
-
-	dxHandler.GetContext()->IASetVertexBuffers(0, 1, &mesh.vertexBuffer, &stride, &offset);
-	dxHandler.GetContext()->IASetIndexBuffer(mesh.indexBuffer, DXGI_FORMAT_R32_UINT, 0);
-
-	dxHandler.GetContext()->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
-	//context->DrawIndexed(mesh.indices.size(), 0, 0);
-
-	dxHandler.GetContext()->DrawIndexedInstanced(mesh.indices.size(), 10, 0, 0, 0);
+	renderer.EndFrame();
 }

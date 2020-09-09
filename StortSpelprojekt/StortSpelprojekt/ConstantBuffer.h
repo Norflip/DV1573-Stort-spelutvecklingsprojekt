@@ -9,7 +9,7 @@ public:
 	ConstantBuffer();
 	virtual ~ConstantBuffer();
 
-	void Initialize(size_t slot, ID3D11Device* device);
+	void Initialize(size_t slot, ShaderTypeFlag type, ID3D11Device* device);
 	void Bind(ID3D11DeviceContext* context);
 	void Release();
 
@@ -17,24 +17,26 @@ public:
 
 private:
 	ID3D11Buffer* buffer;
+	ShaderTypeFlag shaderFlag;
 	size_t slot;
 	T data;
 };
 
-
 template<typename T>
-inline ConstantBuffer<T>::ConstantBuffer() {}
+inline ConstantBuffer<T>::ConstantBuffer() : buffer(nullptr), slot(-1), shaderFlag(ShaderTypeFlag::NONE), data() {}
 
 template<typename T>
 inline ConstantBuffer<T>::~ConstantBuffer() {}
 
 template<typename T>
-inline void ConstantBuffer<T>::Initialize(size_t slot, ID3D11Device* device)
+inline void ConstantBuffer<T>::Initialize(size_t slot, ShaderTypeFlag shaderFlag, ID3D11Device* device)
 {
 	this->data = T();
 	this->slot = slot;
+	this->shaderFlag = shaderFlag;
 
 	static_assert(sizeof(data) % 16 == 0, "struct has the wrong size");
+
 	ZeroMemory(&data, sizeof(T));
 	ZeroMemory(&buffer, sizeof(ID3D11Buffer));
 
@@ -56,7 +58,15 @@ template<typename T>
 inline void ConstantBuffer<T>::Bind(ID3D11DeviceContext* context)
 {
 	context->UpdateSubresource(buffer, 0, 0, &data, 0, 0);
-	context->VSSetConstantBuffers(slot, 1, &buffer);
+
+	if ((shaderFlag & ShaderTypeFlag::PIXEL) != 0)
+	{
+		context->PSSetConstantBuffers(slot, 1, &buffer);
+	}
+	else if ((shaderFlag & ShaderTypeFlag::VERTEX) != 0)
+	{
+		context->VSSetConstantBuffers(slot, 1, &buffer);
+	}
 }
 
 template<typename T>

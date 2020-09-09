@@ -6,14 +6,11 @@
 #include "Window.h"
 #include "Log.h"
 #include "ShittyOBJLoader.h"
-#include "Material.h"
-#include "Transform.h"
 #include "Camera.h"
 #include "ConstantBuffer.h"
+#include "Object.h"
 
 namespace dx = DirectX;
-
-
 
 class Engine
 {
@@ -24,17 +21,11 @@ public:
 
 private:
 	void TMP_Update(const float& deltaTime);
-	void TMP_DrawMesh(const Mesh& mesh, const Transform& transform, const Camera& camera);
 
 private:
 	Window& window;
 	DXHandler dxHandler;
-
-	Mesh mesh;
-	Transform transform;
-
+	Renderer renderer;
 	Camera camera;
-	Material material;
-
-	ObjectConstantBuffer objectBuffer;
+	Object tmp_obj;
 };
