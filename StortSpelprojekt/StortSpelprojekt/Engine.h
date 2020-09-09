@@ -18,15 +18,19 @@
 #include "Material.h"
 #include "Transform.h"
 #include "Camera.h"
+#include "ZWEBLoader.h"
 
 namespace dx = DirectX;
 
 __declspec(align(16))
 struct WorldData
 {
-	DirectX::XMMATRIX mvp;
-	DirectX::XMMATRIX world;
+	DirectX::XMFLOAT4X4 mvp;
+	DirectX::XMFLOAT4X4 world; //I changed this to fix padding
 };
+
+
+
 
 class Engine
 {
@@ -37,8 +41,8 @@ public:
 
 private:
 	void TMP_SetupDX11(HWND hwnd, size_t width, size_t height);
-	void TMP_Update(const float& deltaTime);
-	void TMP_DrawMesh(const Mesh& mesh, const Transform& transform, const Camera& camera);
+	void TMP_Update(const float& deltaTime,float elapsedTime);
+	void TMP_DrawMesh(Mesh& mesh, const Transform& transform, const Camera& camera, float elapsedTime);
 
 private:
 	Window& window;
@@ -55,4 +59,7 @@ private:
 
 	ID3D11Buffer* worldBuffer_ptr;
 	WorldData cb_world;
+
+	ID3D11Buffer* skeletonBuffer_ptr;
+	SkeletonData cb_skeleton;
 };

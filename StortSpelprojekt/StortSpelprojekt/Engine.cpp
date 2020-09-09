@@ -3,19 +3,22 @@
 Engine::Engine(Window& window) : window(window), camera(60.0f, window.GetWindowAspect()), material(Shader())
 {
 	TMP_SetupDX11(window.GetHWND(), window.GetWidth(), window.GetHeight());
-	mesh = ShittyOBJLoader::LoadOBJ("Models/cube.obj", device);
-
+	//mesh = ShittyOBJLoader::LoadOBJ("Models/cube.obj", device);
+	mesh = ZWEBLoader::LoadZWEB(ZWEBLoadType::SkeletonAnimation,"../Models/OrchBody.ZWEB", "../Models/OrchAnimation.ZWEB", device)[0];
 	Shader shader;
 	shader.SetPixelShader(L"Shaders/Default_ps.hlsl");
 	shader.SetVertexShader(L"Shaders/Default_vs.hlsl");
+	shader.SetSkeletonVertexShader(L"Shaders/SkeletonAni_vs.hlsl");
 	shader.Compile(device);
 
 	this->material = Material(shader);
 	this->transform.position = { 0, 0, 5 };
+	this->transform.scale = { 0.0125, 0.0125,0.0125 };
 }
 
 Engine::~Engine()
 {
+	skeletonBuffer_ptr->Release();
 }
 
 void Engine::Run()
@@ -50,7 +53,7 @@ void Engine::Run()
 			float deltaTime = currentTime - timeLastFrame;
 
 			// UPDATE
-			TMP_Update(deltaTime);
+			TMP_Update(deltaTime, currentTime);
 
 			fixedTimeAccumulation += deltaTime;
 			while (fixedTimeAccumulation >= TARGET_FIXED_DELTA)
@@ -118,7 +121,7 @@ void Engine::TMP_SetupDX11(HWND hwnd, size_t width, size_t height)
 
 
 	// WORLD BUFFER
-	static_assert(sizeof(WorldData) % 16 == 0, "struct is wrong size");
+	static_assert(sizeof(WorldData) % 16 == 0, "struct is wrong size"); //This is clever.
 	ZeroMemory(&worldBuffer_ptr, sizeof(ID3D11Buffer));
 
 	HRESULT hr;
@@ -136,31 +139,46 @@ void Engine::TMP_SetupDX11(HWND hwnd, size_t width, size_t height)
 	subresourceData.pSysMem = &cb_world;
 	hr = device->CreateBuffer(&bufferDescription, &subresourceData, &worldBuffer_ptr);
 	assert(SUCCEEDED(hr));
+
+	bufferDescription.ByteWidth = sizeof(cb_skeleton); //shouldn't it be the struct here?
+	subresourceData.pSysMem = &cb_skeleton;
+	hr = device->CreateBuffer(&bufferDescription, &subresourceData, &skeletonBuffer_ptr);
+	assert(SUCCEEDED(hr));
+
 }
 
-void Engine::TMP_Update(const float& deltaTime)
+void Engine::TMP_Update(const float& deltaTime,float elapsedTime)
 {
 	Log::Add(std::to_string(deltaTime));
 
 	const FLOAT DEFAULT_BG_COLOR[4] = { 0.3f, 0.1f, 0.2f, 1.0f };
 	context->ClearRenderTargetView(backbufferRTV, DEFAULT_BG_COLOR);
 
-	transform.Rotate(2.0f * deltaTime, 2.0f * deltaTime, 0.0f);
+	//transform.Rotate(2.0f * deltaTime, 2.0f * deltaTime, 0.0f);
 
 	material.BindToContext(context);
-	TMP_DrawMesh(mesh, transform, camera);
+	
+	TMP_DrawMesh(mesh, transform, camera, elapsedTime);
 
 	swapchain->Present(0, 0);
 }
 
-void Engine::TMP_DrawMesh(const Mesh& mesh, const Transform& transform, const Camera& camera)
+void Engine::TMP_DrawMesh(Mesh& mesh, const Transform& transform, const Camera& camera, float elapsedTime)
 {
 	dx::XMMATRIX world = transform.GetWorldMatrix();
-	cb_world.mvp = DirectX::XMMatrixTranspose(DirectX::XMMatrixMultiply(DirectX::XMMatrixMultiply(world, camera.GetViewMatrix()), camera.GetProjectionMatrix()));
-	cb_world.world = DirectX::XMMatrixTranspose(world);
+	dx::XMStoreFloat4x4(&cb_world.mvp, DirectX::XMMatrixTranspose(DirectX::XMMatrixMultiply(DirectX::XMMatrixMultiply(world, camera.GetViewMatrix()), camera.GetProjectionMatrix())));
+	dx::XMStoreFloat4x4(&cb_world.world,DirectX::XMMatrixTranspose(world));
+	
+	
+	
+	mesh.skeletonAnis[0].makeglobal(elapsedTime, dx::XMMatrixIdentity() , mesh.skeletonAnis[0].getRootKeyJoints());
 
+	cb_skeleton = mesh.skeletonAnis[0].getSkeletonData();
+
+	context->UpdateSubresource(skeletonBuffer_ptr, 0, 0, &cb_skeleton, 0, 0);
 	context->UpdateSubresource(worldBuffer_ptr, 0, 0, &cb_world, 0, 0);
 	context->VSSetConstantBuffers(0, 1, &worldBuffer_ptr);
+	context->VSSetConstantBuffers(3, 1, &skeletonBuffer_ptr);
 
 	UINT stride = sizeof(Mesh::Vertex);
 	UINT offset = 0;
