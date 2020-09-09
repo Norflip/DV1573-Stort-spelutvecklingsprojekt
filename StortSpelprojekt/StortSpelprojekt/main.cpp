@@ -14,6 +14,8 @@ int WINAPI wWinMain(HINSTANCE hInstance, HINSTANCE, PWSTR pCmdLine, int nCmdShow
 	Engine engine(window);
 	engine.Run();
 
+
+	// kolla över
 	//MessageBus messageBus;
 	//ComponentA compA(&messageBus);
 	//ComponentB compB(&messageBus);

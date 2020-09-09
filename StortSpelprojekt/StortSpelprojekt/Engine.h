@@ -9,6 +9,7 @@
 #include "Camera.h"
 #include "ConstantBuffer.h"
 #include "Object.h"
+#include "Scene.h"
 
 namespace dx = DirectX;
 
@@ -17,15 +18,13 @@ class Engine
 public:
 	Engine(Window& window);
 	virtual ~Engine();
-	void Run();
 
-private:
-	void TMP_Update(const float& deltaTime);
+	void Run();
 
 private:
 	Window& window;
 	DXHandler dxHandler;
 	Renderer renderer;
-	Camera camera;
-	Object tmp_obj;
+
+	Scene* activeScene;
 };

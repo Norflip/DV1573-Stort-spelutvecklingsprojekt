@@ -1,8 +1,8 @@
 
 cbuffer cb_Object : register(b0)
 {
-	matrix mvp;
-	matrix world;
+	float4x4 mvp;
+	float4x4 world;
 };
 
 cbuffer cb_Scene : register(b1)

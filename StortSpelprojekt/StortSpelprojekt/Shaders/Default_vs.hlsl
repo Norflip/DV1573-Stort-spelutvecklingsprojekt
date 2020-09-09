@@ -27,8 +27,8 @@ VS_OUTPUT main(VS_INPUT input)
 	output.worldPosition = mul(input.position, world).xyz;
 	output.position = mul(input.position, mvp);
 
-	output.position.x += input.id * 0.2f;
-	output.position.y += input.id * 0.2f;
+	output.position.x += input.id * 0.4f;
+	output.position.y += input.id * 0.4f;
 
 
 	output.normal = normalize(mul(input.normal, world).xyz);

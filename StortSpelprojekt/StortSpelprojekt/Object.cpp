@@ -1,6 +1,6 @@
 #include "Object.h"
 
-Object::Object() : material(Shader())
+Object::Object() : material(Shader()), enabled(true)
 {
 
 }

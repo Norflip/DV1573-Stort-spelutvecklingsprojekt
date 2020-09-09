@@ -11,7 +11,7 @@ Renderer::~Renderer()
 void Renderer::Initialize(DXHandler dxHandler)
 {
 	this->dxHandler = dxHandler;
-	this->objectBuffer.Initialize(0, ShaderTypeFlag::VERTEX, dxHandler.GetDevice());
+	this->objectBuffer.Initialize(CB_OBJECT_SLOT, ShaderTypeFlag::VERTEX, dxHandler.GetDevice());
 }
 
 void Renderer::BeginFrame()
@@ -29,8 +29,8 @@ void Renderer::Draw(const Mesh& mesh, dx::XMMATRIX model, dx::XMMATRIX view, dx:
 {
 	auto cb_objectData = objectBuffer.GetData();
 
-	cb_objectData->mvp = DirectX::XMMatrixTranspose(DirectX::XMMatrixMultiply(DirectX::XMMatrixMultiply(model, view), projection));
-	cb_objectData->world = DirectX::XMMatrixTranspose(model);
+	dx::XMStoreFloat4x4(&cb_objectData->mvp, dx::XMMatrixTranspose(dx::XMMatrixMultiply(dx::XMMatrixMultiply(model, view), projection)));
+	dx::XMStoreFloat4x4(&cb_objectData->world, dx::XMMatrixTranspose(model));
 	objectBuffer.Bind(dxHandler.GetContext());
 
 	UINT stride = sizeof(Mesh::Vertex);
@@ -38,7 +38,6 @@ void Renderer::Draw(const Mesh& mesh, dx::XMMATRIX model, dx::XMMATRIX view, dx:
 
 	dxHandler.GetContext()->IASetVertexBuffers(0, 1, &mesh.vertexBuffer, &stride, &offset);
 	dxHandler.GetContext()->IASetIndexBuffer(mesh.indexBuffer, DXGI_FORMAT_R32_UINT, 0);
-
 	dxHandler.GetContext()->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
 	//context->DrawIndexed(mesh.indices.size(), 0, 0);
 
