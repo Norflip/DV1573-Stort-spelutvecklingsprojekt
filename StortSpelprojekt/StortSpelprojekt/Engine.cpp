@@ -1,7 +1,10 @@
 #include "Engine.h"
 
-Engine::Engine(Window& window) : window(window), activeScene(nullptr)
+Engine::Engine(HINSTANCE hInstance) : window(hInstance), activeScene(nullptr)
 {
+	Log::Open();
+
+	window.Open(800, 800);
 	dxHandler.Initialize(window);
 	renderer.Initialize(dxHandler);
 
@@ -15,14 +18,14 @@ Engine::~Engine()
 
 void Engine::Run()
 {
-	MSG msg;
-	ZeroMemory(&msg, sizeof(MSG));
+	this->running = true;
+	fixedLoopThread = std::thread(FixedUpdateLoop, this);
 
-	fixedLoopThread = std::thread (FixedUpdateLoop, this);
-	
 	auto startTimePoint = std::chrono::high_resolution_clock::now();
 	float timeLastFrame = 0.0f;
-	this->running = true;
+
+	MSG msg;
+	ZeroMemory(&msg, sizeof(MSG));
 
 	while (running)
 	{
@@ -30,7 +33,6 @@ void Engine::Run()
 		{
 			TranslateMessage(&msg);
 			DispatchMessage(&msg);
-
 			if (msg.message == WM_QUIT)
 				Exit();
 		}
@@ -38,10 +40,10 @@ void Engine::Run()
 		{
 			auto elapsed = std::chrono::duration<double, std::milli>(std::chrono::high_resolution_clock::now() - startTimePoint);
 			float currentTime = static_cast<float>(elapsed.count() / 1000.0f);
-			float deltaTime = currentTime - timeLastFrame;
 
 			if (activeScene != nullptr)
 			{
+				float deltaTime = currentTime - timeLastFrame;
 				activeScene->Update(deltaTime);
 				activeScene->Render();
 			}
@@ -53,8 +55,8 @@ void Engine::Run()
 
 void Engine::Exit()
 {
-	fixedLoopThread.join();
 	running = false;
+	//fixedLoopThread.join();
 }
 
 void Engine::RegisterScene(size_t id, Scene* scene)

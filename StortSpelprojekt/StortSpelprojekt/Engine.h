@@ -18,7 +18,7 @@ class Engine
 {
 
 public:
-	Engine(Window& window);
+	Engine(HINSTANCE hInstance);
 	virtual ~Engine();
 
 	void Run();
@@ -38,7 +38,7 @@ private:
 	bool running;
 	std::unordered_map<size_t, Scene*> scenes;
 	
-	Window& window;
+	Window window;
 	DXHandler dxHandler;
 	Renderer renderer;
 

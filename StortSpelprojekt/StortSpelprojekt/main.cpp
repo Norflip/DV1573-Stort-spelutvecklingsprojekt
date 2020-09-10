@@ -6,12 +6,7 @@
 
 int WINAPI wWinMain(HINSTANCE hInstance, HINSTANCE, PWSTR pCmdLine, int nCmdShow)
 {
-	Log::Open();
-
-	Window window (hInstance);
-	window.Open(800, 800);
-
-	Engine engine(window);
+	Engine engine (hInstance);
 	engine.Run();
 
 
