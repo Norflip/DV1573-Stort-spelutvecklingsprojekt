@@ -1,7 +1,4 @@
-#include "Window.h"
-#include "Log.h"
 #include "Engine.h"
-
 #include "BusNode.h"
 
 int WINAPI wWinMain(HINSTANCE hInstance, HINSTANCE, PWSTR pCmdLine, int nCmdShow)

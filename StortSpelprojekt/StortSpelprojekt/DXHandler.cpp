@@ -6,10 +6,11 @@ DXHandler::DXHandler() : context(nullptr), device(nullptr), swapchain(nullptr), 
 
 DXHandler::~DXHandler()
 {
-	context->Release();
-	device->Release();
-	swapchain->Release();
-	backbuffer->Release();
+
+	//context->Release();
+	//device->Release();
+	//swapchain->Release();
+	//backbuffer->Release();
 }
 
 void DXHandler::Initialize(Window& window)
