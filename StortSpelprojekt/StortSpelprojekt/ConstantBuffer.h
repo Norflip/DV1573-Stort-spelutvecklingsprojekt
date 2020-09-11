@@ -14,6 +14,7 @@ public:
 	void Release();
 
 	T* GetData() { return &this->data; }
+	void SetData(T data) { this->data = data; }
 
 private:
 	ID3D11Buffer* buffer;
@@ -59,11 +60,11 @@ inline void ConstantBuffer<T>::Bind(ID3D11DeviceContext* context)
 {
 	context->UpdateSubresource(buffer, 0, 0, &data, 0, 0);
 
-	if ((shaderFlag & ShaderTypeFlag::PIXEL) != 0)
+	if (((int)shaderFlag & (int)ShaderTypeFlag::PIXEL) != 0)
 	{
 		context->PSSetConstantBuffers(slot, 1, &buffer);
 	}
-	else if ((shaderFlag & ShaderTypeFlag::VERTEX) != 0)
+	else if (((int)shaderFlag & (int)ShaderTypeFlag::VERTEX) != 0)
 	{
 		context->VSSetConstantBuffers(slot, 1, &buffer);
 	}

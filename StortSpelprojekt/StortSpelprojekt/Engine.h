@@ -31,16 +31,15 @@ public:
 	void SwitchScene (size_t id);
 
 private:
-	std::thread fixedLoopThread;
+	std::thread* fixedLoopThread;
 	static void FixedUpdateLoop(Engine* engine);
 
 private:
 	bool running;
 	std::unordered_map<size_t, Scene*> scenes;
-	
+	Scene* activeScene;
+
 	Window window;
 	DXHandler dxHandler;
 	Renderer renderer;
-
-	Scene* activeScene;
 };

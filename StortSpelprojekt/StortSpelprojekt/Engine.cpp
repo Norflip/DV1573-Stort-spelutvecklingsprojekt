@@ -19,7 +19,7 @@ Engine::~Engine()
 void Engine::Run()
 {
 	this->running = true;
-	fixedLoopThread = std::thread(FixedUpdateLoop, this);
+	fixedLoopThread = new std::thread(Engine::FixedUpdateLoop, this);
 
 	auto startTimePoint = std::chrono::high_resolution_clock::now();
 	float timeLastFrame = 0.0f;
@@ -56,7 +56,9 @@ void Engine::Run()
 void Engine::Exit()
 {
 	running = false;
-	//fixedLoopThread.join();
+
+	fixedLoopThread->join();
+	delete fixedLoopThread;
 }
 
 void Engine::RegisterScene(size_t id, Scene* scene)
@@ -99,7 +101,6 @@ void Engine::FixedUpdateLoop(Engine* engine)
 		float currentTime = static_cast<float>(elapsed.count() / 1000.0f);
 		float deltaTime = currentTime - timeLastFrame;
 
-		// move to a seperate thread? 
 		fixedTimeAccumulation += deltaTime;
 		while (fixedTimeAccumulation >= TARGET_FIXED_DELTA)
 		{

@@ -38,17 +38,19 @@ void Scene::Update(const float& deltaTime)
 
 void Scene::FixedUpdate(const float& fixedDeltaTime)
 {
-	Log::Add(std::to_string(fixedDeltaTime));
+	//Log::Add(std::to_string(fixedDeltaTime));
 }
 
 void Scene::Render()
 {
 	renderer->BeginFrame();
+	ObjectFlag reqflag = (ObjectFlag::ENABLED | ObjectFlag::VISIBLE);
 
 	for (auto i = objects.begin(); i < objects.end(); i++)
 	{
 		auto obj = (*i);
-		if (obj.IsEnabled())
+
+		if (obj.HasFlag(reqflag))
 		{
 			obj.GetMaterial().BindToContext(dxHandler->GetContext());
 			obj.Draw(renderer, &camera);

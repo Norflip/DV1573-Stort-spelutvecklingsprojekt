@@ -3,7 +3,6 @@
 #include <dxgi.h> 
 #include <d3dcompiler.h>
 #include <assert.h>
-
 #pragma comment(lib, "gdi32")
 #pragma comment(lib, "d3d11") 
 #pragma comment( lib, "dxgi" )   
@@ -11,12 +10,15 @@
 
 #include "Window.h"
 
-enum ShaderTypeFlag
+enum class ShaderTypeFlag
 {
 	NONE = 0,
 	VERTEX = 1 << 0,
-	PIXEL = 1 << 1
+	PIXEL = 1 << 1,
+	GEOMETRY_EXAMPLE = 1 << 2
 };
+
+DEFINE_ENUM_FLAG_OPERATORS(ShaderTypeFlag);
 
 class DXHandler
 {
