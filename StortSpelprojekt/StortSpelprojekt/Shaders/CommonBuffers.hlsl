@@ -1,7 +1,7 @@
 
 cbuffer cb_Object : register(b0)
 {
-	float4x4 mvp; //What is difference between matrix and float4x4??
+	float4x4 mvp;
 	float4x4 world;
 };
 
