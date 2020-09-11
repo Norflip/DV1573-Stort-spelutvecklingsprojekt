@@ -10,8 +10,8 @@ Camera::~Camera()
 
 dx::XMMATRIX Camera::GetViewMatrix() const
 {
-	return DirectX::XMMatrixLookToLH(
-		transform.position,
+	return dx::XMMatrixLookToLH(
+		transform.GetPosition(),
 		transform.TransformDirection({ 0,0,1 }),
 		transform.TransformDirection({ 0,1,0 })
 	);
