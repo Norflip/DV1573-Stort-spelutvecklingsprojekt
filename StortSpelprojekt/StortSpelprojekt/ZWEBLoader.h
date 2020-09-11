@@ -6,11 +6,12 @@ enum ZWEBLoadType
 {
 	NoAnimation,
 	SkeletonAnimation,
-	MorphAnimation
+	MorphAnimation,
+	OnlySkeletonAnimation
 };
 namespace ZWEBLoader
 {
-	inline const std::vector<Mesh> LoadZWEB(ZWEBLoadType type, std::string scenePath, std::string animationPath, ID3D11Device* device) //I want a reference here but it doesn't work.
+	inline const std::vector<Mesh> LoadZWEB(ZWEBLoadType type, std::string scenePath, std::string animationPath, ID3D11Device* device, std::string name) //I want a reference here but it doesn't work.
 	{
 		ZWEB::ZWEBImporter importer;
 
@@ -101,7 +102,7 @@ namespace ZWEBLoader
 			meshes.push_back(MeshCreator::CreateMesh(vertices, indicesZweb, device));
 
 
-			if (type == ZWEBLoadType::SkeletonAnimation) //I will change this in the future so you can load only skeletons.
+			if (type == ZWEBLoadType::SkeletonAnimation||type==ZWEBLoadType::OnlySkeletonAnimation) //I will change this in the future so you can load only skeletons.
 			{
 				SkeletonAni skeletonAnimation;
 				//map must be set first so it can be used to set up the other stuff.
@@ -125,8 +126,15 @@ namespace ZWEBLoader
 					skeletonAnimation.setUpKeys((std::string)keys[0].linkName, keys);
 				}
 
-
-				meshes[meshes.size() - 1].setAnimationTrack(skeletonAnimation);
+				if (type == ZWEBLoadType::OnlySkeletonAnimation)
+				{
+					//add a name to every mesh from the zweb import, what the node name is in maya, then search the names to add the animation track.
+				}
+				else
+				{
+					meshes[meshes.size() - 1].setAnimationTrack(skeletonAnimation);
+				}
+				
 			}
 
 			

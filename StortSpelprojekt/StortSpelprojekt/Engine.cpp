@@ -4,7 +4,7 @@ Engine::Engine(Window& window) : window(window), camera(60.0f, window.GetWindowA
 {
 	TMP_SetupDX11(window.GetHWND(), window.GetWidth(), window.GetHeight());
 	//mesh = ShittyOBJLoader::LoadOBJ("Models/cube.obj", device);
-	mesh = ZWEBLoader::LoadZWEB(ZWEBLoadType::SkeletonAnimation,"../Models/OrchBody.ZWEB", "../Models/OrchAnimation.ZWEB", device)[0];
+	mesh = ZWEBLoader::LoadZWEB(ZWEBLoadType::SkeletonAnimation,"../Models/OrchBody.ZWEB", "../Models/OrchAnimation.ZWEB", device, "null")[0];
 	Shader shader;
 	shader.SetPixelShader(L"Shaders/Default_ps.hlsl");
 	shader.SetVertexShader(L"Shaders/Default_vs.hlsl");
@@ -13,7 +13,7 @@ Engine::Engine(Window& window) : window(window), camera(60.0f, window.GetWindowA
 
 	this->material = Material(shader);
 	this->transform.position = { 0, 0, 5 };
-	this->transform.scale = { 0.0125, 0.0125,0.0125 };
+	this->transform.scale = { 0.0125f, 0.0125f,0.0125f };
 }
 
 Engine::~Engine()
