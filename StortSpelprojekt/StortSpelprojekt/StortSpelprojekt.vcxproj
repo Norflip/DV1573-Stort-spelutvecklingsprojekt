@@ -139,10 +139,11 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClCompile Include="Camera.cpp" />
-    <ClCompile Include="DXHandler.cpp" />
+    <ClCompile Include="DXHelper.cpp" />
     <ClCompile Include="Engine.cpp" />
     <ClCompile Include="main.cpp" />
     <ClCompile Include="Material.cpp" />
+    <ClCompile Include="MeshComponent.cpp" />
     <ClCompile Include="Object.cpp" />
     <ClCompile Include="Renderer.cpp" />
     <ClCompile Include="Scene.cpp" />
@@ -154,12 +155,13 @@
     <ClInclude Include="Buffers.h" />
     <ClInclude Include="BusNode.h" />
     <ClInclude Include="Camera.h" />
-    <ClInclude Include="ConstantBuffer.h" />
-    <ClInclude Include="DXHandler.h" />
+    <ClInclude Include="Component.h" />
+    <ClInclude Include="DXHelper.h" />
     <ClInclude Include="Engine.h" />
     <ClInclude Include="Log.h" />
     <ClInclude Include="Material.h" />
     <ClInclude Include="Mesh.h" />
+    <ClInclude Include="MeshComponent.h" />
     <ClInclude Include="Message.h" />
     <ClInclude Include="MessageBus.h" />
     <ClInclude Include="Object.h" />

@@ -5,8 +5,7 @@ Engine::Engine(HINSTANCE hInstance) : window(hInstance), activeScene(nullptr)
 	Log::Open();
 
 	window.Open(800, 800);
-	dxHandler.Initialize(window);
-	renderer.Initialize(dxHandler);
+	renderer.Initialize(window);
 
 	RegisterScene(0, new Scene());
 	SwitchScene(0);
@@ -33,6 +32,7 @@ void Engine::Run()
 		{
 			TranslateMessage(&msg);
 			DispatchMessage(&msg);
+
 			if (msg.message == WM_QUIT)
 				Exit();
 		}
@@ -66,7 +66,7 @@ void Engine::RegisterScene(size_t id, Scene* scene)
 	auto sceneIt = this->scenes.find(id);
 	assert(sceneIt == scenes.end(), "Conflicting scene IDs");
 
-	scene->Initialize(&dxHandler, &renderer);
+	scene->Initialize(&renderer);
 	this->scenes.insert({ id, scene });
 }
 

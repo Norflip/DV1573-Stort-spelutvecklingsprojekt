@@ -4,7 +4,6 @@
 #include <unordered_map>
 #include <thread>
 
-#include "DXHandler.h"
 #include "Window.h"
 #include "Log.h"
 #include "Scene.h"
@@ -40,6 +39,5 @@ private:
 	Scene* activeScene;
 
 	Window window;
-	DXHandler dxHandler;
 	Renderer renderer;
 };

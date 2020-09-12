@@ -36,7 +36,6 @@ public:
 	ID3D11InputLayout* GetInputLayout() const { return this->inputLayout; }
 
 private:
-	bool hasPixelShader, hasVertexShader;
 	LPCWSTR pixelPath, vertexPath;
 	LPCSTR pixelEntry, vertexEntry;
 	DWORD shaderCompilationFlag;

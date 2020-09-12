@@ -57,8 +57,8 @@ dx::XMMATRIX Transform::GetWorldMatrix() const
 		dx::XMMatrixRotationRollPitchYawFromVector(this->rotation) *
 		dx::XMMatrixTranslationFromVector(this->position);
 
-	if (parent != nullptr)
-		worldMatrix = dx::XMMatrixMultiply(parent->GetWorldMatrix(), worldMatrix);
+	/*if (parent != nullptr)
+		worldMatrix = dx::XMMatrixMultiply(parent->GetWorldMatrix(), worldMatrix);*/
 
 	return worldMatrix;
 }

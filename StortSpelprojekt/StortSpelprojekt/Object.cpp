@@ -1,6 +1,7 @@
 #include "Object.h"
+#include "Component.h"
 
-Object::Object() : material(Shader()), flags(ObjectFlag::ENABLED | ObjectFlag::VISIBLE)
+Object::Object() : flags(ObjectFlag::ENABLED | ObjectFlag::VISIBLE)
 {
 
 }
@@ -10,11 +11,22 @@ Object::~Object()
 
 }
 
+void Object::Update(const float& deltaTime)
+{
+	for (auto i = components.begin(); i < components.end(); i++)
+	{
+		(*i)->Update(deltaTime);
+	}
+}
+
 void Object::Draw(Renderer* renderer, Camera* camera)
 {
-	renderer->Draw(this->mesh, transform.GetWorldMatrix(), camera->GetViewMatrix(), camera->GetProjectionMatrix());
-	// run down the hierarchy
+	for (auto i = components.begin(); i < components.end(); i++)
+	{
+		(*i)->Draw(renderer, camera);
+	}
 }
+
 
 bool Object::HasFlag(ObjectFlag flag) const
 {

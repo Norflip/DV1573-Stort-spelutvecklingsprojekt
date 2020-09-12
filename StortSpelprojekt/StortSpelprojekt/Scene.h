@@ -9,7 +9,7 @@ public:
 	Scene();
 	virtual ~Scene();
 
-	void Initialize(DXHandler* dxHandler, Renderer* renderer);
+	void Initialize(Renderer* renderer);
 	
 	void OnActivate() {}
 	void OnDeactivate() {}
@@ -20,8 +20,7 @@ public:
 	void Render();
 
 private:	
-	std::vector<Object> objects;
+	std::vector<Object*> objects;
 	Camera camera;
-	DXHandler* dxHandler;
 	Renderer* renderer;
 };
