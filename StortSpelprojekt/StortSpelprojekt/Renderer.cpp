@@ -16,6 +16,10 @@ void Renderer::Initialize(Window& window)
 	ZeroMemory(&viewport, sizeof(D3D11_VIEWPORT));
 	viewport.Width = static_cast<FLOAT>(window.GetWidth());
 	viewport.Height = static_cast<FLOAT>(window.GetHeight());
+	//viewport.MinDepth = 0.0f;
+	//viewport.MaxDepth = 1.0f;
+	viewport.TopLeftX = 0;
+	viewport.TopLeftY = 0;
 	context->RSSetViewports(1, &viewport);
 
 	DXHelper::CreateCBuffer(device, &obj_cbuffer, &cb_object_data, sizeof(cb_object_data));
@@ -36,7 +40,8 @@ void Renderer::Draw(const Mesh& mesh, dx::XMMATRIX model, dx::XMMATRIX view, dx:
 {
 	// add to queue? 
 
-	dx::XMStoreFloat4x4(&cb_object_data.mvp, dx::XMMatrixTranspose(model * view * projection));
+	dx::XMMATRIX mvp = dx::XMMatrixMultiply(model, dx::XMMatrixMultiply(view, projection));
+	dx::XMStoreFloat4x4(&cb_object_data.mvp, dx::XMMatrixTranspose(mvp));
 	dx::XMStoreFloat4x4(&cb_object_data.world, dx::XMMatrixTranspose(model));
 	DXHelper::BindCBuffer(context, obj_cbuffer, &cb_object_data, CB_OBJECT_SLOT, ShaderBindFlag::VERTEX);
 
@@ -47,9 +52,9 @@ void Renderer::Draw(const Mesh& mesh, dx::XMMATRIX model, dx::XMMATRIX view, dx:
 	context->IASetIndexBuffer(mesh.indexBuffer, DXGI_FORMAT_R32_UINT, 0);
 	context->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
 
-//	context->DrawIndexed(mesh.indices.size(), 0, 0);
+	context->DrawIndexed(mesh.indices.size(), 0, 0);
 
-	context->DrawIndexedInstanced(mesh.indices.size(), 10, 0, 0, 0);
+	//context->DrawIndexedInstanced(mesh.indices.size(), 10, 0, 0, 0);
 
 }
 

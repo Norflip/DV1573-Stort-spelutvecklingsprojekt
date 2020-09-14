@@ -20,5 +20,5 @@ dx::XMMATRIX Camera::GetViewMatrix() const
 dx::XMMATRIX Camera::GetProjectionMatrix() const
 {
 	const float toRadians = 0.0174532925f;
-	return DirectX::XMMatrixPerspectiveFovLH(fieldOfView * toRadians, aspectRatio, 0.001f, 1000.0f);
+	return DirectX::XMMatrixPerspectiveFovLH(fieldOfView * toRadians, aspectRatio, NEAR_Z, FAR_Z);
 }

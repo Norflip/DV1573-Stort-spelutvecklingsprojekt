@@ -47,7 +47,7 @@ void DXHelper::CreateSwapchain(const Window& window, _Out_ ID3D11Device** device
 	// DEFAULT RASTERIZER STATE
 	D3D11_RASTERIZER_DESC rasterizerDescription;
 	ZeroMemory(&rasterizerDescription, sizeof(D3D11_RASTERIZER_DESC));
-	rasterizerDescription.CullMode = D3D11_CULL_BACK;
+	rasterizerDescription.CullMode = D3D11_CULL_NONE;
 	rasterizerDescription.FillMode = D3D11_FILL_SOLID; //if we want wireframe, fill etc
 	rasterizerDescription.DepthClipEnable = true;
 

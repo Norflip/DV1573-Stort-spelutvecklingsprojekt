@@ -21,15 +21,12 @@ struct VS_OUTPUT
 VS_OUTPUT main(VS_INPUT input)
 {
 	VS_OUTPUT output;
-	output.uv = input.uv;
-
-	
+	output.uv = input.uv;	
 	output.worldPosition = mul(input.position, world).xyz;
 	output.position = mul(input.position, mvp);
 
 //	output.position.x += input.id * 0.4f;
 	//output.position.y += input.id * 0.4f;
-
 
 	output.normal = normalize(mul(input.normal, world).xyz);
 	output.tangent = normalize(mul(input.tangent, world).xyz);

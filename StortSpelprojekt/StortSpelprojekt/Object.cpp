@@ -1,7 +1,7 @@
 #include "Object.h"
 #include "Component.h"
 
-Object::Object() : flags(ObjectFlag::ENABLED | ObjectFlag::VISIBLE)
+Object::Object(const std::string& name, ObjectFlag flag) : name(name), flags(flag)
 {
 
 }

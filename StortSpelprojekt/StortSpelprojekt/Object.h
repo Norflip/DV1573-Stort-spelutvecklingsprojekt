@@ -23,7 +23,7 @@ DEFINE_ENUM_FLAG_OPERATORS(ObjectFlag)
 class Object
 {
 public:
-	Object();
+	Object(const std::string& name, ObjectFlag flag = ObjectFlag::DEFAULT);
 	virtual ~Object();
 
 	void Update(const float& deltaTime);
@@ -42,11 +42,15 @@ public:
 	void AddFlag(ObjectFlag flag);
 	void RemoveFlag(ObjectFlag flag);
 
+	void SetName(const std::string& name) { this->name = name; }
+	std::string GetName() const { return this->name; }
+
 	Transform& GetTransform() { return this->transform; }
 
 private:
 	ObjectFlag flags;
 	Transform transform;
+	std::string name;
 
 	std::vector<Component*> components;
 	ComponentArray componentArray;
