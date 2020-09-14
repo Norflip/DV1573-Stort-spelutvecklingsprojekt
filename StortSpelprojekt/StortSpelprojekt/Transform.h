@@ -1,14 +1,15 @@
 #pragma once
 #include <vector>
 #include <DirectXMath.h>
-
 namespace dx = DirectX;
+
+class Object;
 
 class Transform
 {
 public:
-	Transform();
-	Transform(dx::XMVECTOR position, dx::XMVECTOR rotation, dx::XMVECTOR scale);
+	Transform(Object* owner);
+	Transform(Object* owner, dx::XMVECTOR position, dx::XMVECTOR rotation, dx::XMVECTOR scale);
 	virtual ~Transform();
 
 	dx::XMMATRIX GetWorldMatrix() const;
@@ -28,6 +29,8 @@ public:
 	size_t CountChildren() const { return this->children.size(); }
 	std::vector<Transform*> GetChildren() const { return this->children; }
 
+	Object* GetOwner() const { return this->owner; }
+
 #pragma endregion
 
 #pragma region SETTERS AND GETTERS
@@ -45,6 +48,7 @@ public:
 private:
 	std::vector<Transform*> children;
 	Transform* parent;
+	Object* owner;
 
 	dx::XMVECTOR position;
 	dx::XMVECTOR rotation;

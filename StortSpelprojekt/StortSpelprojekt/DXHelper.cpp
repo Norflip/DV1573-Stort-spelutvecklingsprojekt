@@ -40,15 +40,22 @@ void DXHelper::CreateSwapchain(const Window& window, _Out_ ID3D11Device** device
 	HRESULT getBackbufferResult = (*swapchain)->GetBuffer(0, __uuidof(ID3D11Texture2D), (LPVOID*)&backBufferPtr);
 	assert(SUCCEEDED(getBackbufferResult));
 
+
+
+
 	(*device)->CreateRenderTargetView(backBufferPtr, nullptr, backbuffer);
 	(*context)->OMSetRenderTargets(1, backbuffer, nullptr);
 	backBufferPtr->Release();
+
+
+
+
 
 	// DEFAULT RASTERIZER STATE
 	D3D11_RASTERIZER_DESC rasterizerDescription;
 	ZeroMemory(&rasterizerDescription, sizeof(D3D11_RASTERIZER_DESC));
 	rasterizerDescription.CullMode = D3D11_CULL_NONE;
-	rasterizerDescription.FillMode = D3D11_FILL_SOLID; //if we want wireframe, fill etc
+	rasterizerDescription.FillMode = D3D11_FILL_SOLID;
 	rasterizerDescription.DepthClipEnable = true;
 
 	ID3D11RasterizerState* rasterizerState;

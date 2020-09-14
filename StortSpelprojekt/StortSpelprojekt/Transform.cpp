@@ -1,10 +1,11 @@
 #include "Transform.h"
 
-Transform::Transform() : Transform(dx::XMVectorZero(), dx::XMVectorZero(), dx::XMVectorSplatOne())
+Transform::Transform(Object* owner) : Transform(owner, dx::XMVectorZero(), dx::XMVectorZero(), { 1,1,1 })
 {
+
 }
 
-Transform::Transform(dx::XMVECTOR position, dx::XMVECTOR rotation, dx::XMVECTOR scale) : position(position), rotation(rotation), scale(scale), parent(nullptr)
+Transform::Transform(Object* owner, dx::XMVECTOR position, dx::XMVECTOR rotation, dx::XMVECTOR scale) : owner(owner), position(position), rotation(rotation), scale(scale), parent(nullptr)
 {
 }
 
@@ -57,6 +58,9 @@ dx::XMMATRIX Transform::GetWorldMatrix() const
 		dx::XMMatrixRotationRollPitchYawFromVector(this->rotation) *
 		dx::XMMatrixTranslationFromVector(this->position);
 
+
+
+	// dx::XMMatrixScalingFromVector(this->scale) *
 	/*if (parent != nullptr)
 		worldMatrix = dx::XMMatrixMultiply(parent->GetWorldMatrix(), worldMatrix);*/
 

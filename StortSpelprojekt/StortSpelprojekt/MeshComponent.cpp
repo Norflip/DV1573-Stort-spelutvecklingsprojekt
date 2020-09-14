@@ -13,7 +13,6 @@ void MeshComponent::Draw(Renderer* renderer, Camera* camera)
 {
 	material.BindToContext(renderer->GetContext());
 
-	//Log::Add("drawing");
 	auto view = camera->GetViewMatrix();
 	auto proj = camera->GetProjectionMatrix();
 

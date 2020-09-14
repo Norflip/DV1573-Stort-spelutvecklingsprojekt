@@ -2,6 +2,7 @@
 #include <vector>
 #include "Object.h"
 #include "ShittyOBJLoader.h"
+#include "Input.h"
 
 class Scene
 {
@@ -23,4 +24,8 @@ private:
 	std::vector<Object*> objects;
 	Camera camera;
 	Renderer* renderer;
+
+
+	Mesh mesh;
+	Material material;
 };

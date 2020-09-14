@@ -1,6 +1,6 @@
 #include "Camera.h"
 
-Camera::Camera(float fieldOfView, float aspectRatio) : fieldOfView(fieldOfView), aspectRatio(aspectRatio)
+Camera::Camera(float fieldOfView, float aspectRatio) : fieldOfView(fieldOfView), aspectRatio(aspectRatio), transform(nullptr)
 {
 }
 
