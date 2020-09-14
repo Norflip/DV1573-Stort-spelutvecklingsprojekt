@@ -1,7 +1,6 @@
 #include "Scene.h"
-#include "MeshComponent.h"
 
-Scene::Scene() : camera(60.0f, 1.0f), material(Shader())
+Scene::Scene() : material(Shader())
 {
 
 }
@@ -14,21 +13,35 @@ void Scene::Initialize(Renderer* renderer)
 {
 	this->renderer = renderer;
 
-	camera.GetTransform().SetPosition({ 0, 0, -10 });
-
+	// TEMP
+	// Should change values on resize event
+	Window* window = renderer->GetOutputWindow();
+	
+	Object* cameraObject = new Object("camera", ObjectFlag::ENABLED);
+	camera = cameraObject->AddComponent<CameraComponent>(60.0f);
+	camera->Resize(window->GetWidth(), window->GetHeight());
+	
 	Shader shader;
 	shader.SetPixelShader(L"Shaders/Default_ps.hlsl");
 	shader.SetVertexShader(L"Shaders/Default_vs.hlsl");
 	shader.Compile(renderer->GetDevice());
 
-	 mesh = ShittyOBJLoader::Load("Models/cube.obj", renderer->GetDevice());
-	 material = Material(shader);
+	mesh = ShittyOBJLoader::Load("Models/cube.obj", renderer->GetDevice());
+	material = Material(shader);
 
 
-	Object* tmp_obj = new Object("cube");
-	tmp_obj->GetTransform().SetPosition({ 0, 0, 10 });
+	Object* tmp_obj = new Object("cube1");
+	tmp_obj->GetTransform().SetPosition({ 0, 0, 5 });
 	tmp_obj->AddComponent<MeshComponent>(mesh, material);
 	objects.push_back(tmp_obj);
+
+	Object* tmp_obj2 = new Object("cube2");
+	tmp_obj2->AddComponent<MeshComponent>(mesh, material);
+
+	Transform::SkapaPäron(tmp_obj->GetTransform(), tmp_obj2->GetTransform());
+	objects.push_back(tmp_obj2);
+
+	PrintSceneHierarchy();
 }
 
 void Scene::ProcessInput()
@@ -64,8 +77,44 @@ void Scene::Render()
 	{
 		Object* obj = (*i);
 		//if (obj->HasFlag(ObjectFlag::ENABLED | ObjectFlag::VISIBLE))
-			obj->Draw(renderer, &camera);
+		obj->Draw(renderer, camera);
 	}
 
 	renderer->EndFrame();
+}
+
+void Scene::PrintSceneHierarchy() const
+{
+	Log::Add("PRINTING SCENE HIERARCHY ----");
+
+	for (auto i = objects.cbegin(); i < objects.cend(); i++)
+		PrintSceneHierarchy(*i, 0);
+
+	Log::Add("----");
+}
+
+void Scene::PrintSceneHierarchy(Object* object, size_t level) const
+{
+	std::string indent = "";
+
+	if (level > 0)
+	{
+		for (size_t i = 0; i < level; i++)
+			indent += "  ";
+
+		indent += "L  ";		
+	}
+
+	
+	Log::Add(indent + object->GetName());
+
+	if (object->GetTransform().CountChildren() > 0)
+	{
+		auto children = object->GetTransform().GetChildren();
+
+		for (size_t i = 0; i < children.size(); i++)
+		{
+			PrintSceneHierarchy(children[i]->GetOwner(), level + 1);
+		}
+	}
 }

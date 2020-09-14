@@ -19,7 +19,7 @@ void Object::Update(const float& deltaTime)
 	}
 }
 
-void Object::Draw(Renderer* renderer, Camera* camera)
+void Object::Draw(Renderer* renderer, CameraComponent* camera)
 {
 	for (auto i = components.begin(); i < components.end(); i++)
 	{

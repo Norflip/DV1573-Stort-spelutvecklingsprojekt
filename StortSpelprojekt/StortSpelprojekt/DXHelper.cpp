@@ -1,6 +1,6 @@
 #include "DXHelper.h"
 
-void DXHelper::CreateSwapchain(const Window& window, _Out_ ID3D11Device** device, _Out_ ID3D11DeviceContext** context, _Out_ IDXGISwapChain** swapchain, _Out_ ID3D11RenderTargetView** backbuffer)
+void DXHelper::CreateSwapchain(const Window& window, _Out_ ID3D11Device** device, _Out_ ID3D11DeviceContext** context, _Out_ IDXGISwapChain** swapchain)
 {
 
 	size_t width = window.GetWidth();
@@ -36,20 +36,6 @@ void DXHelper::CreateSwapchain(const Window& window, _Out_ ID3D11Device** device
 	HRESULT resultCreateDevAndSwap = D3D11CreateDeviceAndSwapChain(nullptr, D3D_DRIVER_TYPE_HARDWARE, nullptr, swapchainFlags, featureLevel, 1, D3D11_SDK_VERSION, &swapChainDescription, swapchain, device, nullptr, context);
 	assert(SUCCEEDED(resultCreateDevAndSwap));
 
-	ID3D11Texture2D* backBufferPtr;
-	HRESULT getBackbufferResult = (*swapchain)->GetBuffer(0, __uuidof(ID3D11Texture2D), (LPVOID*)&backBufferPtr);
-	assert(SUCCEEDED(getBackbufferResult));
-
-
-
-
-	(*device)->CreateRenderTargetView(backBufferPtr, nullptr, backbuffer);
-	(*context)->OMSetRenderTargets(1, backbuffer, nullptr);
-	backBufferPtr->Release();
-
-
-
-
 
 	// DEFAULT RASTERIZER STATE
 	D3D11_RASTERIZER_DESC rasterizerDescription;
@@ -65,9 +51,11 @@ void DXHelper::CreateSwapchain(const Window& window, _Out_ ID3D11Device** device
 	assert(SUCCEEDED(resultCreateRasterizer));
 	(*context)->RSSetState(rasterizerState);
 
+
+
 }
 
-void DXHelper::CreateCBuffer(ID3D11Device* device, ID3D11Buffer** buffer, void* initdata, unsigned int byteSize)
+void DXHelper::CreateConstBuffer(ID3D11Device* device, ID3D11Buffer** buffer, void* initdata, unsigned int byteSize)
 {
 	D3D11_BUFFER_DESC bufferDescription;
 	ZeroMemory(&bufferDescription, sizeof(D3D11_BUFFER_DESC));
@@ -83,16 +71,61 @@ void DXHelper::CreateCBuffer(ID3D11Device* device, ID3D11Buffer** buffer, void* 
 	assert(SUCCEEDED(createdBufferResult));
 }
 
-void DXHelper::BindCBuffer(ID3D11DeviceContext* context, ID3D11Buffer* buffer, void* data, size_t slot, ShaderBindFlag flag)
+void DXHelper::BindConstBuffer(ID3D11DeviceContext* context, ID3D11Buffer* buffer, void* data, size_t slot, ShaderBindFlag flag)
 {
-	context->UpdateSubresource(buffer, 0, 0, &data, 0, 0);
+	context->UpdateSubresource(buffer, 0, 0, data, 0, 0);
 
-	if (((int)flag & (int)ShaderBindFlag::PIXEL) != 0)
-	{
+	int bflag = static_cast<int>(flag);
+
+	if ((bflag & (int)ShaderBindFlag::PIXEL) != 0)
 		context->PSSetConstantBuffers(slot, 1, &buffer);
-	}
-	else if (((int)flag & (int)ShaderBindFlag::VERTEX) != 0)
-	{
+	
+	if ((bflag & (int)ShaderBindFlag::VERTEX) != 0)
 		context->VSSetConstantBuffers(slot, 1, &buffer);
-	}
+
+	if ((bflag & (int)ShaderBindFlag::GEOMETRY) != 0)
+		context->GSSetConstantBuffers(slot, 1, &buffer);
+}
+
+void DXHelper::CreateBackbuffer(size_t width, size_t height, ID3D11Device* device,  IDXGISwapChain* swapchain, ID3D11RenderTargetView** backbuffer, ID3D11DepthStencilView** depthStencilView)
+{
+	HRESULT hr;
+
+	// DEPTH TEXTURE
+	D3D11_TEXTURE2D_DESC depthTexDesc;
+	depthTexDesc.Width = width;
+	depthTexDesc.Height = height;
+	depthTexDesc.MipLevels = 1;
+	depthTexDesc.ArraySize = 1;
+	depthTexDesc.SampleDesc.Count = 1;
+	depthTexDesc.SampleDesc.Quality = 0;
+	depthTexDesc.Format = DXGI_FORMAT_D32_FLOAT;
+	depthTexDesc.Usage = D3D11_USAGE_DEFAULT;
+	depthTexDesc.BindFlags = D3D11_BIND_DEPTH_STENCIL;
+	depthTexDesc.CPUAccessFlags = 0;
+	depthTexDesc.MiscFlags = 0;
+
+	ID3D11Texture2D* depthTexture;
+	hr = (device)->CreateTexture2D(&depthTexDesc, 0, &depthTexture);
+	assert(SUCCEEDED(hr));
+
+	D3D11_DEPTH_STENCIL_VIEW_DESC dsvDesc;
+	dsvDesc.Format = depthTexDesc.Format;
+	dsvDesc.Flags = 0;
+	dsvDesc.ViewDimension = D3D11_DSV_DIMENSION_TEXTURE2D;
+	dsvDesc.Texture2D.MipSlice = 0;
+
+	hr = (device)->CreateDepthStencilView(depthTexture, &dsvDesc, depthStencilView);
+	assert(SUCCEEDED(hr));
+
+	depthTexture->Release();
+	depthTexture = nullptr;
+
+
+	ID3D11Texture2D* backBufferPtr;
+	HRESULT getBackbufferResult = swapchain->GetBuffer(0, __uuidof(ID3D11Texture2D), (LPVOID*)&backBufferPtr);
+	assert(SUCCEEDED(getBackbufferResult));
+
+	(device)->CreateRenderTargetView(backBufferPtr, nullptr, backbuffer);
+	backBufferPtr->Release();
 }

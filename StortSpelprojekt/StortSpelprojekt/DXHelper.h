@@ -3,6 +3,7 @@
 #include <dxgi.h> 
 #include <d3dcompiler.h>
 #include <assert.h>
+
 #pragma comment(lib, "gdi32")
 #pragma comment(lib, "d3d11") 
 #pragma comment( lib, "dxgi" )   
@@ -15,22 +16,18 @@ enum class ShaderBindFlag
 	NONE = 0,
 	VERTEX = 1 << 0,
 	PIXEL = 1 << 1,
-	GEOMETRY_EXAMPLE = 1 << 2
+	GEOMETRY = 1 << 2
 };
 
 DEFINE_ENUM_FLAG_OPERATORS(ShaderBindFlag);
 
-struct CBuffer
-{
-	ID3D11Buffer* buffer;
-	size_t slot;
-	ShaderBindFlag flag;
-};
-
 namespace DXHelper
 {
-	void CreateSwapchain(const Window& window, ID3D11Device** device, ID3D11DeviceContext** context, IDXGISwapChain** swapchain, ID3D11RenderTargetView** backbuffer);
+	void CreateSwapchain(const Window& window, ID3D11Device** device, ID3D11DeviceContext** context, IDXGISwapChain** swapchain);
+	void CreateConstBuffer(ID3D11Device* device, ID3D11Buffer** buffer, void* initdata, unsigned int byteSize);
+	void BindConstBuffer(ID3D11DeviceContext* context, ID3D11Buffer* buffer, void* data, size_t slot, ShaderBindFlag flag);
+
+	void CreateBackbuffer(size_t width, size_t height, ID3D11Device* device, IDXGISwapChain* swapchain, ID3D11RenderTargetView** backbuffer, ID3D11DepthStencilView** depthStencilView);
+
 	
-	void CreateCBuffer(ID3D11Device* device, ID3D11Buffer** buffer, void* initdata, unsigned int byteSize);
-	void BindCBuffer(ID3D11DeviceContext* context, ID3D11Buffer* buffer, void* data, size_t slot, ShaderBindFlag flag);
 }

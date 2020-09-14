@@ -52,19 +52,26 @@ bool Transform::ContainsChild(Transform* child) const
 	return contains;
 }
 
+void Transform::SkapaPäron(Transform& parent, Transform& child)
+{
+	parent.AddChild(&child);
+	child.SetParent(&parent);
+}
+
 dx::XMMATRIX Transform::GetWorldMatrix() const
 {
-	dx::XMMATRIX worldMatrix = dx::XMMatrixScalingFromVector(this->scale) *
-		dx::XMMatrixRotationRollPitchYawFromVector(this->rotation) *
-		dx::XMMatrixTranslationFromVector(this->position);
-
-
-
-	// dx::XMMatrixScalingFromVector(this->scale) *
-	/*if (parent != nullptr)
-		worldMatrix = dx::XMMatrixMultiply(parent->GetWorldMatrix(), worldMatrix);*/
+	dx::XMMATRIX worldMatrix = GetLocalWorldMatrix();
+	if (parent != nullptr)
+		worldMatrix = dx::XMMatrixMultiply(parent->GetWorldMatrix(), worldMatrix);
 
 	return worldMatrix;
+}
+
+dx::XMMATRIX Transform::GetLocalWorldMatrix() const
+{
+	return dx::XMMatrixScalingFromVector(this->scale) *
+		dx::XMMatrixRotationRollPitchYawFromVector(this->rotation) *
+		dx::XMMatrixTranslationFromVector(this->position);
 }
 
 DirectX::XMVECTOR Transform::TransformDirection(DirectX::XMVECTOR direction) const

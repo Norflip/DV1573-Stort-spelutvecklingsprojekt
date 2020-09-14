@@ -5,8 +5,9 @@
 #include "Mesh.h"
 #include "Material.h"
 #include "Renderer.h"
-#include "Camera.h"
 #include "Component.h"
+
+class CameraComponent;
 
 enum class ObjectFlag : unsigned int
 {
@@ -27,16 +28,20 @@ public:
 	virtual ~Object();
 
 	void Update(const float& deltaTime);
-	void Draw(Renderer* renderer, Camera* camera);
+	//void FixedUpdate(const float& fixedDeltaTime);
+	void Draw(Renderer* renderer, CameraComponent* camera);
+
 
 	template <typename T>
 	bool HasComponent() const;
 
-	template <typename T, typename... TArgs>
-	T& AddComponent(TArgs&&... mArgs);
+	template <typename T, typename... TArgs> 
+	T* AddComponent(TArgs&&... mArgs);
 
-	template <typename T>
-	T& GetComponent() const;
+	template <typename T> T* 
+	GetComponent() const;
+
+
 
 	bool HasFlag(ObjectFlag flag) const;
 	void AddFlag(ObjectFlag flag);
@@ -64,7 +69,7 @@ inline bool Object::HasComponent() const
 }
 
 template<typename T, typename ...TArgs>
-inline T& Object::AddComponent(TArgs&& ...mArgs)
+inline T* Object::AddComponent(TArgs&& ...mArgs)
 {
 	T* c(new T(std::forward<TArgs>(mArgs)...));
 	c->SetOwner(this);
@@ -74,12 +79,12 @@ inline T& Object::AddComponent(TArgs&& ...mArgs)
 	componentArray[GetComponentTypeID<T>()] = c;
 	componentBitSet[GetComponentTypeID<T>()] = true;
 
-	return *c;
+	return c;
 }
 
 template<typename T>
-inline T& Object::GetComponent() const
+inline T* Object::GetComponent() const
 {
 	auto ptr(componentArray[GetComponentTypeID<T>()]);
-	return *static_cast<T*>(ptr);
+	return static_cast<T*>(ptr);
 }

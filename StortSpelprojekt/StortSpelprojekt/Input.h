@@ -6,12 +6,8 @@ class Input
 public:
 	Input() {};
 	virtual ~Input() {}
-	//void Update ();
 
-	std::string Test() { return "TEST"; }
-
-	// SINGLETON
-	static Input& Instance()
+	static Input& Instance() // singleton
 	{
 		static Input instance;
 		return instance;

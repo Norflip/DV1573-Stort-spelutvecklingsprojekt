@@ -12,22 +12,27 @@ public:
 	Renderer();
 	virtual ~Renderer();
 
-	void Initialize(Window& window);
+	void Initialize(Window* window);
 	void BeginFrame();
 	void EndFrame();
-	
-	void Draw (const Mesh& mesh, dx::XMMATRIX model, dx::XMMATRIX view, dx::XMMATRIX projection);
+
+	void Draw(const Mesh& mesh, dx::XMMATRIX model, dx::XMMATRIX view, dx::XMMATRIX projection);
 	void DrawInstanced(const Mesh& mesh, size_t count, dx::XMMATRIX* models, dx::XMMATRIX view, dx::XMMATRIX projection);
 
 	ID3D11Device* GetDevice() const { return this->device; }
 	ID3D11DeviceContext* GetContext() const { return this->context; }
+	Window* GetOutputWindow() const { return this->outputWindow; }
 
 private:
 	IDXGISwapChain* swapchain;
-	ID3D11RenderTargetView* backbuffer;
 	ID3D11Device* device;
 	ID3D11DeviceContext* context;
 
+	ID3D11RenderTargetView* backbuffer;
+	ID3D11DepthStencilView* depthStencilView;
+
 	cb_Object cb_object_data;
 	ID3D11Buffer* obj_cbuffer;
+
+	Window* outputWindow;
 };

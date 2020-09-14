@@ -3,6 +3,8 @@
 #include "Object.h"
 #include "ShittyOBJLoader.h"
 #include "Input.h"
+#include "CameraComponent.h"
+#include "MeshComponent.h"
 
 class Scene
 {
@@ -15,14 +17,16 @@ public:
 	void OnActivate() {}
 	void OnDeactivate() {}
 	
-	void ProcessInput();
 	void Update(const float& deltaTime);
 	void FixedUpdate(const float& fixedDeltaTime);
 	void Render();
 
+	void PrintSceneHierarchy() const;
+	void PrintSceneHierarchy(Object* object, size_t level) const;
+
 private:	
 	std::vector<Object*> objects;
-	Camera camera;
+	CameraComponent* camera;
 	Renderer* renderer;
 
 

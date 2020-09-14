@@ -13,11 +13,11 @@ public:
 	virtual ~Transform();
 
 	dx::XMMATRIX GetWorldMatrix() const;
+	dx::XMMATRIX GetLocalWorldMatrix() const;
+
 	DirectX::XMVECTOR TransformDirection(DirectX::XMVECTOR direction) const;
 	
 	void Rotate(float pitch, float yaw, float roll);
-	
-#pragma region HIERARCHY
 
 	bool HasParent() const { return this->parent != nullptr; }
 	void SetParent(Transform* parent) { this->parent = parent; }
@@ -29,9 +29,9 @@ public:
 	size_t CountChildren() const { return this->children.size(); }
 	std::vector<Transform*> GetChildren() const { return this->children; }
 
-	Object* GetOwner() const { return this->owner; }
+	static void SkapaPäron(Transform& parent, Transform& child);
 
-#pragma endregion
+	Object* GetOwner() const { return this->owner; }
 
 #pragma region SETTERS AND GETTERS
 	dx::XMVECTOR GetPosition() const { return this->position; }

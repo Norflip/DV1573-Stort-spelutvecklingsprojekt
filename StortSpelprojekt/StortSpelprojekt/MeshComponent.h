@@ -3,7 +3,7 @@
 #include "Mesh.h"
 #include "Material.h"
 #include "Transform.h"
-#include "Camera.h"
+#include "CameraComponent.h"
 #include "Object.h"
 
 class MeshComponent : public Component
@@ -16,7 +16,7 @@ public:
 	Material GetMaterial() const { return this->material; }
 
 	void Update(const float& deltaTime) override;
-	void Draw(Renderer* renderer, Camera* camera) override;
+	void Draw(Renderer* renderer, CameraComponent* camera) override;
 
 private:
 	Mesh mesh;
