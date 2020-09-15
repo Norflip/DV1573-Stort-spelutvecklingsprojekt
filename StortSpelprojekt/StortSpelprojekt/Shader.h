@@ -7,6 +7,7 @@
 
 #include "Log.h"
 #include "Window.h"
+#include "DXHelper.h"
 
 class Shader
 {
@@ -15,9 +16,8 @@ class Shader
 		{"POSITION", 0, DXGI_FORMAT_R32G32B32_FLOAT, 0,	 D3D11_APPEND_ALIGNED_ELEMENT, D3D11_INPUT_PER_VERTEX_DATA, 0},		// 0 + 12 b = 12 b		// D3D11_APPEND_ALIGNED_ELEMENT
 		{"TEXCOORD", 0, DXGI_FORMAT_R32G32_FLOAT,    0,	D3D11_APPEND_ALIGNED_ELEMENT, D3D11_INPUT_PER_VERTEX_DATA, 0},		// 12 + 8 b = 20 b		
 		{"NORMAL",	 0, DXGI_FORMAT_R32G32B32_FLOAT, 0,	D3D11_APPEND_ALIGNED_ELEMENT, D3D11_INPUT_PER_VERTEX_DATA, 0},		// 20 + 12 b = 32b
-		{"TANGENT", 0, DXGI_FORMAT_R32G32B32_FLOAT,  0, D3D11_APPEND_ALIGNED_ELEMENT, D3D11_INPUT_PER_VERTEX_DATA, 0},			// 32 + 12 b = 44b
-		
-		{"SV_InstanceID",   0, DXGI_FORMAT_R32_UINT, 0, D3D11_APPEND_ALIGNED_ELEMENT, D3D11_INPUT_PER_VERTEX_DATA, 0 },
+		{"TANGENT", 0, DXGI_FORMAT_R32G32B32_FLOAT,  0, D3D11_APPEND_ALIGNED_ELEMENT, D3D11_INPUT_PER_VERTEX_DATA, 0},		// 32 + 12 b = 44b
+		{"SV_InstanceID",   0, DXGI_FORMAT_R32_UINT, 0, D3D11_APPEND_ALIGNED_ELEMENT, D3D11_INPUT_PER_VERTEX_DATA, 0 },		
 	};
 
 public:
@@ -26,25 +26,30 @@ public:
 
 	void SetPixelShader(LPCWSTR path, LPCSTR entry = "main");
 	void SetVertexShader(LPCWSTR path, LPCSTR entry = "main");
+	void SetGeometryShader(LPCWSTR path, LPCSTR entry = "main");
+
 	void SetInputLayoutStructure(size_t arraySize, D3D11_INPUT_ELEMENT_DESC* inputLayoutDesc);
 
 	void Compile(ID3D11Device*);
 	void BindToContext(ID3D11DeviceContext*);
 
-	ID3D11PixelShader* GetPixelShader() const { return this->pixelShader; }
-	ID3D11VertexShader* GetVertexShader() const { return this->vertexShader; }
-	ID3D11InputLayout* GetInputLayout() const { return this->inputLayout; }
+	void CompilePS(ID3D11Device*);
+	void CompileVS(ID3D11Device*);
+	void CompileGS(ID3D11Device*);
 
 private:
-	LPCWSTR pixelPath, vertexPath;
-	LPCSTR pixelEntry, vertexEntry;
+	LPCWSTR pixelPath, vertexPath, geometryPath;
+	LPCSTR pixelEntry, vertexEntry, geometryEntry;
+
 	DWORD shaderCompilationFlag;
+	ShaderBindFlag shaderFlags;
 
 	D3D11_INPUT_ELEMENT_DESC* inputLayoutDescription;
-	size_t arraySize;
+	size_t ilArrayCount;
 
 	// SHADER POINTERS
-	ID3D11PixelShader* pixelShader;
 	ID3D11VertexShader* vertexShader;
 	ID3D11InputLayout* inputLayout;
+	ID3D11PixelShader* pixelShader;
+	ID3D11GeometryShader* geometryShader;
 };

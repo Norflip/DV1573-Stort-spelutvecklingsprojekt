@@ -13,10 +13,9 @@ enum class ObjectFlag : unsigned int
 {
 	NONE = 0,
 	ENABLED = 1 << 0,
-	VISIBLE = 1 << 1,
-	STATIC = 1 << 2,
-	REMOVED = 1 << 3,
-	DEFAULT = ENABLED | VISIBLE
+	RENDER = 1 << 1,
+	REMOVED = 1 << 2,
+	DEFAULT = ENABLED | RENDER
 };
 
 DEFINE_ENUM_FLAG_OPERATORS(ObjectFlag)

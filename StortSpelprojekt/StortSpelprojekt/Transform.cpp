@@ -62,7 +62,7 @@ dx::XMMATRIX Transform::GetWorldMatrix() const
 {
 	dx::XMMATRIX worldMatrix = GetLocalWorldMatrix();
 	if (parent != nullptr)
-		worldMatrix = dx::XMMatrixMultiply(parent->GetWorldMatrix(), worldMatrix);
+		worldMatrix = dx::XMMatrixMultiply(worldMatrix, parent->GetWorldMatrix());
 
 	return worldMatrix;
 }

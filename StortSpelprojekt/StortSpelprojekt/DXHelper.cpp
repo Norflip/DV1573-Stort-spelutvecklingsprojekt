@@ -129,3 +129,41 @@ void DXHelper::CreateBackbuffer(size_t width, size_t height, ID3D11Device* devic
 	(device)->CreateRenderTargetView(backBufferPtr, nullptr, backbuffer);
 	backBufferPtr->Release();
 }
+
+void DXHelper::CreateVertexBuffer(ID3D11Device* device, size_t verticeCount, size_t vertexSize, void* vertices, ID3D11Buffer** vertexBuffer)
+{
+	// creates vertex buffer
+	D3D11_BUFFER_DESC vertexBufferDescription;
+	ZeroMemory(&vertexBufferDescription, sizeof(vertexBufferDescription));
+	vertexBufferDescription.Usage = D3D11_USAGE_DEFAULT;
+	vertexBufferDescription.ByteWidth = static_cast<unsigned int>(vertexSize * verticeCount);
+	vertexBufferDescription.BindFlags = D3D11_BIND_VERTEX_BUFFER;
+
+	D3D11_SUBRESOURCE_DATA vertexBuffer_subResource;
+	ZeroMemory(&vertexBuffer_subResource, sizeof(D3D11_SUBRESOURCE_DATA));
+	vertexBuffer_subResource.pSysMem = vertices;
+	vertexBuffer_subResource.SysMemPitch = 0;
+	vertexBuffer_subResource.SysMemSlicePitch = 0;
+
+	HRESULT vertexBufferResult = device->CreateBuffer(&vertexBufferDescription, &vertexBuffer_subResource, vertexBuffer);
+	assert(SUCCEEDED(vertexBufferResult));
+}
+
+void DXHelper::CreateIndexBuffer(ID3D11Device* device, size_t indexCount, unsigned int* indicies, ID3D11Buffer** indexBuffer)
+{
+	// creates index buffer
+	D3D11_BUFFER_DESC indexBufferDescription;
+	indexBufferDescription.Usage = D3D11_USAGE_DEFAULT;
+	indexBufferDescription.ByteWidth = (UINT)(sizeof(unsigned int) * indexCount);
+	indexBufferDescription.BindFlags = D3D11_BIND_INDEX_BUFFER;
+	indexBufferDescription.CPUAccessFlags = 0;
+	indexBufferDescription.MiscFlags = 0;
+
+	D3D11_SUBRESOURCE_DATA indexBuffer_subResource;
+	indexBuffer_subResource.pSysMem = indicies;
+	indexBuffer_subResource.SysMemPitch = 0;
+	indexBuffer_subResource.SysMemSlicePitch = 0;
+
+	HRESULT indexBufferResult = device->CreateBuffer(&indexBufferDescription, &indexBuffer_subResource, indexBuffer);
+	assert(SUCCEEDED(indexBufferResult));
+}

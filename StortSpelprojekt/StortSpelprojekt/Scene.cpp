@@ -30,13 +30,14 @@ void Scene::Initialize(Renderer* renderer)
 	Material material = Material(shader);
 
 	Object* tmp_obj = new Object("cube1");
-	tmp_obj->GetTransform().SetPosition({ 0, 0, 5 });
+	tmp_obj->GetTransform().SetPosition({ 0, 0, 10 });
 	tmp_obj->AddComponent<MeshComponent>(mesh, material);
 
 	objects.push_back(tmp_obj);
 
 	Object* tmp_obj2 = new Object("cube2");
 	tmp_obj2->AddComponent<MeshComponent>(mesh, material);
+	tmp_obj2->GetTransform().SetPosition({ 0, 0, 4 });
 
 	Transform::SkapaPäron(tmp_obj->GetTransform(), tmp_obj2->GetTransform());
 	objects.push_back(tmp_obj2);
