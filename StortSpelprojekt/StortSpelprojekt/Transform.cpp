@@ -1,10 +1,11 @@
 #include "Transform.h"
 
-Transform::Transform() : position(dx::XMVectorZero()), rotation(dx::XMVectorZero()), scale(dx::XMVectorSplatOne())
+Transform::Transform(Object* owner) : Transform(owner, dx::XMVectorZero(), dx::XMVectorZero(), { 1,1,1 })
 {
+
 }
 
-Transform::Transform(dx::XMVECTOR position, dx::XMVECTOR rotation, dx::XMVECTOR scale) : position(position), rotation(rotation), scale(scale)
+Transform::Transform(Object* owner, dx::XMVECTOR position, dx::XMVECTOR rotation, dx::XMVECTOR scale) : owner(owner), position(position), rotation(rotation), scale(scale), parent(nullptr)
 {
 }
 
@@ -21,10 +22,55 @@ void Transform::Rotate(float pitch, float yaw, float roll)
 	//this->rotation = DirectX::XMVectorSetByIndex(this->rotation, p, 0);
 }
 
+void Transform::AddChild(Transform* child)
+{
+	if (child != nullptr)
+	{
+		this->children.push_back(child);
+	}
+}
+
+void Transform::RemoveChild(Transform* child)
+{
+	for (auto i = children.begin(); i < children.end(); i++)
+	{
+		if ((*i) == child)
+		{
+			children.erase(i);
+			break;
+		}
+	}
+}
+
+bool Transform::ContainsChild(Transform* child) const
+{
+	bool contains = false;
+	for (auto i = children.cbegin(); i < children.cend() && !contains; i++)
+	{
+		contains = ((*i) == child);
+	}
+	return contains;
+}
+
+void Transform::SkapaPäron(Transform& parent, Transform& child)
+{
+	parent.AddChild(&child);
+	child.SetParent(&parent);
+}
+
 dx::XMMATRIX Transform::GetWorldMatrix() const
 {
-	return dx::XMMatrixScalingFromVector(this->scale) * 
-		dx::XMMatrixRotationRollPitchYawFromVector(this->rotation) * 
+	dx::XMMATRIX worldMatrix = GetLocalWorldMatrix();
+	if (parent != nullptr)
+		worldMatrix = dx::XMMatrixMultiply(parent->GetWorldMatrix(), worldMatrix);
+
+	return worldMatrix;
+}
+
+dx::XMMATRIX Transform::GetLocalWorldMatrix() const
+{
+	return dx::XMMatrixScalingFromVector(this->scale) *
+		dx::XMMatrixRotationRollPitchYawFromVector(this->rotation) *
 		dx::XMMatrixTranslationFromVector(this->position);
 }
 

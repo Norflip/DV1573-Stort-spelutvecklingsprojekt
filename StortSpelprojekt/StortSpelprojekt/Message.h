@@ -1,16 +1,15 @@
 #pragma once
 #include <string>
 
+template <typename T>
 class Message
 {
 public:
-	Message(const std::string message)
-	{
-		this->message = message;
-	}
-
-	std::string GetEvent() const { return this->message; }
+	Message(const T& msg) : msg(msg) {}
+	T GetEvent() const { return this->msg; }
 
 private:
-	std::string message;
+	T msg;
 };
+
+typedef Message<std::string> StrMessage;
