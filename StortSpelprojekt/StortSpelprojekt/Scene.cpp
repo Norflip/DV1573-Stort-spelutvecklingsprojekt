@@ -1,6 +1,6 @@
 #include "Scene.h"
 
-Scene::Scene() : material(Shader())
+Scene::Scene()
 {
 
 }
