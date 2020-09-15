@@ -7,7 +7,7 @@ Shader::Shader() : pixelShader(nullptr), vertexShader(nullptr), inputLayout(null
 	shaderCompilationFlag = shaderCompilationFlag | D3DCOMPILE_DEBUG;
 #endif
 
-	SetInputLayoutStructure(4, DEFAULT_INPUT_LAYOUTd);
+	SetInputLayoutStructure(5, DEFAULT_INPUT_LAYOUTd);
 }
 
 Shader::~Shader()

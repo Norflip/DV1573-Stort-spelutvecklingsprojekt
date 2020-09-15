@@ -1,58 +1,43 @@
 #pragma once
-
-
 #include <chrono>
-#include <d3d11_1.h>
-#include <dxgi.h> 
 #include <assert.h>
-#include <d3dcompiler.h>
-
-#pragma comment(lib, "gdi32")
-#pragma comment(lib, "d3d11") 
-#pragma comment( lib, "dxgi" )   
-#pragma comment(lib, "d3dcompiler.lib")
+#include <unordered_map>
+#include <thread>
 
 #include "Window.h"
 #include "Log.h"
-#include "ShittyOBJLoader.h"
-#include "Material.h"
-#include "Transform.h"
-#include "Camera.h"
+#include "Scene.h"
 
 namespace dx = DirectX;
 
-__declspec(align(16))
-struct WorldData
-{
-	DirectX::XMMATRIX mvp;
-	DirectX::XMMATRIX world;
-};
+constexpr int FIXED_FPS = 50;
+constexpr float TARGET_FIXED_DELTA = 1.0f / FIXED_FPS;
 
 class Engine
 {
+
 public:
-	Engine(Window& window);
+	Engine(HINSTANCE hInstance);
 	virtual ~Engine();
+
 	void Run();
+	void Exit();
+	bool IsRunning() const { return this->running; }
+
+	Scene* GetActiveScene() const { return this->activeScene; }
+	void RegisterScene (size_t id, Scene* scene);
+	void UnregisterScene(size_t id);
+	void SwitchScene (size_t id);
 
 private:
-	void TMP_SetupDX11(HWND hwnd, size_t width, size_t height);
-	void TMP_Update(const float& deltaTime);
-	void TMP_DrawMesh(const Mesh& mesh, const Transform& transform, const Camera& camera);
+	std::thread* fixedLoopThread;
+	static void FixedUpdateLoop(Engine* engine);
 
 private:
-	Window& window;
-	ID3D11RenderTargetView* backbufferRTV;
-	ID3D11Device* device;
-	ID3D11DeviceContext* context;
-	IDXGISwapChain* swapchain;
+	bool running;
+	std::unordered_map<size_t, Scene*> scenes;
+	Scene* activeScene;
 
-	Mesh mesh;
-	Transform transform;
-
-	Camera camera;
-	Material material;
-
-	ID3D11Buffer* worldBuffer_ptr;
-	WorldData cb_world;
+	Window window;
+	Renderer renderer;
 };

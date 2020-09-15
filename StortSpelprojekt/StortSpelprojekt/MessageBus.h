@@ -4,18 +4,19 @@
 #include <vector>
 #include "Message.h"
 
+template <typename T>
 class MessageBus
 {
 public:
 	MessageBus() {};
 	virtual ~MessageBus() {};
 
-	void AddReciever(std::function<void(Message)> reciever)
+	void AddReciever(std::function<void(T)> reciever)
 	{
 		recievers.push_back(reciever);
 	}
 
-	void Send (Message message)
+	void Send (T message)
 	{
 		messages.push(message);
 	}
@@ -34,7 +35,7 @@ public:
 	}
 
 private:
-	std::vector<std::function<void(Message)>> recievers;
-	std::queue<Message> messages;
+	std::vector<std::function<void(T)>> recievers;
+	std::queue<T> messages;
 
 };

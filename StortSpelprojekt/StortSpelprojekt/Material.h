@@ -8,9 +8,9 @@ public:
 	virtual ~Material();
 	
 	void BindToContext(ID3D11DeviceContext*);
-	
+	//void SetTexture(size_t slot);
+	//void SetSampler(size_t slot);
+
 private:
 	Shader shader;
 };
-
-//using DefaultMaterial = Material<TestMaterialConstantBuffer>

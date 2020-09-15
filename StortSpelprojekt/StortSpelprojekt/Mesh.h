@@ -21,6 +21,7 @@ struct Mesh
 	std::vector<unsigned int> indices;
 	ID3D11Buffer* vertexBuffer;
 	ID3D11Buffer* indexBuffer;
+	D3D11_PRIMITIVE_TOPOLOGY topology;
 
 	Mesh() : Mesh(std::vector<Vertex>(), std::vector<unsigned int>()) {}
 	Mesh(std::vector<Vertex> vertexes, std::vector<unsigned int> indices) : vertexes(vertexes), indices(indices), vertexBuffer(nullptr), indexBuffer(nullptr)
@@ -29,6 +30,7 @@ struct Mesh
 		this->indices = indices;
 		this->vertexBuffer = nullptr;
 		this->indexBuffer = nullptr;
+		this->topology = D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST;
 	}
 
 	void Release()

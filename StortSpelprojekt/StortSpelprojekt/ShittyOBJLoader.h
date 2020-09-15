@@ -61,7 +61,7 @@ namespace ShittyOBJLoader
 		return tangent;
 	}
 
-	inline Mesh LoadOBJ (std::string path, ID3D11Device* device)
+	inline Mesh Load (std::string path, ID3D11Device* device)
 	{
 		Mesh mesh;
 		std::fstream fs;
