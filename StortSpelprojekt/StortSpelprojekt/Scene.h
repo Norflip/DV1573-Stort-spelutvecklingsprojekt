@@ -28,8 +28,4 @@ private:
 	std::vector<Object*> objects;
 	CameraComponent* camera;
 	Renderer* renderer;
-
-
-	Mesh mesh;
-	Material material;
 };

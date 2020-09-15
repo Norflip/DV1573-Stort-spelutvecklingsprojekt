@@ -26,13 +26,13 @@ void Scene::Initialize(Renderer* renderer)
 	shader.SetVertexShader(L"Shaders/Default_vs.hlsl");
 	shader.Compile(renderer->GetDevice());
 
-	mesh = ShittyOBJLoader::Load("Models/cube.obj", renderer->GetDevice());
-	material = Material(shader);
-
+	Mesh mesh = ShittyOBJLoader::Load("Models/cube.obj", renderer->GetDevice());
+	Material material = Material(shader);
 
 	Object* tmp_obj = new Object("cube1");
 	tmp_obj->GetTransform().SetPosition({ 0, 0, 5 });
 	tmp_obj->AddComponent<MeshComponent>(mesh, material);
+
 	objects.push_back(tmp_obj);
 
 	Object* tmp_obj2 = new Object("cube2");
@@ -41,11 +41,7 @@ void Scene::Initialize(Renderer* renderer)
 	Transform::SkapaPäron(tmp_obj->GetTransform(), tmp_obj2->GetTransform());
 	objects.push_back(tmp_obj2);
 
-	PrintSceneHierarchy();
-}
-
-void Scene::ProcessInput()
-{
+	//PrintSceneHierarchy();
 }
 
 void Scene::Update(const float& deltaTime)
