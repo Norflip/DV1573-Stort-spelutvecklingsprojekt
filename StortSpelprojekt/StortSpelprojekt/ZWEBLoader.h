@@ -51,10 +51,10 @@ namespace ZWEBLoader
 				
 				for (unsigned int controlVertex = 0; controlVertex < controlVerticesZweb.size(); controlVertex++)
 				{
-					controlVertices[controlVertex].boneID = dx::XMFLOAT3(controlVerticesZweb[controlVertex].boneIDNrs[0], controlVerticesZweb[controlVertex].boneIDNrs[1]
+					controlVertices[controlVertex].boneID = DirectX::XMFLOAT3(controlVerticesZweb[controlVertex].boneIDNrs[0], controlVerticesZweb[controlVertex].boneIDNrs[1]
 						, controlVerticesZweb[controlVertex].boneIDNrs[2]);
 
-					controlVertices[controlVertex].skinWeight = dx::XMFLOAT3(controlVerticesZweb[controlVertex].skeletonSkinWeight[0], controlVerticesZweb[controlVertex].skeletonSkinWeight[1]
+					controlVertices[controlVertex].skinWeight = DirectX::XMFLOAT3(controlVerticesZweb[controlVertex].skeletonSkinWeight[0], controlVerticesZweb[controlVertex].skeletonSkinWeight[1]
 						, controlVerticesZweb[controlVertex].skeletonSkinWeight[2]);
 
 					if (boneIDMap.find((std::string)controlVerticesZweb[controlVertex].boneID[0]) == boneIDMap.end())
@@ -69,7 +69,7 @@ namespace ZWEBLoader
 					{
 						boneIDMap.insert({ (std::string)controlVerticesZweb[controlVertex].boneID[2], controlVerticesZweb[controlVertex].boneIDNrs[2] });
 					}
-					controlVertices[controlVertex].position = dx::XMFLOAT3(controlVerticesZweb[controlVertex].pos[0], controlVerticesZweb[controlVertex].pos[1]
+					controlVertices[controlVertex].position = DirectX::XMFLOAT3(controlVerticesZweb[controlVertex].pos[0], controlVerticesZweb[controlVertex].pos[1]
 						, controlVerticesZweb[controlVertex].pos[2]);
 				}
 
@@ -97,7 +97,9 @@ namespace ZWEBLoader
 
 			}
 			
+			importer.getMeshInfo(mesh).name;
 
+			//I can add position, rotation and scale as well for the world matrices.
 
 			meshes.push_back(MeshCreator::CreateMesh(vertices, indicesZweb, device));
 

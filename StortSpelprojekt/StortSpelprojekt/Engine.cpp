@@ -14,7 +14,7 @@ Engine::Engine(HINSTANCE hInstance) : window(hInstance), activeScene(nullptr)
 
 Engine::~Engine()
 {
-	skeletonBuffer_ptr->Release();
+	
 }
 
 void Engine::Run()
