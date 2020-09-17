@@ -30,6 +30,7 @@ void Renderer::Initialize(Window* window)
 
 	/* Creating default sampler state */
 	DXHelper::CreateSamplerState(device, D3D11_FILTER_MIN_MAG_MIP_LINEAR, defaultSampler);
+	context->PSSetSamplers(0, 1, &defaultSampler);
 }
 
 void Renderer::BeginFrame()

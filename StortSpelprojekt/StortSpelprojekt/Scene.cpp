@@ -28,14 +28,18 @@ void Scene::Initialize(Renderer* renderer)
 
 
 	/* Loading a texture */
-	Texture diffuseTexture(renderer);
+	Texture diffuseTexture;
 	diffuseTexture.LoadTexture(renderer->GetDevice(), L"Textures/Gorilla.png");
+	Texture randomNormal;
+	randomNormal.LoadTexture(renderer->GetDevice(), L"Textures/RandomNormal.png");
 
 	Mesh mesh = ShittyOBJLoader::Load("Models/Cube.obj", renderer->GetDevice());
 	Material material = Material(shader);
 
 	/* Setting texture to correct slot */
-	material.SetTexture(renderer->GetContext(), diffuseTexture, TEXTURE_DIFFUSE_SLOT, ShaderBindFlag::PIXEL);
+	material.SetTexture(diffuseTexture, TEXTURE_DIFFUSE_SLOT, ShaderBindFlag::PIXEL);
+	material.SetTexture(randomNormal, TEXTURE_NORMAL_SLOT, ShaderBindFlag::PIXEL);
+	//material.SetTexture(renderer->GetContext(), diffuseTexture, TEXTURE_DIFFUSE_SLOT, ShaderBindFlag::PIXEL);
 	
 	Object* tmp_obj = new Object("cube1");
 	tmp_obj->GetTransform().SetPosition({ 0, 0, 10 });

@@ -7,12 +7,11 @@
 
 class Texture {
 public:
-	Texture(Renderer* renderer);
+	Texture();
 	~Texture();
 
 	bool LoadTexture(ID3D11Device* device, LPCWSTR textureFilepath);
 	ID3D11ShaderResourceView* GetTexture() { return this->srv; }
-	ID3D11SamplerState* GetSampler() { return this->samplerState; }
 
 	/* render to texture */
 	bool RenderToTexture(ID3D11Device* device, int textureWidth, int textureHeight);
@@ -26,5 +25,4 @@ private:
 	ID3D11ShaderResourceView* srv;	
 	ID3D11RenderTargetView* rtv;
 	ID3D11Texture2D* renderTargetTexture;
-	ID3D11SamplerState* samplerState;
 };

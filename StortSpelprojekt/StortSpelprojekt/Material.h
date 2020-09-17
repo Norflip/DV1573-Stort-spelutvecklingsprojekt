@@ -1,20 +1,34 @@
 #pragma once
 #include "Shader.h"
 #include "Texture.h"
+#include <vector>
+
 
 class Material
 {
+	struct TextureInfo {
+		Texture texture;
+		size_t slot;
+		ShaderBindFlag flag;
+	};
+
 public:
 	Material (Shader shader);
 	virtual ~Material();
 	
 	void BindToContext(ID3D11DeviceContext*);
+	void BindTextureToContext(ID3D11DeviceContext*);
 
 	/* Binding texture to correct slot in shader based on slot-input */
-	void SetTexture(ID3D11DeviceContext* context, Texture texture, size_t slot, ShaderBindFlag flag);
+	void SetTexture(Texture texture, size_t slot, ShaderBindFlag flag);
+	Texture GetTexture() { return this->texture; }
 
 private:
 	Shader shader;
 	ID3D11ShaderResourceView* srv;
-	ID3D11SamplerState* sampler;
+	Texture texture;
+	size_t slot;
+	ShaderBindFlag flag;
+
+	std::vector<TextureInfo> textures;
 };

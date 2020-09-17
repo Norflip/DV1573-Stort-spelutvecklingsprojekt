@@ -1,12 +1,11 @@
 #include "Texture.h"
 
-Texture::Texture(Renderer* renderer)
+Texture::Texture()
 {
 	hr = 0;
 	srv = 0;
 	rtv = 0;
-	renderTargetTexture = 0;
-	samplerState = renderer->GetSampler();		
+	renderTargetTexture = 0;	
 }
 
 Texture::~Texture()
@@ -23,11 +22,7 @@ bool Texture::LoadTexture(ID3D11Device* device, LPCWSTR textureFilepath)
 }
 
 void Texture::Shutdown()
-{
-	if (samplerState) {
-		samplerState->Release();
-		samplerState = 0;
-	}
+{	
 	if (srv) {
 		srv->Release();
 		srv = 0;

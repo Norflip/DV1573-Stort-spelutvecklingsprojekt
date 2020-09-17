@@ -51,8 +51,6 @@ void DXHelper::CreateSwapchain(const Window& window, _Out_ ID3D11Device** device
 	assert(SUCCEEDED(resultCreateRasterizer));
 	(*context)->RSSetState(rasterizerState);
 
-
-
 }
 
 void DXHelper::CreateSamplerState(ID3D11Device* device, D3D11_FILTER filter, ID3D11SamplerState* samplerstate)

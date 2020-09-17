@@ -14,11 +14,15 @@ struct VS_OUTPUT
 
 float4 main(VS_OUTPUT input) : SV_TARGET
 {
-	float4 textureColor = float4(1.0f, 1.0f, 1.0f, 1.0f);
-	textureColor = diffuseMap.Sample(defaultSampleType, input.uv);
+	float4 diffuseColor = float4(1.0f, 1.0f, 1.0f, 1.0f);
+	diffuseColor = diffuseMap.Sample(defaultSampleType, input.uv);
+
+	float4 normalColor = float4(1.0f, 1.0f, 1.0f, 1.0f);
+	normalColor = normalMap.Sample(defaultSampleType, input.uv);
 
 	float d = dot(input.normal, float3(1,1,0));
 	d = (d + 1) / 2.0f;
-		
-	return textureColor;
+	
+	float4 final = diffuseColor * normalColor;
+	return final;
 }
