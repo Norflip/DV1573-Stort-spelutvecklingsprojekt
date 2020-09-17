@@ -1,6 +1,7 @@
 #pragma once
 #include <vector>
 #include "Object.h"
+#include "HeightMap.h"
 #include "ShittyOBJLoader.h"
 #include "Input.h"
 #include "CameraComponent.h"

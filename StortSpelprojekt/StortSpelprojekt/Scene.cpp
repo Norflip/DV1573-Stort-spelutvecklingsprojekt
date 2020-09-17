@@ -54,6 +54,14 @@ void Scene::Initialize(Renderer* renderer)
 	Transform::SkapaPäron(tmp_obj->GetTransform(), tmp_obj2->GetTransform());
 	objects.push_back(tmp_obj2);
 
+
+	HeightMap* tmp_trn = new HeightMap("Map");
+	tmp_trn->Initialize("data/setup.txt",renderer->GetDevice());
+	Mesh mapMesh = *tmp_trn->GetMesh();
+	tmp_trn->AddComponent<MeshComponent>(mapMesh, material);
+	tmp_trn->GetTransform().SetPosition({ 0,-10,0 });
+	objects.push_back(tmp_trn);
+
 	//PrintSceneHierarchy();
 }
 
@@ -64,6 +72,9 @@ void Scene::Update(const float& deltaTime)
 	for (auto i = objects.begin(); i < objects.end(); i++)
 	{
 		Object* obj = (*i);
+
+		if (obj->GetName() == "Map")
+			std::cout << "yoo" << std::endl;
 
 		if (obj->HasFlag(ObjectFlag::ENABLED))
 			obj->Update(deltaTime);
