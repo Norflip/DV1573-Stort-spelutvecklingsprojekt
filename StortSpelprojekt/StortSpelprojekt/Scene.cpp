@@ -1,6 +1,6 @@
 #include "Scene.h"
 
-Scene::Scene()
+Scene::Scene() : input(Input::Instance())
 {
 
 }
@@ -48,7 +48,7 @@ void Scene::Initialize(Renderer* renderer)
 void Scene::Update(const float& deltaTime)
 {
 	std::vector<Object*> toRemove;
-
+	input.updateInputs();
 	for (auto i = objects.begin(); i < objects.end(); i++)
 	{
 		Object* obj = (*i);
@@ -76,7 +76,6 @@ void Scene::Render()
 		//if (obj->HasFlag(ObjectFlag::ENABLED | ObjectFlag::VISIBLE))
 		obj->Draw(renderer, camera);
 	}
-
 	renderer->EndFrame();
 }
 

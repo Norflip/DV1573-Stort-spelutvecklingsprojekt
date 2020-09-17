@@ -32,7 +32,6 @@ void Window::Open(size_t width, size_t height)
 	int wWidth = windowRect.right - windowRect.left;
 	int wHeight = windowRect.bottom - windowRect.top;
 	this->hwnd = CreateWindowExW(0, CLASS_NAME, projectTitel, WS_OVERLAPPEDWINDOW, windowRect.left, windowRect.top, wWidth, wHeight, nullptr, nullptr, hInstance, nullptr);
-
 	ShowWindow(hwnd, SW_SHOW);
 }
 
