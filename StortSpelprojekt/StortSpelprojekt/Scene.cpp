@@ -36,7 +36,7 @@ void Scene::Initialize(Renderer* renderer)
 
 	dx::XMFLOAT3 miniScale = dx::XMFLOAT3(0.0625f, 0.0625f, 0.0625f);
 
-	dx::XMFLOAT3 miniTranslation = dx::XMFLOAT3(0, -5, 10);
+	dx::XMFLOAT3 miniTranslation = dx::XMFLOAT3(0, 0, 10);
 
 	skeletonObjects[0].GetTransform().SetScale(dx::XMLoadFloat3(&miniScale));
 
@@ -75,6 +75,11 @@ void Scene::Update(const float& deltaTime)
 		if (obj->HasFlag(ObjectFlag::REMOVED))
 			toRemove.push_back(obj);
 	}
+
+	
+	
+
+
 }
 
 void Scene::FixedUpdate(const float& fixedDeltaTime)
@@ -95,9 +100,13 @@ void Scene::Render()
 
 	for (int i = 0; i < skeletonObjects.size(); i++)
 	{
-		//skeletonObjects[i].Draw(renderer, camera);
+
+
 		skeletonObjects[i].GetComponent<MeshComponent>()->GetMaterial().BindToContext(renderer->GetContext());
-		renderer->Draw(skeletonObjects[i].GetComponent<MeshComponent>()->GetMesh(), skeletonObjects[i].GetTransform().GetWorldMatrix(), camera->GetViewMatrix(), camera->GetProjectionMatrix());
+		
+		renderer->DrawSkeleton(skeletonObjects[i].GetComponent<MeshComponent>()->GetMesh(), skeletonObjects[i].GetTransform().GetWorldMatrix(), camera->GetViewMatrix(), camera->GetProjectionMatrix(),
+			skeletonObjects[0].GetComponent<MeshComponent>()->GetMesh().GetAnimationTrack(0).Makeglobal(0.25f, dx::XMMatrixIdentity(),
+				skeletonObjects[0].GetComponent<MeshComponent>()->GetMesh().GetAnimationTrack(0).GetRootKeyJoints()));
 
 		
 	}

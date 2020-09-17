@@ -82,16 +82,19 @@ void Renderer::DrawInstanced(const Mesh& mesh, size_t count, dx::XMMATRIX* model
 	context->DrawIndexedInstanced(mesh.indices.size(), count, 0, 0, 0);
 }
 
-void Renderer::DrawSkeleton(const Mesh& mesh, dx::XMMATRIX model, dx::XMMATRIX view, dx::XMMATRIX projection, const std::vector<dx::XMFLOAT4X4>& bones)
+void Renderer::DrawSkeleton(const Mesh& mesh, dx::XMMATRIX model, dx::XMMATRIX view, dx::XMMATRIX projection, cb_Skeleton& bones)
 {
 
 
 	dx::XMMATRIX mvp = dx::XMMatrixMultiply(model, dx::XMMatrixMultiply(view, projection));
 	dx::XMStoreFloat4x4(&cb_object_data.mvp, dx::XMMatrixTranspose(mvp));
 	dx::XMStoreFloat4x4(&cb_object_data.world, dx::XMMatrixTranspose(model));
-	DXHelper::BindConstBuffer(context, obj_cbuffer, &cb_object_data, CB_OBJECT_SLOT, ShaderBindFlag::VERTEX);
+	DXHelper::BindConstBuffer(context, obj_cbuffer, &cb_object_data, CB_OBJECT_SLOT, ShaderBindFlag::SKELETON);
 
-	DXHelper::BindConstBuffer(context, obj_cbuffer, &cb_object_data, CB_SKELETON_SLOT, ShaderBindFlag::SKELETON);
+	cb_skeleton_data = bones;
+	
+
+	DXHelper::BindConstBuffer(context, skeleton_cbuffer, &cb_skeleton_data, CB_SKELETON_SLOT, ShaderBindFlag::SKELETON);
 
 	UINT stride = sizeof(Mesh::Vertex);
 	UINT offset = 0;

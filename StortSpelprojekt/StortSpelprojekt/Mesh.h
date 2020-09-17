@@ -63,7 +63,7 @@ public:
 	}
 
 
-	const SkeletonAni& GetAnimationTrack(unsigned int trackNr) const
+	SkeletonAni& GetAnimationTrack(unsigned int trackNr)
 	{
 		return skeletonAnimations[trackNr];
 	}

@@ -12,10 +12,10 @@ Shader::Shader() : pixelShader(nullptr), vertexShader(nullptr), inputLayout(null
 
 Shader::~Shader()
 {
-	if (skeletonShader)
+	/*if (skeletonShader)
 	{
-		skeletonShader->Release();
-	}
+		skeletonShader->Release(); WHERE SHOULD THIS GO!=!?!?
+	}*/
 	
 }
 
@@ -44,7 +44,7 @@ void Shader::setSkeletonShader(LPCWSTR path, LPCSTR entry)
 {
 	this->skeletonPath = path;
 	this->skeletonEntry = entry;
-	shaderFlags |= ShaderBindFlag::VERTEX;
+	shaderFlags |= ShaderBindFlag::SKELETON;
 }
 
 void Shader::SetInputLayoutStructure(size_t arraySize, D3D11_INPUT_ELEMENT_DESC* inputLayoutDesc)
@@ -217,16 +217,16 @@ void Shader::CompileSkeletonVS(ID3D11Device* device)
 	if (((int)shaderFlags & (int)ShaderBindFlag::SKELETON) != 0)
 	{
 
-		if (vertexShader != nullptr)
+		if (skeletonShader != nullptr)
 		{
-			delete vertexShader;
-			vertexShader = nullptr;
+			delete skeletonShader;
+			skeletonShader = nullptr;
 		}
 
 		ID3DBlob* errorBlob = nullptr;
 		ID3DBlob* VSSkeletonBlob = nullptr;
 
-		// VERTEX SHADER
+		// Skeleton VERTEX SHADER
 		HRESULT	VSSkeletonCompileResult = D3DCompileFromFile
 		(
 			skeletonPath,
