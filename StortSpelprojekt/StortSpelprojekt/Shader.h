@@ -28,7 +28,6 @@ public:
 	void SetVertexShader(LPCWSTR path, LPCSTR entry = "main");
 	void SetGeometryShader(LPCWSTR path, LPCSTR entry = "main");
 
-
 	void SetInputLayoutStructure(size_t arraySize, D3D11_INPUT_ELEMENT_DESC* inputLayoutDesc);
 
 	void Compile(ID3D11Device*);
