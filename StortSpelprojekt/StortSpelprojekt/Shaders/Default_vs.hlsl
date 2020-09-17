@@ -6,6 +6,9 @@ struct VS_INPUT
 	float2 uv		: TEXCOORD0;
 	float3 normal	: NORMAL;
 	float3 tangent	: TANGENT;
+	float3 binormal : BINORMAL;
+	uint3 boneID    : BONEID;
+	float3 skinWeight: SKINWEIGHT;
 	uint id	: SV_InstanceID;
 };
  

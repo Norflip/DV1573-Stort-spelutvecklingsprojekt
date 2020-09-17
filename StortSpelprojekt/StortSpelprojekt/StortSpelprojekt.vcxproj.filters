@@ -57,6 +57,9 @@
     <ClCompile Include="CameraComponent.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="SkeletonAni.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Window.h">
@@ -119,6 +122,12 @@
     <ClInclude Include="CameraComponent.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="SkeletonAni.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="ZWEBLoader.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <FxCompile Include="Shaders\Default_ps.hlsl">
@@ -128,6 +137,10 @@
       <Filter>Shaders</Filter>
     </FxCompile>
     <FxCompile Include="Shaders\CommonBuffers.hlsl">
+      <Filter>Shaders</Filter>
+    </FxCompile>
+    <FxCompile Include="SkeletonAni_vs.hlsl" />
+    <FxCompile Include="Skeleton_vs.hlsl">
       <Filter>Shaders</Filter>
     </FxCompile>
   </ItemGroup>

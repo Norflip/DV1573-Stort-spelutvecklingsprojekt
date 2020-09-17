@@ -14,3 +14,4 @@ cbuffer cb_Material : register(b2)
 {
 
 }
+

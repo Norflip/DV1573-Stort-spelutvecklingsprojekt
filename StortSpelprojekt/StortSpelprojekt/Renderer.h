@@ -18,6 +18,7 @@ public:
 
 	void Draw(const Mesh& mesh, dx::XMMATRIX model, dx::XMMATRIX view, dx::XMMATRIX projection);
 	void DrawInstanced(const Mesh& mesh, size_t count, dx::XMMATRIX* models, dx::XMMATRIX view, dx::XMMATRIX projection);
+	void DrawSkeleton(const Mesh& mesh, dx::XMMATRIX model, dx::XMMATRIX view, dx::XMMATRIX projection, const std::vector<dx::XMFLOAT4X4>& bones);
 
 	ID3D11Device* GetDevice() const { return this->device; }
 	ID3D11DeviceContext* GetContext() const { return this->context; }
@@ -33,6 +34,9 @@ private:
 
 	cb_Object cb_object_data;
 	ID3D11Buffer* obj_cbuffer;
+
+	cb_Skeleton cb_skeleton_data;
+	ID3D11Buffer* skeleton_cbuffer;
 
 	Window* outputWindow;
 };
