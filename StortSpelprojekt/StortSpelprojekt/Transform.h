@@ -1,22 +1,23 @@
 #pragma once
 #include <vector>
 #include <DirectXMath.h>
-
 namespace dx = DirectX;
+
+class Object;
 
 class Transform
 {
 public:
-	Transform();
-	Transform(dx::XMVECTOR position, dx::XMVECTOR rotation, dx::XMVECTOR scale);
+	Transform(Object* owner);
+	Transform(Object* owner, dx::XMVECTOR position, dx::XMVECTOR rotation, dx::XMVECTOR scale);
 	virtual ~Transform();
 
 	dx::XMMATRIX GetWorldMatrix() const;
+	dx::XMMATRIX GetLocalWorldMatrix() const;
+
 	DirectX::XMVECTOR TransformDirection(DirectX::XMVECTOR direction) const;
 	
 	void Rotate(float pitch, float yaw, float roll);
-	
-#pragma region HIERARCHY
 
 	bool HasParent() const { return this->parent != nullptr; }
 	void SetParent(Transform* parent) { this->parent = parent; }
@@ -28,23 +29,30 @@ public:
 	size_t CountChildren() const { return this->children.size(); }
 	std::vector<Transform*> GetChildren() const { return this->children; }
 
-#pragma endregion
+	static void SkapaPäron(Transform& parent, Transform& child);
+
+	Object* GetOwner() const { return this->owner; }
+
+	bool ChangedThisFrame() const { return this->changedThisFrame; }
+	void MarkNotChanged() { this->changedThisFrame = false; }
 
 #pragma region SETTERS AND GETTERS
 	dx::XMVECTOR GetPosition() const { return this->position; }
-	void SetPosition(dx::XMVECTOR position) { this->position = position; }
+	void SetPosition(dx::XMVECTOR position) { this->position = position; changedThisFrame = true; }
 
 	dx::XMVECTOR GetScale() const { return this->scale; }
-	void SetScale(dx::XMVECTOR scale) { this->scale = scale; }
+	void SetScale(dx::XMVECTOR scale) { this->scale = scale; changedThisFrame = true; }
 
 	dx::XMVECTOR GetRotation() const { return this->rotation; }
-	void SetRotation(dx::XMVECTOR rotation) { this->rotation = rotation; }
+	void SetRotation(dx::XMVECTOR rotation) { this->rotation = rotation; changedThisFrame = true; }
 
 #pragma endregion
 
 private:
+	bool changedThisFrame;
 	std::vector<Transform*> children;
 	Transform* parent;
+	Object* owner;
 
 	dx::XMVECTOR position;
 	dx::XMVECTOR rotation;

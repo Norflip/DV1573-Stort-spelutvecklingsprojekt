@@ -1,6 +1,7 @@
 #include "Object.h"
+#include "Component.h"
 
-Object::Object() : material(Shader()), flags(ObjectFlag::ENABLED | ObjectFlag::VISIBLE)
+Object::Object(const std::string& name, ObjectFlag flag) : name(name), flags(flag), transform(this)
 {
 
 }
@@ -10,10 +11,18 @@ Object::~Object()
 
 }
 
-void Object::Draw(Renderer* renderer, Camera* camera)
+void Object::Update(const float& deltaTime)
 {
-	renderer->Draw(this->mesh, transform.GetWorldMatrix(), camera->GetViewMatrix(), camera->GetProjectionMatrix());
-	// run down the hierarchy
+	transform.MarkNotChanged();
+
+	for (auto i = components.begin(); i < components.end(); i++)
+		(*i)->Update(deltaTime);
+}
+
+void Object::Draw(Renderer* renderer, CameraComponent* camera)
+{
+	for (auto i = components.begin(); i < components.end(); i++)
+		(*i)->Draw(renderer, camera);
 }
 
 bool Object::HasFlag(ObjectFlag flag) const

@@ -13,5 +13,6 @@ float4 main(VS_OUTPUT input) : SV_TARGET
 	float d = dot(input.normal, float3(1,1,0));
 	d = (d + 1) / 2.0f;
 
+
 	return float4(d * input.uv.x, d * input.uv.y, 1.0f, 1.0f);
 }
