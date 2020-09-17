@@ -26,9 +26,21 @@ void Scene::Initialize(Renderer* renderer)
 	shader.SetVertexShader(L"Shaders/Default_vs.hlsl");
 	shader.Compile(renderer->GetDevice());
 
-	Mesh mesh = ShittyOBJLoader::Load("Models/cube.obj", renderer->GetDevice());
+
+	/* Loading a texture */
+	Texture diffuseTexture;
+	diffuseTexture.LoadTexture(renderer->GetDevice(), L"Textures/Gorilla.png");
+	Texture randomNormal;
+	randomNormal.LoadTexture(renderer->GetDevice(), L"Textures/RandomNormal.png");
+
+	Mesh mesh = ShittyOBJLoader::Load("Models/Cube.obj", renderer->GetDevice());
 	Material material = Material(shader);
 
+	/* Setting texture to correct slot */
+	material.SetTexture(diffuseTexture, TEXTURE_DIFFUSE_SLOT, ShaderBindFlag::PIXEL);
+	material.SetTexture(randomNormal, TEXTURE_NORMAL_SLOT, ShaderBindFlag::PIXEL);
+	//material.SetTexture(renderer->GetContext(), diffuseTexture, TEXTURE_DIFFUSE_SLOT, ShaderBindFlag::PIXEL);
+	
 	Object* tmp_obj = new Object("cube1");
 	tmp_obj->GetTransform().SetPosition({ 0, 0, 10 });
 	tmp_obj->AddComponent<MeshComponent>(mesh, material);
@@ -39,7 +51,7 @@ void Scene::Initialize(Renderer* renderer)
 	tmp_obj2->AddComponent<MeshComponent>(mesh, material);
 	tmp_obj2->GetTransform().SetPosition({ 0, 0, 4 });
 
-	Transform::SkapaPäron(tmp_obj->GetTransform(), tmp_obj2->GetTransform());
+	Transform::SkapaPÃ¤ron(tmp_obj->GetTransform(), tmp_obj2->GetTransform());
 	objects.push_back(tmp_obj2);
 
 	//PrintSceneHierarchy();
