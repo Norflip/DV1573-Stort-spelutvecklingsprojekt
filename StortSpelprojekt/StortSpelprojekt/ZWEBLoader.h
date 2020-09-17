@@ -1,17 +1,15 @@
 #pragma once
 #include <ImportZWEB.h>
 #include <DirectXMath.h>
-#include "Mesh.h"
+#include "MeshComponent.h"
 enum ZWEBLoadType
 {
 	NoAnimation,
 	SkeletonAnimation,
-	MorphAnimation,
-	OnlySkeletonAnimation
 };
-namespace ZWEBLoader
+namespace ZWEBLoader //TO BE ADDED: FUNCTION TO LOAD LIGHTS AND TO LOAD TEXTURES INOT MATERIALS FROM PATHWAY
 {
-	inline const std::vector<Mesh> LoadZWEB(ZWEBLoadType type, std::string scenePath, std::string animationPath, ID3D11Device* device, std::string name) //I want a reference here but it doesn't work.
+	inline  std::vector<Object> LoadZWEB(ZWEBLoadType type, std::string scenePath, std::string animationPath,const Shader& shader, ID3D11Device* device) //If object doesn't have animation you can leave that parameter empty
 	{
 		ZWEB::ZWEBImporter importer;
 
@@ -19,7 +17,8 @@ namespace ZWEBLoader
 
 		importer.importAnimation(animationPath);
 
-		std::vector<Mesh> meshes;
+		
+		std::vector<Object> objects;
 		for (int mesh = 0; mesh < importer.getSceneInfo().nrOfMeshes; mesh++)
 		{
 			std::vector<unsigned int> indicesZweb(importer.getMeshInfo(mesh).nrOfindices);
@@ -37,11 +36,15 @@ namespace ZWEBLoader
 			{
 				vertices[vertex].position = DirectX::XMFLOAT3(verticesZweb[vertex].pos[0], verticesZweb[vertex].pos[1], verticesZweb[vertex].pos[2]);
 
-				vertices[vertex].uv = DirectX::XMFLOAT2(verticesZweb[vertex].uv[0], verticesZweb[vertex].uv[1]);
+				vertices[vertex].uv = DirectX::XMFLOAT2(verticesZweb[vertex].uv[0], -verticesZweb[vertex].uv[1]);
 
 				vertices[vertex].normal = DirectX::XMFLOAT3(verticesZweb[vertex].normal[0], verticesZweb[vertex].normal[1], verticesZweb[vertex].normal[2]);
 
 				vertices[vertex].tangent = DirectX::XMFLOAT3(verticesZweb[vertex].tangent[0], verticesZweb[vertex].tangent[1], verticesZweb[vertex].tangent[2]);
+
+				vertices[vertex].binormal = DirectX::XMFLOAT3(verticesZweb[vertex].biNormal[0], verticesZweb[vertex].biNormal[1], verticesZweb[vertex].biNormal[2]);
+
+				
 			}
 			std::map<std::string, unsigned int> boneIDMap; //This is to make sure correct Vertex is mapped to the Correct Bone/Joint.
 			if (type == ZWEBLoadType::SkeletonAnimation)
@@ -51,7 +54,7 @@ namespace ZWEBLoader
 				
 				for (unsigned int controlVertex = 0; controlVertex < controlVerticesZweb.size(); controlVertex++)
 				{
-					controlVertices[controlVertex].boneID = DirectX::XMFLOAT3(controlVerticesZweb[controlVertex].boneIDNrs[0], controlVerticesZweb[controlVertex].boneIDNrs[1]
+					controlVertices[controlVertex].boneID = DirectX::XMUINT3(controlVerticesZweb[controlVertex].boneIDNrs[0], controlVerticesZweb[controlVertex].boneIDNrs[1]
 						, controlVerticesZweb[controlVertex].boneIDNrs[2]);
 
 					controlVertices[controlVertex].skinWeight = DirectX::XMFLOAT3(controlVerticesZweb[controlVertex].skeletonSkinWeight[0], controlVerticesZweb[controlVertex].skeletonSkinWeight[1]
@@ -73,11 +76,11 @@ namespace ZWEBLoader
 						, controlVerticesZweb[controlVertex].pos[2]);
 				}
 
-
+				std::vector<Mesh::Vertex>::iterator it;
 				for (unsigned int vertex = 0; vertex < vertices.size(); vertex++) //for every vertex
 				{
 
-					auto it = std::find(controlVertices.begin(), controlVertices.end(), vertices[vertex]); //check if the vertex is the same as the indexed.
+					it = std::find(controlVertices.begin(), controlVertices.end(), vertices[vertex]); //check if the vertex is the same as the indexed.
 					//note, in the comparison function I only compare the positions.
 
 					if (it != controlVertices.end()) //if it is the same
@@ -97,14 +100,33 @@ namespace ZWEBLoader
 
 			}
 			
-			importer.getMeshInfo(mesh).name;
+			Material mat(shader);
 
-			//I can add position, rotation and scale as well for the world matrices.
+			cb_Material materialData; //Should this be on the heap?
+			//A scene imported may contain 5 meshes but only 2 materials.
+			unsigned int matIndex = importer.getMaterialIndexByName((std::string)importer.getMaterialIDInfo(mesh, 0).materialName); //a single mesh can contain multiple materials but I only support at index 0 in dX.
 
-			meshes.push_back(MeshCreator::CreateMesh(vertices, indicesZweb, device));
+			materialData.ambient = DirectX::XMFLOAT3(importer.getMaterialInfo(matIndex).ka[0], importer.getMaterialInfo(matIndex).ka[1], importer.getMaterialInfo(matIndex).ka[2]);
+
+			materialData.albedo = DirectX::XMFLOAT3(importer.getMaterialInfo(matIndex).kd[0], importer.getMaterialInfo(matIndex).kd[1], importer.getMaterialInfo(matIndex).kd[2]);
+
+			materialData.specular = DirectX::XMFLOAT3(importer.getMaterialInfo(matIndex).ks[0], importer.getMaterialInfo(matIndex).ks[1], importer.getMaterialInfo(matIndex).ks[2]);
+
+			materialData.specularFactor = importer.getMaterialInfo(matIndex).specularPower;
 
 
-			if (type == ZWEBLoadType::SkeletonAnimation||type==ZWEBLoadType::OnlySkeletonAnimation) //I will change this in the future so you can load only skeletons.
+			mat.SetMaterialData(materialData);
+			
+			
+			
+
+			Mesh meshObject(device, vertices, indicesZweb);
+
+
+			meshObject.SetMeshName((std::string)importer.getMeshInfo(mesh).name);
+				
+
+			if (type == ZWEBLoadType::SkeletonAnimation) 
 			{
 				SkeletonAni skeletonAnimation;
 				//map must be set first so it can be used to set up the other stuff.
@@ -128,22 +150,28 @@ namespace ZWEBLoader
 					skeletonAnimation.setUpKeys((std::string)keys[0].linkName, keys);
 				}
 
-				if (type == ZWEBLoadType::OnlySkeletonAnimation)
-				{
-					//add a name to every mesh from the zweb import, what the node name is in maya, then search the names to add the animation track.
-				}
-				else
-				{
-					meshes[meshes.size() - 1].setAnimationTrack(skeletonAnimation);
-				}
+				
+				meshObject.SetAnimationTrack(skeletonAnimation);
 				
 			}
 
+			Object object((std::string)importer.getMeshInfo(mesh).name);
+
 			
 
+			object.AddComponent<MeshComponent>(meshObject, mat); //Should I pass in a fourth argument in the vectors???
+
+			object.GetTransform().SetPosition(DirectX::XMLoadFloat3(&DirectX::XMFLOAT3(importer.getMeshInfo(mesh).translation[0], importer.getMeshInfo(mesh).translation[1], importer.getMeshInfo(mesh).translation[2])));
+
+			object.GetTransform().SetRotation(DirectX::XMLoadFloat3(&DirectX::XMFLOAT3(importer.getMeshInfo(mesh).rotation[0], importer.getMeshInfo(mesh).rotation[1], importer.getMeshInfo(mesh).rotation[2])));
+
+			object.GetTransform().SetScale(DirectX::XMLoadFloat3(&DirectX::XMFLOAT3(importer.getMeshInfo(mesh).scale[0], importer.getMeshInfo(mesh).scale[1], importer.getMeshInfo(mesh).scale[2])));
+
+
+			objects.push_back(object);
 		}
 
-		return meshes;
+		return objects;
 		
 	}
 	

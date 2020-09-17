@@ -24,9 +24,25 @@ void Scene::Initialize(Renderer* renderer)
 	Shader shader;
 	shader.SetPixelShader(L"Shaders/Default_ps.hlsl");
 	shader.SetVertexShader(L"Shaders/Default_vs.hlsl");
+	shader.setSkeletonShader(L"Shaders/Skeleton_vs.hlsl");
 	shader.Compile(renderer->GetDevice());
 
-	Mesh mesh = ShittyOBJLoader::Load("Models/cube.obj", renderer->GetDevice());
+	std::vector<Object> zwebObj = ZWEBLoader::LoadZWEB(ZWEBLoadType::SkeletonAnimation, "../Models/OrchBody.ZWEB", "../Models/OrchAnimation.ZWEB", shader, renderer->GetDevice());
+	
+	for (int object = 0; object < zwebObj.size(); object++)
+	{
+		skeletonObjects.push_back(zwebObj[object]);
+	}
+
+	dx::XMFLOAT3 miniScale = dx::XMFLOAT3(0.0625f, 0.0625f, 0.0625f);
+
+	dx::XMFLOAT3 miniTranslation = dx::XMFLOAT3(0, -5, 10);
+
+	skeletonObjects[0].GetTransform().SetScale(dx::XMLoadFloat3(&miniScale));
+
+	skeletonObjects[0].GetTransform().SetPosition(dx::XMLoadFloat3(&miniTranslation));
+
+	/*Mesh mesh = ShittyOBJLoader::Load("Models/cube.obj", renderer->GetDevice());
 	Material material = Material(shader);
 
 	Object* tmp_obj = new Object("cube1");
@@ -40,7 +56,7 @@ void Scene::Initialize(Renderer* renderer)
 	tmp_obj2->GetTransform().SetPosition({ 0, 0, 4 });
 
 	Transform::SkapaPäron(tmp_obj->GetTransform(), tmp_obj2->GetTransform());
-	objects.push_back(tmp_obj2);
+	objects.push_back(tmp_obj2);*/
 
 	//PrintSceneHierarchy();
 }
@@ -76,6 +92,16 @@ void Scene::Render()
 		//if (obj->HasFlag(ObjectFlag::ENABLED | ObjectFlag::VISIBLE))
 		obj->Draw(renderer, camera);
 	}
+
+	for (int i = 0; i < skeletonObjects.size(); i++)
+	{
+		//skeletonObjects[i].Draw(renderer, camera);
+		skeletonObjects[i].GetComponent<MeshComponent>()->GetMaterial().BindToContext(renderer->GetContext());
+		renderer->Draw(skeletonObjects[i].GetComponent<MeshComponent>()->GetMesh(), skeletonObjects[i].GetTransform().GetWorldMatrix(), camera->GetViewMatrix(), camera->GetProjectionMatrix());
+
+		
+	}
+
 
 	renderer->EndFrame();
 }
