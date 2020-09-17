@@ -26,9 +26,21 @@ void Scene::Initialize(Renderer* renderer)
 	shader.SetVertexShader(L"Shaders/Default_vs.hlsl");
 	shader.Compile(renderer->GetDevice());
 
-	Mesh mesh = ShittyOBJLoader::Load("Models/cube.obj", renderer->GetDevice());
+
+	/* Loading a texture */
+	Texture diffuseTexture;
+	diffuseTexture.LoadTexture(renderer->GetDevice(), L"Textures/Gorilla.png");
+	Texture randomNormal;
+	randomNormal.LoadTexture(renderer->GetDevice(), L"Textures/RandomNormal.png");
+
+	Mesh mesh = ShittyOBJLoader::Load("Models/Cube.obj", renderer->GetDevice());
 	Material material = Material(shader);
 
+	/* Setting texture to correct slot */
+	material.SetTexture(diffuseTexture, TEXTURE_DIFFUSE_SLOT, ShaderBindFlag::PIXEL);
+	material.SetTexture(randomNormal, TEXTURE_NORMAL_SLOT, ShaderBindFlag::PIXEL);
+	//material.SetTexture(renderer->GetContext(), diffuseTexture, TEXTURE_DIFFUSE_SLOT, ShaderBindFlag::PIXEL);
+	
 	Object* tmp_obj = new Object("cube1");
 	tmp_obj->GetTransform().SetPosition({ 0, 0, 10 });
 	tmp_obj->AddComponent<MeshComponent>(mesh, material);
@@ -76,7 +88,7 @@ void Scene::Render()
 		//if (obj->HasFlag(ObjectFlag::ENABLED | ObjectFlag::VISIBLE))
 		obj->Draw(renderer, camera);
 	}
-
+	
 	renderer->EndFrame();
 }
 
