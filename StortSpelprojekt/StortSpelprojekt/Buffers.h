@@ -24,3 +24,8 @@ struct cb_Scene
 {
 
 };
+
+struct cb_light
+{
+
+};
