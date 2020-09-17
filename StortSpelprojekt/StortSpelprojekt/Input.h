@@ -52,7 +52,7 @@ private:
 	
 	// keyboard variables
 	DirectX::Keyboard keyboard;
-	DirectX::Keyboard::State currentKey;
+	DirectX::Keyboard::State currentKey; //remove this
 	DirectX::Keyboard::State previousKey;
 	DirectX::Keyboard::KeyboardStateTracker	keyboardButtons;
 };
