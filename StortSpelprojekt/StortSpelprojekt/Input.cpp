@@ -1,5 +1,5 @@
 #include "Input.h"
-
+#include <iostream>
 Input::Input()
 {
 	/*height = width = 0;
@@ -36,6 +36,10 @@ bool Input::GetKeyUp(DirectX::Keyboard::Keys key) const
 	return !currentKey.IsKeyDown(key) && previousKey.IsKeyDown(key);
 }
 
+void Input::setMouseMode(DirectX::Mouse::Mode)
+{
+}
+
 
 
 bool Input::GetLeftMouseKey() const
@@ -46,7 +50,7 @@ bool Input::GetLeftMouseKey() const
 bool Input::GetLeftMouseKeyDown() const
 {
 
-	return currentMouse.leftButton && previousMouse.leftButton;
+	return currentMouse.leftButton == DirectX::Mouse::ButtonStateTracker::PRESSED;
 }
 
 bool Input::GetLeftMouseKeyUp() const
@@ -80,4 +84,29 @@ Input::~Input()
 
 void Input::updateInputs()
 {
+	previousMouse = currentMouse;
+	currentMouse = mouse.GetState();
+	
+	previousKey = currentKey;
+	currentKey = keyboard.GetState();
+	keyboardButtons.Update(keyboard.GetState());
+
+	if (keyboardButtons.IsKeyPressed(DirectX::Keyboard::Q))
+	{
+		std::cout << "test";
+	}
+	if (keyboardButtons.IsKeyReleased(DirectX::Keyboard::Q))
+	{
+		std::cout << "test2";
+	}
+	if (keyboard.GetState().Q)
+	{
+		std::cout << "ballahir";
+	}
+}
+
+void Input::updateMsg(UINT umsg, WPARAM wParam, LPARAM lParam)
+{
+	DirectX::Keyboard::ProcessMessage(umsg, wParam, lParam);
+	DirectX::Mouse::ProcessMessage(umsg, wParam, lParam);
 }
