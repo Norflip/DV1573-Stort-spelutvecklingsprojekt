@@ -25,7 +25,26 @@ struct cb_Scene
 
 };
 
+/*struct PointLight
+{
+	dx::XMFLOAT4 plAmbient;
+	dx::XMFLOAT4 plDiffuse;
+	dx::XMFLOAT3 plPosition;
+	float plRange;
+	dx::XMFLOAT3 att;
+	float padding;
+};
+
 struct cb_light
 {
+	dx::XMFLOAT3 lightColor;
+	float strenght;
+	PointLight pointLights[5];
+	int nrOfPointLights;
+};*/
 
+struct cb_DirectionalLight
+{
+	dx::XMFLOAT4 Direction;
+	dx::XMFLOAT4 Color;
 };
