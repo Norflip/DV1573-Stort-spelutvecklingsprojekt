@@ -1,6 +1,6 @@
 #include "Renderer.h"
 
-Renderer::Renderer()
+Renderer::Renderer() : device(nullptr), context(nullptr), backbuffer(nullptr), swapchain(nullptr), obj_cbuffer(nullptr)
 {
 }
 
@@ -8,38 +8,66 @@ Renderer::~Renderer()
 {
 }
 
-void Renderer::Initialize(DXHandler dxHandler)
+void Renderer::Initialize(Window* window)
 {
-	this->dxHandler = dxHandler;
-	this->objectBuffer.Initialize(CB_OBJECT_SLOT, ShaderTypeFlag::VERTEX, dxHandler.GetDevice());
+	this->outputWindow = window;
+	DXHelper::CreateSwapchain(*window, &device, &context, &swapchain);
+	DXHelper::CreateBackbuffer(window->GetWidth(), window->GetHeight(), device, swapchain, &backbuffer, &depthStencilView);
+	
+	context->OMSetRenderTargets(1, &backbuffer, depthStencilView);
+
+	D3D11_VIEWPORT viewport;
+	ZeroMemory(&viewport, sizeof(D3D11_VIEWPORT));
+	viewport.Width = static_cast<FLOAT>(window->GetWidth());
+	viewport.Height = static_cast<FLOAT>(window->GetHeight());
+	viewport.TopLeftX = 0;
+	viewport.TopLeftY = 0;
+	viewport.MinDepth = 0.0f;
+	viewport.MaxDepth = 1.0f;
+	context->RSSetViewports(1, &viewport);
+
+	DXHelper::CreateConstBuffer(device, &obj_cbuffer, &cb_object_data, sizeof(cb_object_data));
 }
 
 void Renderer::BeginFrame()
 {
-	// CLEAR THAT SHIIIET
-	dxHandler.GetContext()->ClearRenderTargetView(dxHandler.GetBackbuffer(), DEFAULT_BG_COLOR);
+	context->ClearRenderTargetView(backbuffer, DEFAULT_BG_COLOR);
+	context->ClearDepthStencilView(depthStencilView, D3D11_CLEAR_DEPTH, 1.0f, 0);
 }
 
 void Renderer::EndFrame()
 {
-	dxHandler.GetSwapchain()->Present(0, 0);
+	swapchain->Present(0, 0);
 }
 
-void Renderer::Draw(const Mesh& mesh, dx::XMMATRIX model, dx::XMMATRIX view, dx::XMMATRIX projection)
+void Renderer::Draw(const Mesh& mesh, dx::XMMATRIX world, dx::XMMATRIX view, dx::XMMATRIX projection)
 {
-	auto cb_objectData = objectBuffer.GetData();
+	// add to queue? 
 
-	dx::XMStoreFloat4x4(&cb_objectData->mvp, dx::XMMatrixTranspose(dx::XMMatrixMultiply(dx::XMMatrixMultiply(model, view), projection)));
-	dx::XMStoreFloat4x4(&cb_objectData->world, dx::XMMatrixTranspose(model));
-	objectBuffer.Bind(dxHandler.GetContext());
+	dx::XMMATRIX mvp = dx::XMMatrixMultiply(world, dx::XMMatrixMultiply(view, projection));
+	dx::XMStoreFloat4x4(&cb_object_data.mvp, dx::XMMatrixTranspose(mvp));
+	dx::XMStoreFloat4x4(&cb_object_data.world, dx::XMMatrixTranspose(world));
+	DXHelper::BindConstBuffer(context, obj_cbuffer, &cb_object_data, CB_OBJECT_SLOT, ShaderBindFlag::VERTEX);
 
 	UINT stride = sizeof(Mesh::Vertex);
 	UINT offset = 0;
 
-	dxHandler.GetContext()->IASetVertexBuffers(0, 1, &mesh.vertexBuffer, &stride, &offset);
-	dxHandler.GetContext()->IASetIndexBuffer(mesh.indexBuffer, DXGI_FORMAT_R32_UINT, 0);
-	dxHandler.GetContext()->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
-	//context->DrawIndexed(mesh.indices.size(), 0, 0);
+	context->IASetVertexBuffers(0, 1, &mesh.vertexBuffer, &stride, &offset);
+	context->IASetIndexBuffer(mesh.indexBuffer, DXGI_FORMAT_R32_UINT, 0);
+	context->IASetPrimitiveTopology(mesh.topology);
 
-	dxHandler.GetContext()->DrawIndexedInstanced(mesh.indices.size(), 10, 0, 0, 0);
+	context->DrawIndexed(mesh.indices.size(), 0, 0);
+}
+
+void Renderer::DrawInstanced(const Mesh& mesh, size_t count, dx::XMMATRIX* models, dx::XMMATRIX view, dx::XMMATRIX projection)
+{
+	// another cbuffer for instanced? 
+
+	UINT stride = sizeof(Mesh::Vertex);
+	UINT offset = 0;
+
+	context->IASetVertexBuffers(0, 1, &mesh.vertexBuffer, &stride, &offset);
+	context->IASetIndexBuffer(mesh.indexBuffer, DXGI_FORMAT_R32_UINT, 0);
+	context->IASetPrimitiveTopology(mesh.topology);
+	context->DrawIndexedInstanced(mesh.indices.size(), count, 0, 0, 0);
 }

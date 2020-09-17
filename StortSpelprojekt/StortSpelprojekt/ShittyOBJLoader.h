@@ -61,16 +61,17 @@ namespace ShittyOBJLoader
 		return tangent;
 	}
 
-	inline Mesh LoadOBJ (std::string path, ID3D11Device* device)
+	inline Mesh Load (std::string path, ID3D11Device* device)
 	{
-		Mesh mesh;
+		std::vector<Mesh::Vertex> vertices;
+		std::vector<unsigned int> indices;
+
 		std::fstream fs;
 		fs.open(path);
 
 		if (fs.is_open())
 		{
-			std::vector<Mesh::Vertex> vertexes;
-			std::vector<unsigned int> indices;
+
 			std::vector<DirectX::XMFLOAT2> uvs;
 			std::vector<DirectX::XMFLOAT3> normals;
 
@@ -108,8 +109,9 @@ namespace ShittyOBJLoader
 						z = std::stof(strs[3]);
 
 						Mesh::Vertex v;
-						v.position = DirectX::XMFLOAT3(x, y, z);
-						vertexes.push_back(v);
+						v.position = { x, y, z };
+
+						vertices.push_back(v);
 					}
 					else if (key == "f")	//FACE
 					{
@@ -122,23 +124,23 @@ namespace ShittyOBJLoader
 							indices.push_back(j);
 
 							DirectX::XMVECTOR d = DirectX::XMVectorAdd(
-								DirectX::XMLoadFloat3(&vertexes[j].normal),
+								DirectX::XMLoadFloat3(&vertices[j].normal),
 								DirectX::XMLoadFloat3(&normals[std::stoi(subd[2]) - static_cast<long long>(1)])
 							);
 							//d = dx::XMVector3Normalize(d);
 
-							DirectX::XMStoreFloat3(&vertexes[j].normal, d);
-							vertexes[j].uv = uvs[std::stoi(subd[1]) - static_cast<long long>(1)];
+							DirectX::XMStoreFloat3(&vertices[j].normal, d);
+							vertices[j].uv = uvs[std::stoi(subd[1]) - static_cast<long long>(1)];
 						}
 					}
 				}
 			}
 
 			// normalize added normals
-			for (size_t j = 0; j < vertexes.size(); j++)
+			for (size_t j = 0; j < vertices.size(); j++)
 			{
-				DirectX::XMVECTOR n = DirectX::XMVector3Normalize(DirectX::XMLoadFloat3(&vertexes[j].normal));
-				DirectX::XMStoreFloat3(&vertexes[j].normal, n);
+				DirectX::XMVECTOR n = DirectX::XMVector3Normalize(DirectX::XMLoadFloat3(&vertices[j].normal));
+				DirectX::XMStoreFloat3(&vertices[j].normal, n);
 			}
 
 			DirectX::XMFLOAT3 tangent;
@@ -146,21 +148,19 @@ namespace ShittyOBJLoader
 
 			for (size_t i = 0; i < triangleCount; i++)
 			{
-				tangent = m_calculateTangent(vertexes[indices[i * 3 + 0]], vertexes[indices[i * 3 + 1]], vertexes[indices[i * 3 + 2]]);
-				vertexes[indices[i * 3 + 0]].tangent = tangent;
-				vertexes[indices[i * 3 + 1]].tangent = tangent;
-				vertexes[indices[i * 3 + 2]].tangent = tangent;
+				tangent = m_calculateTangent(vertices[indices[i * 3 + 0]], vertices[indices[i * 3 + 1]], vertices[indices[i * 3 + 2]]);
+				vertices[indices[i * 3 + 0]].tangent = tangent;
+				vertices[indices[i * 3 + 1]].tangent = tangent;
+				vertices[indices[i * 3 + 2]].tangent = tangent;
 			}
 
-			for (size_t j = 0; j < vertexes.size(); j++)
+			for (size_t j = 0; j < vertices.size(); j++)
 			{
-				DirectX::XMVECTOR n = DirectX::XMVector3Normalize(DirectX::XMLoadFloat3(&vertexes[j].tangent));
-				DirectX::XMStoreFloat3(&vertexes[j].tangent, n);
+				DirectX::XMVECTOR n = DirectX::XMVector3Normalize(DirectX::XMLoadFloat3(&vertices[j].tangent));
+				DirectX::XMStoreFloat3(&vertices[j].tangent, n);
 			}
-
-			mesh = MeshCreator::CreateMesh(vertexes, indices, device);
 		}
 
-		return mesh;
+		return Mesh(device, vertices, indices);
 	}
 }

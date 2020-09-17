@@ -5,8 +5,7 @@ Engine::Engine(HINSTANCE hInstance) : window(hInstance), activeScene(nullptr)
 	Log::Open();
 
 	window.Open(800, 800);
-	dxHandler.Initialize(window);
-	renderer.Initialize(dxHandler);
+	renderer.Initialize(&window);
 
 	RegisterScene(0, new Scene());
 	SwitchScene(0);
@@ -20,7 +19,7 @@ Engine::~Engine()
 void Engine::Run()
 {
 	this->running = true;
-	fixedLoopThread = std::thread(FixedUpdateLoop, this);
+	//fixedLoopThread = new std::thread(Engine::FixedUpdateLoop, this);
 
 	auto startTimePoint = std::chrono::high_resolution_clock::now();
 	float timeLastFrame = 0.0f;
@@ -34,6 +33,7 @@ void Engine::Run()
 		{
 			TranslateMessage(&msg);
 			DispatchMessage(&msg);
+
 			if (msg.message == WM_QUIT)
 				Exit();
 		}
@@ -57,7 +57,9 @@ void Engine::Run()
 void Engine::Exit()
 {
 	running = false;
-	//fixedLoopThread.join();
+
+	//fixedLoopThread->join();
+	//delete fixedLoopThread;
 }
 
 void Engine::RegisterScene(size_t id, Scene* scene)
@@ -65,7 +67,7 @@ void Engine::RegisterScene(size_t id, Scene* scene)
 	auto sceneIt = this->scenes.find(id);
 	assert(sceneIt == scenes.end(), "Conflicting scene IDs");
 
-	scene->Initialize(&dxHandler, &renderer);
+	scene->Initialize(&renderer);
 	this->scenes.insert({ id, scene });
 }
 
@@ -100,7 +102,6 @@ void Engine::FixedUpdateLoop(Engine* engine)
 		float currentTime = static_cast<float>(elapsed.count() / 1000.0f);
 		float deltaTime = currentTime - timeLastFrame;
 
-		// move to a seperate thread? 
 		fixedTimeAccumulation += deltaTime;
 		while (fixedTimeAccumulation >= TARGET_FIXED_DELTA)
 		{
