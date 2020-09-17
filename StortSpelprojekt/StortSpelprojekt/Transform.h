@@ -33,19 +33,23 @@ public:
 
 	Object* GetOwner() const { return this->owner; }
 
+	bool ChangedThisFrame() const { return this->changedThisFrame; }
+	void MarkNotChanged() { this->changedThisFrame = false; }
+
 #pragma region SETTERS AND GETTERS
 	dx::XMVECTOR GetPosition() const { return this->position; }
-	void SetPosition(dx::XMVECTOR position) { this->position = position; }
+	void SetPosition(dx::XMVECTOR position) { this->position = position; changedThisFrame = true; }
 
 	dx::XMVECTOR GetScale() const { return this->scale; }
-	void SetScale(dx::XMVECTOR scale) { this->scale = scale; }
+	void SetScale(dx::XMVECTOR scale) { this->scale = scale; changedThisFrame = true; }
 
 	dx::XMVECTOR GetRotation() const { return this->rotation; }
-	void SetRotation(dx::XMVECTOR rotation) { this->rotation = rotation; }
+	void SetRotation(dx::XMVECTOR rotation) { this->rotation = rotation; changedThisFrame = true; }
 
 #pragma endregion
 
 private:
+	bool changedThisFrame;
 	std::vector<Transform*> children;
 	Transform* parent;
 	Object* owner;

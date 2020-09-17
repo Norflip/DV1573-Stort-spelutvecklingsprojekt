@@ -1,6 +1,6 @@
 #include "Renderer.h"
 
-Renderer::Renderer() : device(nullptr), context(nullptr), backbuffer(nullptr), swapchain(nullptr), objCBuffer(nullptr)
+Renderer::Renderer() : device(nullptr), context(nullptr), backbuffer(nullptr), swapchain(nullptr), obj_cbuffer(nullptr)
 {
 }
 
@@ -26,7 +26,11 @@ void Renderer::Initialize(Window* window)
 	viewport.MaxDepth = 1.0f;
 	context->RSSetViewports(1, &viewport);
 
-	DXHelper::CreateConstBuffer(device, &objCBuffer, &objData, sizeof(objData));
+	DXHelper::CreateConstBuffer(device, &obj_cbuffer, &cb_object_data, sizeof(cb_object_data));
+
+	/* Creating default sampler state */
+	DXHelper::CreateSamplerState(device, D3D11_FILTER_MIN_MAG_MIP_LINEAR, defaultSampler);
+	context->PSSetSamplers(0, 1, &defaultSampler);
 }
 
 void Renderer::BeginFrame()
@@ -45,9 +49,9 @@ void Renderer::Draw(const Mesh& mesh, dx::XMMATRIX world, dx::XMMATRIX view, dx:
 	// add to queue? 
 
 	dx::XMMATRIX mvp = dx::XMMatrixMultiply(world, dx::XMMatrixMultiply(view, projection));
-	dx::XMStoreFloat4x4(&objData.mvp, dx::XMMatrixTranspose(mvp));
-	dx::XMStoreFloat4x4(&objData.world, dx::XMMatrixTranspose(world));
-	DXHelper::BindConstBuffer(context, objCBuffer, &objData, CB_OBJECT_SLOT, ShaderBindFlag::VERTEX);
+	dx::XMStoreFloat4x4(&cb_object_data.mvp, dx::XMMatrixTranspose(mvp));
+	dx::XMStoreFloat4x4(&cb_object_data.world, dx::XMMatrixTranspose(world));
+	DXHelper::BindConstBuffer(context, obj_cbuffer, &cb_object_data, CB_OBJECT_SLOT, ShaderBindFlag::VERTEX);
 
 	UINT stride = sizeof(Mesh::Vertex);
 	UINT offset = 0;

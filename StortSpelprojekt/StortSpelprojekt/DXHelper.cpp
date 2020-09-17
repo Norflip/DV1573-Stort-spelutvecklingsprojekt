@@ -51,8 +51,29 @@ void DXHelper::CreateSwapchain(const Window& window, _Out_ ID3D11Device** device
 	assert(SUCCEEDED(resultCreateRasterizer));
 	(*context)->RSSetState(rasterizerState);
 
+}
 
+void DXHelper::CreateSamplerState(ID3D11Device* device, D3D11_FILTER filter, ID3D11SamplerState* samplerstate)
+{
+	D3D11_SAMPLER_DESC samplerDesc;
+	ZeroMemory(&samplerDesc, sizeof(D3D11_SAMPLER_DESC));
+	samplerDesc.Filter = filter;
+	samplerDesc.AddressU = D3D11_TEXTURE_ADDRESS_WRAP;
+	samplerDesc.AddressV = D3D11_TEXTURE_ADDRESS_WRAP;
+	samplerDesc.AddressW = D3D11_TEXTURE_ADDRESS_WRAP;
+	samplerDesc.MipLODBias = 0.0f;
+	samplerDesc.MaxAnisotropy = 1;
+	samplerDesc.ComparisonFunc = D3D11_COMPARISON_ALWAYS;
+	samplerDesc.BorderColor[0] = 0;
+	samplerDesc.BorderColor[1] = 0;
+	samplerDesc.BorderColor[2] = 0;
+	samplerDesc.BorderColor[3] = 0;
+	samplerDesc.MinLOD = 0;
+	samplerDesc.MaxLOD = D3D11_FLOAT32_MAX;
 
+	// Create the sampler state.
+	HRESULT samplerResult = device->CreateSamplerState(&samplerDesc, &samplerstate);
+	assert(SUCCEEDED(samplerResult));	
 }
 
 void DXHelper::CreateConstBuffer(ID3D11Device* device, ID3D11Buffer** buffer, void* initdata, unsigned int byteSize)
@@ -128,4 +149,42 @@ void DXHelper::CreateBackbuffer(size_t width, size_t height, ID3D11Device* devic
 
 	(device)->CreateRenderTargetView(backBufferPtr, nullptr, backbuffer);
 	backBufferPtr->Release();
+}
+
+void DXHelper::CreateVertexBuffer(ID3D11Device* device, size_t verticeCount, size_t vertexSize, void* vertices, ID3D11Buffer** vertexBuffer)
+{
+	// creates vertex buffer
+	D3D11_BUFFER_DESC vertexBufferDescription;
+	ZeroMemory(&vertexBufferDescription, sizeof(vertexBufferDescription));
+	vertexBufferDescription.Usage = D3D11_USAGE_DEFAULT;
+	vertexBufferDescription.ByteWidth = static_cast<unsigned int>(vertexSize * verticeCount);
+	vertexBufferDescription.BindFlags = D3D11_BIND_VERTEX_BUFFER;
+
+	D3D11_SUBRESOURCE_DATA vertexBuffer_subResource;
+	ZeroMemory(&vertexBuffer_subResource, sizeof(D3D11_SUBRESOURCE_DATA));
+	vertexBuffer_subResource.pSysMem = vertices;
+	vertexBuffer_subResource.SysMemPitch = 0;
+	vertexBuffer_subResource.SysMemSlicePitch = 0;
+
+	HRESULT vertexBufferResult = device->CreateBuffer(&vertexBufferDescription, &vertexBuffer_subResource, vertexBuffer);
+	assert(SUCCEEDED(vertexBufferResult));
+}
+
+void DXHelper::CreateIndexBuffer(ID3D11Device* device, size_t indexCount, unsigned int* indicies, ID3D11Buffer** indexBuffer)
+{
+	// creates index buffer
+	D3D11_BUFFER_DESC indexBufferDescription;
+	indexBufferDescription.Usage = D3D11_USAGE_DEFAULT;
+	indexBufferDescription.ByteWidth = (UINT)(sizeof(unsigned int) * indexCount);
+	indexBufferDescription.BindFlags = D3D11_BIND_INDEX_BUFFER;
+	indexBufferDescription.CPUAccessFlags = 0;
+	indexBufferDescription.MiscFlags = 0;
+
+	D3D11_SUBRESOURCE_DATA indexBuffer_subResource;
+	indexBuffer_subResource.pSysMem = indicies;
+	indexBuffer_subResource.SysMemPitch = 0;
+	indexBuffer_subResource.SysMemSlicePitch = 0;
+
+	HRESULT indexBufferResult = device->CreateBuffer(&indexBufferDescription, &indexBuffer_subResource, indexBuffer);
+	assert(SUCCEEDED(indexBufferResult));
 }

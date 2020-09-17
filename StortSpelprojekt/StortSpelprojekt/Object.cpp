@@ -13,20 +13,17 @@ Object::~Object()
 
 void Object::Update(const float& deltaTime)
 {
+	transform.MarkNotChanged();
+
 	for (auto i = components.begin(); i < components.end(); i++)
-	{
 		(*i)->Update(deltaTime);
-	}
 }
 
 void Object::Draw(Renderer* renderer, CameraComponent* camera)
 {
 	for (auto i = components.begin(); i < components.end(); i++)
-	{
 		(*i)->Draw(renderer, camera);
-	}
 }
-
 
 bool Object::HasFlag(ObjectFlag flag) const
 {
