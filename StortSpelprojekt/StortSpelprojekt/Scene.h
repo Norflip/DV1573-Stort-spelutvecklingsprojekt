@@ -28,5 +28,4 @@ private:
 	std::vector<Object*> objects;
 	CameraComponent* camera;
 	Renderer* renderer;
-	Input& input;
 };

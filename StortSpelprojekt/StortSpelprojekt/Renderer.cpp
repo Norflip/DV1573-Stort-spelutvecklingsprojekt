@@ -27,6 +27,10 @@ void Renderer::Initialize(Window* window)
 	context->RSSetViewports(1, &viewport);
 
 	DXHelper::CreateConstBuffer(device, &obj_cbuffer, &cb_object_data, sizeof(cb_object_data));
+
+	/* Creating default sampler state */
+	DXHelper::CreateSamplerState(device, D3D11_FILTER_MIN_MAG_MIP_LINEAR, defaultSampler);
+	context->PSSetSamplers(0, 1, &defaultSampler);
 }
 
 void Renderer::BeginFrame()
