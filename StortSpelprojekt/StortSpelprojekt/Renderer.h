@@ -37,6 +37,10 @@ private:
 
 	cb_Skeleton cb_skeleton_data;
 	ID3D11Buffer* skeleton_cbuffer;
+	
+	//måste avallokeras!!!
+	cb_Lights cb_light_data;
+	ID3D11Buffer* light_cbuffer;
 
 	Window* outputWindow;
 };
