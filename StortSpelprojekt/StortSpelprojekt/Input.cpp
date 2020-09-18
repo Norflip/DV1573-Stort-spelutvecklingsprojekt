@@ -2,12 +2,11 @@
 #include <iostream>
 Input::Input()
 {
-	this->hwnd = nullptr;
 	this->height = 0;
 	this->width = 0;
 }
 
-Input::Input(HWND window, size_t width, size_t height) : hwnd(window), height(height), width(width)
+Input::Input(HWND window, size_t width, size_t height) : height(height), width(width)
 {
 	mouse.SetMode(DirectX::Mouse::MODE_ABSOLUTE);
 };

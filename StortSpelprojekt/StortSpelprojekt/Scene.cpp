@@ -50,20 +50,6 @@ void Scene::Update(const float& deltaTime)
 	std::vector<Object*> toRemove;
 	input.UpdateInputs();
 
-	if (input.GetKeyDown(KEY(Q)))
-	{
-		std::cout<<"FAKK\t";
-	}
-	if (KEY_DOWN(Q))
-	{
-		std::cout << "YOOO";
-		std::cout <<std::endl<< input.GetMousePos().x;
-		std::cout << std::endl<< input.GetMousePos().y;
-	}
-	if (LMOUSE_DOWN)
-	{
-		std::cout << "TOOO ";
-	}
 
 	for (auto i = objects.begin(); i < objects.end(); i++)
 	{

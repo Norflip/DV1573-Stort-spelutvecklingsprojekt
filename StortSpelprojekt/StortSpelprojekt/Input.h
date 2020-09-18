@@ -58,7 +58,6 @@ public:
 	void operator=(Input const&) = delete;
 
 private:
-	HWND hwnd;
 	size_t height, width;
 	// mouse variables	
 	DirectX::Mouse mouse;
@@ -71,7 +70,7 @@ private:
 //CHEAT SHEET
 
 /*
-if (input.GetKeyDown(KEY(Q))) //Created reference of input in scene
+if (input.GetKeyDown(KEY(Q))) //Created reference of input in 
 	std::cout << "DOWNKEY\t";
 if (KEY_DOWN(Q))
 {
