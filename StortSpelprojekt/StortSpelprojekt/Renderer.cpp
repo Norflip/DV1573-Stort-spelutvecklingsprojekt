@@ -28,7 +28,6 @@ void Renderer::Initialize(Window* window)
 	context->RSSetViewports(1, &viewport);
 
 	DXHelper::CreateConstBuffer(device, &obj_cbuffer, &cb_object_data, sizeof(cb_object_data));
-
 	
 	for (int bone = 0; bone < 60; bone++) //set id matrix as default for the bones. So if no animation is happening the character is not funky.
 	{
@@ -37,6 +36,7 @@ void Renderer::Initialize(Window* window)
 
 
 	DXHelper::CreateConstBuffer(device, &skeleton_cbuffer, &cb_skeleton_data, sizeof(cb_Skeleton));
+	DXHelper::CreateConstBuffer(device, &light_cbuffer, &cb_light_data, sizeof(cb_light_data));
 }
 
 void Renderer::BeginFrame()
@@ -64,6 +64,10 @@ void Renderer::Draw(const Mesh& mesh, const cb_Material& material, dx::XMMATRIX 
 	cb_material_data.specular = material.specular;
 	DXHelper::BindConstBuffer(context, material_cbuffer, &cb_material_data, CB_MATERIAL_SLOT, ShaderBindFlag::PIXEL);*/
 
+	//cb_light_data.Direction = dx::XMFLOAT4(0, 0, 1, 0);
+	cb_light_data.Color = dx::XMFLOAT4(1, 1, 1, 1);
+	cb_light_data.Position = dx::XMFLOAT3(1, 1, 0);
+	DXHelper::BindConstBuffer(context, light_cbuffer, &cb_light_data, CB_LIGHT_SLOT, ShaderBindFlag::PIXEL);
 	UINT stride = sizeof(Mesh::Vertex);
 	UINT offset = 0;
 

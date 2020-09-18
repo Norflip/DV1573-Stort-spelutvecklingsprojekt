@@ -20,3 +20,13 @@ cbuffer cb_Material : register(b2)
 	bool hasNormalMap;
 }
 
+
+cbuffer cb_Lights : register(b3)
+{
+    float4 Direction;
+    float4 Color;
+    float3 Position;
+    float type;
+    float3 attenuation;
+    float intensity;
+}

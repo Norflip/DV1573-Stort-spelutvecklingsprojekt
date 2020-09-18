@@ -44,6 +44,10 @@ void Scene::Initialize(Renderer* renderer)
 	skeletonObjects[0].GetTransform().SetPosition(dx::XMLoadFloat3(&miniTranslation));
 
 	/*Mesh mesh = ShittyOBJLoader::Load("Models/cube.obj", renderer->GetDevice());
+
+
+
+	Mesh mesh = ShittyOBJLoader::Load("Models/cube.obj", renderer->GetDevice());
 	Material material = Material(shader);
 
 	Object* tmp_obj = new Object("cube1");
