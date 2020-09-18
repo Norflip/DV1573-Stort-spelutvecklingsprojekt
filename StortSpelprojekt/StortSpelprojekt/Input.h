@@ -67,3 +67,23 @@ private:
 	DirectX::Keyboard keyboard;
 	DirectX::Keyboard::KeyboardStateTracker	keyboardButtons;
 };
+
+//CHEAT SHEET
+
+/*
+if (input.GetKeyDown(KEY(Q))) //Created reference of input in scene
+	std::cout << "DOWNKEY\t";
+if (KEY_DOWN(Q))
+{
+	std::cout << "DOWNKEY2";
+	std::cout << std::endl << input.GetMousePos().x;
+	std::cout << std::endl << input.GetMousePos().y;
+}
+if(Input::Instance().GetKeyDown(DirectX::Keyboard::T))
+	std::cout << "DOWNKEY3 ";
+if (LMOUSE_DOWN)
+	std::cout << "LMOUSEDOWN ";
+
+
+
+*/
