@@ -34,5 +34,9 @@ private:
 	cb_Object cb_object_data;
 	ID3D11Buffer* obj_cbuffer;
 
+	//måste avallokeras!!!
+	cb_Lights cb_light_data;
+	ID3D11Buffer* light_cbuffer;
+
 	Window* outputWindow;
 };

@@ -26,6 +26,9 @@ void Scene::Initialize(Renderer* renderer)
 	shader.SetVertexShader(L"Shaders/Default_vs.hlsl");
 	shader.Compile(renderer->GetDevice());
 
+
+
+
 	Mesh mesh = ShittyOBJLoader::Load("Models/cube.obj", renderer->GetDevice());
 	Material material = Material(shader);
 

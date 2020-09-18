@@ -27,6 +27,8 @@ void Renderer::Initialize(Window* window)
 	context->RSSetViewports(1, &viewport);
 
 	DXHelper::CreateConstBuffer(device, &obj_cbuffer, &cb_object_data, sizeof(cb_object_data));
+
+	DXHelper::CreateConstBuffer(device, &light_cbuffer, &cb_light_data, sizeof(cb_light_data));
 }
 
 void Renderer::BeginFrame()
@@ -49,6 +51,10 @@ void Renderer::Draw(const Mesh& mesh, dx::XMMATRIX world, dx::XMMATRIX view, dx:
 	dx::XMStoreFloat4x4(&cb_object_data.world, dx::XMMatrixTranspose(world));
 	DXHelper::BindConstBuffer(context, obj_cbuffer, &cb_object_data, CB_OBJECT_SLOT, ShaderBindFlag::VERTEX);
 
+	//cb_light_data.Direction = dx::XMFLOAT4(0, 0, 1, 0);
+	cb_light_data.Color = dx::XMFLOAT4(1, 1, 1, 1);
+	cb_light_data.Position = dx::XMFLOAT3(1, 1, 0);
+	DXHelper::BindConstBuffer(context, light_cbuffer, &cb_light_data, CB_LIGHT_SLOT, ShaderBindFlag::PIXEL);
 	UINT stride = sizeof(Mesh::Vertex);
 	UINT offset = 0;
 
