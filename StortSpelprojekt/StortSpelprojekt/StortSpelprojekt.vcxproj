@@ -145,6 +145,7 @@
     <ClCompile Include="main.cpp" />
     <ClCompile Include="Material.cpp" />
     <ClCompile Include="MeshComponent.cpp" />
+    <ClCompile Include="MoveComponent.cpp" />
     <ClCompile Include="Object.cpp" />
     <ClCompile Include="Renderer.cpp" />
     <ClCompile Include="Scene.cpp" />
@@ -156,6 +157,7 @@
     <ClInclude Include="Buffers.h" />
     <ClInclude Include="BusNode.h" />
     <ClInclude Include="CameraComponent.h" />
+    <ClInclude Include="MoveComponent.h" />
     <ClInclude Include="Component.h" />
     <ClInclude Include="DXHelper.h" />
     <ClInclude Include="Engine.h" />

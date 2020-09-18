@@ -28,7 +28,7 @@ public:
 private:	
 	std::vector<Object*> objects;
 	CameraComponent* camera;
-	MoveComponent* move;
+	//MoveComponent* move;
 	Renderer* renderer;
 	Input& input;
 };
