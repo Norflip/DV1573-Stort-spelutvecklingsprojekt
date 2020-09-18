@@ -48,7 +48,12 @@ void Scene::Initialize(Renderer* renderer)
 void Scene::Update(const float& deltaTime)
 {
 	std::vector<Object*> toRemove;
-	input.updateInputs();
+	input.UpdateInputs();
+	if (input.GetKeyDown(DirectX::Keyboard::Keys::Q))
+	{
+		std::cout<<"FAKK";
+	}
+	
 	for (auto i = objects.begin(); i < objects.end(); i++)
 	{
 		Object* obj = (*i);

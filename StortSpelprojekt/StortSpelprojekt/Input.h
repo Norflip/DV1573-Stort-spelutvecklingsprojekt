@@ -6,6 +6,7 @@
 #include <Keyboard.h>
 #include <Mouse.h>
 
+
 class Input
 {
 public:
@@ -18,7 +19,7 @@ public:
 	bool GetKeyDown(DirectX::Keyboard::Keys key) const;
 	bool GetKeyUp(DirectX::Keyboard::Keys key) const;
 
-	void setMouseMode(DirectX::Mouse::Mode);
+	void SetMouseMode(DirectX::Mouse::Mode mode);
 	//Mouse
 	bool GetLeftMouseKey() const;
 	bool GetLeftMouseKeyDown() const;
@@ -28,10 +29,10 @@ public:
 	bool GetRightMouseKeyDown() const;
 	bool GetRightMouseKeyUp() const;
 
-	POINTS GetMousePos() const;
+	POINT GetMousePos() const;
 
-	void updateInputs();
-	void updateMsg(UINT umsg, WPARAM wParam, LPARAM lParam);
+	void UpdateInputs();
+	void UpdateMsg(UINT umsg, WPARAM wParam, LPARAM lParam);
 	static Input& Instance() // singleton
 	{
 		static Input instance;
@@ -47,12 +48,8 @@ private:
 	// mouse variables
 	
 	DirectX::Mouse mouse;
-	DirectX::Mouse::State currentMouse;
-	DirectX::Mouse::State previousMouse;
-	
+	DirectX::Mouse::ButtonStateTracker mouseButtons;
 	// keyboard variables
 	DirectX::Keyboard keyboard;
-	DirectX::Keyboard::State currentKey; //remove this
-	DirectX::Keyboard::State previousKey;
 	DirectX::Keyboard::KeyboardStateTracker	keyboardButtons;
 };
