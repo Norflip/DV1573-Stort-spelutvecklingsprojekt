@@ -6,6 +6,18 @@
 #include <Keyboard.h>
 #include <Mouse.h>
 
+#define KEY(T) DirectX::Keyboard::T
+#define KEY_DOWN(T) Input::Instance().GetKeyDown(DirectX::Keyboard::T)
+#define KEY_UP(T) Input::Instance().GetKeyUp(DirectX::Keyboard::T)
+#define KEY_PRESSED(T) Input::Instance().GetKey(DirectX::Keyboard::T)
+
+#define LMOUSE_DOWN Input::Instance().GetLeftMouseKeyDown()
+#define LMOUSE_UP Input::Instance().GetLeftMouseKeyUp()
+#define LMOUSE_PRESSED Input::Instance().GetLeftMouseKey()
+
+#define RMOUSE_DOWN Input::Instance().GetRightMouseKeyDown()
+#define RMOUSE_UP Input::Instance().GetRightMouseKeyUp()
+#define RMOUSE_PRESSED Input::Instance().GetRightMouseKey()
 
 class Input
 {
@@ -19,8 +31,10 @@ public:
 	bool GetKeyDown(DirectX::Keyboard::Keys key) const;
 	bool GetKeyUp(DirectX::Keyboard::Keys key) const;
 
-	void SetMouseMode(DirectX::Mouse::Mode mode);
+
 	//Mouse
+	void SetMouseMode(DirectX::Mouse::Mode mode);
+
 	bool GetLeftMouseKey() const;
 	bool GetLeftMouseKeyDown() const;
 	bool GetLeftMouseKeyUp() const;
@@ -33,6 +47,7 @@ public:
 
 	void UpdateInputs();
 	void UpdateMsg(UINT umsg, WPARAM wParam, LPARAM lParam);
+	
 	static Input& Instance() // singleton
 	{
 		static Input instance;
@@ -45,8 +60,7 @@ public:
 private:
 	HWND hwnd;
 	size_t height, width;
-	// mouse variables
-	
+	// mouse variables	
 	DirectX::Mouse mouse;
 	DirectX::Mouse::ButtonStateTracker mouseButtons;
 	// keyboard variables

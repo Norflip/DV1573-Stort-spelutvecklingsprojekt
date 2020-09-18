@@ -2,6 +2,9 @@
 #include <iostream>
 Input::Input()
 {
+	this->hwnd = nullptr;
+	this->height = 0;
+	this->width = 0;
 }
 
 Input::Input(HWND window, size_t width, size_t height) : hwnd(window), height(height), width(width)
@@ -28,7 +31,6 @@ void Input::SetMouseMode(DirectX::Mouse::Mode mode)
 
 	mouse.SetMode(mode);
 }
-
 
 
 bool Input::GetLeftMouseKey() const
@@ -76,20 +78,6 @@ void Input::UpdateInputs()
 {
 	mouseButtons.Update(mouse.GetState());
 	keyboardButtons.Update(keyboard.GetState());
-
-
-	if (GetLeftMouseKey())
-	{
-		//std::cout << "testSpam";
-	}
-	if (GetLeftMouseKeyDown())
-	{
-		std::cout << "DOWN";
-	}
-	if (GetLeftMouseKeyUp())
-	{
-		std::cout << "UP";
-	}
 }
 
 void Input::UpdateMsg(UINT umsg, WPARAM wParam, LPARAM lParam)
