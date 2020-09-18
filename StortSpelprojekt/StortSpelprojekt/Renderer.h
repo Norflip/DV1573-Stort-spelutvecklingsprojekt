@@ -21,7 +21,6 @@ public:
 
 	ID3D11Device* GetDevice() const { return this->device; }
 	ID3D11DeviceContext* GetContext() const { return this->context; }
-	ID3D11SamplerState* GetSampler() const { return this->defaultSampler; }
 	Window* GetOutputWindow() const { return this->outputWindow; }
 
 private:
@@ -36,6 +35,4 @@ private:
 	ID3D11Buffer* obj_cbuffer;
 
 	Window* outputWindow;
-
-	ID3D11SamplerState* defaultSampler;
 };

@@ -1,5 +1,5 @@
 #include "Window.h"
-
+#include "Input.h"
 Window::Window(HINSTANCE hInstance) : hInstance(hInstance)
 {
 
@@ -32,12 +32,14 @@ void Window::Open(size_t width, size_t height)
 	int wWidth = windowRect.right - windowRect.left;
 	int wHeight = windowRect.bottom - windowRect.top;
 	this->hwnd = CreateWindowExW(0, CLASS_NAME, projectTitel, WS_OVERLAPPEDWINDOW, windowRect.left, windowRect.top, wWidth, wHeight, nullptr, nullptr, hInstance, nullptr);
-
 	ShowWindow(hwnd, SW_SHOW);
 }
 
 LRESULT Window::WindowProc(HWND hwnd, UINT umsg, WPARAM wParam, LPARAM lParam)
 {
+
+	Input::Instance().updateMsg(umsg, wParam, lParam);
+
 	switch (umsg)
 	{
 		case WM_DESTROY:
