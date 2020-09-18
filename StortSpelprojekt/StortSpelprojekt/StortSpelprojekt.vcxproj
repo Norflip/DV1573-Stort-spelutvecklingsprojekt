@@ -155,6 +155,7 @@
     <ClCompile Include="Scene.cpp" />
     <ClCompile Include="Shader.cpp" />
     <ClCompile Include="SkeletonAni.cpp" />
+    <ClCompile Include="SkeletonMeshComponent.cpp" />
     <ClCompile Include="Transform.cpp" />
     <ClCompile Include="Window.cpp" />
   </ItemGroup>
@@ -178,6 +179,7 @@
     <ClInclude Include="Shader.h" />
     <ClInclude Include="ShittyOBJLoader.h" />
     <ClInclude Include="SkeletonAni.h" />
+    <ClInclude Include="SkeletonMeshComponent.h" />
     <ClInclude Include="Transform.h" />
     <ClInclude Include="Window.h" />
     <ClInclude Include="ZWEBLoader.h" />

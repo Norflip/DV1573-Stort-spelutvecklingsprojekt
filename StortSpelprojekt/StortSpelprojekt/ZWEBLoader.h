@@ -10,11 +10,11 @@ enum ZWEBLoadType
 namespace ZWEBLoader //TO BE ADDED: FUNCTION TO LOAD LIGHTS AND TO LOAD TEXTURES INOT MATERIALS FROM PATHWAY
 {
 
-	inline SkeletonAni& LoadSkeletonOnly(std::string scenePath, std::string animationPath, std::map<std::string, unsigned int>& boneIDMap)
+	inline SkeletonAni LoadSkeletonOnly( std::string animationPath, std::map<std::string, unsigned int>& boneIDMap)
 	{
 		ZWEB::ZWEBImporter importer;
 
-		importer.importScene(scenePath);
+		
 
 		importer.importAnimation(animationPath);
 
@@ -46,18 +46,16 @@ namespace ZWEBLoader //TO BE ADDED: FUNCTION TO LOAD LIGHTS AND TO LOAD TEXTURES
 
 
 	}
-
-
-	inline  std::vector<Object> LoadZWEB(ZWEBLoadType type, std::string scenePath, std::string animationPath,const Shader& shader, ID3D11Device* device) //If object doesn't have animation you can leave that parameter empty
+	inline std::vector<Mesh> LoadMeshes(ZWEBLoadType type, std::string scenePath, ID3D11Device* device)
 	{
+
 		ZWEB::ZWEBImporter importer;
 
 		importer.importScene(scenePath);
 
-		importer.importAnimation(animationPath);
-
 		
-		std::vector<Object> objects;
+
+		std::vector<Mesh> meshes;
 		for (int mesh = 0; mesh < importer.getSceneInfo().nrOfMeshes; mesh++)
 		{
 			std::vector<unsigned int> indicesZweb(importer.getMeshInfo(mesh).nrOfindices);
@@ -83,14 +81,16 @@ namespace ZWEBLoader //TO BE ADDED: FUNCTION TO LOAD LIGHTS AND TO LOAD TEXTURES
 
 				vertices[vertex].binormal = DirectX::XMFLOAT3(verticesZweb[vertex].biNormal[0], verticesZweb[vertex].biNormal[1], verticesZweb[vertex].biNormal[2]);
 
-				
+
 			}
 			std::map<std::string, unsigned int> boneIDMap; //This is to make sure correct Vertex is mapped to the Correct Bone/Joint.
+			boneIDMap.clear();
+
 			if (type == ZWEBLoadType::SkeletonAnimation)
 			{
 				std::vector<VertexHeader> controlVerticesZweb = importer.getControlPoints(mesh); //Controlpoints are indexed, converting them into non indexed here.
 				std::vector<Mesh::Vertex> controlVertices(controlVerticesZweb.size());
-				
+
 				for (unsigned int controlVertex = 0; controlVertex < controlVerticesZweb.size(); controlVertex++)
 				{
 					controlVertices[controlVertex].boneID = DirectX::XMUINT3(controlVerticesZweb[controlVertex].boneIDNrs[0], controlVerticesZweb[controlVertex].boneIDNrs[1]
@@ -136,82 +136,85 @@ namespace ZWEBLoader //TO BE ADDED: FUNCTION TO LOAD LIGHTS AND TO LOAD TEXTURES
 
 				}
 
-
+			
 			}
-			
-			Material mat(shader);
 
-			cb_Material materialData; //Should this be on the heap?
-			//A scene imported may contain 5 meshes but only 2 materials.
-			unsigned int matIndex = importer.getMaterialIndexByName((std::string)importer.getMaterialIDInfo(mesh, 0).materialName); //a single mesh can contain multiple materials but I only support at index 0 in dX.
-
-			materialData.ambient = DirectX::XMFLOAT3(importer.getMaterialInfo(matIndex).ka[0], importer.getMaterialInfo(matIndex).ka[1], importer.getMaterialInfo(matIndex).ka[2]);
-
-			materialData.albedo = DirectX::XMFLOAT3(importer.getMaterialInfo(matIndex).kd[0], importer.getMaterialInfo(matIndex).kd[1], importer.getMaterialInfo(matIndex).kd[2]);
-
-			materialData.specular = DirectX::XMFLOAT3(importer.getMaterialInfo(matIndex).ks[0], importer.getMaterialInfo(matIndex).ks[1], importer.getMaterialInfo(matIndex).ks[2]);
-
-			materialData.specularFactor = importer.getMaterialInfo(matIndex).specularPower;
-
-
-			mat.SetMaterialData(materialData);
-			
-			
 			
 
 			Mesh meshObject(device, vertices, indicesZweb);
+			
 
 
 			meshObject.SetMeshName((std::string)importer.getMeshInfo(mesh).name);
-				
 
-			if (type == ZWEBLoadType::SkeletonAnimation) 
-			{
-				SkeletonAni skeletonAnimation;
-				//map must be set first so it can be used to set up the other stuff.
-				skeletonAnimation.SetUpIDMapAndFrames(boneIDMap, importer.getSkeletonAnimationHeader().fps, importer.getSkeletonAnimationHeader().nrOfAnimationFrames);
-
-				//The offset matrices are loaded in directly as matrices, the local bone space matrices are not because they need to be interpolated during runtime.
-				std::vector<SkeletonOffsetsHeader> offsets;
-				for (unsigned int bone = 0; bone < importer.getSkeletonAnimationHeader().nrOfBones; bone++)
-				{
-
-					offsets.push_back(importer.getSkeletonOffset(bone));
+			meshObject.SetBoneIDS(boneIDMap);
 
 
-				}
-				skeletonAnimation.SetUpOffsetsFromMatrices(offsets);
-
-				for (unsigned int bone = 0; bone < importer.getSkeletonAnimationHeader().nrOfBones; bone++)
-				{
-					std::vector<SkeletonKeysHeader> keys;
-					keys = importer.getSkeletonKeys(bone);
-					skeletonAnimation.SetUpKeys((std::string)keys[0].linkName, keys);
-				}
-
-				
-				meshObject.SetAnimationTrack(skeletonAnimation);
-				
-			}
-
-			Object object((std::string)importer.getMeshInfo(mesh).name);
-
-			
-
-			object.AddComponent<MeshComponent>(meshObject, mat); //Should I pass in a fourth argument in the vectors???
-
-			object.GetTransform().SetPosition(DirectX::XMLoadFloat3(&DirectX::XMFLOAT3(importer.getMeshInfo(mesh).translation[0], importer.getMeshInfo(mesh).translation[1], importer.getMeshInfo(mesh).translation[2])));
-
-			object.GetTransform().SetRotation(DirectX::XMLoadFloat3(&DirectX::XMFLOAT3(importer.getMeshInfo(mesh).rotation[0], importer.getMeshInfo(mesh).rotation[1], importer.getMeshInfo(mesh).rotation[2])));
-
-			object.GetTransform().SetScale(DirectX::XMLoadFloat3(&DirectX::XMFLOAT3(importer.getMeshInfo(mesh).scale[0], importer.getMeshInfo(mesh).scale[1], importer.getMeshInfo(mesh).scale[2])));
+			dx::XMMATRIX worldMatrix = dx::XMMatrixScaling(importer.getMeshInfo(mesh).scale[0], importer.getMeshInfo(mesh).scale[1], importer.getMeshInfo(mesh).scale[2])*
+				dx::XMMatrixRotationRollPitchYaw(importer.getMeshInfo(mesh).rotation[0], importer.getMeshInfo(mesh).rotation[1], importer.getMeshInfo(mesh).rotation[2])*
+				dx::XMMatrixTranslation(importer.getMeshInfo(mesh).translation[0], importer.getMeshInfo(mesh).translation[1], importer.getMeshInfo(mesh).translation[2]);
 
 
-			objects.push_back(object);
+
+			meshObject.SetWorldMatrix(worldMatrix);
+
+
+
+			meshes.push_back(meshObject);
 		}
 
-		return objects;
-		
+		return meshes;
+
+
+
+
 	}
+
+
+	inline std::vector<Material> LoadMaterials(std::string scenePath, const Shader& shader) //Each mesh has a material name there might be 5 meshes and 3 materials.
+	{
+		ZWEB::ZWEBImporter importer;
+
+		importer.importScene(scenePath);
+
+		std::vector<Material> materials;
+		
+		for (unsigned short material = 0; material < importer.getSceneInfo().nrOfMaterials; material++)
+		{
+
+			Material mat(shader);
+
+			cb_Material materialData; 
+			
+			
+			materialData.ambient = DirectX::XMFLOAT3(importer.getMaterialInfo(material).ka[0], importer.getMaterialInfo(material).ka[1], importer.getMaterialInfo(material).ka[2]);
+
+			materialData.albedo = DirectX::XMFLOAT3(importer.getMaterialInfo(material).kd[0], importer.getMaterialInfo(material).kd[1], importer.getMaterialInfo(material).kd[2]);
+
+			materialData.specular = DirectX::XMFLOAT3(importer.getMaterialInfo(material).ks[0], importer.getMaterialInfo(material).ks[1], importer.getMaterialInfo(material).ks[2]);
+
+			materialData.specularFactor = importer.getMaterialInfo(material).specularPower;
+
+
+			mat.SetMaterialData(materialData);
+
+			
+			mat.setName(importer.getMaterialInfo(material).name);
+
+			materials.push_back(mat);
+
+		}
+
+
+		return materials;
+
+
+
+	}
+
+
+
+
+	
 	
 }

@@ -24,23 +24,36 @@ void Scene::Initialize(Renderer* renderer)
 	Shader shader;
 	shader.SetPixelShader(L"Shaders/Default_ps.hlsl");
 	shader.SetVertexShader(L"Shaders/Default_vs.hlsl");
-	shader.setSkeletonShader(L"Shaders/Skeleton_vs.hlsl");
+	shader.SetVertexShader(L"Shaders/Skeleton_vs.hlsl");
 	shader.Compile(renderer->GetDevice());
 
-	std::vector<Object> zwebObj = ZWEBLoader::LoadZWEB(ZWEBLoadType::SkeletonAnimation, "../Models/OrchBody.ZWEB", "../Models/OrchAnimation.ZWEB", shader, renderer->GetDevice());
+	std::vector<Mesh> zwebMeshes = ZWEBLoader::LoadMeshes(ZWEBLoadType::SkeletonAnimation, "../Models/OrchBody.ZWEB", renderer->GetDevice());
 	
-	for (int object = 0; object < zwebObj.size(); object++)
-	{
-		skeletonObjects.push_back(zwebObj[object]);
-	}
+	std::vector<Material> zwebMaterials = ZWEBLoader::LoadMaterials("../Models/OrchBody.ZWEB", shader);
+
+	SkeletonAni zwebSkeleton = ZWEBLoader::LoadSkeletonOnly("../Models/OrchAnimation.ZWEB", zwebMeshes[0].GetBoneIDS());
+
+	Object* testMesh = new Object("test"); //Where do you delete??
+
+	testMesh->GetTransform().SetLocalMatrix(zwebMeshes[0].GetWorldMatrix());
 
 	dx::XMFLOAT3 miniScale = dx::XMFLOAT3(0.0625f, 0.0625f, 0.0625f);
 
 	dx::XMFLOAT3 miniTranslation = dx::XMFLOAT3(0, 0, 10);
 
-	skeletonObjects[0].GetTransform().SetScale(dx::XMLoadFloat3(&miniScale));
+	testMesh->GetTransform().SetScale(dx::XMLoadFloat3(&miniScale));
 
-	skeletonObjects[0].GetTransform().SetPosition(dx::XMLoadFloat3(&miniTranslation));
+	testMesh->GetTransform().SetPosition(dx::XMLoadFloat3(&miniTranslation));
+
+	testMesh->GetTransform().UpdateLocalModelMatrix();
+
+	testMesh->AddComponent<SkeletonMeshComponent>(zwebMeshes[0], zwebMaterials[0]);
+
+	testMesh->GetComponent<SkeletonMeshComponent>()->SetAnimationTrack(zwebSkeleton);
+	
+	objects.push_back(testMesh);
+
+
 
 	/*Mesh mesh = ShittyOBJLoader::Load("Models/cube.obj", renderer->GetDevice());
 	Material material = Material(shader);
@@ -98,18 +111,7 @@ void Scene::Render()
 		obj->Draw(renderer, camera);
 	}
 
-	for (int i = 0; i < skeletonObjects.size(); i++)
-	{
-
-
-		skeletonObjects[i].GetComponent<MeshComponent>()->GetMaterial().BindToContext(renderer->GetContext());
-		
-		renderer->DrawSkeleton(skeletonObjects[i].GetComponent<MeshComponent>()->GetMesh(), skeletonObjects[i].GetTransform().GetWorldMatrix(), camera->GetViewMatrix(), camera->GetProjectionMatrix(),
-			skeletonObjects[0].GetComponent<MeshComponent>()->GetMesh().GetAnimationTrack(0).Makeglobal(0.25f, dx::XMMatrixIdentity(),
-				skeletonObjects[0].GetComponent<MeshComponent>()->GetMesh().GetAnimationTrack(0).GetRootKeyJoints()));
-
-		
-	}
+	
 
 
 	renderer->EndFrame();

@@ -27,10 +27,10 @@ public:
 	Shader();
 	virtual ~Shader();
 
-	void SetPixelShader(LPCWSTR path, LPCSTR entry = "main"); //Could all of these just be one function with precoded path names?
+	void SetPixelShader(LPCWSTR path, LPCSTR entry = "main"); 
 	void SetVertexShader(LPCWSTR path, LPCSTR entry = "main");
 	void SetGeometryShader(LPCWSTR path, LPCSTR entry = "main");
-	void setSkeletonShader(LPCWSTR path, LPCSTR entry = "main");
+	
 
 	void SetInputLayoutStructure(size_t arraySize, D3D11_INPUT_ELEMENT_DESC* inputLayoutDesc);
 

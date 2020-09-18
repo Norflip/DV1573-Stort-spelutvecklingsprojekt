@@ -6,6 +6,7 @@
 #include "CameraComponent.h"
 #include "MeshComponent.h"
 #include "ZWEBLoader.h"
+#include "SkeletonMeshComponent.h"
 
 class Scene
 {
@@ -29,5 +30,5 @@ private:
 	std::vector<Object*> objects;
 	CameraComponent* camera;
 	Renderer* renderer;
-	std::vector<Object> skeletonObjects;
+	
 };
