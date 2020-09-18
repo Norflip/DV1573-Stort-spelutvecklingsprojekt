@@ -9,17 +9,15 @@ private:
 	dx::XMVECTOR direction;
 public:
 	MoveComponent();
-
 	virtual ~MoveComponent();
 
 	void Move(DirectX::XMFLOAT3 moveVector);
-
 	void Update(const float& deltaTime);
+
 
 	/*
 	move = cameraObject->AddComponent<MoveComponent>();
 	objects.push_back(cameraObject);
 	*/
-
 
 };
