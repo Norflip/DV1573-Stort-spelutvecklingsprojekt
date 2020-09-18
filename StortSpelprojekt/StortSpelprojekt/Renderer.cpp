@@ -50,7 +50,7 @@ void Renderer::EndFrame()
 	swapchain->Present(0, 0);
 }
 
-void Renderer::Draw(const Mesh& mesh, dx::XMMATRIX world, dx::XMMATRIX view, dx::XMMATRIX projection)
+void Renderer::Draw(const Mesh& mesh, const cb_Material& material, dx::XMMATRIX world, dx::XMMATRIX view, dx::XMMATRIX projection)
 {
 	// add to queue? 
 
@@ -58,6 +58,11 @@ void Renderer::Draw(const Mesh& mesh, dx::XMMATRIX world, dx::XMMATRIX view, dx:
 	dx::XMStoreFloat4x4(&cb_object_data.mvp, dx::XMMatrixTranspose(mvp));
 	dx::XMStoreFloat4x4(&cb_object_data.world, dx::XMMatrixTranspose(world));
 	DXHelper::BindConstBuffer(context, obj_cbuffer, &cb_object_data, CB_OBJECT_SLOT, ShaderBindFlag::VERTEX);
+	
+	/*cb_material_data.ambient = material.ambient;
+	cb_material_data.diffuse = material.diffuse;
+	cb_material_data.specular = material.specular;
+	DXHelper::BindConstBuffer(context, material_cbuffer, &cb_material_data, CB_MATERIAL_SLOT, ShaderBindFlag::PIXEL);*/
 
 	UINT stride = sizeof(Mesh::Vertex);
 	UINT offset = 0;

@@ -17,12 +17,12 @@ struct cb_Object
 __declspec(align(16))
 struct cb_Material
 {
-	dx::XMFLOAT3 ambient;
-	float pad1;
-	dx::XMFLOAT3 albedo;
-	float pad2;
-	dx::XMFLOAT3 specular;
-	float specularFactor;
+	dx::XMFLOAT4 ambient;
+	dx::XMFLOAT4 diffuse;
+	dx::XMFLOAT4 specular;
+	
+	int hasAlbedo;
+	int hasNormalMap;
 };
 
 __declspec(align(16))

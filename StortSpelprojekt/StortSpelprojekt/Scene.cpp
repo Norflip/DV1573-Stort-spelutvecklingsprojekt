@@ -27,16 +27,17 @@ void Scene::Initialize(Renderer* renderer)
 	shader.setSkeletonShader(L"Shaders/Skeleton_vs.hlsl");
 	shader.Compile(renderer->GetDevice());
 
-	std::vector<Object> zwebObj = ZWEBLoader::LoadZWEB(ZWEBLoadType::SkeletonAnimation, "../Models/OrchBody.ZWEB", "../Models/OrchAnimation.ZWEB", shader, renderer->GetDevice());
+	//std::vector<Object> zwebObj = ZWEBLoader::LoadZWEB(ZWEBLoadType::SkeletonAnimation, "../Models/OrchBody.ZWEB", "../Models/OrchAnimation.ZWEB", shader, renderer->GetDevice());
+	std::vector<Object> zwebObj = ZWEBLoader::LoadZWEB(ZWEBLoadType::NoAnimation, "../Models/tree.ZWEB", "", shader, renderer->GetDevice());
 	
 	for (int object = 0; object < zwebObj.size(); object++)
 	{
 		skeletonObjects.push_back(zwebObj[object]);
 	}
 
-	dx::XMFLOAT3 miniScale = dx::XMFLOAT3(0.0625f, 0.0625f, 0.0625f);
-
-	dx::XMFLOAT3 miniTranslation = dx::XMFLOAT3(0, -5, 10);
+	//dx::XMFLOAT3 miniScale = dx::XMFLOAT3(0.04f, 0.04f, 0.04f);
+	dx::XMFLOAT3 miniScale = dx::XMFLOAT3(1.0f, 1.0f, 1.0f);
+	dx::XMFLOAT3 miniTranslation = dx::XMFLOAT3(0, 0, 3);
 
 	skeletonObjects[0].GetTransform().SetScale(dx::XMLoadFloat3(&miniScale));
 
@@ -97,7 +98,7 @@ void Scene::Render()
 	{
 		//skeletonObjects[i].Draw(renderer, camera);
 		skeletonObjects[i].GetComponent<MeshComponent>()->GetMaterial().BindToContext(renderer->GetContext());
-		renderer->Draw(skeletonObjects[i].GetComponent<MeshComponent>()->GetMesh(), skeletonObjects[i].GetTransform().GetWorldMatrix(), camera->GetViewMatrix(), camera->GetProjectionMatrix());
+		renderer->Draw(skeletonObjects[i].GetComponent<MeshComponent>()->GetMesh(), skeletonObjects[i].GetComponent<MeshComponent>()->GetMaterial().GetMaterialData(), skeletonObjects[i].GetTransform().GetWorldMatrix(), camera->GetViewMatrix(), camera->GetProjectionMatrix());
 
 		
 	}

@@ -34,7 +34,7 @@ namespace ZWEBLoader //TO BE ADDED: FUNCTION TO LOAD LIGHTS AND TO LOAD TEXTURES
 
 			for (unsigned int vertex = 0; vertex < verticesZweb.size(); vertex++)
 			{
-				vertices[vertex].position = DirectX::XMFLOAT3(verticesZweb[vertex].pos[0], verticesZweb[vertex].pos[1], verticesZweb[vertex].pos[2]);
+				vertices[vertex].position = DirectX::XMFLOAT3(verticesZweb[vertex].pos[0], verticesZweb[vertex].pos[1], verticesZweb[vertex].pos[2] * -1.0f);
 
 				vertices[vertex].uv = DirectX::XMFLOAT2(verticesZweb[vertex].uv[0], -verticesZweb[vertex].uv[1]);
 
@@ -106,13 +106,14 @@ namespace ZWEBLoader //TO BE ADDED: FUNCTION TO LOAD LIGHTS AND TO LOAD TEXTURES
 			//A scene imported may contain 5 meshes but only 2 materials.
 			unsigned int matIndex = importer.getMaterialIndexByName((std::string)importer.getMaterialIDInfo(mesh, 0).materialName); //a single mesh can contain multiple materials but I only support at index 0 in dX.
 
-			materialData.ambient = DirectX::XMFLOAT3(importer.getMaterialInfo(matIndex).ka[0], importer.getMaterialInfo(matIndex).ka[1], importer.getMaterialInfo(matIndex).ka[2]);
+			materialData.ambient = DirectX::XMFLOAT4(importer.getMaterialInfo(matIndex).ka[0], importer.getMaterialInfo(matIndex).ka[1], importer.getMaterialInfo(matIndex).ka[2], 1.0f);
 
-			materialData.albedo = DirectX::XMFLOAT3(importer.getMaterialInfo(matIndex).kd[0], importer.getMaterialInfo(matIndex).kd[1], importer.getMaterialInfo(matIndex).kd[2]);
+			materialData.diffuse = DirectX::XMFLOAT4(importer.getMaterialInfo(matIndex).kd[0], importer.getMaterialInfo(matIndex).kd[1], importer.getMaterialInfo(matIndex).kd[2], 1.0f);
 
-			materialData.specular = DirectX::XMFLOAT3(importer.getMaterialInfo(matIndex).ks[0], importer.getMaterialInfo(matIndex).ks[1], importer.getMaterialInfo(matIndex).ks[2]);
+			materialData.specular = DirectX::XMFLOAT4(importer.getMaterialInfo(matIndex).ks[0], importer.getMaterialInfo(matIndex).ks[1], importer.getMaterialInfo(matIndex).ks[2], importer.getMaterialInfo(matIndex).specularPower);
 
-			materialData.specularFactor = importer.getMaterialInfo(matIndex).specularPower;
+
+			//materialData.specularFactor = importer.getMaterialInfo(matIndex).specularPower;
 
 
 			mat.SetMaterialData(materialData);
