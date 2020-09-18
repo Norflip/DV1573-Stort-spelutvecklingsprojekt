@@ -35,8 +35,9 @@ void Renderer::Initialize(Window* window)
 	}
 
 
-	DXHelper::CreateConstBuffer(device, &skeleton_cbuffer, &cb_skeleton_data, sizeof(cb_Skeleton));
+	DXHelper::CreateConstBuffer(device, &skeleton_cbuffer, &cb_skeleton_data, sizeof(cb_skeleton_data));
 	DXHelper::CreateConstBuffer(device, &light_cbuffer, &cb_light_data, sizeof(cb_light_data));
+	DXHelper::CreateConstBuffer(device, &material_cbuffer, &cb_material_data, sizeof(cb_material_data));
 }
 
 void Renderer::BeginFrame()
@@ -59,15 +60,17 @@ void Renderer::Draw(const Mesh& mesh, const cb_Material& material, dx::XMMATRIX 
 	dx::XMStoreFloat4x4(&cb_object_data.world, dx::XMMatrixTranspose(world));
 	DXHelper::BindConstBuffer(context, obj_cbuffer, &cb_object_data, CB_OBJECT_SLOT, ShaderBindFlag::VERTEX);
 	
-	/*cb_material_data.ambient = material.ambient;
+	cb_material_data.ambient = material.ambient;
 	cb_material_data.diffuse = material.diffuse;
 	cb_material_data.specular = material.specular;
-	DXHelper::BindConstBuffer(context, material_cbuffer, &cb_material_data, CB_MATERIAL_SLOT, ShaderBindFlag::PIXEL);*/
+	DXHelper::BindConstBuffer(context, material_cbuffer, &cb_material_data, CB_MATERIAL_SLOT, ShaderBindFlag::PIXEL);
 
-	//cb_light_data.Direction = dx::XMFLOAT4(0, 0, 1, 0);
-	cb_light_data.Color = dx::XMFLOAT4(1, 1, 1, 1);
-	cb_light_data.Position = dx::XMFLOAT3(1, 1, 0);
+	//cb_light_data.lightDirection = dx::XMFLOAT4(0, 0, 1, 0);
+	cb_light_data.lightColor = dx::XMFLOAT4(0.5f, 0.5f, 0.5f, 1);
+	cb_light_data.lightPosition = dx::XMFLOAT3(5.0f, 5.0f, -10.0f);
+	cb_light_data.attenuation = dx::XMFLOAT3(1.0f, 0.02f, 0.0f);
 	DXHelper::BindConstBuffer(context, light_cbuffer, &cb_light_data, CB_LIGHT_SLOT, ShaderBindFlag::PIXEL);
+
 	UINT stride = sizeof(Mesh::Vertex);
 	UINT offset = 0;
 
@@ -110,8 +113,5 @@ void Renderer::DrawSkeleton(const Mesh& mesh, dx::XMMATRIX model, dx::XMMATRIX v
 	context->IASetPrimitiveTopology(mesh.topology);
 
 	context->DrawIndexed(mesh.indices.size(), 0, 0);
-
-
-
 
 }

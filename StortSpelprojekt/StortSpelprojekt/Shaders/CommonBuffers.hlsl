@@ -1,16 +1,16 @@
 
 cbuffer cb_Object : register(b0)
 {
-	matrix mvp;
-	matrix world;
+	row_major matrix mvp;
+	row_major matrix world;
 };
 
-cbuffer cb_Scene : register(b1)
-{
+//cbuffer cb_Scene : register(b1)
+//{
+//
+//}
 
-}
-
-cbuffer cb_Material : register(b2)
+cbuffer cb_Material : register(b1)
 {
 	float4 matAmbient;
 	float4 matDiffuse;
@@ -21,12 +21,12 @@ cbuffer cb_Material : register(b2)
 }
 
 
-cbuffer cb_Lights : register(b3)
+cbuffer cb_Lights : register(b2)
 {
-    float4 Direction;
-    float4 Color;
-    float3 Position;
-    float type;
+    float4 lightDirection;
+    float4 lightColor;
+    float3 lightPosition;
+    float lightType;
     float3 attenuation;
     float intensity;
 }

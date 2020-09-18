@@ -11,35 +11,31 @@ struct VS_OUTPUT
 
 float4 main(VS_OUTPUT input) : SV_TARGET
 {
+	float4 textureColor = float4(1.0f, 1.0f, 1.0f, 1.0f);
+
 	float3 normalized = normalize(input.normal);
 
-	float4 textureColor = float4(1.0f, 1.0f, 1.0f, 1.0f);
-	float range = 50.0f;
-	float4 lightColor = float4(1.0f, 1.0f, 1.0f, 1.0f);
-	float3 viewDirection = float3(0.0f, 0.0f, 1.0f);
-	float3 attenuation = float3(1.0f, 0.02f, 0.0f);
-	float3 lightPos = float3(0.0f, 10.0f, -10.0f);
-
-	float4 matAmbient = float4(1.0f, 0.0f, 0.0f, 1.0f);
-	float4 matSpecular = float4(1.0f, 1.0f, 1.0f, 1.0f);
-	float4 matDiffuse = float4(1.0f, 0.0f, 0.0f, 1.0f);
+	float range = 25.0f;
+	float3 viewDirection = float3(0.0f, 0.0f, 0.0f) - input.worldPosition;
 
 	float4 ambient = float4(0.0f, 0.0f, 0.0f, 0.0f);
 	float4 specular = float4(0.0f, 0.0f, 0.0f, 0.0f);
 	float4 diffuse = float4(0.0f, 0.0f, 0.0f, 0.0f);
 	float4 finalColor = float4(0.0f, 0.0f, 0.0f, 0.0f);
 
-	float3 light = lightPos - input.worldPosition.xyz;
-	float lightDistance = length(light);
+	float3 light = lightPosition - input.worldPosition;
 
-	if (lightDistance > range)
+	float distance = length(light);
+
+	if (distance > range)
 	{
 		return float4(0.0f, 0.0f, 0.0f, 0.0f);
 	}
 
+	light /= distance;
+
 	ambient = matAmbient * lightColor;
 
-	light /= lightDistance;
 	float diffuseFactor = dot(light, normalized);
 
 	if (diffuseFactor > 0.0f)
@@ -48,22 +44,22 @@ float4 main(VS_OUTPUT input) : SV_TARGET
 		//float shine = pow(max(dot(reflection, viewDirection), 0.0f), matSpecular.w);
 
 		float shade = max(dot(reflection, viewDirection), 0.0f);
-		float factor = pow(shade, matSpecular.w);
+		float factor = pow(shade, 10.0f);
 
 		diffuse = diffuseFactor * matDiffuse * lightColor;
 		specular = factor * matSpecular * lightColor;
-
 	}
 
-	float attenuationFactor = 1.0f / attenuation.x + (attenuation.y * lightDistance) + (attenuation.z * (lightDistance * lightDistance));
+	float attenuationFactor = 1.0f / attenuation.x + (attenuation.y * distance) + (attenuation.z * (distance * distance));
 
 	diffuse = saturate(diffuse * attenuationFactor);
 	specular = saturate(specular * attenuationFactor);
-	ambient = saturate(ambient);
+	ambient = saturate(ambient * attenuationFactor);
 
 	finalColor = textureColor * (ambient + diffuse) + specular;
-	float d = dot(input.normal, float3(1,1,0));
-	d = (d + 1) / 2.0f;
+
+	/*float d = dot(input.normal, float3(1,1,0));
+	d = (d + 1) / 2.0f;*/
 
 	return finalColor;
 	//return float4(input.normal, 1.0f);

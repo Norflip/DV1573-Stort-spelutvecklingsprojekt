@@ -18,7 +18,7 @@ void Scene::Initialize(Renderer* renderer)
 	Window* window = renderer->GetOutputWindow();
 	
 	Object* cameraObject = new Object("camera", ObjectFlag::ENABLED);
-	camera = cameraObject->AddComponent<CameraComponent>(60.0f);
+	camera = cameraObject->AddComponent<CameraComponent>(90.0f);
 	camera->Resize(window->GetWidth(), window->GetHeight());
 	
 	Shader shader;
@@ -37,7 +37,7 @@ void Scene::Initialize(Renderer* renderer)
 
 	//dx::XMFLOAT3 miniScale = dx::XMFLOAT3(0.04f, 0.04f, 0.04f);
 	dx::XMFLOAT3 miniScale = dx::XMFLOAT3(1.0f, 1.0f, 1.0f);
-	dx::XMFLOAT3 miniTranslation = dx::XMFLOAT3(0, 0, 3);
+	dx::XMFLOAT3 miniTranslation = dx::XMFLOAT3(0, 0, 2);
 
 	skeletonObjects[0].GetTransform().SetScale(dx::XMLoadFloat3(&miniScale));
 
@@ -104,9 +104,7 @@ void Scene::Render()
 		skeletonObjects[i].GetComponent<MeshComponent>()->GetMaterial().BindToContext(renderer->GetContext());
 		renderer->Draw(skeletonObjects[i].GetComponent<MeshComponent>()->GetMesh(), skeletonObjects[i].GetComponent<MeshComponent>()->GetMaterial().GetMaterialData(), skeletonObjects[i].GetTransform().GetWorldMatrix(), camera->GetViewMatrix(), camera->GetProjectionMatrix());
 
-		
 	}
-
 
 	renderer->EndFrame();
 }
