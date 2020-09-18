@@ -48,7 +48,9 @@ void Scene::Initialize(Renderer* renderer)
 void Scene::Update(const float& deltaTime)
 {
 	std::vector<Object*> toRemove;
-	input.updateInputs();
+	input.UpdateInputs();
+
+
 	for (auto i = objects.begin(); i < objects.end(); i++)
 	{
 		Object* obj = (*i);

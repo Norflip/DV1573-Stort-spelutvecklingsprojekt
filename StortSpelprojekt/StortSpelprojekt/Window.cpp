@@ -37,9 +37,7 @@ void Window::Open(size_t width, size_t height)
 
 LRESULT Window::WindowProc(HWND hwnd, UINT umsg, WPARAM wParam, LPARAM lParam)
 {
-
-	Input::Instance().updateMsg(umsg, wParam, lParam);
-
+	Input::Instance().UpdateMsg(umsg, wParam, lParam);
 	switch (umsg)
 	{
 		case WM_DESTROY:

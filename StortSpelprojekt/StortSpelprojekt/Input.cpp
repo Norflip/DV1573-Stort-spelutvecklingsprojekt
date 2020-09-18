@@ -2,110 +2,84 @@
 #include <iostream>
 Input::Input()
 {
-	/*height = width = 0;
-	currentMouse = mouse.GetState();
-	previousMouse = mouse.GetState();
-
-	currentKey = keyboard.GetState();
-	previousKey = keyboard.GetState();*/
-	//WWND UNINITIALIZED
+	this->height = 0;
+	this->width = 0;
 }
 
-Input::Input(HWND window, size_t width, size_t height) : hwnd(window), height(height), width(width)
+Input::Input(HWND window, size_t width, size_t height) : height(height), width(width)
 {
 	mouse.SetMode(DirectX::Mouse::MODE_ABSOLUTE);
-	currentMouse = mouse.GetState();
-	previousMouse = mouse.GetState();
-
-	currentKey = keyboard.GetState();
-	previousKey = keyboard.GetState();
-
 };
 bool Input::GetKey(DirectX::Keyboard::Keys key) const
 {
-	return currentKey.IsKeyDown(key);
+	return keyboard.GetState().IsKeyDown(key);
 }
 
 bool Input::GetKeyDown(DirectX::Keyboard::Keys key) const
 {
-	return currentKey.IsKeyDown(key) && !previousKey.IsKeyDown(key);
+	return keyboardButtons.IsKeyPressed(key);
 }
 
 bool Input::GetKeyUp(DirectX::Keyboard::Keys key) const
 {
-	return !currentKey.IsKeyDown(key) && previousKey.IsKeyDown(key);
+	return keyboardButtons.IsKeyReleased(key);
 }
 
-void Input::setMouseMode(DirectX::Mouse::Mode)
+void Input::SetMouseMode(DirectX::Mouse::Mode mode)
 {
-}
 
+	mouse.SetMode(mode);
+}
 
 
 bool Input::GetLeftMouseKey() const
 {
-	return  currentMouse.leftButton;
+	return  mouse.GetState().leftButton;
 }
 
 bool Input::GetLeftMouseKeyDown() const
 {
-
-	return currentMouse.leftButton == DirectX::Mouse::ButtonStateTracker::PRESSED;
+	
+	return mouseButtons.leftButton == DirectX::Mouse::ButtonStateTracker::PRESSED;
 }
 
 bool Input::GetLeftMouseKeyUp() const
 {
-	return false;
+	return mouseButtons.leftButton == DirectX::Mouse::ButtonStateTracker::RELEASED;
 }
 
 bool Input::GetRightMouseKey() const
 {
-	return false;
+	return mouse.GetState().rightButton;
 }
 
 bool Input::GetRightMouseKeyDown() const
 {
-	return false;
+	return mouseButtons.rightButton == DirectX::Mouse::ButtonStateTracker::PRESSED;
 }
 
 bool Input::GetRightMouseKeyUp() const
 {
-	return false;
+	return mouseButtons.rightButton == DirectX::Mouse::ButtonStateTracker::RELEASED;
 }
 
-POINTS Input::GetMousePos() const
+POINT Input::GetMousePos() const
 {
-	return POINTS();
+
+	return POINT{ mouse.GetState().x,mouse.GetState().y };
 }
 
 Input::~Input()
 {
 }
 
-void Input::updateInputs()
+void Input::UpdateInputs()
 {
-	previousMouse = currentMouse;
-	currentMouse = mouse.GetState();
-	
-	previousKey = currentKey;
-	currentKey = keyboard.GetState();
+	mouseButtons.Update(mouse.GetState());
 	keyboardButtons.Update(keyboard.GetState());
-
-	if (keyboardButtons.IsKeyPressed(DirectX::Keyboard::Q))
-	{
-		std::cout << "test";
-	}
-	if (keyboardButtons.IsKeyReleased(DirectX::Keyboard::Q))
-	{
-		std::cout << "test2";
-	}
-	if (keyboard.GetState().Q)
-	{
-		std::cout << "ballahir";
-	}
 }
 
-void Input::updateMsg(UINT umsg, WPARAM wParam, LPARAM lParam)
+void Input::UpdateMsg(UINT umsg, WPARAM wParam, LPARAM lParam)
 {
 	DirectX::Keyboard::ProcessMessage(umsg, wParam, lParam);
 	DirectX::Mouse::ProcessMessage(umsg, wParam, lParam);
