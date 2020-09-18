@@ -4,6 +4,7 @@
 #include "ShittyOBJLoader.h"
 #include "Input.h"
 #include "CameraComponent.h"
+#include "MoveComponent.h"
 #include "MeshComponent.h"
 
 class Scene
@@ -27,6 +28,7 @@ public:
 private:	
 	std::vector<Object*> objects;
 	CameraComponent* camera;
+	MoveComponent* move;
 	Renderer* renderer;
 	Input& input;
 };
