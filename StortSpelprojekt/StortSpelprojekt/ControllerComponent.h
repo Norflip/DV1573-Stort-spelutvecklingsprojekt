@@ -4,13 +4,19 @@
 #include "Object.h"
 //#include <DirectXMath.h>
 namespace dx = DirectX;
-class MoveComponent:public Component
+
+const float strafe = 1.f;
+const float fly = 1.f;
+const float walk = 1.f;
+
+class ControllerComponent :public Component
 {
 private:
 	dx::XMVECTOR direction;
+	float speed;
 public:
-	MoveComponent();
-	virtual ~MoveComponent();
+	ControllerComponent();
+	virtual ~ControllerComponent();
 
 	//void Move(DirectX::XMFLOAT3 moveVector);
 	void Update(const float& deltaTime);
@@ -19,5 +25,4 @@ public:
 	move = cameraObject->AddComponent<MoveComponent>();
 	objects.push_back(cameraObject);
 	*/
-
 };

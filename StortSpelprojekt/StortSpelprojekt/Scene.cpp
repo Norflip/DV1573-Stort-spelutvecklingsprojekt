@@ -20,8 +20,8 @@ void Scene::Initialize(Renderer* renderer)
 	Object* cameraObject = new Object("camera", ObjectFlag::ENABLED);
 	camera = cameraObject->AddComponent<CameraComponent>(60.0f);
 	camera->Resize(window->GetWidth(), window->GetHeight());
-	//move = cameraObject->AddComponent<MoveComponent>();
-	//objects.push_back(cameraObject);
+	move = cameraObject->AddComponent<ControllerComponent>();
+	objects.push_back(cameraObject);
 	
 	Shader shader;
 	shader.SetPixelShader(L"Shaders/Default_ps.hlsl");

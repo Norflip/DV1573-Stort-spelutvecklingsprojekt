@@ -10,12 +10,12 @@ MoveComponent::~MoveComponent()
 {
 }
 
-void MoveComponent::Move(DirectX::XMFLOAT3 moveVector)
-{
-	dx::XMVECTOR move = dx::XMLoadFloat3(&moveVector);
-	dx::XMVECTOR newPos = dx::XMVectorAdd(GetOwner()->GetTransform().GetPosition(), move);
-	GetOwner()->GetTransform().SetPosition(newPos);
-}
+//void MoveComponent::Move(DirectX::XMFLOAT3 moveVector)
+//{
+//	dx::XMVECTOR move = dx::XMLoadFloat3(&moveVector);
+//	dx::XMVECTOR newPos = dx::XMVectorAdd(GetOwner()->GetTransform().GetPosition(), move);
+//	GetOwner()->GetTransform().SetPosition(newPos);
+//}
 
 void MoveComponent::Update(const float& deltaTime)
 {
