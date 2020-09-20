@@ -13,9 +13,12 @@ class Material
 	};
 
 public:
+	Material();
 	Material (Shader shader);
 	virtual ~Material();
 	
+	void SetShader(Shader shader) { this->shader = shader; }
+
 	void BindToContext(ID3D11DeviceContext*);
 	void BindTextureToContext(ID3D11DeviceContext*);
 

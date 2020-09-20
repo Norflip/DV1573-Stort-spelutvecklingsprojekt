@@ -1,11 +1,9 @@
 #include "Texture.h"
 
 Texture::Texture()
-{
-	hr = 0;
-	srv = 0;
-	rtv = 0;
-	renderTargetTexture = 0;	
+{	
+	srv = nullptr;
+	rtv = nullptr;
 }
 
 Texture::~Texture()
@@ -26,12 +24,7 @@ void Texture::Shutdown()
 	if (srv) {
 		srv->Release();
 		srv = 0;
-	}
-
-	if (renderTargetTexture) {
-		renderTargetTexture->Release();
-		renderTargetTexture = 0;
-	}
+	}	
 
 	if (rtv) {
 		rtv->Release();

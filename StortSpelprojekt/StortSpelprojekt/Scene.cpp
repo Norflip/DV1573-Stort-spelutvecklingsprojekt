@@ -24,8 +24,11 @@ void Scene::Initialize(Renderer* renderer)
 	Shader shader;
 	shader.SetPixelShader(L"Shaders/Default_ps.hlsl");
 	shader.SetVertexShader(L"Shaders/Default_vs.hlsl");
+	shader.SetSamplerState(renderer->GetDevice(), D3D11_TEXTURE_ADDRESS_WRAP, D3D11_FILTER_MIN_MAG_MIP_LINEAR);
 	shader.Compile(renderer->GetDevice());
-
+	
+	Mesh mesh = ShittyOBJLoader::Load("Models/Cube.obj", renderer->GetDevice());
+	Material material = Material(shader);
 
 	/* Loading a texture */
 	Texture diffuseTexture;
@@ -33,13 +36,9 @@ void Scene::Initialize(Renderer* renderer)
 	Texture randomNormal;
 	randomNormal.LoadTexture(renderer->GetDevice(), L"Textures/RandomNormal.png");
 
-	Mesh mesh = ShittyOBJLoader::Load("Models/Cube.obj", renderer->GetDevice());
-	Material material = Material(shader);
-
-	/* Setting texture to correct slot */
+	/* Setting texture to correct slot in material*/
 	material.SetTexture(diffuseTexture, TEXTURE_DIFFUSE_SLOT, ShaderBindFlag::PIXEL);
 	material.SetTexture(randomNormal, TEXTURE_NORMAL_SLOT, ShaderBindFlag::PIXEL);
-	//material.SetTexture(renderer->GetContext(), diffuseTexture, TEXTURE_DIFFUSE_SLOT, ShaderBindFlag::PIXEL);
 	
 	Object* tmp_obj = new Object("cube1");
 	tmp_obj->GetTransform().SetPosition({ 0, 0, 10 });
@@ -54,7 +53,37 @@ void Scene::Initialize(Renderer* renderer)
 	Transform::SkapaPäron(tmp_obj->GetTransform(), tmp_obj2->GetTransform());
 	objects.push_back(tmp_obj2);
 
+
+	/* * * * * * * * ** * * * * */
+
+	/* Render to texture test */	
+	screenquadTex = new Texture;
+	renderer->RenderToTexture(screenquadTex, renderer->GetDevice(), window->GetWidth(), window->GetHeight());
+
+
+	/* Screenquad shader */
+	Shader screenquadShader;
+	screenquadShader.SetPixelShader(L"Shaders/ScreenQuad_ps.hlsl");
+	screenquadShader.SetVertexShader(L"Shaders/ScreenQuad_vs.hlsl");
+	screenquadShader.SetSamplerState(renderer->GetDevice(), D3D11_TEXTURE_ADDRESS_WRAP, D3D11_FILTER_MIN_MAG_MIP_LINEAR);
+	screenquadShader.Compile(renderer->GetDevice());
+
+	/* Screenquad mat */
+	screenquadmat = Material(screenquadShader);
+
+	/* Screenquad mesh */
+	Mesh screenquadMesh = Mesh::CreateScreenQuad(renderer->GetDevice());
+	screenquadmat.SetTexture(*screenquadTex, TEXTURE_DIFFUSE_SLOT, ShaderBindFlag::PIXEL);
+
+	/* Screenquad object */
+	quad = new Object("Screenquad");
+	quad->AddComponent<MeshComponent>(screenquadMesh, screenquadmat);
+	//objects.push_back(quad);
+
+	
+
 	//PrintSceneHierarchy();
+
 }
 
 void Scene::Update(const float& deltaTime)
@@ -79,7 +108,10 @@ void Scene::FixedUpdate(const float& fixedDeltaTime)
 }
 
 void Scene::Render()
-{
+{	
+	RenderToTexture();	
+
+	/* --------------------------------------------- */
 	renderer->BeginFrame();
 
 	for (auto i = objects.begin(); i < objects.end(); i++)
@@ -88,8 +120,25 @@ void Scene::Render()
 		//if (obj->HasFlag(ObjectFlag::ENABLED | ObjectFlag::VISIBLE))
 		obj->Draw(renderer, camera);
 	}
-	
+
+	quad->Draw(renderer, camera);
+
 	renderer->EndFrame();
+}
+
+void Scene::RenderToTexture()
+{
+	renderer->SetRenderTarget(renderer->GetContext(), screenquadTex->GetRtv());
+	renderer->ClearRenderTarget(renderer->GetContext(), screenquadTex->GetRtv(), dx::XMFLOAT4(0, 1, 0, 1));
+
+	for (auto i = objects.begin(); i < objects.end(); i++)
+	{
+		Object* obj = (*i);
+		//if (obj->HasFlag(ObjectFlag::ENABLED | ObjectFlag::VISIBLE))
+		obj->Draw(renderer, camera);
+	}
+
+	renderer->SetBackbufferRenderTarget();
 }
 
 void Scene::PrintSceneHierarchy() const

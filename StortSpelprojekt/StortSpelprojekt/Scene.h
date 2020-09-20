@@ -21,6 +21,9 @@ public:
 	void FixedUpdate(const float& fixedDeltaTime);
 	void Render();
 
+	/* new */
+	void RenderToTexture();
+
 	void PrintSceneHierarchy() const;
 	void PrintSceneHierarchy(Object* object, size_t level) const;
 
@@ -28,4 +31,10 @@ private:
 	std::vector<Object*> objects;
 	CameraComponent* camera;
 	Renderer* renderer;
+
+	/* Test stuff */
+	Texture* screenquadTex;
+	Object* quad;
+	Material screenquadmat;
+	
 };

@@ -1,5 +1,7 @@
 #include "Material.h"
 
+Material::Material() {}
+
 Material::Material(Shader shader) : shader(shader), srv(nullptr){}
 Material::~Material() {}
 
@@ -17,9 +19,12 @@ void Material::BindTextureToContext(ID3D11DeviceContext* context)
 		srv = textures[i].texture.GetTexture();
 		slot = textures[i].slot;
 
-		if ((bflag & (int)ShaderBindFlag::PIXEL) != 0)
-			context->PSSetShaderResources(slot, 1, &srv);
+		ID3D11ShaderResourceView* const nullsrv[1] = { NULL };
+		context->PSSetShaderResources(slot, 1, nullsrv);
 
+		if ((bflag & (int)ShaderBindFlag::PIXEL) != 0) 
+			context->PSSetShaderResources(slot, 1, &srv);
+		
 		if ((bflag & (int)ShaderBindFlag::VERTEX) != 0)
 			context->VSSetShaderResources(slot, 1, &srv);
 
