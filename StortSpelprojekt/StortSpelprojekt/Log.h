@@ -7,7 +7,7 @@
 #include <cstring>
 #include <fstream>
 
-#define OPEN_LOG
+#define OPEN_LOG  1
 
 namespace Log
 {
@@ -23,19 +23,19 @@ namespace Log
 
 	inline void Open()
 	{
-#if defined(OPEN_LOG) && _DEBUG
-		AllocConsole();
-		HANDLE stdHandle = GetStdHandle(STD_OUTPUT_HANDLE);
-		int hConsole = _open_osfhandle((intptr_t)stdHandle, _O_TEXT);
-		FILE* fp = _fdopen(hConsole, "w");
-		freopen_s(&fp, "CONOUT$", "w", stdout);
-		m_logOpen = true;
-#endif
+		#if (OPEN_LOG)
+				AllocConsole();
+				HANDLE stdHandle = GetStdHandle(STD_OUTPUT_HANDLE);
+				int hConsole = _open_osfhandle((intptr_t)stdHandle, _O_TEXT);
+				FILE* fp = _fdopen(hConsole, "w");
+				freopen_s(&fp, "CONOUT$", "w", stdout);
+				m_logOpen = true;
+		#endif
 	}
 
 	inline void Add(LogLevel level, const std::string& msg)
 	{
-#if defined(OPEN_LOG) && _DEBUG
+#if defined(OPEN_LOG)
 
 		std::string prefix = "";
 		switch (level)
@@ -57,7 +57,7 @@ namespace Log
 
 	inline void Add(const std::string& msg)
 	{
-#if defined(OPEN_LOG) && _DEBUG
+#if defined(OPEN_LOG)
 		if (!m_logOpen)
 			Open();
 
@@ -67,7 +67,7 @@ namespace Log
 
 	inline void AddRaw(const std::string& msg)
 	{
-#if defined(OPEN_LOG) && _DEBUG
+#if defined(OPEN_LOG)
 		if (!m_logOpen)
 			Open();
 

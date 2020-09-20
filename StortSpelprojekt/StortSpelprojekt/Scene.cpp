@@ -1,6 +1,6 @@
 #include "Scene.h"
 
-Scene::Scene()
+Scene::Scene() : input(Input::Instance())
 {
 
 }
@@ -68,7 +68,7 @@ void Scene::Initialize(Renderer* renderer)
 	tmp_obj2->AddComponent<MeshComponent>(mesh, material);
 	tmp_obj2->GetTransform().SetPosition({ 0, 0, 4 });
 
-	Transform::SkapaPäron(tmp_obj->GetTransform(), tmp_obj2->GetTransform());
+	Transform::SkapaPÃ¤ron(tmp_obj->GetTransform(), tmp_obj2->GetTransform());
 	objects.push_back(tmp_obj2);*/
 
 	//PrintSceneHierarchy();
@@ -77,6 +77,8 @@ void Scene::Initialize(Renderer* renderer)
 void Scene::Update(const float& deltaTime)
 {
 	std::vector<Object*> toRemove;
+	input.UpdateInputs();
+
 
 	for (auto i = objects.begin(); i < objects.end(); i++)
 	{
@@ -110,9 +112,6 @@ void Scene::Render()
 		//if (obj->HasFlag(ObjectFlag::ENABLED | ObjectFlag::VISIBLE))
 		obj->Draw(renderer, camera);
 	}
-
-	
-
 
 	renderer->EndFrame();
 }
