@@ -15,7 +15,6 @@ class ControllerComponent :public Component
 private:
 	dx::XMVECTOR direction;
 	float speed;
-	dx::XMVECTOR rotation;
 
 	POINT lastMousePos;
 	bool showCursor;
@@ -26,7 +25,6 @@ public:
 	ControllerComponent();
 	virtual ~ControllerComponent();
 
-	//void Move(DirectX::XMFLOAT3 moveVector);
 	void Update(const float& deltaTime);
 
 	/*

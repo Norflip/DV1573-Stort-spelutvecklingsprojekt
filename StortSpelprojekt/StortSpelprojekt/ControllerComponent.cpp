@@ -6,13 +6,9 @@ ControllerComponent::ControllerComponent()
 	this->direction = dx::XMLoadFloat3(&dir);
 	this->speed = 1.f;
 
-	DirectX::XMFLOAT3 rot = { 0.f, 0.f, 0.f };
-	this->rotation = dx::XMLoadFloat3(&rot);
-
 	this->lastMousePos = Input::Instance().GetMousePos(); 
 	this->showCursor = true;
 	this->lockMouse = false;
-
 }
 
 ControllerComponent::~ControllerComponent()
@@ -30,17 +26,29 @@ void ControllerComponent::Update(const float& deltaTime)
 	this->lastMousePos = Input::Instance().GetMousePos();
 	std::cout <<"["<<mouseVec.x<<", "<< mouseVec.y <<"]"<< std::endl;
 
+	float sens = 0.8f;
+	GetOwner()->GetTransform().Rotate(-mouseVec.y*deltaTime*sens,mouseVec.x*deltaTime*sens,0.f);
+
 	if (KEY_DOWN(D1))
 	{
-		ShowCursor(this->showCursor);
 		this->showCursor = !this->showCursor;
+		ShowCursor(this->showCursor);
+		
 	}
-	if (KEY_DOWN(D2))
-		this->lockMouse = !this->lockMouse;
-	if(this->lockMouse)
-		SetCursorPos(800, 800);
+	//ShowCursor(false);
+	//if (KEY_DOWN(D2))
+	//	this->lockMouse = !this->lockMouse;
+	//if (this->lockMouse)
+	//{
+	//	float absX = abs(Input::Instance().GetMousePos().x);
+	//	float absY = abs(Input::Instance().GetMousePos().y);
+	//	float mouseLockLimit = 80;
+	//	if (absX > mouseLockLimit || absY > mouseLockLimit)
+	//	{
+	//		SetCursorPos(400, 400);
+	//	}
+	//}
 	
-
 	if (KEY_DOWN(LeftShift))
 		this->speed = 4.5f;
 	if (KEY_UP(LeftShift))
@@ -76,7 +84,6 @@ void ControllerComponent::Update(const float& deltaTime)
 	this->direction = dx::XMLoadFloat3(&dir);
 	this->direction = dx::XMVectorScale(this->direction, this->speed);
 	this->direction = dx::XMVectorScale(this->direction, deltaTime);
-
 
 	dx::XMVECTOR newPos = dx::XMVectorAdd(GetOwner()->GetTransform().GetPosition(), this->direction);
 	GetOwner()->GetTransform().SetPosition(newPos);
