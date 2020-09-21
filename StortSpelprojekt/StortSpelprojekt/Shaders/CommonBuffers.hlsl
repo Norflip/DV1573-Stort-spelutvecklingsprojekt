@@ -1,14 +1,16 @@
+static const int POINT_LIGHT_COUNT = 16;
+struct PointLight
+{
+    float4 lightColor;
+    float3 lightPosition;
+    float3 attenuation;
+};
 
 cbuffer cb_Object : register(b0)
 {
 	row_major matrix mvp;
 	row_major matrix world;
 };
-
-//cbuffer cb_Scene : register(b1)
-//{
-//
-//}
 
 cbuffer cb_Material : register(b1)
 {
@@ -20,13 +22,10 @@ cbuffer cb_Material : register(b1)
 	bool hasNormalMap;
 }
 
-
-cbuffer cb_Lights : register(b2)
+cbuffer cb_Scene : register(b2)
 {
-    float4 lightDirection;
-    float4 lightColor;
-    float3 lightPosition;
-    float lightType;
-    float3 attenuation;
-    float intensity;
+    PointLight pointLights[POINT_LIGHT_COUNT];
+    int nrOfPointLights;
+    float3 sunDirection;
+    float sunIntensity;
 }
