@@ -7,11 +7,7 @@ constexpr size_t CB_MATERIAL_SLOT = 1;
 constexpr size_t CB_SCENE_SLOT = 2;
 constexpr size_t CB_SKELETON_SLOT = 3;
 
-
 constexpr size_t POINT_LIGHT_COUNT = 16;
-
-//enum LightType { POINTLIGHT, DIRLIGHT };
-
 
 __declspec(align(16))
 struct cb_Object
