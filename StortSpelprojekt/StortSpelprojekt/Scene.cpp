@@ -20,6 +20,8 @@ void Scene::Initialize(Renderer* renderer)
 	Object* cameraObject = new Object("camera", ObjectFlag::ENABLED);
 	camera = cameraObject->AddComponent<CameraComponent>(60.0f);
 	camera->Resize(window->GetWidth(), window->GetHeight());
+	move = cameraObject->AddComponent<ControllerComponent>();
+	objects.push_back(cameraObject);
 	
 	Shader shader;
 	shader.SetPixelShader(L"Shaders/Default_ps.hlsl");
@@ -37,6 +39,7 @@ void Scene::Initialize(Renderer* renderer)
 
 	Object* tmp_obj2 = new Object("cube2");
 	tmp_obj2->AddComponent<MeshComponent>(mesh, material);
+	tmp_obj2->AddComponent<MoveComponent>();
 	tmp_obj2->GetTransform().SetPosition({ 0, 0, 4 });
 
 	Transform::SkapaPäron(tmp_obj->GetTransform(), tmp_obj2->GetTransform());
