@@ -1,5 +1,5 @@
 #include "Window.h"
-
+#include "Input.h"
 Window::Window(HINSTANCE hInstance) : hInstance(hInstance)
 {
 

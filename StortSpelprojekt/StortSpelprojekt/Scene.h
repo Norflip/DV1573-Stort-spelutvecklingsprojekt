@@ -36,8 +36,11 @@ private:
 	ControllerComponent* move;
 	Renderer* renderer;
 
+	Input& input;
+
 	/* Test stuff */
 	Texture* screenquadTex;
 	Object* quad;
 	Material screenquadmat;	
+
 };

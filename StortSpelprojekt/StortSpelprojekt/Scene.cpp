@@ -1,7 +1,8 @@
 #include "Scene.h"
 
-Scene::Scene()
+Scene::Scene() : input(Input::Instance())
 {
+	
 
 }
 
@@ -53,7 +54,7 @@ void Scene::Initialize(Renderer* renderer)
 	tmp_obj2->AddComponent<MoveComponent>();
 	tmp_obj2->GetTransform().SetPosition({ 0, 0, 4 });
 
-	Transform::SkapaP�ron(tmp_obj->GetTransform(), tmp_obj2->GetTransform());
+	Transform::SetParentChild(tmp_obj->GetTransform(), tmp_obj2->GetTransform());
 	objects.push_back(tmp_obj2);
 
 
