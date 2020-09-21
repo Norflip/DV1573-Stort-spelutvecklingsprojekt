@@ -26,11 +26,7 @@ void Renderer::Initialize(Window* window)
 	viewport.MaxDepth = 1.0f;
 	context->RSSetViewports(1, &viewport);
 
-	DXHelper::CreateConstBuffer(device, &obj_cbuffer, &cb_object_data, sizeof(cb_object_data));
-
-	///* Creating default sampler state */
-	//DXHelper::CreateSamplerState(device, D3D11_FILTER_MIN_MAG_MIP_LINEAR, defaultSampler);
-	//context->PSSetSamplers(0, 1, &defaultSampler);
+	DXHelper::CreateConstBuffer(device, &obj_cbuffer, &cb_object_data, sizeof(cb_object_data));		
 }
 
 void Renderer::BeginFrame()
@@ -105,6 +101,17 @@ void Renderer::ClearRenderTarget(ID3D11DeviceContext* context, ID3D11RenderTarge
 
 	context->ClearRenderTargetView(rtv, color);
 	context->ClearDepthStencilView(depthStencilView, D3D11_CLEAR_DEPTH, 1.0f, 0);
+}
+
+void Renderer::Unbind()
+{	
+	/*	
+		Store total srvs for unbinding later
+		At this moment, 2 slots (diffuse, normal)
+	*/
+	ID3D11ShaderResourceView* nullSRV[1] = { nullptr };
+	for(int i = 0; i < 2; i++)
+		context->PSSetShaderResources(i, 1, nullSRV);	
 }
 
 void Renderer::Draw(const Mesh& mesh, dx::XMMATRIX world, dx::XMMATRIX view, dx::XMMATRIX projection)

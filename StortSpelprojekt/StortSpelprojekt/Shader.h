@@ -27,7 +27,6 @@ public:
 	void SetPixelShader(LPCWSTR path, LPCSTR entry = "main");
 	void SetVertexShader(LPCWSTR path, LPCSTR entry = "main");
 	void SetGeometryShader(LPCWSTR path, LPCSTR entry = "main");
-	void SetSamplerState(ID3D11Device* device, D3D11_TEXTURE_ADDRESS_MODE addressMode, D3D11_FILTER filter);
 
 	void SetInputLayoutStructure(size_t arraySize, D3D11_INPUT_ELEMENT_DESC* inputLayoutDesc);
 
@@ -53,6 +52,4 @@ private:
 	ID3D11InputLayout* inputLayout;
 	ID3D11PixelShader* pixelShader;
 	ID3D11GeometryShader* geometryShader;
-
-	ID3D11SamplerState* defaultSampler;
 };

@@ -19,6 +19,9 @@ public:
 	
 	void SetShader(Shader shader) { this->shader = shader; }
 
+	/* Set /Create sampler state */
+	void SetSamplerState(ID3D11Device* device, D3D11_TEXTURE_ADDRESS_MODE addressMode, D3D11_FILTER filter);
+
 	void BindToContext(ID3D11DeviceContext*);
 	void BindTextureToContext(ID3D11DeviceContext*);
 
@@ -32,6 +35,8 @@ private:
 	Texture texture;
 	size_t slot;
 	ShaderBindFlag flag;
+
+	ID3D11SamplerState* samplerState;
 
 	std::vector<TextureInfo> textures;
 };

@@ -35,30 +35,6 @@ void Shader::SetGeometryShader(LPCWSTR path, LPCSTR entry)
 	shaderFlags |= ShaderBindFlag::GEOMETRY;
 }
 
-void Shader::SetSamplerState(ID3D11Device* device, D3D11_TEXTURE_ADDRESS_MODE addressMode, D3D11_FILTER filter)
-{
-	D3D11_SAMPLER_DESC samplerDesc;
-	ZeroMemory(&samplerDesc, sizeof(D3D11_SAMPLER_DESC));
-	samplerDesc.Filter = filter;
-	samplerDesc.AddressU = addressMode;
-	samplerDesc.AddressV = addressMode;
-	samplerDesc.AddressW = addressMode;
-	samplerDesc.MipLODBias = 0.0f;
-	samplerDesc.MaxAnisotropy = 1;
-	samplerDesc.ComparisonFunc = D3D11_COMPARISON_ALWAYS;
-	samplerDesc.BorderColor[0] = 0;
-	samplerDesc.BorderColor[1] = 0;
-	samplerDesc.BorderColor[2] = 0;
-	samplerDesc.BorderColor[3] = 0;
-	samplerDesc.MinLOD = 0;
-	samplerDesc.MaxLOD = D3D11_FLOAT32_MAX;
-
-	HRESULT samplerResult = device->CreateSamplerState(&samplerDesc, &defaultSampler);
-	assert(SUCCEEDED(samplerResult));
-
-	shaderFlags |= ShaderBindFlag::PIXEL;
-}
-
 void Shader::SetInputLayoutStructure(size_t arraySize, D3D11_INPUT_ELEMENT_DESC* inputLayoutDesc)
 {
 	this->inputLayoutDescription = inputLayoutDesc;
@@ -86,7 +62,6 @@ void Shader::BindToContext(ID3D11DeviceContext* context)
 	if ((flag & (int)ShaderBindFlag::PIXEL) != 0)
 	{
 		//sets the pixel shader	
-		context->PSSetSamplers(0, 1, &defaultSampler);
 		context->PSSetShader(pixelShader, 0, 0);
 	}
 

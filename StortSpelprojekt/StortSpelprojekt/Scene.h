@@ -21,8 +21,8 @@ public:
 	void FixedUpdate(const float& fixedDeltaTime);
 	void Render();
 
-	/* new */
-	void RenderToTexture();
+	/* new - render scene to texture */
+	void RenderSceneToTexture();
 
 	void PrintSceneHierarchy() const;
 	void PrintSceneHierarchy(Object* object, size_t level) const;
@@ -35,6 +35,5 @@ private:
 	/* Test stuff */
 	Texture* screenquadTex;
 	Object* quad;
-	Material screenquadmat;
-	
+	Material screenquadmat;	
 };
