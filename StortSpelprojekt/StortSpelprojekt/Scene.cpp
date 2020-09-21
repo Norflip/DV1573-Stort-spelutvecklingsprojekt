@@ -49,16 +49,17 @@ void Scene::Initialize(Renderer* renderer)
 	Texture randomNormal;
 	randomNormal.LoadTexture(renderer->GetDevice(), L"Textures/RandomNormal.png");
 
+	Material material(shader);
 	/* Setting texture to correct slot in material*/
 	material.SetTexture(diffuseTexture, TEXTURE_DIFFUSE_SLOT, ShaderBindFlag::PIXEL);
 	material.SetTexture(randomNormal, TEXTURE_NORMAL_SLOT, ShaderBindFlag::PIXEL);
 	material.SetSamplerState(renderer->GetDevice(), D3D11_TEXTURE_ADDRESS_WRAP, D3D11_FILTER_MIN_MAG_MIP_LINEAR);
 
-	Object* tmp_obj = new Object("cube1");
+	/*Object* tmp_obj = new Object("cube1");
 	tmp_obj->GetTransform().SetPosition({ 0, 0, 10 });
-	tmp_obj->AddComponent<MeshComponent>(skeletonObjects[0], material);
+	tmp_obj->AddComponent<MeshComponent>(skeletonObjects[0].GetComponent<MeshComponent>(), material);
 
-	objects.push_back(tmp_obj);
+	objects.push_back(tmp_obj);*/
 
 	//Object* tmp_obj2 = new Object("cube2");
 	//tmp_obj2->AddComponent<MeshComponent>(skeletonObjects[0], material);
@@ -123,20 +124,20 @@ void Scene::Render()
 
 	renderer->BeginFrame();
 
-	for (auto i = objects.begin(); i < objects.end(); i++)
-	{
-		Object* obj = (*i);
-		//if (obj->HasFlag(ObjectFlag::ENABLED | ObjectFlag::VISIBLE))
-		obj->Draw(renderer, camera);
-	}
+	//for (auto i = objects.begin(); i < objects.end(); i++)
+	//{
+	//	Object* obj = (*i);
+	//	//if (obj->HasFlag(ObjectFlag::ENABLED | ObjectFlag::VISIBLE))
+	//	obj->Draw(renderer, camera);
+	//}
 
-	for (int i = 0; i < skeletonObjects.size(); i++)
-	{
-		//skeletonObjects[i].Draw(renderer, camera);
-		skeletonObjects[i].GetComponent<MeshComponent>()->GetMaterial().BindToContext(renderer->GetContext());
-		renderer->Draw(skeletonObjects[i].GetComponent<MeshComponent>()->GetMesh(), skeletonObjects[i].GetComponent<MeshComponent>()->GetMaterial().GetMaterialData(), skeletonObjects[i].GetTransform().GetWorldMatrix(), camera->GetViewMatrix(), camera->GetProjectionMatrix());
+	//for (int i = 0; i < skeletonObjects.size(); i++)
+	//{
+	//	//skeletonObjects[i].Draw(renderer, camera);
+	//	skeletonObjects[i].GetComponent<MeshComponent>()->GetMaterial().BindToContext(renderer->GetContext());
+	//	renderer->Draw(skeletonObjects[i].GetComponent<MeshComponent>()->GetMesh(), skeletonObjects[i].GetComponent<MeshComponent>()->GetMaterial().GetMaterialData(), skeletonObjects[i].GetTransform().GetWorldMatrix(), camera->GetViewMatrix(), camera->GetProjectionMatrix());
 
-	}
+	//}
 	
 	/* Render screenquad with rendered scene-texture */
 	quad->Draw(renderer, camera);
@@ -157,7 +158,14 @@ void Scene::RenderSceneToTexture()
 		//if (obj->HasFlag(ObjectFlag::ENABLED | ObjectFlag::VISIBLE))
 		obj->Draw(renderer, camera);	
 	}
-	
+
+	for (int i = 0; i < skeletonObjects.size(); i++)
+	{
+		//skeletonObjects[i].Draw(renderer, camera);
+		skeletonObjects[i].GetComponent<MeshComponent>()->GetMaterial().BindToContext(renderer->GetContext());
+		renderer->Draw(skeletonObjects[i].GetComponent<MeshComponent>()->GetMesh(), skeletonObjects[i].GetComponent<MeshComponent>()->GetMaterial().GetMaterialData(), skeletonObjects[i].GetTransform().GetWorldMatrix(), camera->GetViewMatrix(), camera->GetProjectionMatrix());
+	}
+
 	renderer->Unbind();	// needed?
 
 	renderer->SetBackbufferRenderTarget();

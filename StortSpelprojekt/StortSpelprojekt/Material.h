@@ -29,6 +29,10 @@ public:
 	void SetMaterialData(const cb_Material& materialData);
 	const cb_Material& GetMaterialData() const;
 
+	/* Binding texture to correct slot in shader based on slot-input */
+	void SetTexture(Texture texture, size_t slot, ShaderBindFlag flag);
+	Texture GetTexture() { return this->texture; }
+
 private:
 	Shader shader;
 	cb_Material cb_material_data;
@@ -42,9 +46,5 @@ private:
 
 	std::vector<TextureInfo> textures;
 	void BindTextureToContext(ID3D11DeviceContext*);
-
-	/* Binding texture to correct slot in shader based on slot-input */
-	void SetTexture(Texture texture, size_t slot, ShaderBindFlag flag);
-	Texture GetTexture() { return this->texture; }
 	
 };

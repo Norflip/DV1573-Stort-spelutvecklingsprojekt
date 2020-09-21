@@ -32,7 +32,7 @@ void Material::SetSamplerState(ID3D11Device* device, D3D11_TEXTURE_ADDRESS_MODE 
 void Material::BindToContext(ID3D11DeviceContext* context)
 {
 	this->shader.BindToContext(context);
-	
+	BindTextureToContext(context);
 }
 
 void Material::SetMaterialData(const cb_Material& materialData)
@@ -43,7 +43,6 @@ void Material::SetMaterialData(const cb_Material& materialData)
 const cb_Material& Material::GetMaterialData() const
 {
 	return cb_material_data;
-	BindTextureToContext(context);
 }
 
 void Material::BindTextureToContext(ID3D11DeviceContext* context)

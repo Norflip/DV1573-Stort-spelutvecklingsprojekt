@@ -145,9 +145,6 @@
     <FxCompile Include="Shaders\CommonBuffers.hlsl">
       <Filter>Shaders</Filter>
     </FxCompile>
-    <FxCompile Include="Skeleton_vs.hlsl">
-      <Filter>Shaders</Filter>
-    </FxCompile>
     <FxCompile Include="Shaders\PhongShading.hlsl">
       <Filter>Shaders</Filter>
     </FxCompile>
@@ -155,6 +152,9 @@
       <Filter>Shaders</Filter>
     </FxCompile>
     <FxCompile Include="Shaders\ScreenQuad_ps.hlsl">
+      <Filter>Shaders</Filter>
+    </FxCompile>
+    <FxCompile Include="SkeletonAni_vs.hlsl">
       <Filter>Shaders</Filter>
     </FxCompile>
   </ItemGroup>

@@ -16,17 +16,22 @@ struct VS_OUTPUT
 
 float4 main(VS_OUTPUT input) : SV_TARGET
 {
-	float4 textureColor = diffuseMap.Sample(defaultSampleType, input.uv);
-	float4 normalColor = normalMap.Sample(defaultSampleType, input.uv);
+	float4 textureColor = float4(1.0f, 1.0f, 1.0f, 1.0f);
 	
+	if(hasAlbedo)
+		textureColor = diffuseMap.Sample(defaultSampleType, input.uv);
+
+	if(hasNormalMap)
+		float4 normalColor = normalMap.Sample(defaultSampleType, input.uv);
+
 	float3 normalized = normalize(input.normal);
 
 	float3 viewDirection = float3(0.0f, 0.0f, 0.0f) - input.worldPosition;
 
 	float4 finalColor = CalculateLight(pointLights[0], normalized, input.worldPosition, viewDirection);
 
-	finalColor *= textureColor;
+	//finalColor *= textureColor;
 
 	return finalColor;
-
+	//return finalColor;
 }
