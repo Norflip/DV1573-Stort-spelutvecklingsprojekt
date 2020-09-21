@@ -163,4 +163,9 @@ namespace ShittyOBJLoader
 
 		return Mesh(device, vertices, indices);
 	}
+
+
+	
+
 }
+

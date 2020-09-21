@@ -43,27 +43,57 @@ void Scene::Initialize(Renderer* renderer)
 
 	skeletonObjects[0].GetTransform().SetPosition(dx::XMLoadFloat3(&miniTranslation));
 
-	/*Mesh mesh = ShittyOBJLoader::Load("Models/cube.obj", renderer->GetDevice());
+	/* Loading a texture */
+	Texture diffuseTexture;
+	diffuseTexture.LoadTexture(renderer->GetDevice(), L"Textures/Gorilla.png");
+	Texture randomNormal;
+	randomNormal.LoadTexture(renderer->GetDevice(), L"Textures/RandomNormal.png");
 
-
-
-	Mesh mesh = ShittyOBJLoader::Load("Models/cube.obj", renderer->GetDevice());
-	Material material = Material(shader);
+	/* Setting texture to correct slot in material*/
+	material.SetTexture(diffuseTexture, TEXTURE_DIFFUSE_SLOT, ShaderBindFlag::PIXEL);
+	material.SetTexture(randomNormal, TEXTURE_NORMAL_SLOT, ShaderBindFlag::PIXEL);
+	material.SetSamplerState(renderer->GetDevice(), D3D11_TEXTURE_ADDRESS_WRAP, D3D11_FILTER_MIN_MAG_MIP_LINEAR);
 
 	Object* tmp_obj = new Object("cube1");
 	tmp_obj->GetTransform().SetPosition({ 0, 0, 10 });
-	tmp_obj->AddComponent<MeshComponent>(mesh, material);
+	tmp_obj->AddComponent<MeshComponent>(skeletonObjects[0], material);
 
 	objects.push_back(tmp_obj);
 
-	Object* tmp_obj2 = new Object("cube2");
-	tmp_obj2->AddComponent<MeshComponent>(mesh, material);
-	tmp_obj2->GetTransform().SetPosition({ 0, 0, 4 });
+	//Object* tmp_obj2 = new Object("cube2");
+	//tmp_obj2->AddComponent<MeshComponent>(skeletonObjects[0], material);
+	//tmp_obj2->GetTransform().SetPosition({ 0, 0, 4 });
 
-	Transform::SkapaPäron(tmp_obj->GetTransform(), tmp_obj2->GetTransform());
-	objects.push_back(tmp_obj2);*/
+	//Transform::SkapaPï¿½ron(tmp_obj->GetTransform(), tmp_obj2->GetTransform());
+	//objects.push_back(tmp_obj2);*/
 
+
+	/* * * * * * * * ** * * * * */
+	/* Render to texture test */	
+	screenquadTex = new Texture;
+	renderer->RenderToTexture(screenquadTex, renderer->GetDevice(), window->GetWidth(), window->GetHeight());
+
+	/* Screenquad shader */
+	Shader screenquadShader;
+	screenquadShader.SetPixelShader(L"Shaders/ScreenQuad_ps.hlsl");
+	screenquadShader.SetVertexShader(L"Shaders/ScreenQuad_vs.hlsl");
+	screenquadShader.Compile(renderer->GetDevice());
+
+	/* Screenquad mat */
+	screenquadmat = Material(screenquadShader);
+
+	/* Screenquad mesh */
+	Mesh screenquadMesh = Mesh::CreateScreenQuad(renderer->GetDevice());
+	screenquadmat.SetTexture(*screenquadTex, TEXTURE_DIFFUSE_SLOT, ShaderBindFlag::PIXEL);
+	screenquadmat.SetSamplerState(renderer->GetDevice(), D3D11_TEXTURE_ADDRESS_WRAP, D3D11_FILTER_MIN_MAG_MIP_LINEAR);
+
+	/* Screenquad object */
+	quad = new Object("Screenquad");
+	quad->AddComponent<MeshComponent>(screenquadMesh, screenquadmat);	
+
+	/* * * * * * * * ** * * * * */
 	//PrintSceneHierarchy();
+
 }
 
 void Scene::Update(const float& deltaTime)
@@ -88,7 +118,9 @@ void Scene::FixedUpdate(const float& fixedDeltaTime)
 }
 
 void Scene::Render()
-{
+{	
+	RenderSceneToTexture();
+
 	renderer->BeginFrame();
 
 	for (auto i = objects.begin(); i < objects.end(); i++)
@@ -105,8 +137,30 @@ void Scene::Render()
 		renderer->Draw(skeletonObjects[i].GetComponent<MeshComponent>()->GetMesh(), skeletonObjects[i].GetComponent<MeshComponent>()->GetMaterial().GetMaterialData(), skeletonObjects[i].GetTransform().GetWorldMatrix(), camera->GetViewMatrix(), camera->GetProjectionMatrix());
 
 	}
+	
+	/* Render screenquad with rendered scene-texture */
+	quad->Draw(renderer, camera);
 
 	renderer->EndFrame();
+}
+
+void Scene::RenderSceneToTexture()
+{
+	renderer->Unbind();
+
+	renderer->SetRenderTarget(renderer->GetContext(), screenquadTex->GetRtv());
+	renderer->ClearRenderTarget(renderer->GetContext(), screenquadTex->GetRtv(), dx::XMFLOAT4(0, 1, 0, 1));
+
+	for (auto i = objects.begin(); i < objects.end(); i++)
+	{
+		Object* obj = (*i);
+		//if (obj->HasFlag(ObjectFlag::ENABLED | ObjectFlag::VISIBLE))
+		obj->Draw(renderer, camera);	
+	}
+	
+	renderer->Unbind();	// needed?
+
+	renderer->SetBackbufferRenderTarget();
 }
 
 void Scene::PrintSceneHierarchy() const
