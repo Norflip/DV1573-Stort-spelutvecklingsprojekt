@@ -4,11 +4,13 @@ namespace dx = DirectX;
 
 constexpr size_t CB_OBJECT_SLOT = 0;
 constexpr size_t CB_MATERIAL_SLOT = 1;
-//constexpr size_t CB_SCENE_SLOT = 2;
+constexpr size_t CB_SCENE_SLOT = 2;
 constexpr size_t CB_SKELETON_SLOT = 3;
-constexpr size_t CB_LIGHT_SLOT = 2;
 
-enum LightType { POINTLIGHT, DIRLIGHT };
+
+constexpr size_t POINT_LIGHT_COUNT = 16;
+
+//enum LightType { POINTLIGHT, DIRLIGHT };
 
 
 __declspec(align(16))
@@ -30,24 +32,25 @@ struct cb_Material
 };
 
 __declspec(align(16))
+struct PointLight
+{
+	dx::XMFLOAT4 lightColor;
+	dx::XMFLOAT3 lightPosition;
+	float padding;
+	dx::XMFLOAT3 attenuation;
+};
+
+__declspec(align(16))
 struct cb_Scene
 {
-
+	PointLight pointLights[POINT_LIGHT_COUNT];
+	int nrOfPointLights;
+	dx::XMFLOAT3 sunDirection;
+	float sunIntensity;
 };
 
 __declspec(align(16))
 struct cb_Skeleton
 {
 	dx::XMFLOAT4X4 bones[60]; //Can you use a structured buffer instead?
-};
-
-__declspec(align(16))
-struct cb_Lights
-{
-	dx::XMFLOAT4 lightDirection;
-	dx::XMFLOAT4 lightColor;
-	dx::XMFLOAT3 lightPosition;
-	float lightType;
-	dx::XMFLOAT3 attenuation;
-	float intensity;
 };

@@ -22,8 +22,8 @@ float4 main(VS_OUTPUT input) : SV_TARGET
 	float4 specular = float4(0.0f, 0.0f, 0.0f, 0.0f);
 	float4 diffuse = float4(0.0f, 0.0f, 0.0f, 0.0f);
 	float4 finalColor = float4(0.0f, 0.0f, 0.0f, 0.0f);
-
-	float3 light = lightPosition - input.worldPosition;
+	
+	float3 light = pointLights[0].lightPosition - input.worldPosition;
 
 	float distance = length(light);
 
@@ -34,7 +34,7 @@ float4 main(VS_OUTPUT input) : SV_TARGET
 
 	light /= distance;
 
-	ambient = matAmbient * lightColor;
+    ambient = matAmbient * pointLights[0].lightColor;
 
 	float diffuseFactor = dot(light, normalized);
 
@@ -46,11 +46,11 @@ float4 main(VS_OUTPUT input) : SV_TARGET
 		float shade = max(dot(reflection, viewDirection), 0.0f);
 		float factor = pow(shade, 10.0f);
 
-		diffuse = diffuseFactor * matDiffuse * lightColor;
-		specular = factor * matSpecular * lightColor;
-	}
+        diffuse = diffuseFactor * matDiffuse * pointLights[0].lightColor;
+        specular = factor * matSpecular * pointLights[0].lightColor;
+    }
 
-	float attenuationFactor = 1.0f / attenuation.x + (attenuation.y * distance) + (attenuation.z * (distance * distance));
+    float attenuationFactor = 1.0f / pointLights[0].attenuation.x + (pointLights[0].attenuation.y * distance) + (pointLights[0].attenuation.z * (distance * distance));
 
 	diffuse = saturate(diffuse * attenuationFactor);
 	specular = saturate(specular * attenuationFactor);
@@ -61,7 +61,7 @@ float4 main(VS_OUTPUT input) : SV_TARGET
 	/*float d = dot(input.normal, float3(1,1,0));
 	d = (d + 1) / 2.0f;*/
 
-	return finalColor;
+    return finalColor;
 	//return float4(input.normal, 1.0f);
 	//return float4(d * input.uv.x, d * input.uv.y, 1.0f, 1.0f);
 }
