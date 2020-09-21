@@ -142,7 +142,7 @@
     <FxCompile Include="Skeleton_vs.hlsl">
       <Filter>Shaders</Filter>
     </FxCompile>
-    <FxCompile Include="Shaders\Light.hlsl">
+    <FxCompile Include="Shaders\PhongShading.hlsl">
       <Filter>Shaders</Filter>
     </FxCompile>
   </ItemGroup>

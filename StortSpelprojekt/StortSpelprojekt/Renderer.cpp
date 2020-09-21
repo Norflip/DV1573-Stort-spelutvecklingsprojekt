@@ -65,10 +65,10 @@ void Renderer::Draw(const Mesh& mesh, const cb_Material& material, dx::XMMATRIX 
 	cb_material_data.specular = material.specular;
 	DXHelper::BindConstBuffer(context, material_cbuffer, &cb_material_data, CB_MATERIAL_SLOT, ShaderBindFlag::PIXEL);
 
-	//cb_light_data.lightDirection = dx::XMFLOAT4(0, 0, 1, 0);
 	cb_scene.pointLights[0].lightColor = dx::XMFLOAT4(0.5f, 0.5f, 0.5f, 1);
 	cb_scene.pointLights[0].lightPosition = dx::XMFLOAT3(5.0f, 5.0f, -10.0f);
 	cb_scene.pointLights[0].attenuation = dx::XMFLOAT3(1.0f, 0.02f, 0.0f);
+	cb_scene.pointLights[0].range = 25.0f;
 	DXHelper::BindConstBuffer(context, light_cbuffer, &cb_scene, CB_SCENE_SLOT, ShaderBindFlag::PIXEL);
 
 	UINT stride = sizeof(Mesh::Vertex);

@@ -3,6 +3,7 @@ struct PointLight
 {
     float4 lightColor;
     float3 lightPosition;
+	float range;
     float3 attenuation;
 };
 

@@ -1,4 +1,4 @@
-#include "Light.hlsl"
+#include "PhongShading.hlsl"
 
 struct VS_OUTPUT
 {
@@ -15,10 +15,9 @@ float4 main(VS_OUTPUT input) : SV_TARGET
 
 	float3 normalized = normalize(input.normal);
 
-	float range = 25.0f;
 	float3 viewDirection = float3(0.0f, 0.0f, 0.0f) - input.worldPosition;
 
-	float4 finalColor = CalculateLight(normalized, input.worldPosition, viewDirection);
+	float4 finalColor = CalculateLight(pointLights[0], normalized, input.worldPosition, viewDirection);
 
 
 	return finalColor;

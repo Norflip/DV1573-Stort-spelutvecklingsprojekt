@@ -36,7 +36,7 @@ struct PointLight
 {
 	dx::XMFLOAT4 lightColor;
 	dx::XMFLOAT3 lightPosition;
-	float padding;
+	float range;
 	dx::XMFLOAT3 attenuation;
 };
 
