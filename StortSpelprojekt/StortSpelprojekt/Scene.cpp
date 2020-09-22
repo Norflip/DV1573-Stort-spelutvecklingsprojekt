@@ -31,9 +31,9 @@ void Scene::Initialize(Renderer* renderer)
 	shader.Compile(renderer->GetDevice());
 
 	
-	std::vector<Mesh> zwebMeshes = ZWEBLoader::LoadMeshes(ZWEBLoadType::SkeletonAnimation, "../Models/cubeWithTexture.ZWEB", renderer->GetDevice());
+	std::vector<Mesh> zwebMeshes = ZWEBLoader::LoadMeshes(ZWEBLoadType::SkeletonAnimation, "Models/cubeWithTexture.ZWEB", renderer->GetDevice());
 	
-	std::vector<Material> zwebMaterials = ZWEBLoader::LoadMaterials("../Models/cubeWithTexture.ZWEB", shader, renderer->GetDevice());
+	std::vector<Material> zwebMaterials = ZWEBLoader::LoadMaterials("Models/cubeWithTexture.ZWEB", shader, renderer->GetDevice());
 
 	//SkeletonAni zwebSkeleton = ZWEBLoader::LoadSkeletonOnly("../Models/OrchAnimation.ZWEB", zwebMeshes[0].GetBoneIDS());
 
