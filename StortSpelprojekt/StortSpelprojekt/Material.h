@@ -14,8 +14,8 @@ public:
 	void SetMaterialData(const cb_Material& materialData);
 	const cb_Material& GetMaterialData() const;
 
-	const std::string& getName() const;
-	void setName(const std::string& name);
+	const std::string& GetName() const;
+	void SetName(const std::string& name);
 
 private:
 	Shader shader;

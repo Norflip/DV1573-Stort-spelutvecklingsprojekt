@@ -26,7 +26,7 @@ void Scene::Initialize(Renderer* renderer)
 	shader.SetVertexShader(L"Shaders/Default_vs.hlsl");
 	shader.SetVertexShader(L"Shaders/Skeleton_vs.hlsl");
 	shader.Compile(renderer->GetDevice());
-
+	
 	std::vector<Mesh> zwebMeshes = ZWEBLoader::LoadMeshes(ZWEBLoadType::SkeletonAnimation, "../Models/OrchBody.ZWEB", renderer->GetDevice());
 	
 	std::vector<Material> zwebMaterials = ZWEBLoader::LoadMaterials("../Models/OrchBody.ZWEB", shader);

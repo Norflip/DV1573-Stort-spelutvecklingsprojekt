@@ -19,12 +19,12 @@ const cb_Material& Material::GetMaterialData() const
 	return cb_material_data;
 }
 
-const std::string& Material::getName() const
+const std::string& Material::GetName() const
 {
 	return name;
 }
 
-void Material::setName(const std::string& name)
+void Material::SetName(const std::string& name)
 {
 	this->name = name;
 }
