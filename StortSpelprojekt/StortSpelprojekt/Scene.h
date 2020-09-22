@@ -4,6 +4,8 @@
 #include "ShittyOBJLoader.h"
 #include "Input.h"
 #include "CameraComponent.h"
+#include "MoveComponent.h"
+#include "ControllerComponent.h"
 #include "MeshComponent.h"
 #include "ZWEBLoader.h"
 #include "SkeletonMeshComponent.h"
@@ -29,6 +31,8 @@ public:
 private:	
 	std::vector<Object*> objects;
 	CameraComponent* camera;
+	//MoveComponent* move;
+	ControllerComponent* move;
 	Renderer* renderer;
 	Input& input;
 };
