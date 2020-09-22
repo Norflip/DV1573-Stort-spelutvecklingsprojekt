@@ -69,7 +69,12 @@ dx::XMMATRIX Transform::GetWorldMatrix() const
 
 dx::XMMATRIX Transform::GetLocalWorldMatrix() const
 {
-	return dx::XMMatrixScalingFromVector(this->scale) *
+	return this->modelMatrix;
+}
+
+void Transform::UpdateLocalModelMatrix()
+{
+	this->modelMatrix= dx::XMMatrixScalingFromVector(this->scale) *
 		dx::XMMatrixRotationRollPitchYawFromVector(this->rotation) *
 		dx::XMMatrixTranslationFromVector(this->position);
 }

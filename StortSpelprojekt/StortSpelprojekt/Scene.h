@@ -7,6 +7,8 @@
 #include "MoveComponent.h"
 #include "ControllerComponent.h"
 #include "MeshComponent.h"
+#include "ZWEBLoader.h"
+#include "SkeletonMeshComponent.h"
 
 class Scene
 {

@@ -27,9 +27,39 @@ void Scene::Initialize(Renderer* renderer)
 	Shader shader;
 	shader.SetPixelShader(L"Shaders/Default_ps.hlsl");
 	shader.SetVertexShader(L"Shaders/Default_vs.hlsl");
+	shader.SetVertexShader(L"Shaders/Skeleton_vs.hlsl");
 	shader.Compile(renderer->GetDevice());
+
 	
-	Mesh mesh = ShittyOBJLoader::Load("Models/Cube.obj", renderer->GetDevice());
+	std::vector<Mesh> zwebMeshes = ZWEBLoader::LoadMeshes(ZWEBLoadType::SkeletonAnimation, "../Models/OrchBody.ZWEB", renderer->GetDevice());
+	
+	std::vector<Material> zwebMaterials = ZWEBLoader::LoadMaterials("../Models/OrchBody.ZWEB", shader);
+
+	SkeletonAni zwebSkeleton = ZWEBLoader::LoadSkeletonOnly("../Models/OrchAnimation.ZWEB", zwebMeshes[0].GetBoneIDS());
+
+	Object* testMesh = new Object("test"); //Where do you delete??
+
+	testMesh->GetTransform().SetLocalMatrix(zwebMeshes[0].GetWorldMatrix());
+
+	dx::XMFLOAT3 miniScale = dx::XMFLOAT3(0.0625f, 0.0625f, 0.0625f);
+
+	dx::XMFLOAT3 miniTranslation = dx::XMFLOAT3(0, 0, 10);
+
+	testMesh->GetTransform().SetScale(dx::XMLoadFloat3(&miniScale));
+
+	testMesh->GetTransform().SetPosition(dx::XMLoadFloat3(&miniTranslation));
+
+	testMesh->GetTransform().UpdateLocalModelMatrix();
+
+	testMesh->AddComponent<SkeletonMeshComponent>(zwebMeshes[0], zwebMaterials[0]);
+
+	testMesh->GetComponent<SkeletonMeshComponent>()->SetAnimationTrack(zwebSkeleton);
+	
+	objects.push_back(testMesh);
+
+
+  Mesh mesh = ShittyOBJLoader::Load("Models/Cube.obj", renderer->GetDevice());
+
 	Material material = Material(shader);
 
 	/* Loading a texture */
@@ -102,6 +132,11 @@ void Scene::Update(const float& deltaTime)
 		if (obj->HasFlag(ObjectFlag::REMOVED))
 			toRemove.push_back(obj);
 	}
+
+	
+	
+
+
 }
 
 void Scene::FixedUpdate(const float& fixedDeltaTime)
@@ -124,7 +159,6 @@ void Scene::Render()
 
 	/* Render screenquad with rendered scene-texture */
 	quad->Draw(renderer, camera);
-
 	renderer->EndFrame();
 }
 

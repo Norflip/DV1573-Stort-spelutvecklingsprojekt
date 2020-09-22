@@ -26,7 +26,7 @@ void Window::Open(size_t width, size_t height)
 	RegisterClass(&wndclass);
 
 	// Resizes window rect
-	RECT windowRect = { 50, 50, width, height };
+	RECT windowRect = { 50, 50, (LONG)width, (LONG)height };
 	AdjustWindowRect(&windowRect, WS_OVERLAPPEDWINDOW, FALSE);
 
 	int wWidth = windowRect.right - windowRect.left;

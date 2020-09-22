@@ -50,6 +50,8 @@ public:
 
 	Transform& GetTransform() { return this->transform; }
 
+	
+
 private:
 	ObjectFlag flags;
 	Transform transform;
