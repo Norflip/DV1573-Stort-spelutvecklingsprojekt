@@ -52,7 +52,7 @@ bool Transform::ContainsChild(Transform* child) const
 	return contains;
 }
 
-void Transform::SkapaPäron(Transform& parent, Transform& child)
+void Transform::SetParentChild(Transform& parent, Transform& child)
 {
 	parent.AddChild(&child);
 	child.SetParent(&parent);

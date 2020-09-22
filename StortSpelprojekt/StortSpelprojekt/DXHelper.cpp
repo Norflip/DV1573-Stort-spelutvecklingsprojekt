@@ -51,8 +51,6 @@ void DXHelper::CreateSwapchain(const Window& window, _Out_ ID3D11Device** device
 	assert(SUCCEEDED(resultCreateRasterizer));
 	(*context)->RSSetState(rasterizerState);
 
-
-
 }
 
 void DXHelper::CreateConstBuffer(ID3D11Device* device, ID3D11Buffer** buffer, void* initdata, unsigned int byteSize)

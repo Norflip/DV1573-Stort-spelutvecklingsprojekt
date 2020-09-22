@@ -31,7 +31,7 @@ public:
 	size_t CountChildren() const { return this->children.size(); }
 	std::vector<Transform*> GetChildren() const { return this->children; }
 
-	static void SkapaPäron(Transform& parent, Transform& child);
+	static void SetParentChild(Transform& parent, Transform& child);
 
 	Object* GetOwner() const { return this->owner; }
 

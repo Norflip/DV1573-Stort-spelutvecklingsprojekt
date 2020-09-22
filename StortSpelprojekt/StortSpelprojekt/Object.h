@@ -41,7 +41,6 @@ public:
 	GetComponent() const;
 
 
-
 	bool HasFlag(ObjectFlag flag) const;
 	void AddFlag(ObjectFlag flag);
 	void RemoveFlag(ObjectFlag flag);

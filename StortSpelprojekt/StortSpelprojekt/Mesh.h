@@ -8,7 +8,7 @@
 #include "DXHelper.h"
 
 
-// denna bör ses över.. sudo class där allt är public. Går mot kodstandard.
+// denna bÃ¶r ses Ã¶ver.. sudo class dÃ¤r allt Ã¤r public. GÃ¥r mot kodstandard.
 
 struct Mesh
 {
@@ -104,7 +104,20 @@ public:
 	}
 
 
-	
+	static Mesh CreateScreenQuad(ID3D11Device* device)
+	{
+		const float size = 1.0f;
+		std::vector<Vertex> vertices =
+		{
+			Vertex{{-size, -size, 0} , {0 ,1 },  {0,0,0} , { 0,0,0 } },		// 0,0
+			Vertex{{ size, -size, 0 }, { 1,1 }, { 0,0,0 }, { 0,0,0 }},		// 0, w
+			Vertex{{ size, size, 0 }, { 1,0 }, { 0,0,0 }, { 0,0,0 }},		// h, w
+			Vertex{{ -size, size, 0 }, { 0,0 }, { 0,0,0 }, { 0,0,0 }}		// h, 0
+		};
 
-
+		std::vector<unsigned int> indices = { 3,2,1, 3,1,0 };
+		return Mesh(device, vertices, indices);
+	}	
 };
+
+
