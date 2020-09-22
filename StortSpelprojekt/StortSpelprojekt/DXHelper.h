@@ -16,7 +16,8 @@ enum class ShaderBindFlag
 	NONE = 0,
 	VERTEX = 1 << 0,
 	PIXEL = 1 << 1,
-	GEOMETRY = 1 << 2
+	GEOMETRY = 1 << 2,
+	SKELETON = 1 << 3
 };
 
 DEFINE_ENUM_FLAG_OPERATORS(ShaderBindFlag);

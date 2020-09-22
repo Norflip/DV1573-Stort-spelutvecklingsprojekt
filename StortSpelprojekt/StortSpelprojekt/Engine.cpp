@@ -13,6 +13,7 @@ Engine::Engine(HINSTANCE hInstance) : window(hInstance), activeScene(nullptr)
 
 Engine::~Engine()
 {
+	
 }
 
 void Engine::Run()

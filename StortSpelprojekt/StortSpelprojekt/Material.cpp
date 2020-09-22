@@ -6,4 +6,25 @@ Material::~Material() {}
 void Material::BindToContext(ID3D11DeviceContext* context)
 {
 	this->shader.BindToContext(context);
+	
+}
+
+void Material::SetMaterialData(const cb_Material& materialData)
+{
+	cb_material_data = materialData;
+}
+
+const cb_Material& Material::GetMaterialData() const
+{
+	return cb_material_data;
+}
+
+const std::string& Material::GetName() const
+{
+	return name;
+}
+
+void Material::SetName(const std::string& name)
+{
+	this->name = name;
 }

@@ -1,11 +1,12 @@
 #include "Renderer.h"
 
-Renderer::Renderer() : device(nullptr), context(nullptr), backbuffer(nullptr), swapchain(nullptr), obj_cbuffer(nullptr)
+Renderer::Renderer() : device(nullptr), context(nullptr), backbuffer(nullptr), swapchain(nullptr), obj_cbuffer(nullptr), skeleton_cbuffer(nullptr)
 {
 }
 
 Renderer::~Renderer()
 {
+	skeleton_cbuffer->Release();
 }
 
 void Renderer::Initialize(Window* window)
@@ -27,6 +28,15 @@ void Renderer::Initialize(Window* window)
 	context->RSSetViewports(1, &viewport);
 
 	DXHelper::CreateConstBuffer(device, &obj_cbuffer, &cb_object_data, sizeof(cb_object_data));
+
+	
+	for (int bone = 0; bone < 60; bone++) //set id matrix as default for the bones. So if no animation is happening the character is not funky.
+	{
+		dx::XMStoreFloat4x4(&cb_skeleton_data.bones[bone], dx::XMMatrixIdentity());
+	}
+
+
+	DXHelper::CreateConstBuffer(device, &skeleton_cbuffer, &cb_skeleton_data, sizeof(cb_Skeleton));
 }
 
 void Renderer::BeginFrame()
@@ -70,4 +80,32 @@ void Renderer::DrawInstanced(const Mesh& mesh, size_t count, dx::XMMATRIX* model
 	context->IASetIndexBuffer(mesh.indexBuffer, DXGI_FORMAT_R32_UINT, 0);
 	context->IASetPrimitiveTopology(mesh.topology);
 	context->DrawIndexedInstanced(mesh.indices.size(), count, 0, 0, 0);
+}
+
+void Renderer::DrawSkeleton(const Mesh& mesh, dx::XMMATRIX model, dx::XMMATRIX view, dx::XMMATRIX projection, cb_Skeleton& bones)
+{
+
+
+	dx::XMMATRIX mvp = dx::XMMatrixMultiply(model, dx::XMMatrixMultiply(view, projection));
+	dx::XMStoreFloat4x4(&cb_object_data.mvp, dx::XMMatrixTranspose(mvp));
+	dx::XMStoreFloat4x4(&cb_object_data.world, dx::XMMatrixTranspose(model));
+	DXHelper::BindConstBuffer(context, obj_cbuffer, &cb_object_data, CB_OBJECT_SLOT, ShaderBindFlag::SKELETON);
+
+	cb_skeleton_data = bones;
+	
+
+	DXHelper::BindConstBuffer(context, skeleton_cbuffer, &cb_skeleton_data, CB_SKELETON_SLOT, ShaderBindFlag::SKELETON);
+
+	UINT stride = sizeof(Mesh::Vertex);
+	UINT offset = 0;
+
+	context->IASetVertexBuffers(0, 1, &mesh.vertexBuffer, &stride, &offset);
+	context->IASetIndexBuffer(mesh.indexBuffer, DXGI_FORMAT_R32_UINT, 0);
+	context->IASetPrimitiveTopology(mesh.topology);
+
+	context->DrawIndexed(mesh.indices.size(), 0, 0);
+
+
+
+
 }
