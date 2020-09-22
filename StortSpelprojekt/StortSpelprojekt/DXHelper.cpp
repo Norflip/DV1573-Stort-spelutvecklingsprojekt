@@ -51,8 +51,6 @@ void DXHelper::CreateSwapchain(const Window& window, _Out_ ID3D11Device** device
 	assert(SUCCEEDED(resultCreateRasterizer));
 	(*context)->RSSetState(rasterizerState);
 
-
-
 }
 
 void DXHelper::CreateConstBuffer(ID3D11Device* device, ID3D11Buffer** buffer, void* initdata, unsigned int byteSize)
@@ -85,6 +83,9 @@ void DXHelper::BindConstBuffer(ID3D11DeviceContext* context, ID3D11Buffer* buffe
 
 	if ((bflag & (int)ShaderBindFlag::GEOMETRY) != 0)
 		context->GSSetConstantBuffers(slot, 1, &buffer);
+
+	if ((bflag & (int)ShaderBindFlag::SKELETON) != 0)
+		context->VSSetConstantBuffers(slot, 1, &buffer);
 }
 
 void DXHelper::CreateBackbuffer(size_t width, size_t height, ID3D11Device* device,  IDXGISwapChain* swapchain, ID3D11RenderTargetView** backbuffer, ID3D11DepthStencilView** depthStencilView)

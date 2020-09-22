@@ -41,7 +41,6 @@ public:
 	GetComponent() const;
 
 
-
 	bool HasFlag(ObjectFlag flag) const;
 	void AddFlag(ObjectFlag flag);
 	void RemoveFlag(ObjectFlag flag);
@@ -50,6 +49,8 @@ public:
 	std::string GetName() const { return this->name; }
 
 	Transform& GetTransform() { return this->transform; }
+
+	
 
 private:
 	ObjectFlag flags;

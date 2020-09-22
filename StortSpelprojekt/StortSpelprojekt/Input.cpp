@@ -27,7 +27,6 @@ bool Input::GetKeyUp(DirectX::Keyboard::Keys key) const
 
 void Input::SetMouseMode(DirectX::Mouse::Mode mode)
 {
-
 	mouse.SetMode(mode);
 }
 
