@@ -151,13 +151,13 @@ namespace ZWEBLoader //TO BE ADDED: FUNCTION TO LOAD LIGHTS AND TO LOAD TEXTURES
 			meshObject.SetBoneIDS(boneIDMap);
 
 
-			dx::XMMATRIX worldMatrix = dx::XMMatrixScaling(importer.getMeshInfo(mesh).scale[0], importer.getMeshInfo(mesh).scale[1], importer.getMeshInfo(mesh).scale[2])*
-				dx::XMMatrixRotationRollPitchYaw(importer.getMeshInfo(mesh).rotation[0], importer.getMeshInfo(mesh).rotation[1], importer.getMeshInfo(mesh).rotation[2])*
-				dx::XMMatrixTranslation(importer.getMeshInfo(mesh).translation[0], importer.getMeshInfo(mesh).translation[1], importer.getMeshInfo(mesh).translation[2]);
+			dx::XMFLOAT3 scale = { (importer.getMeshInfo(mesh).scale[0]), (importer.getMeshInfo(mesh).scale[1]), (importer.getMeshInfo(mesh).scale[2]) };
+			dx::XMFLOAT3 rotation = { (importer.getMeshInfo(mesh).rotation[0]), (importer.getMeshInfo(mesh).rotation[1]), (importer.getMeshInfo(mesh).rotation[2]) };
+			dx::XMFLOAT3 translation = { (importer.getMeshInfo(mesh).translation[0]), (importer.getMeshInfo(mesh).translation[1]), (importer.getMeshInfo(mesh).translation[2]) };
 
+				
 
-
-			meshObject.SetWorldMatrix(worldMatrix);
+			meshObject.SetSRT(scale, rotation, translation);
 
 
 

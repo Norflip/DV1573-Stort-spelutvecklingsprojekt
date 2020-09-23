@@ -13,6 +13,12 @@ Transform::~Transform()
 {
 }
 
+void Transform::Translate(float x, float y, float z)
+{
+	DirectX::XMFLOAT3 pos(x, y, z);
+	this->position = dx::XMVectorAdd(this->position, dx::XMLoadFloat3(&pos));
+}
+
 void Transform::Rotate(float pitch, float yaw, float roll)
 {
 	DirectX::XMFLOAT3 rot(pitch, yaw, roll);
@@ -69,15 +75,12 @@ dx::XMMATRIX Transform::GetWorldMatrix() const
 
 dx::XMMATRIX Transform::GetLocalWorldMatrix() const
 {
-	return this->modelMatrix;
-}
-
-void Transform::UpdateLocalModelMatrix()
-{
-	this->modelMatrix= dx::XMMatrixScalingFromVector(this->scale) *
+	return dx::XMMatrixScalingFromVector(this->scale) *
 		dx::XMMatrixRotationRollPitchYawFromVector(this->rotation) *
 		dx::XMMatrixTranslationFromVector(this->position);
 }
+
+
 
 DirectX::XMVECTOR Transform::TransformDirection(DirectX::XMVECTOR direction) const
 {

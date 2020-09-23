@@ -53,7 +53,7 @@ void Scene::Initialize(Renderer* renderer)
 	testMesh->GetTransform().SetPosition(dx::XMLoadFloat3(&miniTranslation));
 	testMesh->GetTransform().UpdateLocalModelMatrix();
 
-	// Behövs dessa och till vad?
+	// Behï¿½vs dessa och till vad?
 	//testMesh->AddFlag(ObjectFlag::ENABLED | ObjectFlag::RENDER);
 	//testMesh->AddComponent<MoveComponent>();
 
@@ -92,6 +92,22 @@ void Scene::Initialize(Renderer* renderer)
 
 	//tmp_obj2->AddFlag(ObjectFlag::ENABLED | ObjectFlag::RENDER);
 	//tmp_obj2->AddComponent<MoveComponent>();
+
+	
+	Object* tmp_obj = new Object("cube1");
+	tmp_obj->GetTransform().SetPosition({ 0, 0, 10 });
+	
+	
+	tmp_obj->AddFlag(ObjectFlag::ENABLED | ObjectFlag::RENDER);
+	tmp_obj->AddComponent<MeshComponent>(mesh, material);
+	objects.push_back(tmp_obj);
+
+	Object* tmp_obj2 = new Object("cube2");
+	tmp_obj2->GetTransform().SetPosition({ 0, 0, 4 });
+
+	tmp_obj2->AddFlag(ObjectFlag::ENABLED | ObjectFlag::RENDER);
+	tmp_obj2->AddComponent<MeshComponent>(mesh, material);
+	tmp_obj2->AddComponent<MoveComponent>();
 	
 
 
