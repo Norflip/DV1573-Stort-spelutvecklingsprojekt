@@ -2,14 +2,9 @@
 
 ControllerComponent::ControllerComponent()
 {
-
-	this->strafe = 1.f;
-	this->elevate = 1.f;
-	this->walk = 1.f;
-	this->faster = 4.5f * this->walk;
-	this->crouchSpeed = 0.3f * this->walk;
-	this->speed = 1.f;
-	this->speedMulitplier = 1.f;
+	//this->move =1.f;
+	this->boost = 4.5f;// *this->move;
+	this->crouchSpeed = 0.3f;// *this->move;
 
 	this->lastMousePos = Input::Instance().GetMousePos(); 
 	this->showCursor = true;
@@ -21,20 +16,51 @@ ControllerComponent::~ControllerComponent()
 {
 }
 
-void ControllerComponent::SetSpeedMulitplier(float speed)
+//void ControllerComponent::SetMoveSpeed(float speed) //sets move speed
+//{
+//	this->move = speed;
+//}
+//
+//float ControllerComponent::GetMoveSpeed() const
+//{
+//	return this->move;
+//}
+
+void ControllerComponent::SetBoostSpeed(float speed) //sets boost multiplier (boost*move)
 {
-	this->speedMulitplier = speed;
+	this->boost = speed;
 }
 
-float ControllerComponent::GetSpeedMulitplier() const
+float ControllerComponent::GetBoostSpeed() const
 {
-	return this->speedMulitplier;
+	return this->boost;
+}
+
+void ControllerComponent::SetCrouchSpeed(float speed) //sets crouch multiplier (crouch*move)
+{
+	this->crouchSpeed = speed;
+}
+
+float ControllerComponent::GetCrouchSpeed() const
+{
+	return crouchSpeed;
+}
+
+void ControllerComponent::SetSensetivity(float sensetivity)
+{
+	this->sensetivity = sensetivity;
+}
+
+float ControllerComponent::GetSensetivity() const
+{
+	return this->sensetivity;
 }
 
 void ControllerComponent::Update(const float& deltaTime)
 {
-	DirectX::XMFLOAT3 dir = { 0,0,0 };
+	DirectX::XMFLOAT3 dir = { 0.f,0.f,0.f };
 	dx::XMFLOAT2 mouseVec;
+	float speed = 1.f;
 	mouseVec.x = this->lastMousePos.x - Input::Instance().GetMousePos().x;
 	mouseVec.y = this->lastMousePos.y - Input::Instance().GetMousePos().y;
 	this->lastMousePos = Input::Instance().GetMousePos();
@@ -55,36 +81,34 @@ void ControllerComponent::Update(const float& deltaTime)
 		ShowCursor(this->showCursor);
 	}
 	
-	if (KEY_DOWN(LeftShift))
-		this->speed = faster;
-	if (KEY_UP(LeftShift))
-		this->speed = walk;
+	if (KEY_PRESSED(LeftShift))
+		speed = boost;
 	if (KEY_DOWN(LeftControl))
 	{
-		this->speed = crouchSpeed;
+		speed = crouchSpeed;
 		GetOwner()->GetTransform().Translate(-CROUCH.x, -CROUCH.y, -CROUCH.z);
 	}
 	if (KEY_UP(LeftControl))
 	{
-		this->speed = walk;
+		speed = 1.f;// move;
 		GetOwner()->GetTransform().Translate(CROUCH.x, CROUCH.y, CROUCH.z);
 	}
 
 	if (KEY_PRESSED(Space))
-		dir.y += elevate;
+		dir.y += 1.f;// move;
 	if (KEY_PRESSED(C))
-		dir.y -= elevate;
+		dir.y -= 1.f;// move;
 	if (KEY_PRESSED(W))
-		dir.z += walk;
+		dir.z += 1.f;// move;
 	if (KEY_PRESSED(S))
-		dir.z -= walk;
+		dir.z -= 1.f;// move;
 	if (KEY_PRESSED(A))
-		dir.x -= strafe;
+		dir.x -= 1.f;// move;
 	if (KEY_PRESSED(D))
-		dir.x += strafe;
+		dir.x += 1.f;// move;
 
 	dx::XMVECTOR direction = dx::XMLoadFloat3(&dir);
-	direction = dx::XMVectorScale(direction, this->speed * this->speedMulitplier);
+	direction = dx::XMVectorScale(direction, speed);
 	direction = dx::XMVectorScale(direction, deltaTime);
 	dx::XMStoreFloat3(&dir, direction);
 	GetOwner()->GetTransform().Translate(dir.x,dir.y,dir.z);
