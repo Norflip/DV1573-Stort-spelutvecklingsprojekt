@@ -40,6 +40,18 @@ void Material::SetMaterialData(const cb_Material& materialData)
 	cb_material_data = materialData;
 }
 
+void Material::ChangeTextureBindFlags(size_t slot, ShaderBindFlag flag)
+{
+	for (int textureNr = 0; textureNr < textures.size(); textureNr++)
+	{
+		if (textures[textureNr].slot == slot)
+		{
+			textures[textureNr].flag = flag;
+			break;
+		}
+	}
+}
+
 const cb_Material& Material::GetMaterialData() const
 {
 	return cb_material_data;

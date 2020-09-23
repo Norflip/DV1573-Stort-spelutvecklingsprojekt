@@ -2,6 +2,7 @@
 #include <ImportZWEB.h>
 #include <DirectXMath.h>
 #include "MeshComponent.h"
+
 enum ZWEBLoadType
 {
 	NoAnimation,
@@ -171,13 +172,22 @@ namespace ZWEBLoader //TO BE ADDED: FUNCTION TO LOAD LIGHTS AND TO LOAD TEXTURES
 	}
 
 
-	inline std::vector<Material> LoadMaterials(std::string scenePath, const Shader& shader) //Each mesh has a material name there might be 5 meshes and 3 materials.
+	inline std::vector<Material> LoadMaterials(std::string scenePath, const Shader& shader, ID3D11Device* device) //Each mesh has a material name there might be 5 meshes and 3 materials.
 	{
 		ZWEB::ZWEBImporter importer;
 
 		importer.importScene(scenePath);
 
 		std::vector<Material> materials;
+
+		std::string diffuseTName = "NULL";
+
+		std::string normalTName = "NULL";
+
+		std::string opacityName = "NULL";
+
+		std::string emissiveName = "NULL";
+
 		
 		for (unsigned short material = 0; material < importer.getSceneInfo().nrOfMaterials; material++)
 		{
@@ -191,15 +201,49 @@ namespace ZWEBLoader //TO BE ADDED: FUNCTION TO LOAD LIGHTS AND TO LOAD TEXTURES
 
 			materialData.albedo = DirectX::XMFLOAT3(importer.getMaterialInfo(material).kd[0], importer.getMaterialInfo(material).kd[1], importer.getMaterialInfo(material).kd[2]);
 
-			materialData.specular = DirectX::XMFLOAT3(importer.getMaterialInfo(material).ks[0], importer.getMaterialInfo(material).ks[1], importer.getMaterialInfo(material).ks[2]);
+			materialData.specular = DirectX::XMFLOAT3(importer.getMaterialInfo(material).ks[0], importer.getMaterialInfo(material).ks[1], importer.getMaterialInfo(material).ks[2]);// if the material is lambert and not Phong then this is default 0.
 
-			materialData.specularFactor = importer.getMaterialInfo(material).specularPower;
+			materialData.specularFactor = importer.getMaterialInfo(material).specularPower; // if the material is lambert and not Phong then this is default 0.
 
 
 			mat.SetMaterialData(materialData);
 
 			
-			mat.setName(importer.getMaterialInfo(material).name);
+			mat.SetName(importer.getMaterialInfo(material).name);
+
+
+			diffuseTName = importer.getMaterialInfo(material).albedoMapName;
+
+			normalTName = importer.getMaterialInfo(material).normalMapName;
+
+			opacityName = importer.getMaterialInfo(material).opacityMapName;
+
+			emissiveName = importer.getMaterialInfo(material).emissiveMapName; //Cannot export displacement, this must be done manually.
+
+
+			if (diffuseTName != " ") //if a texture does not exist, this is it's name.
+			{
+				Texture texture;
+				std::string path = "Textures/" + diffuseTName; //Using a fixed path so that you don't need to export the texture in the right folder, just place it manually in here instead.
+				std::wstring pathWSTR(path.begin(), path.end());
+				
+				bool success = texture.LoadTexture(device, pathWSTR.c_str());
+				assert(success);
+
+				mat.SetTexture(texture, 0, ShaderBindFlag::PIXEL);
+			}
+			if (normalTName != " ")
+			{
+				Texture texture;
+				std::string path = "Textures/" + normalTName;
+				std::wstring pathWSTR(path.begin(), path.end());
+				bool success = texture.LoadTexture(device, pathWSTR.c_str());
+				assert(success);
+
+				mat.SetTexture(texture, 1, ShaderBindFlag::PIXEL);
+			}
+			
+		
 
 			materials.push_back(mat);
 

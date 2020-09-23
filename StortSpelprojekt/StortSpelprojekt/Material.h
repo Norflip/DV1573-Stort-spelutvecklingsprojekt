@@ -33,6 +33,8 @@ public:
 	void SetTexture(Texture texture, size_t slot, ShaderBindFlag flag);
 	Texture GetTexture() { return this->texture; }
 
+	//ZWEB DEFAULTS TEXTURES AS INPUTS TO PIXEL SO THIS CAN BE USED TO MANUALLY CHANGE BIND FLAGS
+	void ChangeTextureBindFlags(size_t slot, ShaderBindFlag flag);
   const cb_Material& GetMaterialData() const;
 
 	const std::string& GetName() const;
