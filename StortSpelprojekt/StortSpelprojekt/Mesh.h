@@ -29,7 +29,10 @@ struct Mesh
 		}
 	};
 private:
-	dx::XMMATRIX worldMatrix;
+	
+	dx::XMFLOAT3 scale;
+	dx::XMFLOAT3 rotation;
+	dx::XMFLOAT3 translation;
 	std::string meshName= "null";
 	std::string materialName = "null"; //Only one material per mesh.
 	std::map<std::string, unsigned int> boneIDMap;
@@ -43,7 +46,7 @@ public:
 
 
 	Mesh(ID3D11Device* device, std::vector<Vertex> vertices, std::vector<unsigned int> indices, D3D11_PRIMITIVE_TOPOLOGY topology = D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST) : 
-		vertices(vertices), indices(indices), vertexBuffer(nullptr), indexBuffer(nullptr), boneIDMap(),meshName(),materialName(),worldMatrix()
+		vertices(vertices), indices(indices), vertexBuffer(nullptr), indexBuffer(nullptr), boneIDMap(),meshName(),materialName(),scale(0,0,0), rotation(0, 0, 0), translation(0, 0, 0)
 	{
 		this->vertices = vertices;
 		this->indices = indices;
@@ -72,16 +75,25 @@ public:
 		return meshName;
 	}
 
-	void SetWorldMatrix(const dx::XMMATRIX& matrix)
+	void SetSRT(const dx::XMFLOAT3& S, const dx::XMFLOAT3& R, const dx::XMFLOAT3& T)
 	{
-		worldMatrix = matrix;
+		scale = S;
+		rotation = R;
+		translation = T;
 	}
-
-	dx::XMMATRIX& GetWorldMatrix()
+	const dx::XMFLOAT3& GetS() const
 	{
-		return worldMatrix;
+		return scale;
 	}
-
+	const dx::XMFLOAT3& GetR() const
+	{
+		return rotation;
+	}
+	const dx::XMFLOAT3& GetT() const
+	{
+		return translation;
+	}
+	
 	void SetMaterialName(const std::string& name)
 	{
 		materialName = name;
