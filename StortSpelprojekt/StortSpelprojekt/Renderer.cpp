@@ -144,6 +144,9 @@ void Renderer::Draw(const Mesh& mesh, const cb_Material& material, dx::XMMATRIX 
 
 	DXHelper::BindConstBuffer(context, material_cbuffer, &cb_material_data, CB_MATERIAL_SLOT, ShaderBindFlag::PIXEL);
 
+	cb_scene.sunDirection = dx::XMFLOAT3(0.0f, 100.0f, -45.0f);
+	cb_scene.sunIntensity = 0.4f;
+
 	cb_scene.pointLights[0].lightColor = dx::XMFLOAT4(0.5f, 0.5f, 0.5f, 1.0f);
 	cb_scene.pointLights[0].lightPosition = dx::XMFLOAT3(15.0f, -5.0f, -5.0f);
 	cb_scene.pointLights[0].attenuation = dx::XMFLOAT3(1.0f, 0.02f, 0.0f);

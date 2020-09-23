@@ -1,6 +1,6 @@
 #include "CommonBuffers.hlsl"
 
-float4 CalculateLight(PointLight pointLight, float3 normal, float3 objectPosition, float3 viewDirection)
+float4 CalculatePointLight(PointLight pointLight, float3 normal, float3 objectPosition, float3 viewDirection)
 {
 	float4 ambient = float4(0.0f, 0.0f, 0.0f, 0.0f);
 	float4 specular = float4(0.0f, 0.0f, 0.0f, 0.0f);
@@ -80,4 +80,35 @@ float3 CalculateNormalMapping(float3 normal, float3 tangent, float4 normalmap)
 	normal = mul(normalmap, TBN);
 
 	return normal;
+}
+
+float4 CalculateDirectionalLight(float3 lightDirection, float3 normal, float3 viewDirection)
+{
+	float4 ambient = float4(0.0f, 0.0f, 0.0f, 0.0f);
+	float4 specular = float4(0.0f, 0.0f, 0.0f, 0.0f);
+	float4 diffuse = float4(0.0f, 0.0f, 0.0f, 0.0f);
+	float4 finalColor = float4(0.0f, 0.0f, 0.0f, 0.0f);
+
+	// Can change from white to wanted color here
+	float4 sunColor = float4(1.0f, 1.0f, 1.0f, 1.0f);
+
+	lightDirection = normalize(lightDirection - float3(0.0f, 0.0f, 0.0f));
+
+	float diffuseFactor = max(dot(normal, lightDirection), 0.0f);
+
+	if (diffuseFactor > 0.0f)
+	{
+		float3 reflection = reflect(-lightDirection, normal);
+		float spec = pow(max(dot(viewDirection, reflection), 0.0f), matSpecular.w);
+
+		
+		diffuse = diffuseFactor * sunColor * matDiffuse;
+		specular = spec * sunColor * matSpecular;
+	}
+
+	ambient = sunColor * matAmbient;
+
+	finalColor = ambient + diffuse + specular;
+
+	return finalColor * sunIntensity;
 }
