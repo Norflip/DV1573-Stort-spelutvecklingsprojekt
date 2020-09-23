@@ -23,20 +23,17 @@ struct Mesh
 		DirectX::XMFLOAT3 skinWeight;
 		bool operator==(const Vertex& other)
 		{
-			if (this->position.x == other.position.x && this->position.y == other.position.y && this->position.z == other.position.z) //To convert from indices, positions need to be compared.
-			{
-				return true;
-			}
-			else
-			{
-				return false;
-			}
-				
+
+			return (this->position.x == other.position.x && this->position.y == other.position.y && this->position.z == other.position.z); //To convert from indices, positions need to be compared.
+			
 		}
 	};
 private:
-	std::vector<SkeletonAni> skeletonAnimations;
+	dx::XMMATRIX worldMatrix;
 	std::string meshName= "null";
+	std::string materialName = "null"; //Only one material per mesh.
+	std::map<std::string, unsigned int> boneIDMap;
+
 public:
 	std::vector<Vertex> vertices;
 	std::vector<unsigned int> indices;
@@ -46,7 +43,7 @@ public:
 
 
 	Mesh(ID3D11Device* device, std::vector<Vertex> vertices, std::vector<unsigned int> indices, D3D11_PRIMITIVE_TOPOLOGY topology = D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST) : 
-		vertices(vertices), indices(indices), vertexBuffer(nullptr), indexBuffer(nullptr), skeletonAnimations(0)
+		vertices(vertices), indices(indices), vertexBuffer(nullptr), indexBuffer(nullptr), boneIDMap(),meshName(),materialName(),worldMatrix()
 	{
 		this->vertices = vertices;
 		this->indices = indices;
@@ -56,16 +53,13 @@ public:
 		DXHelper::CreateIndexBuffer(device, indices.size(), indices.data(), &indexBuffer);
 	}
 
-
-	void SetAnimationTrack(const SkeletonAni& skeletonAni)
+	std::map<std::string, unsigned int>& GetBoneIDS()
 	{
-		skeletonAnimations.push_back(skeletonAni);
+		return boneIDMap;
 	}
-
-
-	const SkeletonAni& GetAnimationTrack(unsigned int trackNr) const
+	void SetBoneIDS(std::map<std::string, unsigned int> bones)
 	{
-		return skeletonAnimations[trackNr];
+		boneIDMap = bones;
 	}
 
 	void SetMeshName(const std::string& name)
@@ -73,9 +67,29 @@ public:
 		meshName = name;
 	}
 
-	const std::string& GetMeshName()const
+	std::string& GetMeshName()
 	{
 		return meshName;
+	}
+
+	void SetWorldMatrix(const dx::XMMATRIX& matrix)
+	{
+		worldMatrix = matrix;
+	}
+
+	dx::XMMATRIX& GetWorldMatrix()
+	{
+		return worldMatrix;
+	}
+
+	void SetMaterialName(const std::string& name)
+	{
+		materialName = name;
+	}
+
+	const std::string& GetMaterialName()const
+	{
+		return materialName;
 	}
 
 	// DECONSTRUCTOR?! WAT DO 
@@ -104,4 +118,3 @@ public:
 		return Mesh(device, vertices, indices);
 	}	
 };
-

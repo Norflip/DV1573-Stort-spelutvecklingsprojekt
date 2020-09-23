@@ -2,6 +2,7 @@
 #include <ImportZWEB.h>
 #include <DirectXMath.h>
 #include "MeshComponent.h"
+
 enum ZWEBLoadType
 {
 	NoAnimation,
@@ -9,16 +10,53 @@ enum ZWEBLoadType
 };
 namespace ZWEBLoader //TO BE ADDED: FUNCTION TO LOAD LIGHTS AND TO LOAD TEXTURES INOT MATERIALS FROM PATHWAY
 {
-	inline  std::vector<Object> LoadZWEB(ZWEBLoadType type, std::string scenePath, std::string animationPath,const Shader& shader, ID3D11Device* device) //If object doesn't have animation you can leave that parameter empty
+
+	inline SkeletonAni LoadSkeletonOnly( std::string animationPath, std::map<std::string, unsigned int>& boneIDMap)
 	{
+		ZWEB::ZWEBImporter importer;
+
+		
+
+		importer.importAnimation(animationPath);
+
+		SkeletonAni skeletonAnimation;
+		//map must be set first so it can be used to set up the other stuff.
+		skeletonAnimation.SetUpIDMapAndFrames(boneIDMap, importer.getSkeletonAnimationHeader().fps, importer.getSkeletonAnimationHeader().nrOfAnimationFrames);
+
+		//The offset matrices are loaded in directly as matrices, the local bone space matrices are not because they need to be interpolated during runtime.
+		std::vector<SkeletonOffsetsHeader> offsets;
+		for (unsigned int bone = 0; bone < importer.getSkeletonAnimationHeader().nrOfBones; bone++)
+		{
+
+			offsets.push_back(importer.getSkeletonOffset(bone));
+
+
+		}
+		skeletonAnimation.SetUpOffsetsFromMatrices(offsets);
+
+		for (unsigned int bone = 0; bone < importer.getSkeletonAnimationHeader().nrOfBones; bone++)
+		{
+			std::vector<SkeletonKeysHeader> keys;
+			keys = importer.getSkeletonKeys(bone);
+			skeletonAnimation.SetUpKeys((std::string)keys[0].linkName, keys);
+		}
+
+		return skeletonAnimation;
+
+
+
+
+	}
+	inline std::vector<Mesh> LoadMeshes(ZWEBLoadType type, std::string scenePath, ID3D11Device* device)
+	{
+
 		ZWEB::ZWEBImporter importer;
 
 		importer.importScene(scenePath);
 
-		importer.importAnimation(animationPath);
-
 		
-		std::vector<Object> objects;
+
+		std::vector<Mesh> meshes;
 		for (int mesh = 0; mesh < importer.getSceneInfo().nrOfMeshes; mesh++)
 		{
 			std::vector<unsigned int> indicesZweb(importer.getMeshInfo(mesh).nrOfindices);
@@ -44,14 +82,16 @@ namespace ZWEBLoader //TO BE ADDED: FUNCTION TO LOAD LIGHTS AND TO LOAD TEXTURES
 
 				vertices[vertex].binormal = DirectX::XMFLOAT3(verticesZweb[vertex].biNormal[0], verticesZweb[vertex].biNormal[1], verticesZweb[vertex].biNormal[2]);
 
-				
+
 			}
 			std::map<std::string, unsigned int> boneIDMap; //This is to make sure correct Vertex is mapped to the Correct Bone/Joint.
+			boneIDMap.clear();
+
 			if (type == ZWEBLoadType::SkeletonAnimation)
 			{
 				std::vector<VertexHeader> controlVerticesZweb = importer.getControlPoints(mesh); //Controlpoints are indexed, converting them into non indexed here.
 				std::vector<Mesh::Vertex> controlVertices(controlVerticesZweb.size());
-				
+
 				for (unsigned int controlVertex = 0; controlVertex < controlVerticesZweb.size(); controlVertex++)
 				{
 					controlVertices[controlVertex].boneID = DirectX::XMUINT3(controlVerticesZweb[controlVertex].boneIDNrs[0], controlVerticesZweb[controlVertex].boneIDNrs[1]
@@ -97,113 +137,128 @@ namespace ZWEBLoader //TO BE ADDED: FUNCTION TO LOAD LIGHTS AND TO LOAD TEXTURES
 
 				}
 
-
-			}
 			
-			Material mat(shader);
-
-			cb_Material materialData; //Should this be on the heap?
-			//A scene imported may contain 5 meshes but only 2 materials.
-			unsigned int matIndex = importer.getMaterialIndexByName((std::string)importer.getMaterialIDInfo(mesh, 0).materialName); //a single mesh can contain multiple materials but I only support at index 0 in dX.
-
-			materialData.ambient = DirectX::XMFLOAT4(importer.getMaterialInfo(matIndex).ka[0], importer.getMaterialInfo(matIndex).ka[1], importer.getMaterialInfo(matIndex).ka[2], 1.0f);
-
-			materialData.diffuse = DirectX::XMFLOAT4(importer.getMaterialInfo(matIndex).kd[0], importer.getMaterialInfo(matIndex).kd[1], importer.getMaterialInfo(matIndex).kd[2], 1.0f);
-
-			materialData.specular = DirectX::XMFLOAT4(importer.getMaterialInfo(matIndex).ks[0], importer.getMaterialInfo(matIndex).ks[1], importer.getMaterialInfo(matIndex).ks[2], importer.getMaterialInfo(matIndex).specularPower);
-
-
-			//materialData.specularFactor = importer.getMaterialInfo(matIndex).specularPower;
-			std::string diffuseName;
-			std::string normalName;
-
-			diffuseName = importer.getMaterialInfo(0).albedoMapName;
-			normalName = importer.getMaterialInfo(0).normalMapName;
-
-			if (diffuseName != "")
-			{
-				Texture tex;
-				std::string path = "Textures/" + diffuseName;
-				std::wstring pathW(path.begin(), path.end());
-
-				bool success = tex.LoadTexture(device, pathW.c_str());
-				assert(success);
-
-				mat.SetTexture(tex, 0, ShaderBindFlag::PIXEL);
-
-			}
-			if (normalName != "")
-			{
-				Texture tex;
-				std::string path = "Textures/" + normalName;
-				std::wstring pathW(path.begin(), path.end());
-
-				bool success = tex.LoadTexture(device, pathW.c_str());
-				assert(success);
-
-				mat.SetTexture(tex, 1, ShaderBindFlag::PIXEL);
-
 			}
 
-
-			mat.SetMaterialData(materialData);
-			
-			
 			
 
 			Mesh meshObject(device, vertices, indicesZweb);
+			
 
 
 			meshObject.SetMeshName((std::string)importer.getMeshInfo(mesh).name);
-				
 
-			if (type == ZWEBLoadType::SkeletonAnimation) 
-			{
-				SkeletonAni skeletonAnimation;
-				//map must be set first so it can be used to set up the other stuff.
-				skeletonAnimation.setUpIDMapAndFrames(boneIDMap, importer.getSkeletonAnimationHeader().fps, importer.getSkeletonAnimationHeader().nrOfAnimationFrames);
-
-				//The offset matrices are loaded in directly as matrices, the local bone space matrices are not because they need to be interpolated during runtime.
-				std::vector<SkeletonOffsetsHeader> offsets;
-				for (unsigned int bone = 0; bone < importer.getSkeletonAnimationHeader().nrOfBones; bone++)
-				{
-
-					offsets.push_back(importer.getSkeletonOffset(bone));
+			meshObject.SetBoneIDS(boneIDMap);
 
 
-				}
-				skeletonAnimation.setUpOffsetsFromMatrices(offsets);
-
-				for (unsigned int bone = 0; bone < importer.getSkeletonAnimationHeader().nrOfBones; bone++)
-				{
-					std::vector<SkeletonKeysHeader> keys;
-					keys = importer.getSkeletonKeys(bone);
-					skeletonAnimation.setUpKeys((std::string)keys[0].linkName, keys);
-				}
-
-				
-				meshObject.SetAnimationTrack(skeletonAnimation);
-				
-			}
-
-			Object object((std::string)importer.getMeshInfo(mesh).name);
-
-			
-
-			object.AddComponent<MeshComponent>(meshObject, mat); //Should I pass in a fourth argument in the vectors???
-
-			object.GetTransform().SetPosition(DirectX::XMLoadFloat3(&DirectX::XMFLOAT3(importer.getMeshInfo(mesh).translation[0], importer.getMeshInfo(mesh).translation[1], importer.getMeshInfo(mesh).translation[2])));
-
-			object.GetTransform().SetRotation(DirectX::XMLoadFloat3(&DirectX::XMFLOAT3(importer.getMeshInfo(mesh).rotation[0], importer.getMeshInfo(mesh).rotation[1], importer.getMeshInfo(mesh).rotation[2])));
-
-			object.GetTransform().SetScale(DirectX::XMLoadFloat3(&DirectX::XMFLOAT3(importer.getMeshInfo(mesh).scale[0], importer.getMeshInfo(mesh).scale[1], importer.getMeshInfo(mesh).scale[2])));
+			dx::XMMATRIX worldMatrix = dx::XMMatrixScaling(importer.getMeshInfo(mesh).scale[0], importer.getMeshInfo(mesh).scale[1], importer.getMeshInfo(mesh).scale[2])*
+				dx::XMMatrixRotationRollPitchYaw(importer.getMeshInfo(mesh).rotation[0], importer.getMeshInfo(mesh).rotation[1], importer.getMeshInfo(mesh).rotation[2])*
+				dx::XMMatrixTranslation(importer.getMeshInfo(mesh).translation[0], importer.getMeshInfo(mesh).translation[1], importer.getMeshInfo(mesh).translation[2]);
 
 
-			objects.push_back(object);
+
+			meshObject.SetWorldMatrix(worldMatrix);
+
+
+
+			meshes.push_back(meshObject);
 		}
 
-		return objects;
-		
+		return meshes;
+
+
+
+
 	}
+
+
+	inline std::vector<Material> LoadMaterials(std::string scenePath, const Shader& shader, ID3D11Device* device) //Each mesh has a material name there might be 5 meshes and 3 materials.
+	{
+		ZWEB::ZWEBImporter importer;
+
+		importer.importScene(scenePath);
+
+		std::vector<Material> materials;
+
+		std::string diffuseTName = "NULL";
+
+		std::string normalTName = "NULL";
+
+		std::string opacityName = "NULL";
+
+		std::string emissiveName = "NULL";
+
+		
+		for (unsigned short material = 0; material < importer.getSceneInfo().nrOfMaterials; material++)
+		{
+
+			Material mat(shader);
+
+			cb_Material materialData; 
+			
+			
+			materialData.ambient = DirectX::XMFLOAT3(importer.getMaterialInfo(material).ka[0], importer.getMaterialInfo(material).ka[1], importer.getMaterialInfo(material).ka[2]);
+
+			materialData.albedo = DirectX::XMFLOAT3(importer.getMaterialInfo(material).kd[0], importer.getMaterialInfo(material).kd[1], importer.getMaterialInfo(material).kd[2]);
+
+			materialData.specular = DirectX::XMFLOAT3(importer.getMaterialInfo(material).ks[0], importer.getMaterialInfo(material).ks[1], importer.getMaterialInfo(material).ks[2]);// if the material is lambert and not Phong then this is default 0.
+
+			materialData.specularFactor = importer.getMaterialInfo(material).specularPower; // if the material is lambert and not Phong then this is default 0.
+
+
+			mat.SetMaterialData(materialData);
+
+			
+			mat.SetName(importer.getMaterialInfo(material).name);
+
+
+			diffuseTName = importer.getMaterialInfo(material).albedoMapName;
+
+			normalTName = importer.getMaterialInfo(material).normalMapName;
+
+			opacityName = importer.getMaterialInfo(material).opacityMapName;
+
+			emissiveName = importer.getMaterialInfo(material).emissiveMapName; //Cannot export displacement, this must be done manually.
+
+
+			if (diffuseTName != " ") //if a texture does not exist, this is it's name.
+			{
+				Texture texture;
+				std::string path = "Textures/" + diffuseTName; //Using a fixed path so that you don't need to export the texture in the right folder, just place it manually in here instead.
+				std::wstring pathWSTR(path.begin(), path.end());
+				
+				bool success = texture.LoadTexture(device, pathWSTR.c_str());
+				assert(success);
+
+				mat.SetTexture(texture, 0, ShaderBindFlag::PIXEL);
+			}
+			if (normalTName != " ")
+			{
+				Texture texture;
+				std::string path = "Textures/" + normalTName;
+				std::wstring pathWSTR(path.begin(), path.end());
+				bool success = texture.LoadTexture(device, pathWSTR.c_str());
+				assert(success);
+
+				mat.SetTexture(texture, 1, ShaderBindFlag::PIXEL);
+			}
+			
+		
+
+			materials.push_back(mat);
+
+		}
+
+
+		return materials;
+
+
+
+	}
+
+
+
+
+	
 	
 }

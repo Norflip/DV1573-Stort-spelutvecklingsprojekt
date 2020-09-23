@@ -1,7 +1,8 @@
 #include "Scene.h"
 
-Scene::Scene()
+Scene::Scene() : input(Input::Instance())
 {
+	
 
 }
 
@@ -20,28 +21,42 @@ void Scene::Initialize(Renderer* renderer)
 	Object* cameraObject = new Object("camera", ObjectFlag::ENABLED);
 	camera = cameraObject->AddComponent<CameraComponent>(90.0f);
 	camera->Resize(window->GetWidth(), window->GetHeight());
+	move = cameraObject->AddComponent<ControllerComponent>();
+	objects.push_back(cameraObject);
 	
 	Shader shader;
+	Shader skeletonShader;
 	shader.SetPixelShader(L"Shaders/Default_ps.hlsl");
 	shader.SetVertexShader(L"Shaders/Default_vs.hlsl");
-	shader.setSkeletonShader(L"Shaders/Skeleton_vs.hlsl");
+	skeletonShader.SetVertexShader(L"Shaders/Skeleton_vs.hlsl");
+	
 	shader.Compile(renderer->GetDevice());
 
-	//std::vector<Object> zwebObj = ZWEBLoader::LoadZWEB(ZWEBLoadType::SkeletonAnimation, "../Models/OrchBody.ZWEB", "../Models/OrchAnimation.ZWEB", shader, renderer->GetDevice());
-	std::vector<Object> zwebObj = ZWEBLoader::LoadZWEB(ZWEBLoadType::NoAnimation, "Models/brickSphere.ZWEB", "", shader, renderer->GetDevice());
 	
-	for (int object = 0; object < zwebObj.size(); object++)
-	{
-		skeletonObjects.push_back(zwebObj[object]);
-	}
+	std::vector<Mesh> zwebMeshes = ZWEBLoader::LoadMeshes(ZWEBLoadType::SkeletonAnimation, "Models/cubeWithTexture.ZWEB", renderer->GetDevice());
+	
+	std::vector<Material> zwebMaterials = ZWEBLoader::LoadMaterials("Models/cubeWithTexture.ZWEB", shader, renderer->GetDevice());
 
-	//dx::XMFLOAT3 miniScale = dx::XMFLOAT3(0.04f, 0.04f, 0.04f);
+
+	Object* testMesh = new Object("test");
+
+	
 	dx::XMFLOAT3 miniScale = dx::XMFLOAT3(1.0f, 1.0f, 1.0f);
-	dx::XMFLOAT3 miniTranslation = dx::XMFLOAT3(0, 0, 2);
+	dx::XMFLOAT3 miniTranslation = dx::XMFLOAT3(0, 0, 7);
 
-	skeletonObjects[0].GetTransform().SetScale(dx::XMLoadFloat3(&miniScale));
 
-	skeletonObjects[0].GetTransform().SetPosition(dx::XMLoadFloat3(&miniTranslation));
+	testMesh->GetTransform().SetPosition(dx::XMLoadFloat3(&miniTranslation));
+
+	testMesh->GetTransform().UpdateLocalModelMatrix();
+
+	zwebMaterials[0].SetSamplerState(renderer->GetDevice(), D3D11_TEXTURE_ADDRESS_WRAP, D3D11_FILTER_MIN_MAG_MIP_LINEAR);
+	testMesh->AddComponent<MeshComponent>(zwebMeshes[0], zwebMaterials[0]);
+	objects.push_back(testMesh);
+
+
+	Mesh mesh = ShittyOBJLoader::Load("Models/Cube.obj", renderer->GetDevice());
+
+	Material material = Material(shader);
 
 	/* Loading a texture */
 	Texture diffuseTexture;
@@ -55,18 +70,23 @@ void Scene::Initialize(Renderer* renderer)
 	material.SetTexture(randomNormal, TEXTURE_NORMAL_SLOT, ShaderBindFlag::PIXEL);
 	material.SetSamplerState(renderer->GetDevice(), D3D11_TEXTURE_ADDRESS_WRAP, D3D11_FILTER_MIN_MAG_MIP_LINEAR);
 
-	/*Object* tmp_obj = new Object("cube1");
-	tmp_obj->GetTransform().SetPosition({ 0, 0, 10 });
-	tmp_obj->AddComponent<MeshComponent>(skeletonObjects[0].GetComponent<MeshComponent>(), material);
+	tmp_obj->GetTransform().UpdateLocalModelMatrix(); // Need to use this after every transform update.
+	
+	tmp_obj->AddFlag(ObjectFlag::ENABLED | ObjectFlag::RENDER);
+	tmp_obj->AddComponent<MeshComponent>(mesh, material);
+	objects.push_back(tmp_obj);
 
-	objects.push_back(tmp_obj);*/
+	Object* tmp_obj2 = new Object("cube2");
+	tmp_obj2->GetTransform().SetPosition({ 0, 0, 4 });
+	tmp_obj2->GetTransform().UpdateLocalModelMatrix();
+	tmp_obj2->AddFlag(ObjectFlag::ENABLED | ObjectFlag::RENDER);
+	tmp_obj2->AddComponent<MeshComponent>(mesh, material);
+	tmp_obj2->AddComponent<MoveComponent>();
+	
+	Transform::SetParentChild(tmp_obj->GetTransform(), tmp_obj2->GetTransform());
 
-	//Object* tmp_obj2 = new Object("cube2");
-	//tmp_obj2->AddComponent<MeshComponent>(skeletonObjects[0], material);
-	//tmp_obj2->GetTransform().SetPosition({ 0, 0, 4 });
 
-	//Transform::SkapaP�ron(tmp_obj->GetTransform(), tmp_obj2->GetTransform());
-	//objects.push_back(tmp_obj2);*/
+	objects.push_back(tmp_obj2);
 
 
 	/* * * * * * * * ** * * * * */
@@ -100,6 +120,8 @@ void Scene::Initialize(Renderer* renderer)
 void Scene::Update(const float& deltaTime)
 {
 	std::vector<Object*> toRemove;
+	input.UpdateInputs();
+
 
 	for (auto i = objects.begin(); i < objects.end(); i++)
 	{
@@ -111,6 +133,11 @@ void Scene::Update(const float& deltaTime)
 		if (obj->HasFlag(ObjectFlag::REMOVED))
 			toRemove.push_back(obj);
 	}
+
+	
+	
+
+
 }
 
 void Scene::FixedUpdate(const float& fixedDeltaTime)
@@ -120,28 +147,18 @@ void Scene::FixedUpdate(const float& fixedDeltaTime)
 
 void Scene::Render()
 {	
-	RenderSceneToTexture();
-
+	
 	renderer->BeginFrame();
-
+	RenderSceneToTexture();
 	//for (auto i = objects.begin(); i < objects.end(); i++)
 	//{
 	//	Object* obj = (*i);
-	//	//if (obj->HasFlag(ObjectFlag::ENABLED | ObjectFlag::VISIBLE))
+	//	//if (obj->HasFlag(ObjectFlag::ENABLED | ObjectFlag::RENDER))
 	//	obj->Draw(renderer, camera);
 	//}
 
-	//for (int i = 0; i < skeletonObjects.size(); i++)
-	//{
-	//	//skeletonObjects[i].Draw(renderer, camera);
-	//	skeletonObjects[i].GetComponent<MeshComponent>()->GetMaterial().BindToContext(renderer->GetContext());
-	//	renderer->Draw(skeletonObjects[i].GetComponent<MeshComponent>()->GetMesh(), skeletonObjects[i].GetComponent<MeshComponent>()->GetMaterial().GetMaterialData(), skeletonObjects[i].GetTransform().GetWorldMatrix(), camera->GetViewMatrix(), camera->GetProjectionMatrix());
-
-	//}
-	
 	/* Render screenquad with rendered scene-texture */
 	quad->Draw(renderer, camera);
-
 	renderer->EndFrame();
 }
 
@@ -157,13 +174,6 @@ void Scene::RenderSceneToTexture()
 		Object* obj = (*i);
 		//if (obj->HasFlag(ObjectFlag::ENABLED | ObjectFlag::VISIBLE))
 		obj->Draw(renderer, camera);	
-	}
-
-	for (int i = 0; i < skeletonObjects.size(); i++)
-	{
-		//skeletonObjects[i].Draw(renderer, camera);
-		skeletonObjects[i].GetComponent<MeshComponent>()->GetMaterial().BindToContext(renderer->GetContext());
-		renderer->Draw(skeletonObjects[i].GetComponent<MeshComponent>()->GetMesh(), skeletonObjects[i].GetComponent<MeshComponent>()->GetMaterial().GetMaterialData(), skeletonObjects[i].GetTransform().GetWorldMatrix(), camera->GetViewMatrix(), camera->GetProjectionMatrix());
 	}
 
 	renderer->Unbind();	// needed?

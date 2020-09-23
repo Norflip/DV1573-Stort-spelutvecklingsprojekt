@@ -1,6 +1,6 @@
 #include "SkeletonAni.h"
 
-DirectX::XMMATRIX& SkeletonAni::lerp(float elapsedTime, std::vector<Bone>& keys)
+DirectX::XMMATRIX& SkeletonAni::Lerp(float elapsedTime, std::vector<Bone>& keys)
 {
     animationTime = elapsedTime * fps;
     //animationTime += elapsedTime;
@@ -64,11 +64,12 @@ DirectX::XMMATRIX& SkeletonAni::lerp(float elapsedTime, std::vector<Bone>& keys)
 SkeletonAni::SkeletonAni()
 {
     animationTime = 0.0f;
+    
 }
 
-void SkeletonAni::makeglobal(float elapsedTime, const DirectX::XMMATRIX& globalParent, std::vector<Bone>& keys)
+cb_Skeleton& SkeletonAni::Makeglobal(float elapsedTime, const DirectX::XMMATRIX& globalParent, std::vector<Bone>& keys)
 {
-    DirectX::XMMATRIX toRoot = lerp(elapsedTime, keys) * globalParent; //These matrices are local, need to make them global recursively.
+    DirectX::XMMATRIX toRoot = Lerp(elapsedTime, keys) * globalParent; //These matrices are local, need to make them global recursively.
 
 
 
@@ -85,14 +86,14 @@ void SkeletonAni::makeglobal(float elapsedTime, const DirectX::XMMATRIX& globalP
     {
         if (keyBones[i][0].parentName == keys[0].name)
         {
-            makeglobal(elapsedTime, toRoot, keyBones[i]);
+            Makeglobal(elapsedTime, toRoot, keyBones[i]);
         }
     }
 
-    
+    return skeletonDataB;
 }
 
-std::string SkeletonAni::getRootName()
+std::string SkeletonAni::GetRootName()
 {
     std::string rootName = "RootNode"; //This is the name given to each rootbone inside fbx sdk from me.
     std::string rootNode;
@@ -109,12 +110,12 @@ std::string SkeletonAni::getRootName()
     return rootNode;
 }
 
-unsigned int SkeletonAni::getNrOfBones() const
+unsigned int SkeletonAni::GetNrOfBones() const
 {
     return (unsigned int)offsetM.size(); //these are one per bone.
 }
 
-void SkeletonAni::setUpOffsetsFromMatrices(std::vector<SkeletonOffsetsHeader>& offsets)
+void SkeletonAni::SetUpOffsetsFromMatrices(std::vector<SkeletonOffsetsHeader>& offsets)
 {
     offsetM.clear();
     offsetM.resize(offsets.size());
@@ -131,18 +132,18 @@ void SkeletonAni::setUpOffsetsFromMatrices(std::vector<SkeletonOffsetsHeader>& o
     }
 }
 
-std::vector<Bone>& SkeletonAni::getRootKeyJoints()
+std::vector<Bone>& SkeletonAni::GetRootKeyJoints()
 {
     for (unsigned int i = 0; i < keyBones.size(); i++)
     {
-        if (keyBones[i][0].name == getRootName())
+        if (keyBones[i][0].name == GetRootName())
         {
             return keyBones[i];
         }
     }
 }
 
-void SkeletonAni::setUpIDMapAndFrames(std::map<std::string, unsigned int> boneIDMap, float fps, float aniLenght)
+void SkeletonAni::SetUpIDMapAndFrames(std::map<std::string, unsigned int> boneIDMap, float fps, float aniLenght)
 {
     this->fps = fps;
     this->lenght = aniLenght;
@@ -151,7 +152,7 @@ void SkeletonAni::setUpIDMapAndFrames(std::map<std::string, unsigned int> boneID
 
 }
 
-void SkeletonAni::setUpKeys(std::string boneName, std::vector<SkeletonKeysHeader>& keys)
+void SkeletonAni::SetUpKeys(std::string boneName, std::vector<SkeletonKeysHeader>& keys)
 {
     std::vector<Bone> jointKeysVector;
     keyBones.resize(offsetM.size());
@@ -190,7 +191,15 @@ void SkeletonAni::setUpKeys(std::string boneName, std::vector<SkeletonKeysHeader
 
 }
 
-const SkeletonData& SkeletonAni::getSkeletonData()
+cb_Skeleton& SkeletonAni::GetSkeletonData()
 {
+
     return skeletonDataB;
 }
+
+std::map<std::string, unsigned int>& SkeletonAni::getBoneIDMap()
+{
+    return boneIDMap;
+}
+
+

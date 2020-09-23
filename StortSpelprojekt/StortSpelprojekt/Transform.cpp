@@ -52,7 +52,7 @@ bool Transform::ContainsChild(Transform* child) const
 	return contains;
 }
 
-void Transform::SkapaPäron(Transform& parent, Transform& child)
+void Transform::SetParentChild(Transform& parent, Transform& child)
 {
 	parent.AddChild(&child);
 	child.SetParent(&parent);
@@ -69,7 +69,12 @@ dx::XMMATRIX Transform::GetWorldMatrix() const
 
 dx::XMMATRIX Transform::GetLocalWorldMatrix() const
 {
-	return dx::XMMatrixScalingFromVector(this->scale) *
+	return this->modelMatrix;
+}
+
+void Transform::UpdateLocalModelMatrix()
+{
+	this->modelMatrix= dx::XMMatrixScalingFromVector(this->scale) *
 		dx::XMMatrixRotationRollPitchYawFromVector(this->rotation) *
 		dx::XMMatrixTranslationFromVector(this->position);
 }

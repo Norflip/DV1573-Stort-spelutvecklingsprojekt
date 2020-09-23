@@ -29,10 +29,21 @@ public:
 	void SetMaterialData(const cb_Material& materialData);
 	const cb_Material& GetMaterialData() const;
 
+
+	void BindTextureToContext(ID3D11DeviceContext*);
+
 	/* Binding texture to correct slot in shader based on slot-input */
 	void SetTexture(Texture texture, size_t slot, ShaderBindFlag flag);
 	Texture GetTexture() { return this->texture; }
 
+	//ZWEB DEFAULTS TEXTURES AS INPUTS TO PIXEL SO THIS CAN BE USED TO MANUALLY CHANGE BIND FLAGS
+	void ChangeTextureBindFlags(size_t slot, ShaderBindFlag flag);
+  const cb_Material& GetMaterialData() const;
+
+	const std::string& GetName() const;
+	void SetName(const std::string& name);
+  void SetMaterialData(const cb_Material& materialData);
+  
 private:
 	Shader shader;
 	cb_Material cb_material_data;
@@ -43,8 +54,7 @@ private:
 	ShaderBindFlag flag;
 
 	ID3D11SamplerState* samplerState;
-
+	std::string name;
 	std::vector<TextureInfo> textures;
-	void BindTextureToContext(ID3D11DeviceContext*);
 	
 };
