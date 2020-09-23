@@ -34,7 +34,13 @@ float4 main(VS_OUTPUT input) : SV_TARGET
 
 	float3 viewDirection = float3(0.0f, 0.0f, 0.0f) - input.worldPosition;
 
-	float4 finalColor = CalculateLight(pointLights[0], normalized, input.worldPosition, viewDirection);
+	float4 finalColor = float4(0.0f, 0.0f, 0.0f, 0.0);
+
+	for (int i = 0; i < 1; i++)
+	{
+		finalColor += CalculateLight(pointLights[i], normalized, input.worldPosition, viewDirection);
+	}
+	//float4 finalColor = CalculateLight(pointLights[0], normalized, input.worldPosition, viewDirection);
 
 	finalColor *= textureColor;
 

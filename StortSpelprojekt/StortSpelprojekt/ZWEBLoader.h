@@ -114,6 +114,36 @@ namespace ZWEBLoader //TO BE ADDED: FUNCTION TO LOAD LIGHTS AND TO LOAD TEXTURES
 
 
 			//materialData.specularFactor = importer.getMaterialInfo(matIndex).specularPower;
+			std::string diffuseName;
+			std::string normalName;
+
+			diffuseName = importer.getMaterialInfo(0).albedoMapName;
+			normalName = importer.getMaterialInfo(0).normalMapName;
+
+			if (diffuseName != "")
+			{
+				Texture tex;
+				std::string path = "Textures/" + diffuseName;
+				std::wstring pathW(path.begin(), path.end());
+
+				bool success = tex.LoadTexture(device, pathW.c_str());
+				assert(success);
+
+				mat.SetTexture(tex, 0, ShaderBindFlag::PIXEL);
+
+			}
+			if (normalName != "")
+			{
+				Texture tex;
+				std::string path = "Textures/" + normalName;
+				std::wstring pathW(path.begin(), path.end());
+
+				bool success = tex.LoadTexture(device, pathW.c_str());
+				assert(success);
+
+				mat.SetTexture(tex, 1, ShaderBindFlag::PIXEL);
+
+			}
 
 
 			mat.SetMaterialData(materialData);
