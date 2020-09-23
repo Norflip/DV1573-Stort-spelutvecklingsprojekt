@@ -31,30 +31,32 @@ void Scene::Initialize(Renderer* renderer)
 	shader.Compile(renderer->GetDevice());
 
 	
-	std::vector<Mesh> zwebMeshes = ZWEBLoader::LoadMeshes(ZWEBLoadType::SkeletonAnimation, "../Models/OrchBody.ZWEB", renderer->GetDevice());
+	std::vector<Mesh> zwebMeshes = ZWEBLoader::LoadMeshes(ZWEBLoadType::SkeletonAnimation, "Models/cubeWithTexture.ZWEB", renderer->GetDevice());
 	
-	std::vector<Material> zwebMaterials = ZWEBLoader::LoadMaterials("../Models/OrchBody.ZWEB", shader);
+	std::vector<Material> zwebMaterials = ZWEBLoader::LoadMaterials("Models/cubeWithTexture.ZWEB", shader, renderer->GetDevice());
 
-	SkeletonAni zwebSkeleton = ZWEBLoader::LoadSkeletonOnly("../Models/OrchAnimation.ZWEB", zwebMeshes[0].GetBoneIDS());
+	//SkeletonAni zwebSkeleton = ZWEBLoader::LoadSkeletonOnly("../Models/OrchAnimation.ZWEB", zwebMeshes[0].GetBoneIDS());
 
-	Object* testMesh = new Object("test"); //Where do you delete??
+	Object* testMesh = new Object("test");
 
-	testMesh->GetTransform().SetLocalMatrix(zwebMeshes[0].GetWorldMatrix());
+	//testMesh->GetTransform().SetLocalMatrix(zwebMeshes[0].GetWorldMatrix());
 
-	dx::XMFLOAT3 miniScale = dx::XMFLOAT3(0.0625f, 0.0625f, 0.0625f);
+	//dx::XMFLOAT3 miniScale = dx::XMFLOAT3(0.0625f, 0.0625f, 0.0625f);
 
 	dx::XMFLOAT3 miniTranslation = dx::XMFLOAT3(0, 0, 10);
 
-	testMesh->GetTransform().SetScale(dx::XMLoadFloat3(&miniScale));
+	//testMesh->GetTransform().SetScale(dx::XMLoadFloat3(&miniScale));
 
 	testMesh->GetTransform().SetPosition(dx::XMLoadFloat3(&miniTranslation));
 
 	testMesh->GetTransform().UpdateLocalModelMatrix();
 
-	testMesh->AddComponent<SkeletonMeshComponent>(zwebMeshes[0], zwebMaterials[0]);
+	//testMesh->AddComponent<SkeletonMeshComponent>(zwebMeshes[0], zwebMaterials[0]);
 
-	testMesh->GetComponent<SkeletonMeshComponent>()->SetAnimationTrack(zwebSkeleton);
-	
+	//testMesh->GetComponent<SkeletonMeshComponent>()->SetAnimationTrack(zwebSkeleton);
+	//
+	zwebMaterials[0].SetSamplerState(renderer->GetDevice(), D3D11_TEXTURE_ADDRESS_WRAP, D3D11_FILTER_MIN_MAG_MIP_LINEAR);
+	testMesh->AddComponent<MeshComponent>(zwebMeshes[0], zwebMaterials[0]);
 	objects.push_back(testMesh);
 
 
