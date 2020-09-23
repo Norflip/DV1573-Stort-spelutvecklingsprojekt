@@ -18,7 +18,8 @@ private:
 
 	POINT lastMousePos;
 	bool showCursor;
-	bool lockMouse;
+	//bool lockMouse;
+	bool canRotate;
 
 
 public:

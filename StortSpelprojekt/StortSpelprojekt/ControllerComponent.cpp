@@ -8,7 +8,8 @@ ControllerComponent::ControllerComponent()
 
 	this->lastMousePos = Input::Instance().GetMousePos(); 
 	this->showCursor = true;
-	this->lockMouse = false;
+	//this->lockMouse = false;
+	this->canRotate = true;
 }
 
 ControllerComponent::~ControllerComponent()
@@ -17,17 +18,22 @@ ControllerComponent::~ControllerComponent()
 
 void ControllerComponent::Update(const float& deltaTime)
 {
-
 	DirectX::XMFLOAT3 dir = { 0,0,0 };
-
 	dx::XMFLOAT2 mouseVec;
 	mouseVec.x = this->lastMousePos.x - Input::Instance().GetMousePos().x;
 	mouseVec.y = this->lastMousePos.y - Input::Instance().GetMousePos().y;
 	this->lastMousePos = Input::Instance().GetMousePos();
-	std::cout <<"["<<mouseVec.x<<", "<< mouseVec.y <<"]"<< std::endl;
+	//std::cout <<"["<<mouseVec.x<<", "<< mouseVec.y <<"]"<< std::endl;
 
-	float sens = 0.8f;
-	GetOwner()->GetTransform().Rotate(-mouseVec.y*deltaTime*sens,mouseVec.x*deltaTime*sens,0.f);
+	if (LMOUSE_DOWN)
+	{
+		this->canRotate = !this->canRotate;
+	}
+	if (this->canRotate)
+	{
+		float sens = 0.8f;
+		GetOwner()->GetTransform().Rotate(-mouseVec.y*deltaTime*sens,mouseVec.x*deltaTime*sens,0.f);
+	}
 
 	if (KEY_DOWN(D1))
 	{
@@ -35,7 +41,7 @@ void ControllerComponent::Update(const float& deltaTime)
 		ShowCursor(this->showCursor);
 		
 	}
-	//ShowCursor(false);
+	//ShowCursor(false); 
 	//if (KEY_DOWN(D2))
 	//	this->lockMouse = !this->lockMouse;
 	//if (this->lockMouse)
