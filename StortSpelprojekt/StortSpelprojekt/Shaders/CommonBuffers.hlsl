@@ -5,6 +5,7 @@ struct PointLight
     float3 lightPosition;
 	float range;
     float3 attenuation;
+	float pad;
 };
 
 cbuffer cb_Object : register(b0)
@@ -29,4 +30,5 @@ cbuffer cb_Scene : register(b2)
     int nrOfPointLights;
     float3 sunDirection;
     float sunIntensity;
+	float3 cameraPosition;
 }

@@ -16,7 +16,7 @@ struct VS_OUTPUT
 
 float4 main(VS_OUTPUT input) : SV_TARGET
 {
-	float4 textureColor = float4(1.0f, 1.0f, 1.0f, 1.0f);
+	float4 textureColor = float4(0.5f, 0.5f, 0.5f, 1.0f);
 	float4 normalmap = float4(1.0f, 1.0f, 1.0f, 1.0f);
 
 	if (hasAlbedo)
@@ -27,23 +27,20 @@ float4 main(VS_OUTPUT input) : SV_TARGET
 		normalmap = normalMap.Sample(defaultSampleType, input.uv);
 		input.normal = CalculateNormalMapping(input.normal, input.tangent, normalmap);
 	}
-		
-
 
 	float3 normalized = normalize(input.normal);
 
-	float3 viewDirection = float3(0.0f, 0.0f, 0.0f) - input.worldPosition;
+	float3 viewDirection = cameraPosition - input.worldPosition;
 
 	float4 finalColor = float4(0.0f, 0.0f, 0.0f, 0.0);
 
-	for (int i = 0; i < 1; i++)
+	for (int i = 0; i < nrOfPointLights; i++)
 	{
 		finalColor += CalculateLight(pointLights[i], normalized, input.worldPosition, viewDirection);
 	}
-	//float4 finalColor = CalculateLight(pointLights[0], normalized, input.worldPosition, viewDirection);
 
 	finalColor *= textureColor;
 
+	//return float4(input.normal, 1.0f);
 	return finalColor;
-	//return finalColor;
 }

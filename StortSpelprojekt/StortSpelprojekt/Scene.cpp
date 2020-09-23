@@ -19,7 +19,7 @@ void Scene::Initialize(Renderer* renderer)
 	Window* window = renderer->GetOutputWindow();
 	
 	Object* cameraObject = new Object("camera", ObjectFlag::ENABLED);
-	camera = cameraObject->AddComponent<CameraComponent>(90.0f);
+	camera = cameraObject->AddComponent<CameraComponent>(60.0f);
 	camera->Resize(window->GetWidth(), window->GetHeight());
 	move = cameraObject->AddComponent<ControllerComponent>();
 	objects.push_back(cameraObject);
@@ -33,30 +33,50 @@ void Scene::Initialize(Renderer* renderer)
 	shader.Compile(renderer->GetDevice());
 
 	
-	std::vector<Mesh> zwebMeshes = ZWEBLoader::LoadMeshes(ZWEBLoadType::SkeletonAnimation, "Models/cubeWithTexture.ZWEB", renderer->GetDevice());
-	
-	std::vector<Material> zwebMaterials = ZWEBLoader::LoadMaterials("Models/cubeWithTexture.ZWEB", shader, renderer->GetDevice());
+	std::vector<Mesh> zwebMeshes = ZWEBLoader::LoadMeshes(ZWEBLoadType::SkeletonAnimation, "Models/brickSphere.ZWEB", renderer->GetDevice());
+	std::vector<Material> zwebMaterials = ZWEBLoader::LoadMaterials("Models/brickSphere.ZWEB", shader, renderer->GetDevice());
 
+	std::vector<Mesh> sylvanas = ZWEBLoader::LoadMeshes(ZWEBLoadType::NoAnimation, "Models/sylvanas.ZWEB", renderer->GetDevice());
+	std::vector<Material> sylvanasMat = ZWEBLoader::LoadMaterials("Models/sylvanas.ZWEB", shader, renderer->GetDevice());
+
+	std::vector<Mesh> cylinder = ZWEBLoader::LoadMeshes(ZWEBLoadType::NoAnimation, "Models/cylinder.ZWEB", renderer->GetDevice());
+	std::vector<Material> cylinderMat = ZWEBLoader::LoadMaterials("Models/cylinder.ZWEB", shader, renderer->GetDevice());
 
 	Object* testMesh = new Object("test");
-
+	Object* testMesh2 = new Object("test2");
+	Object* testMesh3 = new Object("test3");
 	
-	dx::XMFLOAT3 miniScale = dx::XMFLOAT3(1.0f, 1.0f, 1.0f);
-	dx::XMFLOAT3 miniTranslation = dx::XMFLOAT3(0, 0, 7);
-
+	dx::XMFLOAT3 miniTranslation = dx::XMFLOAT3(0, 0, 6);
+	dx::XMFLOAT3 miniTranslation2 = dx::XMFLOAT3(2, 2, 2);
+	dx::XMFLOAT3 miniTranslation3 = dx::XMFLOAT3(-4, -3, -4);
 
 	testMesh->GetTransform().SetPosition(dx::XMLoadFloat3(&miniTranslation));
-
 	testMesh->GetTransform().UpdateLocalModelMatrix();
 
+	// Behövs dessa och till vad?
+	//testMesh->AddFlag(ObjectFlag::ENABLED | ObjectFlag::RENDER);
+	//testMesh->AddComponent<MoveComponent>();
+
+	testMesh2->GetTransform().SetPosition(dx::XMLoadFloat3(&miniTranslation2));
+	testMesh2->GetTransform().UpdateLocalModelMatrix();
+	Transform::SetParentChild(testMesh->GetTransform(), testMesh2->GetTransform());
+
+	testMesh3->GetTransform().SetPosition(dx::XMLoadFloat3(&miniTranslation3));
+	testMesh3->GetTransform().UpdateLocalModelMatrix();
+	Transform::SetParentChild(testMesh2->GetTransform(), testMesh3->GetTransform());
+
 	zwebMaterials[0].SetSamplerState(renderer->GetDevice(), D3D11_TEXTURE_ADDRESS_WRAP, D3D11_FILTER_MIN_MAG_MIP_LINEAR);
+	sylvanasMat[0].SetSamplerState(renderer->GetDevice(), D3D11_TEXTURE_ADDRESS_WRAP, D3D11_FILTER_MIN_MAG_MIP_LINEAR);
+	cylinderMat[0].SetSamplerState(renderer->GetDevice(), D3D11_TEXTURE_ADDRESS_WRAP, D3D11_FILTER_MIN_MAG_MIP_LINEAR);
+
 	testMesh->AddComponent<MeshComponent>(zwebMeshes[0], zwebMaterials[0]);
+	testMesh2->AddComponent<MeshComponent>(sylvanas[0], sylvanasMat[0]);
+	testMesh3->AddComponent<MeshComponent>(cylinder[0], cylinderMat[0]);
+
 	objects.push_back(testMesh);
+	objects.push_back(testMesh2);
+	objects.push_back(testMesh3);
 
-
-	Mesh mesh = ShittyOBJLoader::Load("Models/Cube.obj", renderer->GetDevice());
-
-	Material material = Material(shader);
 
 	/* Loading a texture */
 	Texture diffuseTexture;
@@ -70,23 +90,10 @@ void Scene::Initialize(Renderer* renderer)
 	material.SetTexture(randomNormal, TEXTURE_NORMAL_SLOT, ShaderBindFlag::PIXEL);
 	material.SetSamplerState(renderer->GetDevice(), D3D11_TEXTURE_ADDRESS_WRAP, D3D11_FILTER_MIN_MAG_MIP_LINEAR);
 
-	tmp_obj->GetTransform().UpdateLocalModelMatrix(); // Need to use this after every transform update.
+	//tmp_obj2->AddFlag(ObjectFlag::ENABLED | ObjectFlag::RENDER);
+	//tmp_obj2->AddComponent<MoveComponent>();
 	
-	tmp_obj->AddFlag(ObjectFlag::ENABLED | ObjectFlag::RENDER);
-	tmp_obj->AddComponent<MeshComponent>(mesh, material);
-	objects.push_back(tmp_obj);
 
-	Object* tmp_obj2 = new Object("cube2");
-	tmp_obj2->GetTransform().SetPosition({ 0, 0, 4 });
-	tmp_obj2->GetTransform().UpdateLocalModelMatrix();
-	tmp_obj2->AddFlag(ObjectFlag::ENABLED | ObjectFlag::RENDER);
-	tmp_obj2->AddComponent<MeshComponent>(mesh, material);
-	tmp_obj2->AddComponent<MoveComponent>();
-	
-	Transform::SetParentChild(tmp_obj->GetTransform(), tmp_obj2->GetTransform());
-
-
-	objects.push_back(tmp_obj2);
 
 
 	/* * * * * * * * ** * * * * */
@@ -134,10 +141,6 @@ void Scene::Update(const float& deltaTime)
 			toRemove.push_back(obj);
 	}
 
-	
-	
-
-
 }
 
 void Scene::FixedUpdate(const float& fixedDeltaTime)
@@ -176,7 +179,7 @@ void Scene::RenderSceneToTexture()
 		obj->Draw(renderer, camera);	
 	}
 
-	renderer->Unbind();	// needed?
+	//renderer->Unbind();	// needed?
 
 	renderer->SetBackbufferRenderTarget();
 }

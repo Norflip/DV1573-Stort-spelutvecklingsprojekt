@@ -14,6 +14,7 @@ struct cb_Object
 {
 	dx::XMFLOAT4X4 mvp;
 	dx::XMFLOAT4X4 world;
+
 };
 
 __declspec(align(16))
@@ -43,6 +44,7 @@ struct cb_Scene
 	int nrOfPointLights;
 	dx::XMFLOAT3 sunDirection;
 	float sunIntensity;
+	dx::XMFLOAT3 cameraPosition;
 };
 
 __declspec(align(16))
