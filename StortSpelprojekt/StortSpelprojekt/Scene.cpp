@@ -45,7 +45,6 @@ void Scene::Initialize(Renderer* renderer)
 
 	dx::XMFLOAT3 miniTranslation = dx::XMFLOAT3(0, 0, 0);
 
-	testMesh->GetTransform().SetScale({1000,1000,1000});
 
 	testMesh->GetTransform().SetPosition(dx::XMLoadFloat3(&miniTranslation));
 
@@ -152,16 +151,16 @@ void Scene::FixedUpdate(const float& fixedDeltaTime)
 
 void Scene::Render()
 {	
-	RenderSceneToTexture();
+	
 
 	renderer->BeginFrame();
-
-	for (auto i = objects.begin(); i < objects.end(); i++)
-	{
-		Object* obj = (*i);
-		//if (obj->HasFlag(ObjectFlag::ENABLED | ObjectFlag::RENDER))
-		obj->Draw(renderer, camera);
-	}
+	RenderSceneToTexture();
+	//for (auto i = objects.begin(); i < objects.end(); i++)
+	//{
+	//	Object* obj = (*i);
+	//	//if (obj->HasFlag(ObjectFlag::ENABLED | ObjectFlag::RENDER))
+	//	obj->Draw(renderer, camera);
+	//}
 
 	/* Render screenquad with rendered scene-texture */
 	quad->Draw(renderer, camera);
