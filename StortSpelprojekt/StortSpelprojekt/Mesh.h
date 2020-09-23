@@ -34,7 +34,7 @@ private:
 	dx::XMFLOAT3 rotation;
 	dx::XMFLOAT3 translation;
 	std::string meshName= "null";
-	std::string materialName = "null"; //Only one material per mesh.
+	std::string materialName = "null"; //Only one material per mesh. If someone knows how to use multiple let me know.
 	std::map<std::string, unsigned int> boneIDMap;
 
 public:
@@ -54,6 +54,12 @@ public:
 
 		DXHelper::CreateVertexBuffer(device, vertices.size(), sizeof(Mesh::Vertex), vertices.data(), &vertexBuffer);
 		DXHelper::CreateIndexBuffer(device, indices.size(), indices.data(), &indexBuffer);
+	}
+
+	Mesh()
+	{
+		this->vertices.clear();
+		this->indices.clear();
 	}
 
 	std::map<std::string, unsigned int>& GetBoneIDS()

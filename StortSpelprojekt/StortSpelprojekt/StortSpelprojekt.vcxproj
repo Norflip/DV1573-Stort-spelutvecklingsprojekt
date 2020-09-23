@@ -144,7 +144,7 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <ClCompile Include="BoundingBoxComponent.cpp" />
+    <ClCompile Include="BoundingBoxes.cpp" />
     <ClCompile Include="CameraComponent.cpp" />
     <ClCompile Include="ControllerComponent.cpp" />
     <ClCompile Include="DXHelper.cpp" />
@@ -165,7 +165,7 @@
     <ClCompile Include="Window.cpp" />
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="BoundingBoxComponent.h" />
+    <ClInclude Include="BoundingBoxes.h" />
     <ClInclude Include="Buffers.h" />
     <ClInclude Include="BusNode.h" />
     <ClInclude Include="CameraComponent.h" />

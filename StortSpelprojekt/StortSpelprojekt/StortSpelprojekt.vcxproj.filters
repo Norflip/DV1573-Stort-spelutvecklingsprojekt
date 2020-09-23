@@ -78,7 +78,7 @@
     <ClCompile Include="Input.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="BoundingBoxComponent.cpp">
+    <ClCompile Include="BoundingBoxes.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>
@@ -161,7 +161,7 @@
     <ClInclude Include="ControllerComponent.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="BoundingBoxComponent.h">
+    <ClInclude Include="BoundingBoxes.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>
