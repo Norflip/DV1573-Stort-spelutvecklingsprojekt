@@ -43,18 +43,18 @@ void Scene::Initialize(Renderer* renderer)
 
 	
 
-	dx::XMFLOAT3 miniTranslation = dx::XMFLOAT3(0, 0, 0);
+	dx::XMFLOAT3 miniTranslation = dx::XMFLOAT3(0, 0, 10);
 
 
 	testMesh->GetTransform().SetPosition(dx::XMLoadFloat3(&miniTranslation));
 
-	testMesh->GetTransform().UpdateLocalModelMatrix();
+	
 
 
 	//
 	zwebMaterials[0].SetSamplerState(renderer->GetDevice(), D3D11_TEXTURE_ADDRESS_WRAP, D3D11_FILTER_MIN_MAG_MIP_LINEAR);
 	testMesh->AddComponent<MeshComponent>(zwebMeshes[0], zwebMaterials[0]);
-	//objects.push_back(testMesh);
+	objects.push_back(testMesh);
 
 
 	Mesh mesh = ShittyOBJLoader::Load("Models/Cube.obj", renderer->GetDevice());
@@ -74,7 +74,7 @@ void Scene::Initialize(Renderer* renderer)
 
 	Object* tmp_obj = new Object("cube1");
 	tmp_obj->GetTransform().SetPosition({ 0, 0, 10 });
-	tmp_obj->GetTransform().UpdateLocalModelMatrix(); // Need to use this after every transform update.
+	
 	
 	tmp_obj->AddFlag(ObjectFlag::ENABLED | ObjectFlag::RENDER);
 	tmp_obj->AddComponent<MeshComponent>(mesh, material);
@@ -82,7 +82,7 @@ void Scene::Initialize(Renderer* renderer)
 
 	Object* tmp_obj2 = new Object("cube2");
 	tmp_obj2->GetTransform().SetPosition({ 0, 0, 4 });
-	tmp_obj2->GetTransform().UpdateLocalModelMatrix();
+
 	tmp_obj2->AddFlag(ObjectFlag::ENABLED | ObjectFlag::RENDER);
 	tmp_obj2->AddComponent<MeshComponent>(mesh, material);
 	tmp_obj2->AddComponent<MoveComponent>();
