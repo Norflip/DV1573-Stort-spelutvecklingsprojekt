@@ -45,5 +45,4 @@ private:
 	Texture* screenquadTex;
 	Object* quad;
 	Material screenquadmat;	
-
 };

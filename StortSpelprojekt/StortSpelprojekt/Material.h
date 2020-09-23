@@ -1,10 +1,8 @@
 #pragma once
 #include "Shader.h"
-
+#include "Buffers.h"
 #include "Texture.h"
 #include <vector>
-
-#include "Buffers.h"
 
 
 class Material
@@ -26,6 +24,11 @@ public:
 	void SetSamplerState(ID3D11Device* device, D3D11_TEXTURE_ADDRESS_MODE addressMode, D3D11_FILTER filter);
 
 	void BindToContext(ID3D11DeviceContext*);
+	//void SetTexture(size_t slot);
+	//void SetSampler(size_t slot);
+	void SetMaterialData(const cb_Material& materialData);
+	const cb_Material& GetMaterialData() const;
+
 
 	void BindTextureToContext(ID3D11DeviceContext*);
 
@@ -35,24 +38,21 @@ public:
 
 	//ZWEB DEFAULTS TEXTURES AS INPUTS TO PIXEL SO THIS CAN BE USED TO MANUALLY CHANGE BIND FLAGS
 	void ChangeTextureBindFlags(size_t slot, ShaderBindFlag flag);
-  const cb_Material& GetMaterialData() const;
 
 	const std::string& GetName() const;
 	void SetName(const std::string& name);
-  void SetMaterialData(const cb_Material& materialData);
   
 private:
 	Shader shader;
+	cb_Material cb_material_data;
+
 	ID3D11ShaderResourceView* srv;
 	Texture texture;
 	size_t slot;
 	ShaderBindFlag flag;
 
 	ID3D11SamplerState* samplerState;
-
-	std::vector<TextureInfo> textures;
-
-	cb_Material cb_material_data;
 	std::string name;
+	std::vector<TextureInfo> textures;
+	
 };
-
