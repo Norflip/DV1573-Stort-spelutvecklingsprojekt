@@ -23,6 +23,6 @@ float4 main(VS_OUTPUT input) : SV_TARGET
 	float d = dot(input.normal, float3(1,1,0));
 	d = (d + 1) / 2.0f;
 	
-	float4 final = diffuseColor; * normalColor;
+	float4 final = diffuseColor * normalColor;
 	return final;
 }
