@@ -5,26 +5,30 @@
 //#include <DirectXMath.h>
 namespace dx = DirectX;
 
-const float STRAFE = 1.f;
-const float FLY = 1.f;
-const float WALK = 1.f;
-const dx::XMFLOAT3 CROUCH = { 0,2.f,0 };
-
 class ControllerComponent :public Component
 {
 private:
-	dx::XMVECTOR direction;
+	float strafe;
+	float elevate;  
+	float walk;
+	float faster;
+	float crouchSpeed;
+	const dx::XMFLOAT3 CROUCH = { 0.f,2.f,0.f };
+
 	float speed;
+	float speedMulitplier;
 
 	POINT lastMousePos;
 	bool showCursor;
-	//bool lockMouse;
 	bool canRotate;
-
+	float sensetivity;
 
 public:
 	ControllerComponent();
 	virtual ~ControllerComponent();
+
+	void SetSpeedMulitplier(float speed);
+	float GetSpeedMulitplier()const;
 
 	void Update(const float& deltaTime);
 
