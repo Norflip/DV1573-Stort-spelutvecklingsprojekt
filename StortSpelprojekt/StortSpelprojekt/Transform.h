@@ -19,6 +19,7 @@ public:
 
 	DirectX::XMVECTOR TransformDirection(DirectX::XMVECTOR direction) const;
 	
+	void Translate(float x, float y, float z);
 	void Rotate(float pitch, float yaw, float roll);
 
 	bool HasParent() const { return this->parent != nullptr; }

@@ -8,7 +8,7 @@
 #include "DXHelper.h"
 
 
-// denna bör ses över.. sudo class där allt är public. Går mot kodstandard.
+// denna b�r ses �ver.. sudo class d�r allt �r public. G�r mot kodstandard.
 
 struct Mesh
 {
@@ -121,7 +121,6 @@ public:
 		vertexBuffer = indexBuffer = nullptr;
 	}
 
-
 	static Mesh CreateScreenQuad(ID3D11Device* device)
 	{
 		const float size = 1.0f;
@@ -137,5 +136,3 @@ public:
 		return Mesh(device, vertices, indices);
 	}	
 };
-
-
