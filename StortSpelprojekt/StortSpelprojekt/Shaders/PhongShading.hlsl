@@ -8,7 +8,6 @@ float4 CalculateLight(PointLight pointLight, float3 normal, float3 objectPositio
 	float4 finalColor = float4(0.0f, 0.0f, 0.0f, 0.0f);
 
 	float3 light = pointLight.lightPosition - objectPosition;
-	//float range = 25.0f; // Put this  in light object
 	
 	float distance = length(light);
 	light = normalize(light);

@@ -32,7 +32,6 @@ void Scene::Initialize(Renderer* renderer)
 	
 	shader.Compile(renderer->GetDevice());
 
-	
 	std::vector<Mesh> zwebMeshes = ZWEBLoader::LoadMeshes(ZWEBLoadType::SkeletonAnimation, "Models/brickSphere.ZWEB", renderer->GetDevice());
 	std::vector<Material> zwebMaterials = ZWEBLoader::LoadMaterials("Models/brickSphere.ZWEB", shader, renderer->GetDevice());
 
@@ -51,18 +50,11 @@ void Scene::Initialize(Renderer* renderer)
 	dx::XMFLOAT3 miniTranslation3 = dx::XMFLOAT3(-4, -3, -4);
 
 	testMesh->GetTransform().SetPosition(dx::XMLoadFloat3(&miniTranslation));
-	testMesh->GetTransform().UpdateLocalModelMatrix();
-
-	// Beh�vs dessa och till vad?
-	//testMesh->AddFlag(ObjectFlag::ENABLED | ObjectFlag::RENDER);
-	//testMesh->AddComponent<MoveComponent>();
 
 	testMesh2->GetTransform().SetPosition(dx::XMLoadFloat3(&miniTranslation2));
-	testMesh2->GetTransform().UpdateLocalModelMatrix();
 	Transform::SetParentChild(testMesh->GetTransform(), testMesh2->GetTransform());
 
 	testMesh3->GetTransform().SetPosition(dx::XMLoadFloat3(&miniTranslation3));
-	testMesh3->GetTransform().UpdateLocalModelMatrix();
 	Transform::SetParentChild(testMesh2->GetTransform(), testMesh3->GetTransform());
 
 	zwebMaterials[0].SetSamplerState(renderer->GetDevice(), D3D11_TEXTURE_ADDRESS_WRAP, D3D11_FILTER_MIN_MAG_MIP_LINEAR);
@@ -76,40 +68,6 @@ void Scene::Initialize(Renderer* renderer)
 	objects.push_back(testMesh);
 	objects.push_back(testMesh2);
 	objects.push_back(testMesh3);
-
-
-	/* Loading a texture */
-	Texture diffuseTexture;
-	diffuseTexture.LoadTexture(renderer->GetDevice(), L"Textures/Gorilla.png");
-	Texture randomNormal;
-	randomNormal.LoadTexture(renderer->GetDevice(), L"Textures/RandomNormal.png");
-
-	Material material(shader);
-	/* Setting texture to correct slot in material*/
-	material.SetTexture(diffuseTexture, TEXTURE_DIFFUSE_SLOT, ShaderBindFlag::PIXEL);
-	material.SetTexture(randomNormal, TEXTURE_NORMAL_SLOT, ShaderBindFlag::PIXEL);
-	material.SetSamplerState(renderer->GetDevice(), D3D11_TEXTURE_ADDRESS_WRAP, D3D11_FILTER_MIN_MAG_MIP_LINEAR);
-
-	//tmp_obj2->AddFlag(ObjectFlag::ENABLED | ObjectFlag::RENDER);
-	//tmp_obj2->AddComponent<MoveComponent>();
-
-	
-	Object* tmp_obj = new Object("cube1");
-	tmp_obj->GetTransform().SetPosition({ 0, 0, 10 });
-	
-	
-	tmp_obj->AddFlag(ObjectFlag::ENABLED | ObjectFlag::RENDER);
-	tmp_obj->AddComponent<MeshComponent>(mesh, material);
-	objects.push_back(tmp_obj);
-
-	Object* tmp_obj2 = new Object("cube2");
-	tmp_obj2->GetTransform().SetPosition({ 0, 0, 4 });
-
-	tmp_obj2->AddFlag(ObjectFlag::ENABLED | ObjectFlag::RENDER);
-	tmp_obj2->AddComponent<MeshComponent>(mesh, material);
-	tmp_obj2->AddComponent<MoveComponent>();
-	
-
 
 
 	/* * * * * * * * ** * * * * */
