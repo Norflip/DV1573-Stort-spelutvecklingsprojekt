@@ -32,65 +32,42 @@ void Scene::Initialize(Renderer* renderer)
 	
 	shader.Compile(renderer->GetDevice());
 
-	
-	std::vector<Mesh> zwebMeshes = ZWEBLoader::LoadMeshes(ZWEBLoadType::SkeletonAnimation, "Models/cubeWithTexture.ZWEB", renderer->GetDevice());
-	
-	std::vector<Material> zwebMaterials = ZWEBLoader::LoadMaterials("Models/cubeWithTexture.ZWEB", shader, renderer->GetDevice());
+	std::vector<Mesh> zwebMeshes = ZWEBLoader::LoadMeshes(ZWEBLoadType::SkeletonAnimation, "Models/brickSphere.ZWEB", renderer->GetDevice());
+	std::vector<Material> zwebMaterials = ZWEBLoader::LoadMaterials("Models/brickSphere.ZWEB", shader, renderer->GetDevice());
 
-	
+	std::vector<Mesh> sylvanas = ZWEBLoader::LoadMeshes(ZWEBLoadType::NoAnimation, "Models/sylvanas.ZWEB", renderer->GetDevice());
+	std::vector<Material> sylvanasMat = ZWEBLoader::LoadMaterials("Models/sylvanas.ZWEB", shader, renderer->GetDevice());
+
+	std::vector<Mesh> cylinder = ZWEBLoader::LoadMeshes(ZWEBLoadType::NoAnimation, "Models/cylinder.ZWEB", renderer->GetDevice());
+	std::vector<Material> cylinderMat = ZWEBLoader::LoadMaterials("Models/cylinder.ZWEB", shader, renderer->GetDevice());
 
 	Object* testMesh = new Object("test");
-
+	Object* testMesh2 = new Object("test2");
+	Object* testMesh3 = new Object("test3");
 	
-
-	dx::XMFLOAT3 miniTranslation = dx::XMFLOAT3(0, 0, 10);
-
+	dx::XMFLOAT3 miniTranslation = dx::XMFLOAT3(0, 0, 6);
+	dx::XMFLOAT3 miniTranslation2 = dx::XMFLOAT3(2, 2, 2);
+	dx::XMFLOAT3 miniTranslation3 = dx::XMFLOAT3(-4, -3, -4);
 
 	testMesh->GetTransform().SetPosition(dx::XMLoadFloat3(&miniTranslation));
 
-	
+	testMesh2->GetTransform().SetPosition(dx::XMLoadFloat3(&miniTranslation2));
+	Transform::SetParentChild(testMesh->GetTransform(), testMesh2->GetTransform());
 
+	testMesh3->GetTransform().SetPosition(dx::XMLoadFloat3(&miniTranslation3));
+	Transform::SetParentChild(testMesh2->GetTransform(), testMesh3->GetTransform());
 
-	//
 	zwebMaterials[0].SetSamplerState(renderer->GetDevice(), D3D11_TEXTURE_ADDRESS_WRAP, D3D11_FILTER_MIN_MAG_MIP_LINEAR);
+	sylvanasMat[0].SetSamplerState(renderer->GetDevice(), D3D11_TEXTURE_ADDRESS_WRAP, D3D11_FILTER_MIN_MAG_MIP_LINEAR);
+	cylinderMat[0].SetSamplerState(renderer->GetDevice(), D3D11_TEXTURE_ADDRESS_WRAP, D3D11_FILTER_MIN_MAG_MIP_LINEAR);
+
 	testMesh->AddComponent<MeshComponent>(zwebMeshes[0], zwebMaterials[0]);
+	testMesh2->AddComponent<MeshComponent>(sylvanas[0], sylvanasMat[0]);
+	testMesh3->AddComponent<MeshComponent>(cylinder[0], cylinderMat[0]);
+
 	objects.push_back(testMesh);
-
-
-	Mesh mesh = ShittyOBJLoader::Load("Models/Cube.obj", renderer->GetDevice());
-
-	Material material = Material(shader);
-
-	/* Loading a texture */
-	Texture diffuseTexture;
-	diffuseTexture.LoadTexture(renderer->GetDevice(), L"Textures/Gorilla.png");
-	Texture randomNormal;
-	randomNormal.LoadTexture(renderer->GetDevice(), L"Textures/RandomNormal.png");
-
-	/* Setting texture to correct slot in material*/
-	material.SetTexture(diffuseTexture, TEXTURE_DIFFUSE_SLOT, ShaderBindFlag::PIXEL);
-	material.SetTexture(randomNormal, TEXTURE_NORMAL_SLOT, ShaderBindFlag::PIXEL);
-	material.SetSamplerState(renderer->GetDevice(), D3D11_TEXTURE_ADDRESS_WRAP, D3D11_FILTER_MIN_MAG_MIP_LINEAR);
-
-	Object* tmp_obj = new Object("cube1");
-	tmp_obj->GetTransform().SetPosition({ 0, 0, 10 });
-	
-	
-	tmp_obj->AddFlag(ObjectFlag::ENABLED | ObjectFlag::RENDER);
-	tmp_obj->AddComponent<MeshComponent>(mesh, material);
-	objects.push_back(tmp_obj);
-
-	Object* tmp_obj2 = new Object("cube2");
-	tmp_obj2->GetTransform().SetPosition({ 0, 0, 4 });
-
-	tmp_obj2->AddFlag(ObjectFlag::ENABLED | ObjectFlag::RENDER);
-	tmp_obj2->AddComponent<MeshComponent>(mesh, material);
-	tmp_obj2->AddComponent<MoveComponent>();
-	
-	Transform::SetParentChild(tmp_obj->GetTransform(), tmp_obj2->GetTransform());
-
-
-	objects.push_back(tmp_obj2);
+	objects.push_back(testMesh2);
+	objects.push_back(testMesh3);
 
 
 	/* * * * * * * * ** * * * * */
@@ -138,10 +115,6 @@ void Scene::Update(const float& deltaTime)
 			toRemove.push_back(obj);
 	}
 
-	
-	
-
-
 }
 
 void Scene::FixedUpdate(const float& fixedDeltaTime)
@@ -152,7 +125,6 @@ void Scene::FixedUpdate(const float& fixedDeltaTime)
 void Scene::Render()
 {	
 	
-
 	renderer->BeginFrame();
 	RenderSceneToTexture();
 	//for (auto i = objects.begin(); i < objects.end(); i++)
@@ -180,8 +152,8 @@ void Scene::RenderSceneToTexture()
 		//if (obj->HasFlag(ObjectFlag::ENABLED | ObjectFlag::VISIBLE))
 		obj->Draw(renderer, camera);	
 	}
-	
-	renderer->Unbind();	// needed?
+
+	//renderer->Unbind();	// needed?
 
 	renderer->SetBackbufferRenderTarget();
 }
