@@ -2,39 +2,114 @@
 
 ControllerComponent::ControllerComponent()
 {
-	DirectX::XMFLOAT3 dir = { 0, 1.f, 0 };
-	this->direction = dx::XMLoadFloat3(&dir);
-	this->speed = 1.f;
+	//this->move =1.f;
+	this->boost = 4.5f;// *this->move;
+	this->crouchSpeed = 0.3f;// *this->move;
+
+	this->lastMousePos = Input::Instance().GetMousePos(); 
+	this->showCursor = true;
+	this->canRotate = true;
+	this->sensetivity = 1.f;
 }
 
 ControllerComponent::~ControllerComponent()
 {
 }
 
+//void ControllerComponent::SetMoveSpeed(float speed) //sets move speed
+//{
+//	this->move = speed;
+//}
+//
+//float ControllerComponent::GetMoveSpeed() const
+//{
+//	return this->move;
+//}
+
+void ControllerComponent::SetBoostSpeed(float speed) //sets boost multiplier (boost*move)
+{
+	this->boost = speed;
+}
+
+float ControllerComponent::GetBoostSpeed() const
+{
+	return this->boost;
+}
+
+void ControllerComponent::SetCrouchSpeed(float speed) //sets crouch multiplier (crouch*move)
+{
+	this->crouchSpeed = speed;
+}
+
+float ControllerComponent::GetCrouchSpeed() const
+{
+	return crouchSpeed;
+}
+
+void ControllerComponent::SetSensetivity(float sensetivity)
+{
+	this->sensetivity = sensetivity;
+}
+
+float ControllerComponent::GetSensetivity() const
+{
+	return this->sensetivity;
+}
+
 void ControllerComponent::Update(const float& deltaTime)
 {
+	DirectX::XMFLOAT3 dir = { 0.f,0.f,0.f };
+	dx::XMFLOAT2 mouseVec;
+	float speed = 1.f;
+	mouseVec.x = this->lastMousePos.x - Input::Instance().GetMousePos().x;
+	mouseVec.y = this->lastMousePos.y - Input::Instance().GetMousePos().y;
+	this->lastMousePos = Input::Instance().GetMousePos();
+	//std::cout <<"["<<mouseVec.x<<", "<< mouseVec.y <<"]"<< std::endl;
 
-	DirectX::XMFLOAT3 dir = { 0,0,0 };
+	if (LMOUSE_DOWN)
+	{
+		this->canRotate = !this->canRotate;
+	}
+	if (this->canRotate)
+	{
+		GetOwner()->GetTransform().Rotate(-mouseVec.y*deltaTime* this->sensetivity,-mouseVec.x*deltaTime* this->sensetivity,0.f);
+	}
+
+	if (KEY_DOWN(D1))
+	{
+		this->showCursor = !this->showCursor;
+		ShowCursor(this->showCursor);
+	}
+	
 	if (KEY_PRESSED(LeftShift))
-		this->speed = 4.5f;
-	else
-		this->speed = walk;
-	if (KEY_PRESSED(Space))
-		dir.y += fly;
-	if (KEY_PRESSED(C)|| KEY_PRESSED(LeftControl))
-		dir.y -= fly;
-	if (KEY_PRESSED(W))
-		dir.z += walk;
-	if (KEY_PRESSED(S))
-		dir.z -= walk;
-	if (KEY_PRESSED(A))
-		dir.x -= strafe;
-	if (KEY_PRESSED(D))
-		dir.x += strafe;
+		speed = boost;
+	if (KEY_DOWN(LeftControl))
+	{
+		speed = crouchSpeed;
+		GetOwner()->GetTransform().Translate(-CROUCH.x, -CROUCH.y, -CROUCH.z);
+	}
+	if (KEY_UP(LeftControl))
+	{
+		speed = 1.f;// move;
+		GetOwner()->GetTransform().Translate(CROUCH.x, CROUCH.y, CROUCH.z);
+	}
 
-	this->direction = dx::XMLoadFloat3(&dir);
-	this->direction = dx::XMVectorScale(this->direction, this->speed);
-	this->direction = dx::XMVectorScale(this->direction, deltaTime);
-	dx::XMVECTOR newPos = dx::XMVectorAdd(GetOwner()->GetTransform().GetPosition(), this->direction);
-	GetOwner()->GetTransform().SetPosition(newPos);
+	if (KEY_PRESSED(Space))
+		dir.y += 1.f;// move;
+	if (KEY_PRESSED(C))
+		dir.y -= 1.f;// move;
+	if (KEY_PRESSED(W))
+		dir.z += 1.f;// move;
+	if (KEY_PRESSED(S))
+		dir.z -= 1.f;// move;
+	if (KEY_PRESSED(A))
+		dir.x -= 1.f;// move;
+	if (KEY_PRESSED(D))
+		dir.x += 1.f;// move;
+
+	dx::XMVECTOR direction = dx::XMLoadFloat3(&dir);
+	direction = dx::XMVectorScale(direction, speed);
+	direction = dx::XMVectorScale(direction, deltaTime);
+	dx::XMStoreFloat3(&dir, direction);
+	GetOwner()->GetTransform().Translate(dir.x,dir.y,dir.z);
 }

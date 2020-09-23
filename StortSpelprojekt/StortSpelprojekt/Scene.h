@@ -49,7 +49,9 @@ private:
 	Object* quad;
 	Material screenquadmat;	
 
+
 	//frustumplanes extraction
 	std::vector<dx::XMFLOAT4> extractedPlanes;
+
 
 };

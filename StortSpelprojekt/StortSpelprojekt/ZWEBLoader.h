@@ -74,9 +74,9 @@ namespace ZWEBLoader //TO BE ADDED: FUNCTION TO LOAD LIGHTS AND TO LOAD TEXTURES
 			{
 				vertices[vertex].position = DirectX::XMFLOAT3(verticesZweb[vertex].pos[0], verticesZweb[vertex].pos[1], verticesZweb[vertex].pos[2]);
 
-				vertices[vertex].uv = DirectX::XMFLOAT2(verticesZweb[vertex].uv[0], -verticesZweb[vertex].uv[1]);
+				vertices[vertex].uv = DirectX::XMFLOAT2(verticesZweb[vertex].uv[0], 1.0f - verticesZweb[vertex].uv[1]);
 
-				vertices[vertex].normal = DirectX::XMFLOAT3(verticesZweb[vertex].normal[0], verticesZweb[vertex].normal[1], verticesZweb[vertex].normal[2]);
+				vertices[vertex].normal = DirectX::XMFLOAT3(verticesZweb[vertex].normal[0], verticesZweb[vertex].normal[1], verticesZweb[vertex].normal[2]);// *-1.0f);
 
 				vertices[vertex].tangent = DirectX::XMFLOAT3(verticesZweb[vertex].tangent[0], verticesZweb[vertex].tangent[1], verticesZweb[vertex].tangent[2]);
 
@@ -197,18 +197,12 @@ namespace ZWEBLoader //TO BE ADDED: FUNCTION TO LOAD LIGHTS AND TO LOAD TEXTURES
 			cb_Material materialData; 
 			
 			
-			materialData.ambient = DirectX::XMFLOAT3(importer.getMaterialInfo(material).ka[0], importer.getMaterialInfo(material).ka[1], importer.getMaterialInfo(material).ka[2]);
+			materialData.ambient = DirectX::XMFLOAT4(importer.getMaterialInfo(material).ka[0], importer.getMaterialInfo(material).ka[1], importer.getMaterialInfo(material).ka[2], 1.0f);
 
-			materialData.albedo = DirectX::XMFLOAT3(importer.getMaterialInfo(material).kd[0], importer.getMaterialInfo(material).kd[1], importer.getMaterialInfo(material).kd[2]);
+			materialData.diffuse = DirectX::XMFLOAT4(importer.getMaterialInfo(material).kd[0], importer.getMaterialInfo(material).kd[1], importer.getMaterialInfo(material).kd[2], 1.0f);
 
-			materialData.specular = DirectX::XMFLOAT3(importer.getMaterialInfo(material).ks[0], importer.getMaterialInfo(material).ks[1], importer.getMaterialInfo(material).ks[2]);// if the material is lambert and not Phong then this is default 0.
+			materialData.specular = DirectX::XMFLOAT4(importer.getMaterialInfo(material).ks[0], importer.getMaterialInfo(material).ks[1], importer.getMaterialInfo(material).ks[2], importer.getMaterialInfo(material).specularPower);// if the material is lambert and not Phong then this is default 0.
 
-			materialData.specularFactor = importer.getMaterialInfo(material).specularPower; // if the material is lambert and not Phong then this is default 0.
-
-
-			mat.SetMaterialData(materialData);
-
-			
 			mat.SetName(importer.getMaterialInfo(material).name);
 
 
@@ -231,6 +225,11 @@ namespace ZWEBLoader //TO BE ADDED: FUNCTION TO LOAD LIGHTS AND TO LOAD TEXTURES
 				assert(success);
 
 				mat.SetTexture(texture, 0, ShaderBindFlag::PIXEL);
+				materialData.hasAlbedo = 1;
+			}
+			else
+			{
+				materialData.hasAlbedo = 0;
 			}
 			if (normalTName != " ")
 			{
@@ -240,10 +239,19 @@ namespace ZWEBLoader //TO BE ADDED: FUNCTION TO LOAD LIGHTS AND TO LOAD TEXTURES
 				bool success = texture.LoadTexture(device, pathWSTR.c_str());
 				assert(success);
 
+
 				mat.SetTexture(texture, 1, ShaderBindFlag::PIXEL); //This is default but can be manually changed afterwards.
+
+				
+				materialData.hasNormalMap = 1;
+			}
+			else
+			{
+				materialData.hasNormalMap = 0;
+
 			}
 			
-		
+			mat.SetMaterialData(materialData);
 
 			materials.push_back(mat);
 

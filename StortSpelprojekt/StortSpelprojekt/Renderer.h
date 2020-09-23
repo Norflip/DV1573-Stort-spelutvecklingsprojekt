@@ -25,7 +25,7 @@ public:
 	void ClearRenderTarget(ID3D11DeviceContext* context, ID3D11RenderTargetView* rtv, dx::XMFLOAT4 rgba);
 	void Unbind();
 
-	void Draw(const Mesh& mesh, dx::XMMATRIX model, dx::XMMATRIX view, dx::XMMATRIX projection);
+	void Draw(const Mesh& mesh, const cb_Material& material, dx::XMMATRIX model, dx::XMMATRIX view, dx::XMMATRIX projection, dx::XMVECTOR cameraPosition);
 	void DrawInstanced(const Mesh& mesh, size_t count, dx::XMMATRIX* models, dx::XMMATRIX view, dx::XMMATRIX projection);
 	void DrawSkeleton(const Mesh& mesh, dx::XMMATRIX model, dx::XMMATRIX view, dx::XMMATRIX projection, cb_Skeleton& bones);
 
@@ -47,6 +47,13 @@ private:
 
 	cb_Skeleton cb_skeleton_data;
 	ID3D11Buffer* skeleton_cbuffer;
+	
+	//måste avallokeras!!!
+	cb_Scene cb_scene;
+	ID3D11Buffer* light_cbuffer;
+
+	cb_Material cb_material_data;
+	ID3D11Buffer* material_cbuffer;
 
 	Window* outputWindow;
 
