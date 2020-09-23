@@ -9,6 +9,7 @@
 #include "MeshComponent.h"
 #include "ZWEBLoader.h"
 #include "SkeletonMeshComponent.h"
+#include "BoundingBoxComponent.h"
 
 class Scene
 {
@@ -31,6 +32,9 @@ public:
 	void PrintSceneHierarchy() const;
 	void PrintSceneHierarchy(Object* object, size_t level) const;
 
+	void GetFrustumPlanes(std::vector<dx::XMFLOAT4>& planes);
+
+	bool CullAgainstAABB(std::vector<dx::XMFLOAT4>& planes, const AABB& aabb);
 private:	
 	std::vector<Object*> objects;
 	CameraComponent* camera;
@@ -44,5 +48,8 @@ private:
 	Texture* screenquadTex;
 	Object* quad;
 	Material screenquadmat;	
+
+	//frustumplanes extraction
+	std::vector<dx::XMFLOAT4> extractedPlanes;
 
 };

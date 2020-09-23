@@ -240,7 +240,7 @@ namespace ZWEBLoader //TO BE ADDED: FUNCTION TO LOAD LIGHTS AND TO LOAD TEXTURES
 				bool success = texture.LoadTexture(device, pathWSTR.c_str());
 				assert(success);
 
-				mat.SetTexture(texture, 1, ShaderBindFlag::PIXEL);
+				mat.SetTexture(texture, 1, ShaderBindFlag::PIXEL); //This is default but can be manually changed afterwards.
 			}
 			
 		

@@ -15,6 +15,7 @@ enum class ObjectFlag : unsigned int
 	ENABLED = 1 << 0,
 	RENDER = 1 << 1,
 	REMOVED = 1 << 2,
+	BOUNDINGBOX = 1<<3,
 	DEFAULT = ENABLED | RENDER
 };
 

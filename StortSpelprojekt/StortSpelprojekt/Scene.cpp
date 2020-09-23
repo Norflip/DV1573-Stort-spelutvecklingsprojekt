@@ -37,21 +37,19 @@ void Scene::Initialize(Renderer* renderer)
 	
 	std::vector<Material> zwebMaterials = ZWEBLoader::LoadMaterials("Models/cubeWithTexture.ZWEB", shader, renderer->GetDevice());
 
-	
+	BoundingBoxComponent cubeBB;
+
+	cubeBB.CalcAABB(zwebMeshes[0]);
 
 	Object* testMesh = new Object("test");
 
-	
-
-	dx::XMFLOAT3 miniTranslation = dx::XMFLOAT3(0, 0, 10);
-
+	dx::XMFLOAT3 miniTranslation = dx::XMFLOAT3(0, 0, 3);
 
 	testMesh->GetTransform().SetPosition(dx::XMLoadFloat3(&miniTranslation));
 
-	
+	testMesh->AddComponent<BoundingBoxComponent>(cubeBB);
 
-
-	//
+	testMesh->AddFlag(ObjectFlag::BOUNDINGBOX);
 	zwebMaterials[0].SetSamplerState(renderer->GetDevice(), D3D11_TEXTURE_ADDRESS_WRAP, D3D11_FILTER_MIN_MAG_MIP_LINEAR);
 	testMesh->AddComponent<MeshComponent>(zwebMeshes[0], zwebMaterials[0]);
 	objects.push_back(testMesh);
@@ -74,6 +72,7 @@ void Scene::Initialize(Renderer* renderer)
 
 	Object* tmp_obj = new Object("cube1");
 	tmp_obj->GetTransform().SetPosition({ 0, 0, 10 });
+	
 	
 	
 	tmp_obj->AddFlag(ObjectFlag::ENABLED | ObjectFlag::RENDER);
@@ -176,9 +175,29 @@ void Scene::RenderSceneToTexture()
 
 	for (auto i = objects.begin(); i < objects.end(); i++)
 	{
+		GetFrustumPlanes(extractedPlanes);
 		Object* obj = (*i);
-		//if (obj->HasFlag(ObjectFlag::ENABLED | ObjectFlag::VISIBLE))
-		obj->Draw(renderer, camera);	
+		if (obj->HasFlag(ObjectFlag::BOUNDINGBOX))
+		{
+			for (int aabb = 0; aabb < obj->GetComponent<BoundingBoxComponent>()->GetNrOfAABBs(); aabb++)
+			{
+				if (!CullAgainstAABB(extractedPlanes, obj->GetComponent<BoundingBoxComponent>()->GetAABBs()[aabb]))
+				{
+					obj->Draw(renderer, camera);
+				}
+				else
+				{
+					//std::cout << "THIS IS NOT VISIBLE";
+				}
+				
+			}
+			
+		}
+		else
+		{
+			obj->Draw(renderer, camera);
+		}
+			
 	}
 	
 	renderer->Unbind();	// needed?
@@ -220,4 +239,134 @@ void Scene::PrintSceneHierarchy(Object* object, size_t level) const
 			PrintSceneHierarchy(children[i]->GetOwner(), level + 1);
 		}
 	}
+}
+
+void Scene::GetFrustumPlanes(std::vector<dx::XMFLOAT4>& planes)
+{
+
+	// x, y, z, and w represent A, B, C and D in the plane equation
+	// where ABC are the xyz of the planes normal, and D is the plane constant
+	planes.resize(6);
+	//r means row
+	
+	
+
+	
+
+	// Left Frustum Plane
+   // Add first column of the matrix to the fourth column
+	planes[0].x = camera->GetVIewAndProjectionMatrix().r[0].m128_f32[3] + camera->GetVIewAndProjectionMatrix().r[0].m128_f32[0];
+	planes[0].y = camera->GetVIewAndProjectionMatrix().r[1].m128_f32[3] + camera->GetVIewAndProjectionMatrix().r[1].m128_f32[0];
+	planes[0].z = camera->GetVIewAndProjectionMatrix().r[2].m128_f32[3] + camera->GetVIewAndProjectionMatrix().r[2].m128_f32[0];
+	planes[0].w = camera->GetVIewAndProjectionMatrix().r[3].m128_f32[3] + camera->GetVIewAndProjectionMatrix().r[3].m128_f32[0];
+
+	// Right Frustum Plane
+	// Subtract first column of matrix from the fourth column
+
+	planes[1].x = camera->GetVIewAndProjectionMatrix().r[0].m128_f32[3] - camera->GetVIewAndProjectionMatrix().r[0].m128_f32[0];
+	planes[1].y = camera->GetVIewAndProjectionMatrix().r[1].m128_f32[3] - camera->GetVIewAndProjectionMatrix().r[1].m128_f32[0];
+	planes[1].z = camera->GetVIewAndProjectionMatrix().r[2].m128_f32[3] - camera->GetVIewAndProjectionMatrix().r[2].m128_f32[0];
+	planes[1].w = camera->GetVIewAndProjectionMatrix().r[3].m128_f32[3] - camera->GetVIewAndProjectionMatrix().r[3].m128_f32[0];
+
+	// Top Frustum Plane
+	// Subtract second column of matrix from the fourth column
+
+	planes[2].x = camera->GetVIewAndProjectionMatrix().r[0].m128_f32[3] - camera->GetVIewAndProjectionMatrix().r[0].m128_f32[1];
+	planes[2].y = camera->GetVIewAndProjectionMatrix().r[1].m128_f32[3] - camera->GetVIewAndProjectionMatrix().r[1].m128_f32[1];
+	planes[2].z = camera->GetVIewAndProjectionMatrix().r[2].m128_f32[3] - camera->GetVIewAndProjectionMatrix().r[2].m128_f32[1];
+	planes[2].w = camera->GetVIewAndProjectionMatrix().r[3].m128_f32[3] - camera->GetVIewAndProjectionMatrix().r[3].m128_f32[1];
+
+	// Bottom Frustum Plane
+	// Add second column of the matrix to the fourth column
+
+	planes[3].x = camera->GetVIewAndProjectionMatrix().r[0].m128_f32[3] + camera->GetVIewAndProjectionMatrix().r[0].m128_f32[1];
+	planes[3].y = camera->GetVIewAndProjectionMatrix().r[1].m128_f32[3] + camera->GetVIewAndProjectionMatrix().r[1].m128_f32[1];
+	planes[3].z = camera->GetVIewAndProjectionMatrix().r[2].m128_f32[3] + camera->GetVIewAndProjectionMatrix().r[2].m128_f32[1];
+	planes[3].w = camera->GetVIewAndProjectionMatrix().r[3].m128_f32[3] + camera->GetVIewAndProjectionMatrix().r[3].m128_f32[1];
+
+
+	// Near Frustum Plane
+	// We could add the third column to the fourth column to get the near plane,
+	// but we don't have to do this because the third column IS the near plane
+
+
+	planes[4].x = camera->GetVIewAndProjectionMatrix().r[0].m128_f32[2];
+	planes[4].y = camera->GetVIewAndProjectionMatrix().r[1].m128_f32[2];
+	planes[4].z = camera->GetVIewAndProjectionMatrix().r[2].m128_f32[2];
+	planes[4].w = camera->GetVIewAndProjectionMatrix().r[3].m128_f32[2];
+
+	// Far Frustum Plane
+	// Subtract third column of matrix from the fourth column
+
+	planes[5].x = camera->GetVIewAndProjectionMatrix().r[0].m128_f32[3] - camera->GetVIewAndProjectionMatrix().r[0].m128_f32[2];
+	planes[5].y = camera->GetVIewAndProjectionMatrix().r[1].m128_f32[3] - camera->GetVIewAndProjectionMatrix().r[1].m128_f32[2];
+	planes[5].z = camera->GetVIewAndProjectionMatrix().r[2].m128_f32[3] - camera->GetVIewAndProjectionMatrix().r[2].m128_f32[2];
+	planes[5].w = camera->GetVIewAndProjectionMatrix().r[3].m128_f32[3] - camera->GetVIewAndProjectionMatrix().r[3].m128_f32[2];
+
+
+	// Normalize plane normals (A, B and C (xyz))
+   // Also take note that planes face inward
+
+	for (int i = 0; i < 6; ++i)
+	{
+		float length = sqrt((planes[i].x * planes[i].x) + (planes[i].y * planes[i].y) + (planes[i].z * planes[i].z));
+		planes[i].x /= length;
+		planes[i].y /= length;
+		planes[i].z /= length;
+		planes[i].w /= length;
+	}
+
+
+
+
+}
+
+bool Scene::CullAgainstAABB(std::vector<dx::XMFLOAT4>& planes, const AABB& aabb)
+{
+	for (unsigned int plane = 0; plane < 6; ++plane)
+	{
+		DirectX::XMVECTOR planeNormal = DirectX::XMVectorSet(planes[plane].x, planes[plane].y, planes[plane].z, 0.0f);
+		float planeConstant = planes[plane].w;
+
+		DirectX::XMFLOAT3 diagonal;
+
+		if (planes[plane].x >= 0.0f)
+		{
+			diagonal.x = aabb.max.x - aabb.min.x;
+		}
+		else
+		{
+			diagonal.x = aabb.min.x - aabb.max.x;
+		}
+		if (planes[plane].y >= 0.0f)
+		{
+			diagonal.y = aabb.max.y - aabb.min.y;
+		}
+		else
+		{
+			diagonal.y = aabb.min.y - aabb.max.y;
+		}
+		if (planes[plane].z >= 0.0f)
+		{
+			diagonal.z = aabb.max.z - aabb.min.z;
+		}
+		else
+		{
+			diagonal.z = aabb.min.z - aabb.max.z;
+		}
+
+		
+
+		if (DirectX::XMVectorGetX(DirectX::XMVector3Dot(planeNormal, DirectX::XMLoadFloat3(&diagonal))) + planeConstant < 0.0f)
+		{
+			return true;
+		}
+
+
+	}
+
+
+
+
+	return false;
 }

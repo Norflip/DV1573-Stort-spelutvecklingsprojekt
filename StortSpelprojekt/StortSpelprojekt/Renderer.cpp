@@ -46,7 +46,7 @@ void Renderer::BeginFrame()
 void Renderer::EndFrame()
 {
 	
-	HRESULT hr = swapchain->Present(0,0); //1 here?
+	hr = swapchain->Present(0,0); //1 here?
 	assert(SUCCEEDED(hr));
 }
 
