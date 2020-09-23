@@ -45,7 +45,9 @@ void Renderer::BeginFrame()
 
 void Renderer::EndFrame()
 {
-	swapchain->Present(0, 0);
+	
+	HRESULT hr = swapchain->Present(0,0); //1 here?
+	assert(SUCCEEDED(hr));
 }
 
 void Renderer::RenderToTexture(Texture* texture, ID3D11Device* device, int textureWidth, int textureHeight)
