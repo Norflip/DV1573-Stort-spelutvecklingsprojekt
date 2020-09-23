@@ -45,4 +45,8 @@ private:
 	Object* quad;
 	Material screenquadmat;	
 
+
+
+	/* test sky */
+	Object* testSkybox;
 };

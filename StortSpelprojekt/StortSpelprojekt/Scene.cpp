@@ -33,23 +33,11 @@ void Scene::Initialize(Renderer* renderer)
 	shader.Compile(renderer->GetDevice());
 
 	
-	std::vector<Mesh> zwebMeshes = ZWEBLoader::LoadMeshes(ZWEBLoadType::SkeletonAnimation, "Models/cubeWithTexture.ZWEB", renderer->GetDevice());
-	
+	std::vector<Mesh> zwebMeshes = ZWEBLoader::LoadMeshes(ZWEBLoadType::SkeletonAnimation, "Models/cubeWithTexture.ZWEB", renderer->GetDevice());	
 	std::vector<Material> zwebMaterials = ZWEBLoader::LoadMaterials("Models/cubeWithTexture.ZWEB", shader, renderer->GetDevice());
-
-	
-
 	Object* testMesh = new Object("test");
-
-	
-
 	dx::XMFLOAT3 miniTranslation = dx::XMFLOAT3(0, 0, 10);
-
-
 	testMesh->GetTransform().SetPosition(dx::XMLoadFloat3(&miniTranslation));
-
-	
-
 
 	//
 	zwebMaterials[0].SetSamplerState(renderer->GetDevice(), D3D11_TEXTURE_ADDRESS_WRAP, D3D11_FILTER_MIN_MAG_MIP_LINEAR);
@@ -57,8 +45,12 @@ void Scene::Initialize(Renderer* renderer)
 	objects.push_back(testMesh);
 
 
-	Mesh mesh = ShittyOBJLoader::Load("Models/Cube.obj", renderer->GetDevice());
+	
+	
 
+	/* old stuff */
+
+	Mesh mesh = ShittyOBJLoader::Load("Models/Cube.obj", renderer->GetDevice());
 	Material material = Material(shader);
 
 	/* Loading a texture */
@@ -72,13 +64,14 @@ void Scene::Initialize(Renderer* renderer)
 	material.SetTexture(randomNormal, TEXTURE_NORMAL_SLOT, ShaderBindFlag::PIXEL);
 	material.SetSamplerState(renderer->GetDevice(), D3D11_TEXTURE_ADDRESS_WRAP, D3D11_FILTER_MIN_MAG_MIP_LINEAR);
 
+
 	Object* tmp_obj = new Object("cube1");
 	tmp_obj->GetTransform().SetPosition({ 0, 0, 10 });
-	
 	
 	tmp_obj->AddFlag(ObjectFlag::ENABLED | ObjectFlag::RENDER);
 	tmp_obj->AddComponent<MeshComponent>(mesh, material);
 	objects.push_back(tmp_obj);
+
 
 	Object* tmp_obj2 = new Object("cube2");
 	tmp_obj2->GetTransform().SetPosition({ 0, 0, 4 });
@@ -88,7 +81,6 @@ void Scene::Initialize(Renderer* renderer)
 	tmp_obj2->AddComponent<MoveComponent>();
 	
 	Transform::SetParentChild(tmp_obj->GetTransform(), tmp_obj2->GetTransform());
-
 
 	objects.push_back(tmp_obj2);
 
@@ -117,6 +109,25 @@ void Scene::Initialize(Renderer* renderer)
 	quad->AddComponent<MeshComponent>(screenquadMesh, screenquadmat);	
 
 	/* * * * * * * * ** * * * * */
+
+
+	/* test skybox */
+	Shader skyboxShader;
+	skyboxShader.SetPixelShader(L"Shaders/Sky_ps.hlsl");
+	skyboxShader.SetVertexShader(L"Shaders/Sky_vs.hlsl");
+	skyboxShader.Compile(renderer->GetDevice());
+
+	std::vector<Mesh> zwebSkybox = ZWEBLoader::LoadMeshes(ZWEBLoadType::NoAnimation, "Models/skybox.ZWEB", renderer->GetDevice());
+	std::vector<Material> zwebSkyboxMaterials = ZWEBLoader::LoadMaterials("Models/skybox.ZWEB", skyboxShader, renderer->GetDevice());
+	testSkybox = new Object("skybox");
+
+	dx::XMFLOAT3 skyboxTrans = zwebSkybox[0].GetT();
+	dx::XMFLOAT3 skyboxScale = zwebSkybox[0].GetS();
+
+	testSkybox->AddComponent<MeshComponent>(zwebSkybox[0], zwebSkyboxMaterials[0]);
+	//objects.push_back(testSkybox);
+
+
 	//PrintSceneHierarchy();
 
 }
@@ -137,11 +148,6 @@ void Scene::Update(const float& deltaTime)
 		if (obj->HasFlag(ObjectFlag::REMOVED))
 			toRemove.push_back(obj);
 	}
-
-	
-	
-
-
 }
 
 void Scene::FixedUpdate(const float& fixedDeltaTime)
@@ -151,10 +157,10 @@ void Scene::FixedUpdate(const float& fixedDeltaTime)
 
 void Scene::Render()
 {	
-	
 
 	renderer->BeginFrame();
 	RenderSceneToTexture();
+
 	//for (auto i = objects.begin(); i < objects.end(); i++)
 	//{
 	//	Object* obj = (*i);
@@ -163,6 +169,9 @@ void Scene::Render()
 	//}
 
 	/* Render screenquad with rendered scene-texture */
+
+
+
 	quad->Draw(renderer, camera);
 	renderer->EndFrame();
 }
@@ -181,6 +190,8 @@ void Scene::RenderSceneToTexture()
 		obj->Draw(renderer, camera);	
 	}
 	
+	testSkybox->Draw(renderer, camera);
+
 	renderer->Unbind();	// needed?
 
 	renderer->SetBackbufferRenderTarget();
