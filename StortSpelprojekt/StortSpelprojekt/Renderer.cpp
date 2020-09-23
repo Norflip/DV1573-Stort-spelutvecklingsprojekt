@@ -31,9 +31,12 @@ void Renderer::Initialize(Window* window)
 	{
 		dx::XMStoreFloat4x4(&cb_skeleton_data.bones[bone], dx::XMMatrixIdentity());
 	}
-  
-  DXHelper::CreateConstBuffer(device, &obj_cbuffer, &cb_object_data, sizeof(cb_object_data));
-	DXHelper::CreateConstBuffer(device, &skeleton_cbuffer, &cb_skeleton_data, sizeof(cb_Skeleton));
+
+
+	DXHelper::CreateConstBuffer(device, &obj_cbuffer, &cb_object_data, sizeof(cb_object_data));
+	DXHelper::CreateConstBuffer(device, &light_cbuffer, &cb_scene, sizeof(cb_scene));
+	DXHelper::CreateConstBuffer(device, &material_cbuffer, &cb_material_data, sizeof(cb_material_data));
+	DXHelper::CreateConstBuffer(device, &skeleton_cbuffer, &cb_skeleton_data, sizeof(cb_skeleton_data));
 
 }
 
@@ -124,7 +127,7 @@ void Renderer::Unbind()
 		context->PSSetShaderResources(i, 1, nullSRV);	
 }
 
-void Renderer::Draw(const Mesh& mesh, dx::XMMATRIX world, dx::XMMATRIX view, dx::XMMATRIX projection)
+void Renderer::Draw(const Mesh& mesh, const cb_Material& material, dx::XMMATRIX world, dx::XMMATRIX view, dx::XMMATRIX projection, dx::XMVECTOR cameraPosition)
 {
 	// add to queue? 
 
@@ -132,6 +135,28 @@ void Renderer::Draw(const Mesh& mesh, dx::XMMATRIX world, dx::XMMATRIX view, dx:
 	dx::XMStoreFloat4x4(&cb_object_data.mvp, dx::XMMatrixTranspose(mvp));
 	dx::XMStoreFloat4x4(&cb_object_data.world, dx::XMMatrixTranspose(world));
 	DXHelper::BindConstBuffer(context, obj_cbuffer, &cb_object_data, CB_OBJECT_SLOT, ShaderBindFlag::VERTEX);
+	
+	cb_material_data.ambient = material.ambient;
+	cb_material_data.diffuse = material.diffuse;
+	cb_material_data.specular = material.specular;
+	cb_material_data.hasAlbedo = material.hasAlbedo;
+	cb_material_data.hasNormalMap = material.hasNormalMap;
+
+	DXHelper::BindConstBuffer(context, material_cbuffer, &cb_material_data, CB_MATERIAL_SLOT, ShaderBindFlag::PIXEL);
+
+	cb_scene.pointLights[0].lightColor = dx::XMFLOAT4(0.5f, 0.5f, 0.5f, 1.0f);
+	cb_scene.pointLights[0].lightPosition = dx::XMFLOAT3(15.0f, -5.0f, -5.0f);
+	cb_scene.pointLights[0].attenuation = dx::XMFLOAT3(1.0f, 0.02f, 0.0f);
+	cb_scene.pointLights[0].range = 25.0f;
+
+	cb_scene.pointLights[1].lightColor = dx::XMFLOAT4(0.3f, 0.3f, 0.3f, 1.0f);
+	cb_scene.pointLights[1].lightPosition = dx::XMFLOAT3(-10.0f, 10.0f, -5.0f);
+	cb_scene.pointLights[1].attenuation = dx::XMFLOAT3(1.0f, 0.02f, 0.0f);
+	cb_scene.pointLights[1].range = 25.0f;
+
+	cb_scene.nrOfPointLights = 2;
+	dx::XMStoreFloat3(&cb_scene.cameraPosition, cameraPosition);
+	DXHelper::BindConstBuffer(context, light_cbuffer, &cb_scene, CB_SCENE_SLOT, ShaderBindFlag::PIXEL);
 
 	UINT stride = sizeof(Mesh::Vertex);
 	UINT offset = 0;
@@ -178,8 +203,5 @@ void Renderer::DrawSkeleton(const Mesh& mesh, dx::XMMATRIX model, dx::XMMATRIX v
 	context->IASetPrimitiveTopology(mesh.topology);
 
 	context->DrawIndexed(mesh.indices.size(), 0, 0);
-
-
-
 
 }
