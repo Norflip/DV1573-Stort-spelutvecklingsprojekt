@@ -28,7 +28,7 @@ void Scene::Initialize(Renderer* renderer)
 	shader.Compile(renderer->GetDevice());
 
 	//std::vector<Object> zwebObj = ZWEBLoader::LoadZWEB(ZWEBLoadType::SkeletonAnimation, "../Models/OrchBody.ZWEB", "../Models/OrchAnimation.ZWEB", shader, renderer->GetDevice());
-	std::vector<Object> zwebObj = ZWEBLoader::LoadZWEB(ZWEBLoadType::NoAnimation, "../Models/tree.ZWEB", "", shader, renderer->GetDevice());
+	std::vector<Object> zwebObj = ZWEBLoader::LoadZWEB(ZWEBLoadType::NoAnimation, "../Models/brickSphere.ZWEB", "", shader, renderer->GetDevice());
 	
 	for (int object = 0; object < zwebObj.size(); object++)
 	{

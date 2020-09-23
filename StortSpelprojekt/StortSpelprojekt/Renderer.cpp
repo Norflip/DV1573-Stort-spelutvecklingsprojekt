@@ -137,8 +137,8 @@ void Renderer::Draw(const Mesh& mesh, const cb_Material& material, dx::XMMATRIX 
 	cb_material_data.ambient = material.ambient;
 	cb_material_data.diffuse = material.diffuse;
 	cb_material_data.specular = material.specular;
-	cb_material_data.hasAlbedo = false;
-	cb_material_data.hasNormalMap = false;
+	cb_material_data.hasAlbedo = 0;
+	cb_material_data.hasNormalMap = 0;
 
 	DXHelper::BindConstBuffer(context, material_cbuffer, &cb_material_data, CB_MATERIAL_SLOT, ShaderBindFlag::PIXEL);
 
