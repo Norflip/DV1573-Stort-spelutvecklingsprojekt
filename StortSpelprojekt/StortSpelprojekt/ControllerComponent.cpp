@@ -32,7 +32,7 @@ void ControllerComponent::Update(const float& deltaTime)
 	if (this->canRotate)
 	{
 		float sens = 0.8f;
-		GetOwner()->GetTransform().Rotate(-mouseVec.y*deltaTime*sens,mouseVec.x*deltaTime*sens,0.f);
+		GetOwner()->GetTransform().Rotate(-mouseVec.y*deltaTime*sens,-mouseVec.x*deltaTime*sens,0.f);
 	}
 
 	if (KEY_DOWN(D1))
