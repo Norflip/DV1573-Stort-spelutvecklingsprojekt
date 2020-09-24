@@ -1,7 +1,5 @@
 #pragma once
 #include <chrono>
-//this should contain one timer from start to end
-//Smoothly represent fps and frameTime
 class GameClock
 {
 public:
@@ -12,7 +10,7 @@ public:
 	double GetSeconds()const;
 	double GetFrameTime()const;
 	double GetFramesPerSecond()const;
-	double GetFramesPerSecondSmooth()const; // not needed yet
+	double GetFramesPerSecondSmooth()const; // not needed yet, unimplemented
 	void Update();
 	void Restart();
 	bool Stop();
@@ -27,6 +25,8 @@ public:
 private:
 	std::chrono::time_point<std::chrono::steady_clock> start;
 	std::chrono::time_point<std::chrono::steady_clock> now;
+
+	// for fps
 	std::chrono::time_point<std::chrono::steady_clock> prev;
 	std::chrono::time_point<std::chrono::steady_clock> endSecond;
 	int frameCounter;
