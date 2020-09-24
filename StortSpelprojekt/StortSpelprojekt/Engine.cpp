@@ -7,6 +7,9 @@ Engine::Engine(HINSTANCE hInstance) : window(hInstance), activeScene(nullptr)
 	window.Open(800, 800);
 	renderer.Initialize(&window);
 
+	HRESULT hr = CoInitializeEx(nullptr, COINIT_MULTITHREADED);
+	assert(SUCCEEDED(hr));		
+
 	RegisterScene(0, new Scene());
 	SwitchScene(0);
 }
