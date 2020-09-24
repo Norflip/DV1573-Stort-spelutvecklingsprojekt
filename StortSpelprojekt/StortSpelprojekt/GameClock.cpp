@@ -3,71 +3,83 @@
 GameClock::GameClock()
 {
 	start = std::chrono::high_resolution_clock::now();
-	now = start.time_since_epoch();
-	endSecond = start;
-	amountOfFrames = 0;
+	now = start;
+	endSecond = now + std::chrono::seconds(1);
+	frameCounter = 0;
+	FPS = 0;
+	active = true;
 }
 
 GameClock::~GameClock()
 {
 }
 
-double GameClock::GetMiliseconds()
+double GameClock::GetMiliseconds()const
 {
-	return std::chrono::duration_cast<std::chrono::milliseconds>(now).count();
+	return std::chrono::duration<double, std::milli>(now-start).count();
 }
 
-double GameClock::GetMicroseconds()
+double GameClock::GetMicroseconds()const
 {
-	return std::chrono::duration_cast<std::chrono::microseconds>(now).count();
+	return std::chrono::duration<double, std::micro>(now - start).count();
 }
 
-double GameClock::GetSeconds()
+double GameClock::GetSeconds()const
 {
-	return std::chrono::duration_cast<std::chrono::seconds>(now).count();
+	return std::chrono::duration<double, std::milli>(now - start).count() /1000;
 }
 
-double GameClock::GetFortnights()
+double GameClock::GetFrameTime()const
 {
-	return std::chrono::duration_cast<std::chrono::hours>(now).count()/(24*14);
+	return  std::chrono::duration_cast<std::chrono::microseconds>(now- prev).count()/(double)1000;
 }
 
-double GameClock::GetFrameTime()
+double GameClock::GetFramesPerSecond()const
 {
-	return  (((std::chrono::duration_cast<std::chrono::microseconds>(now - previous).count()/(double)1000)));
+	return FPS;
 }
 
-double GameClock::GetFramesPerSecond()
-{
-
-	//return 1/GetFrameTime()*1000;
-	//return (int)( ((std::chrono::duration_cast<std::chrono::nanoseconds>(now - previous).count())));
-	return amountOfFrames;
-}
-
-double GameClock::GetFramesPerSecondSmooth()
+double GameClock::GetFramesPerSecondSmooth() const// not implemented and not needed (yet at least)
 {
 
 	return 0.0;
 }
 
-void GameClock::UpdateClock()
+void GameClock::Update()
 {
-	previous = now;
-	now = (std::chrono::high_resolution_clock::now() - start);
-
-
-	if (std::chrono::duration_cast<std::chrono::milliseconds>(endSecond - now).count() >0)
-	{
-		amountOfFrames++;
-	}
+	if(std::chrono::duration<double, std::milli>(now - endSecond).count() < 0)
+		frameCounter++;
 	else
 	{
-		endSecond = now;
-		endSecond += std::chrono::milliseconds(1000);
-		amountOfFrames = 0;
+		FPS = frameCounter;
+		frameCounter = 0;
+		endSecond = now + std::chrono::seconds(1);
 	}
-	//endSecond = now + std::chrono::milliseconds(1000);
-	//amountOfFrames = 0;
-	
+
+	prev = now;
+	now = std::chrono::high_resolution_clock::now();
+}
+void GameClock::Restart()
+{
+	start = std::chrono::high_resolution_clock::now();
+}
+
+bool GameClock::Stop()
+{
+		active = false;
+		return active;	
+}
+
+bool GameClock::Start()
+{
+	if (active)
+		return false;
+	else
+	{
+		start = std::chrono::high_resolution_clock::now();
+		active = true;
+		return true;
+	}
+
+
 }

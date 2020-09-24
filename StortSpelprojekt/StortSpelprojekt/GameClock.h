@@ -7,15 +7,16 @@ class GameClock
 public:
 	GameClock();
 	~GameClock();
-	double GetMiliseconds();
-	double GetMicroseconds();
-	double GetSeconds();
-	double GetFortnights(); //very important
-	double GetFrameTime();
-	double GetFramesPerSecond();
-	double GetFramesPerSecondSmooth();
-	void UpdateClock();
-
+	double GetMiliseconds() const;
+	double GetMicroseconds()const;
+	double GetSeconds()const;
+	double GetFrameTime()const;
+	double GetFramesPerSecond()const;
+	double GetFramesPerSecondSmooth()const; // not needed yet
+	void Update();
+	void Restart();
+	bool Stop();
+	bool Start();
 	static GameClock& Instance()
 	{
 		static GameClock instance;
@@ -24,12 +25,11 @@ public:
 	GameClock(GameClock const&) = delete;
 	void operator=(GameClock const&) = delete;
 private:
-	std::chrono::high_resolution_clock::time_point start;
-	std::chrono::high_resolution_clock::duration previous;
-	std::chrono::high_resolution_clock::duration now;
-
-	//FPS stuff
-	std::chrono::high_resolution_clock::duration endSecond;
-	int amountOfFrames;
+	std::chrono::time_point<std::chrono::steady_clock> start;
+	std::chrono::time_point<std::chrono::steady_clock> now;
+	std::chrono::time_point<std::chrono::steady_clock> prev;
+	std::chrono::time_point<std::chrono::steady_clock> endSecond;
+	int frameCounter;
+	int FPS;
+	bool active;
 };
-

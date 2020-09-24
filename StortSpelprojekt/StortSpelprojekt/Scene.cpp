@@ -50,13 +50,10 @@ void Scene::Initialize(Renderer* renderer)
 
 void Scene::Update(const float& deltaTime)
 {
+
 	std::vector<Object*> toRemove;
-	GameClock::Instance().UpdateClock();
-	if ((int)GameClock::Instance().GetMiliseconds() %1000 == 0)
-	{
-		std::cout << "frameTime(ms): " << GameClock::Instance().GetFrameTime() << std::endl;
-		std::cout << "fps: " << GameClock::Instance().GetFramesPerSecond() << std::endl;
-	}
+
+
 	input.UpdateInputs();
 
 	for (auto i = objects.begin(); i < objects.end(); i++)
@@ -69,6 +66,13 @@ void Scene::Update(const float& deltaTime)
 		if (obj->HasFlag(ObjectFlag::REMOVED))
 			toRemove.push_back(obj);
 	}
+	
+	std::cout<<"SECONDS"<<GameClock::Instance().GetSeconds()<<std::endl;
+	std::cout << "MS" << GameClock::Instance().GetMiliseconds() << std::endl;
+	std::cout << "MICR" << GameClock::Instance().GetMicroseconds() << std::endl;
+	std::cout << "Framet" << GameClock::Instance().GetFrameTime() << std::endl;
+	std::cout << "FPS" << GameClock::Instance().GetFramesPerSecond() << std::endl;
+	GameClock::Instance().Update();
 }
 
 void Scene::FixedUpdate(const float& fixedDeltaTime)
