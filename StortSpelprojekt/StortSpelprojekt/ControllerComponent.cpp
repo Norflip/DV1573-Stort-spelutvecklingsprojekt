@@ -8,8 +8,9 @@ ControllerComponent::ControllerComponent()
 
 	this->lastMousePos = Input::Instance().GetMousePos(); 
 	this->showCursor = true;
-	this->canRotate = true;
+	this->canRotate = false;
 	this->sensetivity = 1.f;
+	Input::Instance().SetMouseMode(DirectX::Mouse::MODE_ABSOLUTE);
 }
 
 ControllerComponent::~ControllerComponent()
@@ -72,8 +73,23 @@ void ControllerComponent::Update(const float& deltaTime)
 	}
 	if (this->canRotate)
 	{
-		GetOwner()->GetTransform().Rotate(-mouseVec.y*deltaTime* this->sensetivity,-mouseVec.x*deltaTime* this->sensetivity,0.f);
+		Input::Instance().ConfineMouse();
+
+		//Can't get mouse cursor to be at position without f-up rotation
+		//if (abs(Input::Instance().GetMousePos().x - 400)>100|| abs(Input::Instance().GetMousePos().y - 400) > 100)
+		//{
+		////	SetCursorPos(400, 400); //set to center
+		////	//SetPhysicalCursorPos(400, 400);
+		////	this->lastMousePos.x = 0;
+		////	this->lastMousePos.y = 0;
+		////	mouseVec.x = 0;
+		////	mouseVec.y = 0;
+		//}
+		GetOwner()->GetTransform().Rotate(-mouseVec.y * deltaTime * this->sensetivity, -mouseVec.x * deltaTime * this->sensetivity, 0.f);
+		//GetOwner()->GetTransform().Rotate(Input::Instance().GetMousePos().x, Input::Instance().GetMousePos().y,0.f);
 	}
+	else
+		Input::Instance().FreeMouse();
 
 	if (KEY_DOWN(D1))
 	{
