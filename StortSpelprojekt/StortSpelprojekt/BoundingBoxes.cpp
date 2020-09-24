@@ -3,8 +3,10 @@
 BoundingBoxes::BoundingBoxes(const Mesh& mesh)
 	:basicMesh(mesh)
 {
-	this->AABBs.clear();
-	
+	aabb.c = {( 0, 0, 0) };
+	aabb.h = { (0, 0, 0) };
+	aabb.min = dx::XMFLOAT3(0, 0, 0);
+	aabb.max = dx::XMFLOAT3(0, 0, 0) ;
 }
 
 BoundingBoxes::~BoundingBoxes()
@@ -24,7 +26,7 @@ void BoundingBoxes::CalcAABB(const Mesh& mesh)
 
 
 
-	for (UINT v = 0; v < vertices.size(); v++)
+	for (UINT v = 0; v < mesh.vertices.size(); v++)
 	{
 		minVertex.x = min(minVertex.x, mesh.vertices[v].position.x);    // Find smallest x value in model
 		minVertex.y = min(minVertex.y, mesh.vertices[v].position.y);    // Find smallest y value in model
@@ -36,7 +38,7 @@ void BoundingBoxes::CalcAABB(const Mesh& mesh)
 		maxVertex.z = max(maxVertex.z, mesh.vertices[v].position.z);    // Find largest z value in model
 	}
 
-	AABB aabb;
+	
 
 	aabb.max = maxVertex;
 	aabb.min = minVertex;
@@ -56,7 +58,7 @@ void BoundingBoxes::CalcAABB(const Mesh& mesh)
 	
 	//More calculations are needed for OBB but I don't know what.
 
-	AABBs.push_back(aabb);
+	
 
 
 }
@@ -80,7 +82,7 @@ void BoundingBoxes::CalcAABB()
 		maxVertex.z = max(maxVertex.z, basicMesh.vertices[v].position.z);    // Find largest z value in model
 	}
 
-	AABB aabb;
+	
 
 	aabb.max = maxVertex;
 	aabb.min = minVertex;
@@ -100,5 +102,5 @@ void BoundingBoxes::CalcAABB()
 	
 	//More calculations are needed for OBB but I don't know what.
 
-	AABBs.push_back(aabb);
+	
 }
