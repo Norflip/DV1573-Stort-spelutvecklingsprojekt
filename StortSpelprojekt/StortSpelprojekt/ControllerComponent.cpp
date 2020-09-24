@@ -85,7 +85,6 @@ void ControllerComponent::Update(const float& deltaTime)
 		////	mouseVec.x = 0;
 		////	mouseVec.y = 0;
 		//}
-		//dx::XMVector2ClampLength(); // use clamp to limit rotation
 		GetOwner()->GetTransform().Rotate(-mouseVec.y * deltaTime * this->sensetivity, -mouseVec.x * deltaTime * this->sensetivity, 0.f);
 		//GetOwner()->GetTransform().Rotate(Input::Instance().GetMousePos().x, Input::Instance().GetMousePos().y,0.f);
 	}
