@@ -85,6 +85,7 @@ void ControllerComponent::Update(const float& deltaTime)
 		////	mouseVec.x = 0;
 		////	mouseVec.y = 0;
 		//}
+		//dx::XMVector2ClampLength(); // use clamp to limit rotation
 		GetOwner()->GetTransform().Rotate(-mouseVec.y * deltaTime * this->sensetivity, -mouseVec.x * deltaTime * this->sensetivity, 0.f);
 		//GetOwner()->GetTransform().Rotate(Input::Instance().GetMousePos().x, Input::Instance().GetMousePos().y,0.f);
 	}
@@ -124,6 +125,8 @@ void ControllerComponent::Update(const float& deltaTime)
 		dir.x += 1.f;// move;
 
 	dx::XMVECTOR direction = dx::XMLoadFloat3(&dir);
+	//direction = dx::XMVector3Normalize(direction);
+	direction = GetOwner()->GetTransform().TransformDirection(direction);
 	direction = dx::XMVectorScale(direction, speed);
 	direction = dx::XMVectorScale(direction, deltaTime);
 	dx::XMStoreFloat3(&dir, direction);
