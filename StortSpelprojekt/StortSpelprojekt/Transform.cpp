@@ -13,6 +13,12 @@ Transform::~Transform()
 {
 }
 
+void Transform::Translate(float x, float y, float z)
+{
+	DirectX::XMFLOAT3 pos(x, y, z);
+	this->position = dx::XMVectorAdd(this->position, dx::XMLoadFloat3(&pos));
+}
+
 void Transform::Rotate(float pitch, float yaw, float roll)
 {
 	DirectX::XMFLOAT3 rot(pitch, yaw, roll);
@@ -52,7 +58,7 @@ bool Transform::ContainsChild(Transform* child) const
 	return contains;
 }
 
-void Transform::SkapaPäron(Transform& parent, Transform& child)
+void Transform::SetParentChild(Transform& parent, Transform& child)
 {
 	parent.AddChild(&child);
 	child.SetParent(&parent);
@@ -73,6 +79,8 @@ dx::XMMATRIX Transform::GetLocalWorldMatrix() const
 		dx::XMMatrixRotationRollPitchYawFromVector(this->rotation) *
 		dx::XMMatrixTranslationFromVector(this->position);
 }
+
+
 
 DirectX::XMVECTOR Transform::TransformDirection(DirectX::XMVECTOR direction) const
 {

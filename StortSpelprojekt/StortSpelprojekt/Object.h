@@ -15,6 +15,7 @@ enum class ObjectFlag : unsigned int
 	ENABLED = 1 << 0,
 	RENDER = 1 << 1,
 	REMOVED = 1 << 2,
+	NO_CULL = 1<<3,
 	DEFAULT = ENABLED | RENDER
 };
 
@@ -41,7 +42,6 @@ public:
 	GetComponent() const;
 
 
-
 	bool HasFlag(ObjectFlag flag) const;
 	void AddFlag(ObjectFlag flag);
 	void RemoveFlag(ObjectFlag flag);
@@ -50,6 +50,8 @@ public:
 	std::string GetName() const { return this->name; }
 
 	Transform& GetTransform() { return this->transform; }
+
+	
 
 private:
 	ObjectFlag flags;

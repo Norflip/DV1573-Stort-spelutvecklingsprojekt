@@ -1,10 +1,10 @@
 #pragma once
 #include "Component.h"
-#include "Mesh.h"
 #include "Material.h"
 #include "Transform.h"
 #include "CameraComponent.h"
 #include "Object.h"
+#include "BoundingBoxes.h"
 
 class MeshComponent : public Component
 {
@@ -17,9 +17,10 @@ public:
 
 	void Update(const float& deltaTime) override;
 	void Draw(Renderer* renderer, CameraComponent* camera) override;
-
+	BoundingBoxes& GetBoundingBoxes() { return this->boundingBoxes; }
 private:
 	Mesh mesh;
 	Material material;
-
+	Texture texture;
+	BoundingBoxes boundingBoxes;
 };

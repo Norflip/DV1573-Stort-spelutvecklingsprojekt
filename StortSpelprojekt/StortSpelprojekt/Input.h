@@ -1,10 +1,11 @@
 #pragma once
 #define WIN32_LEAN_AND_MEAN
-#include <Windows.h>
 
+#include <Windows.h>
 #include <string>
 #include <Keyboard.h>
 #include <Mouse.h>
+
 
 #define KEY(T) DirectX::Keyboard::T
 #define KEY_DOWN(T) Input::Instance().GetKeyDown(DirectX::Keyboard::T)

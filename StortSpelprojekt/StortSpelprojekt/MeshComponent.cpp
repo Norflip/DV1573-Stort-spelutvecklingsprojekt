@@ -1,6 +1,6 @@
 #include "MeshComponent.h"
 
-MeshComponent::MeshComponent(Mesh mesh, Material material) : mesh(mesh), material(material) {}
+MeshComponent::MeshComponent(Mesh mesh, Material material) : mesh(mesh), material(material), texture(material.GetTexture()),boundingBoxes(mesh) {}
 MeshComponent::~MeshComponent() {}
 
 void MeshComponent::Update(const float& deltaTime)
@@ -12,5 +12,5 @@ void MeshComponent::Update(const float& deltaTime)
 void MeshComponent::Draw(Renderer* renderer, CameraComponent* camera)
 {
 	material.BindToContext(renderer->GetContext());
-	renderer->Draw(this->mesh, GetOwner()->GetTransform().GetWorldMatrix(), camera->GetViewMatrix(), camera->GetProjectionMatrix());
+	renderer->Draw(this->mesh, this->material.GetMaterialData(),  GetOwner()->GetTransform().GetWorldMatrix(), camera->GetViewMatrix(), camera->GetProjectionMatrix(), camera->GetOwner()->GetTransform().GetPosition());
 }

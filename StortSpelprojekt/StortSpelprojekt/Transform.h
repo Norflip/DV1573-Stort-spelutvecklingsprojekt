@@ -15,8 +15,11 @@ public:
 	dx::XMMATRIX GetWorldMatrix() const;
 	dx::XMMATRIX GetLocalWorldMatrix() const;
 
+	
+
 	DirectX::XMVECTOR TransformDirection(DirectX::XMVECTOR direction) const;
 	
+	void Translate(float x, float y, float z);
 	void Rotate(float pitch, float yaw, float roll);
 
 	bool HasParent() const { return this->parent != nullptr; }
@@ -29,7 +32,7 @@ public:
 	size_t CountChildren() const { return this->children.size(); }
 	std::vector<Transform*> GetChildren() const { return this->children; }
 
-	static void SkapaPäron(Transform& parent, Transform& child);
+	static void SetParentChild(Transform& parent, Transform& child);
 
 	Object* GetOwner() const { return this->owner; }
 
@@ -46,6 +49,8 @@ public:
 	dx::XMVECTOR GetRotation() const { return this->rotation; }
 	void SetRotation(dx::XMVECTOR rotation) { this->rotation = rotation; changedThisFrame = true; }
 
+	
+
 #pragma endregion
 
 private:
@@ -57,4 +62,6 @@ private:
 	dx::XMVECTOR position;
 	dx::XMVECTOR rotation;
 	dx::XMVECTOR scale;
+
+	
 };

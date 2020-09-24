@@ -26,12 +26,13 @@ void Window::Open(size_t width, size_t height)
 	RegisterClass(&wndclass);
 
 	// Resizes window rect
-	RECT windowRect = { 50, 50, width, height };
+	RECT windowRect = { 50, 50, (LONG)width, (LONG)height };
 	AdjustWindowRect(&windowRect, WS_OVERLAPPEDWINDOW, FALSE);
 
 	int wWidth = windowRect.right - windowRect.left;
 	int wHeight = windowRect.bottom - windowRect.top;
 	this->hwnd = CreateWindowExW(0, CLASS_NAME, projectTitel, WS_OVERLAPPEDWINDOW, windowRect.left, windowRect.top, wWidth, wHeight, nullptr, nullptr, hInstance, nullptr);
+
 	ShowWindow(hwnd, SW_SHOW);
 }
 
