@@ -11,6 +11,7 @@
 #include "ZWEBLoader.h"
 #include "SkeletonMeshComponent.h"
 
+
 class Scene
 {
 public:
@@ -32,6 +33,7 @@ public:
 	void PrintSceneHierarchy() const;
 	void PrintSceneHierarchy(Object* object, size_t level) const;
 
+	
 private:	
 	std::vector<Object*> objects;
 	CameraComponent* camera;
@@ -45,4 +47,10 @@ private:
 	Texture* screenquadTex;
 	Object* quad;
 	Material screenquadmat;	
+
+
+	//frustumplanes extraction
+	std::vector<dx::XMFLOAT4> extractedPlanes;
+
+
 };
