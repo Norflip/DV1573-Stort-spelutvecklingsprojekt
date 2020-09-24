@@ -142,6 +142,8 @@
     <ClCompile Include="ControllerComponent.cpp" />
     <ClCompile Include="DXHelper.cpp" />
     <ClCompile Include="Engine.cpp" />
+    <ClCompile Include="GameClock.cpp" />
+    <ClCompile Include="GUIManager.cpp" />
     <ClCompile Include="Input.cpp" />
     <ClCompile Include="main.cpp" />
     <ClCompile Include="Material.cpp" />
@@ -151,6 +153,7 @@
     <ClCompile Include="Renderer.cpp" />
     <ClCompile Include="Scene.cpp" />
     <ClCompile Include="Shader.cpp" />
+    <ClCompile Include="Timer.cpp" />
     <ClCompile Include="Transform.cpp" />
     <ClCompile Include="Window.cpp" />
   </ItemGroup>
@@ -159,6 +162,8 @@
     <ClInclude Include="BusNode.h" />
     <ClInclude Include="CameraComponent.h" />
     <ClInclude Include="ControllerComponent.h" />
+    <ClInclude Include="GameClock.h" />
+    <ClInclude Include="GUIManager.h" />
     <ClInclude Include="MoveComponent.h" />
     <ClInclude Include="Component.h" />
     <ClInclude Include="DXHelper.h" />
@@ -175,6 +180,7 @@
     <ClInclude Include="Scene.h" />
     <ClInclude Include="Shader.h" />
     <ClInclude Include="ShittyOBJLoader.h" />
+    <ClInclude Include="Timer.h" />
     <ClInclude Include="Transform.h" />
     <ClInclude Include="Window.h" />
   </ItemGroup>

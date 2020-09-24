@@ -3,10 +3,12 @@
 #include "Object.h"
 #include "ShittyOBJLoader.h"
 #include "Input.h"
+#include "GameClock.h"
 #include "CameraComponent.h"
 #include "MoveComponent.h"
 #include "ControllerComponent.h"
 #include "MeshComponent.h"
+
 
 class Scene
 {

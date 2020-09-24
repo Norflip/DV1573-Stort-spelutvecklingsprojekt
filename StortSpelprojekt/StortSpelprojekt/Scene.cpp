@@ -51,8 +51,13 @@ void Scene::Initialize(Renderer* renderer)
 void Scene::Update(const float& deltaTime)
 {
 	std::vector<Object*> toRemove;
+	GameClock::Instance().UpdateClock();
+	if ((int)GameClock::Instance().GetMiliseconds() %1000 == 0)
+	{
+		std::cout << "frameTime(ms): " << GameClock::Instance().GetFrameTime() << std::endl;
+		std::cout << "fps: " << GameClock::Instance().GetFramesPerSecond() << std::endl;
+	}
 	input.UpdateInputs();
-
 
 	for (auto i = objects.begin(); i < objects.end(); i++)
 	{
