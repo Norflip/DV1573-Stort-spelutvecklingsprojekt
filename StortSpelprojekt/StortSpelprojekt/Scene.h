@@ -10,6 +10,7 @@
 #include "ZWEBLoader.h"
 #include "SkeletonMeshComponent.h"
 
+#include "Skybox.h"
 
 class Scene
 {
@@ -46,6 +47,11 @@ private:
 	Texture* screenquadTex;
 	Object* quad;
 	Material screenquadmat;	
+
+
+
+	/* test sky */
+	Object* testSkybox;
 
 
 	//frustumplanes extraction
