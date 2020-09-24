@@ -51,6 +51,6 @@ private:
 
 	//frustumplanes extraction
 	std::vector<dx::XMFLOAT4> extractedPlanes;
-
+	dx::XMFLOAT3 tempPos;
 
 };
