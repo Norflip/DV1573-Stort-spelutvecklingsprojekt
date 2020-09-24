@@ -6,7 +6,34 @@ Renderer::Renderer() : device(nullptr), context(nullptr), backbuffer(nullptr), s
 
 Renderer::~Renderer()
 {
+	swapchain->Release();
+	device->Release();
+	context->Release();
+
+	backbuffer->Release();
+	depthStencilView->Release();
+
+	
+	obj_cbuffer->Release();
+
+	
 	skeleton_cbuffer->Release();
+
+
+
+	light_cbuffer->Release();
+
+	
+	material_cbuffer->Release();
+
+	delete outputWindow;
+
+	/* Render to texture test - Is going to be in post processing class later etc. */
+	rtvTest->Release();
+	renderTexture->Release();
+	srvTest->Release();
+
+	blendDepthStencilState->Release();
 }
 
 void Renderer::Initialize(Window* window)
@@ -38,19 +65,38 @@ void Renderer::Initialize(Window* window)
 	DXHelper::CreateConstBuffer(device, &material_cbuffer, &cb_material_data, sizeof(cb_material_data));
 	DXHelper::CreateConstBuffer(device, &skeleton_cbuffer, &cb_skeleton_data, sizeof(cb_skeleton_data));
 
+
+	DXHelper::CreateBlendState(device, &blendOn, &blendOff, &blendDepthStencilState);
+	
+
 }
 
 void Renderer::BeginFrame()
 {
 	context->ClearRenderTargetView(backbuffer, DEFAULT_BG_COLOR);
 	context->ClearDepthStencilView(depthStencilView, D3D11_CLEAR_DEPTH, 1.0f, 0);
+	context->OMSetBlendState(blendOff, BLENDFACTOR, 0xffffffff);
 }
 
 void Renderer::EndFrame()
 {
 	
-	hr = swapchain->Present(0,0); //1 here?
+	hr = swapchain->Present(0,0); 
 	assert(SUCCEEDED(hr));
+}
+
+void Renderer::SetBlendState(bool on)
+{
+	if (on)
+	{
+		context->OMSetBlendState(blendOn, BLENDFACTOR, 0xffffffff);
+	}
+	else
+	{
+		context->OMSetBlendState(blendOff, BLENDFACTOR, 0xffffffff);
+	}
+	
+	
 }
 
 void Renderer::RenderToTexture(Texture* texture, ID3D11Device* device, int textureWidth, int textureHeight)
@@ -130,7 +176,7 @@ void Renderer::Unbind()
 void Renderer::Draw(const Mesh& mesh, const cb_Material& material, dx::XMMATRIX world, dx::XMMATRIX view, dx::XMMATRIX projection, dx::XMVECTOR cameraPosition)
 {
 	// add to queue? 
-
+	
 	dx::XMMATRIX mvp = dx::XMMatrixMultiply(world, dx::XMMatrixMultiply(view, projection));
 	dx::XMStoreFloat4x4(&cb_object_data.mvp, dx::XMMatrixTranspose(mvp));
 	dx::XMStoreFloat4x4(&cb_object_data.world, dx::XMMatrixTranspose(world));
@@ -171,32 +217,63 @@ void Renderer::Draw(const Mesh& mesh, const cb_Material& material, dx::XMMATRIX 
 	context->DrawIndexed(mesh.indices.size(), 0, 0);
 }
 
-void Renderer::DrawInstanced(const Mesh& mesh, size_t count, dx::XMMATRIX* models, dx::XMMATRIX view, dx::XMMATRIX projection)
+void Renderer::DrawInstanced(const Mesh& mesh, const cb_Material& material, size_t count, dx::XMMATRIX view, dx::XMMATRIX projection, dx::XMVECTOR cameraPosition)
 {
-	// another cbuffer for instanced? 
+	
 
-	UINT stride = sizeof(Mesh::Vertex);
-	UINT offset = 0;
+	dx::XMMATRIX vp = dx::XMMatrixMultiply(view, projection); //Not transposed because row major
+	dx::XMStoreFloat4x4(&cb_object_data.vp, dx::XMMatrixTranspose(vp));
+	
+	DXHelper::BindConstBuffer(context, obj_cbuffer, &cb_object_data, CB_OBJECT_SLOT, ShaderBindFlag::VERTEX);
 
-	context->IASetVertexBuffers(0, 1, &mesh.vertexBuffer, &stride, &offset);
+	cb_material_data.ambient = material.ambient;
+	cb_material_data.diffuse = material.diffuse;
+	cb_material_data.specular = material.specular;
+	cb_material_data.hasAlbedo = material.hasAlbedo;
+	cb_material_data.hasNormalMap = material.hasNormalMap;
+
+	DXHelper::BindConstBuffer(context, material_cbuffer, &cb_material_data, CB_MATERIAL_SLOT, ShaderBindFlag::PIXEL);
+
+	cb_scene.sunDirection = dx::XMFLOAT3(0.0f, 100.0f, -45.0f);
+	cb_scene.sunIntensity = 0.4f;
+
+	cb_scene.pointLights[0].lightColor = dx::XMFLOAT4(0.5f, 0.5f, 0.5f, 1.0f);
+	cb_scene.pointLights[0].lightPosition = dx::XMFLOAT3(15.0f, -5.0f, -5.0f);
+	cb_scene.pointLights[0].attenuation = dx::XMFLOAT3(1.0f, 0.02f, 0.0f);
+	cb_scene.pointLights[0].range = 25.0f;
+
+	cb_scene.pointLights[1].lightColor = dx::XMFLOAT4(0.3f, 0.3f, 0.3f, 1.0f);
+	cb_scene.pointLights[1].lightPosition = dx::XMFLOAT3(-10.0f, 10.0f, -5.0f);
+	cb_scene.pointLights[1].attenuation = dx::XMFLOAT3(1.0f, 0.02f, 0.0f);
+	cb_scene.pointLights[1].range = 25.0f;
+
+	cb_scene.nrOfPointLights = 2;
+	dx::XMStoreFloat3(&cb_scene.cameraPosition, cameraPosition);
+	DXHelper::BindConstBuffer(context, light_cbuffer, &cb_scene, CB_SCENE_SLOT, ShaderBindFlag::PIXEL);
+
+	UINT stride[2] = { sizeof(Mesh::Vertex), sizeof(Mesh::InstanceData) };
+	UINT offset[2] = { 0 };
+
+	context->IASetVertexBuffers(0, 2, mesh.vertexAndInstance, stride, offset);
 	context->IASetIndexBuffer(mesh.indexBuffer, DXGI_FORMAT_R32_UINT, 0);
 	context->IASetPrimitiveTopology(mesh.topology);
+
 	context->DrawIndexedInstanced(mesh.indices.size(), count, 0, 0, 0);
 }
 
-void Renderer::DrawSkeleton(const Mesh& mesh, dx::XMMATRIX model, dx::XMMATRIX view, dx::XMMATRIX projection, cb_Skeleton& bones)
+void Renderer::DrawSkeleton(const Mesh& mesh, const cb_Material& material, dx::XMMATRIX model, dx::XMMATRIX view, dx::XMMATRIX projection, cb_Skeleton& bones, dx::XMVECTOR cameraPosition)
 {
-
+	
 
 	dx::XMMATRIX mvp = dx::XMMatrixMultiply(model, dx::XMMatrixMultiply(view, projection));
 	dx::XMStoreFloat4x4(&cb_object_data.mvp, dx::XMMatrixTranspose(mvp));
 	dx::XMStoreFloat4x4(&cb_object_data.world, dx::XMMatrixTranspose(model));
-	DXHelper::BindConstBuffer(context, obj_cbuffer, &cb_object_data, CB_OBJECT_SLOT, ShaderBindFlag::SKELETON);
+	DXHelper::BindConstBuffer(context, obj_cbuffer, &cb_object_data, CB_OBJECT_SLOT, ShaderBindFlag::VERTEX);
 
 	cb_skeleton_data = bones;
 	
 
-	DXHelper::BindConstBuffer(context, skeleton_cbuffer, &cb_skeleton_data, CB_SKELETON_SLOT, ShaderBindFlag::SKELETON);
+	DXHelper::BindConstBuffer(context, skeleton_cbuffer, &cb_skeleton_data, CB_SKELETON_SLOT, ShaderBindFlag::VERTEX);
 
 	UINT stride = sizeof(Mesh::Vertex);
 	UINT offset = 0;
@@ -207,4 +284,92 @@ void Renderer::DrawSkeleton(const Mesh& mesh, dx::XMMATRIX model, dx::XMMATRIX v
 
 	context->DrawIndexed(mesh.indices.size(), 0, 0);
 
+}
+
+void Renderer::DrawAlpha(const Mesh& mesh, const cb_Material& material, dx::XMMATRIX model, dx::XMMATRIX view, dx::XMMATRIX projection, dx::XMVECTOR cameraPosition)
+{
+
+	
+	dx::XMMATRIX mvp = dx::XMMatrixMultiply(model, dx::XMMatrixMultiply(view, projection));
+	dx::XMStoreFloat4x4(&cb_object_data.mvp, dx::XMMatrixTranspose(mvp));
+	dx::XMStoreFloat4x4(&cb_object_data.world, dx::XMMatrixTranspose(model));
+	DXHelper::BindConstBuffer(context, obj_cbuffer, &cb_object_data, CB_OBJECT_SLOT, ShaderBindFlag::VERTEX);
+
+	cb_material_data.ambient = material.ambient;
+	cb_material_data.diffuse = material.diffuse;
+	cb_material_data.specular = material.specular;
+	cb_material_data.hasAlbedo = material.hasAlbedo;
+	cb_material_data.hasNormalMap = material.hasNormalMap;
+
+	DXHelper::BindConstBuffer(context, material_cbuffer, &cb_material_data, CB_MATERIAL_SLOT, ShaderBindFlag::PIXEL);
+
+	cb_scene.sunDirection = dx::XMFLOAT3(0.0f, 100.0f, -45.0f);
+	cb_scene.sunIntensity = 0.4f;
+
+	cb_scene.pointLights[0].lightColor = dx::XMFLOAT4(0.5f, 0.5f, 0.5f, 1.0f);
+	cb_scene.pointLights[0].lightPosition = dx::XMFLOAT3(15.0f, -5.0f, -5.0f);
+	cb_scene.pointLights[0].attenuation = dx::XMFLOAT3(1.0f, 0.02f, 0.0f);
+	cb_scene.pointLights[0].range = 25.0f;
+
+	cb_scene.pointLights[1].lightColor = dx::XMFLOAT4(0.3f, 0.3f, 0.3f, 1.0f);
+	cb_scene.pointLights[1].lightPosition = dx::XMFLOAT3(-10.0f, 10.0f, -5.0f);
+	cb_scene.pointLights[1].attenuation = dx::XMFLOAT3(1.0f, 0.02f, 0.0f);
+	cb_scene.pointLights[1].range = 25.0f;
+
+	cb_scene.nrOfPointLights = 2;
+	dx::XMStoreFloat3(&cb_scene.cameraPosition, cameraPosition);
+	DXHelper::BindConstBuffer(context, light_cbuffer, &cb_scene, CB_SCENE_SLOT, ShaderBindFlag::PIXEL);
+
+	UINT stride = sizeof(Mesh::Vertex);
+	UINT offset = 0;
+
+	context->IASetVertexBuffers(0, 1, &mesh.vertexBuffer, &stride, &offset);
+	context->IASetIndexBuffer(mesh.indexBuffer, DXGI_FORMAT_R32_UINT, 0);
+	context->IASetPrimitiveTopology(mesh.topology);
+
+	context->DrawIndexed(mesh.indices.size(), 0, 0);
+}
+
+void Renderer::DrawAlphaInstanced(const Mesh& mesh, const cb_Material& material, size_t count, dx::XMMATRIX view, dx::XMMATRIX projection, dx::XMVECTOR cameraPosition)
+{
+
+	
+	dx::XMMATRIX vp = dx::XMMatrixMultiply(view, projection);
+	dx::XMStoreFloat4x4(&cb_object_data.vp, dx::XMMatrixTranspose(vp));
+	DXHelper::BindConstBuffer(context, obj_cbuffer, &cb_object_data, CB_OBJECT_SLOT, ShaderBindFlag::VERTEX);
+
+	cb_material_data.ambient = material.ambient;
+	cb_material_data.diffuse = material.diffuse;
+	cb_material_data.specular = material.specular;
+	cb_material_data.hasAlbedo = material.hasAlbedo;
+	cb_material_data.hasNormalMap = material.hasNormalMap;
+
+	DXHelper::BindConstBuffer(context, material_cbuffer, &cb_material_data, CB_MATERIAL_SLOT, ShaderBindFlag::PIXEL);
+
+	cb_scene.sunDirection = dx::XMFLOAT3(0.0f, 100.0f, -45.0f);
+	cb_scene.sunIntensity = 0.4f;
+
+	cb_scene.pointLights[0].lightColor = dx::XMFLOAT4(0.5f, 0.5f, 0.5f, 1.0f);
+	cb_scene.pointLights[0].lightPosition = dx::XMFLOAT3(15.0f, -5.0f, -5.0f);
+	cb_scene.pointLights[0].attenuation = dx::XMFLOAT3(1.0f, 0.02f, 0.0f);
+	cb_scene.pointLights[0].range = 25.0f;
+
+	cb_scene.pointLights[1].lightColor = dx::XMFLOAT4(0.3f, 0.3f, 0.3f, 1.0f);
+	cb_scene.pointLights[1].lightPosition = dx::XMFLOAT3(-10.0f, 10.0f, -5.0f);
+	cb_scene.pointLights[1].attenuation = dx::XMFLOAT3(1.0f, 0.02f, 0.0f);
+	cb_scene.pointLights[1].range = 25.0f;
+
+	cb_scene.nrOfPointLights = 2;
+	dx::XMStoreFloat3(&cb_scene.cameraPosition, cameraPosition);
+	DXHelper::BindConstBuffer(context, light_cbuffer, &cb_scene, CB_SCENE_SLOT, ShaderBindFlag::PIXEL);
+
+	UINT stride[2] = { sizeof(Mesh::Vertex), sizeof(Mesh::InstanceData) };
+	UINT offset[2] = { 0 };
+
+	context->IASetVertexBuffers(0, 2, mesh.vertexAndInstance, stride, offset);
+	
+	context->IASetIndexBuffer(mesh.indexBuffer, DXGI_FORMAT_R32_UINT, 0);
+	context->IASetPrimitiveTopology(mesh.topology);
+
+	context->DrawIndexedInstanced(mesh.indices.size(), count, 0, 0, 0);
 }

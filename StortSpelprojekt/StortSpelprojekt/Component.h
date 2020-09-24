@@ -14,6 +14,13 @@ constexpr std::size_t maxComponents = 16;
 using ComponentBitSet = std::bitset<maxComponents>;
 using ComponentArray = std::array<Component*, maxComponents>;
 
+enum class DrawType
+{
+	STANDARD,
+	SKELETON,
+	INSTANCED,
+	INSTANCEDALPHA
+};
 inline size_t GetComponentID()
 {
 	static size_t lastID = 0;
@@ -36,7 +43,7 @@ public:
 	virtual void Initialize() {};
 	virtual void Update(const float& deltaTime) {};
 	virtual void FixedUpdate(const float& fixedDeltaTime) {};
-	virtual void Draw(Renderer* renderer, CameraComponent* camera) {};
+	virtual void Draw(Renderer* renderer, CameraComponent* camera, DrawType drawType) {};
 
 	void SetOwner(Object* owner) { this->owner = owner; }
 	Object* GetOwner() const { return this->owner; }

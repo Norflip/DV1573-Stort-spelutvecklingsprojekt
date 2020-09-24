@@ -29,7 +29,7 @@ public:
 
 	void Update(const float& deltaTime);
 	//void FixedUpdate(const float& fixedDeltaTime);
-	void Draw(Renderer* renderer, CameraComponent* camera);
+	void Draw(Renderer* renderer, CameraComponent* camera, DrawType drawType);
 
 
 	template <typename T>

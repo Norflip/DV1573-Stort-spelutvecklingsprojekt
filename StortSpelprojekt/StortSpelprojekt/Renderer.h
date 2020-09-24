@@ -16,7 +16,8 @@ public:
 	void Initialize(Window* window);
 	void BeginFrame();
 	void EndFrame();
-		
+	void SetBlendState(bool on);
+
 	/* New stuff...  rendertoTexture is going to be in a post processing class later on */
 	void RenderToTexture(Texture* texture, ID3D11Device* device, int width, int height);
 
@@ -26,8 +27,10 @@ public:
 	void Unbind();
 
 	void Draw(const Mesh& mesh, const cb_Material& material, dx::XMMATRIX model, dx::XMMATRIX view, dx::XMMATRIX projection, dx::XMVECTOR cameraPosition);
-	void DrawInstanced(const Mesh& mesh, size_t count, dx::XMMATRIX* models, dx::XMMATRIX view, dx::XMMATRIX projection);
-	void DrawSkeleton(const Mesh& mesh, dx::XMMATRIX model, dx::XMMATRIX view, dx::XMMATRIX projection, cb_Skeleton& bones);
+	void DrawInstanced(const Mesh& mesh, const cb_Material& material, size_t count, dx::XMMATRIX view, dx::XMMATRIX projection, dx::XMVECTOR cameraPosition);
+	void DrawSkeleton(const Mesh& mesh, const cb_Material& material, dx::XMMATRIX model, dx::XMMATRIX view, dx::XMMATRIX projection, cb_Skeleton& bones, dx::XMVECTOR cameraPosition);
+	void DrawAlpha(const Mesh& mesh, const cb_Material& material, dx::XMMATRIX model, dx::XMMATRIX view, dx::XMMATRIX projection, dx::XMVECTOR cameraPosition);
+	void DrawAlphaInstanced(const Mesh& mesh, const cb_Material& material, size_t count, dx::XMMATRIX view, dx::XMMATRIX projection, dx::XMVECTOR cameraPosition);
 
 	ID3D11Device* GetDevice() const { return this->device; }
 	ID3D11DeviceContext* GetContext() const { return this->context; }
@@ -48,7 +51,7 @@ private:
 	cb_Skeleton cb_skeleton_data;
 	ID3D11Buffer* skeleton_cbuffer;
 	
-	//måste avallokeras!!!
+	
 	cb_Scene cb_scene;
 	ID3D11Buffer* light_cbuffer;
 
@@ -61,4 +64,12 @@ private:
 	ID3D11RenderTargetView* rtvTest;
 	ID3D11Texture2D* renderTexture;
 	ID3D11ShaderResourceView* srvTest;
+
+
+
+	//blend states
+	const float BLENDFACTOR[4] = {0};
+	ID3D11BlendState* blendOff;
+	ID3D11BlendState* blendOn;
+	ID3D11DepthStencilState* blendDepthStencilState;
 };

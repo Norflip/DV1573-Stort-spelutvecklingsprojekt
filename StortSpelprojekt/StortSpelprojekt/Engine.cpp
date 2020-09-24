@@ -13,7 +13,13 @@ Engine::Engine(HINSTANCE hInstance) : window(hInstance), activeScene(nullptr)
 
 Engine::~Engine()
 {
-	
+	for (int i = 0; i < scenes.size(); i++)
+	{
+		if (scenes[i])
+		{
+			delete scenes[i];
+		}
+	}
 }
 
 void Engine::Run()

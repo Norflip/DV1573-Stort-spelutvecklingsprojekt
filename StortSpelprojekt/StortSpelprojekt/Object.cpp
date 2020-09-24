@@ -8,7 +8,15 @@ Object::Object(const std::string& name, ObjectFlag flag) : name(name), flags(fla
 
 Object::~Object()
 {
+	for (int i = 0; i < components.size(); i++)
+	{
+		if (components[i])
+		{
+			delete components[i];
+		}
+	}
 
+	
 }
 
 void Object::Update(const float& deltaTime)
@@ -19,10 +27,10 @@ void Object::Update(const float& deltaTime)
 		(*i)->Update(deltaTime);
 }
 
-void Object::Draw(Renderer* renderer, CameraComponent* camera)
+void Object::Draw(Renderer* renderer, CameraComponent* camera, DrawType drawType)
 {
 	for (auto i = components.begin(); i < components.end(); i++)
-		(*i)->Draw(renderer, camera);
+		(*i)->Draw(renderer, camera, drawType);
 }
 
 bool Object::HasFlag(ObjectFlag flag) const

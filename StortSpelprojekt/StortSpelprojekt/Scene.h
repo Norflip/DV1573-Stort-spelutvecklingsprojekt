@@ -50,6 +50,11 @@ private:
 
 	//frustumplanes extraction
 	std::vector<dx::XMFLOAT4> extractedPlanes;
-	dx::XMFLOAT3 tempPos;
+	dx::XMFLOAT3 tempObjectPos;
+	UINT nrOfInstancesToDraw = 0;
+	D3D11_MAPPED_SUBRESOURCE mappedData = {};
+	//trees
+	std::vector<Object*> alphaInstancedObjects;
+	std::vector<Object*> InstancedObjects;
 
 };

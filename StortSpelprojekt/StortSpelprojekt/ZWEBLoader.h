@@ -250,7 +250,20 @@ namespace ZWEBLoader //TO BE ADDED: FUNCTION TO LOAD LIGHTS AND TO LOAD TEXTURES
 				materialData.hasNormalMap = 0;
 
 			}
-			
+			if (opacityName != " ")
+			{
+				Texture texture;
+				std::string path = "Textures/" + opacityName;
+				std::wstring pathWSTR(path.begin(), path.end());
+				bool success = texture.LoadTexture(device, pathWSTR.c_str());
+				assert(success);
+
+
+				mat.SetTexture(texture, 1, ShaderBindFlag::PIXEL); //This is default but can be manually changed afterwards.
+
+
+				
+			}
 			mat.SetMaterialData(materialData);
 
 			materials.push_back(mat);

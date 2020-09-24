@@ -8,6 +8,7 @@ Texture::Texture()
 
 Texture::~Texture()
 {
+	
 }
 
 bool Texture::LoadTexture(ID3D11Device* device, LPCWSTR textureFilepath)

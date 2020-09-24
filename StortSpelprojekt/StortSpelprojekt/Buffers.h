@@ -14,6 +14,7 @@ struct cb_Object
 {
 	dx::XMFLOAT4X4 mvp;
 	dx::XMFLOAT4X4 world;
+	dx::XMFLOAT4X4 vp;
 
 };
 

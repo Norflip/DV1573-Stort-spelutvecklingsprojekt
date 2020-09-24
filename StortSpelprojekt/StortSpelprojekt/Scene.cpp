@@ -8,6 +8,54 @@ Scene::Scene() : input(Input::Instance())
 
 Scene::~Scene()
 {
+	for (int i = 0; i < objects.size(); i++)
+	{
+		if (objects[i])
+		{
+			delete objects[i];
+		}
+	}
+	for (int i = 0; i < InstancedObjects.size(); i++)
+	{
+		if (InstancedObjects[i])
+		{
+			delete InstancedObjects[i];
+		}
+	}
+
+	for (int i = 0; i < alphaInstancedObjects.size(); i++)
+	{
+		if (alphaInstancedObjects[i])
+		{
+			delete alphaInstancedObjects[i];
+		}
+	}
+
+	/*if (move)
+	{
+		delete move;
+	}*/
+	if (renderer)
+	{
+		delete renderer;
+	}
+	
+	if (quad)
+	{
+		delete quad;
+	}
+	if (screenquadTex)
+	{
+		delete screenquadTex;
+	}
+
+
+	
+
+
+
+
+	
 }
 
 void Scene::Initialize(Renderer* renderer)
@@ -27,57 +75,35 @@ void Scene::Initialize(Renderer* renderer)
 	
 	Shader shader;
 	Shader skeletonShader;
+	Shader instanceShader;
+	Shader alphaInstanceShader;
+	
 	shader.SetPixelShader(L"Shaders/Default_ps.hlsl");
 	shader.SetVertexShader(L"Shaders/Default_vs.hlsl");
 	skeletonShader.SetVertexShader(L"Shaders/Skeleton_vs.hlsl");
-	
+	instanceShader.SetVertexShader(L"Shaders/Instance_vs.hlsl");
+	instanceShader.SetPixelShader(L"Shaders/Default_ps.hlsl");
+	alphaInstanceShader.SetVertexShader(L"Shaders/Instance_vs.hlsl");
+	alphaInstanceShader.SetPixelShader(L"Shaders/Alpha_ps.hlsl");
+	shader.SetDefaultInputLayout();
 	shader.Compile(renderer->GetDevice());
-
-
-
-
-	Mesh mesh = ShittyOBJLoader::Load("Models/Cube.obj", renderer->GetDevice());
-
-	Material material = Material(shader);
-
-	/* Loading a texture */
-	Texture diffuseTexture;
-	diffuseTexture.LoadTexture(renderer->GetDevice(), L"Textures/Gorilla.png");
-	Texture randomNormal;
-	randomNormal.LoadTexture(renderer->GetDevice(), L"Textures/RandomNormal.png");
-
-	/* Setting texture to correct slot in material*/
-	material.SetTexture(diffuseTexture, TEXTURE_DIFFUSE_SLOT, ShaderBindFlag::PIXEL);
-	material.SetTexture(randomNormal, TEXTURE_NORMAL_SLOT, ShaderBindFlag::PIXEL);
-	material.SetSamplerState(renderer->GetDevice(), D3D11_TEXTURE_ADDRESS_WRAP, D3D11_FILTER_MIN_MAG_MIP_LINEAR);
-
-	Object* tmp_obj = new Object("cube1");
-	tmp_obj->GetTransform().SetPosition({ 0, 10, 10 });
-	
-	
-	
-	
-	tmp_obj->AddComponent<MeshComponent>(mesh, material);
-	
-	tmp_obj->GetComponent<MeshComponent>()->GetBoundingBoxes().CalcAABB();
-
-	objects.push_back(tmp_obj);
-
-	Object* tmp_obj2 = new Object("cube2");
-	tmp_obj2->GetTransform().SetPosition({ 0, 0, 4 });
+	instanceShader.SetInstanceLayout();
+	instanceShader.Compile(renderer->GetDevice());
+	alphaInstanceShader.SetInstanceLayout();
+	alphaInstanceShader.Compile(renderer->GetDevice());
 
 	
-	tmp_obj2->AddComponent<MeshComponent>(mesh, material);
-	tmp_obj2->GetComponent<MeshComponent>()->GetBoundingBoxes().CalcAABB();
+
 	
-	tmp_obj2->AddComponent<MoveComponent>();
-	
-	Transform::SetParentChild(tmp_obj->GetTransform(), tmp_obj2->GetTransform());
 	std::vector<Mesh> sylvanas = ZWEBLoader::LoadMeshes(ZWEBLoadType::NoAnimation, "Models/sylvanas.ZWEB", renderer->GetDevice());
 	std::vector<Material> sylvanasMat = ZWEBLoader::LoadMaterials("Models/sylvanas.ZWEB", shader, renderer->GetDevice());
 
 	std::vector<Mesh> cylinder = ZWEBLoader::LoadMeshes(ZWEBLoadType::NoAnimation, "Models/cylinder.ZWEB", renderer->GetDevice());
 	std::vector<Material> cylinderMat = ZWEBLoader::LoadMaterials("Models/cylinder.ZWEB", shader, renderer->GetDevice());
+
+
+	
+		
 
 	Object* testMesh = new Object("test");
 	Object* testMesh2 = new Object("test2");
@@ -111,6 +137,86 @@ void Scene::Initialize(Renderer* renderer)
 	objects.push_back(testMesh3);
 
 
+
+
+	//Instanced Trees test
+	//0 branches, 1 leaves
+	
+	std::vector<Mesh> treeModels = ZWEBLoader::LoadMeshes(ZWEBLoadType::NoAnimation, "Models/treeEmil.ZWEB", renderer->GetDevice());
+	std::vector<Material> treeMaterials = ZWEBLoader::LoadMaterials("Models/treeEmil.ZWEB", instanceShader, renderer->GetDevice());
+
+	treeMaterials[1].SetShader(alphaInstanceShader);
+
+	size_t nrOfInstances = 100;
+	std::vector<Mesh::InstanceData> treeInstances(nrOfInstances);
+	
+	treeMaterials[0].SetSamplerState(renderer->GetDevice(), D3D11_TEXTURE_ADDRESS_WRAP, D3D11_FILTER_MIN_MAG_MIP_LINEAR);
+	treeMaterials[1].SetSamplerState(renderer->GetDevice(), D3D11_TEXTURE_ADDRESS_WRAP, D3D11_FILTER_MIN_MAG_MIP_LINEAR);
+	
+	std::vector<unsigned int> r;
+	for (int i = 0; i < nrOfInstances; i++)
+	{
+		r.push_back(rand() % 51 + 1);
+	}
+	
+
+	for (size_t i = 0; i < nrOfInstances; i++)
+	{
+		
+		dx::XMStoreFloat4x4(&treeInstances[i].instanceWorld,dx::XMMatrixTranslation((i + 1 *r[i] ) + treeModels[0].GetT().x, 0 + treeModels[0].GetT().y, 10 + treeModels[0].GetT().z));
+		treeInstances[i].instancePosition = dx::XMFLOAT3((i + 1 * r[i]) + treeModels[0].GetT().x, 0 + treeModels[0].GetT().y, 10 + treeModels[0].GetT().z);
+
+	}
+	treeModels[0].CreateInstanceBuffer(renderer->GetDevice(), treeInstances);
+	for (size_t i = 0; i < nrOfInstances; i++)
+	{
+
+		dx::XMStoreFloat4x4(&treeInstances[i].instanceWorld, dx::XMMatrixTranslation((i + 1 * r[i])+ treeModels[1].GetT().x, 0 + treeModels[1].GetT().y, 10+ treeModels[1].GetT().z));
+		treeInstances[i].instancePosition = dx::XMFLOAT3((i + 1 * r[i]) + treeModels[1].GetT().x, 0 + treeModels[1].GetT().y, 10 + treeModels[1].GetT().z);
+
+	}
+	
+	treeModels[1].CreateInstanceBuffer(renderer->GetDevice(), treeInstances);
+
+	for (size_t i = 0; i < nrOfInstances; i++)
+	{
+
+		dx::XMStoreFloat4x4(&treeInstances[i].instanceWorld, dx::XMMatrixTranslation((i + 1 * r[i]) + treeModels[2].GetT().x, 0 + treeModels[2].GetT().y, 10 + treeModels[2].GetT().z));
+		treeInstances[i].instancePosition = dx::XMFLOAT3((i + 1 * r[i]) + treeModels[2].GetT().x, 0 + treeModels[2].GetT().y, 10 + treeModels[2].GetT().z);
+
+	}
+
+	treeModels[2].CreateInstanceBuffer(renderer->GetDevice(), treeInstances);
+
+
+	Object* treeBase = new Object("treeBase");
+
+	Object* treeBranches = new Object("treeBranches");
+
+	treeModels[0].SetInstanceNr(nrOfInstances);
+	treeModels[1].SetInstanceNr(nrOfInstances);
+	treeModels[2].SetInstanceNr(nrOfInstances);
+
+
+	treeBase->AddComponent<MeshComponent>(treeModels[2], treeMaterials[0]);
+	treeBase->GetComponent<MeshComponent>()->GetBoundingBoxes().CalcAABB();
+	treeBranches->AddComponent<MeshComponent>(treeModels[0], treeMaterials[0]);
+	treeBranches->GetComponent<MeshComponent>()->GetBoundingBoxes().CalcAABB();
+	
+	
+
+	InstancedObjects.push_back(treeBase);
+	InstancedObjects.push_back(treeBranches);
+	
+	Object* leaves = new Object("leaves");
+
+	leaves->AddComponent<MeshComponent>(treeModels[1], treeMaterials[1]);
+
+	
+
+	alphaInstancedObjects.push_back(leaves);
+	
+
 	/* * * * * * * * ** * * * * */
 	/* Render to texture test */	
 	screenquadTex = new Texture;
@@ -120,6 +226,7 @@ void Scene::Initialize(Renderer* renderer)
 	Shader screenquadShader;
 	screenquadShader.SetPixelShader(L"Shaders/ScreenQuad_ps.hlsl");
 	screenquadShader.SetVertexShader(L"Shaders/ScreenQuad_vs.hlsl");
+	screenquadShader.SetDefaultInputLayout();
 	screenquadShader.Compile(renderer->GetDevice());
 
 	/* Screenquad mat */
@@ -165,53 +272,95 @@ void Scene::FixedUpdate(const float& fixedDeltaTime)
 
 void Scene::Render()
 {	
-	
 	renderer->BeginFrame();
-	RenderSceneToTexture();
-	//for (auto i = objects.begin(); i < objects.end(); i++)
-	//{
-	//	Object* obj = (*i);
-	//	//if (obj->HasFlag(ObjectFlag::ENABLED | ObjectFlag::RENDER))
-	//	obj->Draw(renderer, camera);
-	//}
+	camera->GetFrustumPlanes(extractedPlanes);
+	renderer->SetBlendState(false);
 
-	/* Render screenquad with rendered scene-texture */
-	quad->Draw(renderer, camera);
+	for (auto i = objects.begin(); i < objects.end(); i++)
+	{
+		Object* obj = (*i);
+
+		if (obj->HasFlag(ObjectFlag::NO_CULL))
+		{
+
+			obj->Draw(renderer, camera, DrawType::STANDARD);
+		}
+		else
+		{
+			dx::XMStoreFloat3(&tempObjectPos, obj->GetTransform().GetPosition());//If object is rotating around something else, then maybe decompose world matrix.
+
+			if (!camera->CullAgainstAABB(extractedPlanes, obj->GetComponent<MeshComponent>()->GetBoundingBoxes().GetAABB(), tempObjectPos))
+			{
+				obj->Draw(renderer, camera, DrawType::STANDARD);
+			}
+			else
+			{
+				//std::cout << "THIS IS NOT VISIBLE";
+			}
+
+
+		}
+
+	}
+	for (auto i = InstancedObjects.begin(); i < InstancedObjects.end(); i++)
+	{
+		Object* obj = (*i);
+		if (obj->HasFlag(ObjectFlag::NO_CULL))
+		{
+
+			obj->Draw(renderer, camera, DrawType::INSTANCED);
+		}
+		else
+		{
+			renderer->GetContext()->Map(obj->GetComponent<MeshComponent>()->GetMesh().instanceBuffer, 0, D3D11_MAP_WRITE_DISCARD, 0, &mappedData); //the instance buffer is dynmaic so you can update it.
+
+			Mesh::InstanceData* dataView = reinterpret_cast<Mesh::InstanceData*>(mappedData.pData); //a safe cast
+
+			nrOfInstancesToDraw = 0;
+
+			obj->GetComponent<MeshComponent>()->GetMesh().SetInstanceNr(nrOfInstancesToDraw);
+
+			for (UINT instance = 0; instance < (UINT)obj->GetComponent<MeshComponent>()->GetMesh().instanceData.size(); instance++) //cull all the instances
+			{
+				tempObjectPos = obj->GetComponent<MeshComponent>()->GetMesh().instanceData[instance].instancePosition;
+				if (!camera->CullAgainstAABB(extractedPlanes, obj->GetComponent<MeshComponent>()->GetBoundingBoxes().GetAABB(), tempObjectPos))
+				{
+					dataView[nrOfInstancesToDraw++] = obj->GetComponent<MeshComponent>()->GetMesh().instanceData[instance];
+					
+				}
+
+			}
+			renderer->GetContext()->Unmap(obj->GetComponent<MeshComponent>()->GetMesh().instanceBuffer, 0);
+			obj->GetComponent<MeshComponent>()->GetMesh().SetInstanceNr(nrOfInstancesToDraw);
+			if (nrOfInstancesToDraw > 0)
+			{
+				obj->Draw(renderer, camera, DrawType::INSTANCED);
+			}
+			
+		}
+
+	}
+	renderer->SetBlendState(true);
+	for (auto i = alphaInstancedObjects.begin(); i < alphaInstancedObjects.end(); i++)
+	{
+		Object* obj = (*i);
+
+		obj->Draw(renderer, camera, DrawType::INSTANCEDALPHA);
+
+	}
+
 	renderer->EndFrame();
 }
 
 void Scene::RenderSceneToTexture()
 {
 	renderer->Unbind();
-
-	renderer->SetRenderTarget(renderer->GetContext(), screenquadTex->GetRtv());
-	renderer->ClearRenderTarget(renderer->GetContext(), screenquadTex->GetRtv(), dx::XMFLOAT4(0, 1, 0, 1));
-	camera->GetFrustumPlanes(extractedPlanes);
 	
-	for (auto i = objects.begin(); i < objects.end(); i++)
-	{
-		
-		Object* obj = (*i);
-		if (obj->HasFlag(ObjectFlag::NO_CULL))
-		{
-			
-			obj->Draw(renderer, camera);
-		}
-		else
-		{
-			dx::XMStoreFloat3(&tempPos, obj->GetTransform().GetPosition());//If object is rotating around something else, then maybe decompose world matrix.
-			if (!camera->CullAgainstAABB(extractedPlanes, obj->GetComponent<MeshComponent>()->GetBoundingBoxes().GetAABB(), tempPos))
-			{
-				obj->Draw(renderer, camera);
-			}
-			else
-			{
-				//std::cout << "THIS IS NOT VISIBLE";
-			}
-			
-		}
-			
-	}
+	renderer->SetRenderTarget(renderer->GetContext(), screenquadTex->GetRtv());
+	renderer->ClearRenderTarget(renderer->GetContext(), screenquadTex->GetRtv(), dx::XMFLOAT4(0.3f, 0.1f, 0.2f, 1.0f));
+	
+	
+
 
 	//renderer->Unbind();	// needed?
 

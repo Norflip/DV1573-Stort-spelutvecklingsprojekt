@@ -13,13 +13,13 @@ void SkeletonMeshComponent::Update(const float& deltaTime)
     elapsedTime = deltaTime;
 }
 
-void SkeletonMeshComponent::Draw(Renderer* renderer, CameraComponent* camera)
+void SkeletonMeshComponent::Draw(Renderer* renderer, CameraComponent* camera, DrawType drawType)
 {
 
 	material.BindToContext(renderer->GetContext());
 
-	renderer->DrawSkeleton(mesh, GetOwner()->GetTransform().GetWorldMatrix(), camera->GetViewMatrix(), camera->GetProjectionMatrix(),
-		GetAnimationTrack(0).Makeglobal(elapsedTime, dx::XMMatrixIdentity(), GetAnimationTrack(0).GetRootKeyJoints()));
+	/*renderer->DrawSkeleton(mesh, GetOwner()->GetTransform().GetWorldMatrix(), camera->GetViewMatrix(), camera->GetProjectionMatrix(),
+		GetAnimationTrack(0).Makeglobal(elapsedTime, dx::XMMatrixIdentity(), GetAnimationTrack(0).GetRootKeyJoints()));*/
 
 
 }

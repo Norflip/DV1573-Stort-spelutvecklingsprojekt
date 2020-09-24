@@ -84,8 +84,48 @@ void DXHelper::BindConstBuffer(ID3D11DeviceContext* context, ID3D11Buffer* buffe
 	if ((bflag & (int)ShaderBindFlag::GEOMETRY) != 0)
 		context->GSSetConstantBuffers(slot, 1, &buffer);
 
-	if ((bflag & (int)ShaderBindFlag::SKELETON) != 0)
-		context->VSSetConstantBuffers(slot, 1, &buffer);
+
+}
+
+void DXHelper::CreateBlendState(ID3D11Device* device, ID3D11BlendState** blendOn, ID3D11BlendState** blendOff, ID3D11DepthStencilState** depthStencilState)
+{
+	HRESULT hr;
+	D3D11_BLEND_DESC blendDescOn;
+	ZeroMemory(&blendDescOn, sizeof(D3D11_BLEND_DESC));
+
+
+
+	blendDescOn.RenderTarget[0].BlendEnable = TRUE;
+	blendDescOn.RenderTarget[0].SrcBlend = D3D11_BLEND_SRC_ALPHA;
+	blendDescOn.RenderTarget[0].DestBlend = D3D11_BLEND_INV_SRC_ALPHA;
+	blendDescOn.RenderTarget[0].BlendOp = D3D11_BLEND_OP_ADD;
+	blendDescOn.RenderTarget[0].SrcBlendAlpha = D3D11_BLEND_ONE;
+	blendDescOn.RenderTarget[0].DestBlendAlpha = D3D11_BLEND_ZERO;
+	blendDescOn.RenderTarget[0].BlendOpAlpha = D3D11_BLEND_OP_ADD;
+	blendDescOn.RenderTarget[0].RenderTargetWriteMask = 0x0f;
+
+	D3D11_BLEND_DESC blendDescOff;
+	ZeroMemory(&blendDescOff, sizeof(D3D11_BLEND_DESC));
+
+	blendDescOff.RenderTarget[0].BlendEnable = false;
+	blendDescOff.RenderTarget[0].RenderTargetWriteMask = D3D11_COLOR_WRITE_ENABLE_ALL;
+
+	hr = device->CreateBlendState(&blendDescOn, blendOn);
+	assert(SUCCEEDED(hr));
+
+	hr = device->CreateBlendState(&blendDescOff, blendOff);
+	assert(SUCCEEDED(hr));
+
+	D3D11_DEPTH_STENCIL_DESC depthStencilStateDesc;
+	ZeroMemory(&depthStencilStateDesc, sizeof(D3D11_DEPTH_STENCIL_DESC));
+
+	depthStencilStateDesc.DepthEnable = true;
+	depthStencilStateDesc.DepthWriteMask = D3D11_DEPTH_WRITE_MASK::D3D11_DEPTH_WRITE_MASK_ALL;
+	depthStencilStateDesc.DepthFunc = D3D11_COMPARISON_FUNC::D3D11_COMPARISON_LESS;
+
+	hr = device->CreateDepthStencilState(&depthStencilStateDesc, depthStencilState);
+	assert(SUCCEEDED(hr));
+
 }
 
 void DXHelper::CreateBackbuffer(size_t width, size_t height, ID3D11Device* device,  IDXGISwapChain* swapchain, ID3D11RenderTargetView** backbuffer, ID3D11DepthStencilView** depthStencilView)
@@ -167,4 +207,27 @@ void DXHelper::CreateIndexBuffer(ID3D11Device* device, size_t indexCount, unsign
 
 	HRESULT indexBufferResult = device->CreateBuffer(&indexBufferDescription, &indexBuffer_subResource, indexBuffer);
 	assert(SUCCEEDED(indexBufferResult));
+}
+
+void DXHelper::CreateInstanceBuffer(ID3D11Device* device, size_t instanceCount, size_t instanceDataSize, void* instanceData, ID3D11Buffer** instanceBuffer)
+{
+
+
+	D3D11_BUFFER_DESC instanceBufferDescription;
+	ZeroMemory(&instanceBufferDescription, sizeof(D3D11_BUFFER_DESC));
+
+	instanceBufferDescription.Usage = D3D11_USAGE_DYNAMIC;
+	instanceBufferDescription.ByteWidth = static_cast<unsigned int>(instanceDataSize * instanceCount);
+	instanceBufferDescription.BindFlags = D3D11_BIND_VERTEX_BUFFER;
+	instanceBufferDescription.CPUAccessFlags = D3D11_CPU_ACCESS_WRITE;
+	instanceBufferDescription.MiscFlags = 0;
+
+	D3D11_SUBRESOURCE_DATA instanceBuffer_subResource;
+	ZeroMemory(&instanceBuffer_subResource, sizeof(D3D11_SUBRESOURCE_DATA));
+
+	instanceBuffer_subResource.pSysMem = instanceData;
+	HRESULT hr = device->CreateBuffer(&instanceBufferDescription, &instanceBuffer_subResource, instanceBuffer);
+
+	assert(SUCCEEDED(hr));
+
 }

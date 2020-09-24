@@ -17,6 +17,8 @@ struct VS_INPUT
 	uint3 boneID    : BONEID;
 	float3 skinWeight : SKINWEIGHT;
 	uint id	: SV_InstanceID;
+	float4x4 instanceWorld : INSTANCEWORLD;
+	float3 instancePos : INSTANCEPOS;
 };
 
 struct VS_OUTPUT

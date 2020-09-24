@@ -3,6 +3,7 @@
 
 #define TEXTURE_DIFFUSE_SLOT 0
 #define TEXTURE_NORMAL_SLOT 1
+#define TEXTURE_ALPHA_SLOT 1
 
 class Texture {
 public:

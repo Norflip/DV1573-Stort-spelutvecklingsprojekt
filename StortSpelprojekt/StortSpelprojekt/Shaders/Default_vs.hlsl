@@ -23,6 +23,7 @@ struct VS_OUTPUT
 
 VS_OUTPUT main(VS_INPUT input)
 {
+	
 	VS_OUTPUT output;
 	output.uv = input.uv;	
 	output.worldPosition = mul(world, input.position).xyz;
@@ -37,4 +38,5 @@ VS_OUTPUT main(VS_INPUT input)
 	output.tangent = normalize(mul(world, input.tangent).xyz);
 
 	return output;
+	
 }
