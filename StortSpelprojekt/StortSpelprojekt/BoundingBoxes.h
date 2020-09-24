@@ -15,18 +15,18 @@ class BoundingBoxes
 {
 
 private:
-	std::vector<AABB> AABBs; 
+	AABB aabb; 
 	Mesh basicMesh;
 	
 public:
 	BoundingBoxes(const Mesh& mesh);
 	virtual ~BoundingBoxes();
 
-	void SetAABB(const AABB& aabb) { this->AABBs.push_back(aabb); }
+	void SetAABB(const AABB& aabb) { this->aabb=aabb; }
 	
-	const std::vector<AABB>& GetAABBs() { return this->AABBs; }
+	const AABB& GetAABB() { return this->aabb; }
 
-	UINT GetNrOfAABBs() const { return (UINT)AABBs.size(); }
+	
 	void CalcAABB(const Mesh& mesh); // can also be used to calc OBB if someone knows how.
 	void CalcAABB();
 	
