@@ -151,14 +151,7 @@ void Scene::Update(const float& deltaTime)
 		if (obj->HasFlag(ObjectFlag::REMOVED))
 			toRemove.push_back(obj);
 	}
-	
-	std::cout<<"SECONDS"<<GameClock::Instance().GetSeconds()<<std::endl;
-	std::cout << "MS" << GameClock::Instance().GetMiliseconds() << std::endl;
-	std::cout << "MICR" << GameClock::Instance().GetMicroseconds() << std::endl;
-	std::cout << "Framet" << GameClock::Instance().GetFrameTime() << std::endl;
-	std::cout << "FPS" << GameClock::Instance().GetFramesPerSecond() << std::endl;
 	GameClock::Instance().Update();
-
 }
 
 void Scene::FixedUpdate(const float& fixedDeltaTime)
