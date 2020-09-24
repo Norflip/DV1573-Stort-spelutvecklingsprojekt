@@ -22,7 +22,8 @@ void Scene::Initialize(Renderer* renderer)
 	camera = cameraObject->AddComponent<CameraComponent>(60.0f);
 	camera->Resize(window->GetWidth(), window->GetHeight());
 	move = cameraObject->AddComponent<ControllerComponent>();
-	objects.push_back(cameraObject);
+	cameraObject->AddFlag(ObjectFlag::NO_CULL);
+	objects.push_back(cameraObject); // Is it drawing the camera!?!?!
 	
 	Shader shader;
 	Shader skeletonShader;
@@ -35,6 +36,58 @@ void Scene::Initialize(Renderer* renderer)
 	std::vector<Mesh> zwebMeshes = ZWEBLoader::LoadMeshes(ZWEBLoadType::SkeletonAnimation, "Models/brickSphere.ZWEB", renderer->GetDevice());
 	std::vector<Material> zwebMaterials = ZWEBLoader::LoadMaterials("Models/brickSphere.ZWEB", shader, renderer->GetDevice());
 
+	
+	Object* testMesh = new Object("test");
+
+
+	testMesh->GetTransform().SetPosition({0,0,20});
+
+	
+	zwebMaterials[0].SetSamplerState(renderer->GetDevice(), D3D11_TEXTURE_ADDRESS_WRAP, D3D11_FILTER_MIN_MAG_MIP_LINEAR);
+	testMesh->AddComponent<MeshComponent>(zwebMeshes[0], zwebMaterials[0]);
+
+	
+	testMesh->GetComponent<MeshComponent>()->GetBoundingBoxes().CalcAABB();
+
+	objects.push_back(testMesh);
+
+
+	Mesh mesh = ShittyOBJLoader::Load("Models/Cube.obj", renderer->GetDevice());
+
+	Material material = Material(shader);
+
+	/* Loading a texture */
+	Texture diffuseTexture;
+	diffuseTexture.LoadTexture(renderer->GetDevice(), L"Textures/Gorilla.png");
+	Texture randomNormal;
+	randomNormal.LoadTexture(renderer->GetDevice(), L"Textures/RandomNormal.png");
+
+	/* Setting texture to correct slot in material*/
+	material.SetTexture(diffuseTexture, TEXTURE_DIFFUSE_SLOT, ShaderBindFlag::PIXEL);
+	material.SetTexture(randomNormal, TEXTURE_NORMAL_SLOT, ShaderBindFlag::PIXEL);
+	material.SetSamplerState(renderer->GetDevice(), D3D11_TEXTURE_ADDRESS_WRAP, D3D11_FILTER_MIN_MAG_MIP_LINEAR);
+
+	Object* tmp_obj = new Object("cube1");
+	tmp_obj->GetTransform().SetPosition({ 0, 10, 10 });
+	
+	
+	
+	
+	tmp_obj->AddComponent<MeshComponent>(mesh, material);
+	
+	tmp_obj->GetComponent<MeshComponent>()->GetBoundingBoxes().CalcAABB();
+
+	objects.push_back(tmp_obj);
+
+	Object* tmp_obj2 = new Object("cube2");
+	tmp_obj2->GetTransform().SetPosition({ 0, 0, 4 });
+
+	
+	tmp_obj2->AddComponent<MeshComponent>(mesh, material);
+	tmp_obj2->AddFlag(ObjectFlag::NO_CULL);
+	tmp_obj2->AddComponent<MoveComponent>();
+	
+	Transform::SetParentChild(tmp_obj->GetTransform(), tmp_obj2->GetTransform());
 	std::vector<Mesh> sylvanas = ZWEBLoader::LoadMeshes(ZWEBLoadType::NoAnimation, "Models/sylvanas.ZWEB", renderer->GetDevice());
 	std::vector<Material> sylvanasMat = ZWEBLoader::LoadMaterials("Models/sylvanas.ZWEB", shader, renderer->GetDevice());
 
@@ -167,12 +220,35 @@ void Scene::RenderSceneToTexture()
 
 	renderer->SetRenderTarget(renderer->GetContext(), screenquadTex->GetRtv());
 	renderer->ClearRenderTarget(renderer->GetContext(), screenquadTex->GetRtv(), dx::XMFLOAT4(0, 1, 0, 1));
-
+	camera->GetFrustumPlanes(extractedPlanes);
+	dx::XMFLOAT3 tempPos;
 	for (auto i = objects.begin(); i < objects.end(); i++)
 	{
+		
 		Object* obj = (*i);
-		//if (obj->HasFlag(ObjectFlag::ENABLED | ObjectFlag::VISIBLE))
-		obj->Draw(renderer, camera);	
+		if (obj->HasFlag(ObjectFlag::NO_CULL))
+		{
+			
+			obj->Draw(renderer, camera);
+		}
+		else
+		{
+			for (int aabb = 0; aabb < obj->GetComponent<MeshComponent>()->GetBoundingBoxes().GetNrOfAABBs(); aabb++)
+			{
+				dx::XMStoreFloat3(&tempPos, obj->GetTransform().GetPosition());
+				if (!camera->CullAgainstAABB(extractedPlanes, obj->GetComponent<MeshComponent>()->GetBoundingBoxes().GetAABBs()[aabb], tempPos))
+				{
+					obj->Draw(renderer, camera);
+				}
+				else
+				{
+					//std::cout << "THIS IS NOT VISIBLE";
+				}
+
+			}
+			
+		}
+			
 	}
 	
 	
@@ -217,3 +293,4 @@ void Scene::PrintSceneHierarchy(Object* object, size_t level) const
 		}
 	}
 }
+
