@@ -23,7 +23,7 @@ void Scene::Initialize(Renderer* renderer)
 	camera->Resize(window->GetWidth(), window->GetHeight());
 	move = cameraObject->AddComponent<ControllerComponent>();
 	cameraObject->AddFlag(ObjectFlag::NO_CULL);
-	objects.push_back(cameraObject); // Is it drawing the camera!?!?!
+	objects.push_back(cameraObject);
 	
 	Shader shader;
 	Shader skeletonShader;
@@ -33,23 +33,7 @@ void Scene::Initialize(Renderer* renderer)
 	
 	shader.Compile(renderer->GetDevice());
 
-	std::vector<Mesh> zwebMeshes = ZWEBLoader::LoadMeshes(ZWEBLoadType::SkeletonAnimation, "Models/brickSphere.ZWEB", renderer->GetDevice());
-	std::vector<Material> zwebMaterials = ZWEBLoader::LoadMaterials("Models/brickSphere.ZWEB", shader, renderer->GetDevice());
 
-	
-	Object* testMesh = new Object("test");
-
-
-	testMesh->GetTransform().SetPosition({0,0,20});
-
-	
-	zwebMaterials[0].SetSamplerState(renderer->GetDevice(), D3D11_TEXTURE_ADDRESS_WRAP, D3D11_FILTER_MIN_MAG_MIP_LINEAR);
-	testMesh->AddComponent<MeshComponent>(zwebMeshes[0], zwebMaterials[0]);
-
-	
-	testMesh->GetComponent<MeshComponent>()->GetBoundingBoxes().CalcAABB();
-
-	objects.push_back(testMesh);
 
 
 	Mesh mesh = ShittyOBJLoader::Load("Models/Cube.obj", renderer->GetDevice());
@@ -84,7 +68,8 @@ void Scene::Initialize(Renderer* renderer)
 
 	
 	tmp_obj2->AddComponent<MeshComponent>(mesh, material);
-	tmp_obj2->AddFlag(ObjectFlag::NO_CULL);
+	tmp_obj2->GetComponent<MeshComponent>()->GetBoundingBoxes().CalcAABB();
+	
 	tmp_obj2->AddComponent<MoveComponent>();
 	
 	Transform::SetParentChild(tmp_obj->GetTransform(), tmp_obj2->GetTransform());
@@ -103,21 +88,24 @@ void Scene::Initialize(Renderer* renderer)
 	dx::XMFLOAT3 miniTranslation3 = dx::XMFLOAT3(-4, -3, -4);
 
 	testMesh->GetTransform().SetPosition(dx::XMLoadFloat3(&miniTranslation));
-
+	testMesh->AddFlag(ObjectFlag::NO_CULL);
 	testMesh2->GetTransform().SetPosition(dx::XMLoadFloat3(&miniTranslation2));
 	Transform::SetParentChild(testMesh->GetTransform(), testMesh2->GetTransform());
 
 	testMesh3->GetTransform().SetPosition(dx::XMLoadFloat3(&miniTranslation3));
 	Transform::SetParentChild(testMesh2->GetTransform(), testMesh3->GetTransform());
 
-	zwebMaterials[0].SetSamplerState(renderer->GetDevice(), D3D11_TEXTURE_ADDRESS_WRAP, D3D11_FILTER_MIN_MAG_MIP_LINEAR);
+	
 	sylvanasMat[0].SetSamplerState(renderer->GetDevice(), D3D11_TEXTURE_ADDRESS_WRAP, D3D11_FILTER_MIN_MAG_MIP_LINEAR);
 	cylinderMat[0].SetSamplerState(renderer->GetDevice(), D3D11_TEXTURE_ADDRESS_WRAP, D3D11_FILTER_MIN_MAG_MIP_LINEAR);
 
-	testMesh->AddComponent<MeshComponent>(zwebMeshes[0], zwebMaterials[0]);
+	
 	testMesh2->AddComponent<MeshComponent>(sylvanas[0], sylvanasMat[0]);
+	testMesh2->GetComponent<MeshComponent>()->GetBoundingBoxes().CalcAABB();
+	testMesh2->AddFlag(ObjectFlag::NO_CULL);
 	testMesh3->AddComponent<MeshComponent>(cylinder[0], cylinderMat[0]);
-
+	testMesh3->GetComponent<MeshComponent>()->GetBoundingBoxes().CalcAABB();
+	testMesh3->AddFlag(ObjectFlag::NO_CULL);
 	objects.push_back(testMesh);
 	objects.push_back(testMesh2);
 	objects.push_back(testMesh3);
@@ -199,7 +187,7 @@ void Scene::RenderSceneToTexture()
 	renderer->SetRenderTarget(renderer->GetContext(), screenquadTex->GetRtv());
 	renderer->ClearRenderTarget(renderer->GetContext(), screenquadTex->GetRtv(), dx::XMFLOAT4(0, 1, 0, 1));
 	camera->GetFrustumPlanes(extractedPlanes);
-	dx::XMFLOAT3 tempPos;
+	
 	for (auto i = objects.begin(); i < objects.end(); i++)
 	{
 		
@@ -211,18 +199,14 @@ void Scene::RenderSceneToTexture()
 		}
 		else
 		{
-			for (int aabb = 0; aabb < obj->GetComponent<MeshComponent>()->GetBoundingBoxes().GetNrOfAABBs(); aabb++)
+			dx::XMStoreFloat3(&tempPos, obj->GetTransform().GetPosition());//If object is rotating around something else, then maybe decompose world matrix.
+			if (!camera->CullAgainstAABB(extractedPlanes, obj->GetComponent<MeshComponent>()->GetBoundingBoxes().GetAABB(), tempPos))
 			{
-				dx::XMStoreFloat3(&tempPos, obj->GetTransform().GetPosition());
-				if (!camera->CullAgainstAABB(extractedPlanes, obj->GetComponent<MeshComponent>()->GetBoundingBoxes().GetAABBs()[aabb], tempPos))
-				{
-					obj->Draw(renderer, camera);
-				}
-				else
-				{
-					//std::cout << "THIS IS NOT VISIBLE";
-				}
-
+				obj->Draw(renderer, camera);
+			}
+			else
+			{
+				//std::cout << "THIS IS NOT VISIBLE";
 			}
 			
 		}
