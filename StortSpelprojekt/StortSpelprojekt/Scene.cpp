@@ -135,9 +135,11 @@ void Scene::Initialize(Renderer* renderer)
 
 void Scene::Update(const float& deltaTime)
 {
-	std::vector<Object*> toRemove;
-	input.UpdateInputs();
 
+	std::vector<Object*> toRemove;
+
+
+	input.UpdateInputs();
 
 	for (auto i = objects.begin(); i < objects.end(); i++)
 	{
@@ -149,6 +151,7 @@ void Scene::Update(const float& deltaTime)
 		if (obj->HasFlag(ObjectFlag::REMOVED))
 			toRemove.push_back(obj);
 	}
+	GameClock::Instance().Update();
 }
 
 void Scene::FixedUpdate(const float& fixedDeltaTime)
