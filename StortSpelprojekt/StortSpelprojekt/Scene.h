@@ -4,12 +4,15 @@
 #include "HeightMap.h"
 #include "ShittyOBJLoader.h"
 #include "Input.h"
+#include "GameClock.h"
 #include "CameraComponent.h"
 #include "MoveComponent.h"
 #include "ControllerComponent.h"
 #include "MeshComponent.h"
 #include "ZWEBLoader.h"
 #include "SkeletonMeshComponent.h"
+
+#include "Skybox.h"
 
 
 class Scene
@@ -47,6 +50,11 @@ private:
 	Texture* screenquadTex;
 	Object* quad;
 	Material screenquadmat;	
+
+
+
+	/* test sky */
+	Object* testSkybox;
 
 
 	//frustumplanes extraction

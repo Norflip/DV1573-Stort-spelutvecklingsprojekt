@@ -34,45 +34,9 @@ void Scene::Initialize(Renderer* renderer)
 	shader.Compile(renderer->GetDevice());
 
 
-
-
-	Mesh mesh = ShittyOBJLoader::Load("Models/Cube.obj", renderer->GetDevice());
-
-	Material material = Material(shader);
-
-	/* Loading a texture */
-	Texture diffuseTexture;
-	diffuseTexture.LoadTexture(renderer->GetDevice(), L"Textures/Gorilla.png");
-	Texture randomNormal;
-	randomNormal.LoadTexture(renderer->GetDevice(), L"Textures/RandomNormal.png");
-
-	/* Setting texture to correct slot in material*/
-	material.SetTexture(diffuseTexture, TEXTURE_DIFFUSE_SLOT, ShaderBindFlag::PIXEL);
-	material.SetTexture(randomNormal, TEXTURE_NORMAL_SLOT, ShaderBindFlag::PIXEL);
-	material.SetSamplerState(renderer->GetDevice(), D3D11_TEXTURE_ADDRESS_WRAP, D3D11_FILTER_MIN_MAG_MIP_LINEAR);
-
-	Object* tmp_obj = new Object("cube1");
-	tmp_obj->GetTransform().SetPosition({ 0, 10, 10 });
+	std::vector<Mesh> zwebMeshes = ZWEBLoader::LoadMeshes(ZWEBLoadType::NoAnimation, "Models/brickSphere.ZWEB", renderer->GetDevice());
+	std::vector<Material> zwebMaterials = ZWEBLoader::LoadMaterials("Models/brickSphere.ZWEB", shader, renderer->GetDevice());
 	
-	
-	
-	
-	tmp_obj->AddComponent<MeshComponent>(mesh, material);
-	
-	tmp_obj->GetComponent<MeshComponent>()->GetBoundingBoxes().CalcAABB();
-
-	objects.push_back(tmp_obj);
-
-	Object* tmp_obj2 = new Object("cube2");
-	tmp_obj2->GetTransform().SetPosition({ 0, 0, 4 });
-
-	
-	tmp_obj2->AddComponent<MeshComponent>(mesh, material);
-	tmp_obj2->GetComponent<MeshComponent>()->GetBoundingBoxes().CalcAABB();
-	
-	tmp_obj2->AddComponent<MoveComponent>();
-	
-	Transform::SetParentChild(tmp_obj->GetTransform(), tmp_obj2->GetTransform());
 	std::vector<Mesh> sylvanas = ZWEBLoader::LoadMeshes(ZWEBLoadType::NoAnimation, "Models/sylvanas.ZWEB", renderer->GetDevice());
 	std::vector<Material> sylvanasMat = ZWEBLoader::LoadMaterials("Models/sylvanas.ZWEB", shader, renderer->GetDevice());
 
@@ -89,23 +53,30 @@ void Scene::Initialize(Renderer* renderer)
 
 	testMesh->GetTransform().SetPosition(dx::XMLoadFloat3(&miniTranslation));
 	testMesh->AddFlag(ObjectFlag::NO_CULL);
+	
 	testMesh2->GetTransform().SetPosition(dx::XMLoadFloat3(&miniTranslation2));
+	testMesh2->AddFlag(ObjectFlag::NO_CULL);
 	Transform::SetParentChild(testMesh->GetTransform(), testMesh2->GetTransform());
 
+	testMesh3->AddFlag(ObjectFlag::NO_CULL);
 	testMesh3->GetTransform().SetPosition(dx::XMLoadFloat3(&miniTranslation3));
 	Transform::SetParentChild(testMesh2->GetTransform(), testMesh3->GetTransform());
 
-	
+	testMesh2->AddComponent<MoveComponent>();
+
+	zwebMaterials[0].SetSamplerState(renderer->GetDevice(), D3D11_TEXTURE_ADDRESS_WRAP, D3D11_FILTER_MIN_MAG_MIP_LINEAR);
 	sylvanasMat[0].SetSamplerState(renderer->GetDevice(), D3D11_TEXTURE_ADDRESS_WRAP, D3D11_FILTER_MIN_MAG_MIP_LINEAR);
 	cylinderMat[0].SetSamplerState(renderer->GetDevice(), D3D11_TEXTURE_ADDRESS_WRAP, D3D11_FILTER_MIN_MAG_MIP_LINEAR);
-
 	
+	testMesh->AddComponent<MeshComponent>(zwebMeshes[0], zwebMaterials[0]);
+	testMesh->GetComponent<MeshComponent>()->GetBoundingBoxes().CalcAABB();
+
 	testMesh2->AddComponent<MeshComponent>(sylvanas[0], sylvanasMat[0]);
 	testMesh2->GetComponent<MeshComponent>()->GetBoundingBoxes().CalcAABB();
-	testMesh2->AddFlag(ObjectFlag::NO_CULL);
+
 	testMesh3->AddComponent<MeshComponent>(cylinder[0], cylinderMat[0]);
 	testMesh3->GetComponent<MeshComponent>()->GetBoundingBoxes().CalcAABB();
-	testMesh3->AddFlag(ObjectFlag::NO_CULL);
+	
 	objects.push_back(testMesh);
 	objects.push_back(testMesh2);
 	objects.push_back(testMesh3);
@@ -135,15 +106,40 @@ void Scene::Initialize(Renderer* renderer)
 	quad->AddComponent<MeshComponent>(screenquadMesh, screenquadmat);	
 
 	/* * * * * * * * ** * * * * */
+
+	/*Object* skybox;
+	Skybox* skybox = new Skybox(skybox);*/
+	/* test skybox */
+
+	Shader skyboxShader;
+	skyboxShader.SetPixelShader(L"Shaders/Sky_ps.hlsl");
+	skyboxShader.SetVertexShader(L"Shaders/Sky_vs.hlsl");
+	skyboxShader.Compile(renderer->GetDevice());
+
+	std::vector<Mesh> zwebSkybox = ZWEBLoader::LoadMeshes(ZWEBLoadType::NoAnimation, "Models/skybox.ZWEB", renderer->GetDevice());
+	std::vector<Material> zwebSkyboxMaterials = ZWEBLoader::LoadMaterials("Models/skybox.ZWEB", skyboxShader, renderer->GetDevice());
+	testSkybox = new Object("skybox");
+
+	dx::XMFLOAT3 skyboxTrans = zwebSkybox[0].GetT();
+	dx::XMFLOAT3 skyboxScale = zwebSkybox[0].GetS();
+
+	testSkybox->AddComponent<MeshComponent>(zwebSkybox[0], zwebSkyboxMaterials[0]);
+	testSkybox->AddFlag(ObjectFlag::NO_CULL);
+
+	//objects.push_back(testSkybox);
+	
+
 	//PrintSceneHierarchy();
 
 }
 
 void Scene::Update(const float& deltaTime)
 {
-	std::vector<Object*> toRemove;
-	input.UpdateInputs();
 
+	std::vector<Object*> toRemove;
+
+
+	input.UpdateInputs();
 
 	for (auto i = objects.begin(); i < objects.end(); i++)
 	{
@@ -155,7 +151,7 @@ void Scene::Update(const float& deltaTime)
 		if (obj->HasFlag(ObjectFlag::REMOVED))
 			toRemove.push_back(obj);
 	}
-
+	GameClock::Instance().Update();
 }
 
 void Scene::FixedUpdate(const float& fixedDeltaTime)
@@ -168,6 +164,7 @@ void Scene::Render()
 	
 	renderer->BeginFrame();
 	RenderSceneToTexture();
+
 	//for (auto i = objects.begin(); i < objects.end(); i++)
 	//{
 	//	Object* obj = (*i);
@@ -176,6 +173,8 @@ void Scene::Render()
 	//}
 
 	/* Render screenquad with rendered scene-texture */
+
+
 	quad->Draw(renderer, camera);
 	renderer->EndFrame();
 }
@@ -213,7 +212,10 @@ void Scene::RenderSceneToTexture()
 			
 	}
 
-	//renderer->Unbind();	// needed?
+	testSkybox->Draw(renderer, camera);
+	
+
+	renderer->Unbind();	// needed?
 
 	renderer->SetBackbufferRenderTarget();
 }
