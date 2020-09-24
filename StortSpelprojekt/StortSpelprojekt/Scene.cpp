@@ -32,62 +32,25 @@ void Scene::Initialize(Renderer* renderer)
 	skeletonShader.SetVertexShader(L"Shaders/Skeleton_vs.hlsl");
 	
 	shader.Compile(renderer->GetDevice());
-		
-	std::vector<Mesh> zwebMeshes = ZWEBLoader::LoadMeshes(ZWEBLoadType::SkeletonAnimation, "Models/brickSphere.ZWEB", renderer->GetDevice());
+			
+	
+	
+	//Material material = Material(shader);
+
+	///* Loading a texture */
+	//Texture diffuseTexture;
+	//diffuseTexture.LoadTexture(renderer->GetDevice(), L"Textures/Gorilla.png");
+	//Texture randomNormal;
+	//randomNormal.LoadTexture(renderer->GetDevice(), L"Textures/RandomNormal.png");
+
+	///* Setting texture to correct slot in material*/
+	//material.SetTexture(diffuseTexture, TEXTURE_DIFFUSE_SLOT, ShaderBindFlag::PIXEL);
+	//material.SetTexture(randomNormal, TEXTURE_NORMAL_SLOT, ShaderBindFlag::PIXEL);
+	//material.SetSamplerState(renderer->GetDevice(), D3D11_TEXTURE_ADDRESS_WRAP, D3D11_FILTER_MIN_MAG_MIP_LINEAR);
+
+	std::vector<Mesh> zwebMeshes = ZWEBLoader::LoadMeshes(ZWEBLoadType::NoAnimation, "Models/brickSphere.ZWEB", renderer->GetDevice());
 	std::vector<Material> zwebMaterials = ZWEBLoader::LoadMaterials("Models/brickSphere.ZWEB", shader, renderer->GetDevice());
 
-	
-	Object* testMesh = new Object("test");
-
-
-	testMesh->GetTransform().SetPosition({0,0,20});
-
-	
-	zwebMaterials[0].SetSamplerState(renderer->GetDevice(), D3D11_TEXTURE_ADDRESS_WRAP, D3D11_FILTER_MIN_MAG_MIP_LINEAR);
-	testMesh->AddComponent<MeshComponent>(zwebMeshes[0], zwebMaterials[0]);
-
-	
-	testMesh->GetComponent<MeshComponent>()->GetBoundingBoxes().CalcAABB();
-
-	objects.push_back(testMesh);
-
-
-	Mesh mesh = ShittyOBJLoader::Load("Models/Cube.obj", renderer->GetDevice());
-
-	Material material = Material(shader);
-
-	/* Loading a texture */
-	Texture diffuseTexture;
-	diffuseTexture.LoadTexture(renderer->GetDevice(), L"Textures/Gorilla.png");
-	Texture randomNormal;
-	randomNormal.LoadTexture(renderer->GetDevice(), L"Textures/RandomNormal.png");
-
-	/* Setting texture to correct slot in material*/
-	material.SetTexture(diffuseTexture, TEXTURE_DIFFUSE_SLOT, ShaderBindFlag::PIXEL);
-	material.SetTexture(randomNormal, TEXTURE_NORMAL_SLOT, ShaderBindFlag::PIXEL);
-	material.SetSamplerState(renderer->GetDevice(), D3D11_TEXTURE_ADDRESS_WRAP, D3D11_FILTER_MIN_MAG_MIP_LINEAR);
-
-	Object* tmp_obj = new Object("cube1");
-	tmp_obj->GetTransform().SetPosition({ 0, 10, 10 });
-	
-	
-	
-	
-	tmp_obj->AddComponent<MeshComponent>(mesh, material);
-	
-	tmp_obj->GetComponent<MeshComponent>()->GetBoundingBoxes().CalcAABB();
-
-	objects.push_back(tmp_obj);
-
-	Object* tmp_obj2 = new Object("cube2");
-	tmp_obj2->GetTransform().SetPosition({ 0, 0, 4 });
-
-	
-	tmp_obj2->AddComponent<MeshComponent>(mesh, material);
-	tmp_obj2->AddFlag(ObjectFlag::NO_CULL);
-	tmp_obj2->AddComponent<MoveComponent>();
-	
-	Transform::SetParentChild(tmp_obj->GetTransform(), tmp_obj2->GetTransform());
 	std::vector<Mesh> sylvanas = ZWEBLoader::LoadMeshes(ZWEBLoadType::NoAnimation, "Models/sylvanas.ZWEB", renderer->GetDevice());
 	std::vector<Material> sylvanasMat = ZWEBLoader::LoadMaterials("Models/sylvanas.ZWEB", shader, renderer->GetDevice());
 
@@ -103,10 +66,13 @@ void Scene::Initialize(Renderer* renderer)
 	dx::XMFLOAT3 miniTranslation3 = dx::XMFLOAT3(-4, -3, -4);
 
 	testMesh->GetTransform().SetPosition(dx::XMLoadFloat3(&miniTranslation));
+	testMesh->AddFlag(ObjectFlag::NO_CULL);
 
 	testMesh2->GetTransform().SetPosition(dx::XMLoadFloat3(&miniTranslation2));
+	testMesh2->AddFlag(ObjectFlag::NO_CULL);
 	Transform::SetParentChild(testMesh->GetTransform(), testMesh2->GetTransform());
 
+	testMesh3->AddFlag(ObjectFlag::NO_CULL);
 	testMesh3->GetTransform().SetPosition(dx::XMLoadFloat3(&miniTranslation3));
 	Transform::SetParentChild(testMesh2->GetTransform(), testMesh3->GetTransform());
 
@@ -117,6 +83,8 @@ void Scene::Initialize(Renderer* renderer)
 	testMesh->AddComponent<MeshComponent>(zwebMeshes[0], zwebMaterials[0]);
 	testMesh2->AddComponent<MeshComponent>(sylvanas[0], sylvanasMat[0]);
 	testMesh3->AddComponent<MeshComponent>(cylinder[0], cylinderMat[0]);
+
+	testMesh2->AddComponent<MoveComponent>();
 
 	objects.push_back(testMesh);
 	objects.push_back(testMesh2);

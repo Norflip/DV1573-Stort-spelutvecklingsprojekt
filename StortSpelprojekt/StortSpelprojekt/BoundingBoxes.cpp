@@ -24,7 +24,7 @@ void BoundingBoxes::CalcAABB(const Mesh& mesh)
 
 
 
-	for (UINT v = 0; v < vertices.size(); v++)
+	for (UINT v = 0; v < mesh.vertices.size(); v++)
 	{
 		minVertex.x = min(minVertex.x, mesh.vertices[v].position.x);    // Find smallest x value in model
 		minVertex.y = min(minVertex.y, mesh.vertices[v].position.y);    // Find smallest y value in model
