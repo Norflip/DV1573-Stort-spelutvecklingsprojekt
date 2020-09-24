@@ -68,15 +68,19 @@ void Scene::Initialize(Renderer* renderer)
 	sylvanasMat[0].SetSamplerState(renderer->GetDevice(), D3D11_TEXTURE_ADDRESS_WRAP, D3D11_FILTER_MIN_MAG_MIP_LINEAR);
 	cylinderMat[0].SetSamplerState(renderer->GetDevice(), D3D11_TEXTURE_ADDRESS_WRAP, D3D11_FILTER_MIN_MAG_MIP_LINEAR);
 	
-	
+	testMesh->AddComponent<MeshComponent>(zwebMeshes[0], zwebMaterials[0]);
+	testMesh->GetComponent<MeshComponent>()->GetBoundingBoxes().CalcAABB();
+
 	testMesh2->AddComponent<MeshComponent>(sylvanas[0], sylvanasMat[0]);
 	testMesh2->GetComponent<MeshComponent>()->GetBoundingBoxes().CalcAABB();
-	testMesh3->AddComponent<MeshComponent>(cylinder[0], cylinderMat[0]);
-	
 
+	testMesh3->AddComponent<MeshComponent>(cylinder[0], cylinderMat[0]);
+	testMesh3->GetComponent<MeshComponent>()->GetBoundingBoxes().CalcAABB();
+	
 	objects.push_back(testMesh);
 	objects.push_back(testMesh2);
 	objects.push_back(testMesh3);
+
 
 	/* * * * * * * * ** * * * * */
 	/* Render to texture test */	
@@ -103,8 +107,10 @@ void Scene::Initialize(Renderer* renderer)
 
 	/* * * * * * * * ** * * * * */
 
-
+	/*Object* skybox;
+	Skybox* skybox = new Skybox(skybox);*/
 	/* test skybox */
+
 	Shader skyboxShader;
 	skyboxShader.SetPixelShader(L"Shaders/Sky_ps.hlsl");
 	skyboxShader.SetVertexShader(L"Shaders/Sky_vs.hlsl");
@@ -118,8 +124,10 @@ void Scene::Initialize(Renderer* renderer)
 	dx::XMFLOAT3 skyboxScale = zwebSkybox[0].GetS();
 
 	testSkybox->AddComponent<MeshComponent>(zwebSkybox[0], zwebSkyboxMaterials[0]);
+	testSkybox->AddFlag(ObjectFlag::NO_CULL);
+
 	//objects.push_back(testSkybox);
-	testSkybox->Draw(renderer, camera);
+	
 
 	//PrintSceneHierarchy();
 
@@ -164,7 +172,6 @@ void Scene::Render()
 	/* Render screenquad with rendered scene-texture */
 
 
-
 	quad->Draw(renderer, camera);
 	renderer->EndFrame();
 }
@@ -201,7 +208,8 @@ void Scene::RenderSceneToTexture()
 		}
 			
 	}
-	
+
+	testSkybox->Draw(renderer, camera);
 	
 
 	renderer->Unbind();	// needed?

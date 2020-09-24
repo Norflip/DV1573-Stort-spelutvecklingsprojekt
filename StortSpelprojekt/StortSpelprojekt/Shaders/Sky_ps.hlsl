@@ -3,6 +3,7 @@ TextureCube skymap;
 struct PixelInputType
 {
 	float4 position : SV_POSITION;
+	float3 lPosition : LPOSITION;
 	float2 uv : TEXCOORD0;
 };
 
