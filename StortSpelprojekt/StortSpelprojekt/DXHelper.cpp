@@ -87,7 +87,7 @@ void DXHelper::BindConstBuffer(ID3D11DeviceContext* context, ID3D11Buffer* buffe
 
 }
 
-void DXHelper::CreateBlendState(ID3D11Device* device, ID3D11BlendState** blendOn, ID3D11BlendState** blendOff, ID3D11DepthStencilState** depthStencilState)
+void DXHelper::CreateBlendState(ID3D11Device* device, ID3D11BlendState** blendOn, ID3D11BlendState** blendOff)
 {
 	HRESULT hr;
 	D3D11_BLEND_DESC blendDescOn;
@@ -116,15 +116,7 @@ void DXHelper::CreateBlendState(ID3D11Device* device, ID3D11BlendState** blendOn
 	hr = device->CreateBlendState(&blendDescOff, blendOff);
 	assert(SUCCEEDED(hr));
 
-	D3D11_DEPTH_STENCIL_DESC depthStencilStateDesc;
-	ZeroMemory(&depthStencilStateDesc, sizeof(D3D11_DEPTH_STENCIL_DESC));
-
-	depthStencilStateDesc.DepthEnable = true;
-	depthStencilStateDesc.DepthWriteMask = D3D11_DEPTH_WRITE_MASK::D3D11_DEPTH_WRITE_MASK_ALL;
-	depthStencilStateDesc.DepthFunc = D3D11_COMPARISON_FUNC::D3D11_COMPARISON_LESS;
-
-	hr = device->CreateDepthStencilState(&depthStencilStateDesc, depthStencilState);
-	assert(SUCCEEDED(hr));
+	
 
 }
 

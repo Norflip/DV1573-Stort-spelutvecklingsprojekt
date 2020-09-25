@@ -1,12 +1,13 @@
 #include "Renderer.h"
 
-Renderer::Renderer() : device(nullptr), context(nullptr), backbuffer(nullptr), swapchain(nullptr), obj_cbuffer(nullptr), skeleton_cbuffer(nullptr)
+Renderer::Renderer() : device(nullptr), context(nullptr), backbuffer(nullptr), swapchain(nullptr), obj_cbuffer(nullptr), skeleton_cbuffer(nullptr),light_cbuffer(nullptr),
+material_cbuffer(nullptr),rtvTest(nullptr),renderTexture(nullptr),srvTest(nullptr)
 {
 }
 
 Renderer::~Renderer()
 {
-	swapchain->Release();
+	/*swapchain->Release();
 	device->Release();
 	context->Release();
 
@@ -20,20 +21,35 @@ Renderer::~Renderer()
 	skeleton_cbuffer->Release();
 
 
-
-	light_cbuffer->Release();
+	
+	light_cbuffer->Release();*/
 
 	
-	material_cbuffer->Release();
+	/*material_cbuffer->Release();*/
 
 	//delete outputWindow;
 
 	/* Render to texture test - Is going to be in post processing class later etc. */
-	rtvTest->Release();
-	renderTexture->Release();
-	srvTest->Release();
-
-	blendDepthStencilState->Release();
+	/*if (rtvTest)
+	{
+		rtvTest->Release();
+		rtvTest = 0;
+	}
+	if (renderTexture)
+	{
+		renderTexture->Release();
+		renderTexture = 0;
+	}
+	if (srvTest)
+	{
+		srvTest->Release();
+		srvTest = 0;
+	}*/
+	
+	
+	
+	
+	
 }
 
 void Renderer::Initialize(Window* window)
@@ -66,7 +82,7 @@ void Renderer::Initialize(Window* window)
 	DXHelper::CreateConstBuffer(device, &skeleton_cbuffer, &cb_skeleton_data, sizeof(cb_skeleton_data));
 
 
-	DXHelper::CreateBlendState(device, &blendOn, &blendOff, &blendDepthStencilState);
+	DXHelper::CreateBlendState(device, &blendOn, &blendOff);
 	
 
 }

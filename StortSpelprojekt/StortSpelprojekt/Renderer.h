@@ -71,5 +71,5 @@ private:
 	const float BLENDFACTOR[4] = {0};
 	ID3D11BlendState* blendOff;
 	ID3D11BlendState* blendOn;
-	ID3D11DepthStencilState* blendDepthStencilState;
+	
 };

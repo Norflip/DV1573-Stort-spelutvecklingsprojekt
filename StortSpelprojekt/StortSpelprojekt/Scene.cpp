@@ -37,7 +37,7 @@ Scene::~Scene()
 	}*/
 	if (renderer)
 	{
-		delete renderer;
+		//delete renderer;
 	}
 	
 	if (quad)
@@ -160,6 +160,8 @@ void Scene::Initialize(Renderer* renderer)
 
 	size_t nrOfInstances = 100;
 	std::vector<Mesh::InstanceData> treeInstances(nrOfInstances);
+	std::vector<Mesh::InstanceData> treeBranchInstances(nrOfInstances);
+	std::vector<Mesh::InstanceData> treeLeaveInstances(nrOfInstances);
 	
 	treeMaterials[0].SetSamplerState(renderer->GetDevice(), D3D11_TEXTURE_ADDRESS_WRAP, D3D11_FILTER_MIN_MAG_MIP_LINEAR);
 	treeMaterials[1].SetSamplerState(renderer->GetDevice(), D3D11_TEXTURE_ADDRESS_WRAP, D3D11_FILTER_MIN_MAG_MIP_LINEAR);
@@ -175,29 +177,20 @@ void Scene::Initialize(Renderer* renderer)
 	for (size_t i = 0; i < nrOfInstances; i++)
 	{
 		
-		dx::XMStoreFloat4x4(&treeInstances[i].instanceWorld,dx::XMMatrixTranslation((i + 1 *r[i] ) + treeModels[0].GetT().x, 0 + treeModels[0].GetT().y, 10 + treeModels[0].GetT().z));
-		treeInstances[i].instancePosition = dx::XMFLOAT3((i + 1 * r[i]) + treeModels[0].GetT().x, 0 + treeModels[0].GetT().y, 10 + treeModels[0].GetT().z);
+		dx::XMStoreFloat4x4(&treeBranchInstances[i].instanceWorld,dx::XMMatrixTranslation((i + 1 *r[i] ) + treeModels[0].GetT().x, 0 + treeModels[0].GetT().y, 10 + treeModels[0].GetT().z));
+		treeBranchInstances[i].instancePosition = dx::XMFLOAT3((i + 1 * r[i]) + treeModels[0].GetT().x, 0 + treeModels[0].GetT().y, 10 + treeModels[0].GetT().z);
 
-	}
-	treeModels[0].CreateInstanceBuffer(renderer->GetDevice(), treeInstances);
-	for (size_t i = 0; i < nrOfInstances; i++)
-	{
-
-		dx::XMStoreFloat4x4(&treeInstances[i].instanceWorld, dx::XMMatrixTranslation((i + 1 * r[i])+ treeModels[1].GetT().x, 0 + treeModels[1].GetT().y, 10+ treeModels[1].GetT().z));
-		treeInstances[i].instancePosition = dx::XMFLOAT3((i + 1 * r[i]) + treeModels[1].GetT().x, 0 + treeModels[1].GetT().y, 10 + treeModels[1].GetT().z);
-
-	}
-	
-	treeModels[1].CreateInstanceBuffer(renderer->GetDevice(), treeInstances);
-
-	for (size_t i = 0; i < nrOfInstances; i++)
-	{
+		dx::XMStoreFloat4x4(&treeLeaveInstances[i].instanceWorld, dx::XMMatrixTranslation((i + 1 * r[i]) + treeModels[1].GetT().x, 0 + treeModels[1].GetT().y, 10 + treeModels[1].GetT().z));
+		treeLeaveInstances[i].instancePosition = dx::XMFLOAT3((i + 1 * r[i]) + treeModels[1].GetT().x, 0 + treeModels[1].GetT().y, 10 + treeModels[1].GetT().z);
 
 		dx::XMStoreFloat4x4(&treeInstances[i].instanceWorld, dx::XMMatrixTranslation((i + 1 * r[i]) + treeModels[2].GetT().x, 0 + treeModels[2].GetT().y, 10 + treeModels[2].GetT().z));
 		treeInstances[i].instancePosition = dx::XMFLOAT3((i + 1 * r[i]) + treeModels[2].GetT().x, 0 + treeModels[2].GetT().y, 10 + treeModels[2].GetT().z);
-
 	}
+	treeModels[0].CreateInstanceBuffer(renderer->GetDevice(), treeBranchInstances);
+	
+	treeModels[1].CreateInstanceBuffer(renderer->GetDevice(), treeLeaveInstances );
 
+	
 	treeModels[2].CreateInstanceBuffer(renderer->GetDevice(), treeInstances);
 
 
@@ -344,10 +337,6 @@ void Scene::Render()
 		Object* obj = (*i);
 
 		
-		
-		
-		
-
 		if (obj->HasFlag(ObjectFlag::NO_CULL))
 		{
 
@@ -363,7 +352,7 @@ void Scene::Render()
 
 			Mesh::InstanceData* dataView = reinterpret_cast<Mesh::InstanceData*>(mappedData.pData); //a safe cast
 
-			 //get mesh innan for loopen template kan ta tid.
+		
 
 			for (UINT instance = 0; instance < (UINT)tempMesh.instanceData.size(); instance++) //cull all the instances
 			{
@@ -380,10 +369,7 @@ void Scene::Render()
 			if (nrOfInstancesToDraw > 0)
 			{
 				obj->Draw(renderer, camera, DrawType::INSTANCED);
-				/*std::cout << "\n\n";
-				std::cout << "OBJECTS NOT CULLED: ";
-				std::cout << nrOfInstancesToDraw;
-				std::cout << "\n\n";*/
+				
 			}
 			
 		}
@@ -397,7 +383,7 @@ void Scene::Render()
 		obj->Draw(renderer, camera, DrawType::INSTANCEDALPHA);
 
 	}
-	//testSkybox->Draw(renderer, camera);
+	
 	renderer->EndFrame();
 }
 
