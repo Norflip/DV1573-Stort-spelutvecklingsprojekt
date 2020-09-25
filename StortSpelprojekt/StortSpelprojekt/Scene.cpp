@@ -69,6 +69,7 @@ void Scene::Initialize(Renderer* renderer)
 	Object* cameraObject = new Object("camera", ObjectFlag::ENABLED);
 	camera = cameraObject->AddComponent<CameraComponent>(60.0f);
 	camera->Resize(window->GetWidth(), window->GetHeight());
+	Input::Instance().SetWindow(window->GetHWND(), window->GetHeight(), window->GetWidth());
 	move = cameraObject->AddComponent<ControllerComponent>();
 	cameraObject->AddFlag(ObjectFlag::NO_CULL);
 	objects.push_back(cameraObject);
@@ -92,9 +93,12 @@ void Scene::Initialize(Renderer* renderer)
 	alphaInstanceShader.SetInstanceLayout();
 	alphaInstanceShader.Compile(renderer->GetDevice());
 
+
+
+	std::vector<Mesh> zwebMeshes = ZWEBLoader::LoadMeshes(ZWEBLoadType::NoAnimation, "Models/brickSphere.ZWEB", renderer->GetDevice());
+	std::vector<Material> zwebMaterials = ZWEBLoader::LoadMaterials("Models/brickSphere.ZWEB", shader, renderer->GetDevice());
 	
 
-	
 	std::vector<Mesh> sylvanas = ZWEBLoader::LoadMeshes(ZWEBLoadType::NoAnimation, "Models/sylvanas.ZWEB", renderer->GetDevice());
 	std::vector<Material> sylvanasMat = ZWEBLoader::LoadMaterials("Models/sylvanas.ZWEB", shader, renderer->GetDevice());
 
@@ -115,23 +119,30 @@ void Scene::Initialize(Renderer* renderer)
 
 	testMesh->GetTransform().SetPosition(dx::XMLoadFloat3(&miniTranslation));
 	testMesh->AddFlag(ObjectFlag::NO_CULL);
+	
 	testMesh2->GetTransform().SetPosition(dx::XMLoadFloat3(&miniTranslation2));
+	testMesh2->AddFlag(ObjectFlag::NO_CULL);
 	Transform::SetParentChild(testMesh->GetTransform(), testMesh2->GetTransform());
 
+	testMesh3->AddFlag(ObjectFlag::NO_CULL);
 	testMesh3->GetTransform().SetPosition(dx::XMLoadFloat3(&miniTranslation3));
 	Transform::SetParentChild(testMesh2->GetTransform(), testMesh3->GetTransform());
 
-	
+	testMesh2->AddComponent<MoveComponent>();
+
+	zwebMaterials[0].SetSamplerState(renderer->GetDevice(), D3D11_TEXTURE_ADDRESS_WRAP, D3D11_FILTER_MIN_MAG_MIP_LINEAR);
 	sylvanasMat[0].SetSamplerState(renderer->GetDevice(), D3D11_TEXTURE_ADDRESS_WRAP, D3D11_FILTER_MIN_MAG_MIP_LINEAR);
 	cylinderMat[0].SetSamplerState(renderer->GetDevice(), D3D11_TEXTURE_ADDRESS_WRAP, D3D11_FILTER_MIN_MAG_MIP_LINEAR);
-
 	
+	testMesh->AddComponent<MeshComponent>(zwebMeshes[0], zwebMaterials[0]);
+	testMesh->GetComponent<MeshComponent>()->GetBoundingBoxes().CalcAABB();
+
 	testMesh2->AddComponent<MeshComponent>(sylvanas[0], sylvanasMat[0]);
 	testMesh2->GetComponent<MeshComponent>()->GetBoundingBoxes().CalcAABB();
-	testMesh2->AddFlag(ObjectFlag::NO_CULL);
+
 	testMesh3->AddComponent<MeshComponent>(cylinder[0], cylinderMat[0]);
 	testMesh3->GetComponent<MeshComponent>()->GetBoundingBoxes().CalcAABB();
-	testMesh3->AddFlag(ObjectFlag::NO_CULL);
+	
 	objects.push_back(testMesh);
 	objects.push_back(testMesh2);
 	objects.push_back(testMesh3);
@@ -243,15 +254,40 @@ void Scene::Initialize(Renderer* renderer)
 	quad->AddComponent<MeshComponent>(screenquadMesh, screenquadmat);	
 
 	/* * * * * * * * ** * * * * */
+
+	/*Object* skybox;
+	Skybox* skybox = new Skybox(skybox);*/
+	/* test skybox */
+
+	Shader skyboxShader;
+	skyboxShader.SetPixelShader(L"Shaders/Sky_ps.hlsl");
+	skyboxShader.SetVertexShader(L"Shaders/Sky_vs.hlsl");
+	skyboxShader.Compile(renderer->GetDevice());
+
+	std::vector<Mesh> zwebSkybox = ZWEBLoader::LoadMeshes(ZWEBLoadType::NoAnimation, "Models/skybox.ZWEB", renderer->GetDevice());
+	std::vector<Material> zwebSkyboxMaterials = ZWEBLoader::LoadMaterials("Models/skybox.ZWEB", skyboxShader, renderer->GetDevice());
+	testSkybox = new Object("skybox");
+
+	dx::XMFLOAT3 skyboxTrans = zwebSkybox[0].GetT();
+	dx::XMFLOAT3 skyboxScale = zwebSkybox[0].GetS();
+
+	testSkybox->AddComponent<MeshComponent>(zwebSkybox[0], zwebSkyboxMaterials[0]);
+	testSkybox->AddFlag(ObjectFlag::NO_CULL);
+
+	//objects.push_back(testSkybox);
+	
+
 	//PrintSceneHierarchy();
 
 }
 
 void Scene::Update(const float& deltaTime)
 {
-	std::vector<Object*> toRemove;
-	input.UpdateInputs();
 
+	std::vector<Object*> toRemove;
+
+
+	input.UpdateInputs();
 
 	for (auto i = objects.begin(); i < objects.end(); i++)
 	{
@@ -263,7 +299,7 @@ void Scene::Update(const float& deltaTime)
 		if (obj->HasFlag(ObjectFlag::REMOVED))
 			toRemove.push_back(obj);
 	}
-
+	GameClock::Instance().Update();
 }
 
 void Scene::FixedUpdate(const float& fixedDeltaTime)
@@ -361,7 +397,7 @@ void Scene::Render()
 		obj->Draw(renderer, camera, DrawType::INSTANCEDALPHA);
 
 	}
-
+	//testSkybox->Draw(renderer, camera);
 	renderer->EndFrame();
 }
 

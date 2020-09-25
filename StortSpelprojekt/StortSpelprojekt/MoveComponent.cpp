@@ -2,6 +2,7 @@
 
 MoveComponent::MoveComponent()
 {
+	
 	DirectX::XMFLOAT3 dir = { 0, 1.f, 0 };
 	this->direction = dx::XMLoadFloat3(&dir);
 }

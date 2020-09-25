@@ -17,7 +17,6 @@ private:
 	bool showCursor;
 	bool canRotate;
 	float sensetivity;
-
 public:
 	ControllerComponent();
 	virtual ~ControllerComponent();
