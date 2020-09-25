@@ -26,7 +26,7 @@ Renderer::~Renderer()
 	
 	material_cbuffer->Release();
 
-	delete outputWindow;
+	//delete outputWindow;
 
 	/* Render to texture test - Is going to be in post processing class later etc. */
 	rtvTest->Release();

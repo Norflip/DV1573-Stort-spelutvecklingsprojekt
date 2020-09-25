@@ -231,3 +231,5 @@ void DXHelper::CreateInstanceBuffer(ID3D11Device* device, size_t instanceCount, 
 	assert(SUCCEEDED(hr));
 
 }
+
+

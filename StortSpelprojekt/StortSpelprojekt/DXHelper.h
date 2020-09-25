@@ -17,9 +17,7 @@ enum class ShaderBindFlag
 	VERTEX = 1 << 0,
 	PIXEL = 1 << 1,
 	GEOMETRY = 1 << 2,
-	/*SKELETON = 1 << 3,
-	INSTANCE = 1 << 4,
-	ALPHA = 1 << 5*/
+	
 
 };
 
@@ -28,7 +26,7 @@ DEFINE_ENUM_FLAG_OPERATORS(ShaderBindFlag);
 namespace DXHelper
 {
 	void CreateSwapchain(const Window& window, ID3D11Device** device, ID3D11DeviceContext** context, IDXGISwapChain** swapchain);
-	void CreateConstBuffer(ID3D11Device* device, ID3D11Buffer** buffer, void* initdata, unsigned int byteSize);	
+	void CreateConstBuffer(ID3D11Device* device, ID3D11Buffer** buffer, void* initdata, unsigned int byteSize);
 	void BindConstBuffer(ID3D11DeviceContext* context, ID3D11Buffer* buffer, void* data, size_t slot, ShaderBindFlag flag);
 
 	void CreateBlendState(ID3D11Device* device, ID3D11BlendState** blendOn, ID3D11BlendState** blendOff, ID3D11DepthStencilState** depthStencilState);
@@ -38,4 +36,5 @@ namespace DXHelper
 	void CreateVertexBuffer(ID3D11Device* device, size_t verticeCount, size_t vertexSize, void* vertices, ID3D11Buffer** vertexBuffer);
 	void CreateIndexBuffer(ID3D11Device* device, size_t indexCount, unsigned int* indicies, ID3D11Buffer** indexBuffer);
 	void CreateInstanceBuffer(ID3D11Device* device, size_t instanceCount, size_t instanceDataSize, void* instanceData, ID3D11Buffer** instanceBuffer);
+
 }

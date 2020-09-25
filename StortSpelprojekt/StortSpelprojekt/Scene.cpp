@@ -344,6 +344,10 @@ void Scene::Render()
 			if (nrOfInstancesToDraw > 0)
 			{
 				obj->Draw(renderer, camera, DrawType::INSTANCED);
+				/*std::cout << "\n\n";
+				std::cout << "OBJECTS NOT CULLED: ";
+				std::cout << nrOfInstancesToDraw;
+				std::cout << "\n\n";*/
 			}
 			
 		}
