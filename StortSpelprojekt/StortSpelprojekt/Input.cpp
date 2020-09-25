@@ -4,6 +4,7 @@ Input::Input()
 {
 	this->height = 0;
 	this->width = 0;
+	mouse.SetMode(DirectX::Mouse::MODE_ABSOLUTE);
 }
 
 Input::Input(HWND window, size_t width, size_t height) : height(height), width(width)
@@ -30,6 +31,25 @@ void Input::SetMouseMode(DirectX::Mouse::Mode mode)
 	mouse.SetMode(mode);
 }
 
+void Input::SetWindow(HWND hwnd, size_t height, size_t width)
+{
+	this->height = height;
+	this->width = width;
+	mouse.SetWindow(hwnd);
+
+	GetClientRect(hwnd, &windowRect);
+	MapWindowPoints(hwnd, nullptr, reinterpret_cast<POINT*>(&windowRect), 2);
+}
+
+void Input::ConfineMouse()
+{
+	ClipCursor(&windowRect);
+}
+
+void Input::FreeMouse()
+{
+	ClipCursor(nullptr);
+}
 
 bool Input::GetLeftMouseKey() const
 {

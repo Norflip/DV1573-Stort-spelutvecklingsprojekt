@@ -21,6 +21,7 @@ void Scene::Initialize(Renderer* renderer)
 	Object* cameraObject = new Object("camera", ObjectFlag::ENABLED);
 	camera = cameraObject->AddComponent<CameraComponent>(60.0f);
 	camera->Resize(window->GetWidth(), window->GetHeight());
+	Input::Instance().SetWindow(window->GetHWND(), window->GetHeight(), window->GetWidth());
 	move = cameraObject->AddComponent<ControllerComponent>();
 	cameraObject->AddFlag(ObjectFlag::NO_CULL);
 	objects.push_back(cameraObject);
