@@ -45,6 +45,7 @@ private:
 	ID3D11RenderTargetView* backbuffer;
 	ID3D11DepthStencilView* depthStencilView;
 
+
 	cb_Object cb_object_data;
 	ID3D11Buffer* obj_cbuffer;
 
