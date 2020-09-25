@@ -52,11 +52,11 @@ private:
 	Material screenquadmat;	
 
 
+	/* Test skybox in class */
+	Object* skybox;
+	Skybox* skyboxMesh;
 
-	/* test sky */
-	Object* testSkybox;
-
-
+	
 	//frustumplanes extraction
 	std::vector<dx::XMFLOAT4> extractedPlanes;
 	dx::XMFLOAT3 tempObjectPos;
