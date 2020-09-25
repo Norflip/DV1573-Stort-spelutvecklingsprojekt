@@ -40,6 +40,7 @@ void Input::SetWindow(HWND hwnd, size_t height, size_t width)
 	mouse.SetWindow(hwnd);
 
 	// don't know if clip or rect is ever needed again.. but it was to confine cursor in abolute mode
+	//can be used to confine cursor in menus/ui
 	GetClientRect(hwnd, &windowRect);
 	MapWindowPoints(hwnd, nullptr, reinterpret_cast<POINT*>(&windowRect), 2);
 }
