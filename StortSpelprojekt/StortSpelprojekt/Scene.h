@@ -9,7 +9,7 @@
 #include "MeshComponent.h"
 #include "ZWEBLoader.h"
 #include "SkeletonMeshComponent.h"
-
+#include "GUISprite.h"
 class Scene
 {
 public:
