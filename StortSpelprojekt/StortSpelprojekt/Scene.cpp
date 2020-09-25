@@ -157,6 +157,7 @@ void Scene::Initialize(Renderer* renderer)
 	for (int i = 0; i < nrOfInstances; i++)
 	{
 		r.push_back(rand() % 51 + 1);
+		//r.push_back(1);
 	}
 	
 
@@ -305,6 +306,12 @@ void Scene::Render()
 	for (auto i = InstancedObjects.begin(); i < InstancedObjects.end(); i++)
 	{
 		Object* obj = (*i);
+
+		
+		
+		
+		
+
 		if (obj->HasFlag(ObjectFlag::NO_CULL))
 		{
 
@@ -312,26 +319,28 @@ void Scene::Render()
 		}
 		else
 		{
-			renderer->GetContext()->Map(obj->GetComponent<MeshComponent>()->GetMesh().instanceBuffer, 0, D3D11_MAP_WRITE_DISCARD, 0, &mappedData); //the instance buffer is dynmaic so you can update it.
+			nrOfInstancesToDraw = 0;
+			BoundingBoxes& tempBB = obj->GetComponent<MeshComponent>()->GetBoundingBoxes();
+			Mesh& tempMesh = obj->GetComponent<MeshComponent>()->GetMesh();
+			tempMesh.SetInstanceNr(nrOfInstancesToDraw);
+			renderer->GetContext()->Map(tempMesh.instanceBuffer, 0, D3D11_MAP_WRITE_DISCARD, 0, &mappedData); //the instance buffer is dynmaic so you can update it.
 
 			Mesh::InstanceData* dataView = reinterpret_cast<Mesh::InstanceData*>(mappedData.pData); //a safe cast
 
-			nrOfInstancesToDraw = 0;
+			 //get mesh innan for loopen template kan ta tid.
 
-			obj->GetComponent<MeshComponent>()->GetMesh().SetInstanceNr(nrOfInstancesToDraw);
-
-			for (UINT instance = 0; instance < (UINT)obj->GetComponent<MeshComponent>()->GetMesh().instanceData.size(); instance++) //cull all the instances
+			for (UINT instance = 0; instance < (UINT)tempMesh.instanceData.size(); instance++) //cull all the instances
 			{
-				tempObjectPos = obj->GetComponent<MeshComponent>()->GetMesh().instanceData[instance].instancePosition;
-				if (!camera->CullAgainstAABB(extractedPlanes, obj->GetComponent<MeshComponent>()->GetBoundingBoxes().GetAABB(), tempObjectPos))
+				tempObjectPos = tempMesh.instanceData[instance].instancePosition;
+				if (!camera->CullAgainstAABB(extractedPlanes, tempBB.GetAABB(), tempObjectPos))
 				{
-					dataView[nrOfInstancesToDraw++] = obj->GetComponent<MeshComponent>()->GetMesh().instanceData[instance];
+					dataView[nrOfInstancesToDraw++] = tempMesh.instanceData[instance];
 					
 				}
 
 			}
-			renderer->GetContext()->Unmap(obj->GetComponent<MeshComponent>()->GetMesh().instanceBuffer, 0);
-			obj->GetComponent<MeshComponent>()->GetMesh().SetInstanceNr(nrOfInstancesToDraw);
+			renderer->GetContext()->Unmap(tempMesh.instanceBuffer, 0);
+			tempMesh.SetInstanceNr(nrOfInstancesToDraw);
 			if (nrOfInstancesToDraw > 0)
 			{
 				obj->Draw(renderer, camera, DrawType::INSTANCED);
