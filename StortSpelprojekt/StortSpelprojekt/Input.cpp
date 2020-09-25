@@ -4,6 +4,8 @@ Input::Input()
 {
 	this->height = 0;
 	this->width = 0;
+	this->xPosRelative = 0;
+	this->yPosRelative = 0;
 	mouse.SetMode(DirectX::Mouse::MODE_ABSOLUTE);
 }
 
@@ -37,6 +39,7 @@ void Input::SetWindow(HWND hwnd, size_t height, size_t width)
 	this->width = width;
 	mouse.SetWindow(hwnd);
 
+	// don't know if clip or rect is ever needed again.. but it was to confine cursor in abolute mode
 	GetClientRect(hwnd, &windowRect);
 	MapWindowPoints(hwnd, nullptr, reinterpret_cast<POINT*>(&windowRect), 2);
 }
@@ -88,6 +91,17 @@ POINT Input::GetMousePos() const
 	return POINT{ mouse.GetState().x,mouse.GetState().y };
 }
 
+POINT Input::GetMousePosRelative()const
+{
+	return { this->xPosRelative,this->yPosRelative };
+}
+
+void Input::ResetRelative()
+{
+	this->xPosRelative = 0;
+	this->yPosRelative = 0;
+}
+
 Input::~Input()
 {
 }
@@ -102,4 +116,23 @@ void Input::UpdateMsg(UINT umsg, WPARAM wParam, LPARAM lParam)
 {
 	DirectX::Keyboard::ProcessMessage(umsg, wParam, lParam);
 	DirectX::Mouse::ProcessMessage(umsg, wParam, lParam);
+
+	//use this to extract relative-cursor-postion for fps-like camera
+	//could not get values from mouse class so an own implementation was made
+	switch (umsg)
+	{
+	case WM_INPUT:
+	{
+		UINT dwSize = sizeof(RAWINPUT);
+		static BYTE lpb[sizeof(RAWINPUT)];
+		GetRawInputData((HRAWINPUT)lParam, RID_INPUT, lpb, &dwSize, sizeof(RAWINPUTHEADER));
+		RAWINPUT* raw = (RAWINPUT*)lpb;
+
+		if (raw->header.dwType == RIM_TYPEMOUSE) //if xy is reversed check here, mouse, input, x, y
+		{
+			this->yPosRelative = raw->data.mouse.lLastX;
+			this->xPosRelative = raw->data.mouse.lLastY;
+		}
+	}
+	}
 }
