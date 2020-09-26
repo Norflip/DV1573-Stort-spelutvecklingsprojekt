@@ -6,6 +6,7 @@
 #define TEXTURE_ALPHA_SLOT 1
 #define TEXTURE_CUBE_SLOT 2
 
+
 class Texture {
 public:
 	Texture();

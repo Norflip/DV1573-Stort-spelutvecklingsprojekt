@@ -237,6 +237,9 @@ void Renderer::DrawInstanced(const Mesh& mesh, const cb_Material& material, size
 {
 	
 
+
+
+
 	dx::XMMATRIX vp = dx::XMMatrixMultiply(view, projection); //Not transposed because row major
 	dx::XMStoreFloat4x4(&cb_object_data.vp, dx::XMMatrixTranspose(vp));
 	

@@ -264,6 +264,11 @@ namespace ZWEBLoader //TO BE ADDED: FUNCTION TO LOAD LIGHTS AND TO LOAD TEXTURES
 
 				
 			}
+
+
+
+
+
 			mat.SetMaterialData(materialData);
 
 			materials.push_back(mat);

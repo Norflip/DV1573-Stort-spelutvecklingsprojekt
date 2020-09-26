@@ -83,7 +83,7 @@ void Material::BindTextureToContext(ID3D11DeviceContext* context)
 			context->PSSetShaderResources(slot, 1, &srv);
 		}
 		
-		if ((bflag & (int)ShaderBindFlag::VERTEX) != 0)
+		if ((bflag & (int)ShaderBindFlag::VERTEX) != 0) // you can't sample inside a vertex shader
 			context->VSSetShaderResources(slot, 1, &srv);
 
 		if ((bflag & (int)ShaderBindFlag::GEOMETRY) != 0)

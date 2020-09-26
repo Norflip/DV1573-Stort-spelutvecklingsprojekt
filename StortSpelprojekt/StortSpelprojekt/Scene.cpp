@@ -60,6 +60,48 @@ Scene::~Scene()
 
 void Scene::Initialize(Renderer* renderer)
 {
+
+
+
+
+	/* * * * * * * * ** * * * * */
+	Shader skyboxShader;
+	skyboxShader.SetPixelShader(L"Shaders/Sky_ps.hlsl");
+	skyboxShader.SetVertexShader(L"Shaders/Sky_vs.hlsl");
+	skyboxShader.Compile(renderer->GetDevice());
+
+
+	skybox = new Object("Skybox");
+
+	std::vector<Mesh> skyboxMesh = ZWEBLoader::LoadMeshes(ZWEBLoadType::NoAnimation, "Models/Skybox.ZWEB", renderer->GetDevice());
+
+	this->skybox->GetTransform().SetScale(dx::XMVECTOR(dx::XMVectorSet(10, 10, 10, 1.0f)));
+
+	ID3D11ShaderResourceView* srv;
+	/*HRESULT hr = dx::CreateDDSTextureFromFileEx(renderer->GetDevice(), renderer->GetContext(), L"Textures/test.dds", 0, D3D11_USAGE_DEFAULT, D3D11_BIND_RENDER_TARGET | D3D11_BIND_SHADER_RESOURCE, 0, D3D11_RESOURCE_MISC_GENERATE_MIPS | D3D11_RESOURCE_MISC_TEXTURECUBE, false, nullptr, &srv);
+	if (FAILED(hr)) {
+		MessageBox(0, L"Failed to 'Load DDS Texture' - (skymap.dds).", L"Graphics scene Initialization Message", MB_ICONERROR);
+	}*/
+
+	HRESULT hrs = dx::CreateWICTextureFromFile(renderer->GetDevice(), L"Textures/sunset.png", nullptr, &srv);
+	if (FAILED(hrs)) {
+		MessageBox(0, L"Failed to 'Load DDS Texture' - (skymap.dds).", L"Graphics scene Initialization Message", MB_ICONERROR);
+	}
+
+
+	Texture texture;
+	texture.SetTexture(srv);
+
+	Material skyboxMaterial = Material(skyboxShader);
+	skyboxMaterial.SetTexture(texture, TEXTURE_DIFFUSE_SLOT, ShaderBindFlag::PIXEL);
+	skyboxMaterial.SetSamplerState(renderer->GetDevice(), D3D11_TEXTURE_ADDRESS_WRAP, D3D11_FILTER_MIN_MAG_MIP_LINEAR);
+
+	this->skybox->AddComponent<MeshComponent>(skyboxMesh[0], skyboxMaterial);
+
+
+
+
+	/***************************/
 	this->renderer = renderer;
 
 	// TEMP
@@ -133,7 +175,18 @@ void Scene::Initialize(Renderer* renderer)
 	zwebMaterials[0].SetSamplerState(renderer->GetDevice(), D3D11_TEXTURE_ADDRESS_WRAP, D3D11_FILTER_MIN_MAG_MIP_LINEAR);
 	sylvanasMat[0].SetSamplerState(renderer->GetDevice(), D3D11_TEXTURE_ADDRESS_WRAP, D3D11_FILTER_MIN_MAG_MIP_LINEAR);
 	cylinderMat[0].SetSamplerState(renderer->GetDevice(), D3D11_TEXTURE_ADDRESS_WRAP, D3D11_FILTER_MIN_MAG_MIP_LINEAR);
-	
+
+
+
+
+	sylvanasMat[0].SetTexture(texture, TEXTURE_CUBE_SLOT, ShaderBindFlag::PIXEL);
+	cylinderMat[0].SetTexture(texture, TEXTURE_CUBE_SLOT, ShaderBindFlag::PIXEL);
+	zwebMaterials[0].SetTexture(texture, TEXTURE_CUBE_SLOT, ShaderBindFlag::PIXEL);
+
+
+
+
+
 	testMesh->AddComponent<MeshComponent>(zwebMeshes[0], zwebMaterials[0]);
 	testMesh->GetComponent<MeshComponent>()->GetBoundingBoxes().CalcAABB();
 
@@ -158,14 +211,17 @@ void Scene::Initialize(Renderer* renderer)
 
 	treeMaterials[1].SetShader(alphaInstanceShader);
 
-	size_t nrOfInstances = 100;
+	size_t nrOfInstances = 10;
 	std::vector<Mesh::InstanceData> treeInstances(nrOfInstances);
 	std::vector<Mesh::InstanceData> treeBranchInstances(nrOfInstances);
 	std::vector<Mesh::InstanceData> treeLeaveInstances(nrOfInstances);
 	
 	treeMaterials[0].SetSamplerState(renderer->GetDevice(), D3D11_TEXTURE_ADDRESS_WRAP, D3D11_FILTER_MIN_MAG_MIP_LINEAR);
 	treeMaterials[1].SetSamplerState(renderer->GetDevice(), D3D11_TEXTURE_ADDRESS_WRAP, D3D11_FILTER_MIN_MAG_MIP_LINEAR);
-	
+
+	treeMaterials[0].SetTexture(texture, TEXTURE_CUBE_SLOT, ShaderBindFlag::PIXEL);
+	treeMaterials[1].SetTexture(texture, TEXTURE_CUBE_SLOT, ShaderBindFlag::PIXEL);
+
 	std::vector<unsigned int> r;
 	for (int i = 0; i < nrOfInstances; i++)
 	{
@@ -177,14 +233,14 @@ void Scene::Initialize(Renderer* renderer)
 	for (size_t i = 0; i < nrOfInstances; i++)
 	{
 		
-		dx::XMStoreFloat4x4(&treeBranchInstances[i].instanceWorld,dx::XMMatrixTranslation((i + 1 *r[i] ) + treeModels[0].GetT().x, 0 + treeModels[0].GetT().y, 10 + treeModels[0].GetT().z));
-		treeBranchInstances[i].instancePosition = dx::XMFLOAT3((i + 1 * r[i]) + treeModels[0].GetT().x, 0 + treeModels[0].GetT().y, 10 + treeModels[0].GetT().z);
+		dx::XMStoreFloat4x4(&treeBranchInstances[i].instanceWorld, dx::XMMatrixScaling(0.5f, 0.5f, 0.5f)*dx::XMMatrixTranslation((i + 1 *r[i] ) + treeModels[0].GetT().x, 0 + treeModels[0].GetT().y, (i + 1 * r[i]) + treeModels[0].GetT().z));
+		treeBranchInstances[i].instancePosition = dx::XMFLOAT3((i + 1 * r[i]) + treeModels[0].GetT().x, 0 + treeModels[0].GetT().y, (i + 1 * r[i]) + treeModels[0].GetT().z);
 
-		dx::XMStoreFloat4x4(&treeLeaveInstances[i].instanceWorld, dx::XMMatrixTranslation((i + 1 * r[i]) + treeModels[1].GetT().x, 0 + treeModels[1].GetT().y, 10 + treeModels[1].GetT().z));
-		treeLeaveInstances[i].instancePosition = dx::XMFLOAT3((i + 1 * r[i]) + treeModels[1].GetT().x, 0 + treeModels[1].GetT().y, 10 + treeModels[1].GetT().z);
+		dx::XMStoreFloat4x4(&treeLeaveInstances[i].instanceWorld, dx::XMMatrixScaling(0.5f, 0.5f, 0.5f)*dx::XMMatrixTranslation((i + 1 * r[i]) + treeModels[1].GetT().x, 0 + treeModels[1].GetT().y, (i + 1 * r[i]) + treeModels[1].GetT().z));
+		treeLeaveInstances[i].instancePosition = dx::XMFLOAT3((i + 1 * r[i]) + treeModels[1].GetT().x, 0 + treeModels[1].GetT().y, (i + 1 * r[i]) + treeModels[1].GetT().z);
 
-		dx::XMStoreFloat4x4(&treeInstances[i].instanceWorld, dx::XMMatrixTranslation((i + 1 * r[i]) + treeModels[2].GetT().x, 0 + treeModels[2].GetT().y, 10 + treeModels[2].GetT().z));
-		treeInstances[i].instancePosition = dx::XMFLOAT3((i + 1 * r[i]) + treeModels[2].GetT().x, 0 + treeModels[2].GetT().y, 10 + treeModels[2].GetT().z);
+		dx::XMStoreFloat4x4(&treeInstances[i].instanceWorld, dx::XMMatrixScaling(0.5f, 0.5f, 0.5f)*dx::XMMatrixTranslation((i + 1 * r[i]) + treeModels[2].GetT().x, 0 + treeModels[2].GetT().y, (i + 1 * r[i]) + treeModels[2].GetT().z));
+		treeInstances[i].instancePosition = dx::XMFLOAT3((i + 1 * r[i]) + treeModels[2].GetT().x, 0 + treeModels[2].GetT().y, (i + 1 * r[i]) + treeModels[2].GetT().z);
 	}
 	treeModels[0].CreateInstanceBuffer(renderer->GetDevice(), treeBranchInstances);
 	
@@ -246,40 +302,12 @@ void Scene::Initialize(Renderer* renderer)
 	quad = new Object("Screenquad");
 	quad->AddComponent<MeshComponent>(screenquadMesh, screenquadmat);	
 
-	/* * * * * * * * ** * * * * */
-	Shader skyboxShader;
-	skyboxShader.SetPixelShader(L"Shaders/Sky_ps.hlsl");
-	skyboxShader.SetVertexShader(L"Shaders/Sky_vs.hlsl");
-	skyboxShader.Compile(renderer->GetDevice());
-
-
-	skybox = new Object("Skybox");
-
-	std::vector<Mesh> skyboxMesh = ZWEBLoader::LoadMeshes(ZWEBLoadType::NoAnimation, "Models/Skybox.ZWEB", renderer->GetDevice());
 	
-	this->skybox->GetTransform().SetScale(dx::XMVECTOR(dx::XMVectorSet(10, 10, 10, 1.0f)));
-
-	ID3D11ShaderResourceView* srv;
-	/*HRESULT hr = dx::CreateDDSTextureFromFileEx(renderer->GetDevice(), renderer->GetContext(), L"Textures/test.dds", 0, D3D11_USAGE_DEFAULT, D3D11_BIND_RENDER_TARGET | D3D11_BIND_SHADER_RESOURCE, 0, D3D11_RESOURCE_MISC_GENERATE_MIPS | D3D11_RESOURCE_MISC_TEXTURECUBE, false, nullptr, &srv);
-	if (FAILED(hr)) {
-		MessageBox(0, L"Failed to 'Load DDS Texture' - (skymap.dds).", L"Graphics scene Initialization Message", MB_ICONERROR);
-	}*/
-
-	HRESULT hrs = dx::CreateWICTextureFromFile(renderer->GetDevice(), L"Textures/sunset.png", nullptr, &srv);
-	if (FAILED(hrs)) {
-		MessageBox(0, L"Failed to 'Load DDS Texture' - (skymap.dds).", L"Graphics scene Initialization Message", MB_ICONERROR);
-	}
-
-	Texture texture;
-	texture.SetTexture(srv);
-
-	Material skyboxMaterial = Material(skyboxShader);
-	skyboxMaterial.SetTexture(texture, TEXTURE_DIFFUSE_SLOT, ShaderBindFlag::PIXEL);
-	skyboxMaterial.SetSamplerState(renderer->GetDevice(), D3D11_TEXTURE_ADDRESS_WRAP, D3D11_FILTER_MIN_MAG_MIP_LINEAR);
-
-	this->skybox->AddComponent<MeshComponent>(skyboxMesh[0], skyboxMaterial);
 	
 
+
+
+	
 	/*skybox = new Object("Skybox");
 	skyboxMesh = new Skybox(renderer->GetDevice(), skybox);
 
@@ -323,6 +351,7 @@ void Scene::Render()
 	renderer->BeginFrame();
 	camera->GetFrustumPlanes(extractedPlanes);
 	renderer->SetBlendState(false);
+	this->skybox->Draw(renderer, camera, DrawType::STANDARD);
 
 	for (auto i = objects.begin(); i < objects.end(); i++)
 	{
@@ -393,6 +422,9 @@ void Scene::Render()
 		}
 
 	}
+
+	
+
 	renderer->SetBlendState(true);
 	for (auto i = alphaInstancedObjects.begin(); i < alphaInstancedObjects.end(); i++)
 	{
@@ -402,6 +434,8 @@ void Scene::Render()
 
 	}
 	
+	
+
 	renderer->EndFrame();
 }
 
