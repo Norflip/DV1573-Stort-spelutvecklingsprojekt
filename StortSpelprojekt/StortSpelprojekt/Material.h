@@ -7,6 +7,8 @@
 
 class Material
 {
+	static size_t IDCounter;
+
 	struct TextureInfo {
 		Texture texture;
 		size_t slot;
@@ -39,12 +41,15 @@ public:
 	//ZWEB DEFAULTS TEXTURES AS INPUTS TO PIXEL SO THIS CAN BE USED TO MANUALLY CHANGE BIND FLAGS
 	void ChangeTextureBindFlags(size_t slot, ShaderBindFlag flag);
 
-	const std::string& GetName() const;
-	void SetName(const std::string& name);
-  
+	void SetName(const std::string& name) { this->name = name; }
+	const std::string& GetName() const { return this->name; }
+
+	size_t GetID() const { return this->ID; }
+
 private:
 	Shader shader;
 	cb_Material cb_material_data;
+	size_t ID;
 
 	ID3D11ShaderResourceView* srv;
 	Texture texture;

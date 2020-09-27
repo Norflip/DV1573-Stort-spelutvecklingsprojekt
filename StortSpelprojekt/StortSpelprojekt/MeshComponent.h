@@ -18,9 +18,9 @@ public:
 	void Update(const float& deltaTime) override;
 	void Draw(Renderer* renderer, CameraComponent* camera) override;
 	BoundingBoxes& GetBoundingBoxes() { return this->boundingBoxes; }
+
 private:
 	Mesh mesh;
 	Material material;
-	Texture texture;
 	BoundingBoxes boundingBoxes;
 };

@@ -79,7 +79,7 @@
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="GameClock.cpp">
-          <Filter>Source Files</Filter>
+      <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="Input.cpp">
       <Filter>Source Files</Filter>
@@ -171,12 +171,15 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="GameClock.h">
-          <Filter>Header Files</Filter>
+      <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="BoundingBoxes.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="Skybox.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="RenderPass.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>

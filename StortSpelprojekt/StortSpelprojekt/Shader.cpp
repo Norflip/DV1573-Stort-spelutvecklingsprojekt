@@ -56,7 +56,7 @@ void Shader::Compile(ID3D11Device* device)
 	CompileSkeletonVS(device);
 }
 
-void Shader::BindToContext(ID3D11DeviceContext* context)
+void Shader::BindToContext(ID3D11DeviceContext* context) const
 {
 	int flag = static_cast<int>(shaderFlags);
 

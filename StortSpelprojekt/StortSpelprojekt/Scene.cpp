@@ -18,12 +18,12 @@ void Scene::Initialize(Renderer* renderer)
 	// Should change values on resize event
 	Window* window = renderer->GetOutputWindow();
 	
-	Object* cameraObject = new Object("camera", ObjectFlag::ENABLED);
+	Object* cameraObject = new Object("camera", ObjectFlag::ENABLED | ObjectFlag::NO_CULL);
 	camera = cameraObject->AddComponent<CameraComponent>(60.0f);
 	camera->Resize(window->GetWidth(), window->GetHeight());
+
 	Input::Instance().SetWindow(window->GetHWND(), window->GetHeight(), window->GetWidth());
 	move = cameraObject->AddComponent<ControllerComponent>();
-	cameraObject->AddFlag(ObjectFlag::NO_CULL);
 	objects.push_back(cameraObject);
 	
 	Shader shader;
@@ -164,7 +164,34 @@ void Scene::Render()
 {	
 	
 	renderer->BeginFrame();
-	RenderSceneToTexture();
+	renderer->SetBackbufferRenderTarget();
+
+
+	auto extractedPlanes = camera->GetFrustumPlanes();
+
+	for (auto i = objects.begin(); i < objects.end(); i++)
+	{
+		Object* obj = (*i);
+		if (obj->HasFlag(ObjectFlag::NO_CULL))
+		{
+			obj->Draw(renderer, camera);
+		}
+		else
+		{
+			dx::XMStoreFloat3(&tempPos, obj->GetTransform().GetPosition());//If object is rotating around something else, then maybe decompose world matrix.
+			if (!camera->CullAgainstAABB(extractedPlanes, obj->GetComponent<MeshComponent>()->GetBoundingBoxes().GetAABB(), tempPos))
+			{
+				obj->Draw(renderer, camera);
+			}
+		}
+	}
+
+	testSkybox->Draw(renderer, camera);
+	renderer->DrawItemsToTarget();
+
+	renderer->EndFrame();
+
+	//RenderSceneToTexture();
 
 	//for (auto i = objects.begin(); i < objects.end(); i++)
 	//{
@@ -176,49 +203,49 @@ void Scene::Render()
 	/* Render screenquad with rendered scene-texture */
 
 
-	quad->Draw(renderer, camera);
-	renderer->EndFrame();
+//	quad->Draw(renderer, camera);
+//	renderer->EndFrame();
 }
 
 void Scene::RenderSceneToTexture()
 {
-	renderer->Unbind();
+	//renderer->Unbind();
 
-	renderer->SetRenderTarget(renderer->GetContext(), screenquadTex->GetRtv());
-	renderer->ClearRenderTarget(renderer->GetContext(), screenquadTex->GetRtv(), dx::XMFLOAT4(0, 1, 0, 1));
-	camera->GetFrustumPlanes(extractedPlanes);
-	
-	for (auto i = objects.begin(); i < objects.end(); i++)
-	{
-		
-		Object* obj = (*i);
-		if (obj->HasFlag(ObjectFlag::NO_CULL))
-		{
-			
-			obj->Draw(renderer, camera);
-		}
-		else
-		{
-			dx::XMStoreFloat3(&tempPos, obj->GetTransform().GetPosition());//If object is rotating around something else, then maybe decompose world matrix.
-			if (!camera->CullAgainstAABB(extractedPlanes, obj->GetComponent<MeshComponent>()->GetBoundingBoxes().GetAABB(), tempPos))
-			{
-				obj->Draw(renderer, camera);
-			}
-			else
-			{
-				//std::cout << "THIS IS NOT VISIBLE";
-			}
-			
-		}
-			
-	}
+	//renderer->SetRenderTarget(screenquadTex->GetRtv());
+	//renderer->ClearRenderTarget(screenquadTex->GetRtv(), dx::XMFLOAT4(0, 1, 0, 1));
 
-	testSkybox->Draw(renderer, camera);
-	
+	//camera->GetFrustumPlanes(extractedPlanes);
+	//
+	//for (auto i = objects.begin(); i < objects.end(); i++)
+	//{
+	//	
+	//	Object* obj = (*i);
+	//	if (obj->HasFlag(ObjectFlag::NO_CULL))
+	//	{
+	//		
+	//		obj->Draw(renderer, camera);
+	//	}
+	//	else
+	//	{
+	//		dx::XMStoreFloat3(&tempPos, obj->GetTransform().GetPosition());//If object is rotating around something else, then maybe decompose world matrix.
+	//		if (!camera->CullAgainstAABB(extractedPlanes, obj->GetComponent<MeshComponent>()->GetBoundingBoxes().GetAABB(), tempPos))
+	//		{
+	//			obj->Draw(renderer, camera);
+	//		}
+	//		else
+	//		{
+	//			//std::cout << "THIS IS NOT VISIBLE";
+	//		}
+	//		
+	//	}
+	//		
+	//}
 
-	renderer->Unbind();	// needed?
+	//testSkybox->Draw(renderer, camera);
+	//renderer->DrawItemsToTarget();
 
-	renderer->SetBackbufferRenderTarget();
+	//renderer->Unbind();	// needed?
+	//renderer->SetBackbufferRenderTarget();
 }
 
 void Scene::PrintSceneHierarchy() const

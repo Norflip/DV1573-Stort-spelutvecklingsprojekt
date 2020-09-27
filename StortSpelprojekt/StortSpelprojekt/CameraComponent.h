@@ -20,7 +20,7 @@ public:
 	dx::XMMATRIX GetViewMatrix() const;
 	dx::XMMATRIX GetProjectionMatrix() const { return this->projection; }
 	const dx::XMMATRIX& GetVIewAndProjectionMatrix() { return GetViewMatrix()* GetProjectionMatrix(); }
-	void GetFrustumPlanes(std::vector<dx::XMFLOAT4>& planes);
+	std::vector<dx::XMFLOAT4> GetFrustumPlanes();
 
 	bool CullAgainstAABB(std::vector<dx::XMFLOAT4>& planes, const AABB& aabb, const dx::XMFLOAT3 worldPos);
 private:
@@ -29,6 +29,7 @@ private:
 private:
 	dx::XMMATRIX projection;
 	dx::XMMATRIX view;
+	std::vector<dx::XMFLOAT4> frustumPlanes;
 
 	size_t width, height;
 	float fieldOfView;

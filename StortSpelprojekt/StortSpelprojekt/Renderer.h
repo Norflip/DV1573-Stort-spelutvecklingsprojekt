@@ -1,13 +1,32 @@
 #pragma once
+#include <queue>
+#include <unordered_map>
+
 #include "DXHelper.h"
 #include "Mesh.h"
 #include "Buffers.h"
 #include "Texture.h"
+#include "Material.h"
+#include "CameraComponent.h"
 namespace dx = DirectX;
+
+class RenderPass;
 
 class Renderer
 {
 	const FLOAT DEFAULT_BG_COLOR[4] = { 0.3f, 0.1f, 0.2f, 1.0f };
+
+	struct RenderItem
+	{
+		Mesh mesh;
+		Material material;
+
+		bool instanced;
+		size_t instanceCount;
+
+		dx::XMMATRIX world;
+		const CameraComponent* camera;
+	};
 
 public:
 	Renderer();
@@ -20,13 +39,18 @@ public:
 	/* New stuff...  rendertoTexture is going to be in a post processing class later on */
 	void RenderToTexture(Texture* texture, ID3D11Device* device, int width, int height);
 
-	void SetRenderTarget(ID3D11DeviceContext* context, ID3D11RenderTargetView* rtv);
+	void SetRenderTarget(ID3D11RenderTargetView* rtv);
 	void SetBackbufferRenderTarget();
-	void ClearRenderTarget(ID3D11DeviceContext* context, ID3D11RenderTargetView* rtv, dx::XMFLOAT4 rgba);
+	void ClearRenderTarget(ID3D11RenderTargetView* rtv, dx::XMFLOAT4 rgba);
+	
+	void DrawItemsToTarget();
 	void Unbind();
 
-	void Draw(const Mesh& mesh, const cb_Material& material, dx::XMMATRIX model, dx::XMMATRIX view, dx::XMMATRIX projection, dx::XMVECTOR cameraPosition);
-	void DrawInstanced(const Mesh& mesh, size_t count, dx::XMMATRIX* models, dx::XMMATRIX view, dx::XMMATRIX projection);
+	void AddRenderPass(RenderPass*);
+	void RemoveRenderPass(RenderPass*);
+
+	void Draw(const Mesh& mesh, const Material& material, const dx::XMMATRIX& model, const CameraComponent& camera);
+	void DrawInstanced(const Mesh& mesh, size_t count, const Material& material, const dx::XMMATRIX& model, const CameraComponent& camera);
 	void DrawSkeleton(const Mesh& mesh, dx::XMMATRIX model, dx::XMMATRIX view, dx::XMMATRIX projection, cb_Skeleton& bones);
 
 	ID3D11Device* GetDevice() const { return this->device; }
@@ -34,7 +58,10 @@ public:
 	Window* GetOutputWindow() const { return this->outputWindow; }
 
 private:
-	HRESULT hr;
+	void m_Draw(const RenderItem& item);
+	void m_DrawInstanced(const RenderItem& item);
+
+private:
 	IDXGISwapChain* swapchain;
 	ID3D11Device* device;
 	ID3D11DeviceContext* context;
@@ -61,4 +88,6 @@ private:
 	ID3D11RenderTargetView* rtvTest;
 	ID3D11Texture2D* renderTexture;
 	ID3D11ShaderResourceView* srvTest;
+
+	std::unordered_map<size_t, std::queue<RenderItem>> itemQueue;
 };

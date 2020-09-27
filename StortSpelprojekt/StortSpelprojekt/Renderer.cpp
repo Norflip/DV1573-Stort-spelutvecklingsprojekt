@@ -14,7 +14,7 @@ void Renderer::Initialize(Window* window)
 	this->outputWindow = window;
 	DXHelper::CreateSwapchain(*window, &device, &context, &swapchain);
 	DXHelper::CreateBackbuffer(window->GetWidth(), window->GetHeight(), device, swapchain, &backbuffer, &depthStencilView);
-	
+
 	context->OMSetRenderTargets(1, &backbuffer, depthStencilView);
 
 	D3D11_VIEWPORT viewport;
@@ -48,13 +48,29 @@ void Renderer::BeginFrame()
 
 void Renderer::EndFrame()
 {
-	
-	hr = swapchain->Present(0,0); //1 here?
+
+	//for (auto i : itemQueue)
+	//{
+	//	// bind material from first item in queue
+	//	auto queue = i.second;
+	//	
+	//	while (!queue.empty())
+	//	{
+	//		// render item
+	//		queue.pop();
+	//	}
+	//}
+
+	//// clear queues
+	//itemQueue.clear();
+	DrawItemsToTarget();
+
+	HRESULT hr = swapchain->Present(0, 0); //1 here?
 	assert(SUCCEEDED(hr));
 }
 
 void Renderer::RenderToTexture(Texture* texture, ID3D11Device* device, int textureWidth, int textureHeight)
-{	
+{
 	D3D11_TEXTURE2D_DESC textureDesc;
 	ZeroMemory(&textureDesc, sizeof(D3D11_TEXTURE2D_DESC));
 	textureDesc.Width = textureWidth;
@@ -67,9 +83,9 @@ void Renderer::RenderToTexture(Texture* texture, ID3D11Device* device, int textu
 	textureDesc.BindFlags = D3D11_BIND_RENDER_TARGET | D3D11_BIND_SHADER_RESOURCE;
 	textureDesc.CPUAccessFlags = 0;
 	textureDesc.MiscFlags = 0;
-	hr = device->CreateTexture2D(&textureDesc, NULL, &renderTexture);
+	HRESULT hr = device->CreateTexture2D(&textureDesc, NULL, &renderTexture);
 	assert(SUCCEEDED(hr));
-	
+
 
 	D3D11_RENDER_TARGET_VIEW_DESC renderTargetViewDesc;
 	ZeroMemory(&renderTargetViewDesc, sizeof(D3D11_RENDER_TARGET_VIEW_DESC));
@@ -94,7 +110,7 @@ void Renderer::RenderToTexture(Texture* texture, ID3D11Device* device, int textu
 	texture->SetRenderTarget(rtvTest);
 }
 
-void Renderer::SetRenderTarget(ID3D11DeviceContext* context, ID3D11RenderTargetView* rtv)
+void Renderer::SetRenderTarget(ID3D11RenderTargetView* rtv)
 {
 	context->OMSetRenderTargets(1, &rtv, depthStencilView);
 }
@@ -104,7 +120,7 @@ void Renderer::SetBackbufferRenderTarget()
 	context->OMSetRenderTargets(1, &backbuffer, depthStencilView);
 }
 
-void Renderer::ClearRenderTarget(ID3D11DeviceContext* context, ID3D11RenderTargetView* rtv, dx::XMFLOAT4 rgba)
+void Renderer::ClearRenderTarget(ID3D11RenderTargetView* rtv, dx::XMFLOAT4 rgba)
 {
 	float color[4];
 	color[0] = rgba.x;
@@ -116,33 +132,129 @@ void Renderer::ClearRenderTarget(ID3D11DeviceContext* context, ID3D11RenderTarge
 	context->ClearDepthStencilView(depthStencilView, D3D11_CLEAR_DEPTH, 1.0f, 0);
 }
 
+void Renderer::DrawItemsToTarget()
+{
+	for (auto i : itemQueue)
+	{
+		// bind material from first item in queue
+		auto queue = i.second;
+		if (!queue.empty())
+		{
+			queue.front().material.BindToContext(context);
+
+			while (!queue.empty())
+			{
+				auto item = queue.front();
+				if (item.instanced)
+				{
+					m_DrawInstanced(item);
+				}
+				else
+				{
+					m_Draw(item);
+				}
+
+				// render item
+				queue.pop();
+			}
+		}
+	}
+
+	// clear queues
+	itemQueue.clear();
+}
+
 void Renderer::Unbind()
-{	
-	/*	
+{
+	/*
 		Store total srvs for unbinding later
 		At this moment, 2 slots (diffuse, normal)
 	*/
 	ID3D11ShaderResourceView* nullSRV[1] = { nullptr };
-	for(int i = 0; i < 2; i++)
-		context->PSSetShaderResources(i, 1, nullSRV);	
+	for (int i = 0; i < 2; i++)
+		context->PSSetShaderResources(i, 1, nullSRV);
 }
 
-void Renderer::Draw(const Mesh& mesh, const cb_Material& material, dx::XMMATRIX world, dx::XMMATRIX view, dx::XMMATRIX projection, dx::XMVECTOR cameraPosition)
+void Renderer::AddRenderPass(RenderPass*)
+{
+}
+
+void Renderer::RemoveRenderPass(RenderPass*)
+{
+}
+
+
+void Renderer::Draw(const Mesh& mesh, const Material& material, const dx::XMMATRIX& model, const CameraComponent& camera)
+{
+	RenderItem item;
+	item.mesh = mesh;
+	item.material = material;
+	item.instanced = false;
+	item.world = model;
+	item.camera = &camera;
+
+	size_t materialID = material.GetID();
+	if (itemQueue.find(materialID) == itemQueue.end())
+		itemQueue.insert({ materialID, std::queue<RenderItem>() });
+
+	itemQueue[materialID].push(item);
+}
+
+void Renderer::DrawInstanced(const Mesh& mesh, size_t count, const Material& material, const dx::XMMATRIX& model, const CameraComponent& camera)
+{
+	RenderItem item;
+	item.mesh = mesh;
+	item.material = material;
+	item.instanced = true;
+	item.instanceCount = count;
+	item.world = model;
+	item.camera = &camera;
+
+	size_t materialID = material.GetID();
+	if (itemQueue.find(materialID) == itemQueue.end())
+		itemQueue.insert({ materialID, std::queue<RenderItem>() });
+
+	itemQueue[materialID].push(item);
+
+}
+
+void Renderer::DrawSkeleton(const Mesh& mesh, dx::XMMATRIX model, dx::XMMATRIX view, dx::XMMATRIX projection, cb_Skeleton& bones)
+{
+
+
+	dx::XMMATRIX mvp = dx::XMMatrixMultiply(model, dx::XMMatrixMultiply(view, projection));
+	dx::XMStoreFloat4x4(&cb_object_data.mvp, dx::XMMatrixTranspose(mvp));
+	dx::XMStoreFloat4x4(&cb_object_data.world, dx::XMMatrixTranspose(model));
+	DXHelper::BindConstBuffer(context, obj_cbuffer, &cb_object_data, CB_OBJECT_SLOT, ShaderBindFlag::SKELETON);
+
+	cb_skeleton_data = bones;
+
+
+	DXHelper::BindConstBuffer(context, skeleton_cbuffer, &cb_skeleton_data, CB_SKELETON_SLOT, ShaderBindFlag::SKELETON);
+
+	UINT stride = sizeof(Mesh::Vertex);
+	UINT offset = 0;
+
+	context->IASetVertexBuffers(0, 1, &mesh.vertexBuffer, &stride, &offset);
+	context->IASetIndexBuffer(mesh.indexBuffer, DXGI_FORMAT_R32_UINT, 0);
+	context->IASetPrimitiveTopology(mesh.topology);
+
+	context->DrawIndexed(mesh.indices.size(), 0, 0);
+
+}
+
+void Renderer::m_Draw(const RenderItem& item)
 {
 	// add to queue? 
-
-	dx::XMMATRIX mvp = dx::XMMatrixMultiply(world, dx::XMMatrixMultiply(view, projection));
+	dx::XMMATRIX mvp = dx::XMMatrixMultiply(item.world, dx::XMMatrixMultiply(item.camera->GetViewMatrix(), item.camera->GetProjectionMatrix()));
 	dx::XMStoreFloat4x4(&cb_object_data.mvp, dx::XMMatrixTranspose(mvp));
-	dx::XMStoreFloat4x4(&cb_object_data.world, dx::XMMatrixTranspose(world));
+	dx::XMStoreFloat4x4(&cb_object_data.world, dx::XMMatrixTranspose(item.world));
 	DXHelper::BindConstBuffer(context, obj_cbuffer, &cb_object_data, CB_OBJECT_SLOT, ShaderBindFlag::VERTEX);
-	
-	cb_material_data.ambient = material.ambient;
-	cb_material_data.diffuse = material.diffuse;
-	cb_material_data.specular = material.specular;
-	cb_material_data.hasAlbedo = material.hasAlbedo;
-	cb_material_data.hasNormalMap = material.hasNormalMap;
 
+
+	cb_material_data = item.material.GetMaterialData();
 	DXHelper::BindConstBuffer(context, material_cbuffer, &cb_material_data, CB_MATERIAL_SLOT, ShaderBindFlag::PIXEL);
+
 
 	cb_scene.sunDirection = dx::XMFLOAT3(0.0f, 100.0f, -45.0f);
 	cb_scene.sunIntensity = 0.4f;
@@ -158,53 +270,27 @@ void Renderer::Draw(const Mesh& mesh, const cb_Material& material, dx::XMMATRIX 
 	cb_scene.pointLights[1].range = 25.0f;
 
 	cb_scene.nrOfPointLights = 2;
-	dx::XMStoreFloat3(&cb_scene.cameraPosition, cameraPosition);
+	dx::XMStoreFloat3(&cb_scene.cameraPosition, item.camera->GetOwner()->GetTransform().GetPosition());
 	DXHelper::BindConstBuffer(context, light_cbuffer, &cb_scene, CB_SCENE_SLOT, ShaderBindFlag::PIXEL);
 
 	UINT stride = sizeof(Mesh::Vertex);
 	UINT offset = 0;
 
-	context->IASetVertexBuffers(0, 1, &mesh.vertexBuffer, &stride, &offset);
-	context->IASetIndexBuffer(mesh.indexBuffer, DXGI_FORMAT_R32_UINT, 0);
-	context->IASetPrimitiveTopology(mesh.topology);
+	context->IASetVertexBuffers(0, 1, &item.mesh.vertexBuffer, &stride, &offset);
+	context->IASetIndexBuffer(item.mesh.indexBuffer, DXGI_FORMAT_R32_UINT, 0);
+	context->IASetPrimitiveTopology(item.mesh.topology);
 
-	context->DrawIndexed(mesh.indices.size(), 0, 0);
+	context->DrawIndexed(item.mesh.indices.size(), 0, 0);
 }
 
-void Renderer::DrawInstanced(const Mesh& mesh, size_t count, dx::XMMATRIX* models, dx::XMMATRIX view, dx::XMMATRIX projection)
+void Renderer::m_DrawInstanced(const RenderItem& item)
 {
 	// another cbuffer for instanced? 
-
 	UINT stride = sizeof(Mesh::Vertex);
 	UINT offset = 0;
 
-	context->IASetVertexBuffers(0, 1, &mesh.vertexBuffer, &stride, &offset);
-	context->IASetIndexBuffer(mesh.indexBuffer, DXGI_FORMAT_R32_UINT, 0);
-	context->IASetPrimitiveTopology(mesh.topology);
-	context->DrawIndexedInstanced(mesh.indices.size(), count, 0, 0, 0);
-}
-
-void Renderer::DrawSkeleton(const Mesh& mesh, dx::XMMATRIX model, dx::XMMATRIX view, dx::XMMATRIX projection, cb_Skeleton& bones)
-{
-
-
-	dx::XMMATRIX mvp = dx::XMMatrixMultiply(model, dx::XMMatrixMultiply(view, projection));
-	dx::XMStoreFloat4x4(&cb_object_data.mvp, dx::XMMatrixTranspose(mvp));
-	dx::XMStoreFloat4x4(&cb_object_data.world, dx::XMMatrixTranspose(model));
-	DXHelper::BindConstBuffer(context, obj_cbuffer, &cb_object_data, CB_OBJECT_SLOT, ShaderBindFlag::SKELETON);
-
-	cb_skeleton_data = bones;
-	
-
-	DXHelper::BindConstBuffer(context, skeleton_cbuffer, &cb_skeleton_data, CB_SKELETON_SLOT, ShaderBindFlag::SKELETON);
-
-	UINT stride = sizeof(Mesh::Vertex);
-	UINT offset = 0;
-
-	context->IASetVertexBuffers(0, 1, &mesh.vertexBuffer, &stride, &offset);
-	context->IASetIndexBuffer(mesh.indexBuffer, DXGI_FORMAT_R32_UINT, 0);
-	context->IASetPrimitiveTopology(mesh.topology);
-
-	context->DrawIndexed(mesh.indices.size(), 0, 0);
-
+	context->IASetVertexBuffers(0, 1, &item.mesh.vertexBuffer, &stride, &offset);
+	context->IASetIndexBuffer(item.mesh.indexBuffer, DXGI_FORMAT_R32_UINT, 0);
+	context->IASetPrimitiveTopology(item.mesh.topology);
+	context->DrawIndexedInstanced(item.mesh.indices.size(), item.instanceCount, 0, 0, 0);
 }

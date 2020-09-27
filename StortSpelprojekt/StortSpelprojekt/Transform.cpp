@@ -2,11 +2,12 @@
 
 Transform::Transform(Object* owner) : Transform(owner, dx::XMVectorZero(), dx::XMVectorZero(), { 1,1,1 })
 {
-
+	changedThisFrame = true;
 }
 
 Transform::Transform(Object* owner, dx::XMVECTOR position, dx::XMVECTOR rotation, dx::XMVECTOR scale) : owner(owner), position(position), rotation(rotation), scale(scale), parent(nullptr)
 {
+	changedThisFrame = true;
 }
 
 Transform::~Transform()
@@ -15,17 +16,25 @@ Transform::~Transform()
 
 void Transform::Translate(float x, float y, float z)
 {
-	DirectX::XMFLOAT3 pos(x, y, z);
-	this->position = dx::XMVectorAdd(this->position, dx::XMLoadFloat3(&pos));
+	if (x != 0.0f || y != 0.0f || z != 0.0f)
+	{
+		changedThisFrame = true;
+		DirectX::XMFLOAT3 pos(x, y, z);
+		this->position = dx::XMVectorAdd(this->position, dx::XMLoadFloat3(&pos));
+	}
 }
 
 void Transform::Rotate(float pitch, float yaw, float roll)
 {
-	DirectX::XMFLOAT3 rot(pitch, yaw, roll);
-	this->rotation = DirectX::XMVectorAdd(this->rotation, DirectX::XMLoadFloat3(&rot));
+	if (pitch != 0.0f || yaw != 0.0f || roll != 0.0f)
+	{
+		changedThisFrame = true;
+		DirectX::XMFLOAT3 rot(pitch, yaw, roll);
+		this->rotation = DirectX::XMVectorAdd(this->rotation, DirectX::XMLoadFloat3(&rot));
 
-	//float p = std::fmaxf(-maxPitch, std::fminf(DirectX::XMVectorGetByIndex(this->rotation, 0), maxPitch));
-	//this->rotation = DirectX::XMVectorSetByIndex(this->rotation, p, 0);
+		//float p = std::fmaxf(-maxPitch, std::fminf(DirectX::XMVectorGetByIndex(this->rotation, 0), maxPitch));
+		//this->rotation = DirectX::XMVectorSetByIndex(this->rotation, p, 0);
+	}
 }
 
 void Transform::AddChild(Transform* child)

@@ -35,7 +35,7 @@ public:
 	void SetInputLayoutStructure(size_t arraySize, D3D11_INPUT_ELEMENT_DESC* inputLayoutDesc);
 
 	void Compile(ID3D11Device*);
-	void BindToContext(ID3D11DeviceContext*);
+	void BindToContext(ID3D11DeviceContext*) const;
 
 	void CompilePS(ID3D11Device*);
 	void CompileVS(ID3D11Device*);
