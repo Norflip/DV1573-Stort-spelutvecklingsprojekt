@@ -33,12 +33,15 @@ public:
 	/* new - render scene to texture */
 	void RenderSceneToTexture();
 
-	void PrintSceneHierarchy() const;
+	void AddObject(Object* object);
+	void RemoveObject(Object* object);
+	Object* GetRoot() const { return this->root; }
+
 	void PrintSceneHierarchy(Object* object, size_t level) const;
 
 	
 private:	
-	std::vector<Object*> objects;
+	Object* root;
 	CameraComponent* camera;
 	//MoveComponent* move;
 	ControllerComponent* move;

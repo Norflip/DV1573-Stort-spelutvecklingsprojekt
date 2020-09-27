@@ -15,5 +15,11 @@ void MeshComponent::Update(const float& deltaTime)
 
 void MeshComponent::Draw(Renderer* renderer, CameraComponent* camera)
 {
-	renderer->Draw(mesh, material,  GetOwner()->GetTransform().GetWorldMatrix(), *camera);
+	dx::XMFLOAT3 tmpPos;
+	dx::XMStoreFloat3(&tmpPos, GetOwner()->GetTransform().GetPosition());
+
+	if (GetOwner()->HasFlag(ObjectFlag::NO_CULL) || !camera->CullAgainstAABB(boundingBoxes.GetAABB(), tmpPos))
+	{
+		renderer->Draw(mesh, material, GetOwner()->GetTransform().GetWorldMatrix(), *camera);
+	}
 }

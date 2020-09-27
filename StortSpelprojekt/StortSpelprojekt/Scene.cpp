@@ -18,14 +18,16 @@ void Scene::Initialize(Renderer* renderer)
 	// Should change values on resize event
 	Window* window = renderer->GetOutputWindow();
 	
+	root = new Object("sceneRoot", ObjectFlag::DEFAULT);
+
 	Object* cameraObject = new Object("camera", ObjectFlag::ENABLED | ObjectFlag::NO_CULL);
 	camera = cameraObject->AddComponent<CameraComponent>(60.0f);
 	camera->Resize(window->GetWidth(), window->GetHeight());
 
 	Input::Instance().SetWindow(window->GetHWND(), window->GetHeight(), window->GetWidth());
 	move = cameraObject->AddComponent<ControllerComponent>();
-	objects.push_back(cameraObject);
-	
+	AddObject(cameraObject);
+
 	Shader shader;
 	Shader skeletonShader;
 	shader.SetPixelShader(L"Shaders/Default_ps.hlsl");
@@ -78,9 +80,9 @@ void Scene::Initialize(Renderer* renderer)
 	testMesh3->AddComponent<MeshComponent>(cylinder[0], cylinderMat[0]);
 	testMesh3->GetComponent<MeshComponent>()->GetBoundingBoxes().CalcAABB();
 	
-	objects.push_back(testMesh);
-	objects.push_back(testMesh2);
-	objects.push_back(testMesh3);
+	AddObject(testMesh);
+	//AddObject(testMesh2);
+	//AddObject(testMesh3);
 
 
 	/* * * * * * * * ** * * * * */
@@ -119,7 +121,7 @@ void Scene::Initialize(Renderer* renderer)
 
 	std::vector<Mesh> zwebSkybox = ZWEBLoader::LoadMeshes(ZWEBLoadType::NoAnimation, "Models/skybox.ZWEB", renderer->GetDevice());
 	std::vector<Material> zwebSkyboxMaterials = ZWEBLoader::LoadMaterials("Models/skybox.ZWEB", skyboxShader, renderer->GetDevice());
-	testSkybox = new Object("skybox");
+	testSkybox = new Object("skybox", ObjectFlag::NO_CULL | ObjectFlag::ENABLED);
 
 	dx::XMFLOAT3 skyboxTrans = zwebSkybox[0].GetT();
 	dx::XMFLOAT3 skyboxScale = zwebSkybox[0].GetS();
@@ -127,11 +129,13 @@ void Scene::Initialize(Renderer* renderer)
 	testSkybox->AddComponent<MeshComponent>(zwebSkybox[0], zwebSkyboxMaterials[0]);
 	testSkybox->AddFlag(ObjectFlag::NO_CULL);
 
+	//AddObject(testSkybox);
 	//objects.push_back(testSkybox);
 	
 
-	//PrintSceneHierarchy();
-
+	Log::Add("PRINTING SCENE HIERARCHY ----");
+	PrintSceneHierarchy(root, 0);
+	Log::Add("----");
 }
 
 void Scene::Update(const float& deltaTime)
@@ -141,23 +145,26 @@ void Scene::Update(const float& deltaTime)
 
 
 	input.UpdateInputs();
+	root->Update(deltaTime);
 
-	for (auto i = objects.begin(); i < objects.end(); i++)
-	{
-		Object* obj = (*i);
+	//for (auto i = objects.begin(); i < objects.end(); i++)
+	//{
+	//	Object* obj = (*i);
 
-		if (obj->HasFlag(ObjectFlag::ENABLED))
-			obj->Update(deltaTime);
+	//	if (obj->HasFlag(ObjectFlag::ENABLED))
+	//		obj->Update(deltaTime);
 
-		if (obj->HasFlag(ObjectFlag::REMOVED))
-			toRemove.push_back(obj);
-	}
+	//	if (obj->HasFlag(ObjectFlag::REMOVED))
+	//		toRemove.push_back(obj);
+	//}
+
 	GameClock::Instance().Update();
 }
 
 void Scene::FixedUpdate(const float& fixedDeltaTime)
 {
 	//Log::Add(std::to_string(fixedDeltaTime));
+//	root->FixedUpdate(fixedDeltaTime);
 }
 
 void Scene::Render()
@@ -166,25 +173,26 @@ void Scene::Render()
 	renderer->BeginFrame();
 	renderer->SetBackbufferRenderTarget();
 
+	root->Draw(renderer, camera);
 
-	auto extractedPlanes = camera->GetFrustumPlanes();
+	//auto extractedPlanes = camera->GetFrustumPlanes();
 
-	for (auto i = objects.begin(); i < objects.end(); i++)
-	{
-		Object* obj = (*i);
-		if (obj->HasFlag(ObjectFlag::NO_CULL))
-		{
-			obj->Draw(renderer, camera);
-		}
-		else
-		{
-			dx::XMStoreFloat3(&tempPos, obj->GetTransform().GetPosition());//If object is rotating around something else, then maybe decompose world matrix.
-			if (!camera->CullAgainstAABB(extractedPlanes, obj->GetComponent<MeshComponent>()->GetBoundingBoxes().GetAABB(), tempPos))
-			{
-				obj->Draw(renderer, camera);
-			}
-		}
-	}
+	//for (auto i = objects.begin(); i < objects.end(); i++)
+	//{
+	//	Object* obj = (*i);
+	//	if (obj->HasFlag(ObjectFlag::NO_CULL))
+	//	{
+	//		obj->Draw(renderer, camera);
+	//	}
+	//	else
+	//	{
+	//		dx::XMStoreFloat3(&tempPos, obj->GetTransform().GetPosition());//If object is rotating around something else, then maybe decompose world matrix.
+	//		if (!camera->CullAgainstAABB(extractedPlanes, obj->GetComponent<MeshComponent>()->GetBoundingBoxes().GetAABB(), tempPos))
+	//		{
+	//			obj->Draw(renderer, camera);
+	//		}
+	//	}
+	//}
 
 	testSkybox->Draw(renderer, camera);
 	renderer->DrawItemsToTarget();
@@ -248,14 +256,14 @@ void Scene::RenderSceneToTexture()
 	//renderer->SetBackbufferRenderTarget();
 }
 
-void Scene::PrintSceneHierarchy() const
+void Scene::AddObject(Object* object)
 {
-	Log::Add("PRINTING SCENE HIERARCHY ----");
+	Transform::SetParentChild(root->GetTransform(), object->GetTransform());
+}
 
-	for (auto i = objects.cbegin(); i < objects.cend(); i++)
-		PrintSceneHierarchy(*i, 0);
-
-	Log::Add("----");
+void Scene::RemoveObject(Object* object)
+{
+	// remove the the connection and traverse downwards and remove / destroy all objects
 }
 
 void Scene::PrintSceneHierarchy(Object* object, size_t level) const

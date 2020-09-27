@@ -109,22 +109,17 @@ std::vector<dx::XMFLOAT4> CameraComponent::GetFrustumPlanes()
 	return frustumPlanes;
 }
 
-bool CameraComponent::CullAgainstAABB(std::vector<dx::XMFLOAT4>& planes, const AABB& aabb, const dx::XMFLOAT3 worldPos)
+bool CameraComponent::CullAgainstAABB(const AABB& aabb, const dx::XMFLOAT3 worldPos)
 {
+	auto planes = GetFrustumPlanes();
+
 	for (unsigned int plane = 0; plane < 6; ++plane)
 	{
 		DirectX::XMVECTOR planeNormal = DirectX::XMVectorSet(planes[plane].x, planes[plane].y, planes[plane].z, 0.0f);
 		float planeConstant = planes[plane].w;
-		
-		DirectX::XMFLOAT3 diagonal;
-		/*
-		 // y-axis
-            if(frustumPlanes[planeID].y < 0.0f)    // Which AABB vertex is furthest down (plane normals direction) the y axis
-                axisVert.y = treeAABB[0].y + treeInstanceData[i].pos.y; // min y plus tree positions y
-            else
-                axisVert.y = treeAABB[1].y + treeInstanceData[i].pos.y; // max y plus tree positions y
 
-		*/
+		DirectX::XMFLOAT3 diagonal;
+		
 		if (planes[plane].x < 0.0f)
 		{
 			diagonal.x = aabb.min.x + worldPos.x;
@@ -150,18 +145,12 @@ bool CameraComponent::CullAgainstAABB(std::vector<dx::XMFLOAT4>& planes, const A
 			diagonal.z = aabb.max.z + worldPos.z;
 		}
 
-
-
 		if (DirectX::XMVectorGetX(DirectX::XMVector3Dot(planeNormal, DirectX::XMLoadFloat3(&diagonal))) + planeConstant < 0.0f)
 		{
 			return true;
 		}
-
-
 	}
-
-
-
 
 	return false;
 }
+

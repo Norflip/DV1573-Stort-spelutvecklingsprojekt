@@ -33,6 +33,7 @@ public:
 	std::vector<Transform*> GetChildren() const { return this->children; }
 
 	static void SetParentChild(Transform& parent, Transform& child);
+	static void RemoveParentChild(Transform& parent, Transform& child);
 
 	Object* GetOwner() const { return this->owner; }
 

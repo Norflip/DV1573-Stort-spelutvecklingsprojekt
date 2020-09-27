@@ -73,6 +73,12 @@ void Transform::SetParentChild(Transform& parent, Transform& child)
 	child.SetParent(&parent);
 }
 
+void Transform::RemoveParentChild(Transform& parent, Transform& child)
+{
+	parent.RemoveChild(&child);
+	child.SetParent(nullptr);
+}
+
 dx::XMMATRIX Transform::GetWorldMatrix() const
 {
 	dx::XMMATRIX worldMatrix = GetLocalWorldMatrix();

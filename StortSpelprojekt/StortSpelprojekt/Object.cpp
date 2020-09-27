@@ -13,16 +13,30 @@ Object::~Object()
 
 void Object::Update(const float& deltaTime)
 {
-	transform.MarkNotChanged();
+	if (HasFlag(ObjectFlag::ENABLED))
+	{
+		transform.MarkNotChanged();
 
-	for (auto i = components.begin(); i < components.end(); i++)
-		(*i)->Update(deltaTime);
+		for (auto i = components.begin(); i < components.end(); i++)
+			(*i)->Update(deltaTime);
+
+		auto children = transform.GetChildren();
+		for (auto i = children.begin(); i < children.end(); i++)
+			(*i)->GetOwner()->Update(deltaTime);
+	}
 }
 
 void Object::Draw(Renderer* renderer, CameraComponent* camera)
 {
-	for (auto i = components.begin(); i < components.end(); i++)
-		(*i)->Draw(renderer, camera);
+	if (HasFlag(ObjectFlag::ENABLED))
+	{
+		for (auto i = components.begin(); i < components.end(); i++)
+			(*i)->Draw(renderer, camera);
+
+		auto children = transform.GetChildren();
+		for (auto i = children.begin(); i < children.end(); i++)
+			(*i)->GetOwner()->Draw(renderer, camera);
+	}
 }
 
 bool Object::HasFlag(ObjectFlag flag) const
