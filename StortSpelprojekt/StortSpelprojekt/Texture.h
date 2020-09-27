@@ -7,6 +7,7 @@
 class Texture {
 public:
 	Texture();
+	Texture(ID3D11ShaderResourceView* srv);
 	~Texture();
 
 	bool LoadTexture(ID3D11Device* device, LPCWSTR textureFilepath);
