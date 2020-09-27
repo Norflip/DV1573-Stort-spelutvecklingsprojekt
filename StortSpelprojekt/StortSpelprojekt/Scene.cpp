@@ -20,7 +20,7 @@ void Scene::Initialize(Renderer* renderer)
 	
 	root = new Object("sceneRoot", ObjectFlag::DEFAULT);
 
-	Object* cameraObject = new Object("camera", ObjectFlag::ENABLED | ObjectFlag::NO_CULL);
+	Object* cameraObject = new Object("camera", ObjectFlag::ENABLED);
 	camera = cameraObject->AddComponent<CameraComponent>(60.0f);
 	camera->Resize(window->GetWidth(), window->GetHeight());
 
@@ -55,13 +55,13 @@ void Scene::Initialize(Renderer* renderer)
 	dx::XMFLOAT3 miniTranslation3 = dx::XMFLOAT3(-4, -3, -4);
 
 	testMesh->GetTransform().SetPosition(dx::XMLoadFloat3(&miniTranslation));
-	testMesh->AddFlag(ObjectFlag::NO_CULL);
+	//testMesh->AddFlag(ObjectFlag::NO_CULL);
 	
 	testMesh2->GetTransform().SetPosition(dx::XMLoadFloat3(&miniTranslation2));
-	testMesh2->AddFlag(ObjectFlag::NO_CULL);
+	//testMesh2->AddFlag(ObjectFlag::NO_CULL);
 	Transform::SetParentChild(testMesh->GetTransform(), testMesh2->GetTransform());
 
-	testMesh3->AddFlag(ObjectFlag::NO_CULL);
+	//testMesh3->AddFlag(ObjectFlag::NO_CULL);
 	testMesh3->GetTransform().SetPosition(dx::XMLoadFloat3(&miniTranslation3));
 	Transform::SetParentChild(testMesh2->GetTransform(), testMesh3->GetTransform());
 
@@ -72,13 +72,8 @@ void Scene::Initialize(Renderer* renderer)
 	cylinderMat[0].SetSamplerState(renderer->GetDevice(), D3D11_TEXTURE_ADDRESS_WRAP, D3D11_FILTER_MIN_MAG_MIP_LINEAR);
 	
 	testMesh->AddComponent<MeshComponent>(zwebMeshes[0], zwebMaterials[0]);
-	testMesh->GetComponent<MeshComponent>()->GetBoundingBoxes().CalcAABB();
-
 	testMesh2->AddComponent<MeshComponent>(sylvanas[0], sylvanasMat[0]);
-	testMesh2->GetComponent<MeshComponent>()->GetBoundingBoxes().CalcAABB();
-
 	testMesh3->AddComponent<MeshComponent>(cylinder[0], cylinderMat[0]);
-	testMesh3->GetComponent<MeshComponent>()->GetBoundingBoxes().CalcAABB();
 	
 	AddObject(testMesh);
 	//AddObject(testMesh2);

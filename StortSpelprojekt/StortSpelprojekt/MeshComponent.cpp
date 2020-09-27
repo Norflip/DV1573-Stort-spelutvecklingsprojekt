@@ -1,7 +1,11 @@
 #include "MeshComponent.h"
 #include "MoveComponent.h"
 
-MeshComponent::MeshComponent(Mesh mesh, Material material) : mesh(mesh), material(material),boundingBoxes(mesh) {}
+MeshComponent::MeshComponent(Mesh mesh, Material material) : mesh(mesh), material(material),boundingBoxes(mesh) 
+{
+	boundingBoxes.CalcAABB();
+}
+
 MeshComponent::~MeshComponent() {}
 
 void MeshComponent::Update(const float& deltaTime)
@@ -16,7 +20,7 @@ void MeshComponent::Update(const float& deltaTime)
 void MeshComponent::Draw(Renderer* renderer, CameraComponent* camera)
 {
 	dx::XMFLOAT3 tmpPos;
-	dx::XMStoreFloat3(&tmpPos, GetOwner()->GetTransform().GetPosition());
+	dx::XMStoreFloat3(&tmpPos, GetOwner()->GetTransform().GetWorldPosition());
 
 	if (GetOwner()->HasFlag(ObjectFlag::NO_CULL) || !camera->CullAgainstAABB(boundingBoxes.GetAABB(), tmpPos))
 	{

@@ -79,6 +79,13 @@ void Transform::RemoveParentChild(Transform& parent, Transform& child)
 	child.SetParent(nullptr);
 }
 
+dx::XMVECTOR Transform::GetWorldPosition() const
+{
+	dx::XMVECTOR pos, rot, scale;
+	dx::XMMatrixDecompose(&scale, &rot, &pos, GetWorldMatrix());
+	return pos;
+}
+
 dx::XMMATRIX Transform::GetWorldMatrix() const
 {
 	dx::XMMATRIX worldMatrix = GetLocalWorldMatrix();

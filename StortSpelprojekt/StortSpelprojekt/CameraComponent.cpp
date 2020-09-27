@@ -30,17 +30,15 @@ void CameraComponent::UpdateProjectionMatrix()
 
 std::vector<dx::XMFLOAT4> CameraComponent::GetFrustumPlanes()
 {
-	if (GetOwner()->GetTransform().ChangedThisFrame())
+	if (GetOwner()->GetTransform().ChangedThisFrame() || frustumPlanes.size() == 0)
 	{
 		// x, y, z, and w represent A, B, C and D in the plane equation
 		// where ABC are the xyz of the planes normal, and D is the plane constant
-		frustumPlanes.resize(6);
+		if (frustumPlanes.size() != 6)
+			frustumPlanes.resize(6);
 		//r means row
 
 		dx::XMMATRIX vp = GetVIewAndProjectionMatrix();
-
-		std::cout << "Updating planes" << std::endl;
-
 
 		// Left Frustum Plane
 	   // Add first column of the matrix to the fourth column
@@ -112,44 +110,113 @@ std::vector<dx::XMFLOAT4> CameraComponent::GetFrustumPlanes()
 bool CameraComponent::CullAgainstAABB(const AABB& aabb, const dx::XMFLOAT3 worldPos)
 {
 	auto planes = GetFrustumPlanes();
+	bool inViewResult = true;
 
-	for (unsigned int plane = 0; plane < 6; ++plane)
+	DirectX::XMFLOAT3 min, max, vmin, vmax;
+	min = aabb.min;
+	max = aabb.max;
+
+	min.x += worldPos.x;
+	min.y += worldPos.y;
+	min.z += worldPos.z;
+
+	max.x += worldPos.x;
+	max.y += worldPos.y;
+	max.z += worldPos.z;
+
+	for (int i = 0; i < 6; i++)
 	{
-		DirectX::XMVECTOR planeNormal = DirectX::XMVectorSet(planes[plane].x, planes[plane].y, planes[plane].z, 0.0f);
-		float planeConstant = planes[plane].w;
+		DirectX::XMFLOAT4 plane = frustumPlanes[i];
 
-		DirectX::XMFLOAT3 diagonal;
-		
-		if (planes[plane].x < 0.0f)
+		// X axis
+		if (plane.x < 0)
 		{
-			diagonal.x = aabb.min.x + worldPos.x;
+			vmin.x = min.x;
+			vmax.x = max.x;
 		}
 		else
 		{
-			diagonal.x = aabb.max.x + worldPos.x;
-		}
-		if (planes[plane].y < 0.0f)
-		{
-			diagonal.y = aabb.min.y + worldPos.y;
-		}
-		else
-		{
-			diagonal.y = aabb.max.y + worldPos.y;
-		}
-		if (planes[plane].z < 0.0f)
-		{
-			diagonal.z = aabb.min.z + worldPos.z;
-		}
-		else
-		{
-			diagonal.z = aabb.max.z + worldPos.z;
+			vmin.x = max.x;
+			vmax.x = min.x;
 		}
 
-		if (DirectX::XMVectorGetX(DirectX::XMVector3Dot(planeNormal, DirectX::XMLoadFloat3(&diagonal))) + planeConstant < 0.0f)
+		// Y axis
+		if (plane.y < 0)
 		{
-			return true;
+			vmin.y = min.y;
+			vmax.y = max.y;
+		}
+		else
+		{
+			vmin.y = max.y;
+			vmax.y = min.y;
+		}
+
+		// Z axis
+		if (plane.z < 0)
+		{
+			vmin.z = min.z;
+			vmax.z = max.z;
+		}
+		else
+		{
+			vmin.z = max.z;
+			vmax.z = min.z;
+		}
+
+		float d1 = plane.x * vmin.x + plane.y * vmin.y + plane.z * vmin.z;
+		if (d1 + plane.w < 0)
+			return false;
+
+		bool intersectsFrustum = false;
+
+		if (intersectsFrustum)
+		{
+			float d2 = plane.x * vmax.x + plane.y * vmax.y + plane.z * vmax.z;
+			if (d2 + plane.w <= 0)
+				inViewResult = true;
 		}
 	}
+
+	return !inViewResult;
+
+	//for (unsigned int plane = 0; plane < 6; ++plane)
+	//{
+	//	DirectX::XMVECTOR planeNormal = DirectX::XMVectorSet(planes[plane].x, planes[plane].y, planes[plane].z, 0.0f);
+	//	float planeConstant = planes[plane].w;
+
+	//	DirectX::XMFLOAT3 diagonal;
+
+	//	if (planes[plane].x < 0.0f)
+	//	{
+	//		diagonal.x = aabb.min.x + worldPos.x;
+	//	}
+	//	else
+	//	{
+	//		diagonal.x = aabb.max.x + worldPos.x;
+	//	}
+	//	if (planes[plane].y < 0.0f)
+	//	{
+	//		diagonal.y = aabb.min.y + worldPos.y;
+	//	}
+	//	else
+	//	{
+	//		diagonal.y = aabb.max.y + worldPos.y;
+	//	}
+	//	if (planes[plane].z < 0.0f)
+	//	{
+	//		diagonal.z = aabb.min.z + worldPos.z;
+	//	}
+	//	else
+	//	{
+	//		diagonal.z = aabb.max.z + worldPos.z;
+	//	}
+
+	//	if (DirectX::XMVectorGetX(DirectX::XMVector3Dot(planeNormal, DirectX::XMLoadFloat3(&diagonal))) + planeConstant < 0.0f)
+	//	{
+	//		return true;
+	//	}
+	//}
 
 	return false;
 }
