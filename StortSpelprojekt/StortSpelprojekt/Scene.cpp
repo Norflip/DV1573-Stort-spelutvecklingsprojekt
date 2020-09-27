@@ -175,7 +175,6 @@ void Scene::Render()
 	renderer->BeginFrame();
 	RenderSceneToTexture();
 
-	worldGenerator.Draw(renderer, camera);
 
 	//for (auto i = objects.begin(); i < objects.end(); i++)
 	//{
@@ -199,6 +198,8 @@ void Scene::RenderSceneToTexture()
 	renderer->ClearRenderTarget(renderer->GetContext(), screenquadTex->GetRtv(), dx::XMFLOAT4(0, 1, 0, 1));
 	camera->GetFrustumPlanes(extractedPlanes);
 	
+	worldGenerator.Draw(renderer, camera);
+
 	for (auto i = objects.begin(); i < objects.end(); i++)
 	{
 		

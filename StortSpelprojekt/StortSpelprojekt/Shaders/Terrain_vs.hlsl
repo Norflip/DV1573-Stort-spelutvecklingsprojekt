@@ -59,8 +59,8 @@ VS_OUTPUT main(VS_INPUT input)
 	float4 tes = chunkData.SampleLevel(m_samplerState, input.uv, 0);
 	input.position.y += tes.x * terrainHeight;
 
-	output.worldPosition = mul(input.position, world).xyz;
-	output.position = mul(input.position, mvp);
+	output.worldPosition = mul(world, input.position).xyz;
+	output.position = mul(mvp, input.position);
 	
 	float4 normal = GetNormal(input.uv, 1.0f / 65.0f, terrainHeight);
 	//float4 normal = float4(Unpack3DVector(tes.z), 0.0f);

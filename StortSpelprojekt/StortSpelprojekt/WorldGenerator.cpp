@@ -251,7 +251,7 @@ Chunk* WorldGenerator::CreateChunk(ChunkType type, dx::XMINT2 index, const Path&
 			normalBuffer[bufferIndex * 4 + 3] = 255;
 			
 			float packedNormal = Math::Pack3DVector(normal.x, normal.y, normal.z);
-			float height = Noise::Sample(pos.x + x, CHUNK_SIZE - pos.y + y, settings);
+			float height = Noise::Sample(pos.x + x, pos.y + y, settings);
 
 			heightMap[bufferIndex] = height;
 

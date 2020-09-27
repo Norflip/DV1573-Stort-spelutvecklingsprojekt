@@ -40,7 +40,7 @@ namespace Noise
 
 	inline float Sample(float x, float y, const Settings& settings, const SimplexNoise& noise)
 	{
-		return (noise.fractal(settings.octaves, settings.xOffset + x, CHUNK_SIZE - settings.yOffset + y) + 1.0f) / 2.0f;
+		return (noise.fractal(settings.octaves, settings.xOffset + x, settings.yOffset + y) + 1.0f) / 2.0f;
 	}
 
 	inline float Sample(float x, float y, const Settings& settings)
