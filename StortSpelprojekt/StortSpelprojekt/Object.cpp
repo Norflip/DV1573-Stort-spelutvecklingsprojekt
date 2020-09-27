@@ -8,7 +8,14 @@ Object::Object(const std::string& name, ObjectFlag flag) : name(name), flags(fla
 
 Object::~Object()
 {
+	for (auto i = components.begin(); i < components.end(); i++)
+		delete (*i);
 
+	auto children = transform.GetChildren();
+	for (auto i = children.begin(); i < children.end(); i++)
+		delete (*i)->GetOwner();
+
+	components.clear();
 }
 
 void Object::Update(const float& deltaTime)

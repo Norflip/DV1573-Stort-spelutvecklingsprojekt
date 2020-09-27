@@ -8,6 +8,8 @@ Scene::Scene() : input(Input::Instance())
 
 Scene::~Scene()
 {
+	delete root;
+	root = nullptr;
 }
 
 void Scene::Initialize(Renderer* renderer)
@@ -55,15 +57,13 @@ void Scene::Initialize(Renderer* renderer)
 	dx::XMFLOAT3 miniTranslation3 = dx::XMFLOAT3(-4, -3, -4);
 
 	testMesh->GetTransform().SetPosition(dx::XMLoadFloat3(&miniTranslation));
-	//testMesh->AddFlag(ObjectFlag::NO_CULL);
 	
 	testMesh2->GetTransform().SetPosition(dx::XMLoadFloat3(&miniTranslation2));
-	//testMesh2->AddFlag(ObjectFlag::NO_CULL);
-	Transform::SetParentChild(testMesh->GetTransform(), testMesh2->GetTransform());
+	AddObject(testMesh2, testMesh);
 
-	//testMesh3->AddFlag(ObjectFlag::NO_CULL);
+
 	testMesh3->GetTransform().SetPosition(dx::XMLoadFloat3(&miniTranslation3));
-	Transform::SetParentChild(testMesh2->GetTransform(), testMesh3->GetTransform());
+	AddObject(testMesh3, testMesh2);
 
 	testMesh2->AddComponent<MoveComponent>();
 
@@ -254,6 +254,11 @@ void Scene::RenderSceneToTexture()
 void Scene::AddObject(Object* object)
 {
 	Transform::SetParentChild(root->GetTransform(), object->GetTransform());
+}
+
+void Scene::AddObject(Object* object, Object* parent)
+{
+	Transform::SetParentChild(parent->GetTransform(), object->GetTransform());
 }
 
 void Scene::RemoveObject(Object* object)

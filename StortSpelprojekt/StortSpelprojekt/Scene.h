@@ -34,6 +34,8 @@ public:
 	void RenderSceneToTexture();
 
 	void AddObject(Object* object);
+	void AddObject(Object* object, Object* parent);
+
 	void RemoveObject(Object* object);
 	Object* GetRoot() const { return this->root; }
 
