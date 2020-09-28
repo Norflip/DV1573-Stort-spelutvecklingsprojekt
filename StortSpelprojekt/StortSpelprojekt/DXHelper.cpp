@@ -83,9 +83,6 @@ void DXHelper::BindConstBuffer(ID3D11DeviceContext* context, ID3D11Buffer* buffe
 
 	if ((bflag & (int)ShaderBindFlag::GEOMETRY) != 0)
 		context->GSSetConstantBuffers(slot, 1, &buffer);
-
-	if ((bflag & (int)ShaderBindFlag::SKELETON) != 0)
-		context->VSSetConstantBuffers(slot, 1, &buffer);
 }
 
 RenderTexture DXHelper::CreateBackbuffer(size_t width, size_t height, ID3D11Device* device,  IDXGISwapChain* swapchain)

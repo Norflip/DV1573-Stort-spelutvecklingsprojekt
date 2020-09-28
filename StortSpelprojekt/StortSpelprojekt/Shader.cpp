@@ -53,7 +53,6 @@ void Shader::Compile(ID3D11Device* device)
 	CompileVS(device);
 	CompilePS(device);
 	CompileGS(device);
-	CompileSkeletonVS(device);
 }
 
 void Shader::BindToContext(ID3D11DeviceContext* context) const
@@ -76,11 +75,6 @@ void Shader::BindToContext(ID3D11DeviceContext* context) const
 	if ((flag & (int)ShaderBindFlag::GEOMETRY) != 0)
 	{
 		context->GSSetShader(geometryShader, 0, 0);
-	}
-	if ((flag & (int)ShaderBindFlag::SKELETON) != 0)
-	{
-		context->IASetInputLayout(inputLayout);
-		context->VSSetShader(skeletonShader, 0, 0);
 	}
 }
 
@@ -206,51 +200,3 @@ void Shader::CompileGS(ID3D11Device* device)
 	}
 }
 
-void Shader::CompileSkeletonVS(ID3D11Device* device)
-{
-
-	if (((int)shaderFlags & (int)ShaderBindFlag::SKELETON) != 0)
-	{
-
-		if (skeletonShader != nullptr)
-		{
-			delete skeletonShader;
-			skeletonShader = nullptr;
-		}
-
-		ID3DBlob* errorBlob = nullptr;
-		ID3DBlob* VSSkeletonBlob = nullptr;
-
-		// Skeleton VERTEX SHADER
-		HRESULT	VSSkeletonCompileResult = D3DCompileFromFile
-		(
-			skeletonPath,
-			nullptr,
-			D3D_COMPILE_STANDARD_FILE_INCLUDE,
-			skeletonEntry,
-			"vs_5_0",
-			shaderCompilationFlag,
-			0,
-			&VSSkeletonBlob,
-			&errorBlob
-		);
-
-		if (FAILED(VSSkeletonCompileResult) && errorBlob)
-		{
-			OutputDebugStringA((char*)errorBlob->GetBufferPointer());
-			Log::Add(Log::LogLevel::Error, (char*)errorBlob->GetBufferPointer());
-			errorBlob->Release();
-		}
-
-		HRESULT VSCreateResult = device->CreateVertexShader(VSSkeletonBlob->GetBufferPointer(), VSSkeletonBlob->GetBufferSize(), nullptr, &this->skeletonShader);
-		assert(SUCCEEDED(VSCreateResult));
-
-		
-	}
-
-
-
-
-
-
-}

@@ -31,7 +31,6 @@ public:
 	void SetVertexShader(LPCWSTR path, LPCSTR entry = "main");
 	void SetGeometryShader(LPCWSTR path, LPCSTR entry = "main");
 	
-
 	void SetInputLayoutStructure(size_t arraySize, D3D11_INPUT_ELEMENT_DESC* inputLayoutDesc);
 
 	void Compile(ID3D11Device*);
@@ -40,7 +39,6 @@ public:
 	void CompilePS(ID3D11Device*);
 	void CompileVS(ID3D11Device*);
 	void CompileGS(ID3D11Device*);
-	void CompileSkeletonVS(ID3D11Device*);
 
 private:
 	LPCWSTR pixelPath, vertexPath, geometryPath, skeletonPath;

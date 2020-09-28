@@ -17,13 +17,22 @@ class Renderer
 {
 	const FLOAT DEFAULT_BG_COLOR[4] = { 0.3f, 0.1f, 0.2f, 1.0f };
 
+
 	struct RenderItem
 	{
+		enum class Type
+		{
+			Default,
+			Instanced,
+			Skeleton
+		};
+
 		Mesh mesh;
 		Material material;
 
-		bool instanced;
+		Type type;
 		size_t instanceCount;
+		cb_Skeleton bones;
 
 		dx::XMMATRIX world;
 		const CameraComponent* camera;
@@ -45,7 +54,7 @@ public:
 
 	void Draw(const Mesh& mesh, const Material& material, const dx::XMMATRIX& model, const CameraComponent& camera);
 	void DrawInstanced(const Mesh& mesh, size_t count, const Material& material, const dx::XMMATRIX& model, const CameraComponent& camera);
-	void DrawSkeleton(const Mesh& mesh, dx::XMMATRIX model, dx::XMMATRIX view, dx::XMMATRIX projection, cb_Skeleton& bones);
+	void DrawSkeleton(const Mesh& mesh, const Material& material, const dx::XMMATRIX& model, const CameraComponent& camera, cb_Skeleton& bones);
 
 	ID3D11Device* GetDevice() const { return this->device; }
 	ID3D11DeviceContext* GetContext() const { return this->context; }
@@ -57,8 +66,10 @@ public:
 	void SetRenderTarget(const RenderTexture& target);
 
 private:
+	void AddItem(const RenderItem& item);
 	void m_Draw(const RenderItem& item);
 	void m_DrawInstanced(const RenderItem& item);
+	void m_DrawSkeleton(const RenderItem& item);
 
 private:
 	IDXGISwapChain* swapchain;
