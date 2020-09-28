@@ -43,7 +43,7 @@ std::vector<dx::XMFLOAT4> CameraComponent::GetFrustumPlanes()
 			frustumPlanes.resize(6);
 		//r means row
 
-		dx::XMMATRIX vp = GetVIewAndProjectionMatrix();
+		dx::XMMATRIX vp = dx::XMMatrixMultiply(GetViewMatrix(), GetProjectionMatrix());
 
 		// Left Frustum Plane
 	   // Add first column of the matrix to the fourth column

@@ -19,7 +19,6 @@ public:
 	void Resize(size_t width, size_t height);
 	dx::XMMATRIX GetViewMatrix() const;
 	dx::XMMATRIX GetProjectionMatrix() const;
-	dx::XMMATRIX GetVIewAndProjectionMatrix() const { return GetViewMatrix()* GetProjectionMatrix(); }
 	std::vector<dx::XMFLOAT4> GetFrustumPlanes();
 
 	bool CullAgainstAABB(const AABB& aabb, const dx::XMFLOAT3 worldPos);

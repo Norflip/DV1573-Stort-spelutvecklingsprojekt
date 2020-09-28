@@ -123,6 +123,7 @@ void Scene::Render()
 {	
 	root->Draw(renderer, camera);
 	testSkybox->Draw(renderer, camera);
+	worldGenerator.Draw(renderer, camera);
 
 	renderer->RenderFrame();
 }
