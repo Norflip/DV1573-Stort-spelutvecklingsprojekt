@@ -7,16 +7,19 @@ Shader::Shader() : pixelShader(nullptr), vertexShader(nullptr), inputLayout(null
 	shaderCompilationFlag = shaderCompilationFlag | D3DCOMPILE_DEBUG;
 #endif
 
-	SetInputLayoutStructure(8, DEFAULT_INPUT_LAYOUTd);
+	SetInputLayoutStructure(6, DEFAULT_INPUT_LAYOUTd);
 }
 
 Shader::~Shader()
 {
-	/*if (skeletonShader)
-	{
-		skeletonShader->Release(); WHERE SHOULD THIS GO!=!?!?
-	}*/
+	/*if (vertexShader)
+		vertexShader->Release(); 
 	
+	if (pixelShader)
+		pixelShader->Release();
+
+	if (geometryShader)
+		geometryShader->Release();*/
 }
 
 void Shader::SetPixelShader(LPCWSTR path, LPCSTR entry)

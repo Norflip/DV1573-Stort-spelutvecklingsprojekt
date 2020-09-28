@@ -181,7 +181,6 @@ void Renderer::DrawSkeleton(const Mesh& mesh, const Material& material, const dx
 	AddItem(item);
 }
 
-
 void Renderer::ClearRenderTarget(const RenderTexture& target)
 {
 	context->ClearRenderTargetView(target.rtv, DEFAULT_BG_COLOR);

@@ -179,45 +179,5 @@ bool CameraComponent::CullAgainstAABB(const AABB& aabb, const dx::XMFLOAT3 world
 	}
 
 	return !inViewResult;
-
-	//for (unsigned int plane = 0; plane < 6; ++plane)
-	//{
-	//	DirectX::XMVECTOR planeNormal = DirectX::XMVectorSet(planes[plane].x, planes[plane].y, planes[plane].z, 0.0f);
-	//	float planeConstant = planes[plane].w;
-
-	//	DirectX::XMFLOAT3 diagonal;
-
-	//	if (planes[plane].x < 0.0f)
-	//	{
-	//		diagonal.x = aabb.min.x + worldPos.x;
-	//	}
-	//	else
-	//	{
-	//		diagonal.x = aabb.max.x + worldPos.x;
-	//	}
-	//	if (planes[plane].y < 0.0f)
-	//	{
-	//		diagonal.y = aabb.min.y + worldPos.y;
-	//	}
-	//	else
-	//	{
-	//		diagonal.y = aabb.max.y + worldPos.y;
-	//	}
-	//	if (planes[plane].z < 0.0f)
-	//	{
-	//		diagonal.z = aabb.min.z + worldPos.z;
-	//	}
-	//	else
-	//	{
-	//		diagonal.z = aabb.max.z + worldPos.z;
-	//	}
-
-	//	if (DirectX::XMVectorGetX(DirectX::XMVector3Dot(planeNormal, DirectX::XMLoadFloat3(&diagonal))) + planeConstant < 0.0f)
-	//	{
-	//		return true;
-	//	}
-	//}
-
-	return false;
 }
 
