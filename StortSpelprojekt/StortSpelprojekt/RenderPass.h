@@ -23,7 +23,7 @@ private:
 class PSRenderPass : public RenderPass
 {
 public:
-	PSRenderPass(int priority, LPCWSTR path, LPCSTR entry = "main") : RenderPass(priority), path(path), entry(entry) {}
+	PSRenderPass(int priority, LPCWSTR pixelShaderPath, LPCSTR pixelShaderEntry = "main") : RenderPass(priority), path(pixelShaderPath), entry(pixelShaderEntry) {}
 
 	void m_Initialize(ID3D11Device* device) override 
 	{

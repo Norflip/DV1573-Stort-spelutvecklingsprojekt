@@ -7,10 +7,17 @@ Renderer::Renderer() : device(nullptr), context(nullptr), swapchain(nullptr), ob
 
 Renderer::~Renderer()
 {
-	skeleton_cbuffer->Release();
 	backbuffer.Release();
 	midbuffers[0].Release();
 	midbuffers[1].Release();
+
+	for (auto i = passes.begin(); i < passes.end(); i++)
+		delete (*i);
+
+	obj_cbuffer->Release();
+	skeleton_cbuffer->Release();
+	light_cbuffer->Release();
+	material_cbuffer->Release();
 }
 
 void Renderer::Initialize(Window* window)
@@ -40,9 +47,8 @@ void Renderer::Initialize(Window* window)
 	/* Screenquad mesh */
 	screenQuadMesh = Mesh::CreateScreenQuad(device);
 
-//	AddRenderPass(new PSRenderPass(1, L"Shaders/TestPass.hlsl"));
-//	AddRenderPass(new PSRenderPass(0, L"Shaders/TestPass2.hlsl"));
-
+	///AddRenderPass(new PSRenderPass(1, L"Shaders/TestPass.hlsl"));
+	//AddRenderPass(new PSRenderPass(0, L"Shaders/TestPass2.hlsl"));
 }
 
 void Renderer::BeginManualRenderPass(RenderTexture& target)
@@ -70,13 +76,9 @@ void Renderer::DrawItemsToTarget()
 			{
 				auto item = queue.front();
 				if (item.instanced)
-				{
 					m_DrawInstanced(item);
-				}
 				else
-				{
 					m_Draw(item);
-				}
 
 				// render item
 				queue.pop();
@@ -100,23 +102,25 @@ void Renderer::RenderFrame()
 
 	for (auto i = passes.begin(); i < passes.end(); i++)
 	{
-		size_t nextBufferIndex = 1 - bufferIndex;
-		ClearRenderTarget(midbuffers[nextBufferIndex]);
-		SetRenderTarget(midbuffers[nextBufferIndex]);
+		if ((*i)->IsEnabled())
+		{
+			size_t nextBufferIndex = 1 - bufferIndex;
+			ClearRenderTarget(midbuffers[nextBufferIndex]);
+			SetRenderTarget(midbuffers[nextBufferIndex]);
 
-		GetContext()->PSSetShaderResources(0, 1, &midbuffers[bufferIndex].srv);
+			GetContext()->PSSetShaderResources(0, 1, &midbuffers[bufferIndex].srv);
 
-		(*i)->Pass(this, midbuffers[bufferIndex], midbuffers[nextBufferIndex]);
-		bufferIndex = nextBufferIndex;
+			(*i)->Pass(this, midbuffers[bufferIndex], midbuffers[nextBufferIndex]);
+			bufferIndex = nextBufferIndex;
 
-		// overkill? Gives the correct result if outside the loop but errors in output
-		context->PSSetShaderResources(0, 1, nullSRV);
+			// overkill? Gives the correct result if outside the loop but errors in output
+			context->PSSetShaderResources(0, 1, nullSRV);
+		}
 	}
 
 	ClearRenderTarget(backbuffer);
 	SetRenderTarget(backbuffer);
 	context->PSSetShaderResources(0, 1, &midbuffers[bufferIndex].srv);
-
 	DrawScreenQuad(screenQuadShader);
 
 	HRESULT hr = swapchain->Present(1, 0); //1 here?

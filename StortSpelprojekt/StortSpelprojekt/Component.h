@@ -1,18 +1,10 @@
 #pragma once
-#include <memory>
-#include <algorithm>
-#include <bitset>
-#include <array>
+
 
 class Component;
 class Renderer;
 class CameraComponent;
 class Object;
-
-// max components on entity
-constexpr std::size_t maxComponents = 16;
-using ComponentBitSet = std::bitset<maxComponents>;
-using ComponentArray = std::array<Component*, maxComponents>;
 
 inline size_t GetComponentID()
 {

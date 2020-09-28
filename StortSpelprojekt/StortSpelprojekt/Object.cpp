@@ -33,6 +33,14 @@ void Object::Update(const float& deltaTime)
 	}
 }
 
+void Object::FixedUpdate(const float& fixedDeltaTime)
+{
+	if (HasFlag(ObjectFlag::ENABLED))
+	{
+
+	}
+}
+
 void Object::Draw(Renderer* renderer, CameraComponent* camera)
 {
 	if (HasFlag(ObjectFlag::ENABLED))
