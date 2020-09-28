@@ -59,6 +59,12 @@ void ControllerComponent::Update(const float& deltaTime)
 {
 	DirectX::XMFLOAT3 dir = { 0.f,0.f,0.f };
 	float speed = 1.f;
+
+	mouseVec.x = this->lastMousePos.x - Input::Instance().GetMousePos().x;
+	mouseVec.y = this->lastMousePos.y - Input::Instance().GetMousePos().y;
+	this->lastMousePos = Input::Instance().GetMousePos();
+	//std::cout <<"["<<mouseVec.x<<", "<< mouseVec.y <<"]"<< std::endl;
+
 	if (LMOUSE_DOWN)
 	{
 		this->canRotate = !this->canRotate;
@@ -110,10 +116,18 @@ void ControllerComponent::Update(const float& deltaTime)
 		dir.x += 1.f;// move;
 
 	dx::XMVECTOR direction = dx::XMLoadFloat3(&dir);
+
 	//direction = dx::XMVector3Normalize(direction);
 	direction = GetOwner()->GetTransform().TransformDirection(direction);
 	direction = dx::XMVectorScale(direction, speed);
 	direction = dx::XMVectorScale(direction, deltaTime);
 	dx::XMStoreFloat3(&dir, direction);
 	GetOwner()->GetTransform().Translate(dir.x, dir.y, dir.z);
+
+#if NDEBUG 
+
+	// fixes a bug in release where the compiler removes the variables
+	speed = 0.0f;
+	direction = { 0,0,0 };
+#endif // NDEBUG 
 }

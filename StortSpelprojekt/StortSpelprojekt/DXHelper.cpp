@@ -168,3 +168,65 @@ void DXHelper::CreateIndexBuffer(ID3D11Device* device, size_t indexCount, unsign
 	HRESULT indexBufferResult = device->CreateBuffer(&indexBufferDescription, &indexBuffer_subResource, indexBuffer);
 	assert(SUCCEEDED(indexBufferResult));
 }
+
+ID3D11ShaderResourceView* DXHelper::CreateTexture(unsigned char* buffer, size_t width, size_t height, size_t channels, DXGI_FORMAT format, ID3D11Device* device)
+{
+	D3D11_TEXTURE2D_DESC textureDesc;
+	ZeroMemory(&textureDesc, sizeof(D3D11_TEXTURE2D_DESC));
+	textureDesc.Width = width;
+	textureDesc.Height = height;
+	textureDesc.MipLevels = 1;
+	textureDesc.ArraySize = 1;
+	textureDesc.Format = format;
+	textureDesc.SampleDesc.Count = 1;
+	textureDesc.SampleDesc.Quality = 0;
+	textureDesc.Usage = D3D11_USAGE_DEFAULT;
+	textureDesc.BindFlags = D3D11_BIND_SHADER_RESOURCE;
+
+	D3D11_SUBRESOURCE_DATA textureResourceData;
+	ZeroMemory(&textureResourceData, sizeof(D3D11_SUBRESOURCE_DATA));
+	textureResourceData.pSysMem = buffer;
+	textureResourceData.SysMemPitch = width * 4;
+
+
+	ID3D11Texture2D* texture;
+	ZeroMemory(&texture, sizeof(ID3D11Texture2D));
+	device->CreateTexture2D(&textureDesc, &textureResourceData, &texture);
+
+	ID3D11ShaderResourceView* srv = nullptr;
+
+	if (texture != nullptr)
+	{
+		ZeroMemory(&srv, sizeof(ID3D11ShaderResourceView));
+		device->CreateShaderResourceView(texture, nullptr, &srv);
+
+		texture->Release();
+		texture = nullptr;
+	}
+
+	return srv;
+}
+
+ID3D11SamplerState* DXHelper::CreateSampler(D3D11_FILTER filter, D3D11_TEXTURE_ADDRESS_MODE mode, ID3D11Device* device)
+{
+	D3D11_SAMPLER_DESC samplerDescription;
+	ZeroMemory(&samplerDescription, sizeof(D3D11_SAMPLER_DESC));
+	samplerDescription.Filter = filter;
+	samplerDescription.AddressU = mode;
+	samplerDescription.AddressV = mode;
+	samplerDescription.AddressW = mode;
+	samplerDescription.ComparisonFunc = D3D11_COMPARISON_LESS_EQUAL;
+	samplerDescription.MinLOD = 0.0f;
+	samplerDescription.MaxLOD = D3D11_FLOAT32_MAX;
+	samplerDescription.MipLODBias = 0.0f;
+	samplerDescription.MaxAnisotropy = 0;
+
+	for (size_t i = 0; i < 4; i++)
+		samplerDescription.BorderColor[i] = 1.0f;
+
+	ID3D11SamplerState* samplerState;
+	ZeroMemory(&samplerState, sizeof(ID3D11SamplerState));
+	device->CreateSamplerState(&samplerDescription, &samplerState);
+
+	return samplerState;
+}

@@ -13,7 +13,8 @@
 #include "SkeletonMeshComponent.h"
 
 #include "Skybox.h"
-
+#include "WorldGenerator.h"
+#include "SaveState.h"
 
 class Scene
 {
@@ -51,7 +52,7 @@ private:
 	Object* quad;
 	Material screenquadmat;	
 
-
+	WorldGenerator worldGenerator;
 
 	/* test sky */
 	Object* testSkybox;
