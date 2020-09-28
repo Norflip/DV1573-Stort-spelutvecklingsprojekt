@@ -1,29 +1,27 @@
 #include "MeshComponent.h"
-#include "MoveComponent.h"
 
-MeshComponent::MeshComponent(Mesh mesh, Material material) : mesh(mesh), material(material),boundingBoxes(mesh) 
+MeshComponent::MeshComponent(Mesh mesh, Material material) : boundingBoxes(mesh)
 {
+	meshes.push_back(mesh);
+	materials.push_back(material);
 	boundingBoxes.CalcAABB();
+}
+
+MeshComponent::MeshComponent(std::vector<Mesh> meshes, std::vector<Material> materials) : meshes(meshes), materials(materials), boundingBoxes(meshes[0])
+{
+
 }
 
 MeshComponent::~MeshComponent() {}
 
-void MeshComponent::Update(const float& deltaTime)
-{
-	if (GetOwner()->GetComponent<MoveComponent>())
-	{
-		float rotationDegree = 0.4f * deltaTime;
-		GetOwner()->GetTransform().Rotate(0.0f, rotationDegree, 0.0f);
-	}
-}
-
 void MeshComponent::Draw(Renderer* renderer, CameraComponent* camera)
 {
 	dx::XMFLOAT3 tmpPos;
-	dx::XMStoreFloat3(&tmpPos, GetOwner()->GetTransform().GetWorldPosition());
+	dx::XMStoreFloat3(&tmpPos, GetTransform().GetWorldPosition());
 
 	if (GetOwner()->HasFlag(ObjectFlag::NO_CULL) || !camera->CullAgainstAABB(boundingBoxes.GetAABB(), tmpPos))
 	{
-		renderer->Draw(mesh, material, GetOwner()->GetTransform().GetWorldMatrix(), *camera);
+		for (size_t i = 0; i < meshes.size(); i++)
+			renderer->Draw(meshes[i], materials[i], GetTransform().GetWorldMatrix(), *camera);
 	}
 }

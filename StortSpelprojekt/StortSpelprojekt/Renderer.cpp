@@ -1,135 +1,63 @@
 #include "Renderer.h"
+#include "RenderPass.h"
 
-Renderer::Renderer() : device(nullptr), context(nullptr), backbuffer(nullptr), swapchain(nullptr), obj_cbuffer(nullptr), skeleton_cbuffer(nullptr)
+Renderer::Renderer() : device(nullptr), context(nullptr), swapchain(nullptr), obj_cbuffer(nullptr), skeleton_cbuffer(nullptr)
 {
 }
 
 Renderer::~Renderer()
 {
 	skeleton_cbuffer->Release();
+	backbuffer.Release();
+	midbuffers[0].Release();
+	midbuffers[1].Release();
 }
 
 void Renderer::Initialize(Window* window)
 {
 	this->outputWindow = window;
+
 	DXHelper::CreateSwapchain(*window, &device, &context, &swapchain);
-	DXHelper::CreateBackbuffer(window->GetWidth(), window->GetHeight(), device, swapchain, &backbuffer, &depthStencilView);
-
-	context->OMSetRenderTargets(1, &backbuffer, depthStencilView);
-
-	D3D11_VIEWPORT viewport;
-	ZeroMemory(&viewport, sizeof(D3D11_VIEWPORT));
-	viewport.Width = static_cast<FLOAT>(window->GetWidth());
-	viewport.Height = static_cast<FLOAT>(window->GetHeight());
-	viewport.TopLeftX = 0;
-	viewport.TopLeftY = 0;
-	viewport.MinDepth = 0.0f;
-	viewport.MaxDepth = 1.0f;
-	context->RSSetViewports(1, &viewport);
+	this->backbuffer = DXHelper::CreateBackbuffer(window->GetWidth(), window->GetHeight(), device, swapchain);
+	this->midbuffers[0] = DXHelper::CreateRenderTexture(window->GetWidth(), window->GetHeight(), device);
+	this->midbuffers[1] = DXHelper::CreateRenderTexture(window->GetWidth(), window->GetHeight(), device);
 
 	for (int bone = 0; bone < 60; bone++) //set id matrix as default for the bones. So if no animation is happening the character is not funky.
 	{
 		dx::XMStoreFloat4x4(&cb_skeleton_data.bones[bone], dx::XMMatrixIdentity());
 	}
 
-
 	DXHelper::CreateConstBuffer(device, &obj_cbuffer, &cb_object_data, sizeof(cb_object_data));
 	DXHelper::CreateConstBuffer(device, &light_cbuffer, &cb_scene, sizeof(cb_scene));
 	DXHelper::CreateConstBuffer(device, &material_cbuffer, &cb_material_data, sizeof(cb_material_data));
 	DXHelper::CreateConstBuffer(device, &skeleton_cbuffer, &cb_skeleton_data, sizeof(cb_skeleton_data));
 
+	/* Screenquad shader */
+	screenQuadShader.SetPixelShader(L"Shaders/ScreenQuad_ps.hlsl");
+	screenQuadShader.SetVertexShader(L"Shaders/ScreenQuad_vs.hlsl");
+	screenQuadShader.Compile(device);
+
+	/* Screenquad mesh */
+	screenQuadMesh = Mesh::CreateScreenQuad(device);
+
+
+	//screenQuadMesh.SetTexture(*screenquadTex, TEXTURE_DIFFUSE_SLOT, ShaderBindFlag::PIXEL);
+	//screenquadmat.SetSamplerState(renderer->GetDevice(), D3D11_TEXTURE_ADDRESS_WRAP, D3D11_FILTER_MIN_MAG_MIP_LINEAR);
+
+	AddRenderPass(new PSRenderPass(1, L"Shaders/TestPass.hlsl"));
+	AddRenderPass(new PSRenderPass(0, L"Shaders/TestPass2.hlsl"));
+
 }
 
-void Renderer::BeginFrame()
+void Renderer::BeginManualRenderPass(RenderTexture& target)
 {
-	context->ClearRenderTargetView(backbuffer, DEFAULT_BG_COLOR);
-	context->ClearDepthStencilView(depthStencilView, D3D11_CLEAR_DEPTH, 1.0f, 0);
+	SetRenderTarget(target);
+	//context->OMSetRenderTargets(1, &rtv, depthStencilView);
 }
 
-void Renderer::EndFrame()
+void Renderer::EndManualRenderPass()
 {
-
-	//for (auto i : itemQueue)
-	//{
-	//	// bind material from first item in queue
-	//	auto queue = i.second;
-	//	
-	//	while (!queue.empty())
-	//	{
-	//		// render item
-	//		queue.pop();
-	//	}
-	//}
-
-	//// clear queues
-	//itemQueue.clear();
 	DrawItemsToTarget();
-
-	HRESULT hr = swapchain->Present(0, 0); //1 here?
-	assert(SUCCEEDED(hr));
-}
-
-void Renderer::RenderToTexture(Texture* texture, ID3D11Device* device, int textureWidth, int textureHeight)
-{
-	D3D11_TEXTURE2D_DESC textureDesc;
-	ZeroMemory(&textureDesc, sizeof(D3D11_TEXTURE2D_DESC));
-	textureDesc.Width = textureWidth;
-	textureDesc.Height = textureHeight;
-	textureDesc.MipLevels = 1;
-	textureDesc.ArraySize = 1;
-	textureDesc.Format = DXGI_FORMAT_R32G32B32A32_FLOAT;
-	textureDesc.SampleDesc.Count = 1;
-	textureDesc.Usage = D3D11_USAGE_DEFAULT;
-	textureDesc.BindFlags = D3D11_BIND_RENDER_TARGET | D3D11_BIND_SHADER_RESOURCE;
-	textureDesc.CPUAccessFlags = 0;
-	textureDesc.MiscFlags = 0;
-	HRESULT hr = device->CreateTexture2D(&textureDesc, NULL, &renderTexture);
-	assert(SUCCEEDED(hr));
-
-
-	D3D11_RENDER_TARGET_VIEW_DESC renderTargetViewDesc;
-	ZeroMemory(&renderTargetViewDesc, sizeof(D3D11_RENDER_TARGET_VIEW_DESC));
-	renderTargetViewDesc.Format = textureDesc.Format;
-	renderTargetViewDesc.ViewDimension = D3D11_RTV_DIMENSION_TEXTURE2D;
-	renderTargetViewDesc.Texture2D.MipSlice = 0;
-	hr = device->CreateRenderTargetView(renderTexture, &renderTargetViewDesc, &rtvTest);
-	assert(SUCCEEDED(hr));
-
-
-	D3D11_SHADER_RESOURCE_VIEW_DESC shaderResourceViewDesc;
-	ZeroMemory(&shaderResourceViewDesc, sizeof(D3D11_SHADER_RESOURCE_VIEW_DESC));
-	shaderResourceViewDesc.Format = textureDesc.Format;
-	shaderResourceViewDesc.ViewDimension = D3D11_SRV_DIMENSION_TEXTURE2D;
-	shaderResourceViewDesc.Texture2D.MostDetailedMip = 0;
-	shaderResourceViewDesc.Texture2D.MipLevels = 1;
-	hr = device->CreateShaderResourceView(renderTexture, &shaderResourceViewDesc, &srvTest);
-	assert(SUCCEEDED(hr));
-
-
-	texture->SetTexture(srvTest);
-	texture->SetRenderTarget(rtvTest);
-}
-
-void Renderer::SetRenderTarget(ID3D11RenderTargetView* rtv)
-{
-	context->OMSetRenderTargets(1, &rtv, depthStencilView);
-}
-
-void Renderer::SetBackbufferRenderTarget()
-{
-	context->OMSetRenderTargets(1, &backbuffer, depthStencilView);
-}
-
-void Renderer::ClearRenderTarget(ID3D11RenderTargetView* rtv, dx::XMFLOAT4 rgba)
-{
-	float color[4];
-	color[0] = rgba.x;
-	color[1] = rgba.y;
-	color[2] = rgba.z;
-	color[3] = rgba.w;
-
-	context->ClearRenderTargetView(rtv, color);
-	context->ClearDepthStencilView(depthStencilView, D3D11_CLEAR_DEPTH, 1.0f, 0);
 }
 
 void Renderer::DrawItemsToTarget()
@@ -164,25 +92,49 @@ void Renderer::DrawItemsToTarget()
 	itemQueue.clear();
 }
 
-void Renderer::Unbind()
+void Renderer::RenderFrame()
 {
-	/*
-		Store total srvs for unbinding later
-		At this moment, 2 slots (diffuse, normal)
-	*/
+	size_t bufferIndex = 0;
 	ID3D11ShaderResourceView* nullSRV[1] = { nullptr };
-	for (int i = 0; i < 2; i++)
-		context->PSSetShaderResources(i, 1, nullSRV);
+	context->PSSetShaderResources(0, 1, nullSRV);
+
+	ClearRenderTarget(midbuffers[bufferIndex]);
+	SetRenderTarget(midbuffers[bufferIndex]);
+	DrawItemsToTarget();
+
+	for (auto i = passes.begin(); i < passes.end(); i++)
+	{
+		size_t nextBufferIndex = 1 - bufferIndex;
+		ClearRenderTarget(midbuffers[nextBufferIndex]);
+		SetRenderTarget(midbuffers[nextBufferIndex]);
+
+		GetContext()->PSSetShaderResources(0, 1, &midbuffers[bufferIndex].srv);
+
+		(*i)->Pass(this, midbuffers[bufferIndex], midbuffers[nextBufferIndex]);
+		bufferIndex = nextBufferIndex;
+
+		// overkill? Gives the correct result if outside the loop but errors in output
+		context->PSSetShaderResources(0, 1, nullSRV);
+	}
+
+	ClearRenderTarget(backbuffer);
+	SetRenderTarget(backbuffer);
+	context->PSSetShaderResources(0, 1, &midbuffers[bufferIndex].srv);
+
+	DrawScreenQuad(screenQuadShader);
+
+	HRESULT hr = swapchain->Present(1, 0); //1 here?
+	assert(SUCCEEDED(hr));
 }
 
-void Renderer::AddRenderPass(RenderPass*)
+void Renderer::AddRenderPass(RenderPass* pass)
 {
-}
+	pass->m_Initialize(device);
+	passes.push_back(pass);
 
-void Renderer::RemoveRenderPass(RenderPass*)
-{
+	if (passes.size() > 1)
+		std::sort(passes.begin(), passes.end(), [](const RenderPass* a, const RenderPass* b) -> bool { return a->GetPriority() < b->GetPriority(); });
 }
-
 
 void Renderer::Draw(const Mesh& mesh, const Material& material, const dx::XMMATRIX& model, const CameraComponent& camera)
 {
@@ -205,7 +157,7 @@ void Renderer::DrawInstanced(const Mesh& mesh, size_t count, const Material& mat
 	RenderItem item;
 	item.mesh = mesh;
 	item.material = material;
-	item.instanced = true;
+	item.instanced = count > 1;
 	item.instanceCount = count;
 	item.world = model;
 	item.camera = &camera;
@@ -241,6 +193,20 @@ void Renderer::DrawSkeleton(const Mesh& mesh, dx::XMMATRIX model, dx::XMMATRIX v
 
 	context->DrawIndexed(mesh.indices.size(), 0, 0);
 
+}
+
+
+void Renderer::ClearRenderTarget(const RenderTexture& target)
+{
+	context->ClearRenderTargetView(target.rtv, DEFAULT_BG_COLOR);
+	context->ClearDepthStencilView(target.dsv, D3D11_CLEAR_DEPTH, 1.0f, 0);
+}
+
+void Renderer::SetRenderTarget(const RenderTexture& target)
+{
+	context->OMSetRenderTargets(1, &target.rtv, target.dsv);
+
+	context->RSSetViewports(1, &target.viewport);
 }
 
 void Renderer::m_Draw(const RenderItem& item)
@@ -293,4 +259,16 @@ void Renderer::m_DrawInstanced(const RenderItem& item)
 	context->IASetIndexBuffer(item.mesh.indexBuffer, DXGI_FORMAT_R32_UINT, 0);
 	context->IASetPrimitiveTopology(item.mesh.topology);
 	context->DrawIndexedInstanced(item.mesh.indices.size(), item.instanceCount, 0, 0, 0);
+}
+
+void Renderer::DrawScreenQuad(const Shader& shader)
+{
+	shader.BindToContext(context);
+	UINT stride = sizeof(Mesh::Vertex);
+	UINT offset = 0;
+
+	context->IASetVertexBuffers(0, 1, &screenQuadMesh.vertexBuffer, &stride, &offset);
+	context->IASetIndexBuffer(screenQuadMesh.indexBuffer, DXGI_FORMAT_R32_UINT, 0);
+	context->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
+	context->DrawIndexed(screenQuadMesh.indices.size(), 0, 0);
 }

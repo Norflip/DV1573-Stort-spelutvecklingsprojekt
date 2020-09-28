@@ -40,6 +40,7 @@ public:
 
 	void SetOwner(Object* owner) { this->owner = owner; }
 	Object* GetOwner() const { return this->owner; }
+	Transform& GetTransform() const { return this->owner->GetTransform(); }
 
 private:
 	Object* owner = nullptr;

@@ -8,6 +8,7 @@
 #include "Texture.h"
 #include "Material.h"
 #include "CameraComponent.h"
+
 namespace dx = DirectX;
 
 class RenderPass;
@@ -33,21 +34,14 @@ public:
 	virtual ~Renderer();
 
 	void Initialize(Window* window);
-	void BeginFrame();
-	void EndFrame();
-		
-	/* New stuff...  rendertoTexture is going to be in a post processing class later on */
-	void RenderToTexture(Texture* texture, ID3D11Device* device, int width, int height);
-
-	void SetRenderTarget(ID3D11RenderTargetView* rtv);
-	void SetBackbufferRenderTarget();
-	void ClearRenderTarget(ID3D11RenderTargetView* rtv, dx::XMFLOAT4 rgba);
 	
-	void DrawItemsToTarget();
-	void Unbind();
+	void BeginManualRenderPass(RenderTexture& target);
+	void EndManualRenderPass();
 
+	void DrawItemsToTarget();
+	void RenderFrame();
+	
 	void AddRenderPass(RenderPass*);
-	void RemoveRenderPass(RenderPass*);
 
 	void Draw(const Mesh& mesh, const Material& material, const dx::XMMATRIX& model, const CameraComponent& camera);
 	void DrawInstanced(const Mesh& mesh, size_t count, const Material& material, const dx::XMMATRIX& model, const CameraComponent& camera);
@@ -56,6 +50,11 @@ public:
 	ID3D11Device* GetDevice() const { return this->device; }
 	ID3D11DeviceContext* GetContext() const { return this->context; }
 	Window* GetOutputWindow() const { return this->outputWindow; }
+
+	void DrawScreenQuad(const Shader& shader);
+
+	void ClearRenderTarget(const RenderTexture& target);
+	void SetRenderTarget(const RenderTexture& target);
 
 private:
 	void m_Draw(const RenderItem& item);
@@ -66,8 +65,11 @@ private:
 	ID3D11Device* device;
 	ID3D11DeviceContext* context;
 
-	ID3D11RenderTargetView* backbuffer;
-	ID3D11DepthStencilView* depthStencilView;
+	RenderTexture backbuffer;
+	RenderTexture midbuffers [2];
+	
+	Shader screenQuadShader;
+	Mesh screenQuadMesh;
 
 	cb_Object cb_object_data;
 	ID3D11Buffer* obj_cbuffer;
@@ -84,10 +86,6 @@ private:
 
 	Window* outputWindow;
 
-	/* Render to texture test - Is going to be in post processing class later etc. */
-	ID3D11RenderTargetView* rtvTest;
-	ID3D11Texture2D* renderTexture;
-	ID3D11ShaderResourceView* srvTest;
-
 	std::unordered_map<size_t, std::queue<RenderItem>> itemQueue;
+	std::vector<RenderPass*> passes;
 };

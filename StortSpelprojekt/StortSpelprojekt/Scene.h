@@ -45,25 +45,10 @@ public:
 private:	
 	Object* root;
 	CameraComponent* camera;
-	//MoveComponent* move;
-	ControllerComponent* move;
 	Renderer* renderer;
 
 	Input& input;
 
-	/* Test stuff */
-	Texture* screenquadTex;
-	Object* quad;
-	Material screenquadmat;	
-
-
-
 	/* test sky */
 	Object* testSkybox;
-
-
-	//frustumplanes extraction
-	std::vector<dx::XMFLOAT4> extractedPlanes;
-	dx::XMFLOAT3 tempPos;
-
 };
