@@ -55,7 +55,6 @@ void Renderer::Initialize(Window* window)
 void Renderer::BeginManualRenderPass(RenderTexture& target)
 {
 	SetRenderTarget(target);
-	//context->OMSetRenderTargets(1, &rtv, depthStencilView);
 }
 
 void Renderer::EndManualRenderPass()

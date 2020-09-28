@@ -18,7 +18,7 @@ public:
 
 	void Resize(size_t width, size_t height);
 	dx::XMMATRIX GetViewMatrix() const;
-	dx::XMMATRIX GetProjectionMatrix() const { return this->projection; }
+	dx::XMMATRIX GetProjectionMatrix() const;
 	dx::XMMATRIX GetVIewAndProjectionMatrix() const { return GetViewMatrix()* GetProjectionMatrix(); }
 	std::vector<dx::XMFLOAT4> GetFrustumPlanes();
 
@@ -28,8 +28,8 @@ private:
 	void UpdateProjectionMatrix();
 
 private:
-	dx::XMMATRIX projection;
-	dx::XMMATRIX view;
+	dx::XMFLOAT4X4 projection;
+	dx::XMFLOAT4X4 view;
 	std::vector<dx::XMFLOAT4> frustumPlanes;
 
 	size_t width, height;

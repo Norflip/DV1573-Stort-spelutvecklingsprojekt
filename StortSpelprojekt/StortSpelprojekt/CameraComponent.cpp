@@ -21,11 +21,16 @@ dx::XMMATRIX CameraComponent::GetViewMatrix() const
 	);
 }
 
+dx::XMMATRIX CameraComponent::GetProjectionMatrix() const
+{
+	return dx::XMLoadFloat4x4(&projection);
+}
+
 void CameraComponent::UpdateProjectionMatrix()
 {
 	const float toRadians = 0.0174532925f;
 	float aspect = static_cast<float>(width) / static_cast<float>(height);
-	this->projection = DirectX::XMMatrixPerspectiveFovLH(fieldOfView * toRadians, aspect, CAMERA_NEAR_Z, CAMERA_FAR_Z);
+	dx::XMStoreFloat4x4(&projection, DirectX::XMMatrixPerspectiveFovLH(fieldOfView * toRadians, aspect, CAMERA_NEAR_Z, CAMERA_FAR_Z));
 }
 
 std::vector<dx::XMFLOAT4> CameraComponent::GetFrustumPlanes()
