@@ -19,6 +19,15 @@ void Scene::Initialize(Renderer* renderer)
 	// Should change values on resize event
 	Window* window = renderer->GetOutputWindow();
 
+
+	SaveState state;
+	state.seed = 1337;
+	state.segment = 0;
+
+	worldGenerator.Initialize(renderer->GetDevice());
+	worldGenerator.Generate(state, renderer->GetDevice());
+
+
 	Object* cameraObject = new Object("camera", ObjectFlag::ENABLED);
 	camera = cameraObject->AddComponent<CameraComponent>(60.0f);
 	camera->Resize(window->GetWidth(), window->GetHeight());

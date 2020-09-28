@@ -13,7 +13,8 @@
 #include "SkeletonMeshComponent.h"
 
 #include "Skybox.h"
-
+#include "WorldGenerator.h"
+#include "SaveState.h"
 
 class Scene
 {
@@ -48,6 +49,8 @@ private:
 	Renderer* renderer;
 
 	Input& input;
+
+	WorldGenerator worldGenerator;
 
 	/* test sky */
 	Object* testSkybox;
