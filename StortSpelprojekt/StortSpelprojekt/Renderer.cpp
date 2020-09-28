@@ -40,12 +40,8 @@ void Renderer::Initialize(Window* window)
 	/* Screenquad mesh */
 	screenQuadMesh = Mesh::CreateScreenQuad(device);
 
-
-	//screenQuadMesh.SetTexture(*screenquadTex, TEXTURE_DIFFUSE_SLOT, ShaderBindFlag::PIXEL);
-	//screenquadmat.SetSamplerState(renderer->GetDevice(), D3D11_TEXTURE_ADDRESS_WRAP, D3D11_FILTER_MIN_MAG_MIP_LINEAR);
-
-	AddRenderPass(new PSRenderPass(1, L"Shaders/TestPass.hlsl"));
-	AddRenderPass(new PSRenderPass(0, L"Shaders/TestPass2.hlsl"));
+//	AddRenderPass(new PSRenderPass(1, L"Shaders/TestPass.hlsl"));
+//	AddRenderPass(new PSRenderPass(0, L"Shaders/TestPass2.hlsl"));
 
 }
 

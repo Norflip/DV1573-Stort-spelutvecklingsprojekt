@@ -11,16 +11,8 @@ MoveComponent::~MoveComponent()
 {
 }
 
-//void MoveComponent::Move(DirectX::XMFLOAT3 moveVector)
-//{
-//	dx::XMVECTOR move = dx::XMLoadFloat3(&moveVector);
-//	dx::XMVECTOR newPos = dx::XMVectorAdd(GetOwner()->GetTransform().GetPosition(), move);
-//	GetOwner()->GetTransform().SetPosition(newPos);
-//}
-
 void MoveComponent::Update(const float& deltaTime)
 {
-#if _DEBUG
 	DirectX::XMFLOAT3 pos;
 	dx::XMStoreFloat3(&pos, GetOwner()->GetTransform().GetPosition());
 
@@ -36,5 +28,4 @@ void MoveComponent::Update(const float& deltaTime)
 	newPos = { 0,0,0 };
 	move = { 0,0,0 };
 	pos = { 0,0,0 };
-#endif
 }

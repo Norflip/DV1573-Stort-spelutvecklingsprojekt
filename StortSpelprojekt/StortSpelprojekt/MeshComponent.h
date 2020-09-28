@@ -3,8 +3,8 @@
 #include "Material.h"
 #include "Transform.h"
 #include "CameraComponent.h"
-#include "Object.h"
 #include "BoundingBoxes.h"
+#include "Object.h"
 
 class MeshComponent : public Component
 {

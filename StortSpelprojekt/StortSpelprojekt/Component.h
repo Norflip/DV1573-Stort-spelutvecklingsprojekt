@@ -30,7 +30,7 @@ inline size_t GetComponentTypeID() noexcept
 class Component
 {
 public:
-	Component() {}
+	Component() : owner(nullptr) {}
 	virtual ~Component() {};
 
 	virtual void Initialize() {};
@@ -40,8 +40,7 @@ public:
 
 	void SetOwner(Object* owner) { this->owner = owner; }
 	Object* GetOwner() const { return this->owner; }
-	Transform& GetTransform() const { return this->owner->GetTransform(); }
 
 private:
-	Object* owner = nullptr;
+	Object* owner;
 };
