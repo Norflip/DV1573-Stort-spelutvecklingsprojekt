@@ -17,7 +17,16 @@ void Scene::Initialize(Renderer* renderer)
 	// TEMP
 	// Should change values on resize event
 	Window* window = renderer->GetOutputWindow();
-	
+
+
+	SaveState state;
+	state.seed = 1337;
+	state.segment = 0;
+
+	worldGenerator.Initialize(renderer->GetDevice());
+	worldGenerator.Generate(state, renderer->GetDevice());
+
+
 	Object* cameraObject = new Object("camera", ObjectFlag::ENABLED);
 	camera = cameraObject->AddComponent<CameraComponent>(60.0f);
 	camera->Resize(window->GetWidth(), window->GetHeight());
@@ -166,6 +175,7 @@ void Scene::Render()
 	renderer->BeginFrame();
 	RenderSceneToTexture();
 
+
 	//for (auto i = objects.begin(); i < objects.end(); i++)
 	//{
 	//	Object* obj = (*i);
@@ -188,6 +198,8 @@ void Scene::RenderSceneToTexture()
 	renderer->ClearRenderTarget(renderer->GetContext(), screenquadTex->GetRtv(), dx::XMFLOAT4(0, 1, 0, 1));
 	camera->GetFrustumPlanes(extractedPlanes);
 	
+	worldGenerator.Draw(renderer, camera);
+
 	for (auto i = objects.begin(); i < objects.end(); i++)
 	{
 		
