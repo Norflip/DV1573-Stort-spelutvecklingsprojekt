@@ -78,9 +78,22 @@ float4 main(VS_OUTPUT input) : SV_TARGET
 	*/
 	
 	
+	finalColor = saturate(finalColor * textureColor);
 
-	
-	
+
+	float3 reflectVector = reflect(-viewDirection, input.normal);
+
+	float4 envColor = skymap.SampleLevel(defaultSampleType, reflectVector, 0);
+
+	envColor *= 1;
+
+	float hue = GetH(finalColor.rgb);
+
+	float sat = GetS(finalColor.rgb);
+
+	float lum = GetL(finalColor.rgb);
+
+	return float4(PSColorMode(envColor.rgb,hue, sat, lum, 0.5), 1);
 
 	//return float4(input.normal, 1.0f);
 	return finalColor; //  float4(finalColor.r, finalColor.g, finalColor.b * 5, finalColor.a);
