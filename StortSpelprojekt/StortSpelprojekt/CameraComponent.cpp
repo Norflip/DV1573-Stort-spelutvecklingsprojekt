@@ -33,7 +33,7 @@ void CameraComponent::UpdateProjectionMatrix()
 	dx::XMStoreFloat4x4(&projection, DirectX::XMMatrixPerspectiveFovLH(fieldOfView * toRadians, aspect, CAMERA_NEAR_Z, CAMERA_FAR_Z));
 }
 
-std::vector<dx::XMFLOAT4> CameraComponent::GetFrustumPlanes()
+std::vector<dx::XMFLOAT4>& CameraComponent::GetFrustumPlanes()
 {
 	if (GetOwner()->GetTransform().ChangedThisFrame() || frustumPlanes.size() == 0)
 	{
