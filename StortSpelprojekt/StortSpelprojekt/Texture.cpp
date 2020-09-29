@@ -6,6 +6,10 @@ Texture::Texture()
 	rtv = nullptr;
 }
 
+Texture::Texture(ID3D11ShaderResourceView* srv) : srv(srv), rtv(nullptr)
+{
+}
+
 Texture::~Texture()
 {
 	

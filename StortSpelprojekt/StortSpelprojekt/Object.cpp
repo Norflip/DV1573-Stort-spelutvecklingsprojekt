@@ -8,29 +8,50 @@ Object::Object(const std::string& name, ObjectFlag flag) : name(name), flags(fla
 
 Object::~Object()
 {
-	for (int i = 0; i < components.size(); i++)
-	{
-		if (components[i])
-		{
-			delete components[i];
-		}
-	}
+	for (auto i = components.begin(); i < components.end(); i++)
+		delete (*i);
 
-	
+	auto children = transform.GetChildren();
+	for (auto i = children.begin(); i < children.end(); i++)
+		delete (*i)->GetOwner();
+
+	components.clear();
 }
 
 void Object::Update(const float& deltaTime)
 {
-	transform.MarkNotChanged();
+	if (HasFlag(ObjectFlag::ENABLED))
+	{
+		transform.MarkNotChanged();
 
-	for (auto i = components.begin(); i < components.end(); i++)
-		(*i)->Update(deltaTime);
+		for (auto i = components.begin(); i < components.end(); i++)
+			(*i)->Update(deltaTime);
+
+		auto children = transform.GetChildren();
+		for (auto i = children.begin(); i < children.end(); i++)
+			(*i)->GetOwner()->Update(deltaTime);
+	}
 }
 
-void Object::Draw(Renderer* renderer, CameraComponent* camera, DrawType drawType)
+void Object::FixedUpdate(const float& fixedDeltaTime)
 {
-	for (auto i = components.begin(); i < components.end(); i++)
-		(*i)->Draw(renderer, camera, drawType);
+	if (HasFlag(ObjectFlag::ENABLED))
+	{
+
+	}
+}
+
+void Object::Draw(Renderer* renderer, CameraComponent* camera)
+{
+	if (HasFlag(ObjectFlag::ENABLED))
+	{
+		for (auto i = components.begin(); i < components.end(); i++)
+			(*i)->Draw(renderer, camera);
+
+		auto children = transform.GetChildren();
+		for (auto i = children.begin(); i < children.end(); i++)
+			(*i)->GetOwner()->Draw(renderer, camera);
+	}
 }
 
 bool Object::HasFlag(ObjectFlag flag) const

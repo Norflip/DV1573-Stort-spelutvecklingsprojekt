@@ -1,41 +1,28 @@
 #include "MeshComponent.h"
-#include "MoveComponent.h"
 
-MeshComponent::MeshComponent(Mesh mesh, Material material) : mesh(mesh), material(material), texture(material.GetTexture()),boundingBoxes(mesh) {}
+MeshComponent::MeshComponent(Mesh mesh, Material material) : boundingBoxes(mesh)
+{
+	meshes.push_back(mesh);
+	materials.push_back(material);
+	boundingBoxes.CalcAABB();
+}
+
+MeshComponent::MeshComponent(std::vector<Mesh> meshes, std::vector<Material> materials) : meshes(meshes), materials(materials), boundingBoxes(meshes[0])
+{
+
+}
+
 MeshComponent::~MeshComponent() {}
 
-void MeshComponent::Update(const float& deltaTime)
+void MeshComponent::Draw(Renderer* renderer, CameraComponent* camera)
 {
-	if (GetOwner()->GetComponent<MoveComponent>())
+
+	dx::XMFLOAT3 tmpPos;
+	dx::XMStoreFloat3(&tmpPos, GetOwner()->GetTransform().GetWorldPosition());
+
+	if (GetOwner()->HasFlag(ObjectFlag::NO_CULL) || !camera->CullAgainstAABB(boundingBoxes.GetAABB(), tmpPos))
 	{
-		float rotationDegree = 0.4f * deltaTime;
-		GetOwner()->GetTransform().Rotate(0.0f, rotationDegree, 0.0f);
+		for (size_t i = 0; i < meshes.size(); i++)
+			renderer->Draw(meshes[i], materials[i], GetOwner()->GetTransform().GetWorldMatrix(), *camera);
 	}
 }
-
-void MeshComponent::Draw(Renderer* renderer, CameraComponent* camera, DrawType drawType)
-{
-	if (drawType == DrawType::STANDARD)
-	{
-		renderer->GetContext()->VSSetShader(0, 0, 0);
-		renderer->GetContext()->PSSetShader(0, 0, 0);
-		material.BindToContext(renderer->GetContext());
-		renderer->Draw(this->mesh, this->material.GetMaterialData(), GetOwner()->GetTransform().GetWorldMatrix(), camera->GetViewMatrix(), camera->GetProjectionMatrix(), camera->GetOwner()->GetTransform().GetPosition());
-	}
-	else if (drawType == DrawType::INSTANCED)
-	{
-		renderer->GetContext()->VSSetShader(0, 0, 0);
-		renderer->GetContext()->PSSetShader(0, 0, 0);
-		material.BindToContext(renderer->GetContext());
-		renderer->DrawInstanced(this->mesh, this->material.GetMaterialData(), mesh.GetInstanceNr(), camera->GetViewMatrix(), camera->GetProjectionMatrix(), camera->GetOwner()->GetTransform().GetPosition());
-	}
-	else if (drawType == DrawType::INSTANCEDALPHA)
-	{
-		renderer->GetContext()->VSSetShader(0, 0, 0);
-		renderer->GetContext()->PSSetShader(0, 0, 0);
-		material.BindToContext(renderer->GetContext());
-		renderer->DrawAlphaInstanced(this->mesh, this->material.GetMaterialData(), mesh.GetInstanceNr(), camera->GetViewMatrix(), camera->GetProjectionMatrix(), camera->GetOwner()->GetTransform().GetPosition());
-	}
-}
-
-

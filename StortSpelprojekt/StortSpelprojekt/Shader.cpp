@@ -7,24 +7,19 @@ Shader::Shader() : pixelShader(nullptr), vertexShader(nullptr), inputLayout(null
 	shaderCompilationFlag = shaderCompilationFlag | D3DCOMPILE_DEBUG;
 #endif
 
-	SetInputLayoutStructure(8, DEFAULT_INPUT_LAYOUTd);
+	SetInputLayoutStructure(6, DEFAULT_INPUT_LAYOUTd);
 }
 
 Shader::~Shader()
 {
 	/*if (vertexShader)
-	{
-		vertexShader->Release();
-	}
-	if (geometryShader)
-	{
-		geometryShader->Release();
-	}
-	if (pixelShader)
-	{
-		pixelShader->Release();
-	}*/
+		vertexShader->Release(); 
 	
+	if (pixelShader)
+		pixelShader->Release();
+
+	if (geometryShader)
+		geometryShader->Release();*/
 }
 
 void Shader::SetPixelShader(LPCWSTR path, LPCSTR entry)
@@ -61,12 +56,9 @@ void Shader::Compile(ID3D11Device* device)
 	CompileVS(device);
 	CompilePS(device);
 	CompileGS(device);
-	/*CompileSkeletonVS(device);
-	CompileInstanced(device);
-	CompileAlpha(device);*/
 }
 
-void Shader::BindToContext(ID3D11DeviceContext* context)
+void Shader::BindToContext(ID3D11DeviceContext* context) const
 {
 	int flag = static_cast<int>(shaderFlags);
 
@@ -87,11 +79,6 @@ void Shader::BindToContext(ID3D11DeviceContext* context)
 	{
 		context->GSSetShader(geometryShader, 0, 0);
 	}
-	/*if ((flag & (int)ShaderBindFlag::SKELETON) != 0)
-	{
-		context->IASetInputLayout(inputLayout);
-		context->VSSetShader(skeletonShader, 0, 0);
-	}*/
 }
 
 void Shader::CompilePS(ID3D11Device* device)
@@ -215,17 +202,4 @@ void Shader::CompileGS(ID3D11Device* device)
 		assert(SUCCEEDED(GSCreateResult));
 	}
 }
-
-void Shader::SetInstanceLayout()
-{
-	this->inputLayoutDescription = INSTANCE_INPUT_LAYOUTd;
-	this->ilArrayCount = 12;
-}
-
-void Shader::SetDefaultInputLayout()
-{
-	this->inputLayoutDescription = DEFAULT_INPUT_LAYOUTd;
-	this->ilArrayCount = 8;
-}
-
 

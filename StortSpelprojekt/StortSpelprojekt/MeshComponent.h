@@ -3,25 +3,24 @@
 #include "Material.h"
 #include "Transform.h"
 #include "CameraComponent.h"
-#include "Object.h"
 #include "BoundingBoxes.h"
+#include "Object.h"
 
 class MeshComponent : public Component
 {
 public:
 	MeshComponent(Mesh mesh, Material material);
+	MeshComponent(std::vector <Mesh> meshes, std::vector <Material> materials);
 	virtual ~MeshComponent();
 	
-	Mesh& GetMesh()  { return this->mesh; }
-	Material& GetMaterial()  { return this->material; }
+	std::vector<Mesh> GetMesh() const { return this->meshes; }
+	std::vector<Material> GetMaterial() const { return this->materials; }
 
-	void Update(const float& deltaTime) override;
-	void Draw(Renderer* renderer, CameraComponent* camera, DrawType drawType) override;
-	
+	void Draw(Renderer* renderer, CameraComponent* camera) override;
 	BoundingBoxes& GetBoundingBoxes() { return this->boundingBoxes; }
+
 private:
-	Mesh mesh;
-	Material material;
-	Texture texture;
+	std::vector<Mesh> meshes;
+	std::vector<Material> materials;
 	BoundingBoxes boundingBoxes;
 };

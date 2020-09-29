@@ -7,7 +7,8 @@ namespace dx = DirectX;
 class MoveComponent:public Component
 {
 private:
-	dx::XMVECTOR direction;
+	dx::XMFLOAT3 direction;
+
 public:
 	MoveComponent();
 	virtual ~MoveComponent();

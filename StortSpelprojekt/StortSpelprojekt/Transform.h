@@ -23,7 +23,7 @@ public:
 	void Rotate(float pitch, float yaw, float roll);
 
 	bool HasParent() const { return this->parent != nullptr; }
-	void SetParent(Transform* parent) { this->parent = parent; }
+	void SetParent(Transform* parent) { this->parent = parent; changedThisFrame = true; }
 
 	void AddChild(Transform* child);
 	void RemoveChild(Transform* child);
@@ -33,6 +33,7 @@ public:
 	std::vector<Transform*> GetChildren() const { return this->children; }
 
 	static void SetParentChild(Transform& parent, Transform& child);
+	static void RemoveParentChild(Transform& parent, Transform& child);
 
 	Object* GetOwner() const { return this->owner; }
 
@@ -40,6 +41,7 @@ public:
 	void MarkNotChanged() { this->changedThisFrame = false; }
 
 #pragma region SETTERS AND GETTERS
+	dx::XMVECTOR GetWorldPosition() const;
 	dx::XMVECTOR GetPosition() const { return this->position; }
 	void SetPosition(dx::XMVECTOR position) { this->position = position; changedThisFrame = true; }
 
