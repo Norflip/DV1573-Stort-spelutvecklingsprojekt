@@ -59,6 +59,7 @@ void Scene::Initialize(Renderer* renderer)
 	dx::XMFLOAT3 miniTranslation = dx::XMFLOAT3(0, 0, 6);
 	dx::XMFLOAT3 miniTranslation2 = dx::XMFLOAT3(2, 2, 2);
 	dx::XMFLOAT3 miniTranslation3 = dx::XMFLOAT3(-4, -3, -4);
+	dx::XMFLOAT3 miniTranslation4 = dx::XMFLOAT3(0.f, -7.f, 0.f);
 
 	testMesh->GetTransform().SetPosition(dx::XMLoadFloat3(&miniTranslation));
 	
@@ -70,8 +71,6 @@ void Scene::Initialize(Renderer* renderer)
 	AddObject(testMesh3, testMesh2);
 
 	testMesh2->AddComponent<MoveComponent>();
-	testMesh3->AddComponent<NodeWalker>();
-	//testMesh2->GetComponent<NodeWalker>()->reset();
 
 	zwebMaterials[0].SetSamplerState(renderer->GetDevice(), D3D11_TEXTURE_ADDRESS_WRAP, D3D11_FILTER_MIN_MAG_MIP_LINEAR);
 	sylvanasMat[0].SetSamplerState(renderer->GetDevice(), D3D11_TEXTURE_ADDRESS_WRAP, D3D11_FILTER_MIN_MAG_MIP_LINEAR);
@@ -84,7 +83,11 @@ void Scene::Initialize(Renderer* renderer)
 	AddObject(testMesh);
 	//AddObject(testMesh2);
 	//AddObject(testMesh3);
-
+	Object* testMesh4 = new Object("test4");
+	testMesh4->AddComponent<NodeWalkerComponent>();
+	testMesh4->GetTransform().SetPosition(dx::XMLoadFloat3(&miniTranslation4));
+	testMesh4->AddComponent<MeshComponent>(zwebMeshes[0], sylvanasMat[0]);
+	AddObject(testMesh4);
 
 	/* * * * * * * * ** * * * * */
 

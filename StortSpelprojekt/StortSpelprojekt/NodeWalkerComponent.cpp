@@ -1,6 +1,6 @@
 #include "NodeWalkerComponent.h"
 
-NodeWalker::NodeWalker()
+NodeWalkerComponent::NodeWalkerComponent()
 {
 	this->speed = 1.2f;
 	this->currentNode = 0;
@@ -9,6 +9,7 @@ NodeWalker::NodeWalker()
 	this->canWalk = false;
 	this->length = 0.f;
 
+	//later generate this nodes 
 	this->nodes.push_back(Node("start", 0, { 0.f,0.f,0.f }, 1, -1, -1));
 	this->nodes.push_back(Node("1a", 1, { 5.f,0.f,5.f }, -1, 2, 3));
 	this->nodes.push_back(Node("2a", 2, { 10.f,0.f,15.f }, 4, -1, 5));
@@ -19,35 +20,32 @@ NodeWalker::NodeWalker()
 	this->nodes.push_back(Node("3d", 7, { 30.f,0.f,15.f }, 9, -1, -1));
 	this->nodes.push_back(Node("3e", 8, { 35.f,0.f,10.f }, -1, 9, -1));
 	this->nodes.push_back(Node("Final Stage", 9, { 40.f,0.f,40.f }, -1, -1, -1));
-
-
 }
 
-NodeWalker::~NodeWalker()
+NodeWalkerComponent::~NodeWalkerComponent()
 {
 }
 
-void NodeWalker::Reset()
+void NodeWalkerComponent::Reset()
 {
 	dx::XMVECTOR startPos = dx::XMLoadFloat3(&nodes[0].position);
 	this->GetOwner()->GetTransform().SetPosition(startPos);
 	this->currentNode = 0;
 	this->nextChosen = -1;
 	this->canWalk = false;
-
 }
 
-void NodeWalker::Start()
+void NodeWalkerComponent::Start()
 {
 	this->canWalk = true;
 }
 
-void NodeWalker::Stop()
+void NodeWalkerComponent::Stop()
 {
 	this->canWalk = false;
 }
 
-void NodeWalker::Update(const float& deltaTime)
+void NodeWalkerComponent::Update(const float& deltaTime)
 {
 	if(KEY_DOWN(I))
 	{
@@ -120,5 +118,24 @@ void NodeWalker::Update(const float& deltaTime)
 			}
 		}
 	}
+}
+
+void NodeWalkerComponent::InsertNode(std::string name, int id, dx::XMFLOAT3 position, int nextMiddle, int nextLeft, int nextRight)
+{
+	this->nodes.push_back(Node(name, id, position, nextMiddle, nextLeft, nextRight));
+}
+
+void NodeWalkerComponent::InsertNode(const Node & theNode)
+{
+	this->nodes.push_back(theNode);
+}
+
+void NodeWalkerComponent::insertNodes(std::vector<Node> someNodes)
+{
+	//for (int i = 0; i < someNodes.size(); i++)
+	//{
+	//	this->nodes.push_back(someNodes[i]);
+	//}
+	this->nodes = someNodes;
 }
 

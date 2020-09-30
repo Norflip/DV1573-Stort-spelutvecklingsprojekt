@@ -6,9 +6,9 @@
 #include "Input.h"
 
 namespace dx = DirectX;
-class NodeWalker :public Component
+class NodeWalkerComponent :public Component
 {
-private:
+public:
 	struct Node
 	{
 		std::string name;
@@ -27,8 +27,8 @@ private:
 			this->nextRight = nextRight;
 		}
 	};
+private:
 	std::vector<Node> nodes;
-
 	float speed;
 	int currentNode;
 	int nextChosen;
@@ -36,17 +36,17 @@ private:
 	bool canWalk;
 	float length; //length is only saved for display with
 public:
-	NodeWalker();
-	~NodeWalker();
+	NodeWalkerComponent();
+	~NodeWalkerComponent();
 
 	void Reset();
 	void Start();
 	void Stop();
 
 	void Update(const float& deltaTime);
-	void InsertNode(const dx::XMFLOAT3 nodePos);
-
-private:
+	void InsertNode(std::string name, int id, dx::XMFLOAT3 position, int nextMiddle, int nextLeft, int nextRight);
+	void InsertNode(const Node &theNode);
+	void insertNodes(std::vector<Node> someNodes);
 
 };
 
