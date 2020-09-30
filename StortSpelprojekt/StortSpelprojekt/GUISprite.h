@@ -1,15 +1,11 @@
 #pragma once
 #include "DirectXHelpers.h"
 #include <WICTextureLoader.h>
-#include "Input.h"
 #include <DirectXMath.h>
 #include <SpriteBatch.h>
-#include "DDSTextureLoader.h"
-#include "GUISprite.h"
 #include "Renderer.h"
 #include <wrl.h>
 #include <iostream>
-#include <SpriteBatch.h>
 namespace dx = DirectX;
 class GUISprite
 {

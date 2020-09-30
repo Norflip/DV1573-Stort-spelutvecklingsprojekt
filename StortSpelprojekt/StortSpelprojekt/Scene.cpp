@@ -20,8 +20,9 @@ void Scene::Initialize(Renderer* renderer)
 	Window* window = renderer->GetOutputWindow();
 	spriteBatch = new DirectX::SpriteBatch(renderer->GetContext());
 	testSprite = new GUISprite(*renderer, "Textures/EquipmentBox.png", 100, 100);
-	spritePass = new SpriteRenderPass(110, testSprite);
-	renderer->AddRenderPass(spritePass);
+	//spritePass = new SpriteRenderPass(110, testSprite);
+	//renderer->AddRenderPass(spritePass);
+	renderer->setSprite(testSprite);
 	SaveState state;
 	state.seed = 1337;
 	state.segment = 0;

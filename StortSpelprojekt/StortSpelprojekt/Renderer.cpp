@@ -130,6 +130,7 @@ void Renderer::RenderFrame()
 	SetRenderTarget(backbuffer);
 	context->PSSetShaderResources(0, 1, &midbuffers[bufferIndex].srv);
 	DrawScreenQuad(screenQuadShader);
+	sprite->Draw();
 	HRESULT hr = swapchain->Present(0, 0); //1 here?
 	assert(SUCCEEDED(hr));
 }
@@ -141,6 +142,11 @@ void Renderer::AddRenderPass(RenderPass* pass)
 
 	if (passes.size() > 1)
 		std::sort(passes.begin(), passes.end(), [](const RenderPass* a, const RenderPass* b) -> bool { return a->GetPriority() < b->GetPriority(); });
+}
+
+void Renderer::setSprite(GUISprite* sprite)
+{
+	this->sprite = sprite;
 }
 
 void Renderer::Draw(const Mesh& mesh, const Material& material, const dx::XMMATRIX& model, const CameraComponent& camera)

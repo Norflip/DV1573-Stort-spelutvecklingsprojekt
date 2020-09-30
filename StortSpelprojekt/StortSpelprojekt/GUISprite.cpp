@@ -82,11 +82,11 @@ void GUISprite::SetWICSprite(ID3D11Device* device,std::string spriteFile)
 
 void GUISprite::SetDDSSprite(ID3D11Device* device,  std::string spriteFile)
 {
-	if (this->SRV != nullptr)
-		this->SRV->Release();
+	//if (this->SRV != nullptr)
+	//	this->SRV->Release();
 
-	HRESULT result;
-	std::wstring wsConvert(spriteFile.begin(), spriteFile.end());
-	result = DirectX::CreateDDSTextureFromFile(device, wsConvert.c_str(), nullptr, &SRV);
-	assert(SUCCEEDED(result));
+	//HRESULT result;
+	//std::wstring wsConvert(spriteFile.begin(), spriteFile.end());
+	//result = DirectX::CreateDDSTextureFromFile(device, wsConvert.c_str(), nullptr, &SRV);
+	//assert(SUCCEEDED(result));
 }
