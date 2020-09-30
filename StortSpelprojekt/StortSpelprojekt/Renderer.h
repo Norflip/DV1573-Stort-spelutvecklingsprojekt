@@ -8,7 +8,7 @@
 #include "Texture.h"
 #include "Material.h"
 #include "CameraComponent.h"
-
+#include "GUISprite.h"
 namespace dx = DirectX;
 
 class RenderPass;
@@ -46,7 +46,7 @@ public:
 	
 	void BeginManualRenderPass(RenderTexture& target);
 	void EndManualRenderPass();
-
+	
 	void DrawItemsToTarget();
 	void RenderFrame();
 	

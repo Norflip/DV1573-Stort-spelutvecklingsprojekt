@@ -156,6 +156,7 @@
     <ClCompile Include="ControllerComponent.cpp" />
     <ClCompile Include="DXHelper.cpp" />
     <ClCompile Include="Engine.cpp" />
+    <ClCompile Include="GameClock.cpp" />
     <ClCompile Include="GUISprite.cpp" />
     <ClCompile Include="Input.cpp" />
     <ClCompile Include="main.cpp" />
@@ -183,6 +184,7 @@
     <ClInclude Include="ControllerComponent.h" />
     <ClInclude Include="GameClock.h" />
     <ClInclude Include="GUIManager.h" />
+    <ClInclude Include="GUISprite.h" />
     <ClInclude Include="Math.h" />
     <ClInclude Include="MoveComponent.h" />
     <ClInclude Include="Component.h" />

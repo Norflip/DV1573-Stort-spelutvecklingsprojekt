@@ -1,5 +1,5 @@
 #include "Scene.h"
-
+#include "RenderPass.h"
 Scene::Scene() : input(Input::Instance())
 {
 	root = new Object("sceneRoot", ObjectFlag::DEFAULT);
@@ -18,8 +18,10 @@ void Scene::Initialize(Renderer* renderer)
 	// TEMP
 	// Should change values on resize event
 	Window* window = renderer->GetOutputWindow();
-
-
+	spriteBatch = new DirectX::SpriteBatch(renderer->GetContext());
+	testSprite = new GUISprite(*renderer, "Textures/Gorilla.png", 100, 100);
+	spritePass = new SpriteRenderPass(110, testSprite);
+	renderer->AddRenderPass(spritePass);
 	SaveState state;
 	state.seed = 1337;
 	state.segment = 0;
@@ -123,9 +125,16 @@ void Scene::Render()
 {	
 	root->Draw(renderer, camera);
 	testSkybox->Draw(renderer, camera);
+
 	worldGenerator.Draw(renderer, camera);
 
+	ID3D11ShaderResourceView* pSRV[1] = { NULL };
+	renderer->GetContext()->PSSetShaderResources(0, 1, pSRV);
+
+	//testSprite->Draw();
+
 	renderer->RenderFrame();
+
 }
 
 void Scene::AddObject(Object* object)

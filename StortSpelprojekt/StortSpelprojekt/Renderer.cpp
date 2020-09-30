@@ -104,7 +104,6 @@ void Renderer::RenderFrame()
 	size_t bufferIndex = 0;
 	ID3D11ShaderResourceView* nullSRV[1] = { nullptr };
 	context->PSSetShaderResources(0, 1, nullSRV);
-
 	ClearRenderTarget(midbuffers[bufferIndex]);
 	SetRenderTarget(midbuffers[bufferIndex]);
 	DrawItemsToTarget();
@@ -131,7 +130,7 @@ void Renderer::RenderFrame()
 	SetRenderTarget(backbuffer);
 	context->PSSetShaderResources(0, 1, &midbuffers[bufferIndex].srv);
 	DrawScreenQuad(screenQuadShader);
-
+	//test->Draw();
 	HRESULT hr = swapchain->Present(0, 0); //1 here?
 	assert(SUCCEEDED(hr));
 }

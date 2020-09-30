@@ -78,12 +78,6 @@
     <ClCompile Include="ControllerComponent.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="GUIManager.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="GameClock.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="Input.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
@@ -98,6 +92,12 @@
     </ClCompile>
     <ClCompile Include="ThirdParty\SimplexNoise.cpp">
       <Filter>Source Files\Chunk</Filter>
+    </ClCompile>
+    <ClCompile Include="GUISprite.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="GameClock.cpp">
+      <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -179,9 +179,6 @@
     <ClInclude Include="ControllerComponent.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="GUISprite.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
     <ClInclude Include="GUIManager.h">
       <Filter>Header Files</Filter>
     </ClInclude>
@@ -217,6 +214,9 @@
     </ClInclude>
     <ClInclude Include="ThirdParty\SimplexNoise.h">
       <Filter>Source Files\Chunk</Filter>
+    </ClInclude>
+    <ClInclude Include="GUISprite.h">
+      <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

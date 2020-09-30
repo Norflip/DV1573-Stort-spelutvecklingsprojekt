@@ -9,6 +9,7 @@
 #include "Renderer.h"
 #include <wrl.h>
 #include <iostream>
+#include <SpriteBatch.h>
 namespace dx = DirectX;
 class GUISprite
 {
@@ -28,7 +29,7 @@ private:
 	float width, height;
 	float xScale, yScale;
 	float rotation;
-	dx::SpriteBatch* spriteBatch;
+	std::unique_ptr<dx::SpriteBatch> spriteBatch;
 	Renderer* renderer;
 	dx::XMVECTOR position, color, origin, scale;
 	ID3D11ShaderResourceView* SRV;

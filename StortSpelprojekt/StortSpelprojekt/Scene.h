@@ -16,7 +16,7 @@
 #include "Skybox.h"
 #include "WorldGenerator.h"
 #include "SaveState.h"
-
+class SpriteRenderPass;
 class Scene
 {
 public:
@@ -50,9 +50,9 @@ private:
 	Renderer* renderer;
 
 	Input& input;
-
+	dx::SpriteBatch* spriteBatch;
 	WorldGenerator worldGenerator;
-
+	SpriteRenderPass* spritePass;
 	/* test sky */
 	Object* testSkybox;
 	GUISprite* testSprite;

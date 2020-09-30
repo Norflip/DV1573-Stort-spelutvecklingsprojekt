@@ -25,7 +25,8 @@ GUISprite::GUISprite(Renderer& renderer , std::string filePath, float xPos, floa
 
 	HRESULT result;
 	std::wstring wsConvert(filePath.begin(), filePath.end());
-	spriteBatch = new DirectX::SpriteBatch(renderer.GetContext());
+	spriteBatch = std::make_unique<dx::SpriteBatch>(renderer.GetContext());
+
 	result = DirectX::CreateWICTextureFromFile(renderer.GetDevice(), wsConvert.c_str(), &res, &SRV);
 
 	assert(SUCCEEDED(result));
@@ -55,8 +56,10 @@ GUISprite::~GUISprite()
 
 void GUISprite::Draw()
 {
-
+	spriteBatch->Begin(dx::SpriteSortMode_Immediate);
 	spriteBatch->Draw(SRV, this->position, nullptr, this->color, rotation, origin, scale, DirectX::SpriteEffects::SpriteEffects_None, 0.0f);
+	spriteBatch->End();
+	
 }
 
 void GUISprite::SetPosition(float xPos, float yPos)
