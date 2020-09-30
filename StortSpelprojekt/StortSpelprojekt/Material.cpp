@@ -88,6 +88,7 @@ void Material::BindTextureToContext(ID3D11DeviceContext* context)
 
 		if ((bflag & (int)ShaderBindFlag::GEOMETRY) != 0)
 			context->GSSetShaderResources(slot, 1, &srv);
+				
 	}
 }
 

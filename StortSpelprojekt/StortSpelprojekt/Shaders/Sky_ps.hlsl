@@ -1,6 +1,10 @@
 #include "CommonBuffers.hlsl"
-Texture2D diffuse : register(t0);	// for wic
-TextureCube skymap : register(t2);	// for dds
+
+Texture2D day : register(t2);		// for wic
+Texture2D sunset : register(t3);	// for wic
+Texture2D night : register(t4);		// for wic
+Texture2D end : register(t5);		// for wic
+
 SamplerState defaultSampler : register (s0);
 
 struct PixelInputType
@@ -12,9 +16,35 @@ struct PixelInputType
 
 float4 main(PixelInputType input) : SV_TARGET
 {
-	float4 diffuseMat = skymap.Sample(defaultSampler, input.lPosition);
+	float4 diff;
+	float4 diff2;
+	float4 final;
 
-	float4 diff = diffuse.Sample(defaultSampler, input.uv);
+	// different id, different lerps between textures
+	if (id == 0)
+	{
+		diff = day.Sample(defaultSampler, input.uv);
+		diff2 = sunset.Sample(defaultSampler, input.uv);
+		final = lerp(diff, diff2, factor);
+	}
+	if ( id == 1)
+	{
+		diff = sunset.Sample(defaultSampler, input.uv);
+		diff2 = night.Sample(defaultSampler, input.uv);
+		final = lerp(diff, diff2, factor);
+	}
+	if (id == 2)
+	{
+		diff = night.Sample(defaultSampler, input.uv);
+		diff2 = end.Sample(defaultSampler, input.uv);
+		final = lerp(diff, diff2, factor);
+	}
+	if (id == 3)
+	{
+		diff = end.Sample(defaultSampler, input.uv);
+		diff2 = float4(diff.r, diff.g, diff.b, diff.a);
+		final = lerp(diff, diff2, factor);
+	}
 
-	return diff; //  float4(diffuseMat.r, diffuseMat.g * 2, diffuseMat.b, diffuseMat.a); //  float4(1, 0, 0, 1);
+	return final; //  float4(diffuseMat.r, diffuseMat.g * 2, diffuseMat.b, diffuseMat.a); //  float4(1, 0, 0, 1);
 }

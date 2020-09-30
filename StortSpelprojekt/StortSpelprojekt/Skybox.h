@@ -32,11 +32,15 @@ private:
 	Material skyboxMaterial;
 
 	Texture texture;
+	Texture texture2;
+	Texture texture3;
+	Texture texture4;
 
 	dx::XMFLOAT4 diffuse;
 	dx::XMFLOAT4 ambient;
 	dx::XMFLOAT4 specular;
 
+	ID3D11ShaderResourceView** srvsss;
 	ID3D11ShaderResourceView* srv;
 	std::vector<ID3D11ShaderResourceView*> srvs;
 };

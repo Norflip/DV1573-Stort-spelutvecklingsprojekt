@@ -157,6 +157,10 @@ void Renderer::Draw(const Mesh& mesh, const cb_Material& material, dx::XMMATRIX 
 	cb_scene.pointLights[1].attenuation = dx::XMFLOAT3(1.0f, 0.02f, 0.0f);
 	cb_scene.pointLights[1].range = 25.0f;
 
+	// switch scene id
+	cb_scene.id = 3;
+	cb_scene.factor = 1.0f;
+		
 	cb_scene.nrOfPointLights = 2;
 	dx::XMStoreFloat3(&cb_scene.cameraPosition, cameraPosition);
 	DXHelper::BindConstBuffer(context, light_cbuffer, &cb_scene, CB_SCENE_SLOT, ShaderBindFlag::PIXEL);
