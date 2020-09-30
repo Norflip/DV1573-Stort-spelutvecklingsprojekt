@@ -84,6 +84,82 @@ void Scene::Initialize(Renderer* renderer)
 	//AddObject(testMesh3);
 
 
+
+	/*************************INSTANCING*******************/
+	Shader instanceShader;
+	Shader alphaInstanceShader;
+
+	instanceShader.SetVertexShader(L"Shaders/Instance_vs.hlsl");
+	instanceShader.SetPixelShader(L"Shaders/Default_ps.hlsl");
+	alphaInstanceShader.SetVertexShader(L"Shaders/Instance_vs.hlsl");
+	alphaInstanceShader.SetPixelShader(L"Shaders/Alpha_ps.hlsl");
+	alphaInstanceShader.SetInputLayoutStructure(10, alphaInstanceShader.INSTANCE_INPUT_LAYOUTd);
+	instanceShader.SetInputLayoutStructure(10, instanceShader.INSTANCE_INPUT_LAYOUTd);
+	instanceShader.Compile(renderer->GetDevice());
+	alphaInstanceShader.Compile(renderer->GetDevice());
+
+	
+	std::vector<Mesh> treeModels = ZWEBLoader::LoadMeshes(ZWEBLoadType::NoAnimation, "Models/treeEmil.ZWEB", renderer->GetDevice());
+	std::vector<Material> treeMaterials = ZWEBLoader::LoadMaterials("Models/treeEmil.ZWEB", instanceShader, renderer->GetDevice());
+
+	treeMaterials[0].SetShader(instanceShader);
+	treeMaterials[1].SetShader(alphaInstanceShader);
+
+	size_t nrOfInstances = 10;
+	std::vector<Mesh::InstanceData> treeInstances(nrOfInstances);
+	std::vector<Mesh::InstanceData> treeBranchInstances(nrOfInstances);
+	std::vector<Mesh::InstanceData> treeLeaveInstances(nrOfInstances);
+
+	treeMaterials[0].SetSamplerState(renderer->GetDevice(), D3D11_TEXTURE_ADDRESS_WRAP, D3D11_FILTER_MIN_MAG_MIP_LINEAR);
+	treeMaterials[1].SetSamplerState(renderer->GetDevice(), D3D11_TEXTURE_ADDRESS_WRAP, D3D11_FILTER_MIN_MAG_MIP_LINEAR);
+
+	std::vector<unsigned int> r;
+	for (int i = 0; i < nrOfInstances; i++)
+	{
+		r.push_back(rand() % 51 + 1);
+	
+	}
+
+
+	for (size_t i = 0; i < nrOfInstances; i++)
+	{
+
+		dx::XMStoreFloat4x4(&treeBranchInstances[i].instanceWorld, dx::XMMatrixScaling(0.5f, 0.5f, 0.5f) * dx::XMMatrixTranslation((i + 1 * r[i]) + treeModels[0].GetT().x, 0 + treeModels[0].GetT().y, (i + 1 * r[i]) + treeModels[0].GetT().z));
+		treeBranchInstances[i].instancePosition = dx::XMFLOAT3((i + 1 * r[i]) + treeModels[0].GetT().x, 0 + treeModels[0].GetT().y, (i + 1 * r[i]) + treeModels[0].GetT().z);
+
+		dx::XMStoreFloat4x4(&treeLeaveInstances[i].instanceWorld, dx::XMMatrixScaling(0.5f, 0.5f, 0.5f) * dx::XMMatrixTranslation((i + 1 * r[i]) + treeModels[1].GetT().x, 0 + treeModels[1].GetT().y, (i + 1 * r[i]) + treeModels[1].GetT().z));
+		treeLeaveInstances[i].instancePosition = dx::XMFLOAT3((i + 1 * r[i]) + treeModels[1].GetT().x, 0 + treeModels[1].GetT().y, (i + 1 * r[i]) + treeModels[1].GetT().z);
+
+		dx::XMStoreFloat4x4(&treeInstances[i].instanceWorld, dx::XMMatrixScaling(0.5f, 0.5f, 0.5f) * dx::XMMatrixTranslation((i + 1 * r[i]) + treeModels[2].GetT().x, 0 + treeModels[2].GetT().y, (i + 1 * r[i]) + treeModels[2].GetT().z));
+		treeInstances[i].instancePosition = dx::XMFLOAT3((i + 1 * r[i]) + treeModels[2].GetT().x, 0 + treeModels[2].GetT().y, (i + 1 * r[i]) + treeModels[2].GetT().z);
+	}
+	treeModels[0].CreateInstanceBuffer(renderer->GetDevice(), treeBranchInstances);
+
+	treeModels[1].CreateInstanceBuffer(renderer->GetDevice(), treeLeaveInstances);
+
+
+	treeModels[2].CreateInstanceBuffer(renderer->GetDevice(), treeInstances);
+
+	Object* treeBase = new Object("treeBase");
+
+	Object* treeBranches = new Object("treeBranches");
+
+	Object* leaves = new Object("leaves");
+
+
+	treeBase->AddComponent<InstancedMeshComponent>(treeModels[2], treeMaterials[0]);
+	treeBranches->AddComponent<InstancedMeshComponent>(treeModels[0], treeMaterials[0]);
+	leaves->AddComponent<InstancedMeshComponent>(treeModels[1], treeMaterials[1]);
+
+
+	AddObject(treeBase);
+
+	AddObject(treeBranches);
+
+	AddObject(leaves);
+	/*************************INSTANCING****************/
+
+
 	/* * * * * * * * ** * * * * */
 
 	/*Object* skybox;

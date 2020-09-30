@@ -80,7 +80,7 @@ void Renderer::DrawItemsToTarget()
 				{
 					case RenderItem::Type::Instanced:
 						m_DrawInstanced(item); break;
-
+						
 					case RenderItem::Type::Skeleton:
 						m_DrawSkeleton(item); break;
 
@@ -101,6 +101,7 @@ void Renderer::DrawItemsToTarget()
 
 void Renderer::RenderFrame()
 {
+	//We need to clear Depth Stencil View as well.//Emil
 	size_t bufferIndex = 0;
 	ID3D11ShaderResourceView* nullSRV[1] = { nullptr };
 	context->PSSetShaderResources(0, 1, nullSRV);
@@ -243,11 +244,20 @@ void Renderer::m_Draw(const RenderItem& item)
 
 void Renderer::m_DrawInstanced(const RenderItem& item)
 {
-	// another cbuffer for instanced? 
-	UINT stride = sizeof(Mesh::Vertex);
-	UINT offset = 0;
 
-	context->IASetVertexBuffers(0, 1, &item.mesh.vertexBuffer, &stride, &offset);
+	dx::XMMATRIX vp =dx::XMMatrixMultiply(item.camera->GetViewMatrix(), item.camera->GetProjectionMatrix());
+	dx::XMStoreFloat4x4(&cb_object_data.mvp, dx::XMMatrixTranspose(vp));
+	
+	DXHelper::BindConstBuffer(context, obj_cbuffer, &cb_object_data, CB_OBJECT_SLOT, ShaderBindFlag::VERTEX);
+
+
+	cb_material_data = item.material.GetMaterialData();
+	DXHelper::BindConstBuffer(context, material_cbuffer, &cb_material_data, CB_MATERIAL_SLOT, ShaderBindFlag::PIXEL);
+
+	UINT stride[2] = { sizeof(Mesh::Vertex), sizeof(Mesh::InstanceData) };
+	UINT offset[2] = { 0 };
+	
+	context->IASetVertexBuffers(0, 1, item.mesh.vertexAndInstance, stride, offset);
 	context->IASetIndexBuffer(item.mesh.indexBuffer, DXGI_FORMAT_R32_UINT, 0);
 	context->IASetPrimitiveTopology(item.mesh.topology);
 	context->DrawIndexedInstanced(item.mesh.indices.size(), item.instanceCount, 0, 0, 0);
@@ -255,7 +265,7 @@ void Renderer::m_DrawInstanced(const RenderItem& item)
 
 void Renderer::m_DrawSkeleton(const RenderItem& item)
 {
-	dx::XMMATRIX mvp = dx::XMMatrixMultiply(item.world, dx::XMMatrixMultiply(item.camera->GetViewMatrix(), item.camera->GetProjectionMatrix()));
+	/*dx::XMMATRIX mvp = dx::XMMatrixMultiply(item.world, dx::XMMatrixMultiply(item.camera->GetViewMatrix(), item.camera->GetProjectionMatrix()));
 	dx::XMStoreFloat4x4(&cb_object_data.mvp, dx::XMMatrixTranspose(mvp));
 	dx::XMStoreFloat4x4(&cb_object_data.world, dx::XMMatrixTranspose(item.world));
 	DXHelper::BindConstBuffer(context, obj_cbuffer, &cb_object_data, CB_OBJECT_SLOT, ShaderBindFlag::VERTEX);
@@ -270,7 +280,7 @@ void Renderer::m_DrawSkeleton(const RenderItem& item)
 	context->IASetIndexBuffer(item.mesh.indexBuffer, DXGI_FORMAT_R32_UINT, 0);
 	context->IASetPrimitiveTopology(item.mesh.topology);
 
-	context->DrawIndexed(item.mesh.indices.size(), 0, 0);
+	context->DrawIndexed(item.mesh.indices.size(), 0, 0);*/
 }
 
 void Renderer::DrawScreenQuad(const Shader& shader)

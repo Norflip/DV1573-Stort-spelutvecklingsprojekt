@@ -1,28 +1,9 @@
 #include "CommonBuffers.hlsl"
+#include "IO.hlsl"
 
-struct VS_INPUT
-{
-	float4 position : POSITION;
-	float2 uv		: TEXCOORD0;
-	float3 normal	: NORMAL;
-	float3 tangent	: TANGENT;
-	float3 binormal : BINORMAL;
-	uint3 boneID    : BONEID;
-	float3 skinWeight: SKINWEIGHT;
-	uint id	: SV_InstanceID;
-	float4x4 instanceWorld : INSTANCEWORLD;
-};
 
-struct VS_OUTPUT
-{
-	float4 position		 : SV_POSITION;
-	float3 normal		 : NORMAL;
-	float2 uv			 : TEXCOORD0;
-	float3 worldPosition : POSITION;
-	float3 tangent		 : TANGENT;
-};
 
-VS_OUTPUT main(VS_INPUT input)
+VS_OUTPUT main(VS_INSTANCE_INPUT input)
 {
 	VS_OUTPUT output;
 	output.uv = input.uv;
