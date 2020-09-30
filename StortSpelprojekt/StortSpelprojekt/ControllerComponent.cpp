@@ -77,7 +77,7 @@ void ControllerComponent::Update(const float& deltaTime)
 	//else
 	//	Input::Instance().FreeMouse();
 
-	if (KEY_DOWN(D1))
+	if (KEY_DOWN(H))
 	{
 		this->showCursor = !this->showCursor;
 		ShowCursor(this->showCursor);
