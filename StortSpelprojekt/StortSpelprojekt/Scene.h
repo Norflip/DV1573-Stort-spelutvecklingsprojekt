@@ -53,6 +53,7 @@ private:
 	Object* skybox;
 	Skybox* skyboxMesh;
 
+	Skybox* skyboxClass;
 	
 	//frustumplanes extraction
 	std::vector<dx::XMFLOAT4> extractedPlanes;

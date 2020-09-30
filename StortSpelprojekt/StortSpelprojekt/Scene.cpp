@@ -106,48 +106,11 @@ void Scene::Initialize(Renderer* renderer)
 	quad->AddComponent<MeshComponent>(screenquadMesh, screenquadmat);	
 
 	/* * * * * * * * ** * * * * */
-	Shader skyboxShader;
-	skyboxShader.SetPixelShader(L"Shaders/Sky_ps.hlsl");
-	skyboxShader.SetVertexShader(L"Shaders/Sky_vs.hlsl");
-	skyboxShader.Compile(renderer->GetDevice());
-
-
+	
 	skybox = new Object("Skybox");
+	skyboxClass = new Skybox(renderer->GetDevice(), renderer->GetContext(), skybox);
 
-	std::vector<Mesh> skyboxMesh = ZWEBLoader::LoadMeshes(ZWEBLoadType::NoAnimation, "Models/Skybox.ZWEB", renderer->GetDevice());
 	
-	this->skybox->GetTransform().SetScale(dx::XMVECTOR(dx::XMVectorSet(10, 10, 10, 1.0f)));
-
-	ID3D11ShaderResourceView* srv;
-	/*HRESULT hr = dx::CreateDDSTextureFromFileEx(renderer->GetDevice(), renderer->GetContext(), L"Textures/test.dds", 0, D3D11_USAGE_DEFAULT, D3D11_BIND_RENDER_TARGET | D3D11_BIND_SHADER_RESOURCE, 0, D3D11_RESOURCE_MISC_GENERATE_MIPS | D3D11_RESOURCE_MISC_TEXTURECUBE, false, nullptr, &srv);
-	if (FAILED(hr)) {
-		MessageBox(0, L"Failed to 'Load DDS Texture' - (skymap.dds).", L"Graphics scene Initialization Message", MB_ICONERROR);
-	}*/
-
-	HRESULT hrs = dx::CreateWICTextureFromFile(renderer->GetDevice(), L"Textures/sunset.png", nullptr, &srv);
-	if (FAILED(hrs)) {
-		MessageBox(0, L"Failed to 'Load DDS Texture' - (skymap.dds).", L"Graphics scene Initialization Message", MB_ICONERROR);
-	}
-
-	Texture texture;
-	texture.SetTexture(srv);
-
-	Material skyboxMaterial = Material(skyboxShader);
-	skyboxMaterial.SetTexture(texture, TEXTURE_DIFFUSE_SLOT, ShaderBindFlag::PIXEL);
-	skyboxMaterial.SetSamplerState(renderer->GetDevice(), D3D11_TEXTURE_ADDRESS_WRAP, D3D11_FILTER_MIN_MAG_MIP_LINEAR);
-
-	this->skybox->AddComponent<MeshComponent>(skyboxMesh[0], skyboxMaterial);
-	
-
-	/*skybox = new Object("Skybox");
-	skyboxMesh = new Skybox(renderer->GetDevice(), skybox);
-
-	skyboxMesh->LoadDDS(renderer->GetContext(), renderer->GetDevice(), L"Textures/skymap.dds");
-	skyboxMesh->GetObjectMesh()->AddFlag(ObjectFlag::NO_CULL);
-
-	objects.push_back(skyboxMesh->GetObjectMesh());*/
-
-	//skyboxMesh->GetObjectMesh()->Draw(renderer, camera);
 	//PrintSceneHierarchy();
 }
 
@@ -226,7 +189,9 @@ void Scene::RenderSceneToTexture()
 		}
 			
 	}
-	this->skybox->Draw(renderer, camera);
+
+	skyboxClass->GetThisObject()->Draw(renderer, camera);
+	//this->skybox->Draw(renderer, camera);
 
 	
 	renderer->Unbind();	// needed?

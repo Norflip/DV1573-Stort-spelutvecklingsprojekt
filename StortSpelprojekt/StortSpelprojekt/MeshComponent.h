@@ -13,7 +13,7 @@ public:
 	virtual ~MeshComponent();
 	
 	Mesh GetMesh() const { return this->mesh; }
-	Material GetMaterial() const { return this->material; }
+	Material GetMaterial() { return this->material; }
 
 	void Update(const float& deltaTime) override;
 	void Draw(Renderer* renderer, CameraComponent* camera) override;

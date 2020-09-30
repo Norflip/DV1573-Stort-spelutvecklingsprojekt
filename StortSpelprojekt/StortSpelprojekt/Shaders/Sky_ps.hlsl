@@ -1,6 +1,6 @@
 #include "CommonBuffers.hlsl"
-Texture2D diffuse : register(t0);
-TextureCube skymap : register(t2);
+Texture2D diffuse : register(t0);	// for wic
+TextureCube skymap : register(t2);	// for dds
 SamplerState defaultSampler : register (s0);
 
 struct PixelInputType
