@@ -29,7 +29,7 @@ struct cb_Material
 };
 
 __declspec(align(16))
-struct PointLight
+struct s_PointLight
 {
 	dx::XMFLOAT4 lightColor;
 	dx::XMFLOAT3 lightPosition;
@@ -40,7 +40,7 @@ struct PointLight
 __declspec(align(16))
 struct cb_Scene
 {
-	PointLight pointLights[POINT_LIGHT_COUNT];
+	s_PointLight pointLights[POINT_LIGHT_COUNT];
 	int nrOfPointLights;
 	dx::XMFLOAT3 sunDirection;
 	float sunIntensity;
