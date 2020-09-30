@@ -70,9 +70,11 @@ public:
 
 private:
 	void AddItem(const RenderItem& item);
-	void m_Draw(const RenderItem& item);
-	void m_DrawInstanced(const RenderItem& item);
-	void m_DrawSkeleton(const RenderItem& item);
+	void DrawRenderItem(const RenderItem& item);
+	void DrawRenderItemInstanced(const RenderItem& item);
+	void DrawRenderItemSkeleton(const RenderItem& item);
+
+	
 	void m_DrawAlphaInstanced(const RenderItem& item);
 private:
 	IDXGISwapChain* swapchain;

@@ -84,14 +84,14 @@ void Renderer::DrawItemsToTarget()
 				switch (item.type)
 				{
 					case RenderItem::Type::Instanced:
-						m_DrawInstanced(item); break;
-						
+						DrawRenderItemInstanced(item); break;
+
 					case RenderItem::Type::Skeleton:
-						m_DrawSkeleton(item); break;
+						DrawRenderItemSkeleton(item); break;
 
 					case RenderItem::Type::Default:
 					default:
-						m_Draw(item);
+						DrawRenderItem(item);
 						break;
 				}
 
@@ -210,7 +210,7 @@ void Renderer::AddItem(const RenderItem& item)
 	itemQueue[materialID].push(item);
 }
 
-void Renderer::m_Draw(const RenderItem& item)
+void Renderer::DrawRenderItem(const RenderItem& item)
 {
 	context->OMSetBlendState(blendStateOff, BLENDSTATEMASK, 0xffffffff);
 	dx::XMMATRIX mvp = dx::XMMatrixMultiply(item.world, dx::XMMatrixMultiply(item.camera->GetViewMatrix(), item.camera->GetProjectionMatrix()));
@@ -250,7 +250,7 @@ void Renderer::m_Draw(const RenderItem& item)
 	context->DrawIndexed(item.mesh->indices.size(), 0, 0);
 }
 
-void Renderer::m_DrawInstanced(const RenderItem& item)
+void Renderer::DrawRenderItemInstanced(const RenderItem& item)
 {
 	context->OMSetBlendState(blendStateOff, BLENDSTATEMASK, 0xffffffff);
 	dx::XMMATRIX vp =dx::XMMatrixMultiply(item.camera->GetViewMatrix(), item.camera->GetProjectionMatrix());
@@ -271,7 +271,7 @@ void Renderer::m_DrawInstanced(const RenderItem& item)
 	context->DrawIndexedInstanced(item.mesh->indices.size(), item.instanceCount, 0, 0, 0);
 }
 
-void Renderer::m_DrawSkeleton(const RenderItem& item)
+void Renderer::DrawRenderItemSkeleton(const RenderItem& item)
 {
 	/*dx::XMMATRIX mvp = dx::XMMatrixMultiply(item.world, dx::XMMatrixMultiply(item.camera->GetViewMatrix(), item.camera->GetProjectionMatrix()));
 	dx::XMStoreFloat4x4(&cb_object_data.mvp, dx::XMMatrixTranspose(mvp));

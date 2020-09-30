@@ -173,8 +173,6 @@ bool CameraComponent::CullAgainstAABB(const AABB& aabb, const dx::XMFLOAT3& worl
 		if (d1 + plane.w < 0)
 			return false;
 
-		
-
 		float d2 = plane.x * vmax.x + plane.y * vmax.y + plane.z * vmax.z;
 		if (d2 + plane.w <= 0)
 			inViewResult = true;
