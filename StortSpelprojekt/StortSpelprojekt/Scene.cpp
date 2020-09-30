@@ -22,8 +22,8 @@ void Scene::Initialize(Renderer* renderer)
 	camera = cameraObject->AddComponent<CameraComponent>(60.0f);
 	camera->Resize(window->GetWidth(), window->GetHeight());
 	move = cameraObject->AddComponent<ControllerComponent>();
-	objects.push_back(cameraObject);
-	testSprite = new GUISprite(renderer->GetDevice(), "Textures/AxeIcon.png", 10, 10);
+	//objects.push_back(cameraObject);
+	//testSprite = new GUISprite(renderer->GetDevice(), "Textures/AxeIcon.png", 10, 10);
 	
 	
 	Shader shader;
