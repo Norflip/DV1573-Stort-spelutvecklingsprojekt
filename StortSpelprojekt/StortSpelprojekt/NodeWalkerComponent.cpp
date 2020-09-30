@@ -47,7 +47,7 @@ void NodeWalkerComponent::Stop()
 
 void NodeWalkerComponent::Update(const float& deltaTime)
 {
-	if(KEY_DOWN(I))
+	if(KEY_DOWN(I)) //used to display info and test paths
 	{
 		std::string text = "Options: ";
 		if (!canWalk)

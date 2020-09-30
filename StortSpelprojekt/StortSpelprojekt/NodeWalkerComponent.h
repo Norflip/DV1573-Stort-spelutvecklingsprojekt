@@ -39,7 +39,7 @@ public:
 	NodeWalkerComponent();
 	~NodeWalkerComponent();
 
-	void Reset();
+	void Reset(); //is public cus is meant to be called outside of class if needed
 	void Start();
 	void Stop();
 
