@@ -117,12 +117,12 @@ void Renderer::RenderFrame()
 			SetRenderTarget(midbuffers[nextBufferIndex]);
 
 			GetContext()->PSSetShaderResources(0, 1, &midbuffers[bufferIndex].srv);
-
-			(*i)->Pass(this, midbuffers[bufferIndex], midbuffers[nextBufferIndex]);
+			
+			if((*i)->Pass(this, midbuffers[bufferIndex], midbuffers[nextBufferIndex]))
 			bufferIndex = nextBufferIndex;
 
 			// overkill? Gives the correct result if outside the loop but errors in output
-			context->PSSetShaderResources(0, 1, nullSRV);
+			//context->PSSetShaderResources(0, 1, nullSRV);
 		}
 	}
 
@@ -130,7 +130,6 @@ void Renderer::RenderFrame()
 	SetRenderTarget(backbuffer);
 	context->PSSetShaderResources(0, 1, &midbuffers[bufferIndex].srv);
 	DrawScreenQuad(screenQuadShader);
-	//test->Draw();
 	HRESULT hr = swapchain->Present(0, 0); //1 here?
 	assert(SUCCEEDED(hr));
 }

@@ -19,7 +19,7 @@ void Scene::Initialize(Renderer* renderer)
 	// Should change values on resize event
 	Window* window = renderer->GetOutputWindow();
 	spriteBatch = new DirectX::SpriteBatch(renderer->GetContext());
-	testSprite = new GUISprite(*renderer, "Textures/Gorilla.png", 100, 100);
+	testSprite = new GUISprite(*renderer, "Textures/EquipmentBox.png", 100, 100);
 	spritePass = new SpriteRenderPass(110, testSprite);
 	renderer->AddRenderPass(spritePass);
 	SaveState state;
@@ -128,8 +128,8 @@ void Scene::Render()
 
 	worldGenerator.Draw(renderer, camera);
 
-	ID3D11ShaderResourceView* pSRV[1] = { NULL };
-	renderer->GetContext()->PSSetShaderResources(0, 1, pSRV);
+	//ID3D11ShaderResourceView* pSRV[1] = { NULL };
+	//renderer->GetContext()->PSSetShaderResources(0, 1, pSRV);
 
 	//testSprite->Draw();
 
