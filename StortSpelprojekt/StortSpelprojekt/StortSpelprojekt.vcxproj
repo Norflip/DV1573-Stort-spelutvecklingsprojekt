@@ -163,7 +163,7 @@
     <ClCompile Include="Material.cpp" />
     <ClCompile Include="MeshComponent.cpp" />
     <ClCompile Include="MoveComponent.cpp" />
-    <ClCompile Include="NodeWalker.cpp" />
+    <ClCompile Include="NodeWalkerComponent.cpp" />
     <ClCompile Include="Object.cpp" />
     <ClCompile Include="Renderer.cpp" />
     <ClCompile Include="Scene.cpp" />
@@ -197,7 +197,7 @@
     <ClInclude Include="MeshComponent.h" />
     <ClInclude Include="Message.h" />
     <ClInclude Include="MessageBus.h" />
-    <ClInclude Include="NodeWalker.h" />
+    <ClInclude Include="NodeWalkerComponent.h" />
     <ClInclude Include="Noise.h" />
     <ClInclude Include="Object.h" />
     <ClInclude Include="Renderer.h" />

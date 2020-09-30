@@ -70,6 +70,8 @@ void Scene::Initialize(Renderer* renderer)
 	AddObject(testMesh3, testMesh2);
 
 	testMesh2->AddComponent<MoveComponent>();
+	testMesh3->AddComponent<NodeWalker>();
+	//testMesh2->GetComponent<NodeWalker>()->reset();
 
 	zwebMaterials[0].SetSamplerState(renderer->GetDevice(), D3D11_TEXTURE_ADDRESS_WRAP, D3D11_FILTER_MIN_MAG_MIP_LINEAR);
 	sylvanasMat[0].SetSamplerState(renderer->GetDevice(), D3D11_TEXTURE_ADDRESS_WRAP, D3D11_FILTER_MIN_MAG_MIP_LINEAR);
