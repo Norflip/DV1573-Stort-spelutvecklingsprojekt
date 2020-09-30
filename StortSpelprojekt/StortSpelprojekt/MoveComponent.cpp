@@ -13,8 +13,8 @@ void MoveComponent::Update(const float& deltaTime)
 {
 	DirectX::XMFLOAT3 pos;
 	dx::XMStoreFloat3(&pos, GetOwner()->GetTransform().GetPosition());
-
-	if (pos.y > 1.f || pos.y < -1.f)
+  
+	if (pos.y > 3.f || pos.y < -3.f)
 	{
 		direction.x *= -1;
 		direction.y *= -1;
