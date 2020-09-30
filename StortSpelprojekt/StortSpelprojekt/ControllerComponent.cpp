@@ -59,12 +59,6 @@ void ControllerComponent::Update(const float& deltaTime)
 {
 	DirectX::XMFLOAT3 dir = { 0.f,0.f,0.f };
 	float speed = 1.f;
-
-	/*mouseVec.x = this->lastMousePos.x - Input::Instance().GetMousePos().x;
-	mouseVec.y = this->lastMousePos.y - Input::Instance().GetMousePos().y;
-	this->lastMousePos = Input::Instance().GetMousePos();*/
-	//std::cout <<"["<<mouseVec.x<<", "<< mouseVec.y <<"]"<< std::endl;
-
 	if (LMOUSE_DOWN)
 	{
 		this->canRotate = !this->canRotate;
@@ -83,7 +77,7 @@ void ControllerComponent::Update(const float& deltaTime)
 	//else
 	//	Input::Instance().FreeMouse();
 
-	if (KEY_DOWN(D1))
+	if (KEY_DOWN(H))
 	{
 		this->showCursor = !this->showCursor;
 		ShowCursor(this->showCursor);
