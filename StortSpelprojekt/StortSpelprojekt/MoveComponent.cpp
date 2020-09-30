@@ -2,27 +2,26 @@
 
 MoveComponent::MoveComponent()
 {
-	this->direction = { 0.f, 1.f, 0.f };
+	direction = { 0, 1.f, 0 };
 }
 
 MoveComponent::~MoveComponent()
 {
 }
 
-//void MoveComponent::Move(DirectX::XMFLOAT3 moveVector)
-//{
-//	dx::XMVECTOR move = dx::XMLoadFloat3(&moveVector);
-//	dx::XMVECTOR newPos = dx::XMVectorAdd(GetOwner()->GetTransform().GetPosition(), move);
-//	GetOwner()->GetTransform().SetPosition(newPos);
-//}
-
 void MoveComponent::Update(const float& deltaTime)
 {
 	DirectX::XMFLOAT3 pos;
 	dx::XMStoreFloat3(&pos, GetOwner()->GetTransform().GetPosition());
+  
 	if (pos.y > 3.f || pos.y < -3.f)
 	{
-		this->direction.y *=  -1; //negative direction if outside 3,-3 range
+		direction.x *= -1;
+		direction.y *= -1;
+		direction.z *= -1;
 	}
-	GetOwner()->GetTransform().Translate(this->direction.x * deltaTime, this->direction.y * deltaTime, this->direction.z * deltaTime);
+
+	dx::XMVECTOR move = dx::XMVectorScale(dx::XMLoadFloat3(&this->direction), deltaTime);
+	dx::XMVECTOR newPos = dx::XMVectorAdd(GetOwner()->GetTransform().GetPosition(), move);
+	GetOwner()->GetTransform().SetPosition(newPos);
 }

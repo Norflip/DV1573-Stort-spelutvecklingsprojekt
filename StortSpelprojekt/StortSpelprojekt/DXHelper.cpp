@@ -83,13 +83,15 @@ void DXHelper::BindConstBuffer(ID3D11DeviceContext* context, ID3D11Buffer* buffe
 
 	if ((bflag & (int)ShaderBindFlag::GEOMETRY) != 0)
 		context->GSSetConstantBuffers(slot, 1, &buffer);
-
-	if ((bflag & (int)ShaderBindFlag::SKELETON) != 0)
-		context->VSSetConstantBuffers(slot, 1, &buffer);
 }
 
-void DXHelper::CreateBackbuffer(size_t width, size_t height, ID3D11Device* device,  IDXGISwapChain* swapchain, ID3D11RenderTargetView** backbuffer, ID3D11DepthStencilView** depthStencilView)
+RenderTexture DXHelper::CreateBackbuffer(size_t width, size_t height, ID3D11Device* device,  IDXGISwapChain* swapchain)
 {
+
+	RenderTexture rt;
+	rt.width = width;
+	rt.height = height;
+
 	HRESULT hr;
 
 	// DEPTH TEXTURE
@@ -116,19 +118,151 @@ void DXHelper::CreateBackbuffer(size_t width, size_t height, ID3D11Device* devic
 	dsvDesc.ViewDimension = D3D11_DSV_DIMENSION_TEXTURE2D;
 	dsvDesc.Texture2D.MipSlice = 0;
 
-	hr = (device)->CreateDepthStencilView(depthTexture, &dsvDesc, depthStencilView);
+	hr = (device)->CreateDepthStencilView(depthTexture, &dsvDesc, &rt.dsv);
 	assert(SUCCEEDED(hr));
 
 	depthTexture->Release();
 	depthTexture = nullptr;
 
-
 	ID3D11Texture2D* backBufferPtr;
 	HRESULT getBackbufferResult = swapchain->GetBuffer(0, __uuidof(ID3D11Texture2D), (LPVOID*)&backBufferPtr);
 	assert(SUCCEEDED(getBackbufferResult));
-
-	(device)->CreateRenderTargetView(backBufferPtr, nullptr, backbuffer);
+	(device)->CreateRenderTargetView(backBufferPtr, nullptr, &rt.rtv);
 	backBufferPtr->Release();
+
+	ZeroMemory(&rt.viewport, sizeof(D3D11_VIEWPORT));
+	rt.viewport.Width = static_cast<FLOAT>(width);
+	rt.viewport.Height = static_cast<FLOAT>(height);
+	rt.viewport.TopLeftX = 0;
+	rt.viewport.TopLeftY = 0;
+	rt.viewport.MinDepth = 0.0f;
+	rt.viewport.MaxDepth = 1.0f;
+
+	return rt;
+}
+
+RenderTexture DXHelper::CreateRenderTexture(size_t width, size_t height, ID3D11Device* device)
+{
+	RenderTexture rt;
+	rt.width = width;
+	rt.height = height;
+
+	ZeroMemory(&rt.viewport, sizeof(D3D11_VIEWPORT));
+	rt.viewport.TopLeftX = 0.0f;
+	rt.viewport.TopLeftY = 0.0f;
+	rt.viewport.Width = static_cast<float>(width);
+	rt.viewport.Height = static_cast<float>(height);
+	rt.viewport.MinDepth = 0.0f;
+	rt.viewport.MaxDepth = 1.0f;
+
+	ID3D11Texture2D* texture;
+
+	D3D11_TEXTURE2D_DESC textureDesc;
+	ZeroMemory(&textureDesc, sizeof(D3D11_TEXTURE2D_DESC));
+	textureDesc.Width = width;
+	textureDesc.Height = height;
+	textureDesc.MipLevels = 1;
+	textureDesc.ArraySize = 1;
+	textureDesc.Format = DXGI_FORMAT_R32G32B32A32_FLOAT;
+	textureDesc.SampleDesc.Count = 1;
+	textureDesc.Usage = D3D11_USAGE_DEFAULT;
+	textureDesc.BindFlags = D3D11_BIND_RENDER_TARGET | D3D11_BIND_SHADER_RESOURCE;
+	textureDesc.CPUAccessFlags = 0;
+	textureDesc.MiscFlags = 0;
+	HRESULT hr = device->CreateTexture2D(&textureDesc, NULL, &texture);
+	assert(SUCCEEDED(hr));
+
+
+	D3D11_RENDER_TARGET_VIEW_DESC renderTargetViewDesc;
+	ZeroMemory(&renderTargetViewDesc, sizeof(D3D11_RENDER_TARGET_VIEW_DESC));
+	renderTargetViewDesc.Format = textureDesc.Format;
+	renderTargetViewDesc.ViewDimension = D3D11_RTV_DIMENSION_TEXTURE2D;
+	renderTargetViewDesc.Texture2D.MipSlice = 0;
+
+	hr = device->CreateRenderTargetView(texture, &renderTargetViewDesc, &rt.rtv);
+	assert(SUCCEEDED(hr));
+
+
+	D3D11_SHADER_RESOURCE_VIEW_DESC shaderResourceViewDesc;
+	ZeroMemory(&shaderResourceViewDesc, sizeof(D3D11_SHADER_RESOURCE_VIEW_DESC));
+	shaderResourceViewDesc.Format = textureDesc.Format;
+	shaderResourceViewDesc.ViewDimension = D3D11_SRV_DIMENSION_TEXTURE2D;
+	shaderResourceViewDesc.Texture2D.MostDetailedMip = 0;
+	shaderResourceViewDesc.Texture2D.MipLevels = 1;
+	hr = device->CreateShaderResourceView(texture, &shaderResourceViewDesc, &rt.srv);
+	assert(SUCCEEDED(hr));
+
+	texture->Release();
+	texture = nullptr;
+
+
+	// DEPTH STENCIL
+
+	D3D11_DEPTH_STENCIL_DESC depthStencilStateDsc;
+	ZeroMemory(&depthStencilStateDsc, sizeof(D3D11_DEPTH_STENCIL_DESC));
+
+	depthStencilStateDsc.DepthEnable = true;
+	depthStencilStateDsc.DepthWriteMask = D3D11_DEPTH_WRITE_MASK_ALL;
+	depthStencilStateDsc.DepthFunc = D3D11_COMPARISON_LESS_EQUAL;
+
+	depthStencilStateDsc.StencilEnable = false;
+	depthStencilStateDsc.StencilReadMask = 0xFF;
+	depthStencilStateDsc.StencilWriteMask = 0xFF;
+
+	// Stencil operations if pixel is front-facing.s
+	depthStencilStateDsc.FrontFace.StencilFailOp = D3D11_STENCIL_OP_KEEP;
+	depthStencilStateDsc.FrontFace.StencilPassOp = D3D11_STENCIL_OP_KEEP;
+	depthStencilStateDsc.FrontFace.StencilDepthFailOp = D3D11_STENCIL_OP_INCR;
+	depthStencilStateDsc.FrontFace.StencilFunc = D3D11_COMPARISON_ALWAYS;
+
+	// Stencil operations if pixel is back-facing.
+	depthStencilStateDsc.BackFace.StencilFailOp = D3D11_STENCIL_OP_KEEP;
+	depthStencilStateDsc.BackFace.StencilPassOp = D3D11_STENCIL_OP_KEEP;
+	depthStencilStateDsc.BackFace.StencilDepthFailOp = D3D11_STENCIL_OP_DECR;
+	depthStencilStateDsc.BackFace.StencilFunc = D3D11_COMPARISON_ALWAYS;
+
+	ID3D11DepthStencilState* dss;
+	HRESULT createDepthStencilResult = device->CreateDepthStencilState(&depthStencilStateDsc, &dss);
+	assert(SUCCEEDED(createDepthStencilResult));
+
+	//context->OMSetDepthStencilState(depthStencilState, 1);
+
+
+
+	ID3D11Texture2D* depthTex;
+
+	// DEPTH TEXTURE
+	D3D11_TEXTURE2D_DESC depthTexDesc;
+	depthTexDesc.Width = width;
+	depthTexDesc.Height = height;
+	depthTexDesc.MipLevels = 1;
+	depthTexDesc.ArraySize = 1;
+	depthTexDesc.SampleDesc.Count = 1;
+	depthTexDesc.SampleDesc.Quality = 0;
+	depthTexDesc.Format = DXGI_FORMAT_D32_FLOAT;
+	depthTexDesc.Usage = D3D11_USAGE_DEFAULT;
+	depthTexDesc.BindFlags = D3D11_BIND_DEPTH_STENCIL;
+	depthTexDesc.CPUAccessFlags = 0;
+	depthTexDesc.MiscFlags = 0;
+
+
+	hr = device->CreateTexture2D(&depthTexDesc, 0, &depthTex);
+	assert(SUCCEEDED(hr));
+
+	D3D11_DEPTH_STENCIL_VIEW_DESC dsvDesc;
+	dsvDesc.Format = depthTexDesc.Format;
+	dsvDesc.Flags = 0;
+	dsvDesc.ViewDimension = D3D11_DSV_DIMENSION_TEXTURE2D;
+	dsvDesc.Texture2D.MipSlice = 0;
+
+
+	hr = device->CreateDepthStencilView(depthTex, &dsvDesc, &rt.dsv);
+	assert(SUCCEEDED(hr));
+
+	depthTex->Release();
+	depthTex = nullptr;
+
+	return rt;
 }
 
 void DXHelper::CreateVertexBuffer(ID3D11Device* device, size_t verticeCount, size_t vertexSize, void* vertices, ID3D11Buffer** vertexBuffer)

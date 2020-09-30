@@ -1,46 +1,86 @@
 #pragma once
+#include <queue>
+#include <unordered_map>
+
 #include "DXHelper.h"
 #include "Mesh.h"
 #include "Buffers.h"
 #include "Texture.h"
+#include "Material.h"
+#include "CameraComponent.h"
+
 namespace dx = DirectX;
+
+class RenderPass;
 
 class Renderer
 {
 	const FLOAT DEFAULT_BG_COLOR[4] = { 0.3f, 0.1f, 0.2f, 1.0f };
+
+
+	struct RenderItem
+	{
+		enum class Type
+		{
+			Default,
+			Instanced,
+			Skeleton
+		};
+
+		Mesh mesh;
+		Material material;
+
+		Type type;
+		size_t instanceCount;
+		cb_Skeleton bones;
+
+		dx::XMMATRIX world;
+		const CameraComponent* camera;
+	};
 
 public:
 	Renderer();
 	virtual ~Renderer();
 
 	void Initialize(Window* window);
-	void BeginFrame();
-	void EndFrame();
-		
-	/* New stuff...  rendertoTexture is going to be in a post processing class later on */
-	void RenderToTexture(Texture* texture, ID3D11Device* device, int width, int height);
+	
+	void BeginManualRenderPass(RenderTexture& target);
+	void EndManualRenderPass();
 
-	void SetRenderTarget(ID3D11DeviceContext* context, ID3D11RenderTargetView* rtv);
-	void SetBackbufferRenderTarget();
-	void ClearRenderTarget(ID3D11DeviceContext* context, ID3D11RenderTargetView* rtv, dx::XMFLOAT4 rgba);
-	void Unbind();
+	void DrawItemsToTarget();
+	void RenderFrame();
+	
+	void AddRenderPass(RenderPass*);
 
-	void Draw(const Mesh& mesh, const cb_Material& material, dx::XMMATRIX model, dx::XMMATRIX view, dx::XMMATRIX projection, dx::XMVECTOR cameraPosition);
-	void DrawInstanced(const Mesh& mesh, size_t count, dx::XMMATRIX* models, dx::XMMATRIX view, dx::XMMATRIX projection);
-	void DrawSkeleton(const Mesh& mesh, dx::XMMATRIX model, dx::XMMATRIX view, dx::XMMATRIX projection, cb_Skeleton& bones);
+	void Draw(const Mesh& mesh, const Material& material, const dx::XMMATRIX& model, const CameraComponent& camera);
+	void DrawInstanced(const Mesh& mesh, size_t count, const Material& material, const dx::XMMATRIX& model, const CameraComponent& camera);
+	void DrawSkeleton(const Mesh& mesh, const Material& material, const dx::XMMATRIX& model, const CameraComponent& camera, cb_Skeleton& bones);
 
 	ID3D11Device* GetDevice() const { return this->device; }
 	ID3D11DeviceContext* GetContext() const { return this->context; }
 	Window* GetOutputWindow() const { return this->outputWindow; }
 
+	void DrawScreenQuad(const Shader& shader);
+
+	void ClearRenderTarget(const RenderTexture& target);
+	void SetRenderTarget(const RenderTexture& target);
+
 private:
-	HRESULT hr;
+	void AddItem(const RenderItem& item);
+	void DrawRenderItem(const RenderItem& item);
+	void DrawRenderItemInstanced(const RenderItem& item);
+	void DrawRenderItemSkeleton(const RenderItem& item);
+
+private:
 	IDXGISwapChain* swapchain;
 	ID3D11Device* device;
 	ID3D11DeviceContext* context;
 
-	ID3D11RenderTargetView* backbuffer;
-	ID3D11DepthStencilView* depthStencilView;
+	RenderTexture backbuffer;
+	RenderTexture midbuffers [2];
+	
+	Shader screenQuadShader;
+	Mesh screenQuadMesh;
 
 	cb_Object cb_object_data;
 	ID3D11Buffer* obj_cbuffer;
@@ -57,8 +97,6 @@ private:
 
 	Window* outputWindow;
 
-	/* Render to texture test - Is going to be in post processing class later etc. */
-	ID3D11RenderTargetView* rtvTest;
-	ID3D11Texture2D* renderTexture;
-	ID3D11ShaderResourceView* srvTest;
+	std::unordered_map<size_t, std::queue<RenderItem>> itemQueue;
+	std::vector<RenderPass*> passes;
 };

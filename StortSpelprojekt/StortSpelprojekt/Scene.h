@@ -34,32 +34,24 @@ public:
 	/* new - render scene to texture */
 	void RenderSceneToTexture();
 
-	void PrintSceneHierarchy() const;
+	void AddObject(Object* object);
+	void AddObject(Object* object, Object* parent);
+
+	void RemoveObject(Object* object);
+	Object* GetRoot() const { return this->root; }
+
 	void PrintSceneHierarchy(Object* object, size_t level) const;
 
 	
 private:	
-	std::vector<Object*> objects;
+	Object* root;
 	CameraComponent* camera;
-	//MoveComponent* move;
-	ControllerComponent* move;
 	Renderer* renderer;
 
 	Input& input;
-
-	/* Test stuff */
-	Texture* screenquadTex;
-	Object* quad;
-	Material screenquadmat;	
 
 	WorldGenerator worldGenerator;
 
 	/* test sky */
 	Object* testSkybox;
-
-
-	//frustumplanes extraction
-	std::vector<dx::XMFLOAT4> extractedPlanes;
-	dx::XMFLOAT3 tempPos;
-
 };

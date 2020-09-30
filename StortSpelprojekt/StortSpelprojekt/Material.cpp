@@ -1,8 +1,10 @@
 #include "Material.h"
 
-Material::Material() {}
+size_t Material::idCounter = 0;
 
-Material::Material(Shader shader) : shader(shader), srv(nullptr){}
+Material::Material() : id(idCounter++) {}
+
+Material::Material(Shader shader) : shader(shader), srv(nullptr), id(idCounter++) {}
 Material::~Material() {}
 
 void Material::SetSamplerState(ID3D11Device* device, D3D11_TEXTURE_ADDRESS_MODE addressMode, D3D11_FILTER filter)
@@ -55,16 +57,6 @@ void Material::ChangeTextureBindFlags(size_t slot, ShaderBindFlag flag)
 const cb_Material& Material::GetMaterialData() const
 {
 	return cb_material_data;
-}
-
-const std::string& Material::GetName() const
-{
-	return name;
-}
-
-void Material::SetName(const std::string& name)
-{
-	this->name = name;
 }
 
 void Material::BindTextureToContext(ID3D11DeviceContext* context)
