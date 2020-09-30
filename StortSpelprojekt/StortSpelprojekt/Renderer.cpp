@@ -39,6 +39,9 @@ void Renderer::Initialize(Window* window)
 	DXHelper::CreateConstBuffer(device, &material_cbuffer, &cb_material_data, sizeof(cb_material_data));
 	DXHelper::CreateConstBuffer(device, &skeleton_cbuffer, &cb_skeleton_data, sizeof(cb_skeleton_data));
 
+
+	DXHelper::CreateBlendState(device, &blendStateOn, &blendStateOff);
+
 	/* Screenquad shader */
 	screenQuadShader.SetPixelShader(L"Shaders/ScreenQuad_ps.hlsl");
 	screenQuadShader.SetVertexShader(L"Shaders/ScreenQuad_vs.hlsl");
@@ -157,14 +160,13 @@ void Renderer::Draw(const Mesh& mesh, const Material& material, const dx::XMMATR
 	AddItem(item);
 }
 
-void Renderer::DrawInstanced(const Mesh& mesh, size_t count, const Material& material, const dx::XMMATRIX& model, const CameraComponent& camera)
+void Renderer::DrawInstanced(const Mesh& mesh, const size_t& count, const Material& material, const CameraComponent& camera)
 {
 	RenderItem item;
 	item.mesh = mesh;
 	item.material = material;
 	item.type = RenderItem::Type::Instanced;
 	item.instanceCount = count;
-	item.world = model;
 	item.camera = &camera;
 	AddItem(item);
 }
@@ -179,6 +181,10 @@ void Renderer::DrawSkeleton(const Mesh& mesh, const Material& material, const dx
 	item.world = model;
 	item.camera = &camera;
 	AddItem(item);
+}
+
+void Renderer::DrawAlphaInstanced(const Mesh& mesh, size_t count, const Material& material, const CameraComponent& camera)
+{
 }
 
 void Renderer::ClearRenderTarget(const RenderTexture& target)
@@ -204,7 +210,7 @@ void Renderer::AddItem(const RenderItem& item)
 
 void Renderer::m_Draw(const RenderItem& item)
 {
-	// add to queue? 
+	context->OMSetBlendState(blendStateOff, BLENDSTATEMASK, 0xffffffff);
 	dx::XMMATRIX mvp = dx::XMMatrixMultiply(item.world, dx::XMMatrixMultiply(item.camera->GetViewMatrix(), item.camera->GetProjectionMatrix()));
 	dx::XMStoreFloat4x4(&cb_object_data.mvp, dx::XMMatrixTranspose(mvp));
 	dx::XMStoreFloat4x4(&cb_object_data.world, dx::XMMatrixTranspose(item.world));
@@ -244,9 +250,9 @@ void Renderer::m_Draw(const RenderItem& item)
 
 void Renderer::m_DrawInstanced(const RenderItem& item)
 {
-
+	context->OMSetBlendState(blendStateOff, BLENDSTATEMASK, 0xffffffff);
 	dx::XMMATRIX vp =dx::XMMatrixMultiply(item.camera->GetViewMatrix(), item.camera->GetProjectionMatrix());
-	dx::XMStoreFloat4x4(&cb_object_data.mvp, dx::XMMatrixTranspose(vp));
+	dx::XMStoreFloat4x4(&cb_object_data.vp, dx::XMMatrixTranspose(vp));
 	
 	DXHelper::BindConstBuffer(context, obj_cbuffer, &cb_object_data, CB_OBJECT_SLOT, ShaderBindFlag::VERTEX);
 
@@ -257,7 +263,7 @@ void Renderer::m_DrawInstanced(const RenderItem& item)
 	UINT stride[2] = { sizeof(Mesh::Vertex), sizeof(Mesh::InstanceData) };
 	UINT offset[2] = { 0 };
 	
-	context->IASetVertexBuffers(0, 1, item.mesh.vertexAndInstance, stride, offset);
+	context->IASetVertexBuffers(0, 2, item.mesh.vertexAndInstance, stride, offset);
 	context->IASetIndexBuffer(item.mesh.indexBuffer, DXGI_FORMAT_R32_UINT, 0);
 	context->IASetPrimitiveTopology(item.mesh.topology);
 	context->DrawIndexedInstanced(item.mesh.indices.size(), item.instanceCount, 0, 0, 0);
@@ -283,8 +289,33 @@ void Renderer::m_DrawSkeleton(const RenderItem& item)
 	context->DrawIndexed(item.mesh.indices.size(), 0, 0);*/
 }
 
+void Renderer::m_DrawAlphaInstanced(const RenderItem& item)
+{
+	context->OMSetBlendState(blendStateOn, BLENDSTATEMASK, 0xffffffff);
+
+	dx::XMMATRIX vp = dx::XMMatrixMultiply(item.camera->GetViewMatrix(), item.camera->GetProjectionMatrix());
+	dx::XMStoreFloat4x4(&cb_object_data.vp, dx::XMMatrixTranspose(vp));
+
+	DXHelper::BindConstBuffer(context, obj_cbuffer, &cb_object_data, CB_OBJECT_SLOT, ShaderBindFlag::VERTEX);
+
+
+	cb_material_data = item.material.GetMaterialData();
+	DXHelper::BindConstBuffer(context, material_cbuffer, &cb_material_data, CB_MATERIAL_SLOT, ShaderBindFlag::PIXEL);
+
+	UINT stride[2] = { sizeof(Mesh::Vertex), sizeof(Mesh::InstanceData) };
+	UINT offset[2] = { 0 };
+	
+	context->IASetVertexBuffers(0, 2, item.mesh.vertexAndInstance, stride, offset);
+	context->IASetIndexBuffer(item.mesh.indexBuffer, DXGI_FORMAT_R32_UINT, 0);
+	context->IASetPrimitiveTopology(item.mesh.topology);
+	context->DrawIndexedInstanced(item.mesh.indices.size(), item.instanceCount, 0, 0, 0);
+
+
+}
+
 void Renderer::DrawScreenQuad(const Shader& shader)
 {
+	context->OMSetBlendState(blendStateOff, BLENDSTATEMASK, 0xffffffff);
 	shader.BindToContext(context);
 	UINT stride = sizeof(Mesh::Vertex);
 	UINT offset = 0;

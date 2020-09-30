@@ -24,7 +24,8 @@ class Renderer
 		{
 			Default,
 			Instanced,
-			Skeleton
+			Skeleton,
+			InstancedAlpha
 		};
 
 		Mesh mesh;
@@ -53,8 +54,10 @@ public:
 	void AddRenderPass(RenderPass*);
 
 	void Draw(const Mesh& mesh, const Material& material, const dx::XMMATRIX& model, const CameraComponent& camera);
-	void DrawInstanced(const Mesh& mesh, size_t count, const Material& material, const dx::XMMATRIX& model, const CameraComponent& camera);
+	void DrawInstanced(const Mesh& mesh, const size_t& count, const Material& material, const CameraComponent& camera);
 	void DrawSkeleton(const Mesh& mesh, const Material& material, const dx::XMMATRIX& model, const CameraComponent& camera, cb_Skeleton& bones);
+	void DrawAlphaInstanced(const Mesh& mesh, size_t count, const Material& material, const CameraComponent& camera);
+
 
 	ID3D11Device* GetDevice() const { return this->device; }
 	ID3D11DeviceContext* GetContext() const { return this->context; }
@@ -70,7 +73,7 @@ private:
 	void m_Draw(const RenderItem& item);
 	void m_DrawInstanced(const RenderItem& item);
 	void m_DrawSkeleton(const RenderItem& item);
-
+	void m_DrawAlphaInstanced(const RenderItem& item);
 private:
 	IDXGISwapChain* swapchain;
 	ID3D11Device* device;
@@ -88,7 +91,7 @@ private:
 	cb_Skeleton cb_skeleton_data;
 	ID3D11Buffer* skeleton_cbuffer;
 	
-	//måste avallokeras!!!
+	
 	cb_Scene cb_scene;
 	ID3D11Buffer* light_cbuffer;
 
@@ -99,4 +102,10 @@ private:
 
 	std::unordered_map<size_t, std::queue<RenderItem>> itemQueue;
 	std::vector<RenderPass*> passes;
+
+	//blendstate
+	ID3D11BlendState* blendStateOn;
+	ID3D11BlendState* blendStateOff;
+
+	const float BLENDSTATEMASK[4] = { 0.0f };
 };
