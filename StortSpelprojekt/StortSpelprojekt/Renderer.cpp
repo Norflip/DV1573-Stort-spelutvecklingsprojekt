@@ -3,6 +3,7 @@
 
 Renderer::Renderer() : device(nullptr), context(nullptr), swapchain(nullptr), obj_cbuffer(nullptr), skeleton_cbuffer(nullptr)
 {
+	srand(unsigned int(time(0)));
 }
 
 Renderer::~Renderer()
@@ -227,10 +228,28 @@ void Renderer::DrawRenderItem(const RenderItem& item)
 	cb_scene.pointLights[1].attenuation = dx::XMFLOAT3(1.0f, 0.02f, 0.0f);
 	cb_scene.pointLights[1].range = 25.0f;
 
-	// switch scene id
-	cb_scene.id = 3;
-	cb_scene.factor = 1.0f;
+	/**********************************/
+
+	// temporary switch scene id
+	// very funky stuff here		'o.O'
+	static int ids = 0;
+	static float color = 0.0f;
+
+	color += (float)0.0005f;
+	if (color > 1.0f)
+	{
+		color -= 1.0f;
+		if (ids != 3)
+			ids += 1;
+		else
+			ids = 0;
+	}
 		
+	cb_scene.id = ids;
+	cb_scene.factor = color;
+
+	/**********************************/
+
 	cb_scene.nrOfPointLights = 2;
 	dx::XMStoreFloat3(&cb_scene.cameraPosition, item.camera->GetOwner()->GetTransform().GetPosition());
 	DXHelper::BindConstBuffer(context, light_cbuffer, &cb_scene, CB_SCENE_SLOT, ShaderBindFlag::PIXEL);

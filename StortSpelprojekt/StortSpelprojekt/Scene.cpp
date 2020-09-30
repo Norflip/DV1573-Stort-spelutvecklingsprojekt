@@ -113,6 +113,7 @@ void Scene::Render()
 	root->Draw(renderer, camera);
 
 	// skybox draw object 
+	skyboxClass->GetThisObject()->Draw(renderer, camera);
 	//testSkybox->Draw(renderer, camera);
 	worldGenerator.Draw(renderer, camera);
 
