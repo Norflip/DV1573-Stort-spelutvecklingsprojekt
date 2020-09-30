@@ -5,13 +5,17 @@
 #include <DirectXMath.h>
 #include <SpriteBatch.h>
 #include "DDSTextureLoader.h"
+#include "GUISprite.h"
+#include "Renderer.h"
+#include <wrl.h>
+#include <iostream>
 namespace dx = DirectX;
 class GUISprite
 {
 
 public:
 
-	GUISprite(ID3D11Device* device, std::string, float xPos, float yPos);
+	GUISprite(Renderer& renderer, std::string, float xPos, float yPos);
 	~GUISprite();
 	void Draw();
 	void SetPosition(float xPos, float yPos);
@@ -25,7 +29,7 @@ private:
 	float xScale, yScale;
 	float rotation;
 	dx::SpriteBatch* spriteBatch;
-	ID3D11Device* device;
+	Renderer* renderer;
 	dx::XMVECTOR position, color, origin, scale;
 	ID3D11ShaderResourceView* SRV;
 	

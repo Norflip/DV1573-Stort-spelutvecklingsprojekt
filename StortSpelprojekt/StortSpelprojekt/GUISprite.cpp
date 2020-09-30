@@ -1,7 +1,7 @@
 #include "GUISprite.h"
-
-GUISprite::GUISprite(ID3D11Device* device, std::string filePath, float xPos, float yPos)
+GUISprite::GUISprite(Renderer& renderer , std::string filePath, float xPos, float yPos)
 {
+	this->renderer = &renderer;
 	// position
 	this->xPos = xPos;
 	this->yPos = yPos;
@@ -16,10 +16,28 @@ GUISprite::GUISprite(ID3D11Device* device, std::string filePath, float xPos, flo
 	this->color = dx::XMVectorSet(1.f, 1.f, 1.f, 1.f);
 	this->origin = dx::XMVectorSet(1.f, 1.f, 1.f, 1.f);
 	this->SRV = nullptr;
-	this->device = device;
+
 	this->spriteBatch = nullptr;
 	this->filePath = filePath;
-	SetWICSprite(device, filePath);
+
+	Microsoft::WRL::ComPtr<ID3D11Resource> res;
+	Microsoft::WRL::ComPtr<ID3D11Texture2D> tex;
+
+	HRESULT result;
+	std::wstring wsConvert(filePath.begin(), filePath.end());
+	spriteBatch = new DirectX::SpriteBatch(renderer.GetContext());
+	result = DirectX::CreateWICTextureFromFile(renderer.GetDevice(), wsConvert.c_str(), &res, &SRV);
+
+	assert(SUCCEEDED(result));
+	result = res.As(&tex);
+
+	D3D11_TEXTURE2D_DESC desc;
+	tex->GetDesc(&desc);
+
+	width = desc.Width;
+	height = desc.Height;
+	std::cout << width << "  " << height << std::endl;
+	assert(SUCCEEDED(result));
 }
 
 GUISprite::~GUISprite()
