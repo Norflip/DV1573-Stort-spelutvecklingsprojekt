@@ -1,4 +1,4 @@
-
+#include "IO.hlsl"
 
 struct VertexInputType
 {
@@ -6,15 +6,9 @@ struct VertexInputType
 	float2 uv : TEXCOORD0;
 };
 
-struct PixelInputType
+VS_OUTPUT_QUAD main(VertexInputType input)
 {
-	float4 position : SV_POSITION;
-	float2 uv : TEXCOORD0;
-};
-
-PixelInputType main(VertexInputType input)
-{
-	PixelInputType output;
+	VS_OUTPUT_QUAD output;
 	output.position = input.position;
 	output.uv = input.uv;
 

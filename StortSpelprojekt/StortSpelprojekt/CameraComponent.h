@@ -18,17 +18,18 @@ public:
 
 	void Resize(size_t width, size_t height);
 	dx::XMMATRIX GetViewMatrix() const;
-	dx::XMMATRIX GetProjectionMatrix() const { return this->projection; }
-	const dx::XMMATRIX& GetVIewAndProjectionMatrix() { return GetViewMatrix()* GetProjectionMatrix(); }
-	void GetFrustumPlanes(std::vector<dx::XMFLOAT4>& planes);
+	dx::XMMATRIX GetProjectionMatrix() const;
 
-	bool CullAgainstAABB(std::vector<dx::XMFLOAT4>& planes, const AABB& aabb, const dx::XMFLOAT3 worldPos);
+	bool CullAgainstAABB(const AABB& aabb, const dx::XMFLOAT3 worldPos);
+
 private:
 	void UpdateProjectionMatrix();
+	std::vector<dx::XMFLOAT4>& GetFrustumPlanes();
 
 private:
-	dx::XMMATRIX projection;
-	dx::XMMATRIX view;
+	dx::XMFLOAT4X4 projection;
+	dx::XMFLOAT4X4 view;
+	std::vector<dx::XMFLOAT4> frustumPlanes;
 
 	size_t width, height;
 	float fieldOfView;

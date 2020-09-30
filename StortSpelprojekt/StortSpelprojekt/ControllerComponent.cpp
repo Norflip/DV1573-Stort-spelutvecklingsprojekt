@@ -6,9 +6,8 @@ ControllerComponent::ControllerComponent()
 	this->boost = 4.5f;// *this->move;
 	this->crouchSpeed = 0.3f;// *this->move;
 
-	this->lastMousePos = Input::Instance().GetMousePos(); 
 	this->showCursor = true;
-	this->canRotate = true;
+	this->canRotate = false;
 	this->sensetivity = 1.f;
 }
 
@@ -59,21 +58,24 @@ float ControllerComponent::GetSensetivity() const
 void ControllerComponent::Update(const float& deltaTime)
 {
 	DirectX::XMFLOAT3 dir = { 0.f,0.f,0.f };
-	dx::XMFLOAT2 mouseVec;
 	float speed = 1.f;
-	mouseVec.x = this->lastMousePos.x - Input::Instance().GetMousePos().x;
-	mouseVec.y = this->lastMousePos.y - Input::Instance().GetMousePos().y;
-	this->lastMousePos = Input::Instance().GetMousePos();
-	//std::cout <<"["<<mouseVec.x<<", "<< mouseVec.y <<"]"<< std::endl;
-
 	if (LMOUSE_DOWN)
 	{
 		this->canRotate = !this->canRotate;
+		if (this->canRotate)
+			Input::Instance().SetMouseMode(dx::Mouse::MODE_RELATIVE);
+		else
+			Input::Instance().SetMouseMode(dx::Mouse::MODE_ABSOLUTE);
 	}
 	if (this->canRotate)
 	{
-		GetOwner()->GetTransform().Rotate(-mouseVec.y*deltaTime* this->sensetivity,-mouseVec.x*deltaTime* this->sensetivity,0.f);
+		//Input::Instance().ConfineMouse();
+		SetCursorPos(400, 400); //set this to coordinates middle of screen? get height/width from input?
+		GetOwner()->GetTransform().Rotate(Input::Instance().GetMousePosRelative().x * deltaTime, Input::Instance().GetMousePosRelative().y * deltaTime, 0.f);
+		Input::Instance().ResetRelative();
 	}
+	//else
+	//	Input::Instance().FreeMouse();
 
 	if (KEY_DOWN(D1))
 	{
@@ -108,8 +110,18 @@ void ControllerComponent::Update(const float& deltaTime)
 		dir.x += 1.f;// move;
 
 	dx::XMVECTOR direction = dx::XMLoadFloat3(&dir);
+
+	//direction = dx::XMVector3Normalize(direction);
+	direction = GetOwner()->GetTransform().TransformDirection(direction);
 	direction = dx::XMVectorScale(direction, speed);
 	direction = dx::XMVectorScale(direction, deltaTime);
 	dx::XMStoreFloat3(&dir, direction);
-	GetOwner()->GetTransform().Translate(dir.x,dir.y,dir.z);
+	GetOwner()->GetTransform().Translate(dir.x, dir.y, dir.z);
+
+#if NDEBUG 
+
+	// fixes a bug in release where the compiler removes the variables
+	speed = 0.0f;
+	direction = { 0,0,0 };
+#endif // NDEBUG 
 }

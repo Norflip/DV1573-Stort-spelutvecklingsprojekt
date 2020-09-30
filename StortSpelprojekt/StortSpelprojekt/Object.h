@@ -1,5 +1,9 @@
 #pragma once
 #include <vector>
+#include <memory>
+#include <algorithm>
+#include <bitset>
+#include <array>
 
 #include "Transform.h"
 #include "Mesh.h"
@@ -21,6 +25,11 @@ enum class ObjectFlag : unsigned int
 
 DEFINE_ENUM_FLAG_OPERATORS(ObjectFlag)
 
+// max components on entity
+constexpr std::size_t maxComponents = 16;
+using ComponentBitSet = std::bitset<maxComponents>;
+using ComponentArray = std::array<std::vector<Component*>, maxComponents>;
+
 class Object
 {
 public:
@@ -28,9 +37,8 @@ public:
 	virtual ~Object();
 
 	void Update(const float& deltaTime);
-	//void FixedUpdate(const float& fixedDeltaTime);
+	void FixedUpdate(const float& fixedDeltaTime);
 	void Draw(Renderer* renderer, CameraComponent* camera);
-
 
 	template <typename T>
 	bool HasComponent() const;
@@ -38,9 +46,11 @@ public:
 	template <typename T, typename... TArgs> 
 	T* AddComponent(TArgs&&... mArgs);
 
-	template <typename T> T* 
-	GetComponent() const;
+	template <typename T> 
+	T* GetComponent() const;
 
+	template <typename T>
+	std::vector<T*> GetComponents() const;
 
 	bool HasFlag(ObjectFlag flag) const;
 	void AddFlag(ObjectFlag flag);
@@ -77,7 +87,7 @@ inline T* Object::AddComponent(TArgs&& ...mArgs)
 	c->Initialize();
 
 	components.push_back(c);
-	componentArray[GetComponentTypeID<T>()] = c;
+	componentArray[GetComponentTypeID<T>()].push_back(c);// = c;
 	componentBitSet[GetComponentTypeID<T>()] = true;
 
 	return c;
@@ -86,6 +96,14 @@ inline T* Object::AddComponent(TArgs&& ...mArgs)
 template<typename T>
 inline T* Object::GetComponent() const
 {
-	auto ptr(componentArray[GetComponentTypeID<T>()]);
-	return static_cast<T*>(ptr);
+	auto comps = GetComponents<T>();
+	return comps.size() > 0 ? comps[0] : nullptr;
 }
+
+template<typename T>
+inline std::vector<T*> Object::GetComponents() const
+{
+	auto ptr(componentArray[GetComponentTypeID<T>()]);
+	return std::vector<T*>(ptr);
+}
+
