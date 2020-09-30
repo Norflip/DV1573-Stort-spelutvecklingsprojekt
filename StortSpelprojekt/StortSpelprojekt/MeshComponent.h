@@ -21,6 +21,5 @@ public:
 private:
 	Mesh mesh;
 	Material material;
-	Texture texture;
 	BoundingBoxes boundingBoxes;
 };

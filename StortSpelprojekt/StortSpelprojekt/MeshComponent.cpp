@@ -1,7 +1,7 @@
 #include "MeshComponent.h"
 #include "MoveComponent.h"
 
-MeshComponent::MeshComponent(Mesh mesh, Material material) : mesh(mesh), material(material), texture(material.GetTexture()),boundingBoxes(mesh) {}
+MeshComponent::MeshComponent(Mesh mesh, Material material) : mesh(mesh), material(material),boundingBoxes(mesh) {}
 MeshComponent::~MeshComponent() {}
 
 void MeshComponent::Update(const float& deltaTime)
