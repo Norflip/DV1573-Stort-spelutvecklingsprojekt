@@ -7,7 +7,7 @@
 
 class Material
 {
-	static size_t IDCounter;
+	static size_t idCounter;
 
 	struct TextureInfo {
 		Texture texture;
@@ -44,12 +44,12 @@ public:
 	void SetName(const std::string& name) { this->name = name; }
 	const std::string& GetName() const { return this->name; }
 
-	size_t GetID() const { return this->ID; }
+	size_t GetID() const { return this->id; }
 
 private:
 	Shader shader;
 	cb_Material cb_material_data;
-	size_t ID;
+	size_t id;
 
 	ID3D11ShaderResourceView* srv;
 	Texture texture;

@@ -1,10 +1,10 @@
 #include "Material.h"
 
-size_t Material::IDCounter = 0;
+size_t Material::idCounter = 0;
 
-Material::Material() : ID(IDCounter++) {}
+Material::Material() : id(idCounter++) {}
 
-Material::Material(Shader shader) : shader(shader), srv(nullptr), ID(IDCounter++) {}
+Material::Material(Shader shader) : shader(shader), srv(nullptr), id(idCounter++) {}
 Material::~Material() {}
 
 void Material::SetSamplerState(ID3D11Device* device, D3D11_TEXTURE_ADDRESS_MODE addressMode, D3D11_FILTER filter)
