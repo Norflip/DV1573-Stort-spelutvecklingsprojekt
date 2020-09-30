@@ -73,9 +73,9 @@ private:
 	void DrawRenderItem(const RenderItem& item);
 	void DrawRenderItemInstanced(const RenderItem& item);
 	void DrawRenderItemSkeleton(const RenderItem& item);
-
+	void m_DrawRenderItemAlphaInstanced(const RenderItem& item);
 	
-	void m_DrawAlphaInstanced(const RenderItem& item);
+	
 private:
 	IDXGISwapChain* swapchain;
 	ID3D11Device* device;

@@ -291,7 +291,7 @@ void Renderer::DrawRenderItemSkeleton(const RenderItem& item)
 	context->DrawIndexed(item.mesh.indices.size(), 0, 0);*/
 }
 
-void Renderer::m_DrawAlphaInstanced(const RenderItem& item)
+void Renderer::m_DrawRenderItemAlphaInstanced(const RenderItem& item)
 {
 	context->OMSetBlendState(blendStateOn, BLENDSTATEMASK, 0xffffffff);
 

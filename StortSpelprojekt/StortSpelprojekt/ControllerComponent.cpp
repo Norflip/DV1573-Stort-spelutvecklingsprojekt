@@ -60,9 +60,9 @@ void ControllerComponent::Update(const float& deltaTime)
 	DirectX::XMFLOAT3 dir = { 0.f,0.f,0.f };
 	float speed = 1.f;
 
-	mouseVec.x = this->lastMousePos.x - Input::Instance().GetMousePos().x;
+	/*mouseVec.x = this->lastMousePos.x - Input::Instance().GetMousePos().x;
 	mouseVec.y = this->lastMousePos.y - Input::Instance().GetMousePos().y;
-	this->lastMousePos = Input::Instance().GetMousePos();
+	this->lastMousePos = Input::Instance().GetMousePos();*/
 	//std::cout <<"["<<mouseVec.x<<", "<< mouseVec.y <<"]"<< std::endl;
 
 	if (LMOUSE_DOWN)
