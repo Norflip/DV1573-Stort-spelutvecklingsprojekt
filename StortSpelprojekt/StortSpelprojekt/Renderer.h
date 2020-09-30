@@ -28,8 +28,8 @@ class Renderer
 			InstancedAlpha
 		};
 
-		Mesh mesh;
-		Material material;
+		const Mesh* mesh;
+		const Material* material;
 
 		Type type;
 		size_t instanceCount;

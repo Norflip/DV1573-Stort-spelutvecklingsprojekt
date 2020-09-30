@@ -31,7 +31,7 @@ void Material::SetSamplerState(ID3D11Device* device, D3D11_TEXTURE_ADDRESS_MODE 
 	flag |= ShaderBindFlag::PIXEL;
 }
 
-void Material::BindToContext(ID3D11DeviceContext* context)
+void Material::BindToContext(ID3D11DeviceContext* context) const
 {
 	this->shader.BindToContext(context);
 	BindTextureToContext(context);
@@ -59,13 +59,13 @@ const cb_Material& Material::GetMaterialData() const
 	return cb_material_data;
 }
 
-void Material::BindTextureToContext(ID3D11DeviceContext* context)
+void Material::BindTextureToContext(ID3D11DeviceContext* context) const
 {	
 	for(int i = 0; i < textures.size(); i++){
 		
 		int bflag = static_cast<int>(textures[i].flag);
-		srv = textures[i].texture.GetTexture();
-		slot = textures[i].slot;
+		auto srv = textures[i].texture.GetTexture();
+		size_t slot = textures[i].slot;
 
 		ID3D11ShaderResourceView* const nullsrv[1] = { NULL };
 		context->PSSetShaderResources(slot, 1, nullsrv);

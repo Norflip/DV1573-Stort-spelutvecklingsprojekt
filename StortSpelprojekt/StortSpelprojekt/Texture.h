@@ -16,7 +16,7 @@ public:
 	bool LoadTexture(ID3D11Device* device, LPCWSTR textureFilepath);
 
 	void SetTexture(ID3D11ShaderResourceView* srv) { this->srv = srv; }
-	ID3D11ShaderResourceView* GetTexture() { return this->srv; }
+	ID3D11ShaderResourceView* GetTexture() const { return this->srv; }
 
 	void SetRenderTarget(ID3D11RenderTargetView* rtv) { this->rtv = rtv; }
 	ID3D11RenderTargetView* GetRtv() { return this->rtv; }
