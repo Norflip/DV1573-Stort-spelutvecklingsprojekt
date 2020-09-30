@@ -99,6 +99,9 @@
     <ClCompile Include="ThirdParty\SimplexNoise.cpp">
       <Filter>Source Files\Chunk</Filter>
     </ClCompile>
+    <ClCompile Include="NodeWalker.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Window.h">
@@ -211,6 +214,9 @@
     </ClInclude>
     <ClInclude Include="ThirdParty\SimplexNoise.h">
       <Filter>Source Files\Chunk</Filter>
+    </ClInclude>
+    <ClInclude Include="NodeWalker.h">
+      <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
