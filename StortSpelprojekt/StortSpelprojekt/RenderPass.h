@@ -35,7 +35,7 @@ public:
 	bool Pass(Renderer* renderer, RenderTexture& inTexture, RenderTexture& outTexture) override
 	{
 		renderer->DrawScreenQuad(shader);
-		return true;
+		return false;
 	}
 
 private:
