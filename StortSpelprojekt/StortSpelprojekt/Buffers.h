@@ -51,5 +51,5 @@ struct cb_Scene
 __declspec(align(16))
 struct cb_Skeleton
 {
-	dx::XMFLOAT4X4 bones[60]; //Can you use a structured buffer instead?
+	dx::XMFLOAT4X4 bones[60]; //Can you use a structured buffer instead? YES!
 };
