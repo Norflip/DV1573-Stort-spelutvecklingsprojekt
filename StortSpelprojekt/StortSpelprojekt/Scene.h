@@ -1,8 +1,10 @@
 #pragma once
 #include <vector>
 #include "Object.h"
+#include "HeightMap.h"
 #include "ShittyOBJLoader.h"
 #include "Input.h"
+#include "GameClock.h"
 #include "CameraComponent.h"
 #include "MoveComponent.h"
 #include "ControllerComponent.h"
@@ -10,6 +12,11 @@
 #include "ZWEBLoader.h"
 #include "SkeletonMeshComponent.h"
 #include "GUISprite.h"
+
+#include "Skybox.h"
+#include "WorldGenerator.h"
+#include "SaveState.h"
+
 class Scene
 {
 public:
@@ -28,21 +35,25 @@ public:
 	/* new - render scene to texture */
 	void RenderSceneToTexture();
 
-	void PrintSceneHierarchy() const;
+	void AddObject(Object* object);
+	void AddObject(Object* object, Object* parent);
+
+	void RemoveObject(Object* object);
+	Object* GetRoot() const { return this->root; }
+
 	void PrintSceneHierarchy(Object* object, size_t level) const;
 
+	
 private:	
-	std::vector<Object*> objects;
+	Object* root;
 	CameraComponent* camera;
-	//MoveComponent* move;
-	ControllerComponent* move;
 	Renderer* renderer;
 
 	Input& input;
 
-	/* Test stuff */
-	Texture* screenquadTex;
-	Object* quad;
-	Material screenquadmat;	
+	WorldGenerator worldGenerator;
+
+	/* test sky */
+	Object* testSkybox;
 	GUISprite* testSprite;
 };

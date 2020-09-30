@@ -2,12 +2,13 @@
 
 Scene::Scene() : input(Input::Instance())
 {
-	
-
+	root = new Object("sceneRoot", ObjectFlag::DEFAULT);
 }
 
 Scene::~Scene()
 {
+	delete root;
+	root = nullptr;
 }
 
 void Scene::Initialize(Renderer* renderer)
@@ -17,26 +18,34 @@ void Scene::Initialize(Renderer* renderer)
 	// TEMP
 	// Should change values on resize event
 	Window* window = renderer->GetOutputWindow();
-	
+
+
+	SaveState state;
+	state.seed = 1337;
+	state.segment = 0;
+
+	worldGenerator.Initialize(renderer->GetDevice());
+	worldGenerator.Generate(state, renderer->GetDevice());
+
+
 	Object* cameraObject = new Object("camera", ObjectFlag::ENABLED);
 	camera = cameraObject->AddComponent<CameraComponent>(60.0f);
 	camera->Resize(window->GetWidth(), window->GetHeight());
-	move = cameraObject->AddComponent<ControllerComponent>();
-	//objects.push_back(cameraObject);
-	//testSprite = new GUISprite(renderer->GetDevice(), "Textures/AxeIcon.png", 10, 10);
-	
-	
+	cameraObject->AddComponent<ControllerComponent>();
+
+	Input::Instance().SetWindow(window->GetHWND(), window->GetHeight(), window->GetWidth());
+	AddObject(cameraObject);
+
 	Shader shader;
 	Shader skeletonShader;
 	shader.SetPixelShader(L"Shaders/Default_ps.hlsl");
 	shader.SetVertexShader(L"Shaders/Default_vs.hlsl");
 	skeletonShader.SetVertexShader(L"Shaders/Skeleton_vs.hlsl");
-	
 	shader.Compile(renderer->GetDevice());
 
-	std::vector<Mesh> zwebMeshes = ZWEBLoader::LoadMeshes(ZWEBLoadType::SkeletonAnimation, "Models/brickSphere.ZWEB", renderer->GetDevice());
+	std::vector<Mesh> zwebMeshes = ZWEBLoader::LoadMeshes(ZWEBLoadType::NoAnimation, "Models/brickSphere.ZWEB", renderer->GetDevice());
 	std::vector<Material> zwebMaterials = ZWEBLoader::LoadMaterials("Models/brickSphere.ZWEB", shader, renderer->GetDevice());
-
+	
 	std::vector<Mesh> sylvanas = ZWEBLoader::LoadMeshes(ZWEBLoadType::NoAnimation, "Models/sylvanas.ZWEB", renderer->GetDevice());
 	std::vector<Material> sylvanasMat = ZWEBLoader::LoadMaterials("Models/sylvanas.ZWEB", shader, renderer->GetDevice());
 
@@ -52,122 +61,86 @@ void Scene::Initialize(Renderer* renderer)
 	dx::XMFLOAT3 miniTranslation3 = dx::XMFLOAT3(-4, -3, -4);
 
 	testMesh->GetTransform().SetPosition(dx::XMLoadFloat3(&miniTranslation));
-
+	
 	testMesh2->GetTransform().SetPosition(dx::XMLoadFloat3(&miniTranslation2));
-	Transform::SetParentChild(testMesh->GetTransform(), testMesh2->GetTransform());
+	AddObject(testMesh2, testMesh);
+
 
 	testMesh3->GetTransform().SetPosition(dx::XMLoadFloat3(&miniTranslation3));
-	Transform::SetParentChild(testMesh2->GetTransform(), testMesh3->GetTransform());
+	AddObject(testMesh3, testMesh2);
+
+	testMesh2->AddComponent<MoveComponent>();
 
 	zwebMaterials[0].SetSamplerState(renderer->GetDevice(), D3D11_TEXTURE_ADDRESS_WRAP, D3D11_FILTER_MIN_MAG_MIP_LINEAR);
 	sylvanasMat[0].SetSamplerState(renderer->GetDevice(), D3D11_TEXTURE_ADDRESS_WRAP, D3D11_FILTER_MIN_MAG_MIP_LINEAR);
 	cylinderMat[0].SetSamplerState(renderer->GetDevice(), D3D11_TEXTURE_ADDRESS_WRAP, D3D11_FILTER_MIN_MAG_MIP_LINEAR);
-
+	
 	testMesh->AddComponent<MeshComponent>(zwebMeshes[0], zwebMaterials[0]);
 	testMesh2->AddComponent<MeshComponent>(sylvanas[0], sylvanasMat[0]);
 	testMesh3->AddComponent<MeshComponent>(cylinder[0], cylinderMat[0]);
+	
+	AddObject(testMesh);
+	//AddObject(testMesh2);
+	//AddObject(testMesh3);
 
-	objects.push_back(testMesh);
-	objects.push_back(testMesh2);
-	objects.push_back(testMesh3);
-
-
-	/* * * * * * * * ** * * * * */
-	/* Render to texture test */	
-	screenquadTex = new Texture;
-	renderer->RenderToTexture(screenquadTex, renderer->GetDevice(), window->GetWidth(), window->GetHeight());
-
-	/* Screenquad shader */
-	Shader screenquadShader;
-	screenquadShader.SetPixelShader(L"Shaders/ScreenQuad_ps.hlsl");
-	screenquadShader.SetVertexShader(L"Shaders/ScreenQuad_vs.hlsl");
-	screenquadShader.Compile(renderer->GetDevice());
-
-	/* Screenquad mat */
-	screenquadmat = Material(screenquadShader);
-
-	/* Screenquad mesh */
-	Mesh screenquadMesh = Mesh::CreateScreenQuad(renderer->GetDevice());
-	screenquadmat.SetTexture(*screenquadTex, TEXTURE_DIFFUSE_SLOT, ShaderBindFlag::PIXEL);
-	screenquadmat.SetSamplerState(renderer->GetDevice(), D3D11_TEXTURE_ADDRESS_WRAP, D3D11_FILTER_MIN_MAG_MIP_LINEAR);
-
-	/* Screenquad object */
-	quad = new Object("Screenquad");
-	quad->AddComponent<MeshComponent>(screenquadMesh, screenquadmat);	
 
 	/* * * * * * * * ** * * * * */
-	//PrintSceneHierarchy();
 
+	/*Object* skybox;
+	Skybox* skybox = new Skybox(skybox);*/
+	/* test skybox */
+
+	Shader skyboxShader;
+	skyboxShader.SetPixelShader(L"Shaders/Sky_ps.hlsl");
+	skyboxShader.SetVertexShader(L"Shaders/Sky_vs.hlsl");
+	skyboxShader.Compile(renderer->GetDevice());
+
+	std::vector<Mesh> zwebSkybox = ZWEBLoader::LoadMeshes(ZWEBLoadType::NoAnimation, "Models/skybox.ZWEB", renderer->GetDevice());
+	std::vector<Material> zwebSkyboxMaterials = ZWEBLoader::LoadMaterials("Models/skybox.ZWEB", skyboxShader, renderer->GetDevice());
+
+	testSkybox = new Object("skybox", ObjectFlag::NO_CULL | ObjectFlag::ENABLED);
+	testSkybox->AddComponent<MeshComponent>(zwebSkybox, zwebSkyboxMaterials);
+
+	Log::Add("PRINTING SCENE HIERARCHY ----");
+	PrintSceneHierarchy(root, 0);
+	Log::Add("----");
 }
 
 void Scene::Update(const float& deltaTime)
 {
-	std::vector<Object*> toRemove;
 	input.UpdateInputs();
-
-
-	for (auto i = objects.begin(); i < objects.end(); i++)
-	{
-		Object* obj = (*i);
-
-		if (obj->HasFlag(ObjectFlag::ENABLED))
-			obj->Update(deltaTime);
-
-		if (obj->HasFlag(ObjectFlag::REMOVED))
-			toRemove.push_back(obj);
-	}
-	testSprite->Draw();
+	root->Update(deltaTime);
+	GameClock::Instance().Update();
 }
 
 void Scene::FixedUpdate(const float& fixedDeltaTime)
 {
 	//Log::Add(std::to_string(fixedDeltaTime));
+//	root->FixedUpdate(fixedDeltaTime);
 }
 
 void Scene::Render()
 {	
-	
-	renderer->BeginFrame();
-	RenderSceneToTexture();
-	//for (auto i = objects.begin(); i < objects.end(); i++)
-	//{
-	//	Object* obj = (*i);
-	//	//if (obj->HasFlag(ObjectFlag::ENABLED | ObjectFlag::RENDER))
-	//	obj->Draw(renderer, camera);
-	//}
+	root->Draw(renderer, camera);
+	testSkybox->Draw(renderer, camera);
+	worldGenerator.Draw(renderer, camera);
 
-	/* Render screenquad with rendered scene-texture */
-	quad->Draw(renderer, camera);
-	renderer->EndFrame();
+	renderer->RenderFrame();
 }
 
-void Scene::RenderSceneToTexture()
+void Scene::AddObject(Object* object)
 {
-	renderer->Unbind();
-
-	renderer->SetRenderTarget(renderer->GetContext(), screenquadTex->GetRtv());
-	renderer->ClearRenderTarget(renderer->GetContext(), screenquadTex->GetRtv(), dx::XMFLOAT4(0, 1, 0, 1));
-
-	for (auto i = objects.begin(); i < objects.end(); i++)
-	{
-		Object* obj = (*i);
-		//if (obj->HasFlag(ObjectFlag::ENABLED | ObjectFlag::VISIBLE))
-		obj->Draw(renderer, camera);	
-	}
-
-	//renderer->Unbind();	// needed?
-
-	renderer->SetBackbufferRenderTarget();
+	Transform::SetParentChild(root->GetTransform(), object->GetTransform());
 }
 
-void Scene::PrintSceneHierarchy() const
+void Scene::AddObject(Object* object, Object* parent)
 {
-	Log::Add("PRINTING SCENE HIERARCHY ----");
+	Transform::SetParentChild(parent->GetTransform(), object->GetTransform());
+}
 
-	for (auto i = objects.cbegin(); i < objects.cend(); i++)
-		PrintSceneHierarchy(*i, 0);
-
-	Log::Add("----");
+void Scene::RemoveObject(Object* object)
+{
+	// remove the the connection and traverse downwards and remove / destroy all objects
 }
 
 void Scene::PrintSceneHierarchy(Object* object, size_t level) const
@@ -195,3 +168,4 @@ void Scene::PrintSceneHierarchy(Object* object, size_t level) const
 		}
 	}
 }
+

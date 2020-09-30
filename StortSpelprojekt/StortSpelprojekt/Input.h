@@ -35,6 +35,10 @@ public:
 
 	//Mouse
 	void SetMouseMode(DirectX::Mouse::Mode mode);
+	void SetWindow(HWND hwnd, size_t height, size_t width);
+	void ConfineMouse();
+	void FreeMouse();
+
 
 	bool GetLeftMouseKey() const;
 	bool GetLeftMouseKeyDown() const;
@@ -45,7 +49,8 @@ public:
 	bool GetRightMouseKeyUp() const;
 
 	POINT GetMousePos() const;
-
+	POINT GetMousePosRelative() const;
+	void ResetRelative();
 	void UpdateInputs();
 	void UpdateMsg(UINT umsg, WPARAM wParam, LPARAM lParam);
 	
@@ -60,7 +65,9 @@ public:
 
 private:
 	size_t height, width;
+	RECT windowRect; //confine mouse
 	// mouse variables	
+	int xPosRelative, yPosRelative;
 	DirectX::Mouse mouse;
 	DirectX::Mouse::ButtonStateTracker mouseButtons;
 	// keyboard variables

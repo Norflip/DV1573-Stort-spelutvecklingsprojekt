@@ -1,18 +1,10 @@
 #include "PhongShading.hlsl"
+#include "IO.hlsl"
 
 Texture2D diffuseMap : register (t0);
 Texture2D normalMap : register (t1);
 
 SamplerState defaultSampleType : register (s0);
-
-struct VS_OUTPUT
-{
-	float4 position		 : SV_POSITION;
-	float3 normal		 : NORMAL;
-	float2 uv			 : TEXCOORD0;
-	float3 worldPosition : POSITION;
-	float3 tangent		 : TANGENT;
-};
 
 float4 main(VS_OUTPUT input) : SV_TARGET
 {
