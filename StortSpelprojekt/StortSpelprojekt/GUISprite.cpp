@@ -1,6 +1,6 @@
 #include "GUISprite.h"
 
-GUISprite::GUISprite(ID3D11Device* device, std::string, float xPos, float yPos)
+GUISprite::GUISprite(ID3D11Device* device, std::string filePath, float xPos, float yPos)
 {
 	// position
 	this->xPos = xPos;
@@ -18,6 +18,8 @@ GUISprite::GUISprite(ID3D11Device* device, std::string, float xPos, float yPos)
 	this->SRV = nullptr;
 	this->device = device;
 	this->spriteBatch = nullptr;
+	this->filePath = filePath;
+	SetWICSprite(device, filePath);
 }
 
 GUISprite::~GUISprite()
@@ -33,8 +35,9 @@ GUISprite::~GUISprite()
 	}
 }
 
-void GUISprite::Draw(dx::SpriteBatch* spriteBatch)
+void GUISprite::Draw()
 {
+
 	spriteBatch->Draw(SRV, this->position, nullptr, this->color, rotation, origin, scale, DirectX::SpriteEffects::SpriteEffects_None, 0.0f);
 }
 

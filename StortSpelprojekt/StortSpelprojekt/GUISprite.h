@@ -13,7 +13,7 @@ public:
 
 	GUISprite(ID3D11Device* device, std::string, float xPos, float yPos);
 	~GUISprite();
-	void Draw(dx::SpriteBatch* spriteBatch);
+	void Draw();
 	void SetPosition(float xPos, float yPos);
 	void SetWICSprite(ID3D11Device* device, std::string spriteFile);
 	void SetDDSSprite(ID3D11Device* device, std::string spriteFile); // no dds yet
@@ -28,5 +28,6 @@ private:
 	ID3D11Device* device;
 	dx::XMVECTOR position, color, origin, scale;
 	ID3D11ShaderResourceView* SRV;
+	
 
 };

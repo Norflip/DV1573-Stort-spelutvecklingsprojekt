@@ -23,6 +23,8 @@ void Scene::Initialize(Renderer* renderer)
 	camera->Resize(window->GetWidth(), window->GetHeight());
 	move = cameraObject->AddComponent<ControllerComponent>();
 	objects.push_back(cameraObject);
+	testSprite = new GUISprite(renderer->GetDevice(), "Textures/AxeIcon.png", 10, 10);
+	
 	
 	Shader shader;
 	Shader skeletonShader;
@@ -114,7 +116,7 @@ void Scene::Update(const float& deltaTime)
 		if (obj->HasFlag(ObjectFlag::REMOVED))
 			toRemove.push_back(obj);
 	}
-
+	testSprite->Draw();
 }
 
 void Scene::FixedUpdate(const float& fixedDeltaTime)
