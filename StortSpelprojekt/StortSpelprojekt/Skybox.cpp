@@ -17,7 +17,7 @@ Skybox::Skybox(ID3D11Device* device, ID3D11DeviceContext* context, Object* objec
 	// Add components
 	this->object->AddComponent<MeshComponent>(skyboxMesh, skyboxMaterial);
 		
-	this->object->GetTransform().SetScale(dx::XMVECTOR(dx::XMVectorSet(10,10,10, 1.0f)));	
+	this->object->GetTransform().SetScale(dx::XMVECTOR(dx::XMVectorSet(20,20,20, 1.0f)));	
 }
 
 Skybox::~Skybox()

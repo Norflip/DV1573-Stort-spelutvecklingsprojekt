@@ -64,7 +64,7 @@ void Scene::Initialize(Renderer* renderer)
 	testMesh->GetTransform().SetPosition(dx::XMLoadFloat3(&miniTranslation));
 	
 	testMesh2->GetTransform().SetPosition(dx::XMLoadFloat3(&miniTranslation2));
-	//AddObject(testMesh2, testMesh);
+	AddObject(testMesh2, testMesh);
 
 
 	testMesh3->GetTransform().SetPosition(dx::XMLoadFloat3(&miniTranslation3));
@@ -118,7 +118,7 @@ void Scene::Initialize(Renderer* renderer)
 	treeMaterials[0].SetShader(instanceShader);
 	treeMaterials[1].SetShader(alphaInstanceShader);
 
-	size_t nrOfInstances =100;
+	size_t nrOfInstances =10;
 	std::vector<Mesh::InstanceData> treeInstances(nrOfInstances);
 	std::vector<Mesh::InstanceData> treeBranchInstances(nrOfInstances);
 	std::vector<Mesh::InstanceData> treeLeaveInstances(nrOfInstances);
@@ -205,6 +205,7 @@ void Scene::Update(const float& deltaTime)
 	root->Update(deltaTime);
 	skyboxClass->GetThisObject()->GetTransform().SetPosition(camera->GetOwner()->GetTransform().GetPosition());
 	GameClock::Instance().Update();
+	std::cout << "FPS: " << GameClock::Instance().GetFramesPerSecond() << std::endl;
 }
 
 void Scene::FixedUpdate(const float& fixedDeltaTime)

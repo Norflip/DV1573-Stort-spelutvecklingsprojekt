@@ -6,15 +6,9 @@ Texture2D alphaMap : register (t1); //Maybe you can do this directly inside an a
 TextureCube skymap : register(t2);
 SamplerState defaultSampleType : register (s0);
 
-
-
 float4 main(VS_OUTPUT input) : SV_TARGET
 {
-	
-	
 	float4 textureColor = diffuseMap.Sample(defaultSampleType, input.uv);
-
-	
 
 	float3 normalized = normalize(input.normal);
 
@@ -31,19 +25,13 @@ float4 main(VS_OUTPUT input) : SV_TARGET
 
 	textureColor.a = alphaMap.Sample(defaultSampleType, input.uv).r;
 
-	
-
-
 	finalColor = saturate(finalColor * textureColor);
-
 
 	/*float3 reflectVector = reflect(-viewDirection, input.normal);
 
 	float4 envColor = skymap.SampleLevel(defaultSampleType, reflectVector, 0);
 
 	envColor *= 1;*/
-
-
 
 	//return float4(input.normal, 1.0f);
 	return finalColor;
