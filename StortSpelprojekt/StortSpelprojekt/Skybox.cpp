@@ -64,5 +64,5 @@ void Skybox::LoadAllTextures(ID3D11DeviceContext* context, ID3D11Device* device)
 	texture4.SetTexture(srvs[3]);
 	skyboxMaterial.SetTexture(texture4, TEXTURE_DIFFUSE5_SLOT, ShaderBindFlag::PIXEL);
 
-	skyboxMaterial.SetSamplerState(device, D3D11_TEXTURE_ADDRESS_WRAP, D3D11_FILTER_MIN_MAG_MIP_LINEAR);
+	skyboxMaterial.SetSampler(DXHelper::CreateSampler(D3D11_FILTER_MIN_MAG_MIP_LINEAR, D3D11_TEXTURE_ADDRESS_WRAP, device), 0, ShaderBindFlag::PIXEL);
 }

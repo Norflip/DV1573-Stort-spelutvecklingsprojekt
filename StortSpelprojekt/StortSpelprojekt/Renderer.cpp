@@ -46,9 +46,13 @@ void Renderer::Initialize(Window* window)
 	DXHelper::CreateBlendState(device, &blendStateOn, &blendStateOff);
 
 	/* Screenquad shader */
+	Shader screenQuadShader;
 	screenQuadShader.SetPixelShader(L"Shaders/ScreenQuad_ps.hlsl");
 	screenQuadShader.SetVertexShader(L"Shaders/ScreenQuad_vs.hlsl");
 	screenQuadShader.Compile(device);
+
+	screenQuadMaterial = Material(screenQuadShader);
+	screenQuadMaterial.SetSampler(DXHelper::CreateSampler(D3D11_FILTER_MIN_MAG_MIP_LINEAR, D3D11_TEXTURE_ADDRESS_CLAMP, device), 0, ShaderBindFlag::VERTEX);
 
 	/* Screenquad mesh */
 	screenQuadMesh = Mesh::CreateScreenQuad(device);
@@ -65,12 +69,12 @@ void Renderer::BeginManualRenderPass(RenderTexture& target)
 
 void Renderer::EndManualRenderPass()
 {
-	DrawItemsToTarget();
+	DrawQueueToTarget(opaqueItemQueue);
 }
 
-void Renderer::DrawItemsToTarget()
+void Renderer::DrawQueueToTarget(RenderQueue& queue)
 {
-	for (auto i : itemQueue)
+	for (auto i : queue)
 	{
 		// bind material from first item in queue
 		auto queue = i.second;
@@ -102,7 +106,7 @@ void Renderer::DrawItemsToTarget()
 	}
 
 	// clear queues
-	itemQueue.clear();
+	queue.clear();
 }
 
 void Renderer::RenderFrame()
@@ -114,7 +118,8 @@ void Renderer::RenderFrame()
 
 	ClearRenderTarget(midbuffers[bufferIndex]);
 	SetRenderTarget(midbuffers[bufferIndex]);
-	DrawItemsToTarget();
+	DrawQueueToTarget(opaqueItemQueue);
+	DrawQueueToTarget(transparentItemQueue);
 
 	for (auto i = passes.begin(); i < passes.end(); i++)
 	{
@@ -126,8 +131,8 @@ void Renderer::RenderFrame()
 
 			GetContext()->PSSetShaderResources(0, 1, &midbuffers[bufferIndex].srv);
 
-			(*i)->Pass(this, midbuffers[bufferIndex], midbuffers[nextBufferIndex]);
-			bufferIndex = nextBufferIndex;
+			if ((*i)->Pass(this, midbuffers[bufferIndex], midbuffers[nextBufferIndex]))
+				bufferIndex = nextBufferIndex;
 
 			// overkill? Gives the correct result if outside the loop but errors in output
 			context->PSSetShaderResources(0, 1, nullSRV);
@@ -137,7 +142,7 @@ void Renderer::RenderFrame()
 	ClearRenderTarget(backbuffer);
 	SetRenderTarget(backbuffer);
 	context->PSSetShaderResources(0, 1, &midbuffers[bufferIndex].srv);
-	DrawScreenQuad(screenQuadShader);
+	DrawScreenQuad(screenQuadMaterial);
 
 	HRESULT hr = swapchain->Present(0, 0); //1 here?
 	assert(SUCCEEDED(hr));
@@ -160,7 +165,7 @@ void Renderer::Draw(const Mesh& mesh, const Material& material, const dx::XMMATR
 	item.type = RenderItem::Type::Default;
 	item.world = model;
 	item.camera = &camera;
-	AddItem(item);
+	AddItem(item, material.IsTransparent());
 }
 
 void Renderer::DrawInstanced(const Mesh& mesh, const size_t& count, const Material& material, const CameraComponent& camera)
@@ -171,7 +176,7 @@ void Renderer::DrawInstanced(const Mesh& mesh, const size_t& count, const Materi
 	item.type = RenderItem::Type::Instanced;
 	item.instanceCount = count;
 	item.camera = &camera;
-	AddItem(item);
+	AddItem(item, material.IsTransparent());
 }
 
 void Renderer::DrawSkeleton(const Mesh& mesh, const Material& material, const dx::XMMATRIX& model, const CameraComponent& camera, cb_Skeleton& bones)
@@ -183,7 +188,7 @@ void Renderer::DrawSkeleton(const Mesh& mesh, const Material& material, const dx
 	item.bones = bones;
 	item.world = model;
 	item.camera = &camera;
-	AddItem(item);
+	AddItem(item, false);
 }
 
 
@@ -200,13 +205,15 @@ void Renderer::SetRenderTarget(const RenderTexture& target)
 	context->RSSetViewports(1, &target.viewport);
 }
 
-void Renderer::AddItem(const RenderItem& item)
+void Renderer::AddItem(const RenderItem& item, bool transparent)
 {
-	size_t materialID = item.material->GetID();
-	if (itemQueue.find(materialID) == itemQueue.end())
-		itemQueue.insert({ materialID, std::queue<RenderItem>() });
+	RenderQueue& queue = (transparent) ? transparentItemQueue : opaqueItemQueue;
 
-	itemQueue[materialID].push(item);
+	size_t materialID = item.material.GetID();
+	if (queue.find(materialID) == queue.end())
+		queue.insert({ materialID, std::queue<RenderItem>() });
+
+	queue[materialID].push(item);
 }
 
 void Renderer::DrawRenderItem(const RenderItem& item)
@@ -314,12 +321,11 @@ void Renderer::DrawRenderItemSkeleton(const RenderItem& item)
 	context->DrawIndexed(item.mesh.indices.size(), 0, 0);*/
 }
 
-
-
-void Renderer::DrawScreenQuad(const Shader& shader)
+void Renderer::DrawScreenQuad(const Material& material)
 {
 	context->OMSetBlendState(blendStateOff, BLENDSTATEMASK, 0xffffffff);
-	shader.BindToContext(context);
+	
+	material.BindToContext(context);
 	UINT stride = sizeof(Mesh::Vertex);
 	UINT offset = 0;
 
