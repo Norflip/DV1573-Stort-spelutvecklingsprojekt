@@ -1,6 +1,7 @@
 #include "DXHelper.h"
 
-void DXHelper::CreateSwapchain(const Window& window, _Out_ ID3D11Device** device, _Out_ ID3D11DeviceContext** context, _Out_ IDXGISwapChain** swapchain)
+void DXHelper::CreateSwapchain(const Window& window, _Out_ ID3D11Device** device, _Out_ ID3D11DeviceContext** context, _Out_ IDXGISwapChain** swapchain, 
+	ID3D11RasterizerState** cullBack, ID3D11RasterizerState** cullNone)
 {
 
 	size_t width = window.GetWidth();
@@ -15,7 +16,7 @@ void DXHelper::CreateSwapchain(const Window& window, _Out_ ID3D11Device** device
 	DXGI_SWAP_CHAIN_DESC swapChainDescription;
 	ZeroMemory(&swapChainDescription, sizeof(DXGI_SWAP_CHAIN_DESC));
 
-	swapChainDescription.BufferCount = 2;	 // one back buffer
+	swapChainDescription.BufferCount = 2;	 // one back buffer???
 	swapChainDescription.BufferDesc.Width = width;
 	swapChainDescription.BufferDesc.Height = height;
 	swapChainDescription.BufferDesc.Format = DXGI_FORMAT_R8G8B8A8_UNORM;
@@ -44,12 +45,17 @@ void DXHelper::CreateSwapchain(const Window& window, _Out_ ID3D11Device** device
 	rasterizerDescription.FillMode = D3D11_FILL_SOLID;
 	rasterizerDescription.DepthClipEnable = true;
 
-	ID3D11RasterizerState* rasterizerState;
-	ZeroMemory(&rasterizerState, sizeof(ID3D11RasterizerState));
+	
+	
 
-	HRESULT resultCreateRasterizer = (*device)->CreateRasterizerState(&rasterizerDescription, &rasterizerState);
+	HRESULT resultCreateRasterizer = (*device)->CreateRasterizerState(&rasterizerDescription, cullBack);
 	assert(SUCCEEDED(resultCreateRasterizer));
-	(*context)->RSSetState(rasterizerState);
+
+	rasterizerDescription.CullMode = D3D11_CULL_NONE;
+	
+	resultCreateRasterizer = (*device)->CreateRasterizerState(&rasterizerDescription, cullNone);
+	assert(SUCCEEDED(resultCreateRasterizer));
+	
 
 }
 
