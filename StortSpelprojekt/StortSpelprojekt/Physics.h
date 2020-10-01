@@ -1,7 +1,7 @@
 #pragma once
 
 #include "Bulletphysics\btBulletDynamicsCommon.h"
-#include "RigidBodyComp.h"
+#include "RigidBodyComponent.h"
 #include <vector>
 #include <iostream>
 

@@ -48,7 +48,7 @@ void RigidBodyComp::Initialize()
 
 	mass = 1.0f;
 
-	bool isDynamic = !GetOwner()->HasFlag(ObjectFlag::STATIC);
+	bool isDynamic = (mass != 0);
 
 	localInertia = btVector3(0, 0, 0);
 	if (isDynamic)

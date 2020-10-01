@@ -95,7 +95,7 @@ void Scene::Initialize(Renderer* renderer)
 	skybox = new Object("Skybox");
 	skyboxClass = new Skybox(renderer->GetDevice(), renderer->GetContext(), skybox);
 
-	
+	//
 	//Log::Add("PRINTING SCENE HIERARCHY ----");
 	//PrintSceneHierarchy(root, 0);
 	//Log::Add("----");
