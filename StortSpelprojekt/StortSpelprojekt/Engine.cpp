@@ -4,8 +4,11 @@ Engine::Engine(HINSTANCE hInstance) : window(hInstance), activeScene(nullptr)
 {
 	Log::Open();
 
-	window.Open(800, 800);
+	window.Open(1600, 900);
 	renderer.Initialize(&window);
+
+	HRESULT hr = CoInitializeEx(nullptr, COINIT_MULTITHREADED);
+	assert(SUCCEEDED(hr));		
 
 	RegisterScene(0, new Scene());
 	SwitchScene(0);

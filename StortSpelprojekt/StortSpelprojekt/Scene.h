@@ -51,8 +51,14 @@ private:
 
 	Input& input;
 
-	WorldGenerator worldGenerator;
+	/* Test stuff */
+	Texture* screenquadTex;
+	Object* quad;
 
-	/* test sky */
-	Object* testSkybox;
+
+	/* Test skybox in class */
+	Object* skybox;
+	Skybox* skyboxClass;		
+
+	WorldGenerator worldGenerator;	
 };

@@ -8,10 +8,13 @@
 #include "Texture.h"
 #include "Material.h"
 #include "CameraComponent.h"
+#include <time.h>
 
 namespace dx = DirectX;
 
 class RenderPass;
+
+
 
 class Renderer
 {
@@ -82,6 +85,7 @@ private:
 	Shader screenQuadShader;
 	Mesh screenQuadMesh;
 
+	
 	cb_Object cb_object_data;
 	ID3D11Buffer* obj_cbuffer;
 

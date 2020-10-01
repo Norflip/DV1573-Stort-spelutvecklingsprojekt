@@ -90,6 +90,9 @@
     <ClCompile Include="BoundingBoxes.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="Skybox.cpp">
+      <Filter>Source Files</Filter>
+      </ClCompile>
     <ClCompile Include="Chunk.cpp">
       <Filter>Source Files\Chunk</Filter>
     </ClCompile>

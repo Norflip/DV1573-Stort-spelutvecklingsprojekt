@@ -36,7 +36,7 @@ public:
 
 	/* Binding texture to correct slot in shader based on slot-input */
 	void SetTexture(Texture texture, size_t slot, ShaderBindFlag flag);
-	Texture GetTexture() { return this->texture; }
+	Texture GetTexture() { return this->textures[0].texture; }
 
 	//ZWEB DEFAULTS TEXTURES AS INPUTS TO PIXEL SO THIS CAN BE USED TO MANUALLY CHANGE BIND FLAGS
 	void ChangeTextureBindFlags(size_t slot, ShaderBindFlag flag);
@@ -52,7 +52,7 @@ private:
 	size_t id;
 
 	ID3D11ShaderResourceView* srv;
-	Texture texture;
+	//Texture texture;
 	size_t slot;
 	ShaderBindFlag flag;
 

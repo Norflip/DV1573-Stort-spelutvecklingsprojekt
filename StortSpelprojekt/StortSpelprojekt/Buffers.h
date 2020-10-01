@@ -45,6 +45,11 @@ struct cb_Scene
 	dx::XMFLOAT3 sunDirection;
 	float sunIntensity;
 	dx::XMFLOAT3 cameraPosition;
+
+	// new stuff
+	int id;
+	float factor;
+	dx::XMFLOAT2 padding10;
 };
 
 __declspec(align(16))
