@@ -1,5 +1,18 @@
 #include "DShape.h"
 
+DShape::~DShape()
+{
+	wireOnRS->Release();
+	wireOffRS->Release();
+
+	pixelShader->Release();
+	vertexShader->Release();
+	inputLayout->Release();
+
+	buffer->Release();
+	lineVBuffer->Release();
+}
+
 void DShape::DrawLine(dx::XMFLOAT3 a, dx::XMFLOAT3 b, dx::XMFLOAT3 color)
 {
 	DShape::Instance().AddShape(Shape(a, b, color, Type::LINE));
@@ -54,7 +67,7 @@ void DShape::m_Draw(ID3D11DeviceContext* context)
 		if (camera == nullptr)
 		{
 #if _DEBUG
-			std::cout << "Missing main camera" << std::endl; 
+			std::cout << "Missing main camera" << std::endl;
 #endif
 			return;
 		}

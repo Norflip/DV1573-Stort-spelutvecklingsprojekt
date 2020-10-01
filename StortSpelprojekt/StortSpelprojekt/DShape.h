@@ -41,7 +41,7 @@ class DShape
 
 public:
 	DShape() {};
-	virtual ~DShape() {};
+	virtual ~DShape();
 
 	static void DrawLine(dx::XMFLOAT3 a, dx::XMFLOAT3 b, dx::XMFLOAT3 color = SHAPES_DEFAULT_COLOR);
 
@@ -82,7 +82,6 @@ private:
 
 	ShapeData data;
 	ID3D11Buffer* buffer;
-
 	ID3D11Buffer* lineVBuffer;
 
 	size_t shapeCount;
