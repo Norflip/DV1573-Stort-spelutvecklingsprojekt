@@ -1,6 +1,11 @@
 #include "CameraComponent.h"
 
-CameraComponent::CameraComponent(float fieldOfView) : fieldOfView(fieldOfView) {}
+CameraComponent* CameraComponent::mainCamera = nullptr;
+
+CameraComponent::CameraComponent(float fieldOfView, bool main) : fieldOfView(fieldOfView) 
+{
+	if (main) mainCamera = this;
+}
 CameraComponent::~CameraComponent() {}
 
 void CameraComponent::Resize(size_t width, size_t height)
