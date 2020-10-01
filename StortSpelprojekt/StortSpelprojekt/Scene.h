@@ -55,7 +55,6 @@ private:
 	Texture* screenquadTex;
 	Object* quad;
 
-
 	/* Test skybox in class */
 	Object* skybox;
 	Skybox* skyboxClass;		

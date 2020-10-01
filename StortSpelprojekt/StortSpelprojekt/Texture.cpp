@@ -12,6 +12,7 @@ Texture::Texture(ID3D11ShaderResourceView* srv) : srv(srv), rtv(nullptr)
 
 Texture::~Texture()
 {
+	
 }
 
 bool Texture::LoadTexture(ID3D11Device* device, LPCWSTR textureFilepath)
