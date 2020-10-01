@@ -53,7 +53,6 @@ private:
 	/* Test stuff */
 	Texture* screenquadTex;
 	Object* quad;
-	Material screenquadmat;	
 
 
 	/* Test skybox in class */
