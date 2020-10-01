@@ -24,8 +24,7 @@ class Renderer
 		{
 			Default,
 			Instanced,
-			Skeleton,
-			InstancedAlpha
+			Skeleton
 		};
 
 		const Mesh* mesh;
@@ -56,7 +55,7 @@ public:
 	void Draw(const Mesh& mesh, const Material& material, const dx::XMMATRIX& model, const CameraComponent& camera);
 	void DrawInstanced(const Mesh& mesh, const size_t& count, const Material& material, const CameraComponent& camera);
 	void DrawSkeleton(const Mesh& mesh, const Material& material, const dx::XMMATRIX& model, const CameraComponent& camera, cb_Skeleton& bones);
-	void DrawAlphaInstanced(const Mesh& mesh, size_t count, const Material& material, const CameraComponent& camera);
+	
 
 
 	ID3D11Device* GetDevice() const { return this->device; }
@@ -73,7 +72,7 @@ private:
 	void DrawRenderItem(const RenderItem& item);
 	void DrawRenderItemInstanced(const RenderItem& item);
 	void DrawRenderItemSkeleton(const RenderItem& item);
-	void m_DrawRenderItemAlphaInstanced(const RenderItem& item);
+	
 	
 	
 private:

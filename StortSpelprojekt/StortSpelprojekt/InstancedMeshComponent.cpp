@@ -20,14 +20,19 @@ void InstancedMeshComponent::Draw(Renderer* renderer, CameraComponent* camera)
 	}
 	else
 	{
-		D3D11_MAPPED_SUBRESOURCE mappedData = {}; //zeroing out the memory like this.
+		
 		UINT instances = 0;
 
-		//IF INSTANCES ARE PARENTED THEY NEED TO HAVE THEIR POSITION UPDATED PROBABLY INSIDE THE TRANSFORM CLASS
-		renderer->GetContext()->Map(meshes[0].instanceBuffer, 0, D3D11_MAP_WRITE_DISCARD, 0, &mappedData); //the instance buffer is dynmaic so you can update it.
+		
 
-		Mesh::InstanceData* dataView = reinterpret_cast<Mesh::InstanceData*>(mappedData.pData); //a safe cast
+		Mesh::InstanceData* dataView = nullptr;
+		
 		dx::XMFLOAT3 tmpPos;
+		
+		D3D11_MAPPED_SUBRESOURCE mappedData = DXHelper::BindInstanceBuffer(renderer->GetContext(), meshes[0].instanceBuffer);
+		
+		 dataView = reinterpret_cast<Mesh::InstanceData*>(mappedData.pData);
+		
 		for (UINT instance = 0; instance < (UINT)meshes[0].instanceData.size(); instance++) //cull all the instances
 		{
 			tmpPos = meshes[0].instanceData[instance].instancePosition; //If the position is depending on a parent then update this variable with that parent. This is for static meshes.
@@ -40,7 +45,7 @@ void InstancedMeshComponent::Draw(Renderer* renderer, CameraComponent* camera)
 
 
 		}
-		renderer->GetContext()->Unmap(meshes[0].instanceBuffer, 0);
+		DXHelper::UnBindInstanceBuffer(renderer->GetContext(), meshes[0].instanceBuffer);
 
 		meshes[0].SetInstanceNr(instances);
 		if (instances > 0)

@@ -185,9 +185,7 @@ void Renderer::DrawSkeleton(const Mesh& mesh, const Material& material, const dx
 	AddItem(item);
 }
 
-void Renderer::DrawAlphaInstanced(const Mesh& mesh, size_t count, const Material& material, const CameraComponent& camera)
-{
-}
+
 
 void Renderer::ClearRenderTarget(const RenderTexture& target)
 {
@@ -291,29 +289,7 @@ void Renderer::DrawRenderItemSkeleton(const RenderItem& item)
 	context->DrawIndexed(item.mesh.indices.size(), 0, 0);*/
 }
 
-void Renderer::m_DrawRenderItemAlphaInstanced(const RenderItem& item)
-{
-	context->OMSetBlendState(blendStateOn, BLENDSTATEMASK, 0xffffffff);
 
-	dx::XMMATRIX vp = dx::XMMatrixMultiply(item.camera->GetViewMatrix(), item.camera->GetProjectionMatrix());
-	dx::XMStoreFloat4x4(&cb_object_data.vp, dx::XMMatrixTranspose(vp));
-
-	DXHelper::BindConstBuffer(context, obj_cbuffer, &cb_object_data, CB_OBJECT_SLOT, ShaderBindFlag::VERTEX);
-
-
-	cb_material_data = item.material->GetMaterialData();
-	DXHelper::BindConstBuffer(context, material_cbuffer, &cb_material_data, CB_MATERIAL_SLOT, ShaderBindFlag::PIXEL);
-
-	UINT stride[2] = { sizeof(Mesh::Vertex), sizeof(Mesh::InstanceData) };
-	UINT offset[2] = { 0 };
-	
-	context->IASetVertexBuffers(0, 2, item.mesh->vertexAndInstance, stride, offset);
-	context->IASetIndexBuffer(item.mesh->indexBuffer, DXGI_FORMAT_R32_UINT, 0);
-	context->IASetPrimitiveTopology(item.mesh->topology);
-	context->DrawIndexedInstanced(item.mesh->indices.size(), item.instanceCount, 0, 0, 0);
-
-
-}
 
 void Renderer::DrawScreenQuad(const Shader& shader)
 {
