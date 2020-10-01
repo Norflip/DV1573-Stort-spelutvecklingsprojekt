@@ -1,7 +1,6 @@
 #include "DXHelper.h"
 
-void DXHelper::CreateSwapchain(const Window& window, _Out_ ID3D11Device** device, _Out_ ID3D11DeviceContext** context, _Out_ IDXGISwapChain** swapchain, 
-	ID3D11RasterizerState** cullBack, ID3D11RasterizerState** cullNone)
+void DXHelper::CreateSwapchain(const Window& window, _Out_ ID3D11Device** device, _Out_ ID3D11DeviceContext** context, _Out_ IDXGISwapChain** swapchain)
 {
 
 	size_t width = window.GetWidth();
@@ -38,23 +37,7 @@ void DXHelper::CreateSwapchain(const Window& window, _Out_ ID3D11Device** device
 	assert(SUCCEEDED(resultCreateDevAndSwap));
 
 
-	// DEFAULT RASTERIZER STATE
-	D3D11_RASTERIZER_DESC rasterizerDescription;
-	ZeroMemory(&rasterizerDescription, sizeof(D3D11_RASTERIZER_DESC));
-	rasterizerDescription.CullMode = D3D11_CULL_BACK;
-	rasterizerDescription.FillMode = D3D11_FILL_SOLID;
-	rasterizerDescription.DepthClipEnable = true;
 
-	
-	
-
-	HRESULT resultCreateRasterizer = (*device)->CreateRasterizerState(&rasterizerDescription, cullBack);
-	assert(SUCCEEDED(resultCreateRasterizer));
-
-	rasterizerDescription.CullMode = D3D11_CULL_NONE;
-	
-	resultCreateRasterizer = (*device)->CreateRasterizerState(&rasterizerDescription, cullNone);
-	assert(SUCCEEDED(resultCreateRasterizer));
 	
 
 }
@@ -144,6 +127,27 @@ void DXHelper::CreateBlendState(ID3D11Device* device, ID3D11BlendState** blendOn
 
 	
 
+}
+
+void DXHelper::CreateRSState(ID3D11Device* device, ID3D11RasterizerState** cullBack, ID3D11RasterizerState** cullNone)
+{
+	// DEFAULT RASTERIZER STATE
+	D3D11_RASTERIZER_DESC rasterizerDescription;
+	ZeroMemory(&rasterizerDescription, sizeof(D3D11_RASTERIZER_DESC));
+	rasterizerDescription.CullMode = D3D11_CULL_BACK;
+	rasterizerDescription.FillMode = D3D11_FILL_SOLID;
+	rasterizerDescription.DepthClipEnable = true;
+
+
+
+
+	HRESULT resultCreateRasterizer = device->CreateRasterizerState(&rasterizerDescription, cullBack);
+	assert(SUCCEEDED(resultCreateRasterizer));
+
+	rasterizerDescription.CullMode = D3D11_CULL_NONE;
+
+	resultCreateRasterizer = device->CreateRasterizerState(&rasterizerDescription, cullNone);
+	assert(SUCCEEDED(resultCreateRasterizer));
 }
 
 RenderTexture DXHelper::CreateBackbuffer(size_t width, size_t height, ID3D11Device* device,  IDXGISwapChain* swapchain)

@@ -32,10 +32,13 @@ void Renderer::Initialize(Window* window)
 {
 	this->outputWindow = window;
 
-	DXHelper::CreateSwapchain(*window, &device, &context, &swapchain,&rasterizerStateCullBack, &rasterizerStateCullNone);
+	DXHelper::CreateSwapchain(*window, &device, &context, &swapchain);
 	this->backbuffer = DXHelper::CreateBackbuffer(window->GetWidth(), window->GetHeight(), device, swapchain);
 	this->midbuffers[0] = DXHelper::CreateRenderTexture(window->GetWidth(), window->GetHeight(), device);
 	this->midbuffers[1] = DXHelper::CreateRenderTexture(window->GetWidth(), window->GetHeight(), device);
+
+	DXHelper::CreateRSState(device, &rasterizerStateCullBack, &rasterizerStateCullNone);
+
 
 	for (int bone = 0; bone < 60; bone++) //set id matrix as default for the bones. So if no animation is happening the character is not funky.
 	{
