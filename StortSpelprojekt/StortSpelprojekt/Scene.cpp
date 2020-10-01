@@ -63,11 +63,11 @@ void Scene::Initialize(Renderer* renderer)
 	testMesh->GetTransform().SetPosition(dx::XMLoadFloat3(&miniTranslation));
 	
 	testMesh2->GetTransform().SetPosition(dx::XMLoadFloat3(&miniTranslation2));
-	//AddObject(testMesh2, testMesh);
+	AddObject(testMesh2, testMesh);
 
 
 	testMesh3->GetTransform().SetPosition(dx::XMLoadFloat3(&miniTranslation3));
-	//AddObject(testMesh3, testMesh2);
+	AddObject(testMesh3, testMesh2);
 
 	testMesh2->AddComponent<MoveComponent>();
 
@@ -80,9 +80,9 @@ void Scene::Initialize(Renderer* renderer)
 	testMesh2->AddComponent<MeshComponent>(sylvanas[0], sylvanasMat[0]);
 	testMesh3->AddComponent<MeshComponent>(cylinder[0], cylinderMat[0]);
 	
-	//AddObject(testMesh);
-	/*AddObject(testMesh2);
-	AddObject(testMesh3);*/
+	AddObject(testMesh);
+	//AddObject(testMesh2);
+	//AddObject(testMesh3);
 
 	/* * * * * * * * ** * * * * */
 	
@@ -177,20 +177,20 @@ void Scene::Initialize(Renderer* renderer)
 	
 
 	
-	//AddObject(treeBase);
+	AddObject(treeBase);
 
-	//AddObject(treeBranches);
+	AddObject(treeBranches);
 
-	//AddObject(leaves);
+	AddObject(leaves);
 	/*************************INSTANCING****************/
 
-	//AddObject(testMesh2);
-	//AddObject(testMesh3);
+	AddObject(testMesh2);
+	AddObject(testMesh3);
 	Object* testMesh4 = new Object("test4");
 	testMesh4->AddComponent<NodeWalkerComponent>();
 	testMesh4->GetTransform().SetPosition(dx::XMLoadFloat3(&miniTranslation4));
 	testMesh4->AddComponent<MeshComponent>(zwebMeshes[0], sylvanasMat[0]);
-//	AddObject(testMesh4);
+	AddObject(testMesh4);
 
 	/* * * * * * * * ** * * * * */
 
@@ -231,7 +231,7 @@ void Scene::Render()
 
 	// skybox draw object 
 	skyboxClass->GetThisObject()->Draw(renderer, camera);
-	//worldGenerator.Draw(renderer, camera);
+	worldGenerator.Draw(renderer, camera);
 
 	renderer->RenderFrame();
 }
