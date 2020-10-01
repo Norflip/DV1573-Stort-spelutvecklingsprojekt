@@ -1,7 +1,7 @@
 #include "Renderer.h"
 #include "RenderPass.h"
 
-Renderer::Renderer() : device(nullptr), context(nullptr), swapchain(nullptr), obj_cbuffer(nullptr), skeleton_cbuffer(nullptr)
+Renderer::Renderer() : device(nullptr), context(nullptr), swapchain(nullptr), obj_cbuffer(nullptr), skeleton_srvbuffer(nullptr),skeleton_srv(nullptr)
 {
 	srand(unsigned int(time(0)));
 }
@@ -19,13 +19,14 @@ Renderer::~Renderer()
 		delete (*i);
 
 	obj_cbuffer->Release();
-	skeleton_cbuffer->Release();
+	skeleton_srvbuffer->Release();
 	light_cbuffer->Release();
 	material_cbuffer->Release();
 
 	rasterizerStateCullBack->Release();
 	rasterizerStateCullNone->Release();
 
+	skeleton_srv->Release();
 }
 
 void Renderer::Initialize(Window* window)
@@ -36,17 +37,17 @@ void Renderer::Initialize(Window* window)
 	this->backbuffer = DXHelper::CreateBackbuffer(window->GetWidth(), window->GetHeight(), device, swapchain);
 	this->midbuffers[0] = DXHelper::CreateRenderTexture(window->GetWidth(), window->GetHeight(), device);
 	this->midbuffers[1] = DXHelper::CreateRenderTexture(window->GetWidth(), window->GetHeight(), device);
+	srv_skeleton_data.resize(60);
 
-	for (int bone = 0; bone < 60; bone++) //set id matrix as default for the bones. So if no animation is happening the character is not funky.
-	{
-		dx::XMStoreFloat4x4(&cb_skeleton_data.bones[bone], dx::XMMatrixIdentity());
-	}
-
+	dx::XMFLOAT4X4 bone;
+	dx::XMStoreFloat4x4(&bone, dx::XMMatrixIdentity());
+	
+	srv_skeleton_data = { bone };//set id matrix as default for the bones. So if no animation is happening the character is not funky.
 	DXHelper::CreateConstBuffer(device, &obj_cbuffer, &cb_object_data, sizeof(cb_object_data));
 	DXHelper::CreateConstBuffer(device, &light_cbuffer, &cb_scene, sizeof(cb_scene));
 	DXHelper::CreateConstBuffer(device, &material_cbuffer, &cb_material_data, sizeof(cb_material_data));
-	DXHelper::CreateConstBuffer(device, &skeleton_cbuffer, &cb_skeleton_data, sizeof(cb_skeleton_data));
-
+	
+	DXHelper::CreateStructuredBuffer(device, &skeleton_srvbuffer, &srv_skeleton_data, sizeof(dx::XMFLOAT4X4), srv_skeleton_data.size(), &skeleton_srv);
 
 	DXHelper::CreateBlendState(device, &blendStateOn, &blendStateOff);
 
@@ -189,8 +190,9 @@ void Renderer::DrawInstanced(const Mesh& mesh, const size_t& count, const Materi
 	AddItem(item, material.IsTransparent());
 }
 
-void Renderer::DrawSkeleton(const Mesh& mesh, const Material& material, const dx::XMMATRIX& model, const CameraComponent& camera, cb_Skeleton& bones)
+void Renderer::DrawSkeleton(const Mesh& mesh, const Material& material, const dx::XMMATRIX& model, const CameraComponent& camera, std::vector<dx::XMFLOAT4X4>& bones)
 {
+	
 	RenderItem item;
 	item.mesh = &mesh;
 	item.material = &material;
@@ -199,6 +201,7 @@ void Renderer::DrawSkeleton(const Mesh& mesh, const Material& material, const dx
 	item.world = model;
 	item.camera = &camera;
 	AddItem(item, false);
+	
 }
 
 void Renderer::SetRSToCullNone()
@@ -318,22 +321,21 @@ void Renderer::DrawRenderItemInstanced(const RenderItem& item)
 
 void Renderer::DrawRenderItemSkeleton(const RenderItem& item)
 {
-	/*dx::XMMATRIX mvp = dx::XMMatrixMultiply(item.world, dx::XMMatrixMultiply(item.camera->GetViewMatrix(), item.camera->GetProjectionMatrix()));
+	dx::XMMATRIX mvp = dx::XMMatrixMultiply(item.world, dx::XMMatrixMultiply(item.camera->GetViewMatrix(), item.camera->GetProjectionMatrix()));
 	dx::XMStoreFloat4x4(&cb_object_data.mvp, dx::XMMatrixTranspose(mvp));
 	dx::XMStoreFloat4x4(&cb_object_data.world, dx::XMMatrixTranspose(item.world));
 	DXHelper::BindConstBuffer(context, obj_cbuffer, &cb_object_data, CB_OBJECT_SLOT, ShaderBindFlag::VERTEX);
 
-	cb_skeleton_data = item.bones;
-	DXHelper::BindConstBuffer(context, skeleton_cbuffer, &cb_skeleton_data, CB_SKELETON_SLOT, ShaderBindFlag::VERTEX);
-
+	
+	DXHelper::BindStructuredBuffer(context, skeleton_srvbuffer, (void*)&item.bones, BONES_SRV_SLOT, ShaderBindFlag::VERTEX, &skeleton_srv);
 	UINT stride = sizeof(Mesh::Vertex);
 	UINT offset = 0;
 
-	context->IASetVertexBuffers(0, 1, &item.mesh.vertexBuffer, &stride, &offset);
-	context->IASetIndexBuffer(item.mesh.indexBuffer, DXGI_FORMAT_R32_UINT, 0);
-	context->IASetPrimitiveTopology(item.mesh.topology);
+	context->IASetVertexBuffers(0, 1, &item.mesh->vertexBuffer, &stride, &offset);
+	context->IASetIndexBuffer(item.mesh->indexBuffer, DXGI_FORMAT_R32_UINT, 0);
+	context->IASetPrimitiveTopology(item.mesh->topology);
 
-	context->DrawIndexed(item.mesh.indices.size(), 0, 0);*/
+	context->DrawIndexed(item.mesh->indices.size(), 0, 0);
 }
 
 void Renderer::DrawScreenQuad(const Material& material)

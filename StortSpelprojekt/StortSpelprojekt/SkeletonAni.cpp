@@ -1,6 +1,6 @@
 #include "SkeletonAni.h"
 
-DirectX::XMMATRIX& SkeletonAni::Lerp(float elapsedTime, std::vector<Bone>& keys)
+DirectX::XMFLOAT4X4& SkeletonAni::Lerp(float elapsedTime, std::vector<Bone>& keys)
 {
     animationTime = elapsedTime * fps;
     //animationTime += elapsedTime;
@@ -42,15 +42,17 @@ DirectX::XMMATRIX& SkeletonAni::Lerp(float elapsedTime, std::vector<Bone>& keys)
     assert(t >= 0.0f && t <= 1.0f);
 
     
-    rotQ = DirectX::XMQuaternionSlerp(keys[firstIndex].rotationQuaternion, keys[secondIndex].rotationQuaternion, t); 
+    dx::XMStoreFloat4(&rotQ, DirectX::XMQuaternionSlerp(dx::XMLoadFloat4(&keys[firstIndex].rotationQuaternion), dx::XMLoadFloat4(&keys[secondIndex].rotationQuaternion), t));
+    
+    dx::XMStoreFloat4x4(&rotQM, DirectX::XMMatrixRotationQuaternion(dx::XMLoadFloat4(&rotQ)));
+    
+    dx::XMStoreFloat4(&transV, DirectX::XMVectorLerp(dx::XMLoadFloat4(&keys[firstIndex].translationVector), dx::XMLoadFloat4(&keys[secondIndex].translationVector), t));
+    
+    dx::XMStoreFloat4x4(&transM, DirectX::XMMatrixTranslationFromVector(dx::XMLoadFloat4(&transV)));
 
-    rotQM = DirectX::XMMatrixRotationQuaternion(rotQ);
+     
 
-    transV = DirectX::XMVectorLerp(keys[firstIndex].translationVector, keys[secondIndex].translationVector, t);
-
-    transM = DirectX::XMMatrixTranslationFromVector(transV);
-
-    RT = rotQM * transM; //I have omitted scale
+    dx::XMStoreFloat4x4(&RT, dx::XMLoadFloat4x4(&rotQM) * dx::XMLoadFloat4x4(&transM)); //I have omitted scale
 
 
 
@@ -64,22 +66,22 @@ DirectX::XMMATRIX& SkeletonAni::Lerp(float elapsedTime, std::vector<Bone>& keys)
 SkeletonAni::SkeletonAni()
 {
     animationTime = 0.0f;
-    
+    bones.resize(60); //Maximum number of bones, the animation doesn't need to have this many.
 }
 
 void SkeletonAni::Makeglobal(float elapsedTime, const DirectX::XMMATRIX& globalParent, std::vector<Bone>& keys)
 {
-    DirectX::XMMATRIX toRoot = Lerp(elapsedTime, keys) * globalParent; //These matrices are local, need to make them global recursively.
+    DirectX::XMMATRIX toRoot = dx::XMLoadFloat4x4(&Lerp(elapsedTime, keys)) * globalParent; //These matrices are local, need to make them global recursively.
 
 
 
     unsigned int ftIndex = keys[0].index; //all of these indices have the same index number.
 
-    DirectX::XMMATRIX finalTransform = offsetM[ftIndex] * toRoot;
+    DirectX::XMMATRIX finalTransform = dx::XMLoadFloat4x4(&offsetM[ftIndex]) * toRoot;
     
    
 
-    XMStoreFloat4x4(&skeletonDataB.bones[ftIndex], DirectX::XMMatrixTranspose(finalTransform));
+    XMStoreFloat4x4(&bones[ftIndex], DirectX::XMMatrixTranspose(finalTransform));
     
 
     for (unsigned int i = 0; i < keyBones.size(); i++) //recursively find all the children and repeat.
@@ -90,7 +92,7 @@ void SkeletonAni::Makeglobal(float elapsedTime, const DirectX::XMMATRIX& globalP
         }
     }
 
-   
+    //return bones;
     
 }
 
@@ -128,8 +130,8 @@ void SkeletonAni::SetUpOffsetsFromMatrices(std::vector<SkeletonOffsetsHeader>& o
             , offsets[i].m[8], offsets[i].m[9], offsets[i].m[10], offsets[i].m[11]
             , offsets[i].m[12], offsets[i].m[13], offsets[i].m[14], offsets[i].m[15]);
 
-
-        offsetM[boneIDMap[(std::string)offsets[i].linkName]] = mat;
+        dx::XMStoreFloat4x4(&offsetM[boneIDMap[(std::string)offsets[i].linkName]], mat);
+        
     }
 }
 
@@ -169,10 +171,9 @@ void SkeletonAni::SetUpKeys(std::string boneName, std::vector<SkeletonKeysHeader
         DirectX::XMVECTOR trans = DirectX::XMVectorSet(keys[i].t[0], keys[i].t[1], keys[i].t[2], keys[i].t[3]); //konverteras till left handed i fbx
 
 
-
-        joint.rotationQuaternion = rot;
-        joint.translationVector = trans;
-
+        dx::XMStoreFloat4(&joint.rotationQuaternion, rot);
+        dx::XMStoreFloat4(&joint.translationVector, trans);
+        
 
 
         jointKeysVector.push_back(joint); //every joint contains all the keyframes.
@@ -192,11 +193,7 @@ void SkeletonAni::SetUpKeys(std::string boneName, std::vector<SkeletonKeysHeader
 
 }
 
-cb_Skeleton& SkeletonAni::GetSkeletonData()
-{
 
-    return skeletonDataB;
-}
 
 std::map<std::string, unsigned int>& SkeletonAni::getBoneIDMap()
 {

@@ -71,4 +71,10 @@ namespace DXHelper
 
 	ID3D11ShaderResourceView* CreateTexture(unsigned char* buffer, size_t width, size_t height, size_t channels, DXGI_FORMAT format, ID3D11Device* device);
 	ID3D11SamplerState* CreateSampler(D3D11_FILTER filter, D3D11_TEXTURE_ADDRESS_MODE mode, ID3D11Device* device);
+
+	//Structured buffer
+	//stride is sizeof struct, width is all it contains.
+	void CreateStructuredBuffer(ID3D11Device* device, ID3D11Buffer** buffer, void* data, unsigned int byteStride, unsigned int arraySize,
+		ID3D11ShaderResourceView** srv);
+	void BindStructuredBuffer(ID3D11DeviceContext* context, ID3D11Buffer* buffer, void* data, size_t slot, ShaderBindFlag flag, ID3D11ShaderResourceView** srv);
 }

@@ -15,8 +15,8 @@ struct Bone
 	float frame;
 	std::string name;
 	std::string parentName;
-	DirectX::XMVECTOR rotationQuaternion;
-	DirectX::XMVECTOR translationVector;
+	dx::XMFLOAT4 rotationQuaternion;
+	dx::XMFLOAT4 translationVector;
 };
 
 class SkeletonAni
@@ -26,14 +26,14 @@ private:
 	unsigned int firstIndex, secondIndex;
 	std::map<std::string, unsigned int> boneIDMap;
 	std::vector<std::vector<Bone>> keyBones;
-	std::vector<DirectX::XMMATRIX> offsetM;
-	DirectX::XMMATRIX transM;
-	DirectX::XMMATRIX rotQM;
-	DirectX::XMVECTOR transV;
-	DirectX::XMVECTOR rotQ;
-	DirectX::XMMATRIX RT;
-	
-	DirectX::XMMATRIX& Lerp(float elapsedTime, std::vector<Bone>& keys);
+	std::vector<dx::XMFLOAT4X4> offsetM;
+	dx::XMFLOAT4X4 transM;
+	dx::XMFLOAT4X4 rotQM;
+	dx::XMFLOAT4 transV;
+	dx::XMFLOAT4 rotQ;
+	dx::XMFLOAT4X4 RT;
+
+	DirectX::XMFLOAT4X4& Lerp(float elapsedTime, std::vector<Bone>& keys);
 public:
 	SkeletonAni();
 	void Makeglobal(float elapsedTime, const DirectX::XMMATRIX& globalParent, std::vector<Bone>& keys);
@@ -43,10 +43,10 @@ public:
 	std::vector<Bone>& GetRootKeyJoints();
 	void SetUpIDMapAndFrames(std::map<std::string, unsigned int> boneIDMap, float fps, float aniLenght);
 	void SetUpKeys(std::string boneName, std::vector<SkeletonKeysHeader>& keys);
-	cb_Skeleton& GetSkeletonData();
+	//cb_Skeleton& GetSkeletonData();
 	std::map<std::string, unsigned int>& getBoneIDMap();//This is useful in case you have multiple animations.
-	cb_Skeleton skeletonDataB;
-
-	
+	//cb_Skeleton skeletonDataB;
+	std::vector<dx::XMFLOAT4X4>& GetSkeletonData();
+	std::vector<dx::XMFLOAT4X4> bones;
 };
 

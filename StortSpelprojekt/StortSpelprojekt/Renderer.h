@@ -34,9 +34,9 @@ class Renderer
 
 		Type type;
 		size_t instanceCount;
-		cb_Skeleton bones;
-
-		dx::XMMATRIX world;
+		//cb_Skeleton bones;
+		std::vector<dx::XMFLOAT4X4> bones;
+		dx::XMMATRIX world; //this should be float4x4? no?
 		const CameraComponent* camera;
 	};
 
@@ -58,7 +58,7 @@ public:
 
 	void Draw(const Mesh& mesh, const Material& material, const dx::XMMATRIX& model, const CameraComponent& camera);
 	void DrawInstanced(const Mesh& mesh, const size_t& count, const Material& material, const CameraComponent& camera);
-	void DrawSkeleton(const Mesh& mesh, const Material& material, const dx::XMMATRIX& model, const CameraComponent& camera, cb_Skeleton& bones);
+	void DrawSkeleton(const Mesh& mesh, const Material& material, const dx::XMMATRIX& model, const CameraComponent& camera, std::vector<dx::XMFLOAT4X4>& bones);
 	
 	void SetRSToCullNone();
 
@@ -93,9 +93,9 @@ private:
 	cb_Object cb_object_data;
 	ID3D11Buffer* obj_cbuffer;
 
-	cb_Skeleton cb_skeleton_data;
-	ID3D11Buffer* skeleton_cbuffer;
-	
+	std::vector<dx::XMFLOAT4X4> srv_skeleton_data;
+	ID3D11Buffer* skeleton_srvbuffer;
+	ID3D11ShaderResourceView* skeleton_srv;
 	
 	cb_Scene cb_scene;
 	ID3D11Buffer* light_cbuffer;

@@ -41,7 +41,10 @@ void Scene::Initialize(Renderer* renderer)
 	shader.SetPixelShader(L"Shaders/Default_ps.hlsl");
 	shader.SetVertexShader(L"Shaders/Default_vs.hlsl");
 	skeletonShader.SetVertexShader(L"Shaders/Skeleton_vs.hlsl");
+	skeletonShader.SetPixelShader(L"Shaders/Default_ps.hlsl");
+	skeletonShader.SetInputLayoutStructure(8, skeletonShader.SKELETON_INPUT_LAYOUTd);
 	shader.Compile(renderer->GetDevice());
+	skeletonShader.Compile(renderer->GetDevice());
 
 	std::vector<Mesh> zwebMeshes = ZWEBLoader::LoadMeshes(ZWEBLoadType::NoAnimation, "Models/brickSphere.ZWEB", renderer->GetDevice());
 	std::vector<Material> zwebMaterials = ZWEBLoader::LoadMaterials("Models/brickSphere.ZWEB", shader, renderer->GetDevice());
@@ -184,7 +187,25 @@ void Scene::Initialize(Renderer* renderer)
 
 	AddObject(leaves);
 	/*************************INSTANCING****************/
+	
+	
+	/*************************SKELETON****************/
 
+	std::vector<Mesh> monsterEmilMesh = ZWEBLoader::LoadMeshes(ZWEBLoadType::SkeletonAnimation, "Models/monsterAndIdle.ZWEB", renderer->GetDevice());
+	std::vector<Material> monsterEmilMat = ZWEBLoader::LoadMaterials("Models/monsterAndIdle.ZWEB", shader, renderer->GetDevice());
+
+	SkeletonAni monsterEmilIdle = ZWEBLoader::LoadSkeletonOnly("Models/monsterAndIdleAni.ZWEB", monsterEmilMesh[0].GetBoneIDS());
+
+
+	Object* monsterEmil = new Object("monsterEmil");
+
+	monsterEmil->AddComponent<SkeletonMeshComponent>(monsterEmilMesh[0], monsterEmilMat[0]);
+
+	monsterEmil->RemoveFlag(ObjectFlag::ENABLED);
+
+	AddObject(monsterEmil);
+
+	/*************************SKELETON****************/
 	//AddObject(testMesh2);
 	//AddObject(testMesh3);
 	Object* testMesh4 = new Object("test4");
