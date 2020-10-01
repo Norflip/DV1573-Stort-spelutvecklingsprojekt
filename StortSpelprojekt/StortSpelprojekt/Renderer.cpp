@@ -230,8 +230,10 @@ void Renderer::DrawRenderItem(const RenderItem& item)
 
 	/**********************************/
 
-	// temporary switch scene id
-	// very funky stuff here		'o.O'
+	/* This is a temporary solution to lerp between textures in the shader 
+	   This is jsut ot check if the ids (gonna be our different levels later) works
+	*/
+
 	static int ids = 0;
 	static float color = 0.0f;
 
