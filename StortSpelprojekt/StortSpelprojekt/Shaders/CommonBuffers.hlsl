@@ -31,4 +31,7 @@ cbuffer cb_Scene : register(b2)
     float3 sunDirection;
     float sunIntensity;
 	float3 cameraPosition;
+
+	int id;
+	float factor;
 }

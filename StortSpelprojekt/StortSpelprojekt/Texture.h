@@ -4,6 +4,11 @@
 #define TEXTURE_DIFFUSE_SLOT 0
 #define TEXTURE_NORMAL_SLOT 1
 
+#define TEXTURE_DIFFUSE2_SLOT 2
+#define TEXTURE_DIFFUSE3_SLOT 3
+#define TEXTURE_DIFFUSE4_SLOT 4
+#define TEXTURE_DIFFUSE5_SLOT 5
+
 class Texture {
 public:
 	Texture();

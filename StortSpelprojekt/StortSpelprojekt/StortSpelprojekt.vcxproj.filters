@@ -90,6 +90,9 @@
     <ClCompile Include="BoundingBoxes.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="Skybox.cpp">
+      <Filter>Source Files</Filter>
+      </ClCompile>
     <ClCompile Include="Chunk.cpp">
       <Filter>Source Files\Chunk</Filter>
     </ClCompile>
@@ -98,6 +101,9 @@
     </ClCompile>
     <ClCompile Include="ThirdParty\SimplexNoise.cpp">
       <Filter>Source Files\Chunk</Filter>
+    </ClCompile>
+    <ClCompile Include="NodeWalkerComponent.cpp">
+      <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -211,6 +217,9 @@
     </ClInclude>
     <ClInclude Include="ThirdParty\SimplexNoise.h">
       <Filter>Source Files\Chunk</Filter>
+    </ClInclude>
+    <ClInclude Include="NodeWalkerComponent.h">
+      <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

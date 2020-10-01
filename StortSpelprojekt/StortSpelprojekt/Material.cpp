@@ -94,6 +94,7 @@ void Material::SetTexture(Texture texture, size_t slot, ShaderBindFlag flag)
 		flagMap.insert({ slot, texture });
 	else
 		flagMap[slot] = texture;
+
 }
 
 void Material::SetSampler(ID3D11SamplerState* state, size_t slot, ShaderBindFlag flag)

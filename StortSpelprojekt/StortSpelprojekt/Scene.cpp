@@ -59,6 +59,7 @@ void Scene::Initialize(Renderer* renderer)
 	dx::XMFLOAT3 miniTranslation = dx::XMFLOAT3(0, 0, 6);
 	dx::XMFLOAT3 miniTranslation2 = dx::XMFLOAT3(2, 2, 2);
 	dx::XMFLOAT3 miniTranslation3 = dx::XMFLOAT3(-4, -3, -4);
+	dx::XMFLOAT3 miniTranslation4 = dx::XMFLOAT3(0.f, -7.f, 0.f);
 
 	testMesh->GetTransform().SetPosition(dx::XMLoadFloat3(&miniTranslation));
 	
@@ -83,28 +84,21 @@ void Scene::Initialize(Renderer* renderer)
 	AddObject(testMesh);
 	//AddObject(testMesh2);
 	//AddObject(testMesh3);
-
+	Object* testMesh4 = new Object("test4");
+	testMesh4->AddComponent<NodeWalkerComponent>();
+	testMesh4->GetTransform().SetPosition(dx::XMLoadFloat3(&miniTranslation4));
+	testMesh4->AddComponent<MeshComponent>(zwebMeshes[0], sylvanasMat[0]);
+	AddObject(testMesh4);
 
 	/* * * * * * * * ** * * * * */
+	
+	skybox = new Object("Skybox");
+	skyboxClass = new Skybox(renderer->GetDevice(), renderer->GetContext(), skybox);
 
-	/*Object* skybox;
-	Skybox* skybox = new Skybox(skybox);*/
-	/* test skybox */
-
-	Shader skyboxShader;
-	skyboxShader.SetPixelShader(L"Shaders/Sky_ps.hlsl");
-	skyboxShader.SetVertexShader(L"Shaders/Sky_vs.hlsl");
-	skyboxShader.Compile(renderer->GetDevice());
-
-	std::vector<Mesh> zwebSkybox = ZWEBLoader::LoadMeshes(ZWEBLoadType::NoAnimation, "Models/skybox.ZWEB", renderer->GetDevice());
-	std::vector<Material> zwebSkyboxMaterials = ZWEBLoader::LoadMaterials("Models/skybox.ZWEB", skyboxShader, renderer->GetDevice());
-
-	testSkybox = new Object("skybox", ObjectFlag::NO_CULL | ObjectFlag::ENABLED);
-	testSkybox->AddComponent<MeshComponent>(zwebSkybox, zwebSkyboxMaterials);
-
-	Log::Add("PRINTING SCENE HIERARCHY ----");
-	PrintSceneHierarchy(root, 0);
-	Log::Add("----");
+	
+	//Log::Add("PRINTING SCENE HIERARCHY ----");
+	//PrintSceneHierarchy(root, 0);
+	//Log::Add("----");
 }
 
 void Scene::Update(const float& deltaTime)
@@ -123,7 +117,10 @@ void Scene::FixedUpdate(const float& fixedDeltaTime)
 void Scene::Render()
 {	
 	root->Draw(renderer, camera);
-	testSkybox->Draw(renderer, camera);
+
+	// skybox draw object 
+	skyboxClass->GetThisObject()->Draw(renderer, camera);
+	//testSkybox->Draw(renderer, camera);
 	worldGenerator.Draw(renderer, camera);
 
 	renderer->RenderFrame();

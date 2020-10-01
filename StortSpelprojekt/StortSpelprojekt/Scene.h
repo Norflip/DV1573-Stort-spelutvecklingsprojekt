@@ -11,6 +11,7 @@
 #include "MeshComponent.h"
 #include "ZWEBLoader.h"
 #include "SkeletonMeshComponent.h"
+#include "NodeWalkerComponent.h"
 
 #include "Skybox.h"
 #include "WorldGenerator.h"
@@ -50,8 +51,14 @@ private:
 
 	Input& input;
 
-	WorldGenerator worldGenerator;
+	/* Test stuff */
+	Texture* screenquadTex;
+	Object* quad;
 
-	/* test sky */
-	Object* testSkybox;
+
+	/* Test skybox in class */
+	Object* skybox;
+	Skybox* skyboxClass;		
+
+	WorldGenerator worldGenerator;	
 };
