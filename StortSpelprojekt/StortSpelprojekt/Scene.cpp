@@ -104,6 +104,7 @@ void Scene::Update(const float& deltaTime)
 {
 	input.UpdateInputs();
 	root->Update(deltaTime);
+	skyboxClass->GetThisObject()->GetTransform().SetPosition(camera->GetOwner()->GetTransform().GetPosition());
 	GameClock::Instance().Update();
 }
 

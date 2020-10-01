@@ -278,7 +278,11 @@ Chunk* WorldGenerator::CreateChunk(ChunkType type, dx::XMINT2 index, const Path&
 	std::string name = "chunk " + std::to_string(index.x) + ", " + std::to_string(index.y);
 	Object* chunkObject = new Object(name, ObjectFlag::DEFAULT);
 
-	chunkObject->GetTransform().SetPosition(Chunk::IndexToWorld(index, -5.0f));
+	dx::XMVECTOR indexPos = Chunk::IndexToWorld(index, -5.0f);
+	indexPos.m128_f32[0] -= 40.0f;
+	indexPos.m128_f32[2] -= 120.0f;
+
+	chunkObject->GetTransform().SetPosition(indexPos);
 	chunkObject->AddComponent<MeshComponent>(chunkMesh, material);
 
 	Chunk* chunk = chunkObject->AddComponent<Chunk>(index, type);
