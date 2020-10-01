@@ -137,7 +137,7 @@
       <OptimizeReferences>true</OptimizeReferences>
       <GenerateDebugInformation>true</GenerateDebugInformation>
       <AdditionalLibraryDirectories>$(SolutionDir)\StortSpelprojekt\Bulletphysics\Bullet3Collision;$(SolutionDir)\StortSpelprojekt\Bulletphysics\LinearMath;$(SolutionDir)\StortSpelprojekt\Bulletphysics\Bullet3Dynamics;..\ZWEB\ZWEBBuild\bin\release;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
-      <AdditionalDependencies>ZWEBImporter.lib;Bullet3Dynamics.lib;Bullet3Collision.lib;LinearMath.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>ZWEBImporter.lib;BulletDynamics.lib;BulletCollision.lib;LinearMath.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
