@@ -3,43 +3,39 @@
 #include "Buffers.h"
 #include "Texture.h"
 #include <vector>
+#include <array>
 
+constexpr std::size_t MAX_SHADER_SLOTS = 5;
 
 class Material
 {
 	static size_t idCounter;
 
-	struct TextureInfo {
+	struct Slot
+	{
+		ID3D11SamplerState* state;
 		Texture texture;
-		size_t slot;
-		ShaderBindFlag flag;
+		bool isSet;
 	};
-
+	
 public:
 	Material();
 	Material (Shader shader);
 	virtual ~Material();
 	
 	void SetShader(Shader shader) { this->shader = shader; }
-
-	/* Set /Create sampler state */
-	void SetSamplerState(ID3D11Device* device, D3D11_TEXTURE_ADDRESS_MODE addressMode, D3D11_FILTER filter);
-
 	void BindToContext(ID3D11DeviceContext*);
-	//void SetTexture(size_t slot);
-	//void SetSampler(size_t slot);
+	
+	void SetTexture(Texture texture, size_t slot, ShaderBindFlag flag);
+	void SetSampler (ID3D11SamplerState* state, size_t slot, ShaderBindFlag flag);
+
 	void SetMaterialData(const cb_Material& materialData);
 	const cb_Material& GetMaterialData() const;
 
+	void ChangeTextureBindFlags(size_t slot, ShaderBindFlag oldFlag, ShaderBindFlag newFlag);
 
-	void BindTextureToContext(ID3D11DeviceContext*);
-
-	/* Binding texture to correct slot in shader based on slot-input */
-	void SetTexture(Texture texture, size_t slot, ShaderBindFlag flag);
-	Texture GetTexture() { return this->texture; }
-
-	//ZWEB DEFAULTS TEXTURES AS INPUTS TO PIXEL SO THIS CAN BE USED TO MANUALLY CHANGE BIND FLAGS
-	void ChangeTextureBindFlags(size_t slot, ShaderBindFlag flag);
+	bool IsTransparent() const { return this->transparent; }
+	void SetTransparent(bool transparent) { this->transparent = transparent; }
 
 	void SetName(const std::string& name) { this->name = name; }
 	const std::string& GetName() const { return this->name; }
@@ -50,14 +46,9 @@ private:
 	Shader shader;
 	cb_Material cb_material_data;
 	size_t id;
+	bool transparent;
 
-	ID3D11ShaderResourceView* srv;
-	Texture texture;
-	size_t slot;
-	ShaderBindFlag flag;
-
-	ID3D11SamplerState* samplerState;
 	std::string name;
-	std::vector<TextureInfo> textures;
-	
+	std::unordered_map<int, std::unordered_map<size_t, Texture>> textures;
+	std::unordered_map<int, std::unordered_map<size_t, ID3D11SamplerState*>> samplers;
 };

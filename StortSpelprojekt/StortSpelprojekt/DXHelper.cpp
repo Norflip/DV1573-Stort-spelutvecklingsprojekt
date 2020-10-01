@@ -40,7 +40,7 @@ void DXHelper::CreateSwapchain(const Window& window, _Out_ ID3D11Device** device
 	// DEFAULT RASTERIZER STATE
 	D3D11_RASTERIZER_DESC rasterizerDescription;
 	ZeroMemory(&rasterizerDescription, sizeof(D3D11_RASTERIZER_DESC));
-	rasterizerDescription.CullMode = D3D11_CULL_NONE;
+	rasterizerDescription.CullMode = D3D11_CULL_BACK;
 	rasterizerDescription.FillMode = D3D11_FILL_SOLID;
 	rasterizerDescription.DepthClipEnable = true;
 
@@ -343,24 +343,32 @@ ID3D11ShaderResourceView* DXHelper::CreateTexture(unsigned char* buffer, size_t 
 
 ID3D11SamplerState* DXHelper::CreateSampler(D3D11_FILTER filter, D3D11_TEXTURE_ADDRESS_MODE mode, ID3D11Device* device)
 {
-	D3D11_SAMPLER_DESC samplerDescription;
-	ZeroMemory(&samplerDescription, sizeof(D3D11_SAMPLER_DESC));
-	samplerDescription.Filter = filter;
-	samplerDescription.AddressU = mode;
-	samplerDescription.AddressV = mode;
-	samplerDescription.AddressW = mode;
-	samplerDescription.ComparisonFunc = D3D11_COMPARISON_LESS_EQUAL;
-	samplerDescription.MinLOD = 0.0f;
-	samplerDescription.MaxLOD = D3D11_FLOAT32_MAX;
-	samplerDescription.MipLODBias = 0.0f;
-	samplerDescription.MaxAnisotropy = 0;
+	int hash = static_cast<int>(mode) ^ static_cast<int>(filter);
+	auto findSampler = m_samplerCache.find(hash);
 
-	for (size_t i = 0; i < 4; i++)
-		samplerDescription.BorderColor[i] = 1.0f;
+	if (findSampler == m_samplerCache.end())
+	{
+		D3D11_SAMPLER_DESC samplerDescription;
+		ZeroMemory(&samplerDescription, sizeof(D3D11_SAMPLER_DESC));
+		samplerDescription.Filter = filter;
+		samplerDescription.AddressU = mode;
+		samplerDescription.AddressV = mode;
+		samplerDescription.AddressW = mode;
+		samplerDescription.ComparisonFunc = D3D11_COMPARISON_LESS_EQUAL;
+		samplerDescription.MinLOD = 0.0f;
+		samplerDescription.MaxLOD = D3D11_FLOAT32_MAX;
+		samplerDescription.MipLODBias = 0.0f;
+		samplerDescription.MaxAnisotropy = 0;
 
-	ID3D11SamplerState* samplerState;
-	ZeroMemory(&samplerState, sizeof(ID3D11SamplerState));
-	device->CreateSamplerState(&samplerDescription, &samplerState);
+		for (size_t i = 0; i < 4; i++)
+			samplerDescription.BorderColor[i] = 1.0f;
 
-	return samplerState;
+		ID3D11SamplerState* samplerState;
+		ZeroMemory(&samplerState, sizeof(ID3D11SamplerState));
+		device->CreateSamplerState(&samplerDescription, &samplerState);
+
+		m_samplerCache.insert({ hash, samplerState });
+	}
+
+	return m_samplerCache[hash];
 }

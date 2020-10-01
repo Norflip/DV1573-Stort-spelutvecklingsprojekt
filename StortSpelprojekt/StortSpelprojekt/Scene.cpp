@@ -71,10 +71,11 @@ void Scene::Initialize(Renderer* renderer)
 
 	testMesh2->AddComponent<MoveComponent>();
 
-	zwebMaterials[0].SetSamplerState(renderer->GetDevice(), D3D11_TEXTURE_ADDRESS_WRAP, D3D11_FILTER_MIN_MAG_MIP_LINEAR);
-	sylvanasMat[0].SetSamplerState(renderer->GetDevice(), D3D11_TEXTURE_ADDRESS_WRAP, D3D11_FILTER_MIN_MAG_MIP_LINEAR);
-	cylinderMat[0].SetSamplerState(renderer->GetDevice(), D3D11_TEXTURE_ADDRESS_WRAP, D3D11_FILTER_MIN_MAG_MIP_LINEAR);
-	
+	auto sampler = DXHelper::CreateSampler(D3D11_FILTER_MIN_MAG_MIP_LINEAR, D3D11_TEXTURE_ADDRESS_WRAP, renderer->GetDevice());
+	zwebMaterials[0].SetSampler(sampler, 0, ShaderBindFlag::PIXEL);
+	sylvanasMat[0].SetSampler(sampler, 0, ShaderBindFlag::PIXEL);
+	cylinderMat[0].SetSampler(sampler, 0, ShaderBindFlag::PIXEL);
+
 	testMesh->AddComponent<MeshComponent>(zwebMeshes[0], zwebMaterials[0]);
 	testMesh2->AddComponent<MeshComponent>(sylvanas[0], sylvanasMat[0]);
 	testMesh3->AddComponent<MeshComponent>(cylinder[0], cylinderMat[0]);

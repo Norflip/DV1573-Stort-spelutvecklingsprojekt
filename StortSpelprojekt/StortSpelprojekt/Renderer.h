@@ -17,7 +17,6 @@ class Renderer
 {
 	const FLOAT DEFAULT_BG_COLOR[4] = { 0.3f, 0.1f, 0.2f, 1.0f };
 
-
 	struct RenderItem
 	{
 		enum class Type
@@ -38,6 +37,8 @@ class Renderer
 		const CameraComponent* camera;
 	};
 
+	typedef std::unordered_map<size_t, std::queue<RenderItem>> RenderQueue;
+
 public:
 	Renderer();
 	virtual ~Renderer();
@@ -47,7 +48,7 @@ public:
 	void BeginManualRenderPass(RenderTexture& target);
 	void EndManualRenderPass();
 
-	void DrawItemsToTarget();
+	void DrawQueueToTarget(RenderQueue& queue);
 	void RenderFrame();
 	
 	void AddRenderPass(RenderPass*);
@@ -66,7 +67,7 @@ public:
 	void SetRenderTarget(const RenderTexture& target);
 
 private:
-	void AddItem(const RenderItem& item);
+	void AddItem(const RenderItem& item, bool transparent);
 	void DrawRenderItem(const RenderItem& item);
 	void DrawRenderItemInstanced(const RenderItem& item);
 	void DrawRenderItemSkeleton(const RenderItem& item);
@@ -97,6 +98,7 @@ private:
 
 	Window* outputWindow;
 
-	std::unordered_map<size_t, std::queue<RenderItem>> itemQueue;
+	RenderQueue opaqueItemQueue;
+	RenderQueue transparentItemQueue;
 	std::vector<RenderPass*> passes;
 };
