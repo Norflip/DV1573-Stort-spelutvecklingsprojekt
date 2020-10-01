@@ -9,6 +9,9 @@ Chunk::~Chunk()
 {
 	if (heightMap)
 		delete[] heightMap;
+
+	//delete heightMap;
+	//heightMap = 0;
 }
 
 float Chunk::SampleHeight(float x, float z)

@@ -44,12 +44,20 @@ void Engine::Run()
 			DispatchMessage(&msg);
 
 			if (msg.message == WM_QUIT)
+			{
+				
 				Exit();
+			}
+
+				
 		}
 		else
 		{
 			auto elapsed = std::chrono::duration<double, std::milli>(std::chrono::high_resolution_clock::now() - startTimePoint);
 			float currentTime = static_cast<float>(elapsed.count() / 1000.0f);
+
+			if(Input::Instance().GetKey(DirectX::Keyboard::K))
+				Exit();
 
 			if (activeScene != nullptr)
 			{
@@ -59,6 +67,7 @@ void Engine::Run()
 			}
 
 			timeLastFrame = currentTime;
+
 		}
 	}
 }

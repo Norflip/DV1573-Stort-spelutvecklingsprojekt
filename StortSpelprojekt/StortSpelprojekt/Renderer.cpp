@@ -228,7 +228,7 @@ void Renderer::DrawRenderItem(const RenderItem& item)
 
 	cb_material_data = item.material->GetMaterialData();
 	DXHelper::BindConstBuffer(context, material_cbuffer, &cb_material_data, CB_MATERIAL_SLOT, ShaderBindFlag::PIXEL);
-
+		
 
 	cb_scene.sunDirection = dx::XMFLOAT3(0.0f, 100.0f, -45.0f);
 	cb_scene.sunIntensity = 0.4f;
