@@ -278,8 +278,6 @@ Chunk* WorldGenerator::CreateChunk(ChunkType type, dx::XMINT2 index, const Path&
 	auto sampler = DXHelper::CreateSampler(D3D11_FILTER_MIN_MAG_MIP_LINEAR, D3D11_TEXTURE_ADDRESS_WRAP, device);
 	material.SetSampler(sampler, 0, ShaderBindFlag::PIXEL);
 	material.SetSampler(sampler, 0, ShaderBindFlag::VERTEX);
-	material.SetSampler(sampler, 1, ShaderBindFlag::VERTEX);
-
 
 	std::string name = "chunk " + std::to_string(index.x) + ", " + std::to_string(index.y);
 	Object* chunkObject = new Object(name, ObjectFlag::DEFAULT);

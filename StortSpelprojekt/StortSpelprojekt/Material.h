@@ -24,7 +24,7 @@ public:
 	virtual ~Material();
 	
 	void SetShader(Shader shader) { this->shader = shader; }
-	void BindToContext(ID3D11DeviceContext*);
+	void BindToContext(ID3D11DeviceContext*) const;
 	
 	void SetTexture(Texture texture, size_t slot, ShaderBindFlag flag);
 	void SetSampler (ID3D11SamplerState* state, size_t slot, ShaderBindFlag flag);

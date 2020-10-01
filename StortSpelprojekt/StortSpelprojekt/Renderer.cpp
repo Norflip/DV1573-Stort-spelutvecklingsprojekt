@@ -40,9 +40,13 @@ void Renderer::Initialize(Window* window)
 	DXHelper::CreateConstBuffer(device, &skeleton_cbuffer, &cb_skeleton_data, sizeof(cb_skeleton_data));
 
 	/* Screenquad shader */
+	Shader screenQuadShader;
 	screenQuadShader.SetPixelShader(L"Shaders/ScreenQuad_ps.hlsl");
 	screenQuadShader.SetVertexShader(L"Shaders/ScreenQuad_vs.hlsl");
 	screenQuadShader.Compile(device);
+
+	screenQuadMaterial = Material(screenQuadShader);
+	screenQuadMaterial.SetSampler(DXHelper::CreateSampler(D3D11_FILTER_MIN_MAG_MIP_LINEAR, D3D11_TEXTURE_ADDRESS_CLAMP, device), 0, ShaderBindFlag::VERTEX);
 
 	/* Screenquad mesh */
 	screenQuadMesh = Mesh::CreateScreenQuad(device);
@@ -120,8 +124,8 @@ void Renderer::RenderFrame()
 
 			GetContext()->PSSetShaderResources(0, 1, &midbuffers[bufferIndex].srv);
 
-			if((*i)->Pass(this, midbuffers[bufferIndex], midbuffers[nextBufferIndex]);
-			bufferIndex = nextBufferIndex;
+			if ((*i)->Pass(this, midbuffers[bufferIndex], midbuffers[nextBufferIndex]))
+				bufferIndex = nextBufferIndex;
 
 			// overkill? Gives the correct result if outside the loop but errors in output
 			context->PSSetShaderResources(0, 1, nullSRV);
@@ -131,7 +135,7 @@ void Renderer::RenderFrame()
 	ClearRenderTarget(backbuffer);
 	SetRenderTarget(backbuffer);
 	context->PSSetShaderResources(0, 1, &midbuffers[bufferIndex].srv);
-	DrawScreenQuad(screenQuadShader);
+	DrawScreenQuad(screenQuadMaterial);
 
 	HRESULT hr = swapchain->Present(0, 0); //1 here?
 	assert(SUCCEEDED(hr));
@@ -276,9 +280,9 @@ void Renderer::DrawRenderItemSkeleton(const RenderItem& item)
 	context->DrawIndexed(item.mesh.indices.size(), 0, 0);
 }
 
-void Renderer::DrawScreenQuad(const Shader& shader)
+void Renderer::DrawScreenQuad(const Material& material)
 {
-	shader.BindToContext(context);
+	material.BindToContext(context);
 	UINT stride = sizeof(Mesh::Vertex);
 	UINT offset = 0;
 

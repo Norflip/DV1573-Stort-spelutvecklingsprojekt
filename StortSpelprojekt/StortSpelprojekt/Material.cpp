@@ -7,13 +7,14 @@ Material::Material() : id(idCounter++) {}
 Material::Material(Shader shader) : shader(shader), id(idCounter++) {}
 Material::~Material() {}
 
-void Material::BindToContext(ID3D11DeviceContext* context)
+void Material::BindToContext(ID3D11DeviceContext* context) const
 {
 	this->shader.BindToContext(context);
 
+
 	for (auto i : textures)
 	{
-		for (auto j : textures[i.first])
+		for (auto j : i.second)
 		{
 			size_t slot = j.first;
 			auto srv = j.second.GetTexture();
@@ -31,7 +32,7 @@ void Material::BindToContext(ID3D11DeviceContext* context)
 
 	for (auto i : samplers)
 	{
-		for (auto j : samplers[i.first])
+		for (auto j : i.second)
 		{
 			size_t slot = j.first;
 			auto srv = j.second;
@@ -40,10 +41,10 @@ void Material::BindToContext(ID3D11DeviceContext* context)
 				context->PSSetSamplers(slot, 1, &srv);
 
 			if ((i.first & (int)ShaderBindFlag::VERTEX) != 0)
-				context->PSSetSamplers(slot, 1, &srv);
+				context->VSSetSamplers(slot, 1, &srv);
 
 			if ((i.first & (int)ShaderBindFlag::GEOMETRY) != 0)
-				context->PSSetSamplers(slot, 1, &srv);
+				context->GSSetSamplers(slot, 1, &srv);
 		}
 	}
 }

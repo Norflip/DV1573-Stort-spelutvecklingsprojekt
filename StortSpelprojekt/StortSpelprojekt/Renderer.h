@@ -61,7 +61,7 @@ public:
 	ID3D11DeviceContext* GetContext() const { return this->context; }
 	Window* GetOutputWindow() const { return this->outputWindow; }
 
-	void DrawScreenQuad(const Shader& shader);
+	void DrawScreenQuad(const Material& Material);
 
 	void ClearRenderTarget(const RenderTexture& target);
 	void SetRenderTarget(const RenderTexture& target);
@@ -80,7 +80,7 @@ private:
 	RenderTexture backbuffer;
 	RenderTexture midbuffers [2];
 	
-	Shader screenQuadShader;
+	Material screenQuadMaterial;
 	Mesh screenQuadMesh;
 
 	cb_Object cb_object_data;
