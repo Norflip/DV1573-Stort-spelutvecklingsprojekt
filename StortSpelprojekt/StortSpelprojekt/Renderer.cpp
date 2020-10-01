@@ -201,9 +201,17 @@ void Renderer::DrawSkeleton(const Mesh& mesh, const Material& material, const dx
 	AddItem(item, false);
 }
 
-void Renderer::SetRSToCullNone()
+void Renderer::SetRSToCullNone(bool cullNone)
 {
-	context->RSSetState(rasterizerStateCullNone);
+	if (cullNone)
+	{
+		context->RSSetState(rasterizerStateCullNone);
+	}
+	else
+	{
+		context->RSSetState(rasterizerStateCullBack);
+	}
+	
 }
 
 

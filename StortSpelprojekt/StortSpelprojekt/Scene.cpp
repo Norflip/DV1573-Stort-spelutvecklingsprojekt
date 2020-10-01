@@ -169,7 +169,7 @@ void Scene::Initialize(Renderer* renderer)
 
 	Object* leaves = new Object("leaves");
 
-	treeMaterials[1].SetTransparent(1);
+	treeMaterials[1].SetTransparent(true);
 	treeBase->AddComponent<InstancedMeshComponent>(treeModels[0], treeMaterials[0]);
 	treeBranches->AddComponent<InstancedMeshComponent>(treeModels[1], treeMaterials[0]);
 	leaves->AddComponent<InstancedMeshComponent>(treeModels[2], treeMaterials[1]);
@@ -218,7 +218,7 @@ void Scene::FixedUpdate(const float& fixedDeltaTime)
 void Scene::Render()
 {	
 	// skybox draw object
-	renderer->SetRSToCullNone();
+	renderer->SetRSToCullNone(true);
 	skyboxClass->GetThisObject()->Draw(renderer, camera);
 
 	root->Draw(renderer, camera);
