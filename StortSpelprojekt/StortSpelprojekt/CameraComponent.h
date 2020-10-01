@@ -20,7 +20,7 @@ public:
 	dx::XMMATRIX GetViewMatrix() const;
 	dx::XMMATRIX GetProjectionMatrix() const;
 
-	bool CullAgainstAABB(const AABB& aabb, const dx::XMFLOAT3 worldPos);
+	bool CullAgainstAABB(const AABB& aabb, const dx::XMFLOAT3& worldPos);
 
 private:
 	void UpdateProjectionMatrix();

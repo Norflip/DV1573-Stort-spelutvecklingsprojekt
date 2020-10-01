@@ -41,3 +41,15 @@ struct VS_OUTPUT_QUAD
 	float4 position : SV_POSITION;
 	float2 uv : TEXCOORD0;
 };
+
+struct VS_INSTANCE_INPUT
+{
+	float4 position : POSITION;
+	float2 uv		: TEXCOORD0;
+	float3 normal	: NORMAL;
+	float3 tangent	: TANGENT;
+	float3 binormal : BINORMAL;
+	uint id	: SV_InstanceID;
+	float4x4 instanceWorld : INSTANCEWORLD;
+	float3 instancePos : INSTANCEPOS;
+};

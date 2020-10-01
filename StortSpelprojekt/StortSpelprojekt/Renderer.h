@@ -29,8 +29,8 @@ class Renderer
 			Skeleton
 		};
 
-		Mesh mesh;
-		Material material;
+		const Mesh* mesh;
+		const Material* material;
 
 		Type type;
 		size_t instanceCount;
@@ -57,8 +57,10 @@ public:
 	void AddRenderPass(RenderPass*);
 
 	void Draw(const Mesh& mesh, const Material& material, const dx::XMMATRIX& model, const CameraComponent& camera);
-	void DrawInstanced(const Mesh& mesh, size_t count, const Material& material, const dx::XMMATRIX& model, const CameraComponent& camera);
+	void DrawInstanced(const Mesh& mesh, const size_t& count, const Material& material, const CameraComponent& camera);
 	void DrawSkeleton(const Mesh& mesh, const Material& material, const dx::XMMATRIX& model, const CameraComponent& camera, cb_Skeleton& bones);
+	
+
 
 	ID3D11Device* GetDevice() const { return this->device; }
 	ID3D11DeviceContext* GetContext() const { return this->context; }
@@ -74,7 +76,9 @@ private:
 	void DrawRenderItem(const RenderItem& item);
 	void DrawRenderItemInstanced(const RenderItem& item);
 	void DrawRenderItemSkeleton(const RenderItem& item);
-
+	
+	
+	
 private:
 	IDXGISwapChain* swapchain;
 	ID3D11Device* device;
@@ -86,14 +90,13 @@ private:
 	Material screenQuadMaterial;
 	Mesh screenQuadMesh;
 
-	
 	cb_Object cb_object_data;
 	ID3D11Buffer* obj_cbuffer;
 
 	cb_Skeleton cb_skeleton_data;
 	ID3D11Buffer* skeleton_cbuffer;
 	
-	//måste avallokeras!!!
+	
 	cb_Scene cb_scene;
 	ID3D11Buffer* light_cbuffer;
 
@@ -105,4 +108,10 @@ private:
 	RenderQueue opaqueItemQueue;
 	RenderQueue transparentItemQueue;
 	std::vector<RenderPass*> passes;
+
+	//blendstate
+	ID3D11BlendState* blendStateOn;
+	ID3D11BlendState* blendStateOff;
+
+	const float BLENDSTATEMASK[4] = { 0.0f };
 };

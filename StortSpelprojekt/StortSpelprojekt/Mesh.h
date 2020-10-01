@@ -12,6 +12,13 @@
 
 struct Mesh
 {
+	struct InstanceData // can add more stuff in here, like color.
+	{
+		dx::XMFLOAT4X4 instanceWorld;
+		dx::XMFLOAT3 instancePosition;
+	};
+
+
 	struct Vertex
 	{
 		DirectX::XMFLOAT3 position;
@@ -30,6 +37,7 @@ struct Mesh
 	};
 private:
 	
+	size_t instances = 0;
 	dx::XMFLOAT3 scale;
 	dx::XMFLOAT3 rotation;
 	dx::XMFLOAT3 translation;
@@ -40,8 +48,11 @@ private:
 public:
 	std::vector<Vertex> vertices;
 	std::vector<unsigned int> indices;
+	std::vector<InstanceData> instanceData;
 	ID3D11Buffer* vertexBuffer;
 	ID3D11Buffer* indexBuffer;
+	ID3D11Buffer* instanceBuffer;
+	ID3D11Buffer* vertexAndInstance[2];
 	D3D11_PRIMITIVE_TOPOLOGY topology;
 
 
@@ -51,17 +62,38 @@ public:
 		this->vertices = vertices;
 		this->indices = indices;
 		this->topology = topology;
+		this->instanceData.clear();
 
 		DXHelper::CreateVertexBuffer(device, vertices.size(), sizeof(Mesh::Vertex), vertices.data(), &vertexBuffer);
 		DXHelper::CreateIndexBuffer(device, indices.size(), indices.data(), &indexBuffer);
 	}
-
+	Mesh(ID3D11Device* device, std::vector<Vertex> vertices, std::vector<InstanceData>& instanceData, std::vector<unsigned int> indices, D3D11_PRIMITIVE_TOPOLOGY topology = D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST) :
+		vertices(vertices), indices(indices), vertexBuffer(nullptr), indexBuffer(nullptr), boneIDMap(), meshName(), materialName(), scale(0, 0, 0), rotation(0, 0, 0), translation(0, 0, 0)
+	{
+		this->vertices = vertices;
+		this->indices = indices;
+		this->topology = topology;
+		this->instanceData = instanceData;
+		DXHelper::CreateVertexBuffer(device, vertices.size(), sizeof(Mesh::Vertex), vertices.data(), &vertexBuffer);
+		DXHelper::CreateIndexBuffer(device, indices.size(), indices.data(), &indexBuffer);
+		DXHelper::CreateInstanceBuffer(device, instanceData.size(), sizeof(Mesh::InstanceData), instanceData.data(), &instanceBuffer);
+		vertexAndInstance[0] = vertexBuffer;
+		vertexAndInstance[1] = instanceBuffer;
+	}
 	Mesh()
 	{
 		this->vertices.clear();
 		this->indices.clear();
+		this->instanceData.clear();
 	}
-
+	void CreateInstanceBuffer(ID3D11Device* device, std::vector<InstanceData>& instanceData)
+	{
+		this->instanceData = instanceData;
+		DXHelper::CreateInstanceBuffer(device, instanceData.size(), sizeof(Mesh::InstanceData), instanceData.data(), &instanceBuffer);
+		
+		vertexAndInstance[0] = vertexBuffer;
+		vertexAndInstance[1] = instanceBuffer;
+	}
 	std::map<std::string, unsigned int>& GetBoneIDS()
 	{
 		return boneIDMap;
@@ -110,6 +142,21 @@ public:
 		return materialName;
 	}
 
+	void SetInstanceNr(size_t nr)
+	{
+		this->instances = nr;
+	}
+	size_t GetInstanceNr() const
+	{
+		return this->instances;
+	}
+	ID3D11Buffer** GetVertexAndInstanceBfr()
+	{
+		vertexAndInstance[0] = vertexBuffer;
+		vertexAndInstance[1] = instanceBuffer;
+		return vertexAndInstance;
+	}
+
 	// DECONSTRUCTOR?! WAT DO 
 	void Release()
 	{
@@ -117,8 +164,13 @@ public:
 			vertexBuffer->Release();
 		if (indexBuffer)
 			indexBuffer->Release();
-
-		vertexBuffer = indexBuffer = nullptr;
+		if (instanceBuffer)
+			instanceBuffer->Release();
+		if (vertexAndInstance[0])
+			vertexAndInstance[0]->Release();
+		if (vertexAndInstance[1])
+			vertexAndInstance[1]->Release();
+		vertexBuffer = indexBuffer = instanceBuffer = vertexAndInstance[0] = vertexAndInstance[1] = nullptr;
 	}
 
 	static Mesh CreateScreenQuad(ID3D11Device* device)

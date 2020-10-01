@@ -67,7 +67,7 @@ SkeletonAni::SkeletonAni()
     
 }
 
-cb_Skeleton& SkeletonAni::Makeglobal(float elapsedTime, const DirectX::XMMATRIX& globalParent, std::vector<Bone>& keys)
+void SkeletonAni::Makeglobal(float elapsedTime, const DirectX::XMMATRIX& globalParent, std::vector<Bone>& keys)
 {
     DirectX::XMMATRIX toRoot = Lerp(elapsedTime, keys) * globalParent; //These matrices are local, need to make them global recursively.
 
@@ -90,7 +90,8 @@ cb_Skeleton& SkeletonAni::Makeglobal(float elapsedTime, const DirectX::XMMATRIX&
         }
     }
 
-    return skeletonDataB;
+   
+    
 }
 
 std::string SkeletonAni::GetRootName()
