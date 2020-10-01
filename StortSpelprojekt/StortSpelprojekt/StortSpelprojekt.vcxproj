@@ -151,7 +151,9 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClCompile Include="BoundingBoxes.cpp" />
+    <ClCompile Include="BoxCollideComponent.cpp" />
     <ClCompile Include="CameraComponent.cpp" />
+    <ClCompile Include="CapsuleColliderComponent.cpp" />
     <ClCompile Include="Chunk.cpp" />
     <ClCompile Include="ControllerComponent.cpp" />
     <ClCompile Include="DXHelper.cpp" />
@@ -165,10 +167,13 @@
     <ClCompile Include="MoveComponent.cpp" />
     <ClCompile Include="NodeWalkerComponent.cpp" />
     <ClCompile Include="Object.cpp" />
+    <ClCompile Include="Physics.cpp" />
     <ClCompile Include="Renderer.cpp" />
+    <ClCompile Include="RigidBodyComponent.cpp" />
     <ClCompile Include="Scene.cpp" />
     <ClCompile Include="Shader.cpp" />
     <ClCompile Include="Skybox.cpp" />
+    <ClCompile Include="SphereColliderComponent.cpp" />
     <ClCompile Include="Texture.cpp" />
     <ClCompile Include="SkeletonAni.cpp" />
     <ClCompile Include="SkeletonMeshComponent.cpp" />
@@ -179,10 +184,13 @@
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="BoundingBoxes.h" />
+    <ClInclude Include="BoxColliderComponent.h" />
     <ClInclude Include="Buffers.h" />
     <ClInclude Include="BusNode.h" />
     <ClInclude Include="CameraComponent.h" />
+    <ClInclude Include="CapsuleColliderComponent.h" />
     <ClInclude Include="Chunk.h" />
+    <ClInclude Include="Collider.h" />
     <ClInclude Include="ControllerComponent.h" />
     <ClInclude Include="GameClock.h" />
     <ClInclude Include="GUIManager.h" />
@@ -201,13 +209,16 @@
     <ClInclude Include="NodeWalkerComponent.h" />
     <ClInclude Include="Noise.h" />
     <ClInclude Include="Object.h" />
+    <ClInclude Include="Physics.h" />
     <ClInclude Include="Renderer.h" />
     <ClInclude Include="RenderPass.h" />
+    <ClInclude Include="RigidBodyComponent.h" />
     <ClInclude Include="SaveState.h" />
     <ClInclude Include="Scene.h" />
     <ClInclude Include="Shader.h" />
     <ClInclude Include="ShittyOBJLoader.h" />
     <ClInclude Include="Skybox.h" />
+    <ClInclude Include="SphereColliderComponent.h" />
     <ClInclude Include="Texture.h" />
     <ClInclude Include="SkeletonAni.h" />
     <ClInclude Include="SkeletonMeshComponent.h" />
