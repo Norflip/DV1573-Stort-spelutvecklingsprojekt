@@ -113,8 +113,8 @@ void Scene::Initialize(Renderer* renderer)
 	std::vector<Material> treeMaterials = ZWEBLoader::LoadMaterials("Models/treeEmil.ZWEB", instanceShader, renderer->GetDevice());
 
 	
-	treeMaterials[0].SetSamplerState(renderer->GetDevice(), D3D11_TEXTURE_ADDRESS_WRAP, D3D11_FILTER_MIN_MAG_MIP_LINEAR);
-	treeMaterials[1].SetSamplerState(renderer->GetDevice(), D3D11_TEXTURE_ADDRESS_WRAP, D3D11_FILTER_MIN_MAG_MIP_LINEAR);
+	treeMaterials[0].SetSampler(sampler, 0, ShaderBindFlag::PIXEL);
+	treeMaterials[1].SetSampler(sampler, 0, ShaderBindFlag::PIXEL);
 
 	treeMaterials[0].SetShader(instanceShader);
 	treeMaterials[1].SetShader(alphaInstanceShader);

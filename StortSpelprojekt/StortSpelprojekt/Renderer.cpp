@@ -10,6 +10,7 @@ Renderer::~Renderer()
 {
 	blendStateOff->Release();
 	blendStateOn->Release();
+
 	backbuffer.Release();
 	midbuffers[0].Release();
 	midbuffers[1].Release();
@@ -209,7 +210,7 @@ void Renderer::AddItem(const RenderItem& item, bool transparent)
 {
 	RenderQueue& queue = (transparent) ? transparentItemQueue : opaqueItemQueue;
 
-	size_t materialID = item.material.GetID();
+	size_t materialID = item.material->GetID();
 	if (queue.find(materialID) == queue.end())
 		queue.insert({ materialID, std::queue<RenderItem>() });
 
