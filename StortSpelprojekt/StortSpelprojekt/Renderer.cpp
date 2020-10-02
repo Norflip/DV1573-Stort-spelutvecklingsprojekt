@@ -1,5 +1,6 @@
 #include "Renderer.h"
 #include "RenderPass.h"
+#include "DShape.h"
 
 Renderer::Renderer() : device(nullptr), context(nullptr), swapchain(nullptr), obj_cbuffer(nullptr), skeleton_cbuffer(nullptr)
 {
@@ -64,6 +65,7 @@ void Renderer::Initialize(Window* window)
 
 	/* Screenquad mesh */
 	screenQuadMesh = Mesh::CreateScreenQuad(device);
+	DShape::Instance().m_Initialize(device);
 
 	//EXEMPEL
 	///AddRenderPass(new PSRenderPass(1, L"Shaders/TestPass.hlsl"));
@@ -126,11 +128,14 @@ void Renderer::RenderFrame()
 
 	ClearRenderTarget(midbuffers[bufferIndex]);
 	SetRenderTarget(midbuffers[bufferIndex]);
+  
 	context->RSSetState(rasterizerStateCullBack);
 	context->OMSetBlendState(blendStateOff, BLENDSTATEMASK, 0xffffffff);
 	DrawQueueToTarget(opaqueItemQueue);
+  DShape::Instance().m_Draw(context);
 	context->RSSetState(rasterizerStateCullNone);
 	context->OMSetBlendState(blendStateOn, BLENDSTATEMASK, 0xffffffff);
+
 	DrawQueueToTarget(transparentItemQueue);
 	context->OMSetBlendState(blendStateOff, BLENDSTATEMASK, 0xffffffff);
 	context->RSSetState(rasterizerStateCullBack);

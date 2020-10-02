@@ -30,7 +30,6 @@ void Scene::Initialize(Renderer* renderer)
 	// Should change values on resize event
 	Window* window = renderer->GetOutputWindow();
 
-
 	SaveState state;
 	state.seed = 1337;
 	state.segment = 0;
@@ -40,7 +39,7 @@ void Scene::Initialize(Renderer* renderer)
 
 
 	Object* cameraObject = new Object("camera", ObjectFlag::ENABLED);
-	camera = cameraObject->AddComponent<CameraComponent>(60.0f);
+	camera = cameraObject->AddComponent<CameraComponent>(60.0f, true);
 	camera->Resize(window->GetWidth(), window->GetHeight());
 	cameraObject->AddComponent<ControllerComponent>();
 
@@ -93,8 +92,8 @@ void Scene::Initialize(Renderer* renderer)
 	testMesh3->AddComponent<MeshComponent>(cylinder[0], cylinderMat[0]);
 	
 	AddObject(testMesh);
-	/*AddObject(testMesh2);
-	AddObject(testMesh3);*/
+	//AddObject(testMesh2);
+	//AddObject(testMesh3);
 
 	/* * * * * * * * ** * * * * */
 	
@@ -196,8 +195,8 @@ void Scene::Initialize(Renderer* renderer)
 	AddObject(leaves);
 	/*************************INSTANCING****************/
 
-	//AddObject(testMesh2);
-	//AddObject(testMesh3);
+	AddObject(testMesh2);
+	AddObject(testMesh3);
 	Object* testMesh4 = new Object("test4");
 	testMesh4->AddComponent<NodeWalkerComponent>();
 	testMesh4->GetTransform().SetPosition(dx::XMLoadFloat3(&miniTranslation4));
@@ -213,6 +212,17 @@ void Scene::Initialize(Renderer* renderer)
 
 void Scene::Update(const float& deltaTime)
 {
+	dx::XMFLOAT3 positionA = { 0,0,2 };
+	dx::XMFLOAT3 positionB = { 0, 2,-5};
+
+	DShape::DrawBox(positionA, { 2,2,2 }, { 0, 1, 1 });
+	DShape::DrawWireBox(positionB, { 4,4,4 }, { 1,0,0 });
+
+	DShape::DrawSphere({ -4,0,0 }, 1.0f, { 0, 0, 1 });
+	DShape::DrawWireSphere({ -4,0,5 }, 1.0f, { 0,1,0 });
+
+	DShape::DrawLine(positionA, positionB, { 1,1,0 });
+
 	input.UpdateInputs();
 	root->Update(deltaTime);
 	skyboxClass->GetThisObject()->GetTransform().SetPosition(camera->GetOwner()->GetTransform().GetPosition());

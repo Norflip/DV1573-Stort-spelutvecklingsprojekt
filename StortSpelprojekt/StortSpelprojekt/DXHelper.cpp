@@ -36,9 +36,8 @@ void DXHelper::CreateSwapchain(const Window& window, _Out_ ID3D11Device** device
 	HRESULT resultCreateDevAndSwap = D3D11CreateDeviceAndSwapChain(nullptr, D3D_DRIVER_TYPE_HARDWARE, nullptr, swapchainFlags, featureLevel, 1, D3D11_SDK_VERSION, &swapChainDescription, swapchain, device, nullptr, context);
 	assert(SUCCEEDED(resultCreateDevAndSwap));
 
-
-
-	
+	ID3D11RasterizerState* rasterizerState = CreateRasterizerState(D3D11_CULL_BACK, D3D11_FILL_SOLID, *device);
+	(*context)->RSSetState(rasterizerState);
 
 }
 
@@ -436,6 +435,24 @@ ID3D11SamplerState* DXHelper::CreateSampler(D3D11_FILTER filter, D3D11_TEXTURE_A
 	}
 
 	return m_samplerCache[hash];
+}
+
+ID3D11RasterizerState* DXHelper::CreateRasterizerState(D3D11_CULL_MODE cullMode, D3D11_FILL_MODE fillMode, ID3D11Device* device)
+{
+	// DEFAULT RASTERIZER STATE
+	D3D11_RASTERIZER_DESC rasterizerDescription;
+	ZeroMemory(&rasterizerDescription, sizeof(D3D11_RASTERIZER_DESC));
+	rasterizerDescription.CullMode = cullMode;
+	rasterizerDescription.FillMode = fillMode;
+	rasterizerDescription.DepthClipEnable = true;
+
+	ID3D11RasterizerState* rasterizerState;
+	ZeroMemory(&rasterizerState, sizeof(ID3D11RasterizerState));
+
+	HRESULT resultCreateRasterizer = device->CreateRasterizerState(&rasterizerDescription, &rasterizerState);
+	assert(SUCCEEDED(resultCreateRasterizer));
+
+	return rasterizerState;
 }
 
 void DXHelper::CreateInstanceBuffer(ID3D11Device* device, size_t instanceCount, size_t instanceDataSize, void* instanceData, ID3D11Buffer** instanceBuffer)

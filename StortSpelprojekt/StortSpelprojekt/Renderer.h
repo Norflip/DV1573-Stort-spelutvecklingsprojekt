@@ -71,6 +71,9 @@ public:
 	void ClearRenderTarget(const RenderTexture& target);
 	void SetRenderTarget(const RenderTexture& target);
 
+	bool IsDrawingShapes() const { return this->drawShapes; }
+	void DrawShaped(bool draw) { this->drawShapes = draw; }
+
 private:
 	void AddItem(const RenderItem& item, bool transparent);
 	void DrawRenderItem(const RenderItem& item);
@@ -115,6 +118,8 @@ private:
 
 	const float BLENDSTATEMASK[4] = { 0.0f };
 
+	bool drawShapes = true;
+  
 	//rasterizer
 	ID3D11RasterizerState* rasterizerStateCullBack;
 	ID3D11RasterizerState* rasterizerStateCullNone;

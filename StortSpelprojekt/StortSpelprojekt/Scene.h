@@ -16,6 +16,7 @@
 #include "Skybox.h"
 #include "WorldGenerator.h"
 #include "SaveState.h"
+#include "DShape.h"
 
 class Scene
 {
