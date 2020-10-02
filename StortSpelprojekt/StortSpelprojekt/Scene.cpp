@@ -24,7 +24,7 @@ void Scene::Initialize(Renderer* renderer)
 	GUISprite* buttonSprite = new GUISprite(*renderer, "Textures/EquipmentBox.png", 0, 0, DrawDirection::BottomRight);
 	GUISprite* normalSprite2 = new GUISprite(*renderer, "Textures/EquipmentBox.png", 0, 0, DrawDirection::TopLeft);
 	GUISprite* buttonSprite2 = new GUISprite(*renderer, "Textures/EquipmentBox.png", 0, 0, DrawDirection::TopRight);
-
+	normalSprite->SetActive();
 	guiManager = new GUIManager(renderer);
 	renderer->setGUIManager(guiManager);
 	guiManager->AddGUIObject(normalSprite, "normalSprite");

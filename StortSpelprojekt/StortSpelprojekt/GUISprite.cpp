@@ -69,7 +69,7 @@ void GUISprite::Draw(DirectX::SpriteBatch* test)
 
 void GUISprite::Draw()
 {
-	spriteBatch->Draw(SRV, this->position, nullptr, this->color, rotation, origin, scale, DirectX::SpriteEffects::SpriteEffects_None, 0.0f);	
+		spriteBatch->Draw(SRV, this->position, nullptr, this->color, rotation, origin, scale, DirectX::SpriteEffects::SpriteEffects_None, 0.0f);	
 }
 
 void GUISprite::SetPosition(float xPos, float yPos)
