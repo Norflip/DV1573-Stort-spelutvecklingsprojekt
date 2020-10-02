@@ -16,5 +16,10 @@ void LightManager::RegisterPointLight(PointLightComponent* pointLight/*, int ind
 
 bool LightManager::getPointLight(int index)
 {
-	return pointLightMap[index];
+	std::unordered_map<int, PointLightComponent*>::const_iterator lightObject = pointLightMap.find(index);
+	if (lightObject == pointLightMap.end())
+		return false;
+	else
+		//return true;
+		return pointLightMap[index];
 }
