@@ -169,6 +169,7 @@
     <ClCompile Include="NodeWalkerComponent.cpp" />
     <ClCompile Include="Object.cpp" />
     <ClCompile Include="Renderer.cpp" />
+    <ClCompile Include="ResourceManager.cpp" />
     <ClCompile Include="Scene.cpp" />
     <ClCompile Include="Shader.cpp" />
     <ClCompile Include="Skybox.cpp" />
@@ -188,6 +189,7 @@
     <ClInclude Include="Chunk.h" />
     <ClInclude Include="ControllerComponent.h" />
     <ClInclude Include="DShape.h" />
+    <ClInclude Include="ResourceManager.h" />
     <ClInclude Include="Shapes.h" />
     <ClInclude Include="GameClock.h" />
     <ClInclude Include="GUIManager.h" />

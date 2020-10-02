@@ -1,0 +1,21 @@
+Shaders: 4
+
+Name: default
+
+Name: skeleton
+Input: skeleton
+VS: Skeleton_vs.hlsl
+PS: Default_ps.hlsl
+
+Name: instanceShader
+Input: instance
+VS: Instance_vs.hlsl
+PS: Default_ps.hlsl
+
+Name: alphaInstanceShader
+Input: instance
+VS: Instance_vs.hlsl
+PS: Alpha_ps.hlsl
+
+
+

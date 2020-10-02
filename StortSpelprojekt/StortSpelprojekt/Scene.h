@@ -18,6 +18,7 @@
 #include "SaveState.h"
 #include "DShape.h"
 
+#include "ResourceManager.h"
 class Scene
 {
 public:
@@ -55,4 +56,5 @@ private:
 	Skybox* skyboxClass;		
 
 	WorldGenerator worldGenerator;	
+	ResourceManager* resourceManager;
 };
