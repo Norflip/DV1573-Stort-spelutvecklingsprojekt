@@ -11,11 +11,11 @@
 #include "MeshComponent.h"
 #include "ZWEBLoader.h"
 #include "SkeletonMeshComponent.h"
-#include "GUISprite.h"
-
+#include "GUIManager.h"
 #include "Skybox.h"
 #include "WorldGenerator.h"
 #include "SaveState.h"
+#include <string>
 class SpriteRenderPass;
 class Scene
 {
@@ -55,5 +55,5 @@ private:
 	SpriteRenderPass* spritePass;
 	/* test sky */
 	Object* testSkybox;
-	GUISprite* testSprite;
+	GUIManager* guiManager;
 };

@@ -157,6 +157,7 @@
     <ClCompile Include="DXHelper.cpp" />
     <ClCompile Include="Engine.cpp" />
     <ClCompile Include="GameClock.cpp" />
+    <ClCompile Include="GUIManager.cpp" />
     <ClCompile Include="GUISprite.cpp" />
     <ClCompile Include="Input.cpp" />
     <ClCompile Include="main.cpp" />

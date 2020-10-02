@@ -8,11 +8,12 @@
 #include "Texture.h"
 #include "Material.h"
 #include "CameraComponent.h"
-
+#include "GUIManager.h"
 namespace dx = DirectX;
 
 class RenderPass;
 class GUISprite;
+class GUIManager;
 class Renderer
 {
 	const FLOAT DEFAULT_BG_COLOR[4] = { 0.3f, 0.1f, 0.2f, 1.0f };
@@ -51,7 +52,7 @@ public:
 	void RenderFrame();
 	
 	void AddRenderPass(RenderPass*);
-	void setSprite(GUISprite*);
+	void setGUIManager(GUIManager*);
 	void Draw(const Mesh& mesh, const Material& material, const dx::XMMATRIX& model, const CameraComponent& camera);
 	void DrawInstanced(const Mesh& mesh, size_t count, const Material& material, const dx::XMMATRIX& model, const CameraComponent& camera);
 	void DrawSkeleton(const Mesh& mesh, const Material& material, const dx::XMMATRIX& model, const CameraComponent& camera, cb_Skeleton& bones);
@@ -100,6 +101,6 @@ private:
 	std::unordered_map<size_t, std::queue<RenderItem>> itemQueue;
 	std::vector<RenderPass*> passes;
 
-	// test UI
-	GUISprite* sprite;
+	// GUI
+	GUIManager* guiManager;
 };

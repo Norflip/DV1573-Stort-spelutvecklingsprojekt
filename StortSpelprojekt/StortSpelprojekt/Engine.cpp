@@ -4,7 +4,7 @@ Engine::Engine(HINSTANCE hInstance) : window(hInstance), activeScene(nullptr)
 {
 	Log::Open();
 
-	window.Open(800, 800);
+	window.Open(1600, 900);
 	renderer.Initialize(&window);
 
 	RegisterScene(0, new Scene());

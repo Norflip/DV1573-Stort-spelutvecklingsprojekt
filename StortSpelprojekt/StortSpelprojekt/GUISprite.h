@@ -1,4 +1,6 @@
 #pragma once
+
+#include "GUIManager.h"
 #include "DirectXHelpers.h"
 #include <WICTextureLoader.h>
 #include <DirectXMath.h>
@@ -7,13 +9,25 @@
 #include <wrl.h>
 #include <iostream>
 namespace dx = DirectX;
-class GUISprite
+
+enum DrawDirection : uint32_t
+{
+	Default = 0,
+	TopLeft = 0,
+	TopRight = 1,
+	BottomLeft = 2,
+	BottomRight = TopRight | BottomLeft,
+};
+
+
+class GUISprite :public GUIObject
 {
 
 public:
 
-	GUISprite(Renderer& renderer, std::string, float xPos, float yPos);
+	GUISprite(Renderer& renderer, std::string, float xPos, float yPos , DrawDirection dir);
 	~GUISprite();
+	void Draw(DirectX::SpriteBatch*) override;
 	void Draw();
 	void SetPosition(float xPos, float yPos);
 	void SetWICSprite(ID3D11Device* device, std::string spriteFile);
@@ -29,6 +43,7 @@ private:
 	Renderer* renderer;
 	dx::XMVECTOR position, color, origin, scale;
 	ID3D11ShaderResourceView* SRV;
-	
+	DrawDirection direction;
+	void setPos(float xPos, float yPos, DrawDirection dir);
 
 };

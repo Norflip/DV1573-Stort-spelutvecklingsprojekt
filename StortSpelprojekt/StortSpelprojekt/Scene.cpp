@@ -17,12 +17,21 @@ void Scene::Initialize(Renderer* renderer)
 
 	// TEMP
 	// Should change values on resize event
+
 	Window* window = renderer->GetOutputWindow();
 	spriteBatch = new DirectX::SpriteBatch(renderer->GetContext());
-	testSprite = new GUISprite(*renderer, "Textures/EquipmentBox.png", 100, 100);
-	//spritePass = new SpriteRenderPass(110, testSprite);
-	//renderer->AddRenderPass(spritePass);
-	renderer->setSprite(testSprite);
+	GUISprite* normalSprite = new GUISprite(*renderer, "Textures/EquipmentBox.png", 0, 0, DrawDirection::BottomLeft);
+	GUISprite* buttonSprite = new GUISprite(*renderer, "Textures/EquipmentBox.png", 0, 0, DrawDirection::BottomRight);
+	GUISprite* normalSprite2 = new GUISprite(*renderer, "Textures/EquipmentBox.png", 0, 0, DrawDirection::TopLeft);
+	GUISprite* buttonSprite2 = new GUISprite(*renderer, "Textures/EquipmentBox.png", 0, 0, DrawDirection::TopRight);
+
+	guiManager = new GUIManager(renderer);
+	renderer->setGUIManager(guiManager);
+	guiManager->AddGUIObject(normalSprite, "normalSprite");
+	guiManager->AddGUIObject(buttonSprite, "buttonSprite");
+	guiManager->AddGUIObject(normalSprite2, "normalSprite2");
+	guiManager->AddGUIObject(buttonSprite2, "buttonSprite2");
+	guiManager->GetGUIObject("normalSprite")->SetPosition(100, 100);
 	SaveState state;
 	state.seed = 1337;
 	state.segment = 0;
