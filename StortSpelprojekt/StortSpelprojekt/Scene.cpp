@@ -193,7 +193,7 @@ void Scene::Initialize(Renderer* renderer)
 
 	std::vector<Mesh> monsterEmilMesh = ZWEBLoader::LoadMeshes(ZWEBLoadType::SkeletonAnimation, "Models/monsterAndIdle.ZWEB", renderer->GetDevice());
 	std::vector<Material> monsterEmilMat = ZWEBLoader::LoadMaterials("Models/monsterAndIdle.ZWEB", shader, renderer->GetDevice());
-
+	
 	SkeletonAni monsterEmilIdle = ZWEBLoader::LoadSkeletonOnly("Models/monsterAndIdleAni.ZWEB", monsterEmilMesh[0].GetBoneIDS());
 	monsterEmilMat[0].SetShader(skeletonShader);
 	

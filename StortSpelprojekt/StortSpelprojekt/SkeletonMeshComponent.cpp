@@ -27,7 +27,9 @@ void SkeletonMeshComponent::Draw(Renderer* renderer, CameraComponent* camera)
 		
 		
 		renderer->DrawSkeleton(mesh, material, GetOwner()->GetTransform().GetWorldMatrix(), *camera, finalTransforms);
-		RunAnimation(componentDeltaTime);
+		RunAnimation(0.0f);
+
+		skeletonAnimations[trackMap[currentAni]].getBoneIDMap();
 	}
 }
 
@@ -40,9 +42,9 @@ void SkeletonMeshComponent::RunAnimation(const float& deltaTime)
 	}
 	if (currentAni != StateMachine::NONE)
 	{	//I AM USING MAP HERE THIS MIGHT CREATE COPIES!!!
-		finalTransforms = skeletonAnimations[trackMap[currentAni]].Makeglobal(elapsedTime, dx::XMMatrixIdentity(), skeletonAnimations[trackMap[currentAni]].GetRootKeyJoints());
+		skeletonAnimations[trackMap[currentAni]].Makeglobal(elapsedTime, dx::XMMatrixIdentity(), skeletonAnimations[trackMap[currentAni]].GetRootKeyJoints());
 		//I AM COPYING HERE I DONT KNOW HOW ELSE TO DO IT!!
-		//finalTransforms = skeletonAnimations[trackMap[currentAni]].bones;
+		finalTransforms = skeletonAnimations[trackMap[currentAni]].bones;
 	}
 	//Need to add functionality for multiple flags in one.
 }

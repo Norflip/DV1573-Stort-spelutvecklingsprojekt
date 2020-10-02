@@ -128,9 +128,8 @@ namespace ZWEBLoader //TO BE ADDED: FUNCTION TO LOAD LIGHTS
 						UINT index = (UINT)std::distance(controlVertices.begin(), it); //find wich one
 
 						vertices[vertex].boneID = controlVertices[index].boneID; //add it to the list
-						vertices[vertex].skinWeight.x = controlVertices[index].skinWeight.x;
-						vertices[vertex].skinWeight.y = controlVertices[index].skinWeight.y;
-						vertices[vertex].skinWeight.z = controlVertices[index].skinWeight.z;
+						vertices[vertex].skinWeight = controlVertices[index].skinWeight;
+						
 					}
 
 

@@ -193,7 +193,7 @@ void Renderer::DrawInstanced(const Mesh& mesh, const size_t& count, const Materi
 	AddItem(item, material.IsTransparent());
 }
 
-void Renderer::DrawSkeleton(const Mesh& mesh, const Material& material, const dx::XMMATRIX& model, const CameraComponent& camera,  std::vector<dx::XMFLOAT4X4>& bones)
+void Renderer::DrawSkeleton(const Mesh& mesh, const Material& material, const dx::XMMATRIX& model, const CameraComponent& camera, std::vector<dx::XMFLOAT4X4>& bones)
 {
 	
 	RenderItem item;
