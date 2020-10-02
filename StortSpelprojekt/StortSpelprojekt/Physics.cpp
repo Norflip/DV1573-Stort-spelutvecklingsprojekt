@@ -10,9 +10,9 @@ Physics::~Physics()
 {
 }
 
-void Physics::SetGravity(const btVector3& gravity)
+void Physics::SetGravity(float x, float y, float z)
 {
-    dynamicsWorld->setGravity(gravity);
+    dynamicsWorld->setGravity(btVector3(x, y, z));
 }
 
 void Physics::CreateDynamicWorld()

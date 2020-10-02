@@ -99,6 +99,20 @@ void Scene::Initialize(Renderer* renderer)
 	//Log::Add("PRINTING SCENE HIERARCHY ----");
 	//PrintSceneHierarchy(root, 0);
 	//Log::Add("----");
+
+	//PHYSICS
+
+	BoxColliderComponent* boxCol = testMesh2->AddComponent<BoxColliderComponent>(1, 1, 1, 0, 0, 0, 0, 0, 0, 0);
+
+	RigidBodyComp* rigidBody = testMesh2->AddComponent<RigidBodyComp>();
+	rigidBody->m_GenerateCompoundShape();
+
+	physics.CreateDynamicWorld();
+	physics.SetGravity(0, -10, 0);
+	physics.AddRigidBody(rigidBody);
+
+	physics.SetupShapes();
+
 }
 
 void Scene::Update(const float& deltaTime)
@@ -111,6 +125,7 @@ void Scene::Update(const float& deltaTime)
 
 void Scene::FixedUpdate(const float& fixedDeltaTime)
 {
+	physics.FixedUpdate(fixedDeltaTime);
 	//Log::Add(std::to_string(fixedDeltaTime));
 //	root->FixedUpdate(fixedDeltaTime);
 }

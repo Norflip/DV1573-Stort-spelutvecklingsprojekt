@@ -10,7 +10,7 @@ public:
 	Physics();
 	virtual ~Physics();
 
-	void SetGravity(const btVector3& gravity);
+	void SetGravity(float x, float y, float z);
 	void CreateDynamicWorld();
 	void AddRigidBody(RigidBodyComp* rigidBodyComp);
 	void FixedUpdate(const float& fixedDeltaTime);

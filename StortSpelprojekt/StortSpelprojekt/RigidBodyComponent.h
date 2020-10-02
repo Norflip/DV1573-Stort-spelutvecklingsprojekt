@@ -4,7 +4,9 @@
 #include "Transform.h"
 #include "Component.h"
 #include "Object.h"
-#include <vector>
+#include "BoxColliderComponent.h"
+#include "SphereColliderComponent.h"
+#include "CapsuleColliderComponent.h"
 
 namespace dx = DirectX;
 

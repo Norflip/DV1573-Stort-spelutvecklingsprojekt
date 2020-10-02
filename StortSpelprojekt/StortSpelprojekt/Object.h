@@ -104,6 +104,10 @@ template<typename T>
 inline std::vector<T*> Object::GetComponents() const
 {
 	auto ptr(componentArray[GetComponentTypeID<T>()]);
-	return std::vector<T*>(ptr);
+	std::vector<T*> items;
+	for (auto i = ptr.cbegin(); i < ptr.cend(); i++)
+		items.push_back(static_cast<T*>(*i));
+	return items;
 }
+
 

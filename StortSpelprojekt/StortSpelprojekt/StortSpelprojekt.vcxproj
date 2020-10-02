@@ -161,7 +161,7 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClCompile Include="BoundingBoxes.cpp" />
-    <ClCompile Include="BoxCollideComponent.cpp" />
+    <ClCompile Include="BoxColliderComponent.cpp" />
     <ClCompile Include="CameraComponent.cpp" />
     <ClCompile Include="CapsuleColliderComponent.cpp" />
     <ClCompile Include="Chunk.cpp" />

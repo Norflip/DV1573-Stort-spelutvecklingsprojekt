@@ -17,6 +17,12 @@
 #include "WorldGenerator.h"
 #include "SaveState.h"
 
+#include "Physics.h"
+#include "RigidBodyComponent.h"
+#include "BoxColliderComponent.h"
+#include "SphereColliderComponent.h"
+#include "CapsuleColliderComponent.h"
+
 class Scene
 {
 public:
@@ -60,5 +66,7 @@ private:
 	Object* skybox;
 	Skybox* skyboxClass;		
 
-	WorldGenerator worldGenerator;	
+	WorldGenerator worldGenerator;
+
+	Physics physics;
 };

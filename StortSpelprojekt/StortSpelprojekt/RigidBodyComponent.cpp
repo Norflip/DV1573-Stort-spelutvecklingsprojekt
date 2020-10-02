@@ -33,12 +33,42 @@ dx::XMVECTOR RigidBodyComp::ConvertToRotation() const
 
 void RigidBodyComp::RecursiveAddShapes(Object* obj, btCompoundShape* shape)
 {
+	//BOXES
+	const std::vector<BoxColliderComponent*>& boxes = obj->GetComponents<BoxColliderComponent>();
+
+	for (size_t i = 0; i < boxes.size(); i++)
+	{
+		shape->addChildShape(boxes[i]->GetTransform(), boxes[i]->GetCollisionShape());
+	}
+
+	//SPHERES
+	const std::vector<SphereColliderComponent*>& spheres = obj->GetComponents<SphereColliderComponent>();
+
+	for (size_t i = 0; i < spheres.size(); i++)
+	{
+		shape->addChildShape(spheres[i]->GetTransform(), spheres[i]->GetCollisionShape());
+	}
+
+	//CAPSULES
+	const std::vector<CapsuleColliderComponent*>& capsules = obj->GetComponents<CapsuleColliderComponent>();
+
+	for (size_t i = 0; i < capsules.size(); i++)
+	{
+		shape->addChildShape(capsules[i]->GetTransform(), capsules[i]->GetCollisionShape());
+	}
+
+	//CHILDREN
+	const std::vector<Transform*>& children = GetOwner()->GetTransform().GetChildren();
+
+	for (size_t i = 0; i < children.size(); i++)
+	{
+		RecursiveAddShapes(children[i]->GetOwner(), shape);
+	}
 }
 
 void RigidBodyComp::Initialize()
 {
 	Transform& transform = GetOwner()->GetTransform();
-
 
 	//compShape->addChildShape(rbTransform, colShape);
 
@@ -52,10 +82,10 @@ void RigidBodyComp::Initialize()
 
 	localInertia = btVector3(0, 0, 0);
 	if (isDynamic)
-		colShape->calculateLocalInertia(mass, localInertia);
+		compShape->calculateLocalInertia(mass, localInertia); //this remains null after debugging. Probably one more step before it works
 
 	btDefaultMotionState* myMotionState = new btDefaultMotionState(rbTransform);
-	btRigidBody::btRigidBodyConstructionInfo cInfo(mass, myMotionState, colShape, localInertia);
+	btRigidBody::btRigidBodyConstructionInfo cInfo(mass, myMotionState, compShape, localInertia);
 	body = new btRigidBody(cInfo);
 }
 
