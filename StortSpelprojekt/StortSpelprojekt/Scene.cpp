@@ -169,7 +169,7 @@ void Scene::Initialize(Renderer* renderer)
 
 	Object* leaves = new Object("leaves");
 
-	
+	treeMaterials[1].SetTransparent(true);
 	treeBase->AddComponent<InstancedMeshComponent>(treeModels[0], treeMaterials[0]);
 	treeBranches->AddComponent<InstancedMeshComponent>(treeModels[1], treeMaterials[0]);
 	leaves->AddComponent<InstancedMeshComponent>(treeModels[2], treeMaterials[1]);
@@ -206,7 +206,7 @@ void Scene::Update(const float& deltaTime)
 	root->Update(deltaTime);
 	skyboxClass->GetThisObject()->GetTransform().SetPosition(camera->GetOwner()->GetTransform().GetPosition());
 	GameClock::Instance().Update();
-	std::cout << "FPS: " << GameClock::Instance().GetFramesPerSecond() << std::endl;
+	//std::cout << "FPS: " << GameClock::Instance().GetFramesPerSecond() << std::endl;
 }
 
 void Scene::FixedUpdate(const float& fixedDeltaTime)
@@ -217,10 +217,13 @@ void Scene::FixedUpdate(const float& fixedDeltaTime)
 
 void Scene::Render()
 {	
+	// skybox draw object
+	renderer->SetRSToCullNone(true);
+	skyboxClass->GetThisObject()->Draw(renderer, camera);
+
 	root->Draw(renderer, camera);
 
-	// skybox draw object 
-	skyboxClass->GetThisObject()->Draw(renderer, camera);
+	
 	worldGenerator.Draw(renderer, camera);
 
 	renderer->RenderFrame();

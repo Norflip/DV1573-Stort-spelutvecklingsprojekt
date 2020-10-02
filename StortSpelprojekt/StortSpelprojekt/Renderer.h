@@ -60,7 +60,7 @@ public:
 	void DrawInstanced(const Mesh& mesh, const size_t& count, const Material& material, const CameraComponent& camera);
 	void DrawSkeleton(const Mesh& mesh, const Material& material, const dx::XMMATRIX& model, const CameraComponent& camera, cb_Skeleton& bones);
 	
-
+	void SetRSToCullNone(bool);
 
 	ID3D11Device* GetDevice() const { return this->device; }
 	ID3D11DeviceContext* GetContext() const { return this->context; }
@@ -114,4 +114,8 @@ private:
 	ID3D11BlendState* blendStateOff;
 
 	const float BLENDSTATEMASK[4] = { 0.0f };
+
+	//rasterizer
+	ID3D11RasterizerState* rasterizerStateCullBack;
+	ID3D11RasterizerState* rasterizerStateCullNone;
 };
