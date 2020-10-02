@@ -15,7 +15,7 @@ void DXHelper::CreateSwapchain(const Window& window, _Out_ ID3D11Device** device
 	DXGI_SWAP_CHAIN_DESC swapChainDescription;
 	ZeroMemory(&swapChainDescription, sizeof(DXGI_SWAP_CHAIN_DESC));
 
-	swapChainDescription.BufferCount = 2;	 // one back buffer
+	swapChainDescription.BufferCount = 2;	 // one back buffer???
 	swapChainDescription.BufferDesc.Width = width;
 	swapChainDescription.BufferDesc.Height = height;
 	swapChainDescription.BufferDesc.Format = DXGI_FORMAT_R8G8B8A8_UNORM;
@@ -36,9 +36,9 @@ void DXHelper::CreateSwapchain(const Window& window, _Out_ ID3D11Device** device
 	HRESULT resultCreateDevAndSwap = D3D11CreateDeviceAndSwapChain(nullptr, D3D_DRIVER_TYPE_HARDWARE, nullptr, swapchainFlags, featureLevel, 1, D3D11_SDK_VERSION, &swapChainDescription, swapchain, device, nullptr, context);
 	assert(SUCCEEDED(resultCreateDevAndSwap));
 
-
 	ID3D11RasterizerState* rasterizerState = CreateRasterizerState(D3D11_CULL_BACK, D3D11_FILL_SOLID, *device);
 	(*context)->RSSetState(rasterizerState);
+
 }
 
 void DXHelper::CreateConstBuffer(ID3D11Device* device, ID3D11Buffer** buffer, void* initdata, unsigned int byteSize)
@@ -126,6 +126,27 @@ void DXHelper::CreateBlendState(ID3D11Device* device, ID3D11BlendState** blendOn
 
 	
 
+}
+
+void DXHelper::CreateRSState(ID3D11Device* device, ID3D11RasterizerState** cullBack, ID3D11RasterizerState** cullNone)
+{
+	// DEFAULT RASTERIZER STATE
+	D3D11_RASTERIZER_DESC rasterizerDescription;
+	ZeroMemory(&rasterizerDescription, sizeof(D3D11_RASTERIZER_DESC));
+	rasterizerDescription.CullMode = D3D11_CULL_BACK;
+	rasterizerDescription.FillMode = D3D11_FILL_SOLID;
+	rasterizerDescription.DepthClipEnable = true;
+
+
+
+
+	HRESULT resultCreateRasterizer = device->CreateRasterizerState(&rasterizerDescription, cullBack);
+	assert(SUCCEEDED(resultCreateRasterizer));
+
+	rasterizerDescription.CullMode = D3D11_CULL_NONE;
+
+	resultCreateRasterizer = device->CreateRasterizerState(&rasterizerDescription, cullNone);
+	assert(SUCCEEDED(resultCreateRasterizer));
 }
 
 RenderTexture DXHelper::CreateBackbuffer(size_t width, size_t height, ID3D11Device* device,  IDXGISwapChain* swapchain)

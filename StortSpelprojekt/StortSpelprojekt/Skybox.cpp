@@ -2,7 +2,7 @@
 
 Skybox::Skybox(ID3D11Device* device, ID3D11DeviceContext* context, Object* object)
 {
-	this->object = object;
+	this->object = new Object(*object);
 
 	skyboxShader.SetPixelShader(L"Shaders/Sky_ps.hlsl");
 	skyboxShader.SetVertexShader(L"Shaders/Sky_vs.hlsl");
@@ -22,6 +22,25 @@ Skybox::Skybox(ID3D11Device* device, ID3D11DeviceContext* context, Object* objec
 
 Skybox::~Skybox()
 {
+
+	/*for (int i = 0; i < srvs.size(); i++) {
+		srvs[i]->Release();
+		delete srvs[i];
+	}
+
+	srvs.clear();
+			
+	if (srv)
+	{
+		delete srv;
+		srv = nullptr;
+	}*/
+	
+	if (object)
+	{
+		delete object;
+		object = nullptr;
+	}
 }
 
 void Skybox::LoadAllTextures(ID3D11DeviceContext* context, ID3D11Device* device)

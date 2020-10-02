@@ -32,10 +32,7 @@ public:
 	void Update(const float& deltaTime);
 	void FixedUpdate(const float& fixedDeltaTime);
 	void Render();
-
-	/* new - render scene to texture */
-	void RenderSceneToTexture();
-
+	
 	void AddObject(Object* object);
 	void AddObject(Object* object, Object* parent);
 
@@ -51,10 +48,7 @@ private:
 	Renderer* renderer;
 
 	Input& input;
-
-	/* Test stuff */
-	Texture* screenquadTex;
-	Object* quad;
+		
 
 	/* Test skybox in class */
 	Object* skybox;

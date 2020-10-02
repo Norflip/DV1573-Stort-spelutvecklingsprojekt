@@ -2,13 +2,24 @@
 
 Scene::Scene() : input(Input::Instance())
 {
+	skyboxClass = nullptr;
+	skybox = nullptr;
+	renderer = nullptr;
+	camera = nullptr;
+
 	root = new Object("sceneRoot", ObjectFlag::DEFAULT);
 }
 
 Scene::~Scene()
-{
+{	
+	delete skybox;
+	skybox = nullptr;
+
+	delete skyboxClass;
+	skyboxClass = nullptr;
+
 	delete root;
-	root = nullptr;
+	root = nullptr;	
 }
 
 void Scene::Initialize(Renderer* renderer)
@@ -86,12 +97,11 @@ void Scene::Initialize(Renderer* renderer)
 
 	/* * * * * * * * ** * * * * */
 	
+
 	skybox = new Object("Skybox");
 	skyboxClass = new Skybox(renderer->GetDevice(), renderer->GetContext(), skybox);
-
-	//Log::Add("PRINTING SCENE HIERARCHY ----");
-	//PrintSceneHierarchy(root, 0);
-	//Log::Add("----");
+	skyboxClass->GetThisObject()->AddFlag(ObjectFlag::NO_CULL);
+	//AddObject(skyboxClass->GetThisObject());
 
 	/*************************INSTANCING*******************/
 	Shader instanceShader;
@@ -126,7 +136,7 @@ void Scene::Initialize(Renderer* renderer)
 	
 
 	std::vector<unsigned int> r;
-	for (int i = 0; i < nrOfInstances; i++)
+	for (size_t i = 0; i < nrOfInstances; i++)
 	{
 		r.push_back(rand() % 10 + 1);
 	
@@ -168,12 +178,13 @@ void Scene::Initialize(Renderer* renderer)
 
 	Object* leaves = new Object("leaves");
 
-	
+	treeMaterials[1].SetTransparent(true);
 	treeBase->AddComponent<InstancedMeshComponent>(treeModels[0], treeMaterials[0]);
 	treeBranches->AddComponent<InstancedMeshComponent>(treeModels[1], treeMaterials[0]);
 	leaves->AddComponent<InstancedMeshComponent>(treeModels[2], treeMaterials[1]);
 
 	leaves->AddFlag(ObjectFlag::NO_CULL);
+	
 	
 
 	
@@ -194,9 +205,9 @@ void Scene::Initialize(Renderer* renderer)
 
 	/* * * * * * * * ** * * * * */
 
-	Log::Add("PRINTING SCENE HIERARCHY ----");
-	PrintSceneHierarchy(root, 0);
-	Log::Add("----");
+	//Log::Add("PRINTING SCENE HIERARCHY ----");
+	//PrintSceneHierarchy(root, 0);
+	/*Log::Add("----");*/
 }
 
 void Scene::Update(const float& deltaTime)
@@ -216,7 +227,7 @@ void Scene::Update(const float& deltaTime)
 	root->Update(deltaTime);
 	skyboxClass->GetThisObject()->GetTransform().SetPosition(camera->GetOwner()->GetTransform().GetPosition());
 	GameClock::Instance().Update();
-	std::cout << "FPS: " << GameClock::Instance().GetFramesPerSecond() << std::endl;
+	//std::cout << "FPS: " << GameClock::Instance().GetFramesPerSecond() << std::endl;
 }
 
 void Scene::FixedUpdate(const float& fixedDeltaTime)
@@ -227,10 +238,14 @@ void Scene::FixedUpdate(const float& fixedDeltaTime)
 
 void Scene::Render()
 {	
+	// skybox draw object
+	renderer->SetRSToCullNone(true);
+	skyboxClass->GetThisObject()->Draw(renderer, camera);
+
 	root->Draw(renderer, camera);
 
-	// skybox draw object 
 	skyboxClass->GetThisObject()->Draw(renderer, camera);
+
 	worldGenerator.Draw(renderer, camera);
 
 	renderer->RenderFrame();
@@ -249,8 +264,6 @@ void Scene::AddObject(Object* object, Object* parent)
 void Scene::RemoveObject(Object* object)
 {
 	// remove the the connection and traverse downwards and remove / destroy all objects
-
-	
 }
 
 void Scene::PrintSceneHierarchy(Object* object, size_t level) const
@@ -264,8 +277,7 @@ void Scene::PrintSceneHierarchy(Object* object, size_t level) const
 
 		indent += "L  ";		
 	}
-
-	
+		
 	Log::Add(indent + object->GetName());
 
 	if (object->GetTransform().CountChildren() > 0)

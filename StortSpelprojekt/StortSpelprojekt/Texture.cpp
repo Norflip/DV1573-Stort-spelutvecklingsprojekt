@@ -2,17 +2,16 @@
 
 Texture::Texture()
 {	
+	sizeof(&hr, sizeof(HRESULT));
 	srv = nullptr;
-	rtv = nullptr;
 }
 
-Texture::Texture(ID3D11ShaderResourceView* srv) : srv(srv), rtv(nullptr)
+Texture::Texture(ID3D11ShaderResourceView* srv) : srv(srv)
 {
 }
 
 Texture::~Texture()
-{
-	
+{		
 }
 
 bool Texture::LoadTexture(ID3D11Device* device, LPCWSTR textureFilepath)
@@ -30,9 +29,4 @@ void Texture::Shutdown()
 		srv->Release();
 		srv = 0;
 	}	
-
-	if (rtv) {
-		rtv->Release();
-		rtv = 0;
-	}
 }
