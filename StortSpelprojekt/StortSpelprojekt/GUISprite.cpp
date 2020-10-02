@@ -12,7 +12,8 @@ GUISprite::GUISprite(Renderer& renderer , std::string filePath, float xPos, floa
 	this->direction = dir;
 
 	this->rotation = 0.0f;
-	this->color = dx::XMVectorSet(1.f, 1.f, 1.f, 1.f);
+	this->baseColor = dx::XMVectorSet(1.f, 1.f, 1.f, 1.f);
+	this->activeColor = dx::XMVectorSet(1.3f, 1.3f, 1.3f, 1.3f);
 	this->origin = dx::XMVectorSet(1.f, 1.f, 1.f, 1.f);
 	this->SRV = nullptr;
 	this->xPos = renderer.GetOutputWindow()->GetWidth()-xPos;
@@ -64,12 +65,15 @@ GUISprite::~GUISprite()
 
 void GUISprite::Draw(DirectX::SpriteBatch* test)
 {
-	test->Draw(SRV, this->position, nullptr, this->color, rotation, origin, scale, DirectX::SpriteEffects::SpriteEffects_None, 0.0f);
+	if(active)
+		test->Draw(SRV, this->position, nullptr, this->activeColor, rotation, origin, scale, DirectX::SpriteEffects::SpriteEffects_None, 0.0f);
+	else
+		test->Draw(SRV, this->position, nullptr, this->baseColor, rotation, origin, scale, DirectX::SpriteEffects::SpriteEffects_None, 0.0f);
 }
 
 void GUISprite::Draw()
 {
-		spriteBatch->Draw(SRV, this->position, nullptr, this->color, rotation, origin, scale, DirectX::SpriteEffects::SpriteEffects_None, 0.0f);	
+		spriteBatch->Draw(SRV, this->position, nullptr, this->baseColor, rotation, origin, scale, DirectX::SpriteEffects::SpriteEffects_None, 0.0f);	
 }
 
 void GUISprite::SetPosition(float xPos, float yPos)
@@ -86,6 +90,12 @@ void GUISprite::SetWICSprite(ID3D11Device* device,std::string spriteFile)
 	std::wstring wsConvert(spriteFile.begin(), spriteFile.end());
 	result = DirectX::CreateWICTextureFromFile(device, wsConvert.c_str(), nullptr, &SRV);
 	assert(SUCCEEDED(result));
+}
+
+
+void GUISprite::SetActiveColor(dx::XMVECTOR vector)
+{
+	this->activeColor = vector;
 }
 
 void GUISprite::SetDDSSprite(ID3D11Device* device,  std::string spriteFile)

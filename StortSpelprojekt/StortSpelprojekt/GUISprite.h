@@ -32,11 +32,11 @@ public:
 	void SetPosition(float xPos, float yPos);
 	void SetWICSprite(ID3D11Device* device, std::string spriteFile);
 	void SetActive(bool set = true) { this->active = set; };
-	void SetActiveColor();
+	void SetActiveColor(dx::XMVECTOR vector = dx::XMVectorSet(22.f, 22.f, 22.f, 22.f));
 	bool GetActive() { return this->active; };
 	void SetDDSSprite(ID3D11Device* device, std::string spriteFile); // no dds yet
 private:
-	bool active = true;
+	bool active = false;
 	std::string filePath;
 	float xPos, yPos;
 	float width, height;
@@ -44,7 +44,7 @@ private:
 	float rotation;
 	std::unique_ptr<dx::SpriteBatch> spriteBatch;
 	Renderer* renderer;
-	dx::XMVECTOR position, color, origin, scale; //byt till xmfloat 4
+	dx::XMVECTOR position, baseColor,activeColor, origin, scale; //byt till xmfloat 4
 	ID3D11ShaderResourceView* SRV;
 	DrawDirection direction;
 	void setPos(float xPos, float yPos, DrawDirection dir);
