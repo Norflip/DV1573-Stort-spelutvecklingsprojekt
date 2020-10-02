@@ -90,6 +90,17 @@ void Scene::Initialize(Renderer* renderer)
 	Skybox* skybox = new Skybox(skybox);*/
 	/* test skybox */
 
+	Shader lightSahder;
+	lightSahder.SetVertexShader(L"Shaders/Default_vs.hlsl");
+	lightSahder.SetPixelShader(L"Shaders/Default_ps.hlsl");
+	lightSahder.Compile(renderer->GetDevice());
+	Object* testPointLight = new Object("testPointLight");
+	dx::XMFLOAT3 lightTranslation = dx::XMFLOAT3(15.0f, -5.0f, -5.0f);
+	testPointLight->GetTransform().SetPosition(dx::XMLoadFloat3(&lightTranslation));
+	AddObject(testPointLight);
+	testPointLight->AddComponent<PointLightComponent>(renderer->GetDevice(), renderer->GetContext());
+
+
 	Shader skyboxShader;
 	skyboxShader.SetPixelShader(L"Shaders/Sky_ps.hlsl");
 	skyboxShader.SetVertexShader(L"Shaders/Sky_vs.hlsl");
@@ -101,9 +112,9 @@ void Scene::Initialize(Renderer* renderer)
 	testSkybox = new Object("skybox", ObjectFlag::NO_CULL | ObjectFlag::ENABLED);
 	testSkybox->AddComponent<MeshComponent>(zwebSkybox, zwebSkyboxMaterials);
 
-	Log::Add("PRINTING SCENE HIERARCHY ----");
+	/*Log::Add("PRINTING SCENE HIERARCHY ----");
 	PrintSceneHierarchy(root, 0);
-	Log::Add("----");
+	Log::Add("----");*/
 }
 
 void Scene::Update(const float& deltaTime)

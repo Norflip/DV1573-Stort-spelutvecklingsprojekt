@@ -102,6 +102,9 @@
     <ClCompile Include="PointLightComponent.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="LightManager.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Window.h">
@@ -216,6 +219,9 @@
       <Filter>Source Files\Chunk</Filter>
     </ClInclude>
     <ClInclude Include="PointLightComponent.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="LightManager.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>

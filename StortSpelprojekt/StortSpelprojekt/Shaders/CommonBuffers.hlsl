@@ -26,7 +26,7 @@ cbuffer cb_Material : register(b1)
 
 cbuffer cb_Scene : register(b2)
 {
-    PointLight pointLights[POINT_LIGHT_COUNT];
+    PointLight pointLights/*[POINT_LIGHT_COUNT]*/;
     int nrOfPointLights;
     float3 sunDirection;
     float sunIntensity;

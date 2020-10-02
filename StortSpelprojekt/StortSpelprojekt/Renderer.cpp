@@ -36,6 +36,7 @@ void Renderer::Initialize(Window* window)
 
 	DXHelper::CreateConstBuffer(device, &obj_cbuffer, &cb_object_data, sizeof(cb_object_data));
 	DXHelper::CreateConstBuffer(device, &light_cbuffer, &cb_scene, sizeof(cb_scene));
+	DXHelper::CreateConstBuffer(device, &light_cbuffer, &cb_scene, sizeof(cb_scene));
 	DXHelper::CreateConstBuffer(device, &material_cbuffer, &cb_material_data, sizeof(cb_material_data));
 	DXHelper::CreateConstBuffer(device, &skeleton_cbuffer, &cb_skeleton_data, sizeof(cb_skeleton_data));
 
@@ -213,19 +214,24 @@ void Renderer::DrawRenderItem(const RenderItem& item)
 	cb_material_data = item.material.GetMaterialData();
 	DXHelper::BindConstBuffer(context, material_cbuffer, &cb_material_data, CB_MATERIAL_SLOT, ShaderBindFlag::PIXEL);
 
-
+	
 	cb_scene.sunDirection = dx::XMFLOAT3(0.0f, 100.0f, -45.0f);
 	cb_scene.sunIntensity = 0.4f;
 
-	cb_scene.pointLights[0].lightColor = dx::XMFLOAT4(0.5f, 0.5f, 0.5f, 1.0f);
+	cb_light.pointLights.lightColor = dx::XMFLOAT4(0.5f, 0.5f, 0.5f, 1.0f);
+	cb_light.pointLights.lightPosition = dx::XMFLOAT3(15.0f, -5.0f, -5.0f);
+	cb_light.pointLights.attenuation = dx::XMFLOAT3(1.0f, 0.02f, 0.0f);
+	cb_light.pointLights.range = 25.0f;
+
+	/*cb_scene.pointLights[0].lightColor = dx::XMFLOAT4(0.5f, 0.5f, 0.5f, 1.0f);
 	cb_scene.pointLights[0].lightPosition = dx::XMFLOAT3(15.0f, -5.0f, -5.0f);
 	cb_scene.pointLights[0].attenuation = dx::XMFLOAT3(1.0f, 0.02f, 0.0f);
 	cb_scene.pointLights[0].range = 25.0f;
-
+	
 	cb_scene.pointLights[1].lightColor = dx::XMFLOAT4(0.3f, 0.3f, 0.3f, 1.0f);
 	cb_scene.pointLights[1].lightPosition = dx::XMFLOAT3(-10.0f, 10.0f, -5.0f);
 	cb_scene.pointLights[1].attenuation = dx::XMFLOAT3(1.0f, 0.02f, 0.0f);
-	cb_scene.pointLights[1].range = 25.0f;
+	cb_scene.pointLights[1].range = 25.0f;*/
 
 	cb_scene.nrOfPointLights = 2;
 	dx::XMStoreFloat3(&cb_scene.cameraPosition, item.camera->GetOwner()->GetTransform().GetPosition());

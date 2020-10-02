@@ -37,10 +37,15 @@ struct s_PointLight
 	dx::XMFLOAT3 attenuation;
 };
 
+struct cb_Lights
+{
+	s_PointLight pointLights/*[POINT_LIGHT_COUNT]*/;
+
+};
+
 __declspec(align(16))
 struct cb_Scene
 {
-	s_PointLight pointLights[POINT_LIGHT_COUNT];
 	int nrOfPointLights;
 	dx::XMFLOAT3 sunDirection;
 	float sunIntensity;

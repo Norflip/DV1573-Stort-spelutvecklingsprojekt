@@ -8,6 +8,7 @@
 #include "Texture.h"
 #include "Material.h"
 #include "CameraComponent.h"
+#include "PointLightComponent.h"
 
 namespace dx = DirectX;
 
@@ -90,6 +91,7 @@ private:
 	
 	//måste avallokeras!!!
 	cb_Scene cb_scene;
+	cb_Lights cb_light;
 	ID3D11Buffer* light_cbuffer;
 
 	cb_Material cb_material_data;

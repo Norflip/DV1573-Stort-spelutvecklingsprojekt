@@ -159,6 +159,7 @@
     <ClCompile Include="GameClock.cpp" />
     <ClCompile Include="GUIManager.cpp" />
     <ClCompile Include="Input.cpp" />
+    <ClCompile Include="LightManager.cpp" />
     <ClCompile Include="main.cpp" />
     <ClCompile Include="Material.cpp" />
     <ClCompile Include="MeshComponent.cpp" />
@@ -185,6 +186,7 @@
     <ClInclude Include="ControllerComponent.h" />
     <ClInclude Include="GameClock.h" />
     <ClInclude Include="GUIManager.h" />
+    <ClInclude Include="LightManager.h" />
     <ClInclude Include="Math.h" />
     <ClInclude Include="MoveComponent.h" />
     <ClInclude Include="Component.h" />
