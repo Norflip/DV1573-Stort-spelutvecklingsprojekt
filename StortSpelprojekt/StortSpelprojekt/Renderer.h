@@ -35,8 +35,8 @@ class Renderer
 		Type type;
 		size_t instanceCount;
 		//cb_Skeleton bones;
-		std::vector<dx::XMFLOAT4X4> bones;
-		dx::XMMATRIX world; //this should be float4x4? no?
+		std::vector<dx::XMFLOAT4X4>* bones;
+		dx::XMMATRIX world; //this should be float4x4? no? And a pointer?
 		const CameraComponent* camera;
 	};
 

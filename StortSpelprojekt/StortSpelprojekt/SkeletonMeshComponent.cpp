@@ -1,6 +1,6 @@
 #include "SkeletonMeshComponent.h"
 
-SkeletonMeshComponent::SkeletonMeshComponent(Mesh mesh, Material material) : mesh(mesh), material(material), elapsedTime(0.0f), boundingBoxes(mesh)
+SkeletonMeshComponent::SkeletonMeshComponent(Mesh mesh, Material material) : mesh(mesh), material(material), boundingBoxes(mesh)
 {
 	boundingBoxes.CalcAABB();
 	currentAni = StateMachine::IDLE; // need to figure out where to edit this.
@@ -25,9 +25,9 @@ void SkeletonMeshComponent::Draw(Renderer* renderer, CameraComponent* camera)
 	if (GetOwner()->HasFlag(ObjectFlag::NO_CULL) || !camera->CullAgainstAABB(boundingBoxes.GetAABB(), tmpPos))
 	{
 		
-		RunAnimation(componentDeltaTime);
+		
 		renderer->DrawSkeleton(mesh, material, GetOwner()->GetTransform().GetWorldMatrix(), *camera, finalTransforms);
-			
+		RunAnimation(componentDeltaTime);
 	}
 }
 
@@ -36,13 +36,13 @@ void SkeletonMeshComponent::RunAnimation(const float& deltaTime)
 	elapsedTime += deltaTime;
 	if (elapsedTime >= 60.0f)
 	{
-		elapsedTime = 0.0f;
+		elapsedTime = 0.0f; //I just dont like the idea of it running to infinity.
 	}
 	if (currentAni != StateMachine::NONE)
 	{	//I AM USING MAP HERE THIS MIGHT CREATE COPIES!!!
-		skeletonAnimations[trackMap[currentAni]].Makeglobal(elapsedTime, dx::XMMatrixIdentity(), skeletonAnimations[trackMap[currentAni]].GetRootKeyJoints());
+		finalTransforms = skeletonAnimations[trackMap[currentAni]].Makeglobal(elapsedTime, dx::XMMatrixIdentity(), skeletonAnimations[trackMap[currentAni]].GetRootKeyJoints());
 		//I AM COPYING HERE I DONT KNOW HOW ELSE TO DO IT!!
-		finalTransforms = skeletonAnimations[trackMap[currentAni]].bones;
+		//finalTransforms = skeletonAnimations[trackMap[currentAni]].bones;
 	}
 	//Need to add functionality for multiple flags in one.
 }

@@ -36,3 +36,5 @@ cbuffer cb_Scene : register(b2)
 	int id;
 	float factor;
 }
+
+StructuredBuffer<float4x4> bones : register(t2);

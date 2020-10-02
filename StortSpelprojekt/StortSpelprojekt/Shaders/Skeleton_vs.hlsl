@@ -3,16 +3,16 @@
 
 
 
-StructuredBuffer<float4x4> bones : register(t0);
+
 
 VS_OUTPUT main(VS_INPUT_SKELETON input)
 {
 	VS_OUTPUT output;
 
 
-	float4 p = mul(input.position, bones[input.boneID.x]) * input.skinWeight.x;
-	p += mul(input.position, bones[input.boneID.y]) * input.skinWeight.y;
-	p += mul(input.position, bones[input.boneID.z]) * input.skinWeight.z;
+	float4 p = mul(float4(input.position,1), bones[input.boneID.x]) * input.skinWeight.x;
+	p += mul(float4(input.position,1), bones[input.boneID.y]) * input.skinWeight.y;
+	p += mul(float4(input.position,1), bones[input.boneID.z]) * input.skinWeight.z;
 
 	float3 n = mul(float4(input.normal,0), bones[input.boneID.x]).xyz * input.skinWeight.x;
 	n += mul(float4(input.normal, 0), bones[input.boneID.y]).xyz * input.skinWeight.y;

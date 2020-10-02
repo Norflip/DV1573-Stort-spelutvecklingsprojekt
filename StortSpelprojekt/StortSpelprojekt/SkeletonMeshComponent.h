@@ -4,6 +4,7 @@
 #include "Material.h"
 #include "Transform.h"
 #include "CameraComponent.h"
+#include "BoundingBoxes.h"
 #include "Object.h"
 
 enum StateMachine

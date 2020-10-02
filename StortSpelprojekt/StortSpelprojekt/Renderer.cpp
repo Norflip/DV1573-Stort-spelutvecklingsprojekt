@@ -41,14 +41,17 @@ void Renderer::Initialize(Window* window)
 
 	dx::XMFLOAT4X4 bone;
 	dx::XMStoreFloat4x4(&bone, dx::XMMatrixIdentity());
-	
-	srv_skeleton_data = { bone };//set id matrix as default for the bones. So if no animation is happening the character is not funky.
+	for (int boneNr = 0; boneNr < 60; boneNr++)
+	{
+		srv_skeleton_data[boneNr] = bone;//set id matrix as default for the bones. So if no animation is happening the character is not funky.
+	}
+	 
 	DXHelper::CreateConstBuffer(device, &obj_cbuffer, &cb_object_data, sizeof(cb_object_data));
 	DXHelper::CreateConstBuffer(device, &light_cbuffer, &cb_scene, sizeof(cb_scene));
 	DXHelper::CreateConstBuffer(device, &material_cbuffer, &cb_material_data, sizeof(cb_material_data));
 	
-	DXHelper::CreateStructuredBuffer(device, &skeleton_srvbuffer, &srv_skeleton_data, sizeof(dx::XMFLOAT4X4), srv_skeleton_data.size(), &skeleton_srv);
-
+	DXHelper::CreateStructuredBuffer(device, &skeleton_srvbuffer, srv_skeleton_data, sizeof(dx::XMFLOAT4X4), srv_skeleton_data.size(), &skeleton_srv);
+	
 	DXHelper::CreateBlendState(device, &blendStateOn, &blendStateOff);
 
 	/* Screenquad shader */
@@ -190,14 +193,14 @@ void Renderer::DrawInstanced(const Mesh& mesh, const size_t& count, const Materi
 	AddItem(item, material.IsTransparent());
 }
 
-void Renderer::DrawSkeleton(const Mesh& mesh, const Material& material, const dx::XMMATRIX& model, const CameraComponent& camera, std::vector<dx::XMFLOAT4X4>& bones)
+void Renderer::DrawSkeleton(const Mesh& mesh, const Material& material, const dx::XMMATRIX& model, const CameraComponent& camera,  std::vector<dx::XMFLOAT4X4>& bones)
 {
 	
 	RenderItem item;
 	item.mesh = &mesh;
 	item.material = &material;
 	item.type = RenderItem::Type::Skeleton;
-	item.bones = bones;
+	item.bones = &bones;
 	item.world = model;
 	item.camera = &camera;
 	AddItem(item, false);
@@ -322,12 +325,15 @@ void Renderer::DrawRenderItemInstanced(const RenderItem& item)
 void Renderer::DrawRenderItemSkeleton(const RenderItem& item)
 {
 	dx::XMMATRIX mvp = dx::XMMatrixMultiply(item.world, dx::XMMatrixMultiply(item.camera->GetViewMatrix(), item.camera->GetProjectionMatrix()));
-	dx::XMStoreFloat4x4(&cb_object_data.mvp, dx::XMMatrixTranspose(mvp));
-	dx::XMStoreFloat4x4(&cb_object_data.world, dx::XMMatrixTranspose(item.world));
+	dx::XMStoreFloat4x4(&cb_object_data.mvp, /*dx::XMMatrixTranspose(*/mvp);
+	dx::XMStoreFloat4x4(&cb_object_data.world, /*dx::XMMatrixTranspose(*/item.world);
 	DXHelper::BindConstBuffer(context, obj_cbuffer, &cb_object_data, CB_OBJECT_SLOT, ShaderBindFlag::VERTEX);
 
-	
-	DXHelper::BindStructuredBuffer(context, skeleton_srvbuffer, (void*)&item.bones, BONES_SRV_SLOT, ShaderBindFlag::VERTEX, &skeleton_srv);
+	srv_skeleton_data = *item.bones;
+	DXHelper::BindStructuredBuffer(context, skeleton_srvbuffer, srv_skeleton_data, BONES_SRV_SLOT, ShaderBindFlag::VERTEX, &skeleton_srv);
+
+	cb_material_data = item.material->GetMaterialData();
+	DXHelper::BindConstBuffer(context, material_cbuffer, &cb_material_data, CB_MATERIAL_SLOT, ShaderBindFlag::PIXEL);
 	UINT stride = sizeof(Mesh::Vertex);
 	UINT offset = 0;
 

@@ -69,7 +69,7 @@ SkeletonAni::SkeletonAni()
     bones.resize(60); //Maximum number of bones, the animation doesn't need to have this many.
 }
 
-void SkeletonAni::Makeglobal(float elapsedTime, const DirectX::XMMATRIX& globalParent, std::vector<Bone>& keys)
+std::vector<dx::XMFLOAT4X4>& SkeletonAni::Makeglobal(float elapsedTime, const DirectX::XMMATRIX& globalParent, std::vector<Bone>& keys)
 {
     DirectX::XMMATRIX toRoot = dx::XMLoadFloat4x4(&Lerp(elapsedTime, keys)) * globalParent; //These matrices are local, need to make them global recursively.
 
@@ -92,7 +92,7 @@ void SkeletonAni::Makeglobal(float elapsedTime, const DirectX::XMMATRIX& globalP
         }
     }
 
-    //return bones;
+    return bones;
     
 }
 

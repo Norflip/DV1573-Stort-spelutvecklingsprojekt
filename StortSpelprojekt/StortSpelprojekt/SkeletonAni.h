@@ -36,7 +36,7 @@ private:
 	DirectX::XMFLOAT4X4& Lerp(float elapsedTime, std::vector<Bone>& keys);
 public:
 	SkeletonAni();
-	void Makeglobal(float elapsedTime, const DirectX::XMMATRIX& globalParent, std::vector<Bone>& keys);
+	std::vector<dx::XMFLOAT4X4>& Makeglobal(float elapsedTime, const DirectX::XMMATRIX& globalParent, std::vector<Bone>& keys);
 	std::string GetRootName();
 	unsigned int GetNrOfBones() const;
 	void SetUpOffsetsFromMatrices(std::vector<SkeletonOffsetsHeader>& offsets);
