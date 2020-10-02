@@ -19,9 +19,10 @@ public:
 	void operator=(LightManager const&) = delete;
 
 	bool IsDirty() { return dirty; }; // kollar ifall den har skräpväreden
-	void RegisterPointLight(PointLightComponent* pointLight/*, int index*/);
+	void RegisterPointLight(PointLightComponent* pointLight, int index);
 
-	bool getPointLight(int index);
+	PointLightComponent* GetPointLight(int index);
+	void RemovePointLight(int index);
 
 private:
 

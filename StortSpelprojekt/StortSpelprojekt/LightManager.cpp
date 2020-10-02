@@ -8,18 +8,23 @@ LightManager::~LightManager()
 {
 }
 
-void LightManager::RegisterPointLight(PointLightComponent* pointLight/*, int index*/)
+void LightManager::RegisterPointLight(PointLightComponent* pointLight, int index)
 {
-	int index; //tremporär tills jag kommer op vad som faktiskt ska vara i insert funktionen
 	pointLightMap.insert({ index, pointLight });
 }
 
-bool LightManager::getPointLight(int index)
+PointLightComponent* LightManager::GetPointLight(int index)
 {
 	std::unordered_map<int, PointLightComponent*>::const_iterator lightObject = pointLightMap.find(index);
 	if (lightObject == pointLightMap.end())
-		return false;
+		return nullptr;
 	else
-		//return true;
-		return pointLightMap[index];
+		return lightObject->second;
+}
+
+void LightManager::RemovePointLight(int index)
+{
+	auto temp = pointLightMap.find(index);
+	if (temp != pointLightMap.end())
+		pointLightMap.erase(temp);
 }

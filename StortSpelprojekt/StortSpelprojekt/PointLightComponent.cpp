@@ -42,7 +42,7 @@ void PointLightComponent::Update(const float& deltaTime)
 
 void PointLightComponent::Initialize()
 {
-	LightManager::Instance().RegisterPointLight(this);
+	LightManager::Instance().RegisterPointLight(this,/* this*/);
 }
 
 dx::XMFLOAT4 PointLightComponent::GetColor()
