@@ -195,8 +195,6 @@ void Scene::Initialize(Renderer* renderer)
 	AddObject(leaves);
 	/*************************INSTANCING****************/
 
-	AddObject(testMesh2);
-	AddObject(testMesh3);
 	Object* testMesh4 = new Object("test4");
 	testMesh4->AddComponent<NodeWalkerComponent>();
 	testMesh4->GetTransform().SetPosition(dx::XMLoadFloat3(&miniTranslation4));
@@ -243,8 +241,6 @@ void Scene::Render()
 	skyboxClass->GetThisObject()->Draw(renderer, camera);
 
 	root->Draw(renderer, camera);
-
-	skyboxClass->GetThisObject()->Draw(renderer, camera);
 
 	worldGenerator.Draw(renderer, camera);
 
