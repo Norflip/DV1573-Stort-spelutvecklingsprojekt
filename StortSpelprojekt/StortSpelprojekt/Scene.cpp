@@ -111,9 +111,9 @@ void Scene::Initialize(Renderer* renderer)
 	alphaInstanceShader.Compile(renderer->GetDevice());
 	
 	//0 base 1 branch 2 leaves
-	std::vector<Mesh> treeModels = ZWEBLoader::LoadMeshes(ZWEBLoadType::NoAnimation, "Models/treeEmil.ZWEB", renderer->GetDevice());
+	std::vector<Mesh> treeModels = ZWEBLoader::LoadMeshes(ZWEBLoadType::NoAnimation, "Models/tree.ZWEB", renderer->GetDevice());
 	//0 tree 1 leaves
-	std::vector<Material> treeMaterials = ZWEBLoader::LoadMaterials("Models/treeEmil.ZWEB", instanceShader, renderer->GetDevice());
+	std::vector<Material> treeMaterials = ZWEBLoader::LoadMaterials("Models/tree.ZWEB", instanceShader, renderer->GetDevice());
 
 	
 	treeMaterials[0].SetSampler(sampler, 0, ShaderBindFlag::PIXEL);
@@ -124,7 +124,7 @@ void Scene::Initialize(Renderer* renderer)
 
 	size_t nrOfInstances =10;
 	std::vector<Mesh::InstanceData> treeInstances(nrOfInstances);
-	std::vector<Mesh::InstanceData> treeBranchInstances(nrOfInstances);
+	//std::vector<Mesh::InstanceData> treeBranchInstances(nrOfInstances);
 	std::vector<Mesh::InstanceData> treeLeaveInstances(nrOfInstances);
 
 	
@@ -141,21 +141,21 @@ void Scene::Initialize(Renderer* renderer)
 	{
 		
 
-		dx::XMStoreFloat4x4(&treeBranchInstances[i].instanceWorld, dx::XMMatrixScaling(0.25f, 0.25f, 0.25f) * dx::XMMatrixTranslation((i + 1 * r[i]) + treeModels[1].GetT().x, 0 + treeModels[0].GetT().y, (i + 1 * r[i]) + treeModels[1].GetT().z));
-		treeBranchInstances[i].instancePosition = dx::XMFLOAT3((i + 1 * r[i]) + treeModels[1].GetT().x, 0 + treeModels[1].GetT().y, (i + 1 * r[i]) + treeModels[1].GetT().z);
+		dx::XMStoreFloat4x4(&treeLeaveInstances[i].instanceWorld, dx::XMMatrixScaling(0.25f, 0.25f, 0.25f) * dx::XMMatrixTranslation((i + 1 * r[i]) + treeModels[1].GetT().x, 0 + treeModels[1].GetT().y, (i + 1 * r[i]) + treeModels[1].GetT().z));
+		treeLeaveInstances[i].instancePosition = dx::XMFLOAT3((i + 1 * r[i]) + treeModels[1].GetT().x, 0 + treeModels[1].GetT().y, (i + 1 * r[i]) + treeModels[1].GetT().z);
 
-		dx::XMStoreFloat4x4(&treeLeaveInstances[i].instanceWorld, dx::XMMatrixScaling(0.25f, 0.25f, 0.25f) * dx::XMMatrixTranslation((i + 1 * r[i]) + treeModels[2].GetT().x, 0 + treeModels[2].GetT().y, (i + 1 * r[i]) + treeModels[2].GetT().z));
-		treeLeaveInstances[i].instancePosition = dx::XMFLOAT3((i + 1 * r[i]) + treeModels[2].GetT().x, 0 + treeModels[2].GetT().y, (i + 1 * r[i]) + treeModels[2].GetT().z);
+		/*dx::XMStoreFloat4x4(&treeLeaveInstances[i].instanceWorld, dx::XMMatrixScaling(0.25f, 0.25f, 0.25f) * dx::XMMatrixTranslation((i + 1 * r[i]) + treeModels[2].GetT().x, 0 + treeModels[2].GetT().y, (i + 1 * r[i]) + treeModels[2].GetT().z));
+		treeLeaveInstances[i].instancePosition = dx::XMFLOAT3((i + 1 * r[i]) + treeModels[2].GetT().x, 0 + treeModels[2].GetT().y, (i + 1 * r[i]) + treeModels[2].GetT().z);*/
 
-		dx::XMStoreFloat4x4(&treeInstances[i].instanceWorld,dx::XMMatrixScaling(0.25f, 0.25f, 0.25f) * dx::XMMatrixTranslation((i + 1 * r[i]) + treeModels[0].GetT().x, 0 + treeModels[2].GetT().y, (i + 1 * r[i]) + treeModels[0].GetT().z));
+		dx::XMStoreFloat4x4(&treeInstances[i].instanceWorld,dx::XMMatrixScaling(0.25f, 0.25f, 0.25f) * dx::XMMatrixTranslation((i + 1 * r[i]) + treeModels[0].GetT().x, 0 + treeModels[0].GetT().y, (i + 1 * r[i]) + treeModels[0].GetT().z));
 		treeInstances[i].instancePosition = dx::XMFLOAT3((i + 1 * r[i]) + treeModels[0].GetT().x, 0 + treeModels[0].GetT().y, (i + 1 * r[i]) + treeModels[0].GetT().z);
 	}
 	treeModels[0].CreateInstanceBuffer(renderer->GetDevice(), treeInstances );
 
-	treeModels[1].CreateInstanceBuffer(renderer->GetDevice(), treeBranchInstances );
+	//treeModels[1].CreateInstanceBuffer(renderer->GetDevice(), treeBranchInstances );
 
 
-	treeModels[2].CreateInstanceBuffer(renderer->GetDevice(), treeLeaveInstances);
+	treeModels[1].CreateInstanceBuffer(renderer->GetDevice(), treeLeaveInstances);
 
 	
 
@@ -164,18 +164,18 @@ void Scene::Initialize(Renderer* renderer)
 	treeModels[1].SetInstanceNr(nrOfInstances);
 
 
-	treeModels[2].SetInstanceNr(nrOfInstances);
+	//treeModels[2].SetInstanceNr(nrOfInstances);
 
 	Object* treeBase = new Object("treeBase");
 
-	Object* treeBranches = new Object("treeBranches");
+	//Object* treeBranches = new Object("treeBranches");
 
 	Object* leaves = new Object("leaves");
 
 	treeMaterials[1].SetTransparent(1);
 	treeBase->AddComponent<InstancedMeshComponent>(treeModels[0], treeMaterials[0]);
-	treeBranches->AddComponent<InstancedMeshComponent>(treeModels[1], treeMaterials[0]);
-	leaves->AddComponent<InstancedMeshComponent>(treeModels[2], treeMaterials[1]);
+	//treeBranches->AddComponent<InstancedMeshComponent>(treeModels[1], treeMaterials[0]);
+	leaves->AddComponent<InstancedMeshComponent>(treeModels[1], treeMaterials[1]);
 
 	leaves->AddFlag(ObjectFlag::NO_CULL);
 	
@@ -183,26 +183,26 @@ void Scene::Initialize(Renderer* renderer)
 	
 	AddObject(treeBase);
 
-	AddObject(treeBranches);
+	//AddObject(treeBranches);
 
 	AddObject(leaves);
 	/*************************INSTANCING****************/
 	
 	
 	/*************************SKELETON****************/
-
-	std::vector<Mesh> monsterEmilMesh = ZWEBLoader::LoadMeshes(ZWEBLoadType::SkeletonAnimation, "Models/monsterAndIdle.ZWEB", renderer->GetDevice());
+	//OrchBody monsterAndIdle
+	std::vector<Mesh> monsterEmilMesh = ZWEBLoader::LoadMeshes(ZWEBLoadType::SkeletonAnimation, "Models/OrchBody.ZWEB", renderer->GetDevice());
 	std::vector<Material> monsterEmilMat = ZWEBLoader::LoadMaterials("Models/monsterAndIdle.ZWEB", shader, renderer->GetDevice());
-	
-	SkeletonAni monsterEmilIdle = ZWEBLoader::LoadSkeletonOnly("Models/monsterAndIdleAni.ZWEB", monsterEmilMesh[0].GetBoneIDS());
+	//OrchAnimation monsterAndIdleAni
+	SkeletonAni monsterEmilIdle = ZWEBLoader::LoadSkeletonOnly("Models/OrchAnimation.ZWEB", monsterEmilMesh[0].GetBoneIDS());
 	monsterEmilMat[0].SetShader(skeletonShader);
 	
 	Object* monsterEmil = new Object("monsterEmil");
 
 	monsterEmil->GetTransform().SetScale({ 0.125f, 0.125f, 0.125f });
 
-	monsterEmil->GetTransform().SetPosition({ 0.0f, 0.0f, 0.0f });
-
+	monsterEmil->GetTransform().SetPosition({ 0.0f/*+monsterEmilMesh[0].GetT().x*/, 0.0f /*+ monsterEmilMesh[0].GetT().y*/, 0.0f /*+ monsterEmilMesh[0].GetT().z*/ });
+	monsterEmil->GetTransform().SetRotation({ /*67.50*/0.0f, 0.0f,0.0f });
 	
 
 	monsterEmil->AddComponent<SkeletonMeshComponent>(monsterEmilMesh[0], monsterEmilMat[0])->SetAnimationTrack(monsterEmilIdle, StateMachine::IDLE);

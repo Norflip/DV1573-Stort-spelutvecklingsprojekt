@@ -53,3 +53,51 @@ struct VS_INSTANCE_INPUT
 	float4x4 instanceWorld : INSTANCEWORLD;
 	float3 instancePos : INSTANCEPOS;
 };
+
+struct VS_OUTPUT_GRASS
+{
+	float4 position		 : SV_POSITION;
+	float2 uv			 : TEXCOORD0;
+	float3 worldPosition : POSITION;
+	float tessFactor	 : TESSFACTOR;
+};
+
+struct HS_CONSTANT_DATA_OUTPUT_GRASS
+{
+	float edgeTesselation[2] : SV_TessFactor;
+	uint   triangleIndex : TRIANGLE_INDEX;
+
+
+};
+
+struct HS_OUTPUT_GRASS
+{
+	float3 position	: POSITION;
+	float2 tex		: TEXCOORD0;
+
+};
+
+struct DS_OUTPUT_GRASS
+{
+	float4 position	: SV_Position;
+	centroid float2 tex	: TEXCOORD0;
+	float3 normal   : NORMAL;
+	float4 colour	: COLOUR;
+	float  height : GRASS_HEIGHT;
+	float  bladeHeight : BLADE_HEIGHT;
+	float3 displacement : GRASS_DISPLACEMENT;
+	float3 expandVector : ROTATION;
+};
+
+
+struct GS_OUTPUT_GRASS
+{
+	float4 position	: SV_Position;
+	centroid float2 tex	: TEXCOORD0;
+	float3 normal   : NORMAL;
+	float4 colour	: COLOUR;
+	float3 posToEye : EYE_VECTOR;
+	float3 grassDirection : DIRECTION;
+	float  fade : HAIRFADE;
+};
+

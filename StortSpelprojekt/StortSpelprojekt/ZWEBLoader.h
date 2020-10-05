@@ -41,6 +41,13 @@ namespace ZWEBLoader //TO BE ADDED: FUNCTION TO LOAD LIGHTS
 			skeletonAnimation.SetUpKeys((std::string)keys[0].linkName, keys);
 		}
 
+
+
+		
+
+
+
+
 		return skeletonAnimation;
 
 
@@ -72,7 +79,16 @@ namespace ZWEBLoader //TO BE ADDED: FUNCTION TO LOAD LIGHTS
 
 			for (unsigned int vertex = 0; vertex < verticesZweb.size(); vertex++)
 			{
-				vertices[vertex].position = DirectX::XMFLOAT3(verticesZweb[vertex].pos[0], verticesZweb[vertex].pos[1], verticesZweb[vertex].pos[2]);
+				if (type == ZWEBLoadType::SkeletonAnimation)
+				{
+					//vertices[vertex].position = DirectX::XMFLOAT3(verticesZweb[vertex].pos[0], verticesZweb[vertex].pos[2], verticesZweb[vertex].pos[1]);
+					vertices[vertex].position = DirectX::XMFLOAT3(verticesZweb[vertex].pos[0], verticesZweb[vertex].pos[1], verticesZweb[vertex].pos[2]);
+				}
+				else
+				{
+					vertices[vertex].position = DirectX::XMFLOAT3(verticesZweb[vertex].pos[0], verticesZweb[vertex].pos[1], verticesZweb[vertex].pos[2]);
+				}
+				
 
 				vertices[vertex].uv = DirectX::XMFLOAT2(verticesZweb[vertex].uv[0], 1.0f - verticesZweb[vertex].uv[1]);
 
@@ -86,7 +102,8 @@ namespace ZWEBLoader //TO BE ADDED: FUNCTION TO LOAD LIGHTS
 			}
 			std::map<std::string, unsigned int> boneIDMap; //This is to make sure correct Vertex is mapped to the Correct Bone/Joint.
 			boneIDMap.clear();
-
+			/*std::map<unsigned int, std::string> boneIDMap2;
+			boneIDMap2.clear();*/
 			if (type == ZWEBLoadType::SkeletonAnimation)
 			{
 				std::vector<VertexHeader> controlVerticesZweb = importer.getControlPoints(mesh); //Controlpoints are indexed, converting them into non indexed here.
@@ -114,7 +131,32 @@ namespace ZWEBLoader //TO BE ADDED: FUNCTION TO LOAD LIGHTS
 					}
 					controlVertices[controlVertex].position = DirectX::XMFLOAT3(controlVerticesZweb[controlVertex].pos[0], controlVerticesZweb[controlVertex].pos[1]
 						, controlVerticesZweb[controlVertex].pos[2]);
+
+					/*boneIDMap2.insert({ controlVerticesZweb[controlVertex].boneIDNrs[0],controlVerticesZweb[controlVertex].boneID[0] });
+					boneIDMap2.insert({ controlVerticesZweb[controlVertex].boneIDNrs[1],controlVerticesZweb[controlVertex].boneID[1] });
+					boneIDMap2.insert({ controlVerticesZweb[controlVertex].boneIDNrs[2],controlVerticesZweb[controlVertex].boneID[2] });*/
+
+					
 				}
+
+
+
+				/*for (unsigned int controlVertex = 0; controlVertex < controlVertices.size(); controlVertex++)
+				{
+					std::cout << controlVertex;
+					std::cout << boneIDMap2[controlVertices[controlVertex].boneID.x];
+					std::cout << "\n\n";
+					std::cout << boneIDMap2[controlVertices[controlVertex].boneID.y];
+					std::cout << "\n\n";
+					std::cout << boneIDMap2[controlVertices[controlVertex].boneID.z];
+					std::cout << "\n\n";
+					std::cout << "\n\n";
+				}*/
+
+
+
+
+
 
 				std::vector<Mesh::Vertex>::iterator it;
 				for (unsigned int vertex = 0; vertex < vertices.size(); vertex++) //for every vertex
@@ -130,6 +172,11 @@ namespace ZWEBLoader //TO BE ADDED: FUNCTION TO LOAD LIGHTS
 						vertices[vertex].boneID = controlVertices[index].boneID; //add it to the list
 						vertices[vertex].skinWeight = controlVertices[index].skinWeight;
 						
+
+						//std::cout << "WEIGHT: "<<vertices[vertex].skinWeight.x + vertices[vertex].skinWeight.y + vertices[vertex].skinWeight.z<<std::endl;
+
+
+
 					}
 
 
@@ -138,7 +185,7 @@ namespace ZWEBLoader //TO BE ADDED: FUNCTION TO LOAD LIGHTS
 
 			
 			}
-
+			
 			
 
 			Mesh meshObject(device, vertices, indicesZweb);

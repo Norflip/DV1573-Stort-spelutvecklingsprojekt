@@ -4,6 +4,7 @@
 #include <map>
 #include <ImportZWEB.h>
 #include "Buffers.h"
+#include <SimpleMath.h>
 
 #define CLAMP(x, low, high)  (((x) > (high)) ? (high) : (((x) < (low)) ? (low) : (x)))
 
@@ -15,8 +16,10 @@ struct Bone
 	float frame;
 	std::string name;
 	std::string parentName;
-	dx::XMFLOAT4 rotationQuaternion;
-	dx::XMFLOAT4 translationVector;
+	/*dx::XMFLOAT4 rotationQuaternion;
+	dx::XMFLOAT4 translationVector;*/
+	dx::SimpleMath::Quaternion rotationQuaternion;
+	dx::SimpleMath::Vector3 translationVector;
 };
 
 class SkeletonAni
@@ -26,14 +29,19 @@ private:
 	unsigned int firstIndex, secondIndex;
 	std::map<std::string, unsigned int> boneIDMap;
 	std::vector<std::vector<Bone>> keyBones;
-	std::vector<dx::XMFLOAT4X4> offsetM;
-	dx::XMFLOAT4X4 transM;
+	std::vector</*dx::XMFLOAT4X4*/dx::SimpleMath::Matrix> offsetM;
+	/*dx::XMFLOAT4X4 transM;
 	dx::XMFLOAT4X4 rotQM;
 	dx::XMFLOAT4 transV;
 	dx::XMFLOAT4 rotQ;
-	dx::XMFLOAT4X4 RT;
-
-	DirectX::XMFLOAT4X4& Lerp(float elapsedTime, std::vector<Bone>& keys);
+	dx::XMFLOAT4X4 RT;*/
+	dx::SimpleMath::Matrix transM;
+	dx::SimpleMath::Matrix rotQM;
+	dx::SimpleMath::Vector3 transV;
+	dx::SimpleMath::Quaternion rotQ;
+	dx::SimpleMath::Matrix RT;
+	
+	/*DirectX::XMFLOAT4X4&*/dx::SimpleMath::Matrix& Lerp(float elapsedTime, std::vector<Bone>& keys);
 public:
 	SkeletonAni();
 	std::vector<dx::XMFLOAT4X4>& Makeglobal(float elapsedTime, const DirectX::XMMATRIX& globalParent, std::vector<Bone>& keys);
@@ -50,3 +58,4 @@ public:
 	std::vector<dx::XMFLOAT4X4> bones;
 };
 
+//imgui

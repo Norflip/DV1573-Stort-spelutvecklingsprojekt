@@ -13,6 +13,7 @@ cbuffer cb_Object : register(b0)
 	row_major matrix mvp;
 	row_major matrix world;
 	row_major matrix vp;
+	row_major matrix wv;
 };
 
 cbuffer cb_Material : register(b1)
@@ -35,6 +36,30 @@ cbuffer cb_Scene : register(b2)
 
 	int id;
 	float factor;
+
+	float time;
 }
 
+
+
+
 StructuredBuffer<float4x4> bones : register(t2);
+
+struct Grass
+{
+	float4 position;
+	float4 normal;
+	float4 uv;
+};
+
+StructuredBuffer<Grass> grassStraws : register(t3);
+
+StructuredBuffer<float4> grassIndices : register(t4);
+
+StructuredBuffer<float4>   BCCoordinates : register(t5);
+
+
+cbuffer cb_grass
+{
+	float4 grassParameters; //x == pixelSize
+};
