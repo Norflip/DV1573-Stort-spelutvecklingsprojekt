@@ -33,7 +33,7 @@ public:
 	void SwitchScene (size_t id);
 
 private:
-	std::thread* fixedLoopThread;
+	std::thread fixedLoopThread;
 	static void FixedUpdateLoop(Engine* engine);
 
 private:

@@ -38,6 +38,7 @@ void Physics::AddRigidBody(RigidBodyComp* rigidBodyComp)
 
 void Physics::FixedUpdate(const float& fixedDeltaTime)
 {
+
 	// neccesary? 
 	dynamicsWorld->updateAabbs();
 	dynamicsWorld->computeOverlappingPairs();
@@ -45,9 +46,9 @@ void Physics::FixedUpdate(const float& fixedDeltaTime)
 	float internalTimeStep = 1. / 240.f;
 	dynamicsWorld->stepSimulation(fixedDeltaTime, 4, internalTimeStep);
 
-	for (int j = dynamicsWorld->getNumCollisionObjects() - 1; j >= 0; j--)
+	for (int i = rigidBodyArray.size() - 1; i >= 0; i--)
 	{
-		rigidBodyArray[j]->UpdateWorldTransform();
+		rigidBodyArray[i]->UpdateWorldTransform();
 	}
 
 	CheckForCollisions();

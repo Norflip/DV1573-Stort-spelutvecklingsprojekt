@@ -37,8 +37,8 @@ public:
 
 private:
 	btTransform ConvertToBtTransform(const Transform& transform) const;
-	dx::XMVECTOR ConvertToPosition() const;
-	dx::XMVECTOR ConvertToRotation() const;
+	dx::XMVECTOR ConvertToPosition(const btVector3& position) const;
+	dx::XMVECTOR ConvertToRotation(const btQuaternion& rotation) const;
 	void RecursiveAddShapes(Object* obj, btCompoundShape* shape);
 
 	btCompoundShape* compShape;

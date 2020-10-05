@@ -23,14 +23,19 @@ btTransform RigidBodyComp::ConvertToBtTransform(const Transform& transform) cons
 	return temp;
 }
 
-dx::XMVECTOR RigidBodyComp::ConvertToPosition() const
+dx::XMVECTOR RigidBodyComp::ConvertToPosition(const btVector3& position) const
 {
-	return { static_cast <float>(rbTransform.getOrigin().getX()), static_cast <float>(rbTransform.getOrigin().getY()), static_cast <float>(rbTransform.getOrigin().getZ()) };
+	return { static_cast <float>(position.getX()), static_cast <float>(position.getY()), static_cast <float>(position.getZ()) };
 }
 
-dx::XMVECTOR RigidBodyComp::ConvertToRotation() const
+dx::XMVECTOR RigidBodyComp::ConvertToRotation(const btQuaternion& rotation) const
 {
-	return { static_cast <float>(rbTransform.getRotation().getX()), static_cast <float>(rbTransform.getRotation().getY()), static_cast <float>(rbTransform.getRotation().getZ()) };
+	float x = static_cast <float>(rbTransform.getRotation().getX());
+	float y = static_cast <float>(rbTransform.getRotation().getY());
+	float z = static_cast <float>(rbTransform.getRotation().getZ());
+	float w = static_cast <float>(rbTransform.getRotation().getW());
+
+	return { x,y,z,w };
 }
 
 void RigidBodyComp::RecursiveAddShapes(Object* obj, btCompoundShape* shape)
@@ -93,13 +98,17 @@ void RigidBodyComp::Initialize()
 void RigidBodyComp::FixedUpdate(const float& fixedDeltaTime)
 {
 	Transform& transform = GetOwner()->GetTransform();
-	transform.SetPosition(ConvertToPosition());
-	transform.SetRotation(ConvertToRotation());
+	transform.SetPosition(ConvertToPosition(rbTransform.getOrigin()));
+	transform.SetRotation(ConvertToRotation(rbTransform.getRotation()));
 }
 
 void RigidBodyComp::UpdateWorldTransform()
 {
 	body->getMotionState()->getWorldTransform(rbTransform);
+
+	Transform& transform = GetOwner()->GetTransform();
+	transform.SetPosition(ConvertToPosition(rbTransform.getOrigin()));
+	transform.SetRotation(ConvertToRotation(rbTransform.getRotation()));
 }
 
 void RigidBodyComp::m_GenerateCompoundShape()

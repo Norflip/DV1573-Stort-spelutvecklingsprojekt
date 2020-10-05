@@ -22,7 +22,7 @@ Engine::~Engine()
 void Engine::Run()
 {
 	this->running = true;
-	//fixedLoopThread = new std::thread(Engine::FixedUpdateLoop, this);
+	fixedLoopThread = std::thread(Engine::FixedUpdateLoop, this);
 
 	auto startTimePoint = std::chrono::high_resolution_clock::now();
 	float timeLastFrame = 0.0f;
