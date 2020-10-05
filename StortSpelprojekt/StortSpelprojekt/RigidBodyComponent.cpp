@@ -91,10 +91,8 @@ void RigidBodyComp::Initialize()
 	btDefaultMotionState* myMotionState = new btDefaultMotionState(rbTransform);
 	btRigidBody::btRigidBodyConstructionInfo cInfo(mass, myMotionState, compShape, localInertia);
 	body = new btRigidBody(cInfo);
-
-
 	body->setUserPointer(this);
-	//body->activate(true);
+	body->activate(true);
 
 	// register to physics? 
 }
@@ -109,12 +107,11 @@ void RigidBodyComp::FixedUpdate(const float& fixedDeltaTime)
 void RigidBodyComp::UpdateWorldTransform(const btDynamicsWorld* world)
 {
 	//rbTransform.setIdentity();
-
 	// loopa collision shiet
 
-	btMotionState* motionState = body->getMotionState();
-	motionState->getWorldTransform(rbTransform);
-
+	rbTransform.setIdentity();
+	body->getMotionState()->getWorldTransform(rbTransform);
+	
 	Transform& transform = GetOwner()->GetTransform();
 	transform.SetPosition(ConvertToPosition(rbTransform.getOrigin()));
 	transform.SetRotation(ConvertToRotation(rbTransform.getRotation()));
