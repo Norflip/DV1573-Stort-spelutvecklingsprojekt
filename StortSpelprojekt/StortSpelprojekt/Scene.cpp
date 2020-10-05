@@ -70,7 +70,7 @@ void Scene::Initialize(Renderer* renderer)
 	testMesh3->GetTransform().SetPosition(dx::XMLoadFloat3(&miniTranslation3));
 	AddObject(testMesh3, testMesh2);
 
-	testMesh2->AddComponent<MoveComponent>();
+	//testMesh2->AddComponent<MoveComponent>();
 
 	auto sampler = DXHelper::CreateSampler(D3D11_FILTER_MIN_MAG_MIP_LINEAR, D3D11_TEXTURE_ADDRESS_WRAP, renderer->GetDevice());
 	zwebMaterials[0].SetSampler(sampler, 0, ShaderBindFlag::PIXEL);
@@ -105,10 +105,11 @@ void Scene::Initialize(Renderer* renderer)
 	BoxColliderComponent* boxCol = testMesh2->AddComponent<BoxColliderComponent>(1, 1, 1, 0, 0, 0, 0, 0, 0, 0);
 
 	RigidBodyComp* rigidBody = testMesh2->AddComponent<RigidBodyComp>();
-	rigidBody->m_GenerateCompoundShape();
+	//rigidBody->m_GenerateCompoundShape();
 
-	physics.CreateDynamicWorld();
-	physics.SetGravity(0, -10, 0);
+
+
+	physics.Initialize({ 0, -10, 0 });
 	physics.AddRigidBody(rigidBody);
 
 	physics.SetupShapes();

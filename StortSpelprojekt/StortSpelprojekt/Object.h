@@ -19,7 +19,7 @@ enum class ObjectFlag : unsigned int
 	ENABLED = 1 << 0,
 	RENDER = 1 << 1,
 	REMOVED = 1 << 2,
-	NO_CULL = 1<<3,
+	NO_CULL = 1 << 3,
 	DEFAULT = ENABLED | RENDER
 };
 
@@ -43,14 +43,20 @@ public:
 	template <typename T>
 	bool HasComponent() const;
 
-	template <typename T, typename... TArgs> 
+	template <typename T, typename... TArgs>
 	T* AddComponent(TArgs&&... mArgs);
 
-	template <typename T> 
+	template <typename T>
 	T* GetComponent() const;
 
 	template <typename T>
 	std::vector<T*> GetComponents() const;
+
+	template <typename T>
+	T* GetComponentUpwards() const;
+
+	template <typename T>
+	std::vector<T*> GetComponentsUpwards() const;
 
 	bool HasFlag(ObjectFlag flag) const;
 	void AddFlag(ObjectFlag flag);
@@ -60,8 +66,6 @@ public:
 	std::string GetName() const { return this->name; }
 
 	Transform& GetTransform() { return this->transform; }
-
-	
 
 private:
 	ObjectFlag flags;
@@ -103,11 +107,41 @@ inline T* Object::GetComponent() const
 template<typename T>
 inline std::vector<T*> Object::GetComponents() const
 {
-	auto ptr(componentArray[GetComponentTypeID<T>()]);
 	std::vector<T*> items;
-	for (auto i = ptr.cbegin(); i < ptr.cend(); i++)
-		items.push_back(static_cast<T*>(*i));
+	if (HasComponent<T>())
+	{
+		auto ptr(componentArray[GetComponentTypeID<T>()]);
+
+		for (auto i = ptr.cbegin(); i < ptr.cend(); i++)
+			items.push_back(static_cast<T*>(*i));
+	}
 	return items;
+}
+
+template<typename T>
+inline T* Object::GetComponentUpwards() const
+{
+	std::vector<T*> components = GetComponentsUpwards();
+	return components.size() > 0 ? components[0] : nullptr;
+}
+
+template<typename T>
+inline std::vector<T*> Object::GetComponentsUpwards() const
+{
+	std::vector<T*> components;
+
+	if (HasComponent<T>())
+	{
+		components = GetComponents<T>();
+	}
+	else
+	{
+		Transform* parent = transform.GetParent();
+		if (parent != nullptr)
+			components = transform.GetParent()->GetOwner()->GetComponentsUpwards();
+	}
+
+	return components;
 }
 
 

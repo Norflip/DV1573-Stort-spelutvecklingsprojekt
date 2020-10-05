@@ -181,3 +181,16 @@ bool CameraComponent::CullAgainstAABB(const AABB& aabb, const dx::XMFLOAT3 world
 	return !inViewResult;
 }
 
+Ray CameraComponent::MouseToRay(const float& x, const float& y) const
+{
+	dx::XMVECTOR cScreenSpace = dx::XMVectorSet(x, y, 0.0f, 0.0f);
+	dx::XMVECTOR cObjectSpace = dx::XMVector3Unproject(cScreenSpace, 0, 0, (float)width, (float)height, 0.0f, 1.0f, GetProjectionMatrix(), GetViewMatrix(), dx::XMMatrixIdentity());
+
+	dx::XMVECTOR position = GetOwner()->GetTransform().GetPosition();
+	dx::XMVECTOR dir = dx::XMVectorSubtract(cObjectSpace, position);
+
+	dx::XMFLOAT3 direction, origin;
+	dx::XMStoreFloat3(&direction, dx::XMVector3Normalize(dir));
+	dx::XMStoreFloat3(&origin, position);
+	return Ray(origin, direction);
+}

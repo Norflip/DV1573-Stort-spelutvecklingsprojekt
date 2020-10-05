@@ -4,9 +4,14 @@
 #include "Transform.h"
 #include "Component.h"
 #include "Object.h"
+
 #include "BoxColliderComponent.h"
 #include "SphereColliderComponent.h"
 #include "CapsuleColliderComponent.h"
+
+#include <vector>
+#include <functional>
+#include "CollisionInfo.h"
 
 namespace dx = DirectX;
 
@@ -17,10 +22,18 @@ public:
 	virtual ~RigidBodyComp();
 
 	void Initialize() override;
-	btRigidBody* GetRigidBody();
+	btRigidBody* GetRigidBody() const { return body; }
+
+	void SetMass(float mass) { this->mass = btScalar(mass); }
+	float GetMass() const { return static_cast<float>(this->mass); }
+
 	void FixedUpdate(const float& fixedDeltaTime) override;
 	void UpdateWorldTransform();
+	
 	void m_GenerateCompoundShape();
+	void m_OnCollision(const CollisionInfo& collision);
+	
+	void AddCollisionCallback(std::function<void(CollisionInfo)> callback);
 
 private:
 	btBoxShape* CreateBoxShape(const btVector3& halfExtents) const;
@@ -35,4 +48,6 @@ private:
 	btScalar mass;
 	btTransform rbTransform;
 	btVector3 localInertia;
+
+	std::vector<std::function<void(CollisionInfo)>> callbacks;
 };

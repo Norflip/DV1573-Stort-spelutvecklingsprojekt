@@ -57,13 +57,15 @@ void RigidBodyComp::RecursiveAddShapes(Object* obj, btCompoundShape* shape)
 		shape->addChildShape(capsules[i]->GetTransform(), capsules[i]->GetCollisionShape());
 	}
 
-	//CHILDREN
-	const std::vector<Transform*>& children = GetOwner()->GetTransform().GetChildren();
 
-	for (size_t i = 0; i < children.size(); i++)
-	{
-		RecursiveAddShapes(children[i]->GetOwner(), shape);
-	}
+
+	////CHILDREN
+	//const std::vector<Transform*>& children = GetOwner()->GetTransform().GetChildren();
+
+	//for (size_t i = 0; i < children.size(); i++)
+	//{
+	//	RecursiveAddShapes(children[i]->GetOwner(), shape);
+	//}
 }
 
 void RigidBodyComp::Initialize()
@@ -80,6 +82,8 @@ void RigidBodyComp::Initialize()
 
 	bool isDynamic = (mass != 0);
 
+	m_GenerateCompoundShape();
+
 	localInertia = btVector3(0, 0, 0);
 	if (isDynamic)
 		compShape->calculateLocalInertia(mass, localInertia); //this remains null after debugging. Probably one more step before it works
@@ -87,17 +91,13 @@ void RigidBodyComp::Initialize()
 	btDefaultMotionState* myMotionState = new btDefaultMotionState(rbTransform);
 	btRigidBody::btRigidBodyConstructionInfo cInfo(mass, myMotionState, compShape, localInertia);
 	body = new btRigidBody(cInfo);
+	body->setUserPointer(this);
 }
 
 btBoxShape* RigidBodyComp::CreateBoxShape(const btVector3& halfExtents) const
 {
 	btBoxShape* box = new btBoxShape(halfExtents);
 	return box;
-}
-
-btRigidBody* RigidBodyComp::GetRigidBody()
-{
-	return body;
 }
 
 void RigidBodyComp::FixedUpdate(const float& fixedDeltaTime)
@@ -116,4 +116,18 @@ void RigidBodyComp::m_GenerateCompoundShape()
 {
 	compShape = new btCompoundShape();
 	RecursiveAddShapes(GetOwner(), compShape);
+	
+	std::cout << "CHILDREN: " << compShape->getNumChildShapes() << std::endl;
+
+}
+
+void RigidBodyComp::m_OnCollision(const CollisionInfo& collision)
+{
+	for (auto it = callbacks.begin(); it < callbacks.end(); it++)
+		(*it)(collision);
+}
+
+void RigidBodyComp::AddCollisionCallback(std::function<void(CollisionInfo)> callback)
+{
+	callbacks.push_back(callback);
 }
