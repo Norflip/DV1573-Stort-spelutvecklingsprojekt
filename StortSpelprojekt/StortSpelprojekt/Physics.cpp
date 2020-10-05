@@ -40,26 +40,26 @@ void Physics::FixedUpdate(const float& fixedDeltaTime)
 {
 
 	// neccesary? 
-	dynamicsWorld->updateAabbs();
-	dynamicsWorld->computeOverlappingPairs();
+	//dynamicsWorld->updateAabbs();
+	//dynamicsWorld->computeOverlappingPairs();
 
-	float internalTimeStep = 1. / 240.f;
+	const float internalTimeStep = 1. / 240.f;
 	dynamicsWorld->stepSimulation(fixedDeltaTime, 4, internalTimeStep);
 
 	for (int i = rigidBodyArray.size() - 1; i >= 0; i--)
 	{
-		rigidBodyArray[i]->UpdateWorldTransform();
+		rigidBodyArray[i]->UpdateWorldTransform(dynamicsWorld);
 	}
-
+	
 	CheckForCollisions();
-	if (collisions.empty())
+	/*if (collisions.empty())
 	{
 		std::printf("0 ");
 	}
 	else
 	{
 		std::printf("1 ");
-	}
+	}*/
 
 }
 

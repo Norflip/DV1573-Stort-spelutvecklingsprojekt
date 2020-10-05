@@ -28,12 +28,15 @@ public:
 	float GetMass() const { return static_cast<float>(this->mass); }
 
 	void FixedUpdate(const float& fixedDeltaTime) override;
-	void UpdateWorldTransform();
+	void UpdateWorldTransform(const btDynamicsWorld* world);
 	
 	void m_GenerateCompoundShape();
 	void m_OnCollision(const CollisionInfo& collision);
 	
 	void AddCollisionCallback(std::function<void(CollisionInfo)> callback);
+
+	void AddForce(const dx::XMFLOAT3& force);
+	void AddForce(const float& force, const dx::XMFLOAT3& direction);
 
 private:
 	btTransform ConvertToBtTransform(const Transform& transform) const;
@@ -43,7 +46,7 @@ private:
 
 	btCompoundShape* compShape;
 	btRigidBody* body;
-	btCollisionShape* colShape;
+
 	btScalar mass;
 	btTransform rbTransform;
 	btVector3 localInertia;

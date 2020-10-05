@@ -111,6 +111,8 @@ void Scene::Initialize(Renderer* renderer)
 
 	physics.Initialize({ 0, -10, 0 });
 	physics.AddRigidBody(rigidBody);
+
+	rigidBody->AddForce({ 0,40, 0 });
 }
 
 void Scene::Update(const float& deltaTime)

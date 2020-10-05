@@ -1,7 +1,6 @@
 #include "RigidBodyComponent.h"
 
-RigidBodyComp::RigidBodyComp(float mass)
-	:mass(mass), colShape(nullptr), compShape(nullptr)
+RigidBodyComp::RigidBodyComp(float mass) : mass(mass), compShape(nullptr)
 {
 }
 
@@ -78,46 +77,69 @@ void RigidBodyComp::RecursiveAddShapes(Object* obj, btCompoundShape* shape)
 void RigidBodyComp::Initialize()
 {
 	Transform& transform = GetOwner()->GetTransform();
+	rbTransform.setIdentity();
 	rbTransform = ConvertToBtTransform(transform);
 
-	bool isDynamic = (mass != 0);
 	m_GenerateCompoundShape();
-
 	localInertia = btVector3(0, 0, 0);
-	if (isDynamic)
-		compShape->calculateLocalInertia(mass, localInertia); //this remains null after debugging. Probably one more step before it works
+
+
+	compShape->calculateLocalInertia(mass, localInertia); //this remains null after debugging. Probably one more step before it works
+
+
 
 	btDefaultMotionState* myMotionState = new btDefaultMotionState(rbTransform);
 	btRigidBody::btRigidBodyConstructionInfo cInfo(mass, myMotionState, compShape, localInertia);
 	body = new btRigidBody(cInfo);
+
+
 	body->setUserPointer(this);
+	//body->activate(true);
 
 	// register to physics? 
 }
 
 void RigidBodyComp::FixedUpdate(const float& fixedDeltaTime)
 {
-	Transform& transform = GetOwner()->GetTransform();
+	/*Transform& transform = GetOwner()->GetTransform();
 	transform.SetPosition(ConvertToPosition(rbTransform.getOrigin()));
-	transform.SetRotation(ConvertToRotation(rbTransform.getRotation()));
+	transform.SetRotation(ConvertToRotation(rbTransform.getRotation()));*/
 }
 
-void RigidBodyComp::UpdateWorldTransform()
+void RigidBodyComp::UpdateWorldTransform(const btDynamicsWorld* world)
 {
-	body->getMotionState()->getWorldTransform(rbTransform);
+	//rbTransform.setIdentity();
+
+	// loopa collision shiet
+
+	btMotionState* motionState = body->getMotionState();
+	motionState->getWorldTransform(rbTransform);
 
 	Transform& transform = GetOwner()->GetTransform();
 	transform.SetPosition(ConvertToPosition(rbTransform.getOrigin()));
 	transform.SetRotation(ConvertToRotation(rbTransform.getRotation()));
+
+	std::cout << std::to_string(rbTransform.getOrigin().getX()) << ", " << std::to_string(rbTransform.getOrigin().getY()) << ", " << std::to_string(rbTransform.getOrigin().getZ()) << std::endl;
+
 }
 
 void RigidBodyComp::m_GenerateCompoundShape()
 {
-	compShape = new btCompoundShape();
+	compShape = new btCompoundShape(true, 1);
 	RecursiveAddShapes(GetOwner(), compShape);
-	
-	std::cout << "CHILDREN: " << compShape->getNumChildShapes() << std::endl;
 
+	int children = compShape->getNumChildShapes();
+
+	std::cout << "CHILDREN: " << children << std::endl;
+
+	btScalar* masses = new btScalar[children];
+	for (size_t i = 0; i < children; i++)
+	{
+		masses[i] = mass;
+	}
+
+	btVector3 intertia(0, 0, 0);
+	//compShape->calculatePrincipalAxisTransform(masses, rbTransform, intertia);
 }
 
 void RigidBodyComp::m_OnCollision(const CollisionInfo& collision)
@@ -129,4 +151,10 @@ void RigidBodyComp::m_OnCollision(const CollisionInfo& collision)
 void RigidBodyComp::AddCollisionCallback(std::function<void(CollisionInfo)> callback)
 {
 	callbacks.push_back(callback);
+}
+
+void RigidBodyComp::AddForce(const dx::XMFLOAT3& force)
+{
+	btVector3 forcev3(force.x, force.y, force.z);
+	body->applyCentralForce(forcev3);
 }

@@ -60,8 +60,7 @@ void Engine::Run()
 void Engine::Exit()
 {
 	running = false;
-
-	//fixedLoopThread->join();
+	fixedLoopThread.join();
 	//delete fixedLoopThread;
 }
 
