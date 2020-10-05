@@ -6,6 +6,7 @@ class LightManager
 public:
 
 	LightManager();
+	LightManager(Renderer* renderer);
 	virtual ~LightManager();
 
 
@@ -19,14 +20,16 @@ public:
 	void operator=(LightManager const&) = delete;
 
 	bool IsDirty() { return dirty; }; // kollar ifall den har skräpväreden
-	void RegisterPointLight(PointLightComponent* pointLight, int index);
+	size_t RegisterPointLight(PointLightComponent* pointLight);
 
-	PointLightComponent* GetPointLight(int index);
-	void RemovePointLight(int index);
+	PointLightComponent* GetPointLight(size_t index);
+	void RemovePointLight(size_t index);
 
 private:
 
+	PointLightComponent* pointLightComponent;
+	size_t index;
 	bool dirty;
-	std::unordered_map<int, PointLightComponent*> pointLightMap;
+	std::unordered_map<size_t, PointLightComponent*> pointLightMap;
 
 };
