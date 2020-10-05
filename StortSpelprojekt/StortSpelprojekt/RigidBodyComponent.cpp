@@ -1,7 +1,7 @@
 #include "RigidBodyComponent.h"
 
-RigidBodyComp::RigidBodyComp()
-	:colShape(nullptr), compShape(nullptr)
+RigidBodyComp::RigidBodyComp(float mass)
+	:mass(mass), colShape(nullptr), compShape(nullptr)
 {
 }
 
@@ -12,6 +12,8 @@ RigidBodyComp::~RigidBodyComp()
 btTransform RigidBodyComp::ConvertToBtTransform(const Transform& transform) const
 {
 	btTransform temp;
+	temp.setIdentity();
+
 	dx::XMFLOAT3 tempFloat;
 	dx::XMStoreFloat3(&tempFloat, transform.GetPosition());
 	temp.setOrigin(btVector3(tempFloat.x, tempFloat.y, tempFloat.z));
@@ -71,17 +73,9 @@ void RigidBodyComp::RecursiveAddShapes(Object* obj, btCompoundShape* shape)
 void RigidBodyComp::Initialize()
 {
 	Transform& transform = GetOwner()->GetTransform();
-
-	//compShape->addChildShape(rbTransform, colShape);
-
-	rbTransform.setIdentity();
-
 	rbTransform = ConvertToBtTransform(transform);
 
-	mass = 1.0f;
-
 	bool isDynamic = (mass != 0);
-
 	m_GenerateCompoundShape();
 
 	localInertia = btVector3(0, 0, 0);
@@ -92,12 +86,8 @@ void RigidBodyComp::Initialize()
 	btRigidBody::btRigidBodyConstructionInfo cInfo(mass, myMotionState, compShape, localInertia);
 	body = new btRigidBody(cInfo);
 	body->setUserPointer(this);
-}
 
-btBoxShape* RigidBodyComp::CreateBoxShape(const btVector3& halfExtents) const
-{
-	btBoxShape* box = new btBoxShape(halfExtents);
-	return box;
+	// register to physics? 
 }
 
 void RigidBodyComp::FixedUpdate(const float& fixedDeltaTime)

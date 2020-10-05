@@ -37,7 +37,12 @@ void Object::FixedUpdate(const float& fixedDeltaTime)
 {
 	if (HasFlag(ObjectFlag::ENABLED))
 	{
+		for (auto i = components.begin(); i < components.end(); i++)
+			(*i)->Update(fixedDeltaTime);
 
+		auto children = transform.GetChildren();
+		for (auto i = children.begin(); i < children.end(); i++)
+			(*i)->GetOwner()->Update(fixedDeltaTime);
 	}
 }
 

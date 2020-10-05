@@ -104,7 +104,7 @@ void Scene::Initialize(Renderer* renderer)
 
 	BoxColliderComponent* boxCol = testMesh2->AddComponent<BoxColliderComponent>(1, 1, 1, 0, 0, 0, 0, 0, 0, 0);
 
-	RigidBodyComp* rigidBody = testMesh2->AddComponent<RigidBodyComp>();
+	RigidBodyComp* rigidBody = testMesh2->AddComponent<RigidBodyComp>(4.0f);
 	//rigidBody->m_GenerateCompoundShape();
 
 
@@ -125,7 +125,7 @@ void Scene::FixedUpdate(const float& fixedDeltaTime)
 {
 	physics.FixedUpdate(fixedDeltaTime);
 	//Log::Add(std::to_string(fixedDeltaTime));
-//	root->FixedUpdate(fixedDeltaTime);
+	root->FixedUpdate(fixedDeltaTime);
 }
 
 void Scene::Render()

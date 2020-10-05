@@ -18,7 +18,7 @@ namespace dx = DirectX;
 class RigidBodyComp : public Component
 {
 public:
-	RigidBodyComp();
+	RigidBodyComp(float mass);
 	virtual ~RigidBodyComp();
 
 	void Initialize() override;
@@ -36,7 +36,6 @@ public:
 	void AddCollisionCallback(std::function<void(CollisionInfo)> callback);
 
 private:
-	btBoxShape* CreateBoxShape(const btVector3& halfExtents) const;
 	btTransform ConvertToBtTransform(const Transform& transform) const;
 	dx::XMVECTOR ConvertToPosition() const;
 	dx::XMVECTOR ConvertToRotation() const;
