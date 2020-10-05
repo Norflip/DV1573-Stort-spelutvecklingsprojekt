@@ -42,7 +42,7 @@ void Object::FixedUpdate(const float& fixedDeltaTime)
 
 		auto children = transform.GetChildren();
 		for (auto i = children.begin(); i < children.end(); i++)
-			(*i)->GetOwner()->Update(fixedDeltaTime);
+			(*i)->GetOwner()->FixedUpdate(fixedDeltaTime);
 	}
 }
 
