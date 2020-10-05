@@ -20,10 +20,10 @@ class Material
 	
 public:
 	Material();
-	Material (Shader shader);
+	Material (Shader* shader);
 	virtual ~Material();
 	
-	void SetShader(Shader shader) { this->shader = shader; }
+	void SetShader(Shader* shader) { this->shader = shader; }
 	void BindToContext(ID3D11DeviceContext*) const;
 	
 	void SetTexture(Texture texture, size_t slot, ShaderBindFlag flag);
@@ -43,7 +43,7 @@ public:
 	size_t GetID() const { return this->id; }
 
 private:
-	Shader shader;
+	Shader* shader;
 	cb_Material cb_material_data;
 	size_t id;
 	bool transparent;

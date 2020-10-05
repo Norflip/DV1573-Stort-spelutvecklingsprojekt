@@ -23,7 +23,7 @@ public:
 	WorldGenerator();
 	virtual ~WorldGenerator();
 
-	void Initialize(ID3D11Device* device);
+	void Initialize(ID3D11Device* device, Shader* shader);
 	void Generate(const SaveState& levelState, ID3D11Device* device);
 	void Draw(Renderer*, CameraComponent*);
 
@@ -41,7 +41,7 @@ private:
 private:
 	bool initialized = false;
 	Mesh chunkMesh;
-	Shader shader;
+	Shader* shader;
 
 	std::unordered_map<int, float*> chunkData;
 	std::unordered_map<int, Chunk*> chunkMap;

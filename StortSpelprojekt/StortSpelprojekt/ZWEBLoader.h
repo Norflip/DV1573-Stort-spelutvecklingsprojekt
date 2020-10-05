@@ -140,12 +140,8 @@ namespace ZWEBLoader //TO BE ADDED: FUNCTION TO LOAD LIGHTS AND TO LOAD TEXTURES
 			
 			}
 
-			
-
 			Mesh meshObject(device, vertices, indicesZweb);
 			
-
-
 			meshObject.SetMeshName((std::string)importer.getMeshInfo(mesh).name);
 
 			meshObject.SetBoneIDS(boneIDMap);
@@ -172,7 +168,7 @@ namespace ZWEBLoader //TO BE ADDED: FUNCTION TO LOAD LIGHTS AND TO LOAD TEXTURES
 	}
 
 
-	inline std::vector<Material> LoadMaterials(std::string scenePath, const Shader& shader, ID3D11Device* device) //Each mesh has a material name there might be 5 meshes and 3 materials.
+	inline std::vector<Material> LoadMaterials(std::string scenePath, Shader* shader, ID3D11Device* device) //Each mesh has a material name there might be 5 meshes and 3 materials.
 	{
 		ZWEB::ZWEBImporter importer;
 

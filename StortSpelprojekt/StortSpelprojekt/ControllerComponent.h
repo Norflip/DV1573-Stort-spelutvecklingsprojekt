@@ -16,6 +16,8 @@ private:
 	bool showCursor;
 	bool canRotate;
 	float sensetivity;
+
+	bool compile;
 public:
 	ControllerComponent();
 	virtual ~ControllerComponent();
@@ -34,6 +36,7 @@ public:
 
 	void Update(const float& deltaTime);
 
+	bool Compile() { return this->compile; }
 	/*
 	move = cameraObject->AddComponent<MoveComponent>();
 	objects.push_back(cameraObject);

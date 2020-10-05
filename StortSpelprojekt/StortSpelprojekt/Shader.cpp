@@ -43,8 +43,6 @@ void Shader::SetGeometryShader(LPCWSTR path, LPCSTR entry)
 	shaderFlags |= ShaderBindFlag::GEOMETRY;
 }
 
-
-
 void Shader::SetInputLayoutStructure(size_t arraySize, D3D11_INPUT_ELEMENT_DESC* inputLayoutDesc)
 {
 	this->inputLayoutDescription = inputLayoutDesc;

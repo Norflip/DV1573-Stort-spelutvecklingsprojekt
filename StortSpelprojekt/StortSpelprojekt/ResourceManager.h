@@ -1,5 +1,5 @@
 #pragma once
-#include <map>
+#include <unordered_map>
 #include <string>
 #include <fstream>
 #include "ZWEBLoader.h"
@@ -7,7 +7,8 @@
 class ResourceManager
 {
 private:
-	std::map<std::string, void*> resources;
+	std::unordered_map<std::string, void*> resources;
+	int nrOfShaders;
 public:
 	ResourceManager();
 	~ResourceManager();
@@ -18,8 +19,9 @@ public:
 	void InitializeResources(ID3D11Device* device);
 	void ReadObjects(ID3D11Device* device);
 	void ReadLights();
-	void ReadShaders();
+	void ReadShaders(ID3D11Device* device);
 
+	template <typename T> void CompileShaders(ID3D11Device* device);
 };
 
 // Måste template funktioner ligga i .h filen?
@@ -47,3 +49,26 @@ inline T* ResourceManager::GetResource(std::string key)
 
 	return resource;
 }
+
+//template<typename T>
+//inline void ResourceManager::CompileShaders(ID3D11Device* device)
+//{
+//	int counter = 0;
+//
+//	/*for (std::pair<std::string, void*> element : resources)
+//	{
+//
+//	}*/
+//	/*std::for_each(resource.begin(), resources.end(), [](std::pair<std::string, T> element))
+//	{
+//		Shader* temp = (T*)element.second();
+//
+//		counter++;
+//
+//		if (counter == nrOfShaders - 1)
+//		{
+//			break;
+//		}
+//	}*/
+//
+//}

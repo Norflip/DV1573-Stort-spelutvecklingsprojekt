@@ -1,12 +1,10 @@
 #include "Skybox.h"
 
-Skybox::Skybox(ID3D11Device* device, ID3D11DeviceContext* context, Object* object)
+Skybox::Skybox(ID3D11Device* device, ID3D11DeviceContext* context, Shader* shader)
 {
-	this->object = new Object(*object);
+	this->object = new Object("skybox");
 
-	skyboxShader.SetPixelShader(L"Shaders/Sky_ps.hlsl");
-	skyboxShader.SetVertexShader(L"Shaders/Sky_vs.hlsl");
-	skyboxShader.Compile(device);
+	skyboxShader = shader;
 
 	skyboxMesh = ZWEBLoader::LoadMeshes(ZWEBLoadType::NoAnimation, "Models/Skybox.ZWEB", device)[0];
 	skyboxMaterial = Material(skyboxShader);
@@ -22,20 +20,6 @@ Skybox::Skybox(ID3D11Device* device, ID3D11DeviceContext* context, Object* objec
 
 Skybox::~Skybox()
 {
-
-	/*for (int i = 0; i < srvs.size(); i++) {
-		srvs[i]->Release();
-		delete srvs[i];
-	}
-
-	srvs.clear();
-			
-	if (srv)
-	{
-		delete srv;
-		srv = nullptr;
-	}*/
-	
 	if (object)
 	{
 		delete object;

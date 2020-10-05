@@ -1,14 +1,11 @@
 #include "CommonBuffers.hlsl"
 #include "IO.hlsl"
 
-
-
 StructuredBuffer<float4x4> bones : register(t0);
 
 VS_OUTPUT main(VS_INPUT_SKELETON input)
 {
 	VS_OUTPUT output;
-
 
 	float4 p = mul(input.position, bones[input.boneID.x]) * input.skinWeight.x;
 	p += mul(input.position, bones[input.boneID.y]) * input.skinWeight.y;
@@ -28,15 +25,6 @@ VS_OUTPUT main(VS_INPUT_SKELETON input)
 
 	float4 outpos = mul(float4(p.xyz, 1), mvp);
 	float3 outputWorldpos = mul(p,world).xyz;
-
-
-
-
-
-
-
-
-
 
 
 	output.uv = input.uv;

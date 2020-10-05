@@ -40,7 +40,7 @@ void Scene::Initialize(Renderer* renderer)
 	state.seed = 1337;
 	state.segment = 0;
 
-	worldGenerator.Initialize(renderer->GetDevice());
+	worldGenerator.Initialize(renderer->GetDevice(), resourceManager->GetResource<Shader>("terrainShader"));
 	worldGenerator.Generate(state, renderer->GetDevice());
 
 
@@ -52,23 +52,35 @@ void Scene::Initialize(Renderer* renderer)
 	Input::Instance().SetWindow(window->GetHWND(), window->GetHeight(), window->GetWidth());
 	AddObject(cameraObject);
 
-	Object* testMesh = resourceManager->GetResource<Object>("Test");
-	Object* testMesh2 = resourceManager->GetResource<Object>("Test2");
-	Object* testMesh3 = resourceManager->GetResource<Object>("Test3");
-	
+	Mesh* mesh1 = resourceManager->GetResource<Mesh>("Test");
+	Mesh* mesh2 = resourceManager->GetResource<Mesh>("Test2");
+	Mesh* mesh3 = resourceManager->GetResource<Mesh>("Test3");
+
+	Material* material1 = resourceManager->GetResource<Material>("TestMaterial");
+	Material* material2 = resourceManager->GetResource<Material>("Test2Material");
+	Material* material3 = resourceManager->GetResource<Material>("Test3Material");
+
+	Object* testObject = new Object("test");
+	Object* testObject2 = new Object("test2");
+	Object* testObject3 = new Object("test3");
+
+	testObject->AddComponent<MeshComponent>(*mesh1, *material1);
+	testObject2->AddComponent<MeshComponent>(*mesh2, *material2);
+	testObject3->AddComponent<MeshComponent>(*mesh3, *material3);
+
 	dx::XMFLOAT3 miniTranslation = dx::XMFLOAT3(0, 0, 6);
 	dx::XMFLOAT3 miniTranslation2 = dx::XMFLOAT3(2, 2, 2);
 	dx::XMFLOAT3 miniTranslation3 = dx::XMFLOAT3(-4, -3, -4);
 	dx::XMFLOAT3 miniTranslation4 = dx::XMFLOAT3(0.f, -7.f, 0.f);
 
-	testMesh->GetTransform().SetPosition(dx::XMLoadFloat3(&miniTranslation));
-	testMesh2->GetTransform().SetPosition(dx::XMLoadFloat3(&miniTranslation2));
-	testMesh3->GetTransform().SetPosition(dx::XMLoadFloat3(&miniTranslation3));
+	testObject->GetTransform().SetPosition(dx::XMLoadFloat3(&miniTranslation));
+	testObject2->GetTransform().SetPosition(dx::XMLoadFloat3(&miniTranslation2));
+	testObject3->GetTransform().SetPosition(dx::XMLoadFloat3(&miniTranslation3));
 
-	AddObject(testMesh2, testMesh);
-	AddObject(testMesh3, testMesh2);
+	AddObject(testObject2, testObject);
+	AddObject(testObject3, testObject2);
 
-	AddObject(testMesh);
+	AddObject(testObject);
 	//Shader shader;
 	//Shader skeletonShader;
 	//shader.SetPixelShader(L"Shaders/Default_ps.hlsl");
@@ -121,10 +133,10 @@ void Scene::Initialize(Renderer* renderer)
 	/* * * * * * * * ** * * * * */
 	
 
-	skybox = new Object("Skybox");
-	skyboxClass = new Skybox(renderer->GetDevice(), renderer->GetContext(), skybox);
+	//skybox = new Object("Skybox");
+	skyboxClass = new Skybox(renderer->GetDevice(), renderer->GetContext(), resourceManager->GetResource<Shader>("skyboxShader"));
 	skyboxClass->GetThisObject()->AddFlag(ObjectFlag::NO_CULL);
-	//AddObject(skyboxClass->GetThisObject());
+
 
 	/*************************INSTANCING*******************/
 	Shader instanceShader;
@@ -218,11 +230,11 @@ void Scene::Initialize(Renderer* renderer)
 	//AddObject(leaves);
 	///*************************INSTANCING****************/
 
-	//Object* testMesh4 = new Object("test4");
-	//testMesh4->AddComponent<NodeWalkerComponent>();
-	//testMesh4->GetTransform().SetPosition(dx::XMLoadFloat3(&miniTranslation4));
-	//testMesh4->AddComponent<MeshComponent>(zwebMeshes[0], sylvanasMat[0]);
-	//AddObject(testMesh4);
+	Object* testMesh4 = new Object("test4");
+	testMesh4->AddComponent<NodeWalkerComponent>();
+	testMesh4->GetTransform().SetPosition(dx::XMLoadFloat3(&miniTranslation4));
+	testMesh4->AddComponent<MeshComponent>(*mesh1, *material2);
+	AddObject(testMesh4);
 
 	/* * * * * * * * ** * * * * */
 
@@ -249,6 +261,11 @@ void Scene::Update(const float& deltaTime)
 	skyboxClass->GetThisObject()->GetTransform().SetPosition(camera->GetOwner()->GetTransform().GetPosition());
 	GameClock::Instance().Update();
 	//std::cout << "FPS: " << GameClock::Instance().GetFramesPerSecond() << std::endl;
+
+	/*if (camera->GetOwner()->GetComponent<ControllerComponent>()->Compile())
+	{
+		resourceManager->CompileShaders<Shader>(renderer->GetDevice());
+	}*/
 }
 
 void Scene::FixedUpdate(const float& fixedDeltaTime)

@@ -2,7 +2,7 @@
 
 WorldGenerator::WorldGenerator() : chunkMesh()
 {
-
+	shader = nullptr;
 }
 
 WorldGenerator::~WorldGenerator()
@@ -13,7 +13,7 @@ WorldGenerator::~WorldGenerator()
 	chunks.clear();
 }
 
-void WorldGenerator::Initialize(ID3D11Device* device)
+void WorldGenerator::Initialize(ID3D11Device* device, Shader* shader)
 {
 	// CREATE CHUNK MESH
 	std::vector<Mesh::Vertex> vertices;
@@ -57,10 +57,11 @@ void WorldGenerator::Initialize(ID3D11Device* device)
 		}
 	}
 
-	shader.SetPixelShader(L"Shaders/Terrain_ps.hlsl");
-	shader.SetVertexShader(L"Shaders/Terrain_vs.hlsl");
-	shader.Compile(device);
-
+	/*shader->SetPixelShader(L"Shaders/Terrain_ps.hlsl");
+	shader->SetVertexShader(L"Shaders/Terrain_vs.hlsl");
+	shader->Compile(device);*/
+	
+	this->shader = shader;
 	chunkMesh = Mesh(device, vertices, indicies);
 
 	/*if (CHUNK_SIZE == 64U)
