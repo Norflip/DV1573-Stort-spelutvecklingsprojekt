@@ -36,6 +36,6 @@ private:
 	btBroadphaseInterface* overlappingPairCache;
 	btSequentialImpulseConstraintSolver* solver;
 	btDiscreteDynamicsWorld* dynamicsWorld;
-	std::vector<RigidBodyComp*> rigidBodyArray;
+	std::vector<RigidBodyComp*> bodies;
 	std::vector<btVector3> collisions;
 };

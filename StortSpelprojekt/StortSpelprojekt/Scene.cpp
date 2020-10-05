@@ -19,7 +19,6 @@ void Scene::Initialize(Renderer* renderer)
 	// Should change values on resize event
 	Window* window = renderer->GetOutputWindow();
 	
-	physics.Initialize({ 0, -10, 0 });
 
 
 	SaveState state;
@@ -104,16 +103,16 @@ void Scene::Initialize(Renderer* renderer)
 
 	//PHYSICS
 
-	BoxColliderComponent* boxCol = testMesh2->AddComponent<BoxColliderComponent>(1, 1, 1, 0, 0, 0, 0, 0, 0, 0);
+
 
 	RigidBodyComp* rigidBody = testMesh2->AddComponent<RigidBodyComp>(40.0f);
+	BoxColliderComponent* boxCol = testMesh2->AddComponent<BoxColliderComponent>(1, 1, 1, 0, 0, 0, 0, 0, 0, 0);
+
 	//rigidBody->m_GenerateCompoundShape();
 
 
 
-
-
-
+	physics.Initialize({ 0, -10, 0 });
 	physics.AddRigidBody(rigidBody);
 
 	rigidBody->AddForce({ 0,40, 0 });

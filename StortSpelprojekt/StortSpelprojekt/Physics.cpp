@@ -1,7 +1,6 @@
 #include "Physics.h"
 
-Physics::Physics()
-	:gravity(NULL, NULL, NULL), collisionConfiguration(nullptr), dispatcher(nullptr), overlappingPairCache(nullptr)
+Physics::Physics() : collisionConfiguration(nullptr), dispatcher(nullptr), overlappingPairCache(nullptr)
 {
 }
 
@@ -32,23 +31,25 @@ void Physics::CreateDynamicWorld()
 
 void Physics::AddRigidBody(RigidBodyComp* rigidBodyComp)
 {
+	rigidBodyComp->InitializeBody();
 	dynamicsWorld->addRigidBody(rigidBodyComp->GetRigidBody(), 1, 1);
-	rigidBodyArray.push_back(rigidBodyComp);
+	bodies.push_back(rigidBodyComp);
 }
 
 void Physics::FixedUpdate(const float& fixedDeltaTime)
 {
 
 	// neccesary? 
-	//dynamicsWorld->updateAabbs();
-	//dynamicsWorld->computeOverlappingPairs();
+	dynamicsWorld->updateAabbs();
+	dynamicsWorld->computeOverlappingPairs();
 
 	const float internalTimeStep = 1. / 240.f;
 	dynamicsWorld->stepSimulation(fixedDeltaTime, 4, internalTimeStep);
 
-	for (int i = rigidBodyArray.size() - 1; i >= 0; i--)
+
+	for (int i = bodies.size() - 1; i >= 0; i--)
 	{
-		rigidBodyArray[i]->UpdateWorldTransform(dynamicsWorld);
+		bodies[i]->UpdateWorldTransform(dynamicsWorld);
 	}
 	
 	CheckForCollisions();

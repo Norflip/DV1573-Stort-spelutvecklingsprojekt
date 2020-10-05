@@ -74,7 +74,7 @@ void RigidBodyComp::RecursiveAddShapes(Object* obj, btCompoundShape* shape)
 	//}
 }
 
-void RigidBodyComp::Initialize()
+void RigidBodyComp::InitializeBody()
 {
 	Transform& transform = GetOwner()->GetTransform();
 	rbTransform.setIdentity();
@@ -84,12 +84,12 @@ void RigidBodyComp::Initialize()
 	localInertia = btVector3(0, 0, 0);
 
 
-	compShape->calculateLocalInertia(mass, localInertia); //this remains null after debugging. Probably one more step before it works
+	compShape->calculateLocalInertia(mass, localInertia); //this remains null after debugging. Probably one more step before it works	
 
-
+	btCollisionShape* col = new btBoxShape({ 1,1,1 });
 
 	btDefaultMotionState* myMotionState = new btDefaultMotionState(rbTransform);
-	btRigidBody::btRigidBodyConstructionInfo cInfo(mass, myMotionState, compShape, localInertia);
+	btRigidBody::btRigidBodyConstructionInfo cInfo(mass, myMotionState, col, localInertia);
 	body = new btRigidBody(cInfo);
 	body->setUserPointer(this);
 	body->activate(true);
@@ -102,11 +102,14 @@ void RigidBodyComp::FixedUpdate(const float& fixedDeltaTime)
 	/*Transform& transform = GetOwner()->GetTransform();
 	transform.SetPosition(ConvertToPosition(rbTransform.getOrigin()));
 	transform.SetRotation(ConvertToRotation(rbTransform.getRotation()));*/
+
+	std::cout << "fixed" << std::endl;
 }
 
 void RigidBodyComp::UpdateWorldTransform(const btDynamicsWorld* world)
 {
-	//rbTransform.setIdentity();
+
+	std::cout << "update" << std::endl;
 	// loopa collision shiet
 
 	rbTransform.setIdentity();
@@ -135,8 +138,21 @@ void RigidBodyComp::m_GenerateCompoundShape()
 		masses[i] = mass;
 	}
 
-	btVector3 intertia(0, 0, 0);
-	//compShape->calculatePrincipalAxisTransform(masses, rbTransform, intertia);
+	btVector3 inertia(0, 0, 0);
+	btTransform principalTransform;
+
+	compShape->calculatePrincipalAxisTransform(masses, principalTransform, inertia);
+
+	// Transform all the child shapes by the inverse of the compound's principal transform, so
+	// as to restore their world positions.
+	for (int i = 0; i < compShape->getNumChildShapes(); ++i)
+	{
+		btCollisionShape* childShape = compShape->getChildShape(i);
+		compShape->updateChildTransform(i, principalTransform.inverse() * compShape->getChildTransform(i));
+	}
+
+
+
 }
 
 void RigidBodyComp::m_OnCollision(const CollisionInfo& collision)
