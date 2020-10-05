@@ -6,7 +6,7 @@ LightManager::LightManager()
 
 LightManager::LightManager(Renderer* renderer)
 {
-	//this->pointLightComponent = new PointLightComponent(*renderer->GetContext());
+	this->pointLightComponent = new PointLightComponent(renderer->GetDevice(),renderer->GetContext());
 }
 
 LightManager::~LightManager()
