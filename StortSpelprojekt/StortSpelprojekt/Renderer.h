@@ -13,6 +13,7 @@ namespace dx = DirectX;
 
 class RenderPass;
 class GUISprite;
+class GUIFont;
 class GUIManager;
 class Renderer
 {

@@ -24,7 +24,6 @@ class GUISprite :public GUIObject
 {
 
 public:
-
 	GUISprite(Renderer& renderer, std::string, float xPos, float yPos , DrawDirection dir);
 	~GUISprite();
 	void Draw(DirectX::SpriteBatch*) override;
@@ -32,7 +31,7 @@ public:
 	void SetPosition(float xPos, float yPos);
 	void SetWICSprite(ID3D11Device* device, std::string spriteFile);
 	void SetActive(bool set = true) { this->active = set; };
-	void SetActiveColor(dx::XMVECTOR vector = dx::XMVectorSet(22.f, 22.f, 22.f, 22.f));
+	void SetActiveColor(dx::XMVECTOR vector = dx::XMVectorSet(0.6f, 0.6f, 1.3f, 1.0f));
 	bool GetActive() { return this->active; };
 	void SetDDSSprite(ID3D11Device* device, std::string spriteFile); // no dds yet
 private:

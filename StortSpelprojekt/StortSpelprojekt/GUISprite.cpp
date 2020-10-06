@@ -13,7 +13,7 @@ GUISprite::GUISprite(Renderer& renderer , std::string filePath, float xPos, floa
 
 	this->rotation = 0.0f;
 	this->baseColor = dx::XMVectorSet(1.f, 1.f, 1.f, 1.f);
-	this->activeColor = dx::XMVectorSet(0.6f, 0.6f, 1.3f, 1.0f);
+	this->activeColor = dx::XMVectorSet(0.6f, 0.6f, 1.3f, 1.0f); // default bluetinted
 	this->origin = dx::XMVectorSet(1.f, 1.f, 1.f, 1.f);
 	this->SRV = nullptr;
 	this->xPos = renderer.GetOutputWindow()->GetWidth()-xPos;

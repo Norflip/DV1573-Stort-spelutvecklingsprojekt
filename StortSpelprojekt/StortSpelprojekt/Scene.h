@@ -16,6 +16,8 @@
 #include "WorldGenerator.h"
 #include "SaveState.h"
 #include <string>
+
+class GUIFont;
 class SpriteRenderPass;
 class Scene
 {

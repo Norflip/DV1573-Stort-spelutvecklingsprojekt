@@ -1,5 +1,7 @@
 #include "Scene.h"
 #include "RenderPass.h"
+#include "GUISprite.h"
+#include "GUIFont.h"
 Scene::Scene() : input(Input::Instance())
 {
 	root = new Object("sceneRoot", ObjectFlag::DEFAULT);
@@ -24,9 +26,13 @@ void Scene::Initialize(Renderer* renderer)
 	GUISprite* buttonSprite = new GUISprite(*renderer, "Textures/EquipmentBox.png", 0, 0, DrawDirection::BottomRight);
 	GUISprite* normalSprite2 = new GUISprite(*renderer, "Textures/EquipmentBox.png", 0, 0, DrawDirection::TopLeft);
 	GUISprite* buttonSprite2 = new GUISprite(*renderer, "Textures/EquipmentBox.png", 0, 0, DrawDirection::TopRight);
+	GUIFont* fpsDisplay = new GUIFont(*renderer, "test", 300, 300);
 	normalSprite->SetActive();
+
+
 	guiManager = new GUIManager(renderer);
 	renderer->setGUIManager(guiManager);
+	guiManager->AddGUIObject(fpsDisplay, "fps");
 	guiManager->AddGUIObject(normalSprite, "normalSprite");
 	guiManager->AddGUIObject(buttonSprite, "buttonSprite");
 	guiManager->AddGUIObject(normalSprite2, "normalSprite2");
