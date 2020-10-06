@@ -15,6 +15,12 @@
 
 namespace dx = DirectX;
 
+enum class ForceMode
+{
+	FORCE,
+	IMPULSE
+};
+
 class RigidBodyComp : public Component
 {
 public:
@@ -27,16 +33,16 @@ public:
 	void SetMass(float mass) { this->mass = btScalar(mass); }
 	float GetMass() const { return static_cast<float>(this->mass); }
 
-	void FixedUpdate(const float& fixedDeltaTime) override;
 	void UpdateWorldTransform(const btDynamicsWorld* world);
 	
-	void m_GenerateCompoundShape();
+	void m_GenerateCompoundShape(btTransform& transform, btVector3& inertia, btScalar* masses);
 	void m_OnCollision(const CollisionInfo& collision);
 	
 	void AddCollisionCallback(std::function<void(CollisionInfo)> callback);
 
-	void AddForce(const dx::XMFLOAT3& force);
-	void AddForce(const float& force, const dx::XMFLOAT3& direction);
+	void AddForce(const dx::XMFLOAT3& force, const ForceMode& mode);
+
+	void AddForceAtPoint(const dx::XMFLOAT3& force, const dx::XMFLOAT3& offset, const ForceMode& mode);
 
 private:
 	btTransform ConvertToBtTransform(const Transform& transform) const;
@@ -48,8 +54,6 @@ private:
 	btRigidBody* body;
 
 	btScalar mass;
-	btTransform rbTransform;
-	btVector3 localInertia;
 
 	std::vector<std::function<void(CollisionInfo)>> callbacks;
 };

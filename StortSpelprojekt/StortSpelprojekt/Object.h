@@ -20,6 +20,7 @@ enum class ObjectFlag : unsigned int
 	RENDER = 1 << 1,
 	REMOVED = 1 << 2,
 	NO_CULL = 1 << 3,
+	STATIC = 1 << 4,
 	DEFAULT = ENABLED | RENDER
 };
 

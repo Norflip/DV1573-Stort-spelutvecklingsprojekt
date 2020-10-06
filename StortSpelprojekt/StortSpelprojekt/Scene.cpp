@@ -106,7 +106,7 @@ void Scene::Initialize(Renderer* renderer)
 
 
 	RigidBodyComp* rigidBody = testMesh2->AddComponent<RigidBodyComp>(40.0f);
-	BoxColliderComponent* boxCol = testMesh2->AddComponent<BoxColliderComponent>(1, 1, 1, 0, 0, 0, 0, 0, 0, 0);
+	BoxColliderComponent* boxCol = testMesh2->AddComponent<BoxColliderComponent>(dx::XMFLOAT3( 1,1,1 ), dx::XMFLOAT3(0,0,0), dx::XMFLOAT4(0,0,0,0));
 
 	//rigidBody->m_GenerateCompoundShape();
 
@@ -115,7 +115,7 @@ void Scene::Initialize(Renderer* renderer)
 	physics.Initialize({ 0, -10, 0 });
 	physics.AddRigidBody(rigidBody);
 
-	rigidBody->AddForce({ 0,40, 0 });
+	//rigidBody->AddForce({ 4000, 0, 0 }, ForceMode::IMPULSE);
 }
 
 void Scene::Update(const float& deltaTime)

@@ -49,7 +49,10 @@ void Physics::FixedUpdate(const float& fixedDeltaTime)
 
 	for (int i = bodies.size() - 1; i >= 0; i--)
 	{
-		bodies[i]->UpdateWorldTransform(dynamicsWorld);
+		if (bodies[i]->GetOwner()->HasFlag(ObjectFlag::ENABLED))
+		{
+			bodies[i]->UpdateWorldTransform(dynamicsWorld);
+		}
 	}
 	
 	CheckForCollisions();
@@ -61,6 +64,7 @@ void Physics::FixedUpdate(const float& fixedDeltaTime)
 	{
 		std::printf("1 ");
 	}*/
+
 
 }
 

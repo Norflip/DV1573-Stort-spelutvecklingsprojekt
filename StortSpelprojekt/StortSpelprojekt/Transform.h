@@ -5,6 +5,8 @@ namespace dx = DirectX;
 
 class Object;
 
+#define ASSERT_STATIC_OBJECT assert(!GetOwner()->HasFlag(ObjectFlag::STATIC))
+
 class Transform
 {
 public:
@@ -41,13 +43,13 @@ public:
 #pragma region SETTERS AND GETTERS
 	dx::XMVECTOR GetWorldPosition() const;
 	dx::XMVECTOR GetPosition() const { return dx::XMLoadFloat3(&this->position); }
-	void SetPosition(dx::XMVECTOR position) { dx::XMStoreFloat3(&this->position, position); changedThisFrame = true; }
+	void SetPosition(dx::XMVECTOR position);
 
 	dx::XMVECTOR GetScale() const { return dx::XMLoadFloat3(&this->scale); }
-	void SetScale(dx::XMVECTOR scale) { dx::XMStoreFloat3(&this->scale, scale); changedThisFrame = true; }
+	void SetScale(dx::XMVECTOR scale);
 
 	dx::XMVECTOR GetRotation() const { return dx::XMLoadFloat3(&this->rotation); }
-	void SetRotation(dx::XMVECTOR rotation) { dx::XMStoreFloat3(&this->rotation, rotation); changedThisFrame = true; }
+	void SetRotation(dx::XMVECTOR rotation);
 	
 
 #pragma endregion

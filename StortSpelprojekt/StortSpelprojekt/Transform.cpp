@@ -1,4 +1,5 @@
 #include "Transform.h"
+#include "Object.h"
 
 Transform::Transform(Object* owner) : Transform(owner,dx::XMVectorZero(), dx::XMVectorZero(), dx::XMVectorSplatOne())
 {
@@ -19,6 +20,8 @@ Transform::~Transform()
 
 void Transform::Translate(float x, float y, float z)
 {
+	ASSERT_STATIC_OBJECT;
+
 	if (x != 0.0f || y != 0.0f || z != 0.0f)
 	{
 		changedThisFrame = true;
@@ -31,6 +34,8 @@ void Transform::Translate(float x, float y, float z)
 
 void Transform::Rotate(float pitch, float yaw, float roll)
 {
+	ASSERT_STATIC_OBJECT;
+
 	if (pitch != 0.0f || yaw != 0.0f || roll != 0.0f)
 	{
 		changedThisFrame = true;
@@ -88,6 +93,27 @@ dx::XMVECTOR Transform::GetWorldPosition() const
 	dx::XMVECTOR pos, rot, scale;
 	dx::XMMatrixDecompose(&scale, &rot, &pos, GetWorldMatrix());
 	return pos;
+}
+
+void Transform::SetPosition(dx::XMVECTOR position)
+{
+	ASSERT_STATIC_OBJECT;
+	dx::XMStoreFloat3(&this->position, position); 
+	changedThisFrame = true;
+}
+
+void Transform::SetScale(dx::XMVECTOR scale)
+{
+	ASSERT_STATIC_OBJECT;
+	dx::XMStoreFloat3(&this->scale, scale); 
+	changedThisFrame = true;
+}
+
+void Transform::SetRotation(dx::XMVECTOR rotation)
+{
+	ASSERT_STATIC_OBJECT;
+	dx::XMStoreFloat3(&this->rotation, rotation); 
+	changedThisFrame = true;
 }
 
 dx::XMMATRIX Transform::GetWorldMatrix() const

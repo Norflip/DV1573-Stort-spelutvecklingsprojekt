@@ -3,26 +3,21 @@
 #include "Collider.h"
 #include <vector>
 
+namespace dx = DirectX;
+
 class BoxColliderComponent : public Component, public Collider
 {
 public:
 
-	BoxColliderComponent(float x, float y, float z, float rX, float rY, float rZ, float rW, float pX, float pY, float pZ);
+	BoxColliderComponent(dx::XMFLOAT3 extends, dx::XMFLOAT3 position, dx::XMFLOAT4 quaterionRotation);
 	virtual~BoxColliderComponent() {};
 
 	virtual void Initialize() override;
-	// Inherited via Collider
-	virtual btCollisionShape* GetCollisionShape()const override;
-	virtual btTransform GetTransform() const override;
+	dx::XMFLOAT3 GetExtends() const { return this->extends; }
 
 private:
-
-	float x, y, z, rX, rY, rZ, rW, pX, pY, pZ;
-	btCollisionShape* shape;
-
-	btTransform trans;
-
-	btQuaternion rotation;
-	btVector3 position;
 	
+	dx::XMFLOAT3 position;
+	dx::XMFLOAT4 rotation;
+	dx::XMFLOAT3 extends;
 };

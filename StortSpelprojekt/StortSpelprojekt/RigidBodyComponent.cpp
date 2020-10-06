@@ -29,10 +29,10 @@ dx::XMVECTOR RigidBodyComp::ConvertToPosition(const btVector3& position) const
 
 dx::XMVECTOR RigidBodyComp::ConvertToRotation(const btQuaternion& rotation) const
 {
-	float x = static_cast <float>(rbTransform.getRotation().getX());
-	float y = static_cast <float>(rbTransform.getRotation().getY());
-	float z = static_cast <float>(rbTransform.getRotation().getZ());
-	float w = static_cast <float>(rbTransform.getRotation().getW());
+	float x = static_cast <float>(rotation.getX());
+	float y = static_cast <float>(rotation.getY());
+	float z = static_cast <float>(rotation.getZ());
+	float w = static_cast <float>(rotation.getW());
 
 	return { x,y,z,w };
 }
@@ -42,6 +42,7 @@ void RigidBodyComp::RecursiveAddShapes(Object* obj, btCompoundShape* shape)
 	//BOXES
 	const std::vector<BoxColliderComponent*>& boxes = obj->GetComponents<BoxColliderComponent>();
 
+	std::cout << "BOXES: " << boxes.size() << std::endl;
 	for (size_t i = 0; i < boxes.size(); i++)
 	{
 		shape->addChildShape(boxes[i]->GetTransform(), boxes[i]->GetCollisionShape());
@@ -77,53 +78,51 @@ void RigidBodyComp::RecursiveAddShapes(Object* obj, btCompoundShape* shape)
 void RigidBodyComp::InitializeBody()
 {
 	Transform& transform = GetOwner()->GetTransform();
-	rbTransform.setIdentity();
-	rbTransform = ConvertToBtTransform(transform);
+	btTransform rbTransform = ConvertToBtTransform(transform);
+	btVector3 inertia(0, 0, 0);
 
-	m_GenerateCompoundShape();
-	localInertia = btVector3(0, 0, 0);
+	compShape = new btCompoundShape();
+	RecursiveAddShapes(GetOwner(), compShape);
 
+	btTransform t;
+	t.setIdentity();
+	t.setOrigin({ 0,0,0 });
 
-	compShape->calculateLocalInertia(mass, localInertia); //this remains null after debugging. Probably one more step before it works	
+	int children = compShape->getNumChildShapes();
+	btScalar* masses = new btScalar[children];
+	for (size_t i = 0; i < children; i++)
+	{
+		masses[i] = mass / children;
+	}
 
-	btCollisionShape* col = new btBoxShape({ 1,1,1 });
+	compShape->calculatePrincipalAxisTransform(masses, t, inertia);
 
 	btDefaultMotionState* myMotionState = new btDefaultMotionState(rbTransform);
-	btRigidBody::btRigidBodyConstructionInfo cInfo(mass, myMotionState, col, localInertia);
+	btRigidBody::btRigidBodyConstructionInfo cInfo(mass, myMotionState, compShape, inertia);
 	body = new btRigidBody(cInfo);
 	body->setUserPointer(this);
-	body->activate(true);
-
-	// register to physics? 
-}
-
-void RigidBodyComp::FixedUpdate(const float& fixedDeltaTime)
-{
-	/*Transform& transform = GetOwner()->GetTransform();
-	transform.SetPosition(ConvertToPosition(rbTransform.getOrigin()));
-	transform.SetRotation(ConvertToRotation(rbTransform.getRotation()));*/
-
-	std::cout << "fixed" << std::endl;
+	body->setFriction(1);
+	body->setRestitution(0);
 }
 
 void RigidBodyComp::UpdateWorldTransform(const btDynamicsWorld* world)
 {
 
-	std::cout << "update" << std::endl;
 	// loopa collision shiet
 
-	rbTransform.setIdentity();
+	//rbTransform.setIdentity();
+	btTransform rbTransform;
 	body->getMotionState()->getWorldTransform(rbTransform);
 	
 	Transform& transform = GetOwner()->GetTransform();
 	transform.SetPosition(ConvertToPosition(rbTransform.getOrigin()));
 	transform.SetRotation(ConvertToRotation(rbTransform.getRotation()));
 
-	std::cout << std::to_string(rbTransform.getOrigin().getX()) << ", " << std::to_string(rbTransform.getOrigin().getY()) << ", " << std::to_string(rbTransform.getOrigin().getZ()) << std::endl;
+	//std::cout << std::to_string(rbTransform.getOrigin().getX()) << ", " << std::to_string(rbTransform.getOrigin().getY()) << ", " << std::to_string(rbTransform.getOrigin().getZ()) << std::endl;
 
 }
 
-void RigidBodyComp::m_GenerateCompoundShape()
+void RigidBodyComp::m_GenerateCompoundShape(btTransform& transform, btVector3& inertia, btScalar* masses)
 {
 	compShape = new btCompoundShape(true, 1);
 	RecursiveAddShapes(GetOwner(), compShape);
@@ -132,27 +131,11 @@ void RigidBodyComp::m_GenerateCompoundShape()
 
 	std::cout << "CHILDREN: " << children << std::endl;
 
-	btScalar* masses = new btScalar[children];
+	masses = new btScalar[children];
 	for (size_t i = 0; i < children; i++)
 	{
 		masses[i] = mass;
 	}
-
-	btVector3 inertia(0, 0, 0);
-	btTransform principalTransform;
-
-	compShape->calculatePrincipalAxisTransform(masses, principalTransform, inertia);
-
-	// Transform all the child shapes by the inverse of the compound's principal transform, so
-	// as to restore their world positions.
-	for (int i = 0; i < compShape->getNumChildShapes(); ++i)
-	{
-		btCollisionShape* childShape = compShape->getChildShape(i);
-		compShape->updateChildTransform(i, principalTransform.inverse() * compShape->getChildTransform(i));
-	}
-
-
-
 }
 
 void RigidBodyComp::m_OnCollision(const CollisionInfo& collision)
@@ -166,8 +149,35 @@ void RigidBodyComp::AddCollisionCallback(std::function<void(CollisionInfo)> call
 	callbacks.push_back(callback);
 }
 
-void RigidBodyComp::AddForce(const dx::XMFLOAT3& force)
+void RigidBodyComp::AddForce(const dx::XMFLOAT3& force, const ForceMode& mode)
 {
 	btVector3 forcev3(force.x, force.y, force.z);
-	body->applyCentralForce(forcev3);
+
+	switch (mode)
+	{
+		case ForceMode::IMPULSE:
+			body->applyCentralImpulse(forcev3);
+
+		case ForceMode::FORCE:
+		default:
+			body->applyCentralForce(forcev3);
+			break;
+	}
+}
+
+void RigidBodyComp::AddForceAtPoint(const dx::XMFLOAT3& force, const dx::XMFLOAT3& offset, const ForceMode& mode)
+{
+	btVector3 forcev3 (force.x, force.y, force.z);
+	btVector3 pos (offset.x, offset.y, offset.z);
+
+	switch (mode)
+	{
+		case ForceMode::IMPULSE:
+			body->applyImpulse(forcev3, pos);
+
+		case ForceMode::FORCE:
+		default:
+			body->applyForce(forcev3, pos);
+			break;
+	}
 }
