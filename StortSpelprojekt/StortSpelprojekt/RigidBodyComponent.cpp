@@ -1,7 +1,8 @@
 #include "RigidBodyComponent.h"
 
-RigidBodyComp::RigidBodyComp(float mass) : mass(mass), compShape(nullptr)
+RigidBodyComp::RigidBodyComp(float mass) : mass(mass),compShape(nullptr)
 {
+
 }
 
 RigidBodyComp::~RigidBodyComp()
@@ -41,8 +42,6 @@ void RigidBodyComp::RecursiveAddShapes(Object* obj, btCompoundShape* shape)
 {
 	//BOXES
 	const std::vector<BoxColliderComponent*>& boxes = obj->GetComponents<BoxColliderComponent>();
-
-	std::cout << "BOXES: " << boxes.size() << std::endl;
 	for (size_t i = 0; i < boxes.size(); i++)
 	{
 		shape->addChildShape(boxes[i]->GetTransform(), boxes[i]->GetCollisionShape());
@@ -50,7 +49,6 @@ void RigidBodyComp::RecursiveAddShapes(Object* obj, btCompoundShape* shape)
 
 	//SPHERES
 	const std::vector<SphereColliderComponent*>& spheres = obj->GetComponents<SphereColliderComponent>();
-
 	for (size_t i = 0; i < spheres.size(); i++)
 	{
 		shape->addChildShape(spheres[i]->GetTransform(), spheres[i]->GetCollisionShape());
@@ -58,7 +56,6 @@ void RigidBodyComp::RecursiveAddShapes(Object* obj, btCompoundShape* shape)
 
 	//CAPSULES
 	const std::vector<CapsuleColliderComponent*>& capsules = obj->GetComponents<CapsuleColliderComponent>();
-
 	for (size_t i = 0; i < capsules.size(); i++)
 	{
 		shape->addChildShape(capsules[i]->GetTransform(), capsules[i]->GetCollisionShape());
@@ -88,17 +85,22 @@ void RigidBodyComp::InitializeBody()
 	t.setIdentity();
 	t.setOrigin({ 0,0,0 });
 
-	int children = compShape->getNumChildShapes();
-	btScalar* masses = new btScalar[children];
-	for (size_t i = 0; i < children; i++)
+	if (IsDynamic())
 	{
-		masses[i] = mass / children;
+		int children = compShape->getNumChildShapes();
+		btScalar* masses = new btScalar[children];
+		for (size_t i = 0; i < children; i++)
+		{
+			masses[i] = mass / children;
+		}
+
+		compShape->calculatePrincipalAxisTransform(masses, t, inertia);
 	}
 
-	compShape->calculatePrincipalAxisTransform(masses, t, inertia);
+	btCollisionShape* groundShape = new btBoxShape(btVector3(btScalar(50.), btScalar(50.), btScalar(50.)));
 
 	btDefaultMotionState* myMotionState = new btDefaultMotionState(rbTransform);
-	btRigidBody::btRigidBodyConstructionInfo cInfo(mass, myMotionState, compShape, inertia);
+	btRigidBody::btRigidBodyConstructionInfo cInfo(mass, myMotionState, groundShape, inertia);
 	body = new btRigidBody(cInfo);
 	body->setUserPointer(this);
 	body->setFriction(1);
@@ -113,7 +115,7 @@ void RigidBodyComp::UpdateWorldTransform(const btDynamicsWorld* world)
 	//rbTransform.setIdentity();
 	btTransform rbTransform;
 	body->getMotionState()->getWorldTransform(rbTransform);
-	
+
 	Transform& transform = GetOwner()->GetTransform();
 	transform.SetPosition(ConvertToPosition(rbTransform.getOrigin()));
 	transform.SetRotation(ConvertToRotation(rbTransform.getRotation()));
@@ -167,8 +169,8 @@ void RigidBodyComp::AddForce(const dx::XMFLOAT3& force, const ForceMode& mode)
 
 void RigidBodyComp::AddForceAtPoint(const dx::XMFLOAT3& force, const dx::XMFLOAT3& offset, const ForceMode& mode)
 {
-	btVector3 forcev3 (force.x, force.y, force.z);
-	btVector3 pos (offset.x, offset.y, offset.z);
+	btVector3 forcev3(force.x, force.y, force.z);
+	btVector3 pos(offset.x, offset.y, offset.z);
 
 	switch (mode)
 	{

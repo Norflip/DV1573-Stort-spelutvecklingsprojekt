@@ -21,6 +21,9 @@ enum class ForceMode
 	IMPULSE
 };
 
+
+#define STATIC_BODY 0
+
 class RigidBodyComp : public Component
 {
 public:
@@ -33,16 +36,15 @@ public:
 	void SetMass(float mass) { this->mass = btScalar(mass); }
 	float GetMass() const { return static_cast<float>(this->mass); }
 
-	void UpdateWorldTransform(const btDynamicsWorld* world);
-	
 	void m_GenerateCompoundShape(btTransform& transform, btVector3& inertia, btScalar* masses);
-	void m_OnCollision(const CollisionInfo& collision);
-	
-	void AddCollisionCallback(std::function<void(CollisionInfo)> callback);
+	virtual void UpdateWorldTransform(const btDynamicsWorld* world);	
+	virtual void m_OnCollision(const CollisionInfo& collision);
+	virtual void AddCollisionCallback(std::function<void(CollisionInfo)> callback);
 
-	void AddForce(const dx::XMFLOAT3& force, const ForceMode& mode);
+	virtual void AddForce(const dx::XMFLOAT3& force, const ForceMode& mode);
+	virtual void AddForceAtPoint(const dx::XMFLOAT3& force, const dx::XMFLOAT3& offset, const ForceMode& mode);
 
-	void AddForceAtPoint(const dx::XMFLOAT3& force, const dx::XMFLOAT3& offset, const ForceMode& mode);
+	bool IsDynamic() const { return mass != 0.0f; }
 
 private:
 	btTransform ConvertToBtTransform(const Transform& transform) const;

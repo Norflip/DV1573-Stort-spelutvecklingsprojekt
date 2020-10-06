@@ -1,7 +1,10 @@
 #include "Object.h"
 #include "Component.h"
 
-Object::Object(const std::string& name, ObjectFlag flag) : name(name), flags(flag), transform(this)
+size_t Object::idCounter = 0;
+
+
+Object::Object(const std::string& name, ObjectFlag flag) : name(name), flags(flag), transform(this), id(idCounter++)
 {
 
 }

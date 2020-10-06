@@ -29,11 +29,23 @@ void Physics::CreateDynamicWorld()
 	dynamicsWorld = new btDiscreteDynamicsWorld(dispatcher, overlappingPairCache, solver, collisionConfiguration);
 }
 
-void Physics::AddRigidBody(RigidBodyComp* rigidBodyComp)
+void Physics::RegisterRigidBody(RigidBodyComp* rigidBodyComp)
 {
 	rigidBodyComp->InitializeBody();
-	dynamicsWorld->addRigidBody(rigidBodyComp->GetRigidBody(), 1, 1);
-	bodies.push_back(rigidBodyComp);
+	dynamicsWorld->addRigidBody(rigidBodyComp->GetRigidBody(), 0, 0);
+	bodyMap.insert({ rigidBodyComp->GetOwner()->GetID(), rigidBodyComp });
+}
+
+void Physics::UnregisterRigidBody(Object* object)
+{
+	auto find = bodyMap.find(object->GetID());
+	if (find != bodyMap.end())
+		bodyMap.erase(find);
+}
+
+void Physics::UnregisterRigidBody(RigidBodyComp* rigidBodyComp)
+{
+	UnregisterRigidBody(rigidBodyComp->GetOwner());
 }
 
 void Physics::FixedUpdate(const float& fixedDeltaTime)
@@ -46,15 +58,14 @@ void Physics::FixedUpdate(const float& fixedDeltaTime)
 	const float internalTimeStep = 1. / 240.f;
 	dynamicsWorld->stepSimulation(fixedDeltaTime, 4, internalTimeStep);
 
-
-	for (int i = bodies.size() - 1; i >= 0; i--)
+	for (auto i : bodyMap)
 	{
-		if (bodies[i]->GetOwner()->HasFlag(ObjectFlag::ENABLED))
+		if (i.second->GetOwner()->HasFlag(ObjectFlag::ENABLED))
 		{
-			bodies[i]->UpdateWorldTransform(dynamicsWorld);
+			i.second->UpdateWorldTransform(dynamicsWorld);
 		}
 	}
-	
+
 	CheckForCollisions();
 	/*if (collisions.empty())
 	{
@@ -68,18 +79,25 @@ void Physics::FixedUpdate(const float& fixedDeltaTime)
 
 }
 
-bool Physics::RaycastWorld(const Ray& ray, float maxDistance) const
+bool Physics::RaycastWorld(const Ray& ray, float maxDistance, PhysicsLayer layer) const
 {
+	//std::cout << "origin: " << ray.origin.x << ", " << ray.origin.y << ", " << ray.origin.z << std::endl;
+	//std::cout << "direction: " << ray.direction.x << ", " << ray.direction.y << ", " << ray.direction.z << std::endl;
+
 	dx::XMFLOAT3 furthestPoint = ray.GetPoint(maxDistance);
 	btVector3 from = btVector3(ray.origin.x, ray.origin.y, ray.origin.z);
 	btVector3 to = btVector3(furthestPoint.x, furthestPoint.y, furthestPoint.z);
 
+
 	btCollisionWorld::ClosestRayResultCallback closestResults(from, to);
 	closestResults.m_flags |= btTriangleRaycastCallback::kF_FilterBackfaces;
+	closestResults.m_collisionFilterGroup = 0;
+	closestResults.m_collisionFilterMask = 0;
 
 	dynamicsWorld->rayTest(from, to, closestResults);
+	bool hit = closestResults.hasHit();
 
-	if (closestResults.hasHit())
+	if (hit)
 	{
 		btVector3 p = from.lerp(to, closestResults.m_closestHitFraction);
 		dynamicsWorld->getDebugDrawer()->drawSphere(p, 0.1, btVector3(0,0,1));
@@ -87,13 +105,14 @@ bool Physics::RaycastWorld(const Ray& ray, float maxDistance) const
 		
 		void* userPointer = closestResults.m_collisionObject->getUserPointer();
 		RigidBodyComp* rb = static_cast<RigidBodyComp*>(userPointer);
+
 		if (rb != nullptr)
 		{
 			std::cout << "RB!!" << std::endl;
 		}
 	}
 
-	return false;
+	return hit;
 }
 
 void Physics::CheckForCollisions()

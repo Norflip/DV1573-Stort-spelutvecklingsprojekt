@@ -33,6 +33,8 @@ using ComponentArray = std::array<std::vector<Component*>, maxComponents>;
 
 class Object
 {
+	static size_t idCounter;
+
 public:
 	Object(const std::string& name, ObjectFlag flag = ObjectFlag::DEFAULT);
 	virtual ~Object();
@@ -68,10 +70,13 @@ public:
 
 	Transform& GetTransform() { return this->transform; }
 
+	size_t GetID() const { return this->id; }
+
 private:
 	ObjectFlag flags;
 	Transform transform;
 	std::string name;
+	size_t id;
 
 	std::vector<Component*> components;
 	ComponentArray componentArray;

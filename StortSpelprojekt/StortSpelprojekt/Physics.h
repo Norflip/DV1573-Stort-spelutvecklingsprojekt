@@ -8,6 +8,14 @@
 #include <iostream>
 #include "CollisionInfo.h"
 #include "Ray.h"
+#include <unordered_map>
+
+enum class PhysicsLayer : unsigned int
+{
+	DEFAULT = 1 << 1
+};
+
+DEFINE_ENUM_FLAG_OPERATORS(PhysicsLayer)
 
 class Physics
 {
@@ -19,10 +27,14 @@ public:
 
 	void SetGravity(float x, float y, float z);
 	void CreateDynamicWorld();
-	void AddRigidBody(RigidBodyComp* rigidBodyComp);
+	
+	void RegisterRigidBody(RigidBodyComp* rigidBodyComp);
+	void UnregisterRigidBody(Object* object);
+	void UnregisterRigidBody(RigidBodyComp* rigidBodyComp);
+
 	void FixedUpdate(const float& fixedDeltaTime);
 	
-	bool RaycastWorld(const Ray& ray, float maxDistance) const;
+	bool RaycastWorld(const Ray& ray, float maxDistance, PhysicsLayer layer = PhysicsLayer::DEFAULT) const;
 
 	//static dx::XMFLOAT3 ToXMFLOAT3(const btVector3& v3) { return dx::XMFLOAT3(v3.x, v3.y, v3.z); }
 	//static btVector3 ToVector3(const dx::XMFLOAT3& xm3) { return btVector3(xm3.x, xm3.y, xm3.z); }
@@ -36,6 +48,7 @@ private:
 	btBroadphaseInterface* overlappingPairCache;
 	btSequentialImpulseConstraintSolver* solver;
 	btDiscreteDynamicsWorld* dynamicsWorld;
-	std::vector<RigidBodyComp*> bodies;
 	std::vector<btVector3> collisions;
+
+	std::unordered_map<size_t, RigidBodyComp*> bodyMap;
 };

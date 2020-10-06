@@ -165,6 +165,7 @@
     <ClCompile Include="CameraComponent.cpp" />
     <ClCompile Include="CapsuleColliderComponent.cpp" />
     <ClCompile Include="Chunk.cpp" />
+    <ClCompile Include="ChunkCollider.cpp" />
     <ClCompile Include="ControllerComponent.cpp" />
     <ClCompile Include="DXHelper.cpp" />
     <ClCompile Include="Engine.cpp" />
@@ -200,6 +201,7 @@
     <ClInclude Include="CameraComponent.h" />
     <ClInclude Include="CapsuleColliderComponent.h" />
     <ClInclude Include="Chunk.h" />
+    <ClInclude Include="ChunkCollider.h" />
     <ClInclude Include="Collider.h" />
     <ClInclude Include="CollisionInfo.h" />
     <ClInclude Include="ControllerComponent.h" />

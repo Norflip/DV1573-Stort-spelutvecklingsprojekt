@@ -8,7 +8,7 @@ struct Ray
 	dx::XMFLOAT3 origin, direction;
 	Ray(dx::XMFLOAT3 origin, dx::XMFLOAT3 direction) : origin(origin) 
 	{
-		dx::XMStoreFloat3(&this->origin, dx::XMVector3Normalize(dx::XMLoadFloat3(&direction)));
+		dx::XMStoreFloat3(&this->direction, dx::XMVector3Normalize(dx::XMLoadFloat3(&direction)));
 	}
 
 	dx::XMFLOAT3 GetPoint(float distance) const

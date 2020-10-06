@@ -105,22 +105,34 @@ void Scene::Initialize(Renderer* renderer)
 
 
 
-	RigidBodyComp* rigidBody = testMesh2->AddComponent<RigidBodyComp>(40.0f);
+	RigidBodyComp* rigidBody = testMesh2->AddComponent<RigidBodyComp>(4.0f);
+
 	BoxColliderComponent* boxCol = testMesh2->AddComponent<BoxColliderComponent>(dx::XMFLOAT3( 1,1,1 ), dx::XMFLOAT3(0,0,0), dx::XMFLOAT4(0,0,0,0));
 
 	//rigidBody->m_GenerateCompoundShape();
 
 
 
-	physics.Initialize({ 0, -10, 0 });
-	physics.AddRigidBody(rigidBody);
+	physics.Initialize({ 0, -0.01, 0 });
+	physics.RegisterRigidBody(rigidBody);
 
 	//rigidBody->AddForce({ 4000, 0, 0 }, ForceMode::IMPULSE);
 }
 
 void Scene::Update(const float& deltaTime)
-{
+{	
 	input.UpdateInputs();
+	
+	POINT p = input.GetMousePos();
+
+//	std::cout << p.x << ", " << p.y << std::endl;
+
+	Ray ray = camera->MouseToRay(p.x, p.y);
+	if (physics.RaycastWorld(ray, 100.0f, PhysicsLayer::DEFAULT))
+	{
+		std::cout << "hit" << std::endl;
+	}
+	
 	root->Update(deltaTime);
 	skyboxClass->GetThisObject()->GetTransform().SetPosition(camera->GetOwner()->GetTransform().GetPosition());
 	GameClock::Instance().Update();
