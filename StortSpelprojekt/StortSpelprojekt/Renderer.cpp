@@ -99,7 +99,7 @@ void Renderer::DrawQueueToTarget(RenderQueue& queue)
 		auto queue = i.second;
 		if (!queue.empty())
 		{
-			DXHelper::bindNullShaders(context);
+			
 			queue.front().material->BindToContext(context);
 
 			while (!queue.empty())
@@ -112,9 +112,9 @@ void Renderer::DrawQueueToTarget(RenderQueue& queue)
 						
 						DrawRenderItemInstanced(item); break;
 					case RenderItem::Type::Grass:
-						
+						context->RSSetState(rasterizerStateCullNone);
 						DrawRenderItemGrass(item); break;
-
+						context->RSSetState(rasterizerStateCullBack);
 					case RenderItem::Type::Skeleton:
 						
 						DrawRenderItemSkeleton(item); break;
@@ -147,7 +147,9 @@ void Renderer::RenderFrame()
   
 	context->RSSetState(rasterizerStateCullBack);
 	context->OMSetBlendState(blendStateOff, BLENDSTATEMASK, 0xffffffff);
+	DXHelper::bindNullShaders(context);
 	DrawQueueToTarget(opaqueItemQueue);
+	DXHelper::bindNullShaders(context);
   DShape::Instance().m_Draw(context);
 	context->RSSetState(rasterizerStateCullNone);
 	context->OMSetBlendState(blendStateOn, BLENDSTATEMASK, 0xffffffff);
@@ -237,7 +239,7 @@ void Renderer::DrawGrass(const CameraComponent& camera, const Mesh& mesh, const 
 	item.mesh = &mesh;
 	item.material = &material;
 	item.world = model;
-	AddItem(item, true);
+	AddItem(item, false);
 }
 
 void Renderer::SetRSToCullNone(bool cullNone)

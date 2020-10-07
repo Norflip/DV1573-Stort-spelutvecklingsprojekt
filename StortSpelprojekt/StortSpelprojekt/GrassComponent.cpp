@@ -157,7 +157,7 @@ void GrassComponent::InitializeGrass(std::vector<Mesh::Vertex>& vertices, std::v
 
 void GrassComponent::Draw(Renderer* renderer, CameraComponent* camera)
 {
-
+	
 	renderer->DrawGrass(*camera, grassMesh, grassMat, model);
 	
 	
