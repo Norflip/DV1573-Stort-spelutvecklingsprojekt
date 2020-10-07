@@ -13,18 +13,17 @@ WorldGenerator::~WorldGenerator()
 
 	chunks.clear();
 
-	for (size_t i = 0; i < grassComponents.size(); i++)
-		delete grassComponents[i];
+	
 }
 
-void WorldGenerator::initalizeGrass(ID3D11Device* device, ID3D11DeviceContext* context)
+void WorldGenerator::InitalizeGrass(ID3D11Device* device, ID3D11DeviceContext* context)
 {
 
 	
 
 	for (int grass = 0; grass < grassComponents.size(); grass++)
 	{
-		grassComponents[grass]->InitializeGrass(chunkMesh.vertices, chunkMesh.indices, device, context);
+		grassComponents[grass].InitializeGrass(chunkMesh.vertices, chunkMesh.indices, device, context);
 	}
 	
 }
@@ -196,7 +195,7 @@ void WorldGenerator::Draw(Renderer* renderer, CameraComponent* camera)
 
 	for (auto i = grassComponents.begin(); i < grassComponents.end(); i++)
 	{
-		(*i)->Draw(renderer, camera);
+		(*i).Draw(renderer, camera);
 	}
 	
 }
@@ -374,15 +373,16 @@ Chunk* WorldGenerator::CreateChunk(ChunkType type, dx::XMINT2 index, const Path&
 
 	/****************************EMIL KOD*/
 	dx::XMMATRIX chunkModel = chunkObject->GetTransform().GetLocalWorldMatrix();
-	GrassComponent* grassComponent = new GrassComponent(device, grassV, grassI, grassShader, chunkModel);
+	GrassComponent grassComponent(device, grassV, grassI, grassShader, chunkModel);
 
 
 	/**************************/
 	//update the height map.
-	grassComponent->GetMaterial().SetTexture(Texture(srv), 6, ShaderBindFlag::DOMAINS);
+	grassComponent.GetMaterial().SetTexture(Texture(srv), 6, ShaderBindFlag::DOMAINS);
 
 	/*****************************/
 
+	
 
 	grassComponents.push_back(grassComponent);
 

@@ -1,7 +1,7 @@
 #include "DXHelper.h"
 
 
-void DXHelper::bindNullShaders(ID3D11DeviceContext* context)
+void DXHelper::BindNullShaders(ID3D11DeviceContext* context)
 {
 	context->VSSetShader(0, 0, 0);
 	context->HSSetShader(0, 0, 0);

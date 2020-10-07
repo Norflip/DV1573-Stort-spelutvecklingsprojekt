@@ -54,7 +54,7 @@ public:
 public:
 	Shader();
 	virtual ~Shader();
-
+	
 	void SetPixelShader(LPCWSTR path, LPCSTR entry = "main"); 
 	void SetVertexShader(LPCWSTR path, LPCSTR entry = "main");
 	void SetHullShader(LPCWSTR path, LPCSTR entry = "main");

@@ -51,7 +51,7 @@ namespace DXHelper
 {
 	static std::unordered_map<int, ID3D11SamplerState*> m_samplerCache;
 
-	void bindNullShaders(ID3D11DeviceContext* context);
+	void BindNullShaders(ID3D11DeviceContext* context);
 
 	
 	void CreateSwapchain(const Window& window, ID3D11Device** device, ID3D11DeviceContext** context, IDXGISwapChain** swapchain);
