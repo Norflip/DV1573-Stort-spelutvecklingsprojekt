@@ -136,7 +136,7 @@ void Renderer::RenderFrame()
 	context->OMSetBlendState(blendStateOff, BLENDSTATEMASK, 0xffffffff);
 	DrawQueueToTarget(opaqueItemQueue);
 
-	DShape::Instance().m_Draw(context);
+	//DShape::Instance().m_Draw(context);
 
 	context->RSSetState(rasterizerStateCullNone);
 	context->OMSetBlendState(blendStateOn, BLENDSTATEMASK, 0xffffffff);
