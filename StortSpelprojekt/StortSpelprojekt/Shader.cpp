@@ -22,23 +22,23 @@ Shader::~Shader()
 		geometryShader->Release();*/
 }
 
-void Shader::SetPixelShader(LPCWSTR path, LPCSTR entry)
+void Shader::SetPixelShader(std::string path, LPCSTR entry)
 {
-	this->pixelPath = path;
+	this->pixel = path;
 	this->pixelEntry = entry;
 	shaderFlags |= ShaderBindFlag::PIXEL;
 }
 
-void Shader::SetVertexShader(LPCWSTR path, LPCSTR entry)
+void Shader::SetVertexShader(std::string path, LPCSTR entry)
 {
-	this->vertexPath = path;
+	this->vertex = path;
 	this->vertexEntry = entry;
 	shaderFlags |= ShaderBindFlag::VERTEX;
 }
 
-void Shader::SetGeometryShader(LPCWSTR path, LPCSTR entry)
+void Shader::SetGeometryShader(std::string path, LPCSTR entry)
 {
-	this->geometryPath = path;
+	//this->geometryPath = path;
 	this->geometryEntry = entry;
 	shaderFlags |= ShaderBindFlag::GEOMETRY;
 }
@@ -85,16 +85,20 @@ void Shader::CompilePS(ID3D11Device* device)
 	{
 		if (pixelShader != nullptr)
 		{
-			delete pixelShader;
-			pixelShader = nullptr;
+			pixelShader->Release();
+			//delete pixelShader;
+			//pixelShader = nullptr;
 		}
 
 		ID3DBlob* errorBlob = nullptr;
 		ID3DBlob* PSBlob = nullptr;
 		
+		// Convert the string to a wstring locally, without changing the content
+		std::wstring wPixel = std::wstring(pixel.begin(), pixel.end());
+
 		HRESULT PSCompileResult = D3DCompileFromFile
 		(
-			pixelPath,
+			wPixel.c_str(),
 			nullptr,
 			D3D_COMPILE_STANDARD_FILE_INCLUDE,
 			pixelEntry,
@@ -126,17 +130,21 @@ void Shader::CompileVS(ID3D11Device* device)
 
 		if (vertexShader != nullptr)
 		{
-			delete vertexShader;
-			vertexShader = nullptr;
+			vertexShader->Release();
+			//delete vertexShader;
+			//vertexShader = nullptr;
 		}
 
 		ID3DBlob* errorBlob = nullptr;
 		ID3DBlob* VSBlob = nullptr;
 		
+		// Convert the string to a wstring locally, without changing the content
+		std::wstring wVertex = std::wstring(vertex.begin(), vertex.end());
+
 		// VERTEX SHADER
 		HRESULT	VSCompileResult = D3DCompileFromFile
 		(
-			vertexPath,
+			wVertex.c_str(),
 			nullptr,
 			D3D_COMPILE_STANDARD_FILE_INCLUDE,
 			vertexEntry,
@@ -169,16 +177,20 @@ void Shader::CompileGS(ID3D11Device* device)
 
 		if (geometryShader != nullptr)
 		{
-			delete geometryShader;
-			geometryShader = nullptr;
+			geometryShader->Release();
+			//delete geometryShader;
+			//geometryShader = nullptr;
 		}
 
 		ID3DBlob* errorBlob = nullptr;
 		ID3DBlob* GSBlob = nullptr;
 
+		// Convert the string to a wstring locally, without changing the content
+		std::wstring wGeometry = std::wstring(geometry.begin(), geometry.end());
+
 		HRESULT GSCompileResult = D3DCompileFromFile
 		(
-			geometryPath,
+			wGeometry.c_str(),
 			nullptr,
 			D3D_COMPILE_STANDARD_FILE_INCLUDE,
 			geometryEntry,

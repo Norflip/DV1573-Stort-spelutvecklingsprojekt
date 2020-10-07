@@ -56,8 +56,8 @@ void Renderer::Initialize(Window* window)
 
 	/* Screenquad shader */
 	Shader* screenQuadShader = new Shader;
-	screenQuadShader->SetPixelShader(L"Shaders/ScreenQuad_ps.hlsl");
-	screenQuadShader->SetVertexShader(L"Shaders/ScreenQuad_vs.hlsl");
+	screenQuadShader->SetPixelShader("Shaders/ScreenQuad_ps.hlsl");
+	screenQuadShader->SetVertexShader("Shaders/ScreenQuad_vs.hlsl");
 	screenQuadShader->Compile(device);
 
 	screenQuadMaterial = Material(screenQuadShader);
@@ -219,10 +219,7 @@ void Renderer::SetRSToCullNone(bool cullNone)
 	{
 		context->RSSetState(rasterizerStateCullBack);
 	}
-	
 }
-
-
 
 void Renderer::ClearRenderTarget(const RenderTexture& target)
 {
@@ -254,7 +251,6 @@ void Renderer::DrawRenderItem(const RenderItem& item)
 	dx::XMStoreFloat4x4(&cb_object_data.mvp, dx::XMMatrixTranspose(mvp));
 	dx::XMStoreFloat4x4(&cb_object_data.world, dx::XMMatrixTranspose(item.world));
 	DXHelper::BindConstBuffer(context, obj_cbuffer, &cb_object_data, CB_OBJECT_SLOT, ShaderBindFlag::VERTEX);
-
 
 	cb_material_data = item.material->GetMaterialData();
 	DXHelper::BindConstBuffer(context, material_cbuffer, &cb_material_data, CB_MATERIAL_SLOT, ShaderBindFlag::PIXEL);

@@ -26,7 +26,8 @@ public:
 	virtual ~Scene();
 
 	void Initialize(Renderer* renderer);
-	
+	void InitializeObjects();
+
 	void OnActivate() {}
 	void OnDeactivate() {}
 	
@@ -49,7 +50,6 @@ private:
 	Renderer* renderer;
 
 	Input& input;
-		
 
 	/* Test skybox in class */
 	Object* skybox;

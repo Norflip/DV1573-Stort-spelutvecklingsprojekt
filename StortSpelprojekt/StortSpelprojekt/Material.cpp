@@ -11,7 +11,6 @@ void Material::BindToContext(ID3D11DeviceContext* context) const
 {
 	this->shader->BindToContext(context);
 
-
 	for (auto i : textures)
 	{
 		for (auto j : i.second)

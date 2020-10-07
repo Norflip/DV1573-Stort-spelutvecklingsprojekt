@@ -9,8 +9,6 @@ ControllerComponent::ControllerComponent()
 	this->showCursor = true;
 	this->canRotate = false;
 	this->sensetivity = 1.f;
-
-	this->compile = false;
 }
 
 ControllerComponent::~ControllerComponent()
@@ -110,9 +108,6 @@ void ControllerComponent::Update(const float& deltaTime)
 		dir.x -= 1.f;// move;
 	if (KEY_PRESSED(D))
 		dir.x += 1.f;// move;
-
-	if (KEY_PRESSED(P))
-		compile = true;
 
 	dx::XMVECTOR direction = dx::XMLoadFloat3(&dir);
 

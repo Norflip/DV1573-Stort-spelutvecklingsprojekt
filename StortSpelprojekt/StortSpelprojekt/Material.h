@@ -41,6 +41,7 @@ public:
 	const std::string& GetName() const { return this->name; }
 
 	size_t GetID() const { return this->id; }
+	Shader* GetShader() { return this->shader; }
 
 private:
 	Shader* shader;

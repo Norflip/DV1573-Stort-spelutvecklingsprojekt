@@ -2,7 +2,7 @@
 
 WorldGenerator::WorldGenerator() : chunkMesh()
 {
-	shader = nullptr;
+	//shader = nullptr;
 }
 
 WorldGenerator::~WorldGenerator()
