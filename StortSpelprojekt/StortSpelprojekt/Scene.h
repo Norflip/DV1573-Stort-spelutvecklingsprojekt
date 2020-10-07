@@ -11,10 +11,13 @@
 #include "MeshComponent.h"
 #include "ZWEBLoader.h"
 #include "SkeletonMeshComponent.h"
-#include "GUIManager.h"
+#include "NodeWalkerComponent.h"
+
 #include "Skybox.h"
 #include "WorldGenerator.h"
 #include "SaveState.h"
+#include "DShape.h"
+#include "GUIManager.h"
 #include <string>
 
 class GUIFont;
@@ -33,10 +36,7 @@ public:
 	void Update(const float& deltaTime);
 	void FixedUpdate(const float& fixedDeltaTime);
 	void Render();
-
-	/* new - render scene to texture */
-	void RenderSceneToTexture();
-
+	
 	void AddObject(Object* object);
 	void AddObject(Object* object, Object* parent);
 
@@ -52,10 +52,16 @@ private:
 	Renderer* renderer;
 
 	Input& input;
+
 	dx::SpriteBatch* spriteBatch;
 	WorldGenerator worldGenerator;
-	SpriteRenderPass* spritePass;
-	/* test sky */
-	Object* testSkybox;
-	GUIManager* guiManager;
+	SpriteRenderPass* spritePass;	
+
+	GUIManager* guiManager;		
+
+	/* Test skybox in class */
+	Object* skybox;
+	Skybox* skyboxClass;		
+
+	WorldGenerator worldGenerator;	
 };

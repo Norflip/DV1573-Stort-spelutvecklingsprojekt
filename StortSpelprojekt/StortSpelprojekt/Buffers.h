@@ -14,6 +14,7 @@ struct cb_Object
 {
 	dx::XMFLOAT4X4 mvp;
 	dx::XMFLOAT4X4 world;
+	dx::XMFLOAT4X4 vp;
 
 };
 
@@ -45,10 +46,15 @@ struct cb_Scene
 	dx::XMFLOAT3 sunDirection;
 	float sunIntensity;
 	dx::XMFLOAT3 cameraPosition;
+
+	// new stuff
+	int id;
+	float factor;
+	dx::XMFLOAT2 padding10;
 };
 
 __declspec(align(16))
 struct cb_Skeleton
 {
-	dx::XMFLOAT4X4 bones[60]; //Can you use a structured buffer instead?
+	dx::XMFLOAT4X4 bones[60]; //Can you use a structured buffer instead? YES!
 };

@@ -32,11 +32,11 @@ private:
 	DirectX::XMVECTOR transV;
 	DirectX::XMVECTOR rotQ;
 	DirectX::XMMATRIX RT;
-	cb_Skeleton skeletonDataB;
+	
 	DirectX::XMMATRIX& Lerp(float elapsedTime, std::vector<Bone>& keys);
 public:
 	SkeletonAni();
-	cb_Skeleton& Makeglobal(float elapsedTime, const DirectX::XMMATRIX& globalParent, std::vector<Bone>& keys);
+	void Makeglobal(float elapsedTime, const DirectX::XMMATRIX& globalParent, std::vector<Bone>& keys);
 	std::string GetRootName();
 	unsigned int GetNrOfBones() const;
 	void SetUpOffsetsFromMatrices(std::vector<SkeletonOffsetsHeader>& offsets);
@@ -45,5 +45,8 @@ public:
 	void SetUpKeys(std::string boneName, std::vector<SkeletonKeysHeader>& keys);
 	cb_Skeleton& GetSkeletonData();
 	std::map<std::string, unsigned int>& getBoneIDMap();//This is useful in case you have multiple animations.
+	cb_Skeleton skeletonDataB;
+
+	
 };
 

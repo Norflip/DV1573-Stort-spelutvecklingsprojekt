@@ -12,6 +12,7 @@ cbuffer cb_Object : register(b0)
 {
 	row_major matrix mvp;
 	row_major matrix world;
+	row_major matrix vp;
 };
 
 cbuffer cb_Material : register(b1)
@@ -31,4 +32,7 @@ cbuffer cb_Scene : register(b2)
     float3 sunDirection;
     float sunIntensity;
 	float3 cameraPosition;
+
+	int id;
+	float factor;
 }

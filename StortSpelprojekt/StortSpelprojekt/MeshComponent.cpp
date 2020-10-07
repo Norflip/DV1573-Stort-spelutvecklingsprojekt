@@ -16,7 +16,6 @@ MeshComponent::~MeshComponent() {}
 
 void MeshComponent::Draw(Renderer* renderer, CameraComponent* camera)
 {
-
 	dx::XMFLOAT3 tmpPos;
 	dx::XMStoreFloat3(&tmpPos, GetOwner()->GetTransform().GetWorldPosition());
 
@@ -25,4 +24,5 @@ void MeshComponent::Draw(Renderer* renderer, CameraComponent* camera)
 		for (size_t i = 0; i < meshes.size(); i++)
 			renderer->Draw(meshes[i], materials[i], GetOwner()->GetTransform().GetWorldMatrix(), *camera);
 	}
+
 }

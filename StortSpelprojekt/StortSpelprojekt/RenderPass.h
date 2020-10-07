@@ -27,19 +27,22 @@ public:
 
 	void m_Initialize(ID3D11Device* device) override 
 	{
+		Shader shader;
 		shader.SetPixelShader(path, entry);
 		shader.SetVertexShader(L"Shaders/ScreenQuad_vs.hlsl");
 		shader.Compile(device);
+		material = Material(shader);
 	}
 
 	bool Pass(Renderer* renderer, RenderTexture& inTexture, RenderTexture& outTexture) override
 	{
-		renderer->DrawScreenQuad(shader);
-		return false;
+		renderer->DrawScreenQuad(material);
+		return true;
 	}
 
 private:
-	Shader shader;
+	Material material;
+
 	LPCWSTR path;
 	LPCSTR entry;
 };

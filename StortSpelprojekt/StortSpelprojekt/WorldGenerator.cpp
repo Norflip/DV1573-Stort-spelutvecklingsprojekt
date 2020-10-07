@@ -165,7 +165,7 @@ dx::XMINT2 WorldGenerator::GetDirection(dx::XMINT2 direction, float value, const
 {
 	dx::XMINT2 newDirection = direction;
 
-	// Filip: Kolla genom logiken här
+	// Filip: Kolla genom logiken hï¿½r
 	if (newDirection.y == 0)
 	{
 		if (value < 0.8f)
@@ -212,7 +212,7 @@ dx::XMFLOAT2 WorldGenerator::PathIndexToWorld(const dx::XMINT2& i) const
 
 Chunk* WorldGenerator::CreateChunk(ChunkType type, dx::XMINT2 index, const Path& path, ID3D11Device* device)
 {
-	// + 1 för height map
+	// + 1 fï¿½r height map
 	size_t size = CHUNK_SIZE + 1;
 
 	Noise::Settings settings (0);
@@ -274,15 +274,23 @@ Chunk* WorldGenerator::CreateChunk(ChunkType type, dx::XMINT2 index, const Path&
 	material.SetTexture(Texture(srv), 0, ShaderBindFlag::VERTEX);
 	material.SetTexture(Texture(nsrv), 1, ShaderBindFlag::VERTEX);
 
+	auto sampler = DXHelper::CreateSampler(D3D11_FILTER_MIN_MAG_MIP_LINEAR, D3D11_TEXTURE_ADDRESS_WRAP, device);
+	material.SetSampler(sampler, 0, ShaderBindFlag::PIXEL);
+	material.SetSampler(sampler, 0, ShaderBindFlag::VERTEX);
+
 	std::string name = "chunk " + std::to_string(index.x) + ", " + std::to_string(index.y);
 	Object* chunkObject = new Object(name, ObjectFlag::DEFAULT);
 
-	chunkObject->GetTransform().SetPosition(Chunk::IndexToWorld(index, -5.0f));
+	dx::XMVECTOR indexPos = Chunk::IndexToWorld(index, -5.0f);
+	indexPos.m128_f32[0] -= 40.0f;
+	indexPos.m128_f32[2] -= 120.0f;
+
+	chunkObject->GetTransform().SetPosition(indexPos);
 	chunkObject->AddComponent<MeshComponent>(chunkMesh, material);
 
 	Chunk* chunk = chunkObject->AddComponent<Chunk>(index, type);
 	chunk->SetHeightMap(heightMap);
-
+	
 	chunks.push_back(chunk);
 	chunkMap.insert({ HASH2D_I(index.x, index.y), chunk });
 

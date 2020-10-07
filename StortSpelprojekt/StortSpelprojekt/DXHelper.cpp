@@ -15,7 +15,7 @@ void DXHelper::CreateSwapchain(const Window& window, _Out_ ID3D11Device** device
 	DXGI_SWAP_CHAIN_DESC swapChainDescription;
 	ZeroMemory(&swapChainDescription, sizeof(DXGI_SWAP_CHAIN_DESC));
 
-	swapChainDescription.BufferCount = 2;	 // one back buffer
+	swapChainDescription.BufferCount = 2;	 // one back buffer???
 	swapChainDescription.BufferDesc.Width = width;
 	swapChainDescription.BufferDesc.Height = height;
 	swapChainDescription.BufferDesc.Format = DXGI_FORMAT_R8G8B8A8_UNORM;
@@ -36,19 +36,7 @@ void DXHelper::CreateSwapchain(const Window& window, _Out_ ID3D11Device** device
 	HRESULT resultCreateDevAndSwap = D3D11CreateDeviceAndSwapChain(nullptr, D3D_DRIVER_TYPE_HARDWARE, nullptr, swapchainFlags, featureLevel, 1, D3D11_SDK_VERSION, &swapChainDescription, swapchain, device, nullptr, context);
 	assert(SUCCEEDED(resultCreateDevAndSwap));
 
-
-	// DEFAULT RASTERIZER STATE
-	D3D11_RASTERIZER_DESC rasterizerDescription;
-	ZeroMemory(&rasterizerDescription, sizeof(D3D11_RASTERIZER_DESC));
-	rasterizerDescription.CullMode = D3D11_CULL_NONE;
-	rasterizerDescription.FillMode = D3D11_FILL_SOLID;
-	rasterizerDescription.DepthClipEnable = true;
-
-	ID3D11RasterizerState* rasterizerState;
-	ZeroMemory(&rasterizerState, sizeof(ID3D11RasterizerState));
-
-	HRESULT resultCreateRasterizer = (*device)->CreateRasterizerState(&rasterizerDescription, &rasterizerState);
-	assert(SUCCEEDED(resultCreateRasterizer));
+	ID3D11RasterizerState* rasterizerState = CreateRasterizerState(D3D11_CULL_BACK, D3D11_FILL_SOLID, *device);
 	(*context)->RSSetState(rasterizerState);
 
 }
@@ -83,6 +71,82 @@ void DXHelper::BindConstBuffer(ID3D11DeviceContext* context, ID3D11Buffer* buffe
 
 	if ((bflag & (int)ShaderBindFlag::GEOMETRY) != 0)
 		context->GSSetConstantBuffers(slot, 1, &buffer);
+
+
+}
+
+D3D11_MAPPED_SUBRESOURCE& DXHelper::BindInstanceBuffer(ID3D11DeviceContext* context, ID3D11Buffer* buffer)
+{
+	D3D11_MAPPED_SUBRESOURCE mappedData = {}; //zeroing out the memory like this.
+	
+
+	
+	context->Map(buffer, 0, D3D11_MAP_WRITE_DISCARD, 0, &mappedData);
+
+	return mappedData;
+
+	
+
+
+}
+
+void DXHelper::UnBindInstanceBuffer(ID3D11DeviceContext* context, ID3D11Buffer* buffer)
+{
+	context->Unmap(buffer, 0);
+}
+
+void DXHelper::CreateBlendState(ID3D11Device* device, ID3D11BlendState** blendOn, ID3D11BlendState** blendOff)
+{
+	HRESULT hr;
+	D3D11_BLEND_DESC blendDescOn;
+	ZeroMemory(&blendDescOn, sizeof(D3D11_BLEND_DESC));
+
+
+
+	blendDescOn.RenderTarget[0].BlendEnable = TRUE;
+	blendDescOn.RenderTarget[0].SrcBlend = D3D11_BLEND_SRC_ALPHA;
+	blendDescOn.RenderTarget[0].DestBlend = D3D11_BLEND_INV_SRC_ALPHA;
+	blendDescOn.RenderTarget[0].BlendOp = D3D11_BLEND_OP_ADD;
+	blendDescOn.RenderTarget[0].SrcBlendAlpha = D3D11_BLEND_ONE;
+	blendDescOn.RenderTarget[0].DestBlendAlpha = D3D11_BLEND_ZERO;
+	blendDescOn.RenderTarget[0].BlendOpAlpha = D3D11_BLEND_OP_ADD;
+	blendDescOn.RenderTarget[0].RenderTargetWriteMask = 0x0f;
+
+	D3D11_BLEND_DESC blendDescOff;
+	ZeroMemory(&blendDescOff, sizeof(D3D11_BLEND_DESC));
+
+	blendDescOff.RenderTarget[0].BlendEnable = false;
+	blendDescOff.RenderTarget[0].RenderTargetWriteMask = D3D11_COLOR_WRITE_ENABLE_ALL;
+
+	hr = device->CreateBlendState(&blendDescOn, blendOn);
+	assert(SUCCEEDED(hr));
+
+	hr = device->CreateBlendState(&blendDescOff, blendOff);
+	assert(SUCCEEDED(hr));
+
+	
+
+}
+
+void DXHelper::CreateRSState(ID3D11Device* device, ID3D11RasterizerState** cullBack, ID3D11RasterizerState** cullNone)
+{
+	// DEFAULT RASTERIZER STATE
+	D3D11_RASTERIZER_DESC rasterizerDescription;
+	ZeroMemory(&rasterizerDescription, sizeof(D3D11_RASTERIZER_DESC));
+	rasterizerDescription.CullMode = D3D11_CULL_BACK;
+	rasterizerDescription.FillMode = D3D11_FILL_SOLID;
+	rasterizerDescription.DepthClipEnable = true;
+
+
+
+
+	HRESULT resultCreateRasterizer = device->CreateRasterizerState(&rasterizerDescription, cullBack);
+	assert(SUCCEEDED(resultCreateRasterizer));
+
+	rasterizerDescription.CullMode = D3D11_CULL_NONE;
+
+	resultCreateRasterizer = device->CreateRasterizerState(&rasterizerDescription, cullNone);
+	assert(SUCCEEDED(resultCreateRasterizer));
 }
 
 RenderTexture DXHelper::CreateBackbuffer(size_t width, size_t height, ID3D11Device* device,  IDXGISwapChain* swapchain)
@@ -343,24 +407,74 @@ ID3D11ShaderResourceView* DXHelper::CreateTexture(unsigned char* buffer, size_t 
 
 ID3D11SamplerState* DXHelper::CreateSampler(D3D11_FILTER filter, D3D11_TEXTURE_ADDRESS_MODE mode, ID3D11Device* device)
 {
-	D3D11_SAMPLER_DESC samplerDescription;
-	ZeroMemory(&samplerDescription, sizeof(D3D11_SAMPLER_DESC));
-	samplerDescription.Filter = filter;
-	samplerDescription.AddressU = mode;
-	samplerDescription.AddressV = mode;
-	samplerDescription.AddressW = mode;
-	samplerDescription.ComparisonFunc = D3D11_COMPARISON_LESS_EQUAL;
-	samplerDescription.MinLOD = 0.0f;
-	samplerDescription.MaxLOD = D3D11_FLOAT32_MAX;
-	samplerDescription.MipLODBias = 0.0f;
-	samplerDescription.MaxAnisotropy = 0;
+	int hash = static_cast<int>(mode) ^ static_cast<int>(filter);
+	auto findSampler = m_samplerCache.find(hash);
 
-	for (size_t i = 0; i < 4; i++)
-		samplerDescription.BorderColor[i] = 1.0f;
+	if (findSampler == m_samplerCache.end())
+	{
+		D3D11_SAMPLER_DESC samplerDescription;
+		ZeroMemory(&samplerDescription, sizeof(D3D11_SAMPLER_DESC));
+		samplerDescription.Filter = filter;
+		samplerDescription.AddressU = mode;
+		samplerDescription.AddressV = mode;
+		samplerDescription.AddressW = mode;
+		samplerDescription.ComparisonFunc = D3D11_COMPARISON_LESS_EQUAL;
+		samplerDescription.MinLOD = 0.0f;
+		samplerDescription.MaxLOD = D3D11_FLOAT32_MAX;
+		samplerDescription.MipLODBias = 0.0f;
+		samplerDescription.MaxAnisotropy = 0;
 
-	ID3D11SamplerState* samplerState;
-	ZeroMemory(&samplerState, sizeof(ID3D11SamplerState));
-	device->CreateSamplerState(&samplerDescription, &samplerState);
+		for (size_t i = 0; i < 4; i++)
+			samplerDescription.BorderColor[i] = 1.0f;
 
-	return samplerState;
+		ID3D11SamplerState* samplerState;
+		ZeroMemory(&samplerState, sizeof(ID3D11SamplerState));
+		device->CreateSamplerState(&samplerDescription, &samplerState);
+
+		m_samplerCache.insert({ hash, samplerState });
+	}
+
+	return m_samplerCache[hash];
 }
+
+ID3D11RasterizerState* DXHelper::CreateRasterizerState(D3D11_CULL_MODE cullMode, D3D11_FILL_MODE fillMode, ID3D11Device* device)
+{
+	// DEFAULT RASTERIZER STATE
+	D3D11_RASTERIZER_DESC rasterizerDescription;
+	ZeroMemory(&rasterizerDescription, sizeof(D3D11_RASTERIZER_DESC));
+	rasterizerDescription.CullMode = cullMode;
+	rasterizerDescription.FillMode = fillMode;
+	rasterizerDescription.DepthClipEnable = true;
+
+	ID3D11RasterizerState* rasterizerState;
+	ZeroMemory(&rasterizerState, sizeof(ID3D11RasterizerState));
+
+	HRESULT resultCreateRasterizer = device->CreateRasterizerState(&rasterizerDescription, &rasterizerState);
+	assert(SUCCEEDED(resultCreateRasterizer));
+
+	return rasterizerState;
+}
+
+void DXHelper::CreateInstanceBuffer(ID3D11Device* device, size_t instanceCount, size_t instanceDataSize, void* instanceData, ID3D11Buffer** instanceBuffer)
+{
+
+
+	D3D11_BUFFER_DESC instanceBufferDescription;
+	ZeroMemory(&instanceBufferDescription, sizeof(D3D11_BUFFER_DESC));
+
+	instanceBufferDescription.Usage = D3D11_USAGE_DYNAMIC;
+	instanceBufferDescription.ByteWidth = static_cast<unsigned int>(instanceDataSize * instanceCount);
+	instanceBufferDescription.BindFlags = D3D11_BIND_VERTEX_BUFFER;
+	instanceBufferDescription.CPUAccessFlags = D3D11_CPU_ACCESS_WRITE;
+	instanceBufferDescription.MiscFlags = 0;
+
+	D3D11_SUBRESOURCE_DATA instanceBuffer_subResource;
+	ZeroMemory(&instanceBuffer_subResource, sizeof(D3D11_SUBRESOURCE_DATA));
+
+	instanceBuffer_subResource.pSysMem = instanceData;
+	HRESULT hr = device->CreateBuffer(&instanceBufferDescription, &instanceBuffer_subResource, instanceBuffer);
+
+	assert(SUCCEEDED(hr));
+
+}
+
