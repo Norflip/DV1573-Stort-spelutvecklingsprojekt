@@ -110,7 +110,9 @@ void Scene::Initialize(Renderer* renderer)
 	skyboxClass->GetThisObject()->AddFlag(ObjectFlag::NO_CULL);
 	//AddObject(skyboxClass->GetThisObject());
 
-	/*************************INSTANCING*******************/
+	
+
+	/* NEW TREE TEST INSTANCED*/
 	Shader instanceShader;
 	Shader alphaInstanceShader;
 
@@ -124,99 +126,68 @@ void Scene::Initialize(Renderer* renderer)
 	alphaInstanceShader.Compile(renderer->GetDevice());
 	
 	//0 base 1 branch 2 leaves
-	std::vector<Mesh> treeModels = ZWEBLoader::LoadMeshes(ZWEBLoadType::NoAnimation, "Models/tree.ZWEB", renderer->GetDevice());
+	std::vector<Mesh> stylizedTreeModel = ZWEBLoader::LoadMeshes(ZWEBLoadType::NoAnimation, "Models/tree.ZWEB", renderer->GetDevice());
 	//0 tree 1 leaves
-	std::vector<Material> treeMaterials = ZWEBLoader::LoadMaterials("Models/tree.ZWEB", instanceShader, renderer->GetDevice());
+	std::vector<Material> stylizedTreeMaterial = ZWEBLoader::LoadMaterials("Models/tree.ZWEB", instanceShader, renderer->GetDevice());
 
 	
-	treeMaterials[0].SetSampler(sampler, 0, ShaderBindFlag::PIXEL);
-	treeMaterials[1].SetSampler(sampler, 0, ShaderBindFlag::PIXEL);
+	stylizedTreeMaterial[0].SetSampler(sampler, 0, ShaderBindFlag::PIXEL);
+	stylizedTreeMaterial[1].SetSampler(sampler, 0, ShaderBindFlag::PIXEL);
 
-	treeMaterials[0].SetShader(instanceShader);
-	treeMaterials[1].SetShader(alphaInstanceShader);
+	stylizedTreeMaterial[0].SetShader(instanceShader);
+	stylizedTreeMaterial[1].SetShader(alphaInstanceShader);
 
-	size_t nrOfInstances =10;
-	std::vector<Mesh::InstanceData> treeInstances(nrOfInstances);
-	//std::vector<Mesh::InstanceData> treeBranchInstances(nrOfInstances);
-	std::vector<Mesh::InstanceData> treeLeaveInstances(nrOfInstances);
+	size_t nrOfInstancedStyTrees =5;
+	std::vector<Mesh::InstanceData> styTreesInstanced(nrOfInstancedStyTrees);
+	std::vector<Mesh::InstanceData> styLeavesInstanced(nrOfInstancedStyTrees);
 
 	
-
-	std::vector<unsigned int> r;
-	for (size_t i = 0; i < nrOfInstances; i++)
+	std::vector<unsigned int> randNr;
+	for (size_t i = 0; i < nrOfInstancedStyTrees; i++)
 	{
-		r.push_back(rand() % 10 + 1);
-	
+		randNr.push_back(rand() % 5 + 1);
 	}
 
 
-	for (size_t i = 0; i < nrOfInstances; i++)
-	{
+	for (size_t i = 0; i < nrOfInstancedStyTrees; i++)
+	{		
+		dx::XMStoreFloat4x4(&styLeavesInstanced[i].instanceWorld, dx::XMMatrixScaling(0.5f, 0.5f, 0.5f) * dx::XMMatrixTranslation((i + 6 * randNr[i]) + stylizedTreeModel[1].GetT().x, 0 + stylizedTreeModel[1].GetT().y, (i + 1 * randNr[i]) + stylizedTreeModel[1].GetT().z));
+		styLeavesInstanced[i].instancePosition = dx::XMFLOAT3((i + 1 * randNr[i]) + stylizedTreeModel[1].GetT().x, 0 + stylizedTreeModel[1].GetT().y, (i + 1 * randNr[i]) + stylizedTreeModel[1].GetT().z);
+
+		dx::XMStoreFloat4x4(&styTreesInstanced[i].instanceWorld,dx::XMMatrixScaling(0.5f, 0.5f, 0.5f) * dx::XMMatrixTranslation((i + 6 * randNr[i]) + stylizedTreeModel[0].GetT().x, 0 + stylizedTreeModel[0].GetT().y, (i + 1 * randNr[i]) + stylizedTreeModel[0].GetT().z));
+		styTreesInstanced[i].instancePosition = dx::XMFLOAT3((i + 1 * randNr[i]) + stylizedTreeModel[0].GetT().x, 0 + stylizedTreeModel[0].GetT().y, (i + 1 * randNr[i]) + stylizedTreeModel[0].GetT().z);
+	}
+
+	stylizedTreeModel[0].CreateInstanceBuffer(renderer->GetDevice(), styTreesInstanced);
+	stylizedTreeModel[1].CreateInstanceBuffer(renderer->GetDevice(), styLeavesInstanced);
 		
+	stylizedTreeModel[0].SetInstanceNr(nrOfInstancedStyTrees);
+	stylizedTreeModel[1].SetInstanceNr(nrOfInstancedStyTrees);
 
-		dx::XMStoreFloat4x4(&treeLeaveInstances[i].instanceWorld, dx::XMMatrixScaling(0.25f, 0.25f, 0.25f) * dx::XMMatrixTranslation((i + 1 * r[i]) + treeModels[1].GetT().x, 0 + treeModels[1].GetT().y, (i + 1 * r[i]) + treeModels[1].GetT().z));
-		treeLeaveInstances[i].instancePosition = dx::XMFLOAT3((i + 1 * r[i]) + treeModels[1].GetT().x, 0 + treeModels[1].GetT().y, (i + 1 * r[i]) + treeModels[1].GetT().z);
+	Object* styTreeBase = new Object("treeBase");
+	Object* styLeavesBase = new Object("leaves");
 
-		/*dx::XMStoreFloat4x4(&treeLeaveInstances[i].instanceWorld, dx::XMMatrixScaling(0.25f, 0.25f, 0.25f) * dx::XMMatrixTranslation((i + 1 * r[i]) + treeModels[2].GetT().x, 0 + treeModels[2].GetT().y, (i + 1 * r[i]) + treeModels[2].GetT().z));
-		treeLeaveInstances[i].instancePosition = dx::XMFLOAT3((i + 1 * r[i]) + treeModels[2].GetT().x, 0 + treeModels[2].GetT().y, (i + 1 * r[i]) + treeModels[2].GetT().z);*/
+	stylizedTreeMaterial[1].SetTransparent(true);
+	styTreeBase->AddComponent<InstancedMeshComponent>(stylizedTreeModel[0], stylizedTreeMaterial[0]);
+	styLeavesBase->AddComponent<InstancedMeshComponent>(stylizedTreeModel[1], stylizedTreeMaterial[1]);
 
-		dx::XMStoreFloat4x4(&treeInstances[i].instanceWorld,dx::XMMatrixScaling(0.25f, 0.25f, 0.25f) * dx::XMMatrixTranslation((i + 1 * r[i]) + treeModels[0].GetT().x, 0 + treeModels[0].GetT().y, (i + 1 * r[i]) + treeModels[0].GetT().z));
-		treeInstances[i].instancePosition = dx::XMFLOAT3((i + 1 * r[i]) + treeModels[0].GetT().x, 0 + treeModels[0].GetT().y, (i + 1 * r[i]) + treeModels[0].GetT().z);
-	}
-	treeModels[0].CreateInstanceBuffer(renderer->GetDevice(), treeInstances );
+	styLeavesBase->AddFlag(ObjectFlag::NO_CULL);
+		
+	AddObject(styTreeBase);
+	AddObject(styLeavesBase);
 
-	//treeModels[1].CreateInstanceBuffer(renderer->GetDevice(), treeBranchInstances );
+	/* NEW TREE TEST INSTANCED*/
 
-
-	treeModels[1].CreateInstanceBuffer(renderer->GetDevice(), treeLeaveInstances);
 
 	
 
-	treeModels[0].SetInstanceNr(nrOfInstances);
-
-	treeModels[1].SetInstanceNr(nrOfInstances);
 
 
-	//treeModels[2].SetInstanceNr(nrOfInstances);
-
-	Object* treeBase = new Object("treeBase");
-
-	//Object* treeBranches = new Object("treeBranches");
-
-	Object* leaves = new Object("leaves");
-
-	treeMaterials[1].SetTransparent(true);
-	treeBase->AddComponent<InstancedMeshComponent>(treeModels[0], treeMaterials[0]);
-	//treeBranches->AddComponent<InstancedMeshComponent>(treeModels[1], treeMaterials[0]);
-	leaves->AddComponent<InstancedMeshComponent>(treeModels[1], treeMaterials[1]);
-
-	leaves->AddFlag(ObjectFlag::NO_CULL);
-	
-	
 
 	
-	AddObject(treeBase);
 
-	//AddObject(treeBranches);
-
-	AddObject(leaves);
-	/*************************INSTANCING****************/
+	/*************************INSTANCING*******************/
 	
-	
-	/*************************SKELETON****************/
-	//OrchBody monsterAndIdle
-	std::vector<Mesh> monsterEmilMesh = ZWEBLoader::LoadMeshes(ZWEBLoadType::SkeletonAnimation, "Models/monsterAndIdle.ZWEB", renderer->GetDevice());
-	std::vector<Material> monsterEmilMat = ZWEBLoader::LoadMaterials("Models/monsterAndIdle.ZWEB", shader, renderer->GetDevice());
-	//OrchAnimation monsterAndIdleAni
-	SkeletonAni monsterEmilIdle = ZWEBLoader::LoadSkeletonOnly("Models/monsterAndIdleAni.ZWEB", monsterEmilMesh[0].GetBoneIDS());
-	monsterEmilMat[0].SetShader(skeletonShader);
-	
-	Object* monsterEmil = new Object("monsterEmil");
-
-	monsterEmil->GetTransform().SetScale({ 0.125f, 0.125f, 0.125f });
-
-	monsterEmil->GetTransform().SetPosition({ 0.0f/*+monsterEmilMesh[0].GetT().x*/, 0.0f /*+ monsterEmilMesh[0].GetT().y*/, 0.0f /*+ monsterEmilMesh[0].GetT().z*/ });
-	monsterEmil->GetTransform().SetRotation({ /*67.50*/0.0f, 0.0f,0.0f });
 	
 
 	monsterEmil->AddComponent<SkeletonMeshComponent>(monsterEmilMesh[0], monsterEmilMat[0])->SetAnimationTrack(monsterEmilIdle, StateMachine::IDLE);
