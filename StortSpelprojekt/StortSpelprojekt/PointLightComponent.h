@@ -10,7 +10,7 @@ class PointLightComponent : public Component
 {
 public:
 
-	PointLightComponent(ID3D11Device* device, ID3D11DeviceContext* context);
+	PointLightComponent();
 	PointLightComponent(dx::XMFLOAT4 lightColor, float range , dx::XMFLOAT3 attenuation, ID3D11Device* device, ID3D11DeviceContext* context);
 	virtual ~PointLightComponent();
 
@@ -25,11 +25,10 @@ public:
 
 private:
 
-	s_PointLight lightData;
-	ID3D11Buffer* lightBuffer;
-	/*dx::XMFLOAT4 lightColor;
+	dx::XMFLOAT4 lightColor;
+	dx::XMFLOAT3 lightPosition;
 	float range;
-	dx::XMFLOAT3 attenuation;*/
+	dx::XMFLOAT3 attenuation;
 	float elapsedTime;
 
 };

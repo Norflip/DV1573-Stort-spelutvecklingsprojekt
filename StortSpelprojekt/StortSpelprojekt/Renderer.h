@@ -8,7 +8,7 @@
 #include "Texture.h"
 #include "Material.h"
 #include "CameraComponent.h"
-#include "PointLightComponent.h"
+#include "LightManager.h"
 
 namespace dx = DirectX;
 

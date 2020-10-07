@@ -98,7 +98,7 @@ void Scene::Initialize(Renderer* renderer)
 	dx::XMFLOAT3 lightTranslation = dx::XMFLOAT3(15.0f, -5.0f, -5.0f);
 	testPointLight->GetTransform().SetPosition(dx::XMLoadFloat3(&lightTranslation));
 	AddObject(testPointLight);
-	testPointLight->AddComponent<PointLightComponent>(renderer->GetDevice(), renderer->GetContext());
+	testPointLight->AddComponent<PointLightComponent>();
 
 
 	Shader skyboxShader;

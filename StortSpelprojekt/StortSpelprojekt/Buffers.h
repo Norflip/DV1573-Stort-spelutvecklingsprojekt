@@ -32,7 +32,7 @@ __declspec(align(16))
 struct s_PointLight
 {
 	dx::XMFLOAT4 lightColor;
-	dx::XMFLOAT3 lightPosition;
+	dx::XMVECTOR lightPosition;
 	float range;
 	dx::XMFLOAT3 attenuation;
 };
@@ -40,16 +40,15 @@ struct s_PointLight
 struct cb_Lights
 {
 	s_PointLight pointLights/*[POINT_LIGHT_COUNT]*/;
-
+	int nrOfPointLights;
+	dx::XMFLOAT3 sunDirection;
+	float sunIntensity;
+	dx::XMFLOAT3 cameraPosition;
 };
 
 __declspec(align(16))
 struct cb_Scene
 {
-	int nrOfPointLights;
-	dx::XMFLOAT3 sunDirection;
-	float sunIntensity;
-	dx::XMFLOAT3 cameraPosition;
 };
 
 __declspec(align(16))
