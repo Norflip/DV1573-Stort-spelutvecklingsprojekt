@@ -1,6 +1,6 @@
 #include "GrassComponent.h"
 
-GrassComponent::GrassComponent(ID3D11Device* device, std::vector<Mesh::Vertex>& vertex, std::vector<unsigned int>& index, Shader& shader, dx::XMMATRIX& model)
+GrassComponent::GrassComponent(ID3D11Device* device, std::vector<Mesh::Vertex>& vertex, std::vector<unsigned int>& index, Shader& shader)
 	:grassMesh(device, vertex, index, D3D11_PRIMITIVE_TOPOLOGY_1_CONTROL_POINT_PATCHLIST), grassMat(shader)
 {
 	height.LoadTexture(device, L"Textures/grassHeight.png");
@@ -21,7 +21,7 @@ GrassComponent::GrassComponent(ID3D11Device* device, std::vector<Mesh::Vertex>& 
 	grassMat.SetSampler(sampler, 0, ShaderBindFlag::HULL);
 	grassMat.SetSampler(sampler, 0,  ShaderBindFlag::DOMAINS );
 	grassMat.SetSampler(sampler, 0,   ShaderBindFlag::PIXEL);
-	this->model = model;
+	
 	
 
 }
@@ -158,15 +158,12 @@ void GrassComponent::InitializeGrass(std::vector<Mesh::Vertex>& vertices, std::v
 void GrassComponent::Draw(Renderer* renderer, CameraComponent* camera)
 {
 	
-	renderer->DrawGrass(*camera, grassMesh, grassMat, model);
+	renderer->DrawGrass(*camera, grassMesh, grassMat, this->GetOwner()->GetTransform().GetWorldMatrix());
 	
 	
 }
 
-void GrassComponent::SetModel(dx::XMMATRIX& model)
-{
-	this->model = model;
-}
+
 
 Material& GrassComponent::GetMaterial()
 {

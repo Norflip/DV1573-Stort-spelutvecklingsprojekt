@@ -17,7 +17,7 @@ class GrassComponent :
     public Component
 {
 public:
-	GrassComponent(ID3D11Device* device, std::vector<Mesh::Vertex>& vertex, std::vector<unsigned int>& index, Shader& shader, dx::XMMATRIX& model);
+	GrassComponent(ID3D11Device* device, std::vector<Mesh::Vertex>& vertex, std::vector<unsigned int>& index, Shader& shader);
 	virtual ~GrassComponent();
 
 	void InitializeGrass(std::vector<Mesh::Vertex>& vertices, std::vector<unsigned int>& indices, ID3D11Device* device, ID3D11DeviceContext* context);
@@ -42,6 +42,6 @@ private:
 	ID3D11Buffer* grassBCBfr = nullptr;
 	ID3D11ShaderResourceView* grassBCSRV = nullptr;
 	ID3D11Buffer* grassCBuffer = nullptr;
-	dx::XMMATRIX model;
+	
 };
 

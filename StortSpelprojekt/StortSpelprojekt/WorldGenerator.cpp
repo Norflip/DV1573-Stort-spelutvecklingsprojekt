@@ -13,8 +13,7 @@ WorldGenerator::~WorldGenerator()
 
 	chunks.clear();
 
-	for (size_t i = 0; i < grassComponents.size(); i++)
-		delete grassComponents[i]->GetOwner();
+
 }
 
 void WorldGenerator::InitalizeGrass(ID3D11Device* device, ID3D11DeviceContext* context)
@@ -194,10 +193,7 @@ void WorldGenerator::Draw(Renderer* renderer, CameraComponent* camera)
 		(*i)->GetOwner()->Draw(renderer, camera);
 	}
 
-	for (auto i = grassComponents.begin(); i < grassComponents.end(); i++)
-	{
-		(*i)->Draw(renderer, camera);
-	}
+
 	
 }
 
@@ -372,20 +368,22 @@ Chunk* WorldGenerator::CreateChunk(ChunkType type, dx::XMINT2 index, const Path&
 	chunkObject->GetTransform().SetPosition(indexPos);
 	chunkObject->AddComponent<MeshComponent>(chunkMesh, material);
 
-	/****************************EMIL KOD*/
-	dx::XMMATRIX chunkModel = chunkObject->GetTransform().GetLocalWorldMatrix();
-	Object* grassObject = new Object("grass" + std::to_string(index.x) + ", " + std::to_string(index.y), ObjectFlag::DEFAULT);
-	GrassComponent* grassComponent = grassObject->AddComponent<GrassComponent>(device, grassV, grassI, grassShader, chunkModel);
 
-	grassComponent->GetMaterial().SetTexture(Texture(srv), 6, ShaderBindFlag::DOMAINS);
-
-	grassComponents.push_back(grassComponent);
-
-	/****************************EMIL KOD*/
 	
 	Chunk* chunk = chunkObject->AddComponent<Chunk>(index, type);
 
-	
+	/****************************EMIL KOD*/
+
+
+	GrassComponent* grassComponent = chunkObject->AddComponent<GrassComponent>(device, grassV, grassI, grassShader);
+
+	grassComponent->GetMaterial().SetTexture(Texture(srv), 6, ShaderBindFlag::DOMAINS);
+
+
+	grassComponents.push_back(grassComponent);
+
+
+		/****************************EMIL KOD*/
 
 	chunk->SetHeightMap(heightMap);
 	
