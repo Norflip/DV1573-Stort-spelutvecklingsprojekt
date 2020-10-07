@@ -22,10 +22,10 @@ void Scene::Initialize(Renderer* renderer)
 
 	Window* window = renderer->GetOutputWindow();
 	spriteBatch = new DirectX::SpriteBatch(renderer->GetContext());
-	GUISprite* normalSprite = new GUISprite(*renderer, "Textures/EquipmentBox.png", 0, 0, DrawDirection::BottomLeft);
-	GUISprite* buttonSprite = new GUISprite(*renderer, "Textures/EquipmentBox.png", 0, 0, DrawDirection::BottomRight);
-	GUISprite* normalSprite2 = new GUISprite(*renderer, "Textures/EquipmentBox.png", 0, 0, DrawDirection::TopLeft);
-	GUISprite* buttonSprite2 = new GUISprite(*renderer, "Textures/EquipmentBox.png", 0, 0, DrawDirection::TopRight);
+	GUISprite* normalSprite = new GUISprite(*renderer, "Textures/EquipmentBox.png", 0, 0, DrawDirection::BottomLeft, ClickFunction::Clickable);
+	GUISprite* buttonSprite = new GUISprite(*renderer, "Textures/EquipmentBox.png", 0, 0, DrawDirection::BottomRight, ClickFunction::Clickable);
+	GUISprite* normalSprite2 = new GUISprite(*renderer, "Textures/EquipmentBox.png", 0, 0, DrawDirection::TopLeft, ClickFunction::Clickable);
+	GUISprite* buttonSprite2 = new GUISprite(*renderer, "Textures/EquipmentBox.png", 0, 0, DrawDirection::TopRight, ClickFunction::Clickable);
 	GUIFont* fpsDisplay = new GUIFont(*renderer, "test", 300, 300);
 	normalSprite->SetActive();
 
@@ -119,9 +119,9 @@ void Scene::Initialize(Renderer* renderer)
 	testSkybox = new Object("skybox", ObjectFlag::NO_CULL | ObjectFlag::ENABLED);
 	testSkybox->AddComponent<MeshComponent>(zwebSkybox, zwebSkyboxMaterials);
 
-	Log::Add("PRINTING SCENE HIERARCHY ----");
+	/*Log::Add("PRINTING SCENE HIERARCHY ----");
 	PrintSceneHierarchy(root, 0);
-	Log::Add("----");
+	Log::Add("----");*/
 }
 
 void Scene::Update(const float& deltaTime)
@@ -129,6 +129,7 @@ void Scene::Update(const float& deltaTime)
 	input.UpdateInputs();
 	root->Update(deltaTime);
 	GameClock::Instance().Update();
+	guiManager->UpdateAll();
 }
 
 void Scene::FixedUpdate(const float& fixedDeltaTime)

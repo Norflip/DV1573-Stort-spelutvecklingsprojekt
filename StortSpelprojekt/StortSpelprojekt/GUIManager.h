@@ -6,6 +6,7 @@
 #include "Renderer.h"
 #include <string>
 
+#include "Input.h"
 namespace dx = DirectX;
 
 
@@ -17,6 +18,7 @@ public:
 	virtual ~GUIObject() {};
 	virtual void Draw(DirectX::SpriteBatch*) = 0;
 	virtual void SetPosition(float x, float y) = 0;
+	virtual void Update() = 0;
 
 private:
 	std::string name;
@@ -35,6 +37,9 @@ public:
 	GUIObject* GetGUIObject(std::string name);
 	void RemoveGUIObject(std::string name);
 	void DrawAll();
+
+	void UpdateAll();
+
 private:
 	dx::SpriteBatch* spriteBatch;
 	Renderer* renderer;

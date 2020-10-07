@@ -15,6 +15,7 @@ public:
 	void SetFontSize(DirectX::XMFLOAT2 fontSize);
 	void SetFontColor(DirectX::XMVECTORF32 fontColor);
 	std::string GetString() const;
+	void Update() {};
 
 private:
 	Renderer* renderer;

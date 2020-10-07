@@ -19,12 +19,17 @@ enum DrawDirection : uint32_t
 	BottomRight = TopRight | BottomLeft,
 };
 
+enum ClickFunction
+{
+	Clickable = 0,
+	NotClickable = 1,
+};
 
 class GUISprite :public GUIObject
 {
 
 public:
-	GUISprite(Renderer& renderer, std::string, float xPos, float yPos , DrawDirection dir);
+	GUISprite(Renderer& renderer, std::string, float xPos, float yPos , DrawDirection dir, ClickFunction clickFunc);
 	~GUISprite();
 	void Draw(DirectX::SpriteBatch*) override;
 	void Draw();
@@ -34,10 +39,16 @@ public:
 	void SetActiveColor(dx::XMVECTOR vector = dx::XMVectorSet(0.6f, 0.6f, 1.3f, 1.0f));
 	bool GetActive() { return this->active; };
 	void SetDDSSprite(ID3D11Device* device, std::string spriteFile); // no dds yet
+	
+	bool IsClicked();
+	bool IsMouseOver();
+	void Update();
+
 private:
 	bool active = false;
 	std::string filePath;
 	float xPos, yPos;
+	float relativeXPos, relativeYPos;
 	float width, height;
 	float xScale, yScale;
 	float rotation;
@@ -48,4 +59,5 @@ private:
 	DrawDirection direction;
 	void setPos(float xPos, float yPos, DrawDirection dir);
 
+	ClickFunction clickFunc;
 };

@@ -120,7 +120,6 @@ void WorldGenerator::Generate(const SaveState& levelState, ID3D11Device* device)
 		indexCount++;
 	}
 
-	Log::Add("Created " + std::to_string(chunkCount) + " chunks with " + std::to_string(collisionCount) + " collisions.");
 }
 
 void WorldGenerator::Draw(Renderer* renderer, CameraComponent* camera)

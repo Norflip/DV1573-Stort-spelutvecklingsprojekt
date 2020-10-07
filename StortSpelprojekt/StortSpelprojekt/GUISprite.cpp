@@ -1,11 +1,11 @@
 #include "GUISprite.h"
 
 
-GUISprite::GUISprite(Renderer& renderer , std::string filePath, float xPos, float yPos, DrawDirection dir )
+GUISprite::GUISprite(Renderer& renderer , std::string filePath, float xPos, float yPos, DrawDirection dir, ClickFunction clickFunc)
 {
 	this->renderer = &renderer;
 	// position
-
+	this->clickFunc = clickFunc;
 	//Scale
 	this->xScale = 1.0;
 	this->yScale = 1.0;
@@ -73,7 +73,7 @@ void GUISprite::Draw(DirectX::SpriteBatch* test)
 
 void GUISprite::Draw()
 {
-		spriteBatch->Draw(SRV, this->position, nullptr, this->baseColor, rotation, origin, scale, DirectX::SpriteEffects::SpriteEffects_None, 0.0f);	
+	spriteBatch->Draw(SRV, this->position, nullptr, this->baseColor, rotation, origin, scale, DirectX::SpriteEffects::SpriteEffects_None, 0.0f);	
 }
 
 void GUISprite::SetPosition(float xPos, float yPos)
@@ -109,6 +109,30 @@ void GUISprite::SetDDSSprite(ID3D11Device* device,  std::string spriteFile)
 	//assert(SUCCEEDED(result));
 }
 
+bool GUISprite::IsClicked()
+{
+	if (clickFunc == ClickFunction::Clickable && IsMouseOver() && Input::Instance().GetLeftMouseKeyDown())
+		return true;
+	else
+		return false;
+}
+
+bool GUISprite::IsMouseOver()
+{
+	if ((Input::Instance().GetMousePos().x > xPos && Input::Instance().GetMousePos().x < xPos + width) && (Input::Instance().GetMousePos().y > yPos && Input::Instance().GetMousePos().y < yPos + height))
+	{
+		return true;
+	}
+	else
+		return false;
+}
+
+void GUISprite::Update()
+{
+	if (clickFunc == ClickFunction::Clickable && IsMouseOver() && Input::Instance().GetLeftMouseKeyDown())
+		SetPosition(500, 500);
+}
+
 void GUISprite::setPos(float xPos, float yPos, DrawDirection dir)
 {
 	switch (dir)
@@ -116,23 +140,33 @@ void GUISprite::setPos(float xPos, float yPos, DrawDirection dir)
 	case Default:
 		this->xPos = xPos;
 		this->yPos = yPos;
+		this->relativeXPos = xPos;
+		this->relativeYPos = yPos;
 		break;
 	case TopRight:
-		this->xPos = renderer->GetOutputWindow()->GetWidth() - xPos - width;
+		this->xPos = renderer->GetOutputWindow()->GetWidth() - width * 2 - xPos;
 		this->yPos = yPos;
+		this->relativeXPos = renderer->GetOutputWindow()->GetWidth() - xPos - width;
+		this->relativeYPos = yPos;
 		break;
 	case BottomLeft:
 		this->xPos = xPos;
-		this->yPos = renderer->GetOutputWindow()->GetHeight() - yPos - height;
+		this->yPos = renderer->GetOutputWindow()->GetHeight() - height * 2 - yPos;
+		this->relativeXPos = xPos;
+		this->relativeYPos = renderer->GetOutputWindow()->GetHeight() - yPos - height;
 		break;
 	case BottomRight:
-		this->xPos = renderer->GetOutputWindow()->GetWidth() - xPos - width;
-		this->yPos = renderer->GetOutputWindow()->GetHeight() - yPos - height;
+		this->xPos = renderer->GetOutputWindow()->GetWidth() - width * 2 - xPos;
+		this->yPos = renderer->GetOutputWindow()->GetHeight() - height * 2 - yPos;
+		this->relativeXPos = renderer->GetOutputWindow()->GetWidth() - xPos - width;
+		this->relativeYPos = renderer->GetOutputWindow()->GetHeight() - yPos - height;
 		break;
 	default:
 		this->xPos = xPos;
 		this->yPos = yPos;
+		this->relativeXPos = xPos;
+		this->relativeYPos = yPos;
 		break;
 	}
-	this->position = dx::XMVectorSet(this->xPos, this->yPos, 0, 0);
+	this->position = dx::XMVectorSet(this->relativeXPos, this->relativeYPos, 0, 0);
 }

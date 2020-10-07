@@ -44,3 +44,11 @@ void GUIManager::DrawAll()
 		i.second->Draw(spriteBatch);
 	spriteBatch->End();
 }
+
+void GUIManager::UpdateAll()
+{
+	for (auto i : GUIObjects)
+	{
+		i.second->Update();
+	}
+}
