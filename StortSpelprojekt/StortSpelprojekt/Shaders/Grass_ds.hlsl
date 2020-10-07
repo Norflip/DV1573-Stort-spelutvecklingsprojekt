@@ -20,11 +20,7 @@ DS_OUTPUT_GRASS main(HS_CONSTANT_DATA_OUTPUT_GRASS input,
 {
 	DS_OUTPUT_GRASS output = (DS_OUTPUT_GRASS)0;
 
-	float h = chunkData.SampleLevel(LinearSampler, uv, 0).r;
-	float y = h * 10.0f;
-
 	uint currentStrand = (int)(uv.y * input.edgeTesselation[0] + 0.5);
-	
 
 	float3 BCC = BCCoordinates[currentStrand].xyz;
 
@@ -33,13 +29,29 @@ DS_OUTPUT_GRASS main(HS_CONSTANT_DATA_OUTPUT_GRASS input,
 	uint v2 = (uint)grassIndices[index + 1].x;
 	uint v3 = (uint)grassIndices[index + 2].x;
 
+	float2 uv1 = grassStraws[v1].uv.xy;
+	float2 uv2 = grassStraws[v2].uv.xy;
+	float2 uv3 = grassStraws[v3].uv.xy;
+
+
+	float2 uvPlane = BCC.x * uv1 + BCC.y * uv2 + BCC.z * uv3;
+
+
+	float h = chunkData.SampleLevel(LinearSampler, uvPlane, 0).r;
+	float y = h * 10.0f;
+
+	
+	
+
+	
+
 	float3 position1 = grassStraws[v1].position.xyz;
 	float3 position2 = grassStraws[v2].position.xyz;
 	float3 position3 = grassStraws[v3].position.xyz;
 
-	position1.y = y;
-	position2.y = y;
-	position3.y = y;
+	position1.y += y;
+	position2.y += y;
+	position3.y += y;
 
 
 
@@ -52,18 +64,13 @@ DS_OUTPUT_GRASS main(HS_CONSTANT_DATA_OUTPUT_GRASS input,
 	
 	float3 normal = BCC.x * normal1 + BCC.y * normal2 + BCC.z * normal3;
 
-	float2 uv1 = grassStraws[v1].uv.xy;
-	float2 uv2 = grassStraws[v2].uv.xy;
-	float2 uv3 = grassStraws[v3].uv.xy;
-
 	
-	float2 uvPlane = BCC.x * uv1 + BCC.y * uv2 + BCC.z * uv3;
 
 	
 	float4 colour = grassColorMap.SampleLevel(LinearSampler, uvPlane, 0);
 
 
-	output.bladeHeight = grassHeightMap.SampleLevel(LinearSampler, uvPlane, 0).r *2.0f;/*width*/
+	output.bladeHeight = grassHeightMap.SampleLevel(LinearSampler, uvPlane, 0).r *1.0f;
 	output.height = uv.x * output.bladeHeight;
 
 	output.expandVector = normalize(pos - position1);
@@ -73,7 +80,7 @@ DS_OUTPUT_GRASS main(HS_CONSTANT_DATA_OUTPUT_GRASS input,
 
 	float noiseSample = noiseMap.SampleLevel(LinearSampler, 4 * uvPlane, 0).r;
 
-	float disp = 0.4f * pow(uv.x, 1) * (noiseSample + 0.125 * abs(sin(time + noiseSample))); /*length*/ 
+	float disp = 1.0f * pow(uv.x, 1) * (noiseSample + 0.1 * abs(sin(/*time*/ 1.0f+ noiseSample)));
 
 	output.position = float4(pos.xyz, 1.0f);
 	output.displacement = float3(0, disp, 0);

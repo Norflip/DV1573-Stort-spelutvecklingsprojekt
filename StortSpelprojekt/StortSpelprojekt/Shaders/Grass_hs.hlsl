@@ -7,7 +7,7 @@
 Texture2D grassHeightMap : register (t1);
 SamplerState linearSampler : register(s0);
 
-//PatchTess PatchHS(InputPatch<VS_CONTROL_POINT_OUTPUT, 3> patch, uint patchID : SV_PrimitiveID)
+
 
 // Patch Constant Function
 HS_CONSTANT_DATA_OUTPUT_GRASS hsPerIsoLinePatch(InputPatch<VS_OUTPUT_GRASS,1> input, uint i : SV_PrimitiveID)
@@ -16,8 +16,8 @@ HS_CONSTANT_DATA_OUTPUT_GRASS hsPerIsoLinePatch(InputPatch<VS_OUTPUT_GRASS,1> in
 
 
 
-	output.edgeTesselation[1] = (uint)input[0].tessFactor * fmod(1, 64); //4
-	output.edgeTesselation[0] = (uint)input[0].tessFactor * fmod(1, 64); //max times max per triangle fmod
+	output.edgeTesselation[1] = (input[0].tessFactor * fmod(1, 64)); //4
+	output.edgeTesselation[0] = (input[0].tessFactor * fmod(1, 64)); //max times max per triangle fmod
 	
 	
 
@@ -34,7 +34,7 @@ HS_CONSTANT_DATA_OUTPUT_GRASS hsPerIsoLinePatch(InputPatch<VS_OUTPUT_GRASS,1> in
 	float3 normal = (normal1 + normal2 + normal2) / 3.0f;
 	float3 viewNormal = mul(float4(normal, 0.0f), wv).xyz;
 
-	if (viewNormal.z >= 0.3)
+	if (viewNormal.z >= 0.3f)
 	{
 		output.edgeTesselation[0] = 0;
 	}
@@ -66,6 +66,7 @@ HS_OUTPUT_GRASS main(InputPatch<VS_OUTPUT_GRASS, 1> p,
 	HS_OUTPUT_GRASS output = (HS_OUTPUT_GRASS)0;
 	output.position = p[i].worldPosition;
 	output.tex = p[i].uv;
+	
 	return output;
 }
 

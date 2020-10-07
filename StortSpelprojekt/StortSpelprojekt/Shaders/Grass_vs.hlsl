@@ -19,7 +19,7 @@ VS_OUTPUT_GRASS main(VS_INPUT input)
 
 	float tess = saturate((50.0f - d) / (50.0f - 1.0f));
 
-	output.tessFactor = 0.0f +tess * (4.0f - 0.0f);
+	output.tessFactor = 0.0f + tess * (4.0f - 0.0f);
 
 	
 	
