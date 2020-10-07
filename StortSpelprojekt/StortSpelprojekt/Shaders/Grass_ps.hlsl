@@ -3,7 +3,7 @@
 
 float4 main(GS_OUTPUT_GRASS input) : SV_TARGET
 {
-	float3 L = sunDirection;
+	/*float3 L = sunDirection;
 	float3 T = input.grassDirection;
 
 	float3 pos2Eye = normalize(cameraPosition - input.posToEye);
@@ -20,9 +20,9 @@ float4 main(GS_OUTPUT_GRASS input) : SV_TARGET
 	float sinTH = sqrt(1.0 - dotTH * dotTH);
 	float dirAtten = smoothstep(-1,0,dotTH);
 
-	float3 specular = 0.2 * dirAtten * pow(sinTH, 300) * float3(0.8,0.5,0);
+	float3 specular = 0.2 * dirAtten * pow(sinTH, 300) * float3(0.8,0.5,0);*/ // can send in a color through a buffer to change the grass with the light.
 
-	float3 colour = input.colour.rgb * lerp(0.5, 1.0, input.tex.y) + specular + fresnel * float3(0.9,0.9,0);
+	float3 colour = input.colour.rgb;// *lerp(0.5, 1.0, input.tex.y) + specular + fresnel * float3(0.9, 0.9, 0);
 
 	return float4(colour,1);
 }

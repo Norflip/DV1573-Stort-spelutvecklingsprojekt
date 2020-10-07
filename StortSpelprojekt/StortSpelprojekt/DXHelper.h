@@ -17,7 +17,9 @@ enum class ShaderBindFlag
 	NONE = 0,
 	VERTEX = 1 << 0,
 	PIXEL = 1 << 1,
-	GEOMETRY = 1 << 2
+	GEOMETRY = 1 << 2,
+	HULL = 1 << 3,
+	DOMAINS = 1 << 4
 };
 
 DEFINE_ENUM_FLAG_OPERATORS(ShaderBindFlag);
@@ -49,6 +51,8 @@ namespace DXHelper
 {
 	static std::unordered_map<int, ID3D11SamplerState*> m_samplerCache;
 
+	void bindNullShaders(ID3D11DeviceContext* context);
+
 	void CreateSwapchain(const Window& window, ID3D11Device** device, ID3D11DeviceContext** context, IDXGISwapChain** swapchain, ID3D11RasterizerState** cullBack,
 		ID3D11RasterizerState** cullNone);
 	void CreateConstBuffer(ID3D11Device* device, ID3D11Buffer** buffer, void* initdata, unsigned int byteSize);
@@ -74,12 +78,77 @@ namespace DXHelper
 
 	//Structured buffer
 	//stride is sizeof struct, width is all it contains.
-	void CreateStructuredBuffer(ID3D11Device* device, ID3D11Buffer** buffer, std::vector<DirectX::XMFLOAT4X4>& data, unsigned int byteStride, unsigned int arraySize,
+	template<typename T>
+	void CreateStructuredBuffer(ID3D11Device* device, ID3D11Buffer** buffer, std::vector<T>& data, unsigned int byteStride, unsigned int arraySize,
 		ID3D11ShaderResourceView** srv);
-	
-	void BindStructuredBuffer(ID3D11DeviceContext* context, ID3D11Buffer* buffer, std::vector<DirectX::XMFLOAT4X4>& data, size_t slot, ShaderBindFlag flag, ID3D11ShaderResourceView** srv);
+	template<typename T>
+	void BindStructuredBuffer(ID3D11DeviceContext* context, ID3D11Buffer* buffer, std::vector<T>& data, size_t slot, ShaderBindFlag flag, ID3D11ShaderResourceView** srv);
 
 	
 	
+
+	template<typename T>
+	void CreateStructuredBuffer(ID3D11Device* device, ID3D11Buffer** buffer, std::vector<T>& data, unsigned int byteStride, unsigned int arraySize, ID3D11ShaderResourceView** srv)
+	{
+
+
+		D3D11_BUFFER_DESC sBufferDesc = {};
+		D3D11_SUBRESOURCE_DATA sBufferSub = {};
+
+		sBufferDesc.Usage = D3D11_USAGE_DEFAULT;
+		sBufferDesc.ByteWidth = byteStride * arraySize; //sizeofStruct*nrOfElements
+		sBufferDesc.BindFlags = D3D11_BIND_SHADER_RESOURCE;
+		sBufferDesc.CPUAccessFlags = 0;// 0; //D3D11_CPU_ACCESS_WRITE
+		sBufferDesc.StructureByteStride = byteStride; //sizeofStruct
+		sBufferDesc.MiscFlags = D3D11_RESOURCE_MISC_BUFFER_STRUCTURED;
+
+
+		sBufferSub.pSysMem = data.data();
+
+
+
+		HRESULT hr = device->CreateBuffer(&sBufferDesc, &sBufferSub, buffer);
+		assert(SUCCEEDED(hr));
+
+		D3D11_SHADER_RESOURCE_VIEW_DESC srvDesc = {};
+		srvDesc.Format = DXGI_FORMAT_UNKNOWN;
+		srvDesc.ViewDimension = D3D11_SRV_DIMENSION_BUFFEREX;
+		srvDesc.BufferEx.FirstElement = 0;
+		srvDesc.BufferEx.Flags = 0;
+		srvDesc.BufferEx.NumElements = arraySize;
+		hr = device->CreateShaderResourceView(*buffer, &srvDesc, srv);
+
+		assert(SUCCEEDED(hr));
+
+
+	}
+
+	template<typename T>
+	void BindStructuredBuffer(ID3D11DeviceContext* context, ID3D11Buffer* buffer, std::vector<T>& data, size_t slot, ShaderBindFlag flag, ID3D11ShaderResourceView** srv)
+	{
+		assert(buffer != 0);
+
+		context->UpdateSubresource(buffer, 0, 0, data.data(), 0, 0);
+
+
+		int bflag = static_cast<int>(flag);
+
+		if ((bflag & (int)ShaderBindFlag::PIXEL) != 0)
+			context->PSSetShaderResources(slot, 1, srv);
+
+		if ((bflag & (int)ShaderBindFlag::VERTEX) != 0)
+			context->VSSetShaderResources(slot, 1, srv);
+
+		if ((bflag & (int)ShaderBindFlag::HULL) != 0)
+			context->HSSetShaderResources(slot, 1, srv);
+
+		if ((bflag & (int)ShaderBindFlag::DOMAINS) != 0)
+			context->DSSetShaderResources(slot, 1, srv);
+
+		if ((bflag & (int)ShaderBindFlag::GEOMETRY) != 0)
+			context->GSSetShaderResources(slot, 1, srv);
+
+		
+	}
 
 }

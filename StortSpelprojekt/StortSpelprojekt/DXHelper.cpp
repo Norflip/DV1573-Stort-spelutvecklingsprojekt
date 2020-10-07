@@ -1,6 +1,16 @@
 #include "DXHelper.h"
 
-void DXHelper::CreateSwapchain(const Window& window, _Out_ ID3D11Device** device, _Out_ ID3D11DeviceContext** context, _Out_ IDXGISwapChain** swapchain, 
+void DXHelper::bindNullShaders(ID3D11DeviceContext* context)
+{
+	context->VSSetShader(0, 0, 0);
+	context->HSSetShader(0, 0, 0);
+	context->DSSetShader(0, 0, 0);
+	context->GSSetShader(0, 0, 0);
+	context->PSSetShader(0, 0, 0);
+
+}
+
+void DXHelper::CreateSwapchain(const Window& window, _Out_ ID3D11Device** device, _Out_ ID3D11DeviceContext** context, _Out_ IDXGISwapChain** swapchain,
 	ID3D11RasterizerState** cullBack, ID3D11RasterizerState** cullNone)
 {
 
@@ -89,6 +99,12 @@ void DXHelper::BindConstBuffer(ID3D11DeviceContext* context, ID3D11Buffer* buffe
 
 	if ((bflag & (int)ShaderBindFlag::GEOMETRY) != 0)
 		context->GSSetConstantBuffers(slot, 1, &buffer);
+
+	if ((bflag & (int)ShaderBindFlag::HULL) != 0)
+		context->HSSetConstantBuffers(slot, 1, &buffer);
+
+	if ((bflag & (int)ShaderBindFlag::DOMAINS) != 0)
+		context->DSSetConstantBuffers(slot, 1, &buffer);
 
 
 }
@@ -434,56 +450,7 @@ ID3D11SamplerState* DXHelper::CreateSampler(D3D11_FILTER filter, D3D11_TEXTURE_A
 	return m_samplerCache[hash];
 }
 
-void DXHelper::CreateStructuredBuffer(ID3D11Device* device, ID3D11Buffer** buffer, std::vector<DirectX::XMFLOAT4X4>& data, unsigned int byteStride, unsigned int arraySize,
-	ID3D11ShaderResourceView** srv)
-{
-	D3D11_BUFFER_DESC sBufferDesc = {};
-	D3D11_SUBRESOURCE_DATA sBufferSub = {};
 
-	sBufferDesc.Usage = D3D11_USAGE_DEFAULT;
-	sBufferDesc.ByteWidth = byteStride* arraySize; //sizeofStruct*nrOfElements
-	sBufferDesc.BindFlags = D3D11_BIND_SHADER_RESOURCE;
-	sBufferDesc.CPUAccessFlags = 0;// 0; //D3D11_CPU_ACCESS_WRITE
-	sBufferDesc.StructureByteStride = byteStride; //sizeofStruct
-	sBufferDesc.MiscFlags = D3D11_RESOURCE_MISC_BUFFER_STRUCTURED;
-	sBufferDesc.Usage = D3D11_USAGE_DEFAULT; 
-	sBufferSub.pSysMem = data.data();
-
-
-
-	HRESULT hr = device->CreateBuffer(&sBufferDesc, &sBufferSub, buffer);
-	assert(SUCCEEDED(hr));
-
-	D3D11_SHADER_RESOURCE_VIEW_DESC srvDesc = {};
-	srvDesc.Format = DXGI_FORMAT_UNKNOWN;
-	srvDesc.ViewDimension = D3D11_SRV_DIMENSION_BUFFEREX;
-	srvDesc.BufferEx.FirstElement = 0;
-	srvDesc.BufferEx.Flags = 0;
-	srvDesc.BufferEx.NumElements = arraySize;
-	hr = device->CreateShaderResourceView(*buffer, &srvDesc, srv);
-
-	assert(SUCCEEDED(hr));
-}
-
-void DXHelper::BindStructuredBuffer(ID3D11DeviceContext* context, ID3D11Buffer* buffer, std::vector<DirectX::XMFLOAT4X4>& data, size_t slot, ShaderBindFlag flag, ID3D11ShaderResourceView** srv)
-{
-
-	assert(buffer!=0);
-
-	context->UpdateSubresource(buffer, 0, 0, data.data(), 0, 0);
-
-
-	int bflag = static_cast<int>(flag);
-
-	if ((bflag & (int)ShaderBindFlag::PIXEL) != 0)
-		context->PSSetShaderResources(slot, 1, srv);
-
-	if ((bflag & (int)ShaderBindFlag::VERTEX) != 0)
-		context->VSSetShaderResources(slot, 1, srv);
-
-	if ((bflag & (int)ShaderBindFlag::GEOMETRY) != 0)
-		context->GSSetShaderResources(slot, 1, srv);
-}
 
 
 

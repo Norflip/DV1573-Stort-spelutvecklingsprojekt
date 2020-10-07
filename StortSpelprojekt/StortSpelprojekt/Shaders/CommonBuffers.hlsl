@@ -36,8 +36,9 @@ cbuffer cb_Scene : register(b2)
 
 	int id;
 	float factor;
-
+	float2 padd;
 	float time;
+	float3 padd2;
 }
 
 
@@ -59,7 +60,8 @@ StructuredBuffer<float4> grassIndices : register(t4);
 StructuredBuffer<float4>   BCCoordinates : register(t5);
 
 
-cbuffer cb_grass
+cbuffer cb_grass : register(b3)
 {
-	float4 grassParameters; //x == pixelSize
+	float pixelSize;
+	 //can add more parameters here.
 };

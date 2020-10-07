@@ -1,9 +1,11 @@
 #include "CommonBuffers.hlsl"
 #include "IO.hlsl"
 
-Texture2D grassHeightMap : register (t0);
-Texture2D grassColorMap : register (t1);
+Texture2D grassHeightMap : register (t1);
+Texture2D grassColorMap : register (t0);
 Texture2D noiseMap : register (t2);
+Texture2D chunkData : register (t6);
+//could add normals here as well to add variation.
 SamplerState LinearSampler : register(s0);
 
 
@@ -18,7 +20,8 @@ DS_OUTPUT_GRASS main(HS_CONSTANT_DATA_OUTPUT_GRASS input,
 {
 	DS_OUTPUT_GRASS output = (DS_OUTPUT_GRASS)0;
 
-	
+	float h = chunkData.SampleLevel(LinearSampler, uv, 0).r;
+	float y = h * 10.0f;
 
 	uint currentStrand = (int)(uv.y * input.edgeTesselation[0] + 0.5);
 	
@@ -30,22 +33,28 @@ DS_OUTPUT_GRASS main(HS_CONSTANT_DATA_OUTPUT_GRASS input,
 	uint v2 = (uint)grassIndices[index + 1].x;
 	uint v3 = (uint)grassIndices[index + 2].x;
 
-	float3 position1 = grassStraws[v1].position;
-	float3 position2 = grassStraws[v2].position;
-	float3 position3 = grassStraws[v3].position;
+	float3 position1 = grassStraws[v1].position.xyz;
+	float3 position2 = grassStraws[v2].position.xyz;
+	float3 position3 = grassStraws[v3].position.xyz;
+
+	position1.y = y;
+	position2.y = y;
+	position3.y = y;
+
+
 
 	float3 pos = BCC.x * position1 + BCC.y * position2 + BCC.z * position3;
 
-	float3 normal1 = grassStraws[v1].normal;
-	float3 normal2 = grassStraws[v2].normal;
-	float3 normal3 = grassStraws[v3].normal;
+	float3 normal1 = grassStraws[v1].normal.xyz;
+	float3 normal2 = grassStraws[v2].normal.xyz;
+	float3 normal3 = grassStraws[v3].normal.xyz;
 
 	
 	float3 normal = BCC.x * normal1 + BCC.y * normal2 + BCC.z * normal3;
 
-	float2 uv1 = MasterHairStrands[v1].uv;
-	float2 uv2 = MasterHairStrands[v2].uv;
-	float2 uv3 = MasterHairStrands[v3].uv;
+	float2 uv1 = grassStraws[v1].uv.xy;
+	float2 uv2 = grassStraws[v2].uv.xy;
+	float2 uv3 = grassStraws[v3].uv.xy;
 
 	
 	float2 uvPlane = BCC.x * uv1 + BCC.y * uv2 + BCC.z * uv3;
@@ -54,7 +63,7 @@ DS_OUTPUT_GRASS main(HS_CONSTANT_DATA_OUTPUT_GRASS input,
 	float4 colour = grassColorMap.SampleLevel(LinearSampler, uvPlane, 0);
 
 
-	output.bladeHeight = grassHeightMap.SampleLevel(LinearSampler, uvPlane, 0).r * 2.5f/*length*/;
+	output.bladeHeight = grassHeightMap.SampleLevel(LinearSampler, uvPlane, 0).r *2.0f;/*width*/
 	output.height = uv.x * output.bladeHeight;
 
 	output.expandVector = normalize(pos - position1);
@@ -64,12 +73,12 @@ DS_OUTPUT_GRASS main(HS_CONSTANT_DATA_OUTPUT_GRASS input,
 
 	float noiseSample = noiseMap.SampleLevel(LinearSampler, 4 * uvPlane, 0).r;
 
-	float disp = 1.5f /*width*/ * pow(uv.x, 2) * (noiseSample + 0.5 * abs(sin(time + noiseSample)));
+	float disp = 0.4f * pow(uv.x, 1) * (noiseSample + 0.125 * abs(sin(time + noiseSample))); /*length*/ 
 
 	output.position = float4(pos.xyz, 1.0f);
-	output.displacement = float3(0, -disp, 0);
+	output.displacement = float3(0, disp, 0);
 	output.tex.y = uv.x;
-	output.normal = mul(float4(normal, 0), world).xyz;
+	output.normal = mul(float4(normal, 0), world);
 
 	output.colour = float4(colour.rgb, 1.0f);
 

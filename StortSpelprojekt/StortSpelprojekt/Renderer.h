@@ -26,7 +26,8 @@ class Renderer
 		{
 			Default,
 			Instanced,
-			Skeleton
+			Skeleton,
+			Grass
 		};
 
 		const Mesh* mesh;
@@ -34,9 +35,9 @@ class Renderer
 
 		Type type;
 		size_t instanceCount;
-		//cb_Skeleton bones;
+		
 		std::vector<dx::XMFLOAT4X4>* bones;
-		dx::XMMATRIX world; //this should be float4x4? no? And a pointer?
+		dx::XMMATRIX world;
 		const CameraComponent* camera;
 	};
 
@@ -59,7 +60,7 @@ public:
 	void Draw(const Mesh& mesh, const Material& material, const dx::XMMATRIX& model, const CameraComponent& camera);
 	void DrawInstanced(const Mesh& mesh, const size_t& count, const Material& material, const CameraComponent& camera);
 	void DrawSkeleton(const Mesh& mesh, const Material& material, const dx::XMMATRIX& model, const CameraComponent& camera, std::vector<dx::XMFLOAT4X4>& bones);
-	
+	void DrawGrass(const CameraComponent& camera, const Mesh& mesh, const Material& material, const dx::XMMATRIX& model);
 	void SetRSToCullNone();
 
 	ID3D11Device* GetDevice() const { return this->device; }
@@ -71,12 +72,14 @@ public:
 	void ClearRenderTarget(const RenderTexture& target);
 	void SetRenderTarget(const RenderTexture& target);
 
+	void UpdateTime(float time);
+
 private:
 	void AddItem(const RenderItem& item, bool transparent);
 	void DrawRenderItem(const RenderItem& item);
 	void DrawRenderItemInstanced(const RenderItem& item);
 	void DrawRenderItemSkeleton(const RenderItem& item);
-	
+	void DrawRenderItemGrass(const RenderItem& item);
 	
 	
 private:

@@ -4,24 +4,22 @@
 
 
 
-Texture2D grassHeightMap : register (t0);
+Texture2D grassHeightMap : register (t1);
 SamplerState linearSampler : register(s0);
 
-
+//PatchTess PatchHS(InputPatch<VS_CONTROL_POINT_OUTPUT, 3> patch, uint patchID : SV_PrimitiveID)
 
 // Patch Constant Function
-HS_CONSTANT_DATA_OUTPUT_GRASS hsPerIsoLinePatch(uint i : SV_PrimitiveID)
+HS_CONSTANT_DATA_OUTPUT_GRASS hsPerIsoLinePatch(InputPatch<VS_OUTPUT_GRASS,1> input, uint i : SV_PrimitiveID)
 {
 	HS_CONSTANT_DATA_OUTPUT_GRASS output;
 
 
-	//make black spots where grass should not exist. Like roads and where trees are.
-	float len = grassHeightMap.SampleLevel(LinearSampler, uv, 0).r;
 
-	if (len < 0.1)
-	{
-		output.edgeTesselation[0] = 0;
-	}
+	output.edgeTesselation[1] = (uint)input[0].tessFactor * fmod(1, 64); //4
+	output.edgeTesselation[0] = (uint)input[0].tessFactor * fmod(1, 64); //max times max per triangle fmod
+	
+	
 
 	output.triangleIndex = i;
 
@@ -47,9 +45,14 @@ HS_CONSTANT_DATA_OUTPUT_GRASS hsPerIsoLinePatch(uint i : SV_PrimitiveID)
 
 	float2 uv = (uv1 + uv2 + uv3) / 3.0f;
 
+	float len = grassHeightMap.SampleLevel(linearSampler, uv, 0).r;
 
+	if (len < 0.1)
+	{
+		output.edgeTesselation[0] = 0;
+	}
 
-	return Output;
+	return output;
 }
 
 [domain("isoline")]
@@ -60,8 +63,9 @@ HS_CONSTANT_DATA_OUTPUT_GRASS hsPerIsoLinePatch(uint i : SV_PrimitiveID)
 HS_OUTPUT_GRASS main(InputPatch<VS_OUTPUT_GRASS, 1> p,
 	uint i : SV_OutputControlPointID)
 {
-	HS_OUTPUT_GRASS output = (HS_OUTPUT)0;
+	HS_OUTPUT_GRASS output = (HS_OUTPUT_GRASS)0;
 	output.position = p[i].worldPosition;
-	output.tex = p[i].tex;
+	output.tex = p[i].uv;
 	return output;
 }
+

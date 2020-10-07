@@ -5,7 +5,7 @@ namespace dx = DirectX;
 constexpr size_t CB_OBJECT_SLOT = 0;
 constexpr size_t CB_MATERIAL_SLOT = 1;
 constexpr size_t CB_SCENE_SLOT = 2;
-
+constexpr size_t CB_GRASS_PARAMETERS_SLOT = 3;
 
 constexpr size_t POINT_LIGHT_COUNT = 16;
 
@@ -53,12 +53,13 @@ struct cb_Scene
 	dx::XMFLOAT2 padding10;
 	
 	float time;
-	dx::XMFLOAT3 padding10;
+	dx::XMFLOAT3 padding11;
 };
 
 
 __declspec(align(16))
 struct cb_grass
 {
-	dx::XMFLOAT4 grassParameters; //x pixelsize, y length, z width, w indices
-};
+	float pixelSize;
+	dx::XMFLOAT3 padding;
+};	

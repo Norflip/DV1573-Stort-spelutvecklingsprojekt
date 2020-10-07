@@ -14,7 +14,7 @@ Scene::~Scene()
 void Scene::Initialize(Renderer* renderer)
 {
 	this->renderer = renderer;
-
+	
 	// TEMP
 	// Should change values on resize event
 	Window* window = renderer->GetOutputWindow();
@@ -25,7 +25,11 @@ void Scene::Initialize(Renderer* renderer)
 	state.segment = 0;
 
 	worldGenerator.Initialize(renderer->GetDevice());
+	
 	worldGenerator.Generate(state, renderer->GetDevice());
+	
+	
+	worldGenerator.initalizeGrass(renderer->GetDevice(), renderer->GetContext());
 
 
 	Object* cameraObject = new Object("camera", ObjectFlag::ENABLED);
@@ -191,10 +195,10 @@ void Scene::Initialize(Renderer* renderer)
 	
 	/*************************SKELETON****************/
 	//OrchBody monsterAndIdle
-	std::vector<Mesh> monsterEmilMesh = ZWEBLoader::LoadMeshes(ZWEBLoadType::SkeletonAnimation, "Models/OrchBody.ZWEB", renderer->GetDevice());
+	std::vector<Mesh> monsterEmilMesh = ZWEBLoader::LoadMeshes(ZWEBLoadType::SkeletonAnimation, "Models/monsterAndIdle.ZWEB", renderer->GetDevice());
 	std::vector<Material> monsterEmilMat = ZWEBLoader::LoadMaterials("Models/monsterAndIdle.ZWEB", shader, renderer->GetDevice());
 	//OrchAnimation monsterAndIdleAni
-	SkeletonAni monsterEmilIdle = ZWEBLoader::LoadSkeletonOnly("Models/OrchAnimation.ZWEB", monsterEmilMesh[0].GetBoneIDS());
+	SkeletonAni monsterEmilIdle = ZWEBLoader::LoadSkeletonOnly("Models/monsterAndIdleAni.ZWEB", monsterEmilMesh[0].GetBoneIDS());
 	monsterEmilMat[0].SetShader(skeletonShader);
 	
 	Object* monsterEmil = new Object("monsterEmil");
@@ -207,7 +211,7 @@ void Scene::Initialize(Renderer* renderer)
 
 	monsterEmil->AddComponent<SkeletonMeshComponent>(monsterEmilMesh[0], monsterEmilMat[0])->SetAnimationTrack(monsterEmilIdle, StateMachine::IDLE);
 
-	//monsterEmil->GetComponent<SkeletonMeshComponent>()->SetAnimationTrack();
+	
 
 	AddObject(monsterEmil);
 
@@ -220,6 +224,9 @@ void Scene::Initialize(Renderer* renderer)
 	testMesh4->AddComponent<MeshComponent>(zwebMeshes[0], sylvanasMat[0]);
 	AddObject(testMesh4);
 
+	clock.Update();
+	clock.Start();
+	clock.Update();
 	/* * * * * * * * ** * * * * */
 
 	Log::Add("PRINTING SCENE HIERARCHY ----");
@@ -229,17 +236,25 @@ void Scene::Initialize(Renderer* renderer)
 
 void Scene::Update(const float& deltaTime)
 {
+	clock.Update();
 	input.UpdateInputs();
 	root->Update(deltaTime);
 	skyboxClass->GetThisObject()->GetTransform().SetPosition(camera->GetOwner()->GetTransform().GetPosition());
 	GameClock::Instance().Update();
 	//std::cout << "FPS: " << GameClock::Instance().GetFramesPerSecond() << std::endl;
+	renderer->UpdateTime((float)clock.GetSeconds());
+	float t = (float)clock.GetSeconds();
+	t = t;
+	if (clock.GetSeconds() > 60)
+	{
+		clock.Restart();
+	}
 }
 
 void Scene::FixedUpdate(const float& fixedDeltaTime)
 {
 	//Log::Add(std::to_string(fixedDeltaTime));
-//	root->FixedUpdate(fixedDeltaTime);
+	//root->FixedUpdate(fixedDeltaTime);
 }
 
 void Scene::Render()
@@ -252,7 +267,7 @@ void Scene::Render()
 
 	
 	worldGenerator.Draw(renderer, camera);
-
+	
 	renderer->RenderFrame();
 }
 

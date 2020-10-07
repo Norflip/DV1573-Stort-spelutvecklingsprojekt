@@ -2,9 +2,9 @@
 #include "IO.hlsl"
 
 [maxvertexcount(4)]
-void main(line DS_OUTPUT input[2], inout TriangleStream<DS_OUTPUT> TriangleOutputStream)
+void main(line DS_OUTPUT_GRASS input[2], inout TriangleStream<GS_OUTPUT_GRASS> TriangleOutputStream)
 {
-	DS_OUTPUT output = (DS_OUTPUT)0;
+	GS_OUTPUT_GRASS output = (GS_OUTPUT_GRASS)0;
 
 	float bladeHeight = input[0].bladeHeight;
 
@@ -17,10 +17,10 @@ void main(line DS_OUTPUT input[2], inout TriangleStream<DS_OUTPUT> TriangleOutpu
 	pos1World.xyz += input[1].displacement;
 
 	float3 grassDirection = normalize(pos1World.xyz - pos0World.xyz);
-	grassDirection = mul(float4(grassDirection, 0), world).xyz;
+	grassDirection = grassDirection;
 
 	
-	float grassBladeScale = 1.5f;
+	float grassBladeScale = 1.0f;
 	float powfactor = 2;
 	float maxHeightPow = pow(bladeHeight, powfactor);
 	float origWidth1 = grassBladeScale * (maxHeightPow - pow(input[0].height, powfactor));
@@ -28,14 +28,14 @@ void main(line DS_OUTPUT input[2], inout TriangleStream<DS_OUTPUT> TriangleOutpu
 
 	
 	float w = mul(float4(pos1World, 1.0f), mvp).w;
-	float pixelRadius = w * grassParameters.x;
+	float pixelRadius = w * pixelSize;
 
 	
 	float width1 = max(pixelRadius, origWidth1);
 	float width2 = max(pixelRadius, origWidth2);
 
 	float3 pos = pos0World.xyz - right * width1 / 2;
-	output.posToEye = mul(float4(pos, 1.0f), world).xyz;
+	output.posToEye = mul(float4(pos, 1), world);
 
 	output.position = mul(float4(pos, 1.0f), mvp);
 	output.tex = float2(0, input[0].tex.y);
@@ -47,7 +47,7 @@ void main(line DS_OUTPUT input[2], inout TriangleStream<DS_OUTPUT> TriangleOutpu
 	TriangleOutputStream.Append(output);
 
 	pos = pos1World.xyz - right * width2 / 2;
-	output.posToEye = mul(float4(pos, 1.0f), world).xyz;
+	output.posToEye = mul(float4(pos, 1), world);
 
 	output.position = mul(float4(pos, 1.0f), mvp);
 	output.tex = float2(0, input[1].tex.y);
@@ -59,7 +59,7 @@ void main(line DS_OUTPUT input[2], inout TriangleStream<DS_OUTPUT> TriangleOutpu
 	TriangleOutputStream.Append(output);
 
 	pos = pos0World.xyz + right * width1 / 2;
-	output.posToEye = mul(float4(pos, 1.0f), world).xyz;
+	output.posToEye = mul(float4(pos, 1), world);
 
 	output.position = mul(float4(pos, 1.0f), mvp);
 	output.tex = float2(1, input[0].tex.y);
@@ -72,7 +72,7 @@ void main(line DS_OUTPUT input[2], inout TriangleStream<DS_OUTPUT> TriangleOutpu
 
 	pos = pos1World.xyz + right * width2 / 2;
 
-	output.posToEye = mul(float4(pos, 1.0f), world).xyz;
+	output.posToEye = mul(float4(pos, 1), world);
 
 	output.position = mul(float4(pos, 1.0f), mvp);
 	output.tex = float2(1, input[1].tex.y);
