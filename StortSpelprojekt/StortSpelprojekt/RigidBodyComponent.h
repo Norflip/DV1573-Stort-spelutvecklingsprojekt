@@ -30,7 +30,7 @@ public:
 	RigidBodyComp(float mass);
 	virtual ~RigidBodyComp();
 
-	void InitializeBody();
+	void m_InitializeBody();
 	btRigidBody* GetRigidBody() const { return body; }
 
 	void SetMass(float mass) { this->mass = btScalar(mass); }

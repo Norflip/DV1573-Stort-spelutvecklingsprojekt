@@ -67,6 +67,4 @@ private:
 	Skybox* skyboxClass;		
 
 	WorldGenerator worldGenerator;
-
-	Physics physics;
 };

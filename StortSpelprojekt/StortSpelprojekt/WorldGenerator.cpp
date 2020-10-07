@@ -73,10 +73,10 @@ void WorldGenerator::Initialize(ID3D11Device* device)
 	}*/
 }
 
-void WorldGenerator::Generate(const SaveState& levelState, ID3D11Device* device)
+void WorldGenerator::Generate(const SaveState& levelState, Physics& physics, ID3D11Device* device)
 {
 	size_t steps = 4;
-	int segmentSeed = GetSegmentSeed(levelState);
+	int segmentSeed = levelState.seed ^ std::hash<int>()(levelState.segment);
 
 	Path path = CalculatePath(steps, segmentSeed);
 	std::unordered_set<int> visited;
@@ -106,7 +106,7 @@ void WorldGenerator::Generate(const SaveState& levelState, ID3D11Device* device)
 					if (indexCount == path.size() - 1) 
 						type = ChunkType::Goal;
 
-					CreateChunk(type, index, path, device);
+					CreateChunk(type, index, path, physics, device);
 					visited.insert(hash);
 					chunkCount++;
 				}
@@ -211,7 +211,7 @@ dx::XMFLOAT2 WorldGenerator::PathIndexToWorld(const dx::XMINT2& i) const
 	return dx::XMFLOAT2(x, y);
 }
 
-Chunk* WorldGenerator::CreateChunk(ChunkType type, dx::XMINT2 index, const Path& path, ID3D11Device* device)
+Chunk* WorldGenerator::CreateChunk(ChunkType type, dx::XMINT2 index, const Path& path, Physics& physics, ID3D11Device* device)
 {
 	// + 1 för height map
 	size_t size = CHUNK_SIZE + 1;
@@ -270,6 +270,7 @@ Chunk* WorldGenerator::CreateChunk(ChunkType type, dx::XMINT2 index, const Path&
 	delete[] buffer;
 	delete[] normalBuffer;
 
+
 	Material material(shader);
 	material.SetTexture(Texture(srv), 0, ShaderBindFlag::PIXEL);
 	material.SetTexture(Texture(srv), 0, ShaderBindFlag::VERTEX);
@@ -278,6 +279,8 @@ Chunk* WorldGenerator::CreateChunk(ChunkType type, dx::XMINT2 index, const Path&
 	auto sampler = DXHelper::CreateSampler(D3D11_FILTER_MIN_MAG_MIP_LINEAR, D3D11_TEXTURE_ADDRESS_WRAP, device);
 	material.SetSampler(sampler, 0, ShaderBindFlag::PIXEL);
 	material.SetSampler(sampler, 0, ShaderBindFlag::VERTEX);
+
+
 
 	std::string name = "chunk " + std::to_string(index.x) + ", " + std::to_string(index.y);
 	Object* chunkObject = new Object(name, ObjectFlag::DEFAULT);
@@ -291,6 +294,12 @@ Chunk* WorldGenerator::CreateChunk(ChunkType type, dx::XMINT2 index, const Path&
 
 	Chunk* chunk = chunkObject->AddComponent<Chunk>(index, type);
 	chunk->SetHeightMap(heightMap);
+
+	chunkObject->AddComponent<ChunkCollider>(chunk);
+	RigidBodyComp* rigidBody = chunkObject->AddComponent<RigidBodyComp>(STATIC_BODY);
+
+	//remember to remove when loading new map
+	physics.RegisterRigidBody(rigidBody);
 
 	chunks.push_back(chunk);
 	chunkMap.insert({ HASH2D_I(index.x, index.y), chunk });

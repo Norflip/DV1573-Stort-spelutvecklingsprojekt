@@ -19,20 +19,22 @@ void Scene::Initialize(Renderer* renderer)
 	// Should change values on resize event
 	Window* window = renderer->GetOutputWindow();
 	
-
+	Physics& physics = Physics::Instance();
+	physics.Initialize({ 0, -1, 0 });
 
 	SaveState state;
 	state.seed = 1337;
 	state.segment = 0;
 
 	worldGenerator.Initialize(renderer->GetDevice());
-	worldGenerator.Generate(state, renderer->GetDevice());
+	worldGenerator.Generate(state, physics, renderer->GetDevice());
 
 
 	Object* cameraObject = new Object("camera", ObjectFlag::ENABLED);
 	camera = cameraObject->AddComponent<CameraComponent>(60.0f);
 	camera->Resize(window->GetWidth(), window->GetHeight());
 	cameraObject->AddComponent<ControllerComponent>();
+
 
 	Input::Instance().SetWindow(window->GetHWND(), window->GetHeight(), window->GetWidth());
 	AddObject(cameraObject);
@@ -65,11 +67,9 @@ void Scene::Initialize(Renderer* renderer)
 	testMesh->GetTransform().SetPosition(dx::XMLoadFloat3(&miniTranslation));
 	
 	testMesh2->GetTransform().SetPosition(dx::XMLoadFloat3(&miniTranslation2));
-	AddObject(testMesh2, testMesh);
 
 
 	testMesh3->GetTransform().SetPosition(dx::XMLoadFloat3(&miniTranslation3));
-	AddObject(testMesh3, testMesh2);
 
 	//testMesh2->AddComponent<MoveComponent>();
 
@@ -82,13 +82,18 @@ void Scene::Initialize(Renderer* renderer)
 	testMesh2->AddComponent<MeshComponent>(sylvanas[0], sylvanasMat[0]);
 	testMesh3->AddComponent<MeshComponent>(cylinder[0], cylinderMat[0]);
 	
-	AddObject(testMesh);
+	
+
 	//AddObject(testMesh2);
 	//AddObject(testMesh3);
 	Object* testMesh4 = new Object("test4");
 	testMesh4->AddComponent<NodeWalkerComponent>();
 	testMesh4->GetTransform().SetPosition(dx::XMLoadFloat3(&miniTranslation4));
 	testMesh4->AddComponent<MeshComponent>(zwebMeshes[0], sylvanasMat[0]);
+	
+	AddObject(testMesh);
+	AddObject(testMesh2);
+	AddObject(testMesh3);
 	AddObject(testMesh4);
 
 	/* * * * * * * * ** * * * * */
@@ -106,14 +111,11 @@ void Scene::Initialize(Renderer* renderer)
 
 
 	RigidBodyComp* rigidBody = testMesh2->AddComponent<RigidBodyComp>(4.0f);
-
 	BoxColliderComponent* boxCol = testMesh2->AddComponent<BoxColliderComponent>(dx::XMFLOAT3( 1,1,1 ), dx::XMFLOAT3(0,0,0), dx::XMFLOAT4(0,0,0,0));
 
 	//rigidBody->m_GenerateCompoundShape();
 
 
-
-	physics.Initialize({ 0, -0.01, 0 });
 	physics.RegisterRigidBody(rigidBody);
 
 	//rigidBody->AddForce({ 4000, 0, 0 }, ForceMode::IMPULSE);
@@ -124,13 +126,12 @@ void Scene::Update(const float& deltaTime)
 	input.UpdateInputs();
 	
 	POINT p = input.GetMousePos();
-
-//	std::cout << p.x << ", " << p.y << std::endl;
+	std::cout << p.x << ", " << p.y << std::endl;
 
 	Ray ray = camera->MouseToRay(p.x, p.y);
-	if (physics.RaycastWorld(ray, 100.0f, PhysicsLayer::DEFAULT))
+	if (Physics::Instance().RaytestSingle(ray, 1000.0f, PhysicsGroup::DEFAULT))
 	{
-		std::cout << "hit" << std::endl;
+		//std::cout << "hit" << std::endl;
 	}
 	
 	root->Update(deltaTime);
@@ -140,7 +141,7 @@ void Scene::Update(const float& deltaTime)
 
 void Scene::FixedUpdate(const float& fixedDeltaTime)
 {
-	physics.FixedUpdate(fixedDeltaTime);
+	Physics::Instance().FixedUpdate(fixedDeltaTime);
 	//Log::Add(std::to_string(fixedDeltaTime));
 	root->FixedUpdate(fixedDeltaTime);
 }

@@ -1,4 +1,5 @@
 #include "RigidBodyComponent.h"
+#include "Physics.h"
 
 RigidBodyComp::RigidBodyComp(float mass) : mass(mass),compShape(nullptr)
 {
@@ -72,7 +73,7 @@ void RigidBodyComp::RecursiveAddShapes(Object* obj, btCompoundShape* shape)
 	//}
 }
 
-void RigidBodyComp::InitializeBody()
+void RigidBodyComp::m_InitializeBody()
 {
 	Transform& transform = GetOwner()->GetTransform();
 	btTransform rbTransform = ConvertToBtTransform(transform);
@@ -94,7 +95,8 @@ void RigidBodyComp::InitializeBody()
 			masses[i] = mass / children;
 		}
 
-		compShape->calculatePrincipalAxisTransform(masses, t, inertia);
+		compShape->calculateLocalInertia(mass, inertia);
+		//compShape->calculatePrincipalAxisTransform(masses, t, inertia);
 	}
 
 	btCollisionShape* groundShape = new btBoxShape(btVector3(btScalar(50.), btScalar(50.), btScalar(50.)));
@@ -105,6 +107,8 @@ void RigidBodyComp::InitializeBody()
 	body->setUserPointer(this);
 	body->setFriction(1);
 	body->setRestitution(0);
+
+
 }
 
 void RigidBodyComp::UpdateWorldTransform(const btDynamicsWorld* world)

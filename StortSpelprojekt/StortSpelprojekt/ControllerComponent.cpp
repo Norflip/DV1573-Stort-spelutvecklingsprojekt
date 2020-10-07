@@ -63,9 +63,13 @@ void ControllerComponent::Update(const float& deltaTime)
 	{
 		this->canRotate = !this->canRotate;
 		if (this->canRotate)
+		{
 			Input::Instance().SetMouseMode(dx::Mouse::MODE_RELATIVE);
+		}
 		else
+		{
 			Input::Instance().SetMouseMode(dx::Mouse::MODE_ABSOLUTE);
+		}
 	}
 	if (this->canRotate)
 	{

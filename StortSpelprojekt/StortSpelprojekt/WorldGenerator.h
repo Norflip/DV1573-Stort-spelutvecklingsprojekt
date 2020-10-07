@@ -11,6 +11,9 @@
 #include "ShittyOBJLoader.h"
 #include "Math.h"
 #include "SaveState.h"
+#include "ChunkCollider.h"
+#include "RigidBodyComponent.h"
+#include "Physics.h"
 
 constexpr int LOAD_RADIUS = 1;
 constexpr size_t MAX_CHUNK_RENDER = 16;
@@ -24,7 +27,7 @@ public:
 	virtual ~WorldGenerator();
 
 	void Initialize(ID3D11Device* device);
-	void Generate(const SaveState& levelState, ID3D11Device* device);
+	void Generate(const SaveState& levelState, Physics& physics, ID3D11Device* device);
 	void Draw(Renderer*, CameraComponent*);
 
 private:
@@ -34,8 +37,7 @@ private:
 	float GetDistanceToPath(const dx::XMFLOAT2& position, const Path& path) const;
 	dx::XMFLOAT2 PathIndexToWorld(const dx::XMINT2& i) const;
 	
-	Chunk* CreateChunk(ChunkType type, dx::XMINT2 index, const Path& path, ID3D11Device* device);
-	int GetSegmentSeed(const SaveState& levelState) { return levelState.seed ^ std::hash<int>()(levelState.segment); }
+	Chunk* CreateChunk(ChunkType type, dx::XMINT2 index, const Path& path, Physics& physics, ID3D11Device* device);
 	dx::XMFLOAT3 CalculateNormal(float x, float y, const Noise::Settings& settings) const;
 
 private:

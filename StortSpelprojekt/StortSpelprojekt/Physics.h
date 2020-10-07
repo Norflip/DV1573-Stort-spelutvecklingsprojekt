@@ -10,12 +10,14 @@
 #include "Ray.h"
 #include <unordered_map>
 
-enum class PhysicsLayer : unsigned int
+enum class PhysicsGroup : unsigned int
 {
-	DEFAULT = 1 << 1
+	none = 0,
+	DEFAULT = 1 << 1,
+	TERRAIN = 1 << 2
 };
 
-DEFINE_ENUM_FLAG_OPERATORS(PhysicsLayer)
+DEFINE_ENUM_FLAG_OPERATORS(PhysicsGroup)
 
 class Physics
 {
@@ -28,13 +30,25 @@ public:
 	void SetGravity(float x, float y, float z);
 	void CreateDynamicWorld();
 	
+	// remove rigidbody on chunk and add shape?
+	void ReigsterCollisionObject();
+
 	void RegisterRigidBody(RigidBodyComp* rigidBodyComp);
 	void UnregisterRigidBody(Object* object);
 	void UnregisterRigidBody(RigidBodyComp* rigidBodyComp);
 
 	void FixedUpdate(const float& fixedDeltaTime);
 	
-	bool RaycastWorld(const Ray& ray, float maxDistance, PhysicsLayer layer = PhysicsLayer::DEFAULT) const;
+	bool RaytestSingle(const Ray& ray, float maxDistance, PhysicsGroup layer = PhysicsGroup::DEFAULT) const;
+
+	static Physics& Instance() // singleton
+	{
+		static Physics instance;
+		return instance;
+	}
+
+	Physics(Physics const&) = delete;
+	void operator=(Physics const&) = delete;
 
 	//static dx::XMFLOAT3 ToXMFLOAT3(const btVector3& v3) { return dx::XMFLOAT3(v3.x, v3.y, v3.z); }
 	//static btVector3 ToVector3(const dx::XMFLOAT3& xm3) { return btVector3(xm3.x, xm3.y, xm3.z); }
