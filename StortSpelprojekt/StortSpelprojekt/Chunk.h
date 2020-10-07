@@ -25,7 +25,7 @@ public:
 
 	float SampleHeight(float x, float z);
 
-	void SetHeightMap(float* heightmap) { this->heightMap = heightMap; }
+	void SetHeightMap(float* heightmap) { this->heightMap = heightmap; }
 	dx::XMINT2 GetIndex() const { return this->index; }
 	ChunkType GetType() const { return this->type; }
 

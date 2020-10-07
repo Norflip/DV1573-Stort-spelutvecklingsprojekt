@@ -2,13 +2,24 @@
 
 Scene::Scene() : input(Input::Instance())
 {
+	skyboxClass = nullptr;
+	skybox = nullptr;
+	renderer = nullptr;
+	camera = nullptr;
+
 	root = new Object("sceneRoot", ObjectFlag::DEFAULT);
 }
 
 Scene::~Scene()
-{
+{	
+	delete skybox;
+	skybox = nullptr;
+
+	delete skyboxClass;
+	skyboxClass = nullptr;
+
 	delete root;
-	root = nullptr;
+	root = nullptr;	
 }
 
 void Scene::Initialize(Renderer* renderer)
@@ -18,7 +29,6 @@ void Scene::Initialize(Renderer* renderer)
 	// TEMP
 	// Should change values on resize event
 	Window* window = renderer->GetOutputWindow();
-
 
 	SaveState state;
 	state.seed = 1337;
@@ -33,7 +43,7 @@ void Scene::Initialize(Renderer* renderer)
 
 
 	Object* cameraObject = new Object("camera", ObjectFlag::ENABLED);
-	camera = cameraObject->AddComponent<CameraComponent>(60.0f);
+	camera = cameraObject->AddComponent<CameraComponent>(60.0f, true);
 	camera->Resize(window->GetWidth(), window->GetHeight());
 	cameraObject->AddComponent<ControllerComponent>();
 
@@ -89,17 +99,16 @@ void Scene::Initialize(Renderer* renderer)
 	testMesh3->AddComponent<MeshComponent>(cylinder[0], cylinderMat[0]);
 	
 	AddObject(testMesh);
-	/*AddObject(testMesh2);
-	AddObject(testMesh3);*/
+	//AddObject(testMesh2);
+	//AddObject(testMesh3);
 
 	/* * * * * * * * ** * * * * */
 	
+
 	skybox = new Object("Skybox");
 	skyboxClass = new Skybox(renderer->GetDevice(), renderer->GetContext(), skybox);
-
-	//Log::Add("PRINTING SCENE HIERARCHY ----");
-	//PrintSceneHierarchy(root, 0);
-	//Log::Add("----");
+	skyboxClass->GetThisObject()->AddFlag(ObjectFlag::NO_CULL);
+	//AddObject(skyboxClass->GetThisObject());
 
 	/*************************INSTANCING*******************/
 	Shader instanceShader;
@@ -134,7 +143,7 @@ void Scene::Initialize(Renderer* renderer)
 	
 
 	std::vector<unsigned int> r;
-	for (int i = 0; i < nrOfInstances; i++)
+	for (size_t i = 0; i < nrOfInstances; i++)
 	{
 		r.push_back(rand() % 10 + 1);
 	
@@ -176,12 +185,13 @@ void Scene::Initialize(Renderer* renderer)
 
 	Object* leaves = new Object("leaves");
 
-	treeMaterials[1].SetTransparent(1);
+	treeMaterials[1].SetTransparent(true);
 	treeBase->AddComponent<InstancedMeshComponent>(treeModels[0], treeMaterials[0]);
 	//treeBranches->AddComponent<InstancedMeshComponent>(treeModels[1], treeMaterials[0]);
 	leaves->AddComponent<InstancedMeshComponent>(treeModels[1], treeMaterials[1]);
 
 	leaves->AddFlag(ObjectFlag::NO_CULL);
+	
 	
 
 	
@@ -229,14 +239,25 @@ void Scene::Initialize(Renderer* renderer)
 	clock.Update();
 	/* * * * * * * * ** * * * * */
 
-	Log::Add("PRINTING SCENE HIERARCHY ----");
-	PrintSceneHierarchy(root, 0);
-	Log::Add("----");
+	//Log::Add("PRINTING SCENE HIERARCHY ----");
+	//PrintSceneHierarchy(root, 0);
+	/*Log::Add("----");*/
 }
 
 void Scene::Update(const float& deltaTime)
 {
 	clock.Update();
+	dx::XMFLOAT3 positionA = { 0,0,2 };
+	dx::XMFLOAT3 positionB = { 0, 2,-5};
+
+	DShape::DrawBox(positionA, { 2,2,2 }, { 0, 1, 1 });
+	DShape::DrawWireBox(positionB, { 4,4,4 }, { 1,0,0 });
+
+	DShape::DrawSphere({ -4,0,0 }, 1.0f, { 0, 0, 1 });
+	DShape::DrawWireSphere({ -4,0,5 }, 1.0f, { 0,1,0 });
+
+	DShape::DrawLine(positionA, positionB, { 1,1,0 });
+
 	input.UpdateInputs();
 	root->Update(deltaTime);
 	skyboxClass->GetThisObject()->GetTransform().SetPosition(camera->GetOwner()->GetTransform().GetPosition());
@@ -260,12 +281,11 @@ void Scene::FixedUpdate(const float& fixedDeltaTime)
 void Scene::Render()
 {	
 	// skybox draw object
-	renderer->SetRSToCullNone();
+	renderer->SetRSToCullNone(true);
 	skyboxClass->GetThisObject()->Draw(renderer, camera);
 
 	root->Draw(renderer, camera);
 
-	
 	worldGenerator.Draw(renderer, camera);
 	
 	renderer->RenderFrame();
@@ -284,8 +304,6 @@ void Scene::AddObject(Object* object, Object* parent)
 void Scene::RemoveObject(Object* object)
 {
 	// remove the the connection and traverse downwards and remove / destroy all objects
-
-	
 }
 
 void Scene::PrintSceneHierarchy(Object* object, size_t level) const
@@ -299,8 +317,7 @@ void Scene::PrintSceneHierarchy(Object* object, size_t level) const
 
 		indent += "L  ";		
 	}
-
-	
+		
 	Log::Add(indent + object->GetName());
 
 	if (object->GetTransform().CountChildren() > 0)

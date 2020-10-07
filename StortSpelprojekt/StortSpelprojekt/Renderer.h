@@ -61,7 +61,8 @@ public:
 	void DrawInstanced(const Mesh& mesh, const size_t& count, const Material& material, const CameraComponent& camera);
 	void DrawSkeleton(const Mesh& mesh, const Material& material, const dx::XMMATRIX& model, const CameraComponent& camera, std::vector<dx::XMFLOAT4X4>& bones);
 	void DrawGrass(const CameraComponent& camera, const Mesh& mesh, const Material& material, const dx::XMMATRIX& model);
-	void SetRSToCullNone();
+	
+	void SetRSToCullNone(bool);
 
 	ID3D11Device* GetDevice() const { return this->device; }
 	ID3D11DeviceContext* GetContext() const { return this->context; }
@@ -73,6 +74,8 @@ public:
 	void SetRenderTarget(const RenderTexture& target);
 
 	void UpdateTime(float time);
+	bool IsDrawingShapes() const { return this->drawShapes; }
+	void DrawShaped(bool draw) { this->drawShapes = draw; }
 
 private:
 	void AddItem(const RenderItem& item, bool transparent);
@@ -118,6 +121,8 @@ private:
 
 	const float BLENDSTATEMASK[4] = { 0.0f };
 
+	bool drawShapes = true;
+  
 	//rasterizer
 	ID3D11RasterizerState* rasterizerStateCullBack;
 	ID3D11RasterizerState* rasterizerStateCullNone;

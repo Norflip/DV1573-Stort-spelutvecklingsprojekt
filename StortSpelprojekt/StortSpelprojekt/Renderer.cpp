@@ -1,5 +1,6 @@
 #include "Renderer.h"
 #include "RenderPass.h"
+#include "DShape.h"
 
 Renderer::Renderer() : device(nullptr), context(nullptr), swapchain(nullptr), obj_cbuffer(nullptr), skeleton_srvbuffer(nullptr),skeleton_srv(nullptr)
 {
@@ -33,7 +34,7 @@ void Renderer::Initialize(Window* window)
 {
 	this->outputWindow = window;
 
-	DXHelper::CreateSwapchain(*window, &device, &context, &swapchain,&rasterizerStateCullBack, &rasterizerStateCullNone);
+	DXHelper::CreateSwapchain(*window, &device, &context, &swapchain);
 	this->backbuffer = DXHelper::CreateBackbuffer(window->GetWidth(), window->GetHeight(), device, swapchain);
 	this->midbuffers[0] = DXHelper::CreateRenderTexture(window->GetWidth(), window->GetHeight(), device);
 	this->midbuffers[1] = DXHelper::CreateRenderTexture(window->GetWidth(), window->GetHeight(), device);
@@ -41,7 +42,11 @@ void Renderer::Initialize(Window* window)
 
 	dx::XMFLOAT4X4 bone;
 	dx::XMStoreFloat4x4(&bone, dx::XMMatrixIdentity());
-	for (int boneNr = 0; boneNr < 60; boneNr++)
+	
+	DXHelper::CreateRSState(device, &rasterizerStateCullBack, &rasterizerStateCullNone);
+
+
+	for (int boneNr = 0; boneNr < 60; boneNr++) //set id matrix as default for the bones. So if no animation is happening the character is not funky.
 	{
 		srv_skeleton_data[boneNr] = bone;//set id matrix as default for the bones. So if no animation is happening the character is not funky. I need to bind them as well.
 	}
@@ -65,6 +70,7 @@ void Renderer::Initialize(Window* window)
 
 	/* Screenquad mesh */
 	screenQuadMesh = Mesh::CreateScreenQuad(device);
+	DShape::Instance().m_Initialize(device);
 
 	//EXEMPEL
 	///AddRenderPass(new PSRenderPass(1, L"Shaders/TestPass.hlsl"));
@@ -138,9 +144,11 @@ void Renderer::RenderFrame()
 
 	ClearRenderTarget(midbuffers[bufferIndex]);
 	SetRenderTarget(midbuffers[bufferIndex]);
+  
 	context->RSSetState(rasterizerStateCullBack);
 	context->OMSetBlendState(blendStateOff, BLENDSTATEMASK, 0xffffffff);
 	DrawQueueToTarget(opaqueItemQueue);
+  DShape::Instance().m_Draw(context);
 	context->RSSetState(rasterizerStateCullNone);
 	context->OMSetBlendState(blendStateOn, BLENDSTATEMASK, 0xffffffff);
 	DXHelper::bindNullShaders(context);
@@ -232,9 +240,17 @@ void Renderer::DrawGrass(const CameraComponent& camera, const Mesh& mesh, const 
 	AddItem(item, true);
 }
 
-void Renderer::SetRSToCullNone()
+void Renderer::SetRSToCullNone(bool cullNone)
 {
-	context->RSSetState(rasterizerStateCullNone);
+	if (cullNone)
+	{
+		context->RSSetState(rasterizerStateCullNone);
+	}
+	else
+	{
+		context->RSSetState(rasterizerStateCullBack);
+	}
+	
 }
 
 
@@ -278,7 +294,7 @@ void Renderer::DrawRenderItem(const RenderItem& item)
 
 	cb_material_data = item.material->GetMaterialData();
 	DXHelper::BindConstBuffer(context, material_cbuffer, &cb_material_data, CB_MATERIAL_SLOT, ShaderBindFlag::PIXEL);
-
+		
 
 	cb_scene.sunDirection = dx::XMFLOAT3(0.0f, 100.0f, -45.0f);
 	cb_scene.sunIntensity = 0.4f;

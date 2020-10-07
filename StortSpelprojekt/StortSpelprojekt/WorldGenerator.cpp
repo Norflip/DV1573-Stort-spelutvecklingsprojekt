@@ -182,7 +182,8 @@ void WorldGenerator::Generate(const SaveState& levelState, ID3D11Device* device)
 		indexCount++;
 	}
 
-	Log::Add("Created " + std::to_string(chunkCount) + " chunks with " + std::to_string(collisionCount) + " collisions.");
+	/* Log::Add Gives us error..? */
+	//Log::Add("Created " + std::to_string(chunkCount) + " chunks with " + std::to_string(collisionCount) + " collisions.");
 }
 
 void WorldGenerator::Draw(Renderer* renderer, CameraComponent* camera)
@@ -393,7 +394,7 @@ Chunk* WorldGenerator::CreateChunk(ChunkType type, dx::XMINT2 index, const Path&
 	
 
 	chunk->SetHeightMap(heightMap);
-
+	
 	chunks.push_back(chunk);
 	chunkMap.insert({ HASH2D_I(index.x, index.y), chunk });
 
