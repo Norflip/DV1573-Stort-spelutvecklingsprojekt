@@ -186,17 +186,6 @@ void Scene::Initialize(Renderer* renderer)
 
 	
 
-	/*************************INSTANCING*******************/
-	
-	
-
-	monsterEmil->AddComponent<SkeletonMeshComponent>(monsterEmilMesh[0], monsterEmilMat[0])->SetAnimationTrack(monsterEmilIdle, StateMachine::IDLE);
-
-	
-
-	AddObject(monsterEmil);
-
-	/*************************SKELETON****************/
 	//AddObject(testMesh2);
 	//AddObject(testMesh3);
 	Object* testMesh4 = new Object("test4");
