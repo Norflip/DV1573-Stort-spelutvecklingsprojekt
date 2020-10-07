@@ -99,12 +99,15 @@ void Renderer::DrawQueueToTarget(RenderQueue& queue)
 		auto queue = i.second;
 		if (!queue.empty())
 		{
-			
-			queue.front().material->BindToContext(context);
+			const Material* mat = queue.front().material;
+			mat->BindToContext(context);
 
 			while (!queue.empty())
 			{
+				
 				auto item = queue.front();
+
+				
 
 				switch (item.type)
 				{
@@ -128,6 +131,7 @@ void Renderer::DrawQueueToTarget(RenderQueue& queue)
 
 				queue.pop();
 			}
+			mat->UnbindToContext(context);
 		}
 	}
 
@@ -147,15 +151,15 @@ void Renderer::RenderFrame()
   
 	context->RSSetState(rasterizerStateCullBack);
 	context->OMSetBlendState(blendStateOff, BLENDSTATEMASK, 0xffffffff);
-	DXHelper::bindNullShaders(context);
+	
 	DrawQueueToTarget(opaqueItemQueue);
-	DXHelper::bindNullShaders(context);
+	
   DShape::Instance().m_Draw(context);
 	context->RSSetState(rasterizerStateCullNone);
 	context->OMSetBlendState(blendStateOn, BLENDSTATEMASK, 0xffffffff);
-	DXHelper::bindNullShaders(context);
+	
 	DrawQueueToTarget(transparentItemQueue);
-	DXHelper::bindNullShaders(context);
+	
 	context->OMSetBlendState(blendStateOff, BLENDSTATEMASK, 0xffffffff);
 	context->RSSetState(rasterizerStateCullBack);
 	
@@ -334,7 +338,7 @@ void Renderer::DrawRenderItem(const RenderItem& item)
 	cb_scene.factor = color;
 
 	/**********************************/
-
+	
 	cb_scene.nrOfPointLights = 2;
 	dx::XMStoreFloat3(&cb_scene.cameraPosition, item.camera->GetOwner()->GetTransform().GetPosition());
 	DXHelper::BindConstBuffer(context, light_cbuffer, &cb_scene, CB_SCENE_SLOT, ShaderBindFlag::PIXEL);
@@ -395,6 +399,7 @@ void Renderer::DrawRenderItemSkeleton(const RenderItem& item)
 
 void Renderer::DrawRenderItemGrass(const RenderItem& item)
 {
+	
 	dx::XMMATRIX mvp = dx::XMMatrixMultiply(item.world, dx::XMMatrixMultiply(item.camera->GetViewMatrix(), item.camera->GetProjectionMatrix()));
 	dx::XMStoreFloat4x4(&cb_object_data.mvp,mvp);
 
@@ -430,7 +435,6 @@ void Renderer::DrawRenderItemGrass(const RenderItem& item)
 
 void Renderer::DrawScreenQuad(const Material& material)
 {
-	
 	
 	material.BindToContext(context);
 	UINT stride = sizeof(Mesh::Vertex);

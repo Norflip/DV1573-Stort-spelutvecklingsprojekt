@@ -323,3 +323,22 @@ void Shader::CompileDS(ID3D11Device* device)
 	}
 }
 
+void Shader::Unbind(ID3D11DeviceContext* context) const
+{
+	
+
+	int flag = static_cast<int>(shaderFlags);
+
+	
+
+	if ((flag & (int)ShaderBindFlag::HULL) != 0)
+		context->HSSetShader(nullptr, 0, 0);
+
+	if ((flag & (int)ShaderBindFlag::DOMAINS) != 0)
+		context->DSSetShader(nullptr, 0, 0);
+
+	if ((flag & (int)ShaderBindFlag::GEOMETRY) != 0)
+		context->GSSetShader(nullptr, 0, 0);
+
+
+}

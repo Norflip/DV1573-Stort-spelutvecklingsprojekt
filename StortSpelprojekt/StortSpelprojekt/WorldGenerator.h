@@ -50,7 +50,7 @@ private:
 	std::unordered_map<int, Chunk*> chunkMap;
 	std::vector<Chunk*> chunks;
 
-	std::vector<GrassComponent> grassComponents;
+	std::vector<GrassComponent*> grassComponents;
 	Shader grassShader;
 	std::vector<Mesh::Vertex> grassV;
 	std::vector<unsigned int> grassI;

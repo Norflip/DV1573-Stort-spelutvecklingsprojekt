@@ -22,7 +22,7 @@ public:
 	Material();
 	Material (Shader shader);
 	virtual ~Material();
-	
+	void UnbindToContext(ID3D11DeviceContext* context) const;
 	void SetShader(Shader shader) { this->shader = shader; }
 	void BindToContext(ID3D11DeviceContext*) const;
 	

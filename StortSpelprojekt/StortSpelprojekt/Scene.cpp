@@ -39,7 +39,7 @@ void Scene::Initialize(Renderer* renderer)
 	worldGenerator.Generate(state, renderer->GetDevice());
 	
 	
-	worldGenerator.initalizeGrass(renderer->GetDevice(), renderer->GetContext());
+	worldGenerator.InitalizeGrass(renderer->GetDevice(), renderer->GetContext());
 
 
 	Object* cameraObject = new Object("camera", ObjectFlag::ENABLED);
