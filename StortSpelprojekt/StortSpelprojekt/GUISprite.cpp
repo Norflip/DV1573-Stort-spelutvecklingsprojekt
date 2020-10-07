@@ -30,7 +30,7 @@ GUISprite::GUISprite(Renderer& renderer , std::string filePath, float xPos, floa
 	HRESULT result;
 	std::wstring wsConvert(filePath.begin(), filePath.end());
 	spriteBatch = std::make_unique<dx::SpriteBatch>(renderer.GetContext());
-
+	
 	result = DirectX::CreateWICTextureFromFile(renderer.GetDevice(), wsConvert.c_str(), &res, &SRV);
 
 	assert(SUCCEEDED(result));

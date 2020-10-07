@@ -63,5 +63,4 @@ private:
 	Object* skybox;
 	Skybox* skyboxClass;		
 
-	WorldGenerator worldGenerator;	
 };

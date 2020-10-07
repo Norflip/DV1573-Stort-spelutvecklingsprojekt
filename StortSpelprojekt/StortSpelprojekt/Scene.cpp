@@ -257,20 +257,13 @@ void Scene::FixedUpdate(const float& fixedDeltaTime)
 void Scene::Render()
 {	
 	// skybox draw object
-	renderer->SetRSToCullNone(true);
+	//renderer->SetRSToCullNone(true);
 	skyboxClass->GetThisObject()->Draw(renderer, camera);
 
 	root->Draw(renderer, camera);
-
 	worldGenerator.Draw(renderer, camera);
 
-	//ID3D11ShaderResourceView* pSRV[1] = { NULL };
-	//renderer->GetContext()->PSSetShaderResources(0, 1, pSRV);
-
-	//testSprite->Draw();
-
 	renderer->RenderFrame();
-
 }
 
 void Scene::AddObject(Object* object)
