@@ -6,6 +6,7 @@ Texture2D night : register(t4);		// for wic
 Texture2D end : register(t5);		// for wic
 
 SamplerState defaultSampler : register (s0);
+#include "IO.hlsl"
 
 struct PixelInputType
 {

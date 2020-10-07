@@ -120,7 +120,8 @@ void WorldGenerator::Generate(const SaveState& levelState, Physics& physics, ID3
 		indexCount++;
 	}
 
-	Log::Add("Created " + std::to_string(chunkCount) + " chunks with " + std::to_string(collisionCount) + " collisions.");
+	/* Log::Add Gives us error..? */
+	//Log::Add("Created " + std::to_string(chunkCount) + " chunks with " + std::to_string(collisionCount) + " collisions.");
 }
 
 void WorldGenerator::Draw(Renderer* renderer, CameraComponent* camera)
@@ -166,7 +167,7 @@ dx::XMINT2 WorldGenerator::GetDirection(dx::XMINT2 direction, float value, const
 {
 	dx::XMINT2 newDirection = direction;
 
-	// Filip: Kolla genom logiken här
+	// Filip: Kolla genom logiken hï¿½r
 	if (newDirection.y == 0)
 	{
 		if (value < 0.8f)
@@ -213,7 +214,7 @@ dx::XMFLOAT2 WorldGenerator::PathIndexToWorld(const dx::XMINT2& i) const
 
 Chunk* WorldGenerator::CreateChunk(ChunkType type, dx::XMINT2 index, const Path& path, Physics& physics, ID3D11Device* device)
 {
-	// + 1 för height map
+	// + 1 fï¿½r height map
 	size_t size = CHUNK_SIZE + 1;
 
 	Noise::Settings settings (0);

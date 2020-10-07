@@ -5,11 +5,14 @@
 #include <bitset>
 #include <array>
 
-#include "Transform.h"
-#include "Mesh.h"
-#include "Material.h"
+#include "MeshComponent.h"
+#include "SkeletonMeshComponent.h"
+#include "InstancedMeshComponent.h"
+//#include "Transform.h"
+//#include "Mesh.h"
+//#include "Material.h"
 #include "Renderer.h"
-#include "Component.h"
+//#include "Component.h"
 
 class CameraComponent;
 

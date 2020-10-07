@@ -9,6 +9,10 @@
 #define TEXTURE_DIFFUSE4_SLOT 4
 #define TEXTURE_DIFFUSE5_SLOT 5
 
+#define TEXTURE_ALPHA_SLOT 1
+#define TEXTURE_CUBE_SLOT 2
+
+
 class Texture {
 public:
 	Texture();
@@ -18,15 +22,11 @@ public:
 	bool LoadTexture(ID3D11Device* device, LPCWSTR textureFilepath);
 
 	void SetTexture(ID3D11ShaderResourceView* srv) { this->srv = srv; }
-	ID3D11ShaderResourceView* GetTexture() { return this->srv; }
-
-	void SetRenderTarget(ID3D11RenderTargetView* rtv) { this->rtv = rtv; }
-	ID3D11RenderTargetView* GetRtv() { return this->rtv; }
-
+	ID3D11ShaderResourceView* GetTexture() const { return this->srv; }
+	
 	void Shutdown();
 	
 private:
 	HRESULT hr;
 	ID3D11ShaderResourceView* srv;	
-	ID3D11RenderTargetView* rtv;
 };

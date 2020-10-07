@@ -1,9 +1,10 @@
 #include "PhongShading.hlsl"
 #include "IO.hlsl"
 
+#include "PSBlendModes.hlsl"
 Texture2D diffuseMap : register (t0);
 Texture2D normalMap : register (t1);
-
+TextureCube skymap : register(t2); //just testing
 SamplerState defaultSampleType : register (s0);
 
 float4 main(VS_OUTPUT input) : SV_TARGET
@@ -34,6 +35,9 @@ float4 main(VS_OUTPUT input) : SV_TARGET
 	}
 
 	finalColor = saturate(finalColor * textureColor);
+
+
+
 
 	//return float4(input.normal, 1.0f);
 	return finalColor; //  float4(finalColor.r, finalColor.g, finalColor.b * 5, finalColor.a);

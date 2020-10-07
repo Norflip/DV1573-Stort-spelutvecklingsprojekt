@@ -1,5 +1,6 @@
 #include "Renderer.h"
 #include "RenderPass.h"
+#include "DShape.h"
 
 Renderer::Renderer() : device(nullptr), context(nullptr), swapchain(nullptr), obj_cbuffer(nullptr), skeleton_cbuffer(nullptr)
 {
@@ -8,6 +9,9 @@ Renderer::Renderer() : device(nullptr), context(nullptr), swapchain(nullptr), ob
 
 Renderer::~Renderer()
 {
+	blendStateOff->Release();
+	blendStateOn->Release();
+
 	backbuffer.Release();
 	midbuffers[0].Release();
 	midbuffers[1].Release();
@@ -19,6 +23,10 @@ Renderer::~Renderer()
 	skeleton_cbuffer->Release();
 	light_cbuffer->Release();
 	material_cbuffer->Release();
+
+	rasterizerStateCullBack->Release();
+	rasterizerStateCullNone->Release();
+
 }
 
 void Renderer::Initialize(Window* window)
@@ -30,6 +38,9 @@ void Renderer::Initialize(Window* window)
 	this->midbuffers[0] = DXHelper::CreateRenderTexture(window->GetWidth(), window->GetHeight(), device);
 	this->midbuffers[1] = DXHelper::CreateRenderTexture(window->GetWidth(), window->GetHeight(), device);
 
+	DXHelper::CreateRSState(device, &rasterizerStateCullBack, &rasterizerStateCullNone);
+
+
 	for (int bone = 0; bone < 60; bone++) //set id matrix as default for the bones. So if no animation is happening the character is not funky.
 	{
 		dx::XMStoreFloat4x4(&cb_skeleton_data.bones[bone], dx::XMMatrixIdentity());
@@ -39,6 +50,9 @@ void Renderer::Initialize(Window* window)
 	DXHelper::CreateConstBuffer(device, &light_cbuffer, &cb_scene, sizeof(cb_scene));
 	DXHelper::CreateConstBuffer(device, &material_cbuffer, &cb_material_data, sizeof(cb_material_data));
 	DXHelper::CreateConstBuffer(device, &skeleton_cbuffer, &cb_skeleton_data, sizeof(cb_skeleton_data));
+
+
+	DXHelper::CreateBlendState(device, &blendStateOn, &blendStateOff);
 
 	/* Screenquad shader */
 	Shader screenQuadShader;
@@ -51,6 +65,7 @@ void Renderer::Initialize(Window* window)
 
 	/* Screenquad mesh */
 	screenQuadMesh = Mesh::CreateScreenQuad(device);
+	DShape::Instance().m_Initialize(device);
 
 	//EXEMPEL
 	///AddRenderPass(new PSRenderPass(1, L"Shaders/TestPass.hlsl"));
@@ -75,7 +90,7 @@ void Renderer::DrawQueueToTarget(RenderQueue& queue)
 		auto queue = i.second;
 		if (!queue.empty())
 		{
-			queue.front().material.BindToContext(context);
+			queue.front().material->BindToContext(context);
 
 			while (!queue.empty())
 			{
@@ -106,15 +121,24 @@ void Renderer::DrawQueueToTarget(RenderQueue& queue)
 
 void Renderer::RenderFrame()
 {
+	//We need to clear Depth Stencil View as well.//Emil
 	size_t bufferIndex = 0;
 	ID3D11ShaderResourceView* nullSRV[1] = { nullptr };
 	context->PSSetShaderResources(0, 1, nullSRV);
 
 	ClearRenderTarget(midbuffers[bufferIndex]);
 	SetRenderTarget(midbuffers[bufferIndex]);
+  
+	context->RSSetState(rasterizerStateCullBack);
+	context->OMSetBlendState(blendStateOff, BLENDSTATEMASK, 0xffffffff);
 	DrawQueueToTarget(opaqueItemQueue);
-	DrawQueueToTarget(transparentItemQueue);
+  DShape::Instance().m_Draw(context);
+	context->RSSetState(rasterizerStateCullNone);
+	context->OMSetBlendState(blendStateOn, BLENDSTATEMASK, 0xffffffff);
 
+	DrawQueueToTarget(transparentItemQueue);
+	context->OMSetBlendState(blendStateOff, BLENDSTATEMASK, 0xffffffff);
+	context->RSSetState(rasterizerStateCullBack);
 	for (auto i = passes.begin(); i < passes.end(); i++)
 	{
 		if ((*i)->IsEnabled())
@@ -154,22 +178,21 @@ void Renderer::AddRenderPass(RenderPass* pass)
 void Renderer::Draw(const Mesh& mesh, const Material& material, const dx::XMMATRIX& model, const CameraComponent& camera)
 {
 	RenderItem item;
-	item.mesh = mesh;
-	item.material = material;
+	item.mesh = &mesh;
+	item.material = &material;
 	item.type = RenderItem::Type::Default;
 	item.world = model;
 	item.camera = &camera;
 	AddItem(item, material.IsTransparent());
 }
 
-void Renderer::DrawInstanced(const Mesh& mesh, size_t count, const Material& material, const dx::XMMATRIX& model, const CameraComponent& camera)
+void Renderer::DrawInstanced(const Mesh& mesh, const size_t& count, const Material& material, const CameraComponent& camera)
 {
 	RenderItem item;
-	item.mesh = mesh;
-	item.material = material;
+	item.mesh = &mesh;
+	item.material = &material;
 	item.type = RenderItem::Type::Instanced;
 	item.instanceCount = count;
-	item.world = model;
 	item.camera = &camera;
 	AddItem(item, material.IsTransparent());
 }
@@ -177,14 +200,29 @@ void Renderer::DrawInstanced(const Mesh& mesh, size_t count, const Material& mat
 void Renderer::DrawSkeleton(const Mesh& mesh, const Material& material, const dx::XMMATRIX& model, const CameraComponent& camera, cb_Skeleton& bones)
 {
 	RenderItem item;
-	item.mesh = mesh;
-	item.material = material;
+	item.mesh = &mesh;
+	item.material = &material;
 	item.type = RenderItem::Type::Skeleton;
 	item.bones = bones;
 	item.world = model;
 	item.camera = &camera;
 	AddItem(item, false);
 }
+
+void Renderer::SetRSToCullNone(bool cullNone)
+{
+	if (cullNone)
+	{
+		context->RSSetState(rasterizerStateCullNone);
+	}
+	else
+	{
+		context->RSSetState(rasterizerStateCullBack);
+	}
+	
+}
+
+
 
 void Renderer::ClearRenderTarget(const RenderTexture& target)
 {
@@ -202,7 +240,7 @@ void Renderer::AddItem(const RenderItem& item, bool transparent)
 {
 	RenderQueue& queue = (transparent) ? transparentItemQueue : opaqueItemQueue;
 
-	size_t materialID = item.material.GetID();
+	size_t materialID = item.material->GetID();
 	if (queue.find(materialID) == queue.end())
 		queue.insert({ materialID, std::queue<RenderItem>() });
 
@@ -211,16 +249,16 @@ void Renderer::AddItem(const RenderItem& item, bool transparent)
 
 void Renderer::DrawRenderItem(const RenderItem& item)
 {
-	// add to queue? 
+	
 	dx::XMMATRIX mvp = dx::XMMatrixMultiply(item.world, dx::XMMatrixMultiply(item.camera->GetViewMatrix(), item.camera->GetProjectionMatrix()));
 	dx::XMStoreFloat4x4(&cb_object_data.mvp, dx::XMMatrixTranspose(mvp));
 	dx::XMStoreFloat4x4(&cb_object_data.world, dx::XMMatrixTranspose(item.world));
 	DXHelper::BindConstBuffer(context, obj_cbuffer, &cb_object_data, CB_OBJECT_SLOT, ShaderBindFlag::VERTEX);
 
 
-	cb_material_data = item.material.GetMaterialData();
+	cb_material_data = item.material->GetMaterialData();
 	DXHelper::BindConstBuffer(context, material_cbuffer, &cb_material_data, CB_MATERIAL_SLOT, ShaderBindFlag::PIXEL);
-
+		
 
 	cb_scene.sunDirection = dx::XMFLOAT3(0.0f, 100.0f, -45.0f);
 	cb_scene.sunIntensity = 0.4f;
@@ -266,28 +304,37 @@ void Renderer::DrawRenderItem(const RenderItem& item)
 	UINT stride = sizeof(Mesh::Vertex);
 	UINT offset = 0;
 
-	context->IASetVertexBuffers(0, 1, &item.mesh.vertexBuffer, &stride, &offset);
-	context->IASetIndexBuffer(item.mesh.indexBuffer, DXGI_FORMAT_R32_UINT, 0);
-	context->IASetPrimitiveTopology(item.mesh.topology);
+	context->IASetVertexBuffers(0, 1, &item.mesh->vertexBuffer, &stride, &offset);
+	context->IASetIndexBuffer(item.mesh->indexBuffer, DXGI_FORMAT_R32_UINT, 0);
+	context->IASetPrimitiveTopology(item.mesh->topology);
 
-	context->DrawIndexed(item.mesh.indices.size(), 0, 0);
+	context->DrawIndexed(item.mesh->indices.size(), 0, 0);
 }
 
 void Renderer::DrawRenderItemInstanced(const RenderItem& item)
 {
-	// another cbuffer for instanced? 
-	UINT stride = sizeof(Mesh::Vertex);
-	UINT offset = 0;
+	
+	dx::XMMATRIX vp =dx::XMMatrixMultiply(item.camera->GetViewMatrix(), item.camera->GetProjectionMatrix());
+	dx::XMStoreFloat4x4(&cb_object_data.vp, dx::XMMatrixTranspose(vp));
+	
+	DXHelper::BindConstBuffer(context, obj_cbuffer, &cb_object_data, CB_OBJECT_SLOT, ShaderBindFlag::VERTEX);
 
-	context->IASetVertexBuffers(0, 1, &item.mesh.vertexBuffer, &stride, &offset);
-	context->IASetIndexBuffer(item.mesh.indexBuffer, DXGI_FORMAT_R32_UINT, 0);
-	context->IASetPrimitiveTopology(item.mesh.topology);
-	context->DrawIndexedInstanced(item.mesh.indices.size(), item.instanceCount, 0, 0, 0);
+
+	cb_material_data = item.material->GetMaterialData();
+	DXHelper::BindConstBuffer(context, material_cbuffer, &cb_material_data, CB_MATERIAL_SLOT, ShaderBindFlag::PIXEL);
+
+	UINT stride[2] = { sizeof(Mesh::Vertex), sizeof(Mesh::InstanceData) };
+	UINT offset[2] = { 0 };
+	
+	context->IASetVertexBuffers(0, 2, item.mesh->vertexAndInstance, stride, offset);
+	context->IASetIndexBuffer(item.mesh->indexBuffer, DXGI_FORMAT_R32_UINT, 0);
+	context->IASetPrimitiveTopology(item.mesh->topology);
+	context->DrawIndexedInstanced(item.mesh->indices.size(), item.instanceCount, 0, 0, 0);
 }
 
 void Renderer::DrawRenderItemSkeleton(const RenderItem& item)
 {
-	dx::XMMATRIX mvp = dx::XMMatrixMultiply(item.world, dx::XMMatrixMultiply(item.camera->GetViewMatrix(), item.camera->GetProjectionMatrix()));
+	/*dx::XMMATRIX mvp = dx::XMMatrixMultiply(item.world, dx::XMMatrixMultiply(item.camera->GetViewMatrix(), item.camera->GetProjectionMatrix()));
 	dx::XMStoreFloat4x4(&cb_object_data.mvp, dx::XMMatrixTranspose(mvp));
 	dx::XMStoreFloat4x4(&cb_object_data.world, dx::XMMatrixTranspose(item.world));
 	DXHelper::BindConstBuffer(context, obj_cbuffer, &cb_object_data, CB_OBJECT_SLOT, ShaderBindFlag::VERTEX);
@@ -302,11 +349,13 @@ void Renderer::DrawRenderItemSkeleton(const RenderItem& item)
 	context->IASetIndexBuffer(item.mesh.indexBuffer, DXGI_FORMAT_R32_UINT, 0);
 	context->IASetPrimitiveTopology(item.mesh.topology);
 
-	context->DrawIndexed(item.mesh.indices.size(), 0, 0);
+	context->DrawIndexed(item.mesh.indices.size(), 0, 0);*/
 }
 
 void Renderer::DrawScreenQuad(const Material& material)
 {
+	
+	
 	material.BindToContext(context);
 	UINT stride = sizeof(Mesh::Vertex);
 	UINT offset = 0;

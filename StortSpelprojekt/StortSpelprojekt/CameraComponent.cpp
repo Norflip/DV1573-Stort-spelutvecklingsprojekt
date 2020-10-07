@@ -1,6 +1,11 @@
 #include "CameraComponent.h"
 
-CameraComponent::CameraComponent(float fieldOfView) : fieldOfView(fieldOfView) {}
+CameraComponent* CameraComponent::mainCamera = nullptr;
+
+CameraComponent::CameraComponent(float fieldOfView, bool main) : fieldOfView(fieldOfView) 
+{
+	if (main) mainCamera = this;
+}
 CameraComponent::~CameraComponent() {}
 
 void CameraComponent::Resize(size_t width, size_t height)
@@ -112,7 +117,7 @@ std::vector<dx::XMFLOAT4>& CameraComponent::GetFrustumPlanes()
 	return frustumPlanes;
 }
 
-bool CameraComponent::CullAgainstAABB(const AABB& aabb, const dx::XMFLOAT3 worldPos)
+bool CameraComponent::CullAgainstAABB(const AABB& aabb, const dx::XMFLOAT3& worldPos)
 {
 	auto planes = GetFrustumPlanes();
 	bool inViewResult = true;
@@ -131,7 +136,7 @@ bool CameraComponent::CullAgainstAABB(const AABB& aabb, const dx::XMFLOAT3 world
 
 	for (int i = 0; i < 6; i++)
 	{
-		DirectX::XMFLOAT4 plane = frustumPlanes[i];
+		DirectX::XMFLOAT4& plane = frustumPlanes[i];
 
 		// X axis
 		if (plane.x < 0)

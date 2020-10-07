@@ -16,7 +16,13 @@ Engine::Engine(HINSTANCE hInstance) : window(hInstance), activeScene(nullptr)
 
 Engine::~Engine()
 {
-	
+	for (int i = 0; i < scenes.size(); i++)
+	{
+		if (scenes[i])
+		{
+			delete scenes[i];
+		}
+	}
 }
 
 void Engine::Run()
@@ -37,14 +43,15 @@ void Engine::Run()
 			TranslateMessage(&msg);
 			DispatchMessage(&msg);
 
-			if (msg.message == WM_QUIT)
+			if (msg.message == WM_QUIT)				
 				Exit();
+				
 		}
 		else
 		{
 			auto elapsed = std::chrono::duration<double, std::milli>(std::chrono::high_resolution_clock::now() - startTimePoint);
 			float currentTime = static_cast<float>(elapsed.count() / 1000.0f);
-
+			
 			if (activeScene != nullptr)
 			{
 				float deltaTime = currentTime - timeLastFrame;
@@ -53,6 +60,7 @@ void Engine::Run()
 			}
 
 			timeLastFrame = currentTime;
+
 		}
 	}
 }

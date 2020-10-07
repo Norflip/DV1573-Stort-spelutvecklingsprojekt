@@ -1,10 +1,9 @@
 #include "CommonBuffers.hlsl"
 #include "IO.hlsl"
 
-cbuffer cb_Skeleton : register(b3)
-{
-	float4x4 bones[60];
-};
+
+
+StructuredBuffer<float4x4> bones : register(t0);
 
 VS_OUTPUT main(VS_INPUT_SKELETON input)
 {

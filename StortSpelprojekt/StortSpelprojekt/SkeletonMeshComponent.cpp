@@ -15,9 +15,9 @@ void SkeletonMeshComponent::Update(const float& deltaTime)
 
 void SkeletonMeshComponent::Draw(Renderer* renderer, CameraComponent* camera)
 {
-	material.BindToContext(renderer->GetContext());
-	auto bones = GetAnimationTrack(0).Makeglobal(elapsedTime, dx::XMMatrixIdentity(), GetAnimationTrack(0).GetRootKeyJoints());
-	renderer->DrawSkeleton(mesh,material, GetOwner()->GetTransform().GetWorldMatrix(), *camera, bones);
+	/*material.BindToContext(renderer->GetContext());
+	GetAnimationTrack(0).Makeglobal(elapsedTime, dx::XMMatrixIdentity(), GetAnimationTrack(0).GetRootKeyJoints());
+	renderer->DrawSkeleton(mesh,material, GetOwner()->GetTransform().GetWorldMatrix(), *camera, bones);*/
 }
 
 void SkeletonMeshComponent::SetAnimationTrack(const SkeletonAni& skeletonAni)
