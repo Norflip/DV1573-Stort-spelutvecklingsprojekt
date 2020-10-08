@@ -22,7 +22,6 @@ public:
 private:
 	bool IsValid(dx::XMFLOAT2 point, dx::XMFLOAT2 regionSize, float cellSize, float radius, Points& points, int* grid, int cols, int rows);
 
-	std::default_random_engine rng;
+	std::default_random_engine rngEngine;
 	std::uniform_real_distribution<float> distribution;
-	int seed;
 };

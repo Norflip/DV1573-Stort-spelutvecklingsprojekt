@@ -5,7 +5,7 @@ namespace dx = DirectX;
 #include "Component.h"
 #include "Math.h"
 
-constexpr int CHUNK_SIZE = 64;
+constexpr int CHUNK_SIZE = 32;
 constexpr float TERRAIN_SCALE = 10.0f;
 
 enum class ChunkType

@@ -1,6 +1,6 @@
 #include "PossionDiscSampler.h"
 
-PossionDiscSampler::PossionDiscSampler(int seed)
+PossionDiscSampler::PossionDiscSampler(int seed) : distribution(0.0f, 1.0f)
 {
 	Reseed(seed);
 }
@@ -27,7 +27,7 @@ Points PossionDiscSampler::GeneratePoints(float radius, dx::XMFLOAT2 regionSize,
 	while (spawnPoints.size() > 0 && points.size() < 500)
 	{
 		// RANDOM
-		int index = static_cast<int>(floorf((spawnPoints.size() - 1) * distribution(rng)));
+		int index = static_cast<int>(floorf((spawnPoints.size() - 1) * distribution(rngEngine)));
 
 		dx::XMFLOAT2 center = spawnPoints[index];
 		bool accepted = false;
@@ -35,8 +35,8 @@ Points PossionDiscSampler::GeneratePoints(float radius, dx::XMFLOAT2 regionSize,
 		for (size_t i = 0; i < rejectionCount; i++)
 		{
 			// random.value
-			float angle = distribution(rng) * Math::PI * 2.0f;
-			float offset = (distribution(rng) + 1.0f) * radius; // random mellan radius och radius * 2
+			float angle = distribution(rngEngine) * Math::PI * 2.0f;
+			float offset = (distribution(rngEngine) + 1.0f) * radius; // random mellan radius och radius * 2
 			dx::XMFLOAT2 direction(sinf(angle), cosf(angle));
 			dx::XMFLOAT2 point(center.x + direction.x * offset, center.y + direction.y * offset);
 
@@ -71,8 +71,7 @@ void PossionDiscSampler::ResetWorld()
 
 void PossionDiscSampler::Reseed(int seed)
 {
-	this->seed = seed;
-	rng.seed(seed);
+	rngEngine.seed(seed);
 	distribution = std::uniform_real_distribution<float>(0.0f, 1.0f);
 }
 

@@ -13,11 +13,10 @@
 #include "SaveState.h"
 #include "DShape.h"
 #include "PossionDiscSampler.h"
+#include "Path.h"
 
 constexpr int LOAD_RADIUS = 1;
 constexpr size_t MAX_CHUNK_RENDER = 16;
-
-typedef std::vector<dx::XMFLOAT2> Path;
 
 class WorldGenerator
 {
@@ -33,23 +32,13 @@ public:
 	void DrawShapes ();
 	
 private:
-	std::vector<dx::XMINT2> CalculateIndexes (size_t steps, int seed);
-	Path CalculatePath(std::vector<dx::XMINT2>& indexes);
-
-	dx::XMINT2 GetDirection(dx::XMINT2 direction, float value, const std::default_random_engine& rng);
-	float GetDistanceToPath(const dx::XMFLOAT2& position, const Path& path) const;
-	
-	Chunk* CreateChunk(ChunkType type, dx::XMINT2 index, const Path& path, ID3D11Device* device, Object* root);
+	Chunk* CreateChunk(ChunkType type, dx::XMINT2 index, const Noise::Settings& settings, ID3D11Device* device, Object* root);
 	int GetSegmentSeed(const SaveState& levelState) { return levelState.seed ^ std::hash<int>()(levelState.segment); }
 	dx::XMFLOAT3 CalculateNormal(float x, float y, const Noise::Settings& settings) const;
 
-	
-
 private:
-	bool initialized = false;
 	Mesh chunkMesh;
 	Shader shader;
-	std::vector<dx::XMINT2> indexes;
 	Path path;
 
 	std::unordered_map<int, float*> chunkData;
