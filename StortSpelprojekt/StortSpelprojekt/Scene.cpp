@@ -172,7 +172,9 @@ void Scene::Initialize(Renderer* renderer)
 	styLeavesBase->AddComponent<InstancedMeshComponent>(stylizedTreeModel[1], stylizedTreeMaterial[1]);
 
 	styLeavesBase->AddFlag(ObjectFlag::NO_CULL);
-		
+	
+	
+
 	AddObject(styTreeBase);
 	AddObject(styLeavesBase);
 
