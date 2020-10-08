@@ -168,6 +168,9 @@
     <ClCompile Include="GUIFont.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="PossionDiscSampler.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="BoundingBoxes.h">
@@ -250,7 +253,7 @@
     </ClInclude>
     <ClInclude Include="ShittyOBJLoader.h">
       <Filter>Header Files</Filter>
-    </ClInclude>    
+    </ClInclude>
     <ClInclude Include="ThirdParty\SimplexNoise.h">
       <Filter>Header Files</Filter>
     </ClInclude>
@@ -300,6 +303,9 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="GUIFont.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="PossionDiscSampler.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>

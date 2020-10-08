@@ -1,4 +1,5 @@
 #include "Chunk.h"
+#include <iostream>
 
 Chunk::Chunk(dx::XMINT2 index, ChunkType type) : index(index), type(type), heightMap(nullptr)
 {
@@ -16,30 +17,30 @@ Chunk::~Chunk()
 
 float Chunk::SampleHeight(float x, float z)
 {
-	/*int col = (int)floorf(x);
-	int row = (int)floorf(z);
+	int col =  (int)floorf(x);
+	int row =  (int)floorf(z);
 	float height = 0.0f;
 
-	if (row > 0 && col > 0 && row < CHUNK_SIZE && col < CHUNK_SIZE)
+	if (row >= 0 && col >= 0 && row < CHUNK_SIZE && col < CHUNK_SIZE)
 	{
 		float bl = heightMap[col * CHUNK_SIZE + row];
 		float br = heightMap[(col + 1) * CHUNK_SIZE + row];
 		float tr = heightMap[(col + 1) * CHUNK_SIZE + (row + 1)];
 		float tl = heightMap[col * CHUNK_SIZE + (row + 1)];
 
-		float u = x - col;
-		float v = z - row;
-		height = Math::Lerp(Math::Lerp(bl, br, u), Math::Lerp(tl, tr, u), v);
+		float u = x - (float)col;
+		float v = z - (float)row;
+		height = Math::Lerp(Math::Lerp(bl, br, u), Math::Lerp(tl, tr, u), 1.0f - v);
 	}
 	
-	return height * TERRAIN_SCALE;*/
-	return 0.0f;
+	std::cout << "col: " << col << ", row: " << row << ", height: " << height << std::endl;
+	return height * TERRAIN_SCALE;
 }
 
 dx::XMVECTOR Chunk::IndexToWorld(const dx::XMINT2& index, float y)
 {
-	float x = static_cast<float>(index.x * (int)CHUNK_SIZE) + ((float)CHUNK_SIZE / 2.0f);
-	float z = static_cast<float>(index.y * (int)CHUNK_SIZE) + ((float)CHUNK_SIZE / 2.0f);
+	float x = static_cast<float>(index.x * (int)CHUNK_SIZE);// +((float)CHUNK_SIZE / 2.0f);
+	float z = static_cast<float>(index.y * (int)CHUNK_SIZE) - CHUNK_SIZE;// + ((float)CHUNK_SIZE / 2.0f);
 	dx::XMVECTOR pos = { x,y,z };
 	return pos;
 }
@@ -47,7 +48,7 @@ dx::XMVECTOR Chunk::IndexToWorld(const dx::XMINT2& index, float y)
 dx::XMFLOAT2 Chunk::IndexToXZ(const dx::XMINT2& index)
 {
 	float x = (float)index.x * (float)CHUNK_SIZE;
-	float y = (float)index.y * (float)CHUNK_SIZE;
+	float y = (float)index.y * (float)CHUNK_SIZE - CHUNK_SIZE;
 
 	return dx::XMFLOAT2(x, y);
 }

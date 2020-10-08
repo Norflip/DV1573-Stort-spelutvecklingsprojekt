@@ -16,10 +16,60 @@ WorldGenerator::~WorldGenerator()
 
 void WorldGenerator::InitalizeGrass(ID3D11Device* device, ID3D11DeviceContext* context)
 {
-
 	for (int grass = 0; grass < grassComponents.size(); grass++)
 	{
 		grassComponents[grass]->InitializeGrass(chunkMesh.vertices, chunkMesh.indices, device, context);
+	}
+}
+
+void WorldGenerator::InitializeTrees(std::vector<Mesh> models, std::vector<Material> materials, ID3D11Device* device)
+{
+	PossionDiscSampler sampler(0);
+
+	for (auto chunk : chunks)
+	{
+		Points points = sampler.GeneratePoints(20.0f, { CHUNK_SIZE, CHUNK_SIZE }, false);
+		size_t nrOfInstancedStyTrees = points.size();
+
+		if (nrOfInstancedStyTrees > 0)
+		{
+			std::vector<Mesh::InstanceData> treesInstanced(nrOfInstancedStyTrees);
+			std::vector<Mesh::InstanceData> leavesInstanced(nrOfInstancedStyTrees);
+			dx::XMFLOAT2 posXZ = Chunk::IndexToXZ(chunk->GetIndex());
+
+			for (size_t i = 0; i < nrOfInstancedStyTrees; i++)
+			{
+				dx::XMFLOAT3 chunkPosition;
+				dx::XMStoreFloat3(&chunkPosition, chunk->GetOwner()->GetTransform().GetWorldPosition());
+				float y = chunkPosition.y + chunk->SampleHeight(points[i].x, points[i].y);
+				
+				dx::XMFLOAT3 position (posXZ.x + points[i].x, y, posXZ.y + points[i].y);
+				leavesInstanced[i].instancePosition = position;
+				treesInstanced[i].instancePosition = position;
+
+				dx::XMMATRIX translation = dx::XMMatrixScaling(0.5f, 0.5f, 0.5f) * dx::XMMatrixTranslation(position.x, position.y, position.z);
+				dx::XMStoreFloat4x4(&leavesInstanced[i].instanceWorld, translation);
+				dx::XMStoreFloat4x4(&treesInstanced[i].instanceWorld, translation);
+			}
+
+			models[0].CreateInstanceBuffer(device, treesInstanced);
+			models[0].SetInstanceNr(nrOfInstancedStyTrees);
+
+			models[1].CreateInstanceBuffer(device, leavesInstanced);
+			models[1].SetInstanceNr(nrOfInstancedStyTrees);
+
+			materials[1].SetTransparent(true);
+
+			Object* styTreeBase = new Object("treeBase");
+			styTreeBase->AddComponent<InstancedMeshComponent>(models[0], materials[0]);
+
+			Object* styLeavesBase = new Object("leaves", ObjectFlag::DEFAULT | ObjectFlag::NO_CULL);
+			styLeavesBase->AddComponent<InstancedMeshComponent>(models[1], materials[1]);
+
+			Transform::SetParentChild(chunk->GetOwner()->GetTransform(), styTreeBase->GetTransform());
+			Transform::SetParentChild(chunk->GetOwner()->GetTransform(), styLeavesBase->GetTransform());
+			break;
+		}
 	}
 }
 
@@ -108,12 +158,14 @@ void WorldGenerator::Initialize(ID3D11Device* device)
 
 }
 
-void WorldGenerator::Generate(const SaveState& levelState, ID3D11Device* device)
+void WorldGenerator::Generate(const SaveState& levelState, ID3D11Device* device, Object* root)
 {
 	size_t steps = 4;
 	int segmentSeed = GetSegmentSeed(levelState);
 
-	Path path = CalculatePath(steps, segmentSeed);
+	indexes = CalculateIndexes(steps, segmentSeed);
+	path = CalculatePath(indexes);
+
 	std::unordered_set<int> visited;
 	dx::XMINT2 index = { 0,0 };
 	size_t indexCount = 0;
@@ -121,12 +173,12 @@ void WorldGenerator::Generate(const SaveState& levelState, ID3D11Device* device)
 	size_t collisionCount = 0;
 	size_t chunkCount = 0;
 
-	for (auto i = path.cbegin(); i < path.cend(); i++)
+	for (auto i = indexes.cbegin(); i < indexes.cend(); i++)
 	{
 		// load around
-		for (int y = 0; y <= LOAD_RADIUS; y++)
+		for (int y = -LOAD_RADIUS; y <= LOAD_RADIUS; y++)
 		{
-			for (int x = 0; x <= LOAD_RADIUS; x++)
+			for (int x = -LOAD_RADIUS; x <= LOAD_RADIUS; x++)
 			{
 				index.x = (*i).x + x;
 				index.y = (*i).y + y;
@@ -138,10 +190,11 @@ void WorldGenerator::Generate(const SaveState& levelState, ID3D11Device* device)
 
 					if (indexCount == 0)
 						type = ChunkType::Start;
-					if (indexCount == path.size() - 1)
+					if (indexCount == indexes.size() - 1)
 						type = ChunkType::Goal;
 
-					CreateChunk(type, index, path, device);
+					CreateChunk(type, index, path, device, root);
+					
 					visited.insert(hash);
 					chunkCount++;
 				}
@@ -157,16 +210,25 @@ void WorldGenerator::Generate(const SaveState& levelState, ID3D11Device* device)
 
 }
 
-void WorldGenerator::Draw(Renderer* renderer, CameraComponent* camera)
+void WorldGenerator::DrawShapes ()
 {
+	float offset = CHUNK_SIZE / 2.0f;
 
-	for (auto i = chunks.begin(); i < chunks.end(); i++)
+	for (auto i = 0; i < path.size(); i++)
 	{
-		(*i)->GetOwner()->Draw(renderer, camera);
+		dx::XMFLOAT2 p = path[i];
+		dx::XMFLOAT3 p3 = { p.x + offset, 5, p.y + offset };
+		DShape::DrawSphere(p3, 0.5f, { 0,0,0 });
+
+		if (i < path.size() - 1)
+		{
+			dx::XMFLOAT2 p2 = path[i + 1];
+			DShape::DrawLine({ p2.x + offset, 5, p2.y + offset }, p3, { 1,0,0 });
+		}
 	}
 }
 
-std::vector<dx::XMINT2> WorldGenerator::CalculatePath(size_t steps, int seed)
+std::vector<dx::XMINT2> WorldGenerator::CalculateIndexes(size_t steps, int seed)
 {
 	const int STEPS_FORWARD = 2;
 	std::vector<dx::XMINT2> path;
@@ -175,9 +237,10 @@ std::vector<dx::XMINT2> WorldGenerator::CalculatePath(size_t steps, int seed)
 
 	dx::XMINT2 direction = { 0,1 };
 	dx::XMINT2 current = { 0,0 };
+	dx::XMINT2 tmp = { 0,0 };
+
 	size_t maxSteps = steps;
 	std::uniform_real_distribution<float> distribution(0.0f, 1.0f);
-	dx::XMINT2 tmp = { 0,0 };
 
 	while (maxSteps > 0)
 	{
@@ -191,8 +254,31 @@ std::vector<dx::XMINT2> WorldGenerator::CalculatePath(size_t steps, int seed)
 			current = tmp;
 		}
 
-		direction = GetDirection(direction, distribution(rng), rng);
+		//direction = GetDirection(direction, distribution(rng), rng);
 	}
+
+	return path;
+}
+
+Path WorldGenerator::CalculatePath(std::vector<dx::XMINT2>& indexes)
+{
+	size_t cuts = 7;
+	Path path(path.size() * cuts);
+
+	for (size_t i = 0; i < indexes.size() - 1; i++)
+	{
+		dx::XMFLOAT2 pointA = Chunk::IndexToXZ(indexes[i]);
+		dx::XMFLOAT2 pointB = Chunk::IndexToXZ(indexes[i + 1]);
+
+		for (int j = 0; j < cuts; j++)
+		{
+			float t = (float)j / (float)cuts;
+			path.push_back(Math::Lerp(pointA, pointB, t));
+		}
+	}
+
+	// add last
+	path.push_back(Chunk::IndexToXZ(indexes[indexes.size() - 1]));
 
 	return path;
 }
@@ -218,20 +304,30 @@ dx::XMINT2 WorldGenerator::GetDirection(dx::XMINT2 direction, float value, const
 	return newDirection;
 }
 
-float WorldGenerator::GetDistanceToPath(const dx::XMFLOAT2& position, const Path& indexes) const
+float WorldGenerator::GetDistanceToPath(const dx::XMFLOAT2& position, const Path& path) const
 {
 	float shortest = FLT_MAX;
+	float offset = CHUNK_SIZE / 2.0f;
 
-	for (size_t i = 0; i < indexes.size() - 1; i++)
+	for (size_t i = 0; i < path.size() - 1; i++)
 	{
-		dx::XMFLOAT2 p0 = PathIndexToWorld(indexes[i]);
-		dx::XMFLOAT2 p1 = PathIndexToWorld(indexes[i + 1]);
+		dx::XMFLOAT2 p0 = path[i];
+		dx::XMFLOAT2 p1 = path[i + 1];
 
-		float tmpDistance = Math::DistanceToLineSqr(position.x, position.y, p0.x, p0.y, p1.x, p1.y);
+		if (p0.x == p1.x && p0.y == p1.y)
+		{
+			std::cout << "watf" << std::endl;
+		}
+
+		float tmpDistance = Math::DistanceToLineSqr(position.x, position.y, 
+			p0.x + offset, p0.y + offset, 
+			p1.x + offset, p1.y + offset
+		);
 
 		if (tmpDistance < shortest)
 		{
-			//std::cout << "(" << p0.x << ", " << p0.y << ") > (" << p1.x << ", " << p1.y << ") dst: " << tmpDistance << " p: " << position.x << ", " << position.y << std::endl;
+			//	std::cout << "SHORTER" << std::endl;
+				//std::cout << "(" << p0.x << ", " << p0.y << ") > (" << p1.x << ", " << p1.y << ") dst: " << tmpDistance << " p: " << position.x << ", " << position.y << std::endl;
 			shortest = tmpDistance;
 		}
 	}
@@ -239,33 +335,24 @@ float WorldGenerator::GetDistanceToPath(const dx::XMFLOAT2& position, const Path
 	return sqrtf(shortest);
 }
 
-dx::XMFLOAT2 WorldGenerator::PathIndexToWorld(const dx::XMINT2& i) const
-{
-	float x = static_cast<float>(i.x * CHUNK_SIZE) + (static_cast<float>(CHUNK_SIZE) / 2.0f);
-	float y = static_cast<float>(i.y * CHUNK_SIZE) + (static_cast<float>(CHUNK_SIZE) / 2.0f);
-	return dx::XMFLOAT2(x, y);
-}
-
-Chunk* WorldGenerator::CreateChunk(ChunkType type, dx::XMINT2 index, const Path& path, ID3D11Device* device)
+Chunk* WorldGenerator::CreateChunk(ChunkType type, dx::XMINT2 index, const Path& path, ID3D11Device* device, Object* root)
 {
 	// + 1 f�r height map
 	size_t size = CHUNK_SIZE + 1;
 
 	Noise::Settings settings(0);
-	settings.octaves = 4;
+	settings.octaves = 5;
 	settings.persistance = 0.5f;
-	settings.lacunarity = 1.99f;
-	settings.scale = 20.f;
+	settings.lacunarity = 1.4f;
+	settings.scale = 1.f;
 
 	dx::XMFLOAT2 pos = Chunk::IndexToXZ(index);
 
 	unsigned char* buffer = new unsigned char[size * size * 4];
-	unsigned char* normalBuffer = new unsigned char[size * size * 4];
 	float* heightMap = new float[size * size];
 
 	size_t bufferIndex = 0;
-
-	const float MAX_DISTANCE = 600.0f;
+	const float MAX_DISTANCE = 10.0f;
 
 	for (size_t y = 0; y < size; y++)
 	{
@@ -274,59 +361,44 @@ Chunk* WorldGenerator::CreateChunk(ChunkType type, dx::XMINT2 index, const Path&
 			dx::XMFLOAT2 pf = dx::XMFLOAT2(pos.x + static_cast<float>(x), pos.y + static_cast<float>(y));
 			float distance = GetDistanceToPath(pf, path);
 
-			distance = sqrtf(pf.x * pf.x + pf.y * pf.y);
-
 			if (distance > MAX_DISTANCE)
 				distance = MAX_DISTANCE;
 
 			distance = distance / MAX_DISTANCE;
 
-			//if (distance < 1.0f)
-		//		std::cout << distance << std::endl;
-
-			dx::XMFLOAT3 normal = CalculateNormal(pos.x + x, CHUNK_SIZE - pos.y + y, settings);
-			normalBuffer[bufferIndex * 4 + 0] = static_cast<unsigned char>(255 * normal.x);
-			normalBuffer[bufferIndex * 4 + 1] = static_cast<unsigned char>(255 * normal.y);
-			normalBuffer[bufferIndex * 4 + 2] = static_cast<unsigned char>(255 * normal.z);
-			normalBuffer[bufferIndex * 4 + 3] = 255;
-
-			float packedNormal = Math::Pack3DVector(normal.x, normal.y, normal.z);
 			float height = Noise::Sample(pos.x + x, pos.y + y, settings);
-
 			heightMap[bufferIndex] = height;
 
 			buffer[bufferIndex * 4 + 0] = static_cast<unsigned char>(255 * height);
 			buffer[bufferIndex * 4 + 1] = static_cast<unsigned char>(255 * distance);
-			buffer[bufferIndex * 4 + 2] = static_cast<unsigned char>(255 * distance);
+			buffer[bufferIndex * 4 + 2] = static_cast<unsigned char>(255);
 			buffer[bufferIndex * 4 + 3] = static_cast<unsigned char>(255);
+
 			bufferIndex++;
 		}
 	}
 
 	auto srv = DXHelper::CreateTexture(buffer, size, size, 4, DXGI_FORMAT_R8G8B8A8_UNORM_SRGB, device);
-	auto nsrv = DXHelper::CreateTexture(normalBuffer, size, size, 4, DXGI_FORMAT_R8G8B8A8_UNORM_SRGB, device);
+	//	auto nsrv = DXHelper::CreateTexture(normalBuffer, size, size, 4, DXGI_FORMAT_R8G8B8A8_UNORM_SRGB, device);
 
 
 
 
-	//delete[] heightMap;
+		//delete[] heightMap;
 	delete[] buffer;
-	delete[] normalBuffer;
+	//	delete[] normalBuffer;
 
 
 
 	Material material(shader);
 	material.SetTexture(Texture(srv), 0, ShaderBindFlag::PIXEL);
 	material.SetTexture(Texture(srv), 0, ShaderBindFlag::VERTEX);
-	material.SetTexture(Texture(nsrv), 1, ShaderBindFlag::VERTEX);
+	//material.SetTexture(Texture(nsrv), 1, ShaderBindFlag::VERTEX);
 
 	std::string name = "chunk " + std::to_string(index.x) + ", " + std::to_string(index.y);
 	Object* chunkObject = new Object(name, ObjectFlag::DEFAULT);
 
-	dx::XMVECTOR indexPos = Chunk::IndexToWorld(index, -5.0f);
-	indexPos.m128_f32[0] -= 40.0f;
-	indexPos.m128_f32[2] -= 120.0f;
-
+	dx::XMVECTOR indexPos = Chunk::IndexToWorld(index, 0.0f);
 	chunkObject->GetTransform().SetPosition(indexPos);
 	chunkObject->AddComponent<MeshComponent>(chunkMesh, material);
 
@@ -346,6 +418,8 @@ Chunk* WorldGenerator::CreateChunk(ChunkType type, dx::XMINT2 index, const Path&
 
 	/****************************EMIL KOD*/
 
+
+	Transform::SetParentChild(root->GetTransform(), chunk->GetOwner()->GetTransform());
 	chunk->SetHeightMap(heightMap);
 
 	chunks.push_back(chunk);

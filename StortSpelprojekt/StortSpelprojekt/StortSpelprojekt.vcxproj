@@ -171,6 +171,7 @@
     <ClCompile Include="MoveComponent.cpp" />
     <ClCompile Include="NodeWalkerComponent.cpp" />
     <ClCompile Include="Object.cpp" />
+    <ClCompile Include="PossionDiscSampler.cpp" />
     <ClCompile Include="Renderer.cpp" />
     <ClCompile Include="Scene.cpp" />
     <ClCompile Include="Shader.cpp" />
@@ -192,6 +193,7 @@
     <ClInclude Include="Chunk.h" />
     <ClInclude Include="ControllerComponent.h" />
     <ClInclude Include="DShape.h" />
+    <ClInclude Include="PossionDiscSampler.h" />
     <ClInclude Include="Shapes.h" />
     <ClInclude Include="GameClock.h" />
     <ClInclude Include="GrassComponent.h" />

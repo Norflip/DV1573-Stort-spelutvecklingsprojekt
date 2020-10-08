@@ -54,12 +54,9 @@ void Scene::Initialize(Renderer* renderer)
 	state.segment = 0;
 
 	worldGenerator.Initialize(renderer->GetDevice());
-	
-	worldGenerator.Generate(state, renderer->GetDevice());
-	
+	worldGenerator.Generate(state, renderer->GetDevice(), root);
 	
 	worldGenerator.InitalizeGrass(renderer->GetDevice(), renderer->GetContext());
-
 
 	Object* cameraObject = new Object("camera", ObjectFlag::ENABLED);
 	camera = cameraObject->AddComponent<CameraComponent>(60.0f, true);
@@ -156,19 +153,21 @@ void Scene::Initialize(Renderer* renderer)
 	stylizedTreeMaterial[0].SetShader(instanceShader);
 	stylizedTreeMaterial[1].SetShader(alphaInstanceShader);
 
-	size_t nrOfInstancedStyTrees =5;
-	std::vector<Mesh::InstanceData> styTreesInstanced(nrOfInstancedStyTrees);
-	std::vector<Mesh::InstanceData> styLeavesInstanced(nrOfInstancedStyTrees);
+	worldGenerator.InitializeTrees(stylizedTreeModel, stylizedTreeMaterial, renderer->GetDevice());
 
-	
-	std::vector<unsigned int> randNr;
-	for (size_t i = 0; i < nrOfInstancedStyTrees; i++)
-	{
-		randNr.push_back(rand() % 5 + 1);
-	}
+	//size_t nrOfInstancedStyTrees =5;
+	//std::vector<Mesh::InstanceData> styTreesInstanced(nrOfInstancedStyTrees);
+	//std::vector<Mesh::InstanceData> styLeavesInstanced(nrOfInstancedStyTrees);
+
+	//
+	//std::vector<unsigned int> randNr;
+	//for (size_t i = 0; i < nrOfInstancedStyTrees; i++)
+	//{
+	//	randNr.push_back(rand() % 5 + 1);
+	//}
 
 
-	for (size_t i = 0; i < nrOfInstancedStyTrees; i++)
+	/*for (size_t i = 0; i < nrOfInstancedStyTrees; i++)
 	{		
 		dx::XMStoreFloat4x4(&styLeavesInstanced[i].instanceWorld, dx::XMMatrixScaling(0.5f, 0.5f, 0.5f) * dx::XMMatrixTranslation((i + 6 * randNr[i]) + stylizedTreeModel[1].GetT().x, 0 + stylizedTreeModel[1].GetT().y, (i + 1 * randNr[i]) + stylizedTreeModel[1].GetT().z));
 		styLeavesInstanced[i].instancePosition = dx::XMFLOAT3((i + 1 * randNr[i]) + stylizedTreeModel[1].GetT().x, 0 + stylizedTreeModel[1].GetT().y, (i + 1 * randNr[i]) + stylizedTreeModel[1].GetT().z);
@@ -193,7 +192,7 @@ void Scene::Initialize(Renderer* renderer)
 	styLeavesBase->AddFlag(ObjectFlag::NO_CULL);
 		
 	AddObject(styTreeBase);
-	AddObject(styLeavesBase);
+	AddObject(styLeavesBase);*/
 
 	/* NEW TREE TEST INSTANCED*/
 
@@ -226,16 +225,6 @@ void Scene::Initialize(Renderer* renderer)
 void Scene::Update(const float& deltaTime)
 {
 	clock.Update();
-	dx::XMFLOAT3 positionA = { 0,0,2 };
-	dx::XMFLOAT3 positionB = { 0, 2,-5};
-
-	DShape::DrawBox(positionA, { 2,2,2 }, { 0, 1, 1 });
-	DShape::DrawWireBox(positionB, { 4,4,4 }, { 1,0,0 });
-
-	DShape::DrawSphere({ -4,0,0 }, 1.0f, { 0, 0, 1 });
-	DShape::DrawWireSphere({ -4,0,5 }, 1.0f, { 0,1,0 });
-
-	DShape::DrawLine(positionA, positionB, { 1,1,0 });
 
 	input.UpdateInputs();
 	root->Update(deltaTime);
