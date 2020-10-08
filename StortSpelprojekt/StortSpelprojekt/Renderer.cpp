@@ -27,6 +27,7 @@ Renderer::~Renderer()
 	rasterizerStateCullBack->Release();
 	rasterizerStateCullNone->Release();
 
+	dss->Release();
 }
 
 void Renderer::Initialize(Window* window)
@@ -35,8 +36,8 @@ void Renderer::Initialize(Window* window)
 
 	DXHelper::CreateSwapchain(*window, &device, &context, &swapchain);
 	this->backbuffer = DXHelper::CreateBackbuffer(window->GetWidth(), window->GetHeight(), device, swapchain);
-	this->midbuffers[0] = DXHelper::CreateRenderTexture(window->GetWidth(), window->GetHeight(), device);
-	this->midbuffers[1] = DXHelper::CreateRenderTexture(window->GetWidth(), window->GetHeight(), device);
+	this->midbuffers[0] = DXHelper::CreateRenderTexture(window->GetWidth(), window->GetHeight(), device, context, &dss);
+	this->midbuffers[1] = DXHelper::CreateRenderTexture(window->GetWidth(), window->GetHeight(), device, context, &dss);
 
 	DXHelper::CreateRSState(device, &rasterizerStateCullBack, &rasterizerStateCullNone);
 
@@ -129,16 +130,21 @@ void Renderer::RenderFrame()
 	ClearRenderTarget(midbuffers[bufferIndex]);
 	SetRenderTarget(midbuffers[bufferIndex]);
   
+	context->OMSetDepthStencilState(dss,0);
+
 	context->RSSetState(rasterizerStateCullBack);
 	context->OMSetBlendState(blendStateOff, BLENDSTATEMASK, 0xffffffff);
 	DrawQueueToTarget(opaqueItemQueue);
-  DShape::Instance().m_Draw(context);
+
+	//DShape::Instance().m_Draw(context);
+
 	context->RSSetState(rasterizerStateCullNone);
 	context->OMSetBlendState(blendStateOn, BLENDSTATEMASK, 0xffffffff);
+	DrawQueueToTarget(transparentItemQueue);	    
 
-	DrawQueueToTarget(transparentItemQueue);
 	context->OMSetBlendState(blendStateOff, BLENDSTATEMASK, 0xffffffff);
 	context->RSSetState(rasterizerStateCullBack);
+	
 	for (auto i = passes.begin(); i < passes.end(); i++)
 	{
 		if ((*i)->IsEnabled())
@@ -153,7 +159,7 @@ void Renderer::RenderFrame()
 				bufferIndex = nextBufferIndex;
 
 			// overkill? Gives the correct result if outside the loop but errors in output
-			context->PSSetShaderResources(0, 1, nullSRV);
+			//context->PSSetShaderResources(0, 1, nullSRV);
 		}
 	}
 
@@ -161,6 +167,8 @@ void Renderer::RenderFrame()
 	SetRenderTarget(backbuffer);
 	context->PSSetShaderResources(0, 1, &midbuffers[bufferIndex].srv);
 	DrawScreenQuad(screenQuadMaterial);
+		
+	guiManager->DrawAll();
 
 	HRESULT hr = swapchain->Present(0, 0); //1 here?
 	assert(SUCCEEDED(hr));
@@ -173,6 +181,11 @@ void Renderer::AddRenderPass(RenderPass* pass)
 
 	if (passes.size() > 1)
 		std::sort(passes.begin(), passes.end(), [](const RenderPass* a, const RenderPass* b) -> bool { return a->GetPriority() < b->GetPriority(); });
+}
+
+void Renderer::SetGUIManager(GUIManager* manager)
+{
+	this->guiManager = manager;
 }
 
 void Renderer::Draw(const Mesh& mesh, const Material& material, const dx::XMMATRIX& model, const CameraComponent& camera)
@@ -227,7 +240,8 @@ void Renderer::SetRSToCullNone(bool cullNone)
 void Renderer::ClearRenderTarget(const RenderTexture& target)
 {
 	context->ClearRenderTargetView(target.rtv, DEFAULT_BG_COLOR);
-	context->ClearDepthStencilView(target.dsv, D3D11_CLEAR_DEPTH, 1.0f, 0);
+	context->ClearDepthStencilView(target.dsv, D3D11_CLEAR_DEPTH | D3D11_CLEAR_STENCIL, 1.0f, 0);
+	
 }
 
 void Renderer::SetRenderTarget(const RenderTexture& target)
@@ -314,6 +328,8 @@ void Renderer::DrawRenderItem(const RenderItem& item)
 void Renderer::DrawRenderItemInstanced(const RenderItem& item)
 {
 	
+
+
 	dx::XMMATRIX vp =dx::XMMatrixMultiply(item.camera->GetViewMatrix(), item.camera->GetProjectionMatrix());
 	dx::XMStoreFloat4x4(&cb_object_data.vp, dx::XMMatrixTranspose(vp));
 	

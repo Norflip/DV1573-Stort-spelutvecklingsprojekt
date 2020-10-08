@@ -160,6 +160,7 @@
     <ClCompile Include="Engine.cpp" />
     <ClCompile Include="GameClock.cpp" />
     <ClCompile Include="GUIManager.cpp" />
+    <ClCompile Include="GUISprite.cpp" />
     <ClCompile Include="Input.cpp" />
     <ClCompile Include="InstancedMeshComponent.cpp" />
     <ClCompile Include="main.cpp" />
@@ -171,6 +172,7 @@
     <ClCompile Include="Renderer.cpp" />
     <ClCompile Include="Scene.cpp" />
     <ClCompile Include="Shader.cpp" />
+    <ClCompile Include="GUIFont.cpp" />
     <ClCompile Include="Skybox.cpp" />
     <ClCompile Include="Texture.cpp" />
     <ClCompile Include="SkeletonAni.cpp" />
@@ -190,7 +192,9 @@
     <ClInclude Include="DShape.h" />
     <ClInclude Include="Shapes.h" />
     <ClInclude Include="GameClock.h" />
+    <ClInclude Include="GUIFont.h" />
     <ClInclude Include="GUIManager.h" />
+    <ClInclude Include="GUISprite.h" />
     <ClInclude Include="InstancedMeshComponent.h" />
     <ClInclude Include="Math.h" />
     <ClInclude Include="MoveComponent.h" />
