@@ -74,8 +74,6 @@ void WorldGenerator::Initialize(ID3D11Device* device, Shader* shader, Shader* gr
 	this->shader = shader;
 	chunkMesh = Mesh(device, vertices, indicies);
 
-	
-
 	/****************EMILKOD****************/
 
 	this->grassShader = grassShader;
