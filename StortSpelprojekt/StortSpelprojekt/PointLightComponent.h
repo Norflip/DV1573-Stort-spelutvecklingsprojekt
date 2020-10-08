@@ -11,10 +11,8 @@ class PointLightComponent : public Component
 public:
 
 	PointLightComponent();
-	PointLightComponent(dx::XMFLOAT4 lightColor, float range , dx::XMFLOAT3 attenuation, ID3D11Device* device, ID3D11DeviceContext* context);
 	virtual ~PointLightComponent();
 
-	virtual void Update(const float& deltaTime) override;
 	virtual void Initialize() override;
 	dx::XMFLOAT4 GetColor();
 	void SetColor(dx::XMFLOAT4 color);

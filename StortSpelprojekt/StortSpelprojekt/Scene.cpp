@@ -153,13 +153,29 @@ void Scene::Initialize(Renderer* renderer)
 	lightSahder.SetVertexShader(L"Shaders/Default_vs.hlsl");
 	lightSahder.SetPixelShader(L"Shaders/Default_ps.hlsl");
 	lightSahder.Compile(renderer->GetDevice());
-	Object* testPointLight = new Object("testPointLight");
-	dx::XMFLOAT3 lightTranslation = dx::XMFLOAT3(15.0f, -5.0f, -5.0f);
-	testPointLight->GetTransform().SetPosition(dx::XMLoadFloat3(&lightTranslation));
-	AddObject(testPointLight);
-	testPointLight->AddComponent<PointLightComponent>();
 
-
+	//TEST POINT LIGHTS____________________________________________________________________________________________________________________
+	Object* testPointLight = new Object("testPointLight");								
+	dx::XMFLOAT3 lightTranslation = dx::XMFLOAT3(2.0f, 0.0f, 3.0f);						
+	testPointLight->GetTransform().SetPosition(dx::XMLoadFloat3(&lightTranslation));	
+	AddObject(testPointLight);															
+	testPointLight->AddComponent<PointLightComponent>();								
+	testPointLight->GetComponent<PointLightComponent>()->SetColor({ 1.f, 0.f, 0.f, 1.f });
+																						
+	Object* testPointLight2 = new Object("testPointLight2");							
+	dx::XMFLOAT3 lightTranslation2 = dx::XMFLOAT3(0.0f, 2.0f, 3.0f);					
+	testPointLight2->GetTransform().SetPosition(dx::XMLoadFloat3(&lightTranslation2));	
+	AddObject(testPointLight2);															
+	testPointLight2->AddComponent<PointLightComponent>();								
+	testPointLight2->GetComponent<PointLightComponent>()->SetColor({ 0.f, 1.f, 0.f, 1.f });
+																						
+	Object* testPointLight3 = new Object("testPointLight3");							
+	dx::XMFLOAT3 lightTranslation3 = dx::XMFLOAT3(-2.0f, 0.0f, 3.0f);					
+	testPointLight3->GetTransform().SetPosition(dx::XMLoadFloat3(&lightTranslation3));	
+	AddObject(testPointLight3);															
+	testPointLight3->AddComponent<PointLightComponent>();								
+	testPointLight3->GetComponent<PointLightComponent>()->SetColor({ 0.f, 0.f, 1.f, 1.f });
+	//_____________________________________________________________________________________________________________________________________
 	Shader skyboxShader;
 	skyboxShader.SetPixelShader(L"Shaders/Sky_ps.hlsl");
 	skyboxShader.SetVertexShader(L"Shaders/Sky_vs.hlsl");

@@ -3,25 +3,13 @@
 
 PointLightComponent::PointLightComponent()
 {
-	this->lightColor = { 1, 1, 1, 1 };
+	this->lightColor = { 0.5f, 0.5f, 0.5f, 0.5f };
 	this->range = 25;
 	this->attenuation = { 1.0f, 0.02f, 0.0f };
 }
 
-PointLightComponent::PointLightComponent(dx::XMFLOAT4 lightColor, float range, dx::XMFLOAT3 attenuation, ID3D11Device* device, ID3D11DeviceContext* context)
-{
-
-}
-
 PointLightComponent::~PointLightComponent()
 {
-}
-
-void PointLightComponent::Update(const float& deltaTime)
-{
-	this->elapsedTime += deltaTime;
-
-	dx::XMStoreFloat3(&this->lightPosition, GetOwner()->GetTransform().GetPosition());
 }
 
 void PointLightComponent::Initialize()
