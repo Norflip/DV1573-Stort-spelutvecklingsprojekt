@@ -191,7 +191,7 @@ Ray CameraComponent::MouseToRay(const float& x, const float& y) const
 	dx::XMVECTOR screenPosition = dx::XMVectorSet(x, y, 0.0f, 0.0f);
 
 
-	dx::XMVECTOR worldPosition = dx::XMVector3Unproject(screenPosition, 0, 0, (float)width, (float)height, 0.001f, 1.0f, GetProjectionMatrix(), GetViewMatrix(), dx::XMMatrixIdentity());
+	dx::XMVECTOR worldPosition = dx::XMVector3Unproject(screenPosition, 0, 0, (float)width, (float)height, 0.0f, 1.0f, GetProjectionMatrix(), GetViewMatrix(), dx::XMMatrixIdentity());
 
 	dx::XMVECTOR position = GetOwner()->GetTransform().GetPosition();
 	dx::XMVECTOR dir = dx::XMVectorSubtract(worldPosition, position);

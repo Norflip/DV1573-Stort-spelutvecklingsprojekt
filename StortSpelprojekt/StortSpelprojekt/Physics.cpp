@@ -34,7 +34,9 @@ void Physics::RegisterRigidBody(RigidBodyComp* rigidBodyComp)
 	assert(dynamicsWorld != nullptr);
 
 	rigidBodyComp->m_InitializeBody();
-	dynamicsWorld->addRigidBody(rigidBodyComp->GetRigidBody(), 1, 1);
+	int group = static_cast<int>(rigidBodyComp->GetGroup());
+	dynamicsWorld->addRigidBody(rigidBodyComp->GetRigidBody(), group, 0);
+
 	bodyMap.insert({ rigidBodyComp->GetOwner()->GetID(), rigidBodyComp });
 }
 
@@ -73,7 +75,7 @@ void Physics::FixedUpdate(const float& fixedDeltaTime)
 	CheckForCollisions();
 }
 
-bool Physics::RaytestSingle(const Ray& ray, float maxDistance, PhysicsGroup layer) const
+RayHit Physics::RaytestSingle(const Ray& ray, float maxDistance, PhysicsGroup layer) const
 {
 	//std::cout << "origin: " << ray.origin.x << ", " << ray.origin.y << ", " << ray.origin.z << std::endl;
 	//std::cout << "direction: " << ray.direction.x << ", " << ray.direction.y << ", " << ray.direction.z << std::endl;
@@ -90,27 +92,28 @@ bool Physics::RaytestSingle(const Ray& ray, float maxDistance, PhysicsGroup laye
 
 	btCollisionWorld::ClosestRayResultCallback closestResults(from, to);
 	closestResults.m_flags |= btTriangleRaycastCallback::kF_FilterBackfaces;
-	closestResults.m_collisionFilterGroup = 1;
-	closestResults.m_collisionFilterMask = 1;
+	closestResults.m_collisionFilterGroup = static_cast<int>(layer);
+	closestResults.m_collisionFilterMask = -1;
 
 	dynamicsWorld->rayTest(from, to, closestResults);
-	bool hit = closestResults.hasHit();
+	bool didHit = closestResults.hasHit();
+	RayHit hit;
+	hit.ray = ray;
 
-	if (hit)
+	if (didHit)
 	{
-		btVector3 p = from.lerp(to, closestResults.m_closestHitFraction);
+		btVector3 position = from.lerp(to, closestResults.m_closestHitFraction);
+		btVector3 normal = closestResults.m_hitNormalWorld;
 		//dynamicsWorld->getDebugDrawer()->drawSphere(p, 0.1, btVector3(0,0,1));
 		//dynamicsWorld->getDebugDrawer()->drawLine(p, p + closestResults.m_hitNormalWorld, btVector3(0, 0, 1));
-		
+			
 		void* userPointer = closestResults.m_collisionObject->getUserPointer();
-		RigidBodyComp* rb = static_cast<RigidBodyComp*>(userPointer);
-
-		if (rb != nullptr)
-		{
-			std::cout << rb->GetOwner()->GetName() << std::endl;
-		}
+		hit.body = static_cast<RigidBodyComp*>(userPointer);
+		hit.position = ToXMFLOAT3(position);// { position.getX(), position.getY(), position.getZ() };
+		hit.normal = ToXMFLOAT3(normal);// { normal.getX(), normal.getY(), normal.getZ() };
 	}
 
+	hit.hit = didHit;
 	return hit;
 }
 

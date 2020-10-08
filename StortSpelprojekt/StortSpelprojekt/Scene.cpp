@@ -31,7 +31,7 @@ void Scene::Initialize(Renderer* renderer)
 	Window* window = renderer->GetOutputWindow();
 	
 	Physics& physics = Physics::Instance();
-	physics.Initialize({ 0, -1, 0 });
+	physics.Initialize({ 0, -0.001f, 0 });
 
 	SaveState state;
 	state.seed = 1337;
@@ -208,7 +208,7 @@ void Scene::Initialize(Renderer* renderer)
 	AddObject(testMesh3);
 	AddObject(testMesh4);
 
-	RigidBodyComp* rigidBody = testMesh2->AddComponent<RigidBodyComp>(4.0f);
+	RigidBodyComp* rigidBody = testMesh2->AddComponent<RigidBodyComp>(4.0f, PhysicsGroup::DEFAULT);
 	BoxColliderComponent* boxCol = testMesh2->AddComponent<BoxColliderComponent>(dx::XMFLOAT3( 1,1,1 ), dx::XMFLOAT3(0,0,0), dx::XMFLOAT4(0,0,0,0));
 
 	//rigidBody->m_GenerateCompoundShape();
@@ -225,37 +225,47 @@ void Scene::Initialize(Renderer* renderer)
 
 void Scene::Update(const float& deltaTime)
 {
-	dx::XMFLOAT3 positionA = { 0,0,2 };
-	dx::XMFLOAT3 positionB = { 0, 2,-5};
+	//dx::XMFLOAT3 positionA = { 0,0,2 };
+	//dx::XMFLOAT3 positionB = { 0, 2,-5};
 
-	DShape::DrawBox(positionA, { 2,2,2 }, { 0, 1, 1 });
-	DShape::DrawWireBox(positionB, { 4,4,4 }, { 1,0,0 });
+	//DShape::DrawBox(positionA, { 2,2,2 }, { 0, 1, 1 });
+	//DShape::DrawWireBox(positionB, { 4,4,4 }, { 1,0,0 });
 
-	DShape::DrawSphere({ -4,0,0 }, 1.0f, { 0, 0, 1 });
-	DShape::DrawWireSphere({ -4,0,5 }, 1.0f, { 0,1,0 });
+	//DShape::DrawSphere({ -4,0,0 }, 1.0f, { 0, 0, 1 });
+	//DShape::DrawWireSphere({ -4,0,5 }, 1.0f, { 0,1,0 });
 
-	DShape::DrawLine(positionA, positionB, { 1,1,0 });
+	//DShape::DrawLine(positionA, positionB, { 1,1,0 });
 
 	input.UpdateInputs();
-	
 	POINT p = input.GetMousePos();
-	std::cout << p.x << ", " << p.y << std::endl;
+	//std::cout << p.x << ", " << p.y << std::endl;
 
 	Ray ray = camera->MouseToRay(p.x, p.y);
-	if (Physics::Instance().RaytestSingle(ray, 1000.0f, PhysicsGroup::DEFAULT))
+	RayHit hit = Physics::Instance().RaytestSingle(ray, 1000.0f, PhysicsGroup::DEFAULT);
+
+	if (hit.hit)
 	{
-		//std::cout << "hit" << std::endl;
+		DShape::DrawLine(ray.origin, hit.position, { 1,1,0 });
+		DShape::DrawSphere(hit.position, 1.0f, { 0, 0, 1 });
+
+		if (hit.body != nullptr)
+		{
+			std::cout << hit.body->GetOwner()->GetName() << std::endl;
+		}
 	}
-	
+
+
 	root->Update(deltaTime);
 	skyboxClass->GetThisObject()->GetTransform().SetPosition(camera->GetOwner()->GetTransform().GetPosition());
 	GameClock::Instance().Update();
+
 	//std::cout << "FPS: " << GameClock::Instance().GetFramesPerSecond() << std::endl;
 }
 
 void Scene::FixedUpdate(const float& fixedDeltaTime)
 {
 	Physics::Instance().FixedUpdate(fixedDeltaTime);
+	
 	//Log::Add(std::to_string(fixedDeltaTime));
 	root->FixedUpdate(fixedDeltaTime);
 }

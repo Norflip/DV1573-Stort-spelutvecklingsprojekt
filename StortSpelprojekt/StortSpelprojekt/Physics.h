@@ -10,14 +10,26 @@
 #include "Ray.h"
 #include <unordered_map>
 
-enum class PhysicsGroup : unsigned int
+enum class PhysicsGroup : int
 {
-	none = 0,
-	DEFAULT = 1 << 1,
-	TERRAIN = 1 << 2
+	ALL = -1,
+	NOTHING = 0,
+	DEFAULT = 1 << 0,
+	TERRAIN = 1 << 1,
 };
 
 DEFINE_ENUM_FLAG_OPERATORS(PhysicsGroup)
+
+struct RayHit
+{
+	Ray ray;
+	dx::XMFLOAT3 position;
+	dx::XMFLOAT3 normal;
+	RigidBodyComp* body;
+	bool hit;
+	
+	RayHit() {}
+};
 
 class Physics
 {
@@ -31,7 +43,7 @@ public:
 	void CreateDynamicWorld();
 	
 	// remove rigidbody on chunk and add shape?
-	void ReigsterCollisionObject();
+	//void ReigsterCollisionObject();
 
 	void RegisterRigidBody(RigidBodyComp* rigidBodyComp);
 	void UnregisterRigidBody(Object* object);
@@ -39,7 +51,7 @@ public:
 
 	void FixedUpdate(const float& fixedDeltaTime);
 	
-	bool RaytestSingle(const Ray& ray, float maxDistance, PhysicsGroup layer = PhysicsGroup::DEFAULT) const;
+	RayHit RaytestSingle(const Ray& ray, float maxDistance, PhysicsGroup layer = PhysicsGroup::DEFAULT) const;
 
 	static Physics& Instance() // singleton
 	{
@@ -50,7 +62,7 @@ public:
 	Physics(Physics const&) = delete;
 	void operator=(Physics const&) = delete;
 
-	//static dx::XMFLOAT3 ToXMFLOAT3(const btVector3& v3) { return dx::XMFLOAT3(v3.x, v3.y, v3.z); }
+	static dx::XMFLOAT3 ToXMFLOAT3(const btVector3& v3) { return dx::XMFLOAT3((float)v3.getX(), (float)v3.getY(), (float)v3.getZ()); }
 	//static btVector3 ToVector3(const dx::XMFLOAT3& xm3) { return btVector3(xm3.x, xm3.y, xm3.z); }
 
 private:

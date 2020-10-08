@@ -6,6 +6,7 @@ namespace dx = DirectX;
 struct Ray
 {
 	dx::XMFLOAT3 origin, direction;
+	Ray() {}
 	Ray(dx::XMFLOAT3 origin, dx::XMFLOAT3 direction) : origin(origin) 
 	{
 		dx::XMStoreFloat3(&this->direction, dx::XMVector3Normalize(dx::XMLoadFloat3(&direction)));

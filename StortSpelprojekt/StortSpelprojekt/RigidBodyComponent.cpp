@@ -1,7 +1,7 @@
 #include "RigidBodyComponent.h"
 #include "Physics.h"
 
-RigidBodyComp::RigidBodyComp(float mass) : mass(mass),compShape(nullptr)
+RigidBodyComp::RigidBodyComp(float mass, PhysicsGroup group) : mass(mass), group(group), compShape(nullptr)
 {
 
 }
@@ -62,6 +62,12 @@ void RigidBodyComp::RecursiveAddShapes(Object* obj, btCompoundShape* shape)
 		shape->addChildShape(capsules[i]->GetTransform(), capsules[i]->GetCollisionShape());
 	}
 
+	//CHUNK
+	const std::vector<ChunkCollider*>& chunks = obj->GetComponents<ChunkCollider>();
+	for (size_t i = 0; i < chunks.size(); i++)
+	{
+		shape->addChildShape(chunks[i]->GetTransform(), chunks[i]->GetCollisionShape());
+	}
 
 
 	////CHILDREN
@@ -81,6 +87,8 @@ void RigidBodyComp::m_InitializeBody()
 
 	compShape = new btCompoundShape();
 	RecursiveAddShapes(GetOwner(), compShape);
+
+	std::cout << GetOwner()->GetName() << " has " << compShape->getNumChildShapes() << " children. " << std::endl;
 
 	btTransform t;
 	t.setIdentity();

@@ -8,6 +8,7 @@
 #include "BoxColliderComponent.h"
 #include "SphereColliderComponent.h"
 #include "CapsuleColliderComponent.h"
+#include "ChunkCollider.h"
 
 #include <vector>
 #include <functional>
@@ -21,13 +22,14 @@ enum class ForceMode
 	IMPULSE
 };
 
+enum class PhysicsGroup : int;
 
 #define STATIC_BODY 0
 
 class RigidBodyComp : public Component
 {
 public:
-	RigidBodyComp(float mass);
+	RigidBodyComp(float mass, PhysicsGroup group);
 	virtual ~RigidBodyComp();
 
 	void m_InitializeBody();
@@ -45,6 +47,7 @@ public:
 	virtual void AddForceAtPoint(const dx::XMFLOAT3& force, const dx::XMFLOAT3& offset, const ForceMode& mode);
 
 	bool IsDynamic() const { return mass != 0.0f; }
+	PhysicsGroup GetGroup() const { return this->group; }
 
 private:
 	btTransform ConvertToBtTransform(const Transform& transform) const;
@@ -52,6 +55,7 @@ private:
 	dx::XMVECTOR ConvertToRotation(const btQuaternion& rotation) const;
 	void RecursiveAddShapes(Object* obj, btCompoundShape* shape);
 
+	PhysicsGroup group;
 	btCompoundShape* compShape;
 	btRigidBody* body;
 

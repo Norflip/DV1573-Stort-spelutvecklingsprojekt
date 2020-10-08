@@ -297,7 +297,7 @@ Chunk* WorldGenerator::CreateChunk(ChunkType type, dx::XMINT2 index, const Path&
 	chunk->SetHeightMap(heightMap);
 
 	chunkObject->AddComponent<ChunkCollider>(chunk);
-	RigidBodyComp* rigidBody = chunkObject->AddComponent<RigidBodyComp>(STATIC_BODY);
+	RigidBodyComp* rigidBody = chunkObject->AddComponent<RigidBodyComp>(STATIC_BODY, PhysicsGroup::TERRAIN);
 
 	//remember to remove when loading new map
 	physics.RegisterRigidBody(rigidBody);
