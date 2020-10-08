@@ -40,33 +40,33 @@ Shader::~Shader()
 
 void Shader::SetPixelShader(std::string path, LPCSTR entry)
 {
-	this->pixel = path;
+	this->pixelPath = path;
 	this->pixelEntry = entry;
 	shaderFlags |= ShaderBindFlag::PIXEL;
 }
 
 void Shader::SetVertexShader(std::string path, LPCSTR entry)
 {
-	this->vertex = path;
+	this->vertexPath = path;
 	this->vertexEntry = entry;
 	shaderFlags |= ShaderBindFlag::VERTEX;
 }
 
-void Shader::SetHullShader(LPCWSTR path, LPCSTR entry)
+void Shader::SetHullShader(std::string path, LPCSTR entry)
 {
 	this->hullPath = path;
 	this->hullEntry = entry;
 	shaderFlags |= ShaderBindFlag::HULL;
 }
 
-void Shader::SetDomainShader(LPCWSTR path, LPCSTR entry)
+void Shader::SetDomainShader(std::string path, LPCSTR entry)
 {
 	this->domainPath = path;
 	this->domainEntry = entry;
 	shaderFlags |= ShaderBindFlag::DOMAINS;
 }
 
-void Shader::SetGeometryShader(LPCWSTR path, LPCSTR entry)
+void Shader::SetGeometryShader(std::string path, LPCSTR entry)
 {
 	this->geometryPath = path;
 	this->geometryEntry = entry;
@@ -135,7 +135,7 @@ void Shader::CompilePS(ID3D11Device* device)
 		ID3DBlob* PSBlob = nullptr;
 		
 		// Convert the string to a wstring locally, without changing the content
-		std::wstring wPixel = std::wstring(pixel.begin(), pixel.end());
+		std::wstring wPixel = std::wstring(pixelPath.begin(), pixelPath.end());
 
 		HRESULT PSCompileResult = D3DCompileFromFile
 		(
@@ -180,7 +180,7 @@ void Shader::CompileVS(ID3D11Device* device)
 		ID3DBlob* VSBlob = nullptr;
 		
 		// Convert the string to a wstring locally, without changing the content
-		std::wstring wVertex = std::wstring(vertex.begin(), vertex.end());
+		std::wstring wVertex = std::wstring(vertexPath.begin(), vertexPath.end());
 
 		// VERTEX SHADER
 		HRESULT	VSCompileResult = D3DCompileFromFile
@@ -227,7 +227,7 @@ void Shader::CompileGS(ID3D11Device* device)
 		ID3DBlob* GSBlob = nullptr;
 
 		// Convert the string to a wstring locally, without changing the content
-		std::wstring wGeometry = std::wstring(geometry.begin(), geometry.end());
+		std::wstring wGeometry = std::wstring(geometryPath.begin(), geometryPath.end());
 
 		HRESULT GSCompileResult = D3DCompileFromFile
 		(
@@ -268,9 +268,12 @@ void Shader::CompileHS(ID3D11Device* device)
 		ID3DBlob* errorBlob = nullptr;
 		ID3DBlob* HSBlob = nullptr;
 
+		// Convert the string to a wstring locally, without changing the content
+		std::wstring wHull = std::wstring(hullPath.begin(), hullPath.end());
+
 		HRESULT HSCompileResult = D3DCompileFromFile
 		(
-			hullPath,
+			wHull.c_str(),
 			nullptr,
 			D3D_COMPILE_STANDARD_FILE_INCLUDE,
 			hullEntry,
@@ -308,9 +311,12 @@ void Shader::CompileDS(ID3D11Device* device)
 		ID3DBlob* errorBlob = nullptr;
 		ID3DBlob* DSBlob = nullptr;
 
+		// Convert the string to a wstring locally, without changing the content
+		std::wstring wDomain = std::wstring(domainPath.begin(), domainPath.end());
+
 		HRESULT DSCompileResult = D3DCompileFromFile
 		(
-			domainPath,
+			wDomain.c_str(),
 			nullptr,
 			D3D_COMPILE_STANDARD_FILE_INCLUDE,
 			domainEntry,

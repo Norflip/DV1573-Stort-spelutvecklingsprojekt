@@ -172,6 +172,12 @@ void ResourceManager::ReadShaders(ID3D11Device* device)
 				pos = line.find(delimiter);
 				std::string check = line.substr(0, pos);
 				
+				std::string pixelPath;
+				std::string vertexPath;
+				std::string hullPath;
+				std::string domainPath;
+				std::string geometryPath;
+
 				// If the file specifies what input layout to use
 				if (check == "Input")
 				{
@@ -179,11 +185,33 @@ void ResourceManager::ReadShaders(ID3D11Device* device)
 
 					std::getline(file, line);
 					pos = line.find(delimiter);
-					std::string vertexPath = line.substr(pos + 2, line.length() - pos - 2);
+					vertexPath = line.substr(pos + 2, line.length() - pos - 2);
 
 					std::getline(file, line);
 					pos = line.find(delimiter);
-					std::string pixelPath = line.substr(pos + 2, line.length() - pos - 2);
+
+					std::string type = line.substr(0, pos);
+
+					if (type == "HS")
+					{
+						hullPath = line.substr(pos + 2, line.length() - pos - 2);
+
+						getline(file, line);
+						pos = line.find(delimiter);
+						domainPath = line.substr(pos + 2, line.length() - pos - 2);
+
+						getline(file, line);
+						pos = line.find(delimiter);
+						geometryPath = line.substr(pos + 2, line.length() - pos - 2);
+
+						getline(file, line);
+						pos = line.find(delimiter);
+						pixelPath = line.substr(pos + 2, line.length() - pos - 2);
+					}
+					else if(type == "PS")
+					{
+						pixelPath = line.substr(pos + 2, line.length() - pos - 2);
+					}
 
 					Shader* tempShader = new Shader;
 
@@ -199,6 +227,13 @@ void ResourceManager::ReadShaders(ID3D11Device* device)
 					
 					// Compile the shader
 					tempShader->SetVertexShader(vertexPath);
+					if(hullPath != "")
+						tempShader->SetHullShader(hullPath);
+					if (domainPath != "")
+						tempShader->SetDomainShader(domainPath);
+					if (geometryPath != "")
+						tempShader->SetGeometryShader(geometryPath);
+
 					tempShader->SetPixelShader(pixelPath);
 					tempShader->Compile(device);
 
@@ -210,12 +245,41 @@ void ResourceManager::ReadShaders(ID3D11Device* device)
 
 					std::getline(file, line);
 					pos = line.find(delimiter);
+					std::string type = line.substr(0, pos);
+
+					if (type == "HS")
+					{
+						hullPath = line.substr(pos + 2, line.length() - pos - 2);
+
+						getline(file, line);
+						pos = line.find(delimiter);
+						domainPath = line.substr(pos + 2, line.length() - pos - 2);
+
+						getline(file, line);
+						pos = line.find(delimiter);
+						geometryPath = line.substr(pos + 2, line.length() - pos - 2);
+
+						getline(file, line);
+						pos = line.find(delimiter);
+						pixelPath = line.substr(pos + 2, line.length() - pos - 2);
+					}
+					else if (type == "PS")
+					{
+						pixelPath = line.substr(pos + 2, line.length() - pos - 2);
+					}
 					std::string pixelPath = line.substr(pos + 2, line.length() - pos - 2);
 
 					Shader* tempShader = new Shader;
 
 					// Compile the shader
 					tempShader->SetVertexShader(vertexPath);
+					if (hullPath != "")
+						tempShader->SetHullShader(hullPath);
+					if (domainPath != "")
+						tempShader->SetDomainShader(domainPath);
+					if (geometryPath != "")
+						tempShader->SetGeometryShader(geometryPath);
+
 					tempShader->SetPixelShader(pixelPath);
 					tempShader->Compile(device);
 

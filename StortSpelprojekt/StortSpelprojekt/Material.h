@@ -24,6 +24,7 @@ public:
 	virtual ~Material();
 	
 	void SetShader(Shader* shader) { this->shader = shader; }
+	void UnbindToContext(ID3D11DeviceContext* context) const;
 	void BindToContext(ID3D11DeviceContext*) const;
 	
 	void SetTexture(Texture texture, size_t slot, ShaderBindFlag flag);

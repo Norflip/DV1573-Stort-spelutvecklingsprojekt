@@ -23,7 +23,7 @@ public:
 	WorldGenerator();
 	virtual ~WorldGenerator();
 
-	void Initialize(ID3D11Device* device, Shader* shader);
+	void Initialize(ID3D11Device* device, Shader* shader, Shader* grassShader);
 	void InitalizeGrass(ID3D11Device* device,ID3D11DeviceContext* context);
 	
 	void Generate(const SaveState& levelState, ID3D11Device* device);
@@ -53,7 +53,7 @@ private:
 	std::vector<Chunk*> chunks;
 
 	std::vector<GrassComponent*> grassComponents;
-	Shader grassShader;
+	Shader* grassShader;
 	std::vector<Mesh::Vertex> grassV;
 	std::vector<unsigned int> grassI;
 	

@@ -1,4 +1,4 @@
-Shaders: 7
+Shaders: 8
 
 Name: default
 
@@ -29,3 +29,9 @@ Name: skyboxShader
 VS: Shaders/Sky_vs.hlsl
 PS: Shaders/Sky_ps.hlsl
 
+Name: grassShader
+VS: Shaders/Grass_vs.hlsl
+HS: Shaders/Grass_hs.hlsl
+DS: Shaders/Grass_ds.hlsl
+GS: Shaders/Grass_gs.hlsl
+PS: Shaders/Grass_ps.hlsl

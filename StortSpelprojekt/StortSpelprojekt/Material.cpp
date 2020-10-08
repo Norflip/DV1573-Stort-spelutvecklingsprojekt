@@ -9,7 +9,7 @@ Material::~Material() {}
 
 void Material::UnbindToContext(ID3D11DeviceContext* context) const
 {
-	shader.Unbind(context);
+	shader->Unbind(context);
 }
 
 void Material::BindToContext(ID3D11DeviceContext* context) const

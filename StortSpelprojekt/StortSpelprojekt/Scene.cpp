@@ -5,7 +5,6 @@
 Scene::Scene() : input(Input::Instance())
 {
 	skyboxClass = nullptr;
-	skybox = nullptr;
 	renderer = nullptr;
 	camera = nullptr;
 
@@ -14,9 +13,6 @@ Scene::Scene() : input(Input::Instance())
 
 Scene::~Scene()
 {	
-	delete skybox;
-	skybox = nullptr;
-
 	delete skyboxClass;
 	skyboxClass = nullptr;
 
@@ -59,10 +55,8 @@ void Scene::Initialize(Renderer* renderer)
 	state.seed = 1337;
 	state.segment = 0;
 
-	worldGenerator.Initialize(renderer->GetDevice(), resourceManager->GetShaderResource("terrainShader"));
-	worldGenerator.Generate(state, renderer->GetDevice());
-	
-	
+	worldGenerator.Initialize(renderer->GetDevice(), resourceManager->GetShaderResource("terrainShader"), resourceManager->GetShaderResource("grassShader"));	worldGenerator.Generate(state, renderer->GetDevice());
+
 	worldGenerator.InitalizeGrass(renderer->GetDevice(), renderer->GetContext());
 
 	Object* cameraObject = new Object("camera", ObjectFlag::ENABLED);
@@ -184,12 +178,6 @@ void Scene::InitializeObjects()
 	AddObject(styLeavesBase);
 
 	/* NEW TREE TEST INSTANCED*/
-
-	Object* testMesh4 = new Object("test4");
-	testMesh4->AddComponent<NodeWalkerComponent>();
-	testMesh4->GetTransform().SetPosition(dx::XMLoadFloat3(&miniTranslation4));
-	testMesh4->AddComponent<MeshComponent>(zwebMeshes[0], sylvanasMat[0]);
-	AddObject(testMesh4);
 
 	clock.Update();
 	clock.Start();
