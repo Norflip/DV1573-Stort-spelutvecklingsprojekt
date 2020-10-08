@@ -7,7 +7,7 @@ WorldGenerator::WorldGenerator() : chunkMesh()
 
 WorldGenerator::~WorldGenerator()
 {
-	
+
 	for (size_t i = 0; i < chunks.size(); i++)
 		delete chunks[i]->GetOwner();
 
@@ -19,13 +19,13 @@ WorldGenerator::~WorldGenerator()
 void WorldGenerator::InitalizeGrass(ID3D11Device* device, ID3D11DeviceContext* context)
 {
 
-	
+
 
 	for (int grass = 0; grass < grassComponents.size(); grass++)
 	{
 		grassComponents[grass]->InitializeGrass(chunkMesh.vertices, chunkMesh.indices, device, context);
 	}
-	
+
 }
 
 void WorldGenerator::Initialize(ID3D11Device* device)
@@ -78,13 +78,13 @@ void WorldGenerator::Initialize(ID3D11Device* device)
 
 	chunkMesh = Mesh(device, vertices, indicies);
 
-	
+
 
 	/****************EMILKOD****************/
 
 
-	
-	
+
+
 
 	grassShader.SetVertexShader(L"Shaders/Grass_vs.hlsl");
 	grassShader.SetHullShader(L"Shaders/Grass_hs.hlsl");
@@ -92,27 +92,27 @@ void WorldGenerator::Initialize(ID3D11Device* device)
 	grassShader.SetGeometryShader(L"Shaders/Grass_gs.hlsl");
 	grassShader.SetPixelShader(L"Shaders/Grass_ps.hlsl");
 	grassShader.Compile(device);
-	
+
 
 	Mesh::Vertex v;
 	v.normal = dx::XMFLOAT3(0, 1, 0);
 	v.position = dx::XMFLOAT3(0, 0, 0);
 	v.uv = dx::XMFLOAT2(1, 0);
 	grassV.push_back(v);
-	
+
 	for (int index = 0; index < chunkMesh.indices.size() / 3; index++)
 	{
 		grassI.push_back(0);
 	}
-	
-	
 
 
-	
-	
 
-	
-	
+
+
+
+
+
+
 
 
 
@@ -130,7 +130,7 @@ void WorldGenerator::Initialize(ID3D11Device* device)
 	}*/
 
 
-	
+
 
 }
 
@@ -146,7 +146,7 @@ void WorldGenerator::Generate(const SaveState& levelState, ID3D11Device* device)
 
 	size_t collisionCount = 0;
 	size_t chunkCount = 0;
-	
+
 	for (auto i = path.cbegin(); i < path.cend(); i++)
 	{
 		// load around
@@ -162,9 +162,9 @@ void WorldGenerator::Generate(const SaveState& levelState, ID3D11Device* device)
 				{
 					ChunkType type = ChunkType::Path;
 
-					if (indexCount == 0) 
+					if (indexCount == 0)
 						type = ChunkType::Start;
-					if (indexCount == path.size() - 1) 
+					if (indexCount == path.size() - 1)
 						type = ChunkType::Goal;
 
 					CreateChunk(type, index, path, device);
@@ -185,14 +185,14 @@ void WorldGenerator::Generate(const SaveState& levelState, ID3D11Device* device)
 
 void WorldGenerator::Draw(Renderer* renderer, CameraComponent* camera)
 {
-	
+
 	for (auto i = chunks.begin(); i < chunks.end(); i++)
 	{
 		(*i)->GetOwner()->Draw(renderer, camera);
 	}
 
 
-	
+
 }
 
 
@@ -282,12 +282,12 @@ Chunk* WorldGenerator::CreateChunk(ChunkType type, dx::XMINT2 index, const Path&
 	// + 1 f�r height map
 	size_t size = CHUNK_SIZE + 1;
 
-	Noise::Settings settings (0);
+	Noise::Settings settings(0);
 	settings.octaves = 4;
 	settings.persistance = 0.5f;
 	settings.lacunarity = 1.99f;
 	settings.scale = 20.f;
-	
+
 	dx::XMFLOAT2 pos = Chunk::IndexToXZ(index);
 
 	unsigned char* buffer = new unsigned char[size * size * 4];
@@ -296,9 +296,9 @@ Chunk* WorldGenerator::CreateChunk(ChunkType type, dx::XMINT2 index, const Path&
 
 	size_t bufferIndex = 0;
 
-	const float MAX_DISTANCE = 10.0f;
+	const float MAX_DISTANCE = 600.0f;
 
-	
+
 
 
 
@@ -306,20 +306,25 @@ Chunk* WorldGenerator::CreateChunk(ChunkType type, dx::XMINT2 index, const Path&
 	{
 		for (size_t x = 0; x < size; x++)
 		{
-			dx::XMFLOAT2 pf = dx::XMFLOAT2(pos.x + static_cast<float>(x), CHUNK_SIZE - pos.y + static_cast<float>(y));
+			dx::XMFLOAT2 pf = dx::XMFLOAT2(pos.x + static_cast<float>(x), pos.y + static_cast<float>(y));
 			float distance = GetDistanceToPath(pf, path);
-			
+
+			distance = sqrtf(pf.x * pf.x + pf.y * pf.y);
+
 			if (distance > MAX_DISTANCE)
 				distance = MAX_DISTANCE;
 
 			distance = distance / MAX_DISTANCE;
- 
+
+			//if (distance < 1.0f)
+		//		std::cout << distance << std::endl;
+
 			dx::XMFLOAT3 normal = CalculateNormal(pos.x + x, CHUNK_SIZE - pos.y + y, settings);
 			normalBuffer[bufferIndex * 4 + 0] = static_cast<unsigned char>(255 * normal.x);
 			normalBuffer[bufferIndex * 4 + 1] = static_cast<unsigned char>(255 * normal.y);
 			normalBuffer[bufferIndex * 4 + 2] = static_cast<unsigned char>(255 * normal.z);
 			normalBuffer[bufferIndex * 4 + 3] = 255;
-			
+
 			float packedNormal = Math::Pack3DVector(normal.x, normal.y, normal.z);
 			float height = Noise::Sample(pos.x + x, pos.y + y, settings);
 
@@ -332,18 +337,18 @@ Chunk* WorldGenerator::CreateChunk(ChunkType type, dx::XMINT2 index, const Path&
 			bufferIndex++;
 		}
 	}
-	
+
 	auto srv = DXHelper::CreateTexture(buffer, size, size, 4, DXGI_FORMAT_R8G8B8A8_UNORM_SRGB, device);
 	auto nsrv = DXHelper::CreateTexture(normalBuffer, size, size, 4, DXGI_FORMAT_R8G8B8A8_UNORM_SRGB, device);
 
-	
-	
+
+
 
 	//delete[] heightMap;
 	delete[] buffer;
 	delete[] normalBuffer;
 
-	
+
 
 	Material material(shader);
 	material.SetTexture(Texture(srv), 0, ShaderBindFlag::PIXEL);
@@ -356,8 +361,8 @@ Chunk* WorldGenerator::CreateChunk(ChunkType type, dx::XMINT2 index, const Path&
 
 	std::string name = "chunk " + std::to_string(index.x) + ", " + std::to_string(index.y);
 	Object* chunkObject = new Object(name, ObjectFlag::DEFAULT);
-	
-	
+
+
 
 	dx::XMVECTOR indexPos = Chunk::IndexToWorld(index, -5.0f);
 	indexPos.m128_f32[0] -= 40.0f;
@@ -367,7 +372,7 @@ Chunk* WorldGenerator::CreateChunk(ChunkType type, dx::XMINT2 index, const Path&
 	chunkObject->AddComponent<MeshComponent>(chunkMesh, material);
 
 
-	
+
 	Chunk* chunk = chunkObject->AddComponent<Chunk>(index, type);
 
 	/****************************EMIL KOD*/
@@ -381,10 +386,10 @@ Chunk* WorldGenerator::CreateChunk(ChunkType type, dx::XMINT2 index, const Path&
 	grassComponents.push_back(grassComponent);
 
 
-		/****************************EMIL KOD*/
+	/****************************EMIL KOD*/
 
 	chunk->SetHeightMap(heightMap);
-	
+
 	chunks.push_back(chunk);
 	chunkMap.insert({ HASH2D_I(index.x, index.y), chunk });
 
@@ -405,8 +410,8 @@ dx::XMFLOAT3 WorldGenerator::CalculateNormal(float x, float y, const Noise::Sett
 
 	// Z 
 	dx::XMVECTOR horizontal = dx::XMVector3Normalize({ 1.0f, 0.0f, right - left });
-	dx::XMVECTOR vertical = dx::XMVector3Normalize({ 0.0f, 1.0f, up - down});
-	
+	dx::XMVECTOR vertical = dx::XMVector3Normalize({ 0.0f, 1.0f, up - down });
+
 	// Y
 	//dx::XMVECTOR horizontal = dx::XMVector3Normalize({ 1.0f, right - left, 0.0f });
 	//dx::XMVECTOR vertical = dx::XMVector3Normalize({ 0.0f, up - down, -1.0f }); */
