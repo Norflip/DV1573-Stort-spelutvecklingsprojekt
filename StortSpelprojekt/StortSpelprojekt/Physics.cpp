@@ -90,7 +90,6 @@ bool Physics::RaytestSingle(const Ray& ray, float maxDistance, PhysicsGroup laye
 
 	btCollisionWorld::ClosestRayResultCallback closestResults(from, to);
 	closestResults.m_flags |= btTriangleRaycastCallback::kF_FilterBackfaces;
-
 	closestResults.m_collisionFilterGroup = 1;
 	closestResults.m_collisionFilterMask = 1;
 

@@ -117,7 +117,7 @@ std::vector<dx::XMFLOAT4>& CameraComponent::GetFrustumPlanes()
 	return frustumPlanes;
 }
 
-bool CameraComponent::CullAgainstAABB(const AABB& aabb, const dx::XMFLOAT3& worldPos)
+bool CameraComponent::CullAgainstAABB(const AABB& aabb, const dx::XMFLOAT3 worldPos)
 {
 	auto planes = GetFrustumPlanes();
 	bool inViewResult = true;
