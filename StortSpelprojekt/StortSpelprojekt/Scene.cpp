@@ -95,7 +95,7 @@ void Scene::Initialize(Renderer* renderer)
 	lightSahder.SetPixelShader(L"Shaders/Default_ps.hlsl");
 	lightSahder.Compile(renderer->GetDevice());
 	Object* testPointLight = new Object("testPointLight");
-	dx::XMFLOAT3 lightTranslation = dx::XMFLOAT3(15.0f, -5.0f, -5.0f);
+	dx::XMFLOAT3 lightTranslation = dx::XMFLOAT3(-15.0f, -5.0f, -5.0f);
 	testPointLight->GetTransform().SetPosition(dx::XMLoadFloat3(&lightTranslation));
 	AddObject(testPointLight);
 	testPointLight->AddComponent<PointLightComponent>();

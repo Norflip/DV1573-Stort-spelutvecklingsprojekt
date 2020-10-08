@@ -36,5 +36,4 @@ private:
 	size_t index;
 	bool dirty;
 	std::unordered_map<size_t, PointLightComponent*> pointLightMap;
-
 };
