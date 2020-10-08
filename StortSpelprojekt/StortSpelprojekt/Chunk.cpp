@@ -23,10 +23,10 @@ float Chunk::SampleHeight(float x, float z)
 
 	if (row >= 0 && col >= 0 && row < CHUNK_SIZE && col < CHUNK_SIZE)
 	{
-		float bl = heightMap[col * CHUNK_SIZE + row];
-		float br = heightMap[(col + 1) * CHUNK_SIZE + row];
-		float tr = heightMap[(col + 1) * CHUNK_SIZE + (row + 1)];
-		float tl = heightMap[col * CHUNK_SIZE + (row + 1)];
+		float bl = heightMap[col + CHUNK_SIZE * row];
+		float br = heightMap[(col + 1) + CHUNK_SIZE * row];
+		float tr = heightMap[(col + 1) + CHUNK_SIZE * (row + 1)];
+		float tl = heightMap[col + CHUNK_SIZE * (row + 1)];
 
 		float u = x - (float)col;
 		float v = z - (float)row;

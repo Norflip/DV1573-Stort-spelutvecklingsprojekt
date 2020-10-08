@@ -7,10 +7,6 @@ WorldGenerator::WorldGenerator() : chunkMesh()
 
 WorldGenerator::~WorldGenerator()
 {
-
-	for (size_t i = 0; i < chunks.size(); i++)
-		delete chunks[i]->GetOwner();
-
 	chunks.clear();
 }
 
@@ -369,10 +365,17 @@ Chunk* WorldGenerator::CreateChunk(ChunkType type, dx::XMINT2 index, const Path&
 			float height = Noise::Sample(pos.x + x, pos.y + y, settings);
 			heightMap[bufferIndex] = height;
 
-			buffer[bufferIndex * 4 + 0] = static_cast<unsigned char>(255 * height);
+			buffer[bufferIndex * 4 + 0] = static_cast<unsigned char>(255 * height * distance);
 			buffer[bufferIndex * 4 + 1] = static_cast<unsigned char>(255 * distance);
-			buffer[bufferIndex * 4 + 2] = static_cast<unsigned char>(255);
+			buffer[bufferIndex * 4 + 2] = static_cast<unsigned char>(255 * height);
 			buffer[bufferIndex * 4 + 3] = static_cast<unsigned char>(255);
+
+			int d = x + size * y;
+
+			if (d != bufferIndex)
+			{
+				std::cout << "index: " << d << " | " << bufferIndex << std::endl;
+			}
 
 			bufferIndex++;
 		}
@@ -381,19 +384,17 @@ Chunk* WorldGenerator::CreateChunk(ChunkType type, dx::XMINT2 index, const Path&
 	auto srv = DXHelper::CreateTexture(buffer, size, size, 4, DXGI_FORMAT_R8G8B8A8_UNORM_SRGB, device);
 	//	auto nsrv = DXHelper::CreateTexture(normalBuffer, size, size, 4, DXGI_FORMAT_R8G8B8A8_UNORM_SRGB, device);
 
-
-
-
-		//delete[] heightMap;
+	//delete[] heightMap;
 	delete[] buffer;
 	//	delete[] normalBuffer;
-
-
 
 	Material material(shader);
 	material.SetTexture(Texture(srv), 0, ShaderBindFlag::PIXEL);
 	material.SetTexture(Texture(srv), 0, ShaderBindFlag::VERTEX);
-	//material.SetTexture(Texture(nsrv), 1, ShaderBindFlag::VERTEX);
+	
+	auto sampler = DXHelper::CreateSampler(D3D11_FILTER_MIN_MAG_MIP_POINT, D3D11_TEXTURE_ADDRESS_CLAMP, device);
+	material.SetSampler(sampler, 0, ShaderBindFlag::PIXEL);
+	material.SetSampler(sampler, 0, ShaderBindFlag::VERTEX);
 
 	std::string name = "chunk " + std::to_string(index.x) + ", " + std::to_string(index.y);
 	Object* chunkObject = new Object(name, ObjectFlag::DEFAULT);
@@ -433,12 +434,11 @@ dx::XMFLOAT3 WorldGenerator::CalculateNormal(float x, float y, const Noise::Sett
 {
 	// left, right, down, up
 	const float quadsize = 1.0f;
-	const float terrainHeight = 10.0f;
 
-	float left = Noise::Sample(x - quadsize, y, settings) * terrainHeight;
-	float right = Noise::Sample(x + quadsize, y, settings) * terrainHeight;
-	float down = Noise::Sample(x, y - quadsize, settings) * terrainHeight;
-	float up = Noise::Sample(x, y + quadsize, settings) * terrainHeight;
+	float left = Noise::Sample(x - quadsize, y, settings) * TERRAIN_SCALE;
+	float right = Noise::Sample(x + quadsize, y, settings) * TERRAIN_SCALE;
+	float down = Noise::Sample(x, y - quadsize, settings) * TERRAIN_SCALE;
+	float up = Noise::Sample(x, y + quadsize, settings) * TERRAIN_SCALE;
 
 	// Z 
 	dx::XMVECTOR horizontal = dx::XMVector3Normalize({ 1.0f, 0.0f, right - left });

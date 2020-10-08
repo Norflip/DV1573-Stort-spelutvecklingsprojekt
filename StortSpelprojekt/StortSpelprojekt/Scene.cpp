@@ -254,8 +254,8 @@ void Scene::Render()
 	skyboxClass->GetThisObject()->Draw(renderer, camera);
 
 	root->Draw(renderer, camera);
-	worldGenerator.Draw(renderer, camera);
-	
+	worldGenerator.DrawShapes();
+
 	renderer->RenderFrame();
 }
 
