@@ -57,7 +57,7 @@ private:
 	dx::XMVECTOR position, baseColor,activeColor, origin, scale; //byt till xmfloat 4
 	ID3D11ShaderResourceView* SRV;
 	DrawDirection direction;
-	void setPos(float xPos, float yPos, DrawDirection dir);
+	void SetPos(float xPos, float yPos, DrawDirection dir);
 
 	ClickFunction clickFunc;
 };

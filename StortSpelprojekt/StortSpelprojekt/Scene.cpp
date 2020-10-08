@@ -42,7 +42,7 @@ void Scene::Initialize(Renderer* renderer)
 
 
 	guiManager = new GUIManager(renderer);
-	renderer->setGUIManager(guiManager);
+	renderer->SetGUIManager(guiManager);
 	guiManager->AddGUIObject(fpsDisplay, "fps");
 	guiManager->AddGUIObject(normalSprite, "normalSprite");
 	guiManager->AddGUIObject(buttonSprite, "buttonSprite");
