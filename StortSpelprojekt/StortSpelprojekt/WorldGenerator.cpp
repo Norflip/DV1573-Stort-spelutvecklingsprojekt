@@ -24,7 +24,7 @@ void WorldGenerator::InitializeTrees(std::vector<Mesh> models, std::vector<Mater
 
 	for (auto chunk : chunks)
 	{
-		Points points = sampler.GeneratePoints(20.0f, { CHUNK_SIZE, CHUNK_SIZE }, false);
+		Points points = sampler.GeneratePoints(5.0f, { CHUNK_SIZE, CHUNK_SIZE }, false);
 		size_t nrOfInstancedStyTrees = points.size();
 
 		if (nrOfInstancedStyTrees > 0)
@@ -37,7 +37,7 @@ void WorldGenerator::InitializeTrees(std::vector<Mesh> models, std::vector<Mater
 			{
 				dx::XMFLOAT3 chunkPosition;
 				dx::XMStoreFloat3(&chunkPosition, chunk->GetOwner()->GetTransform().GetWorldPosition());
-				float y = chunkPosition.y + chunk->SampleHeight(points[i].x, points[i].y);
+				float y = chunkPosition.y;// +chunk->SampleHeight(points[i].x, points[i].y);
 				
 				dx::XMFLOAT3 position (posXZ.x + points[i].x, y, posXZ.y + points[i].y);
 				leavesInstanced[i].instancePosition = position;
@@ -64,6 +64,8 @@ void WorldGenerator::InitializeTrees(std::vector<Mesh> models, std::vector<Mater
 
 			Transform::SetParentChild(chunk->GetOwner()->GetTransform(), styTreeBase->GetTransform());
 			Transform::SetParentChild(chunk->GetOwner()->GetTransform(), styLeavesBase->GetTransform());
+
+			// just the first one for testing 
 			break;
 		}
 	}

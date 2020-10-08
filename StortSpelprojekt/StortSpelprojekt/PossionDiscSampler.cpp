@@ -37,17 +37,18 @@ Points PossionDiscSampler::GeneratePoints(float radius, dx::XMFLOAT2 regionSize,
 			// random.value
 			float angle = distribution(rngEngine) * Math::PI * 2.0f;
 			float offset = (distribution(rngEngine) + 1.0f) * radius; // random mellan radius och radius * 2
+
+
 			dx::XMFLOAT2 direction(sinf(angle), cosf(angle));
 			dx::XMFLOAT2 point(center.x + direction.x * offset, center.y + direction.y * offset);
 
 			if (IsValid(point, regionSize, cellSize, radius, points, grid, cols, rows))
 			{
-				// checka om vägen är ivägen
-
 				points.push_back(point);
 				spawnPoints.push_back(point);
 
 				accepted = true;
+
 				int x = static_cast<int>(point.x / cellSize);
 				int y = static_cast<int>(point.y / cellSize);
 				grid[x * cols + y] = points.size();
@@ -67,6 +68,7 @@ Points PossionDiscSampler::GeneratePoints(float radius, dx::XMFLOAT2 regionSize,
 
 void PossionDiscSampler::ResetWorld()
 {
+	//@TODO
 }
 
 void PossionDiscSampler::Reseed(int seed)
@@ -92,7 +94,7 @@ bool PossionDiscSampler::IsValid(dx::XMFLOAT2 point, dx::XMFLOAT2 regionSize, fl
 		{
 			for (int y = ymin; y <= ymax; y++)
 			{
-				int index = grid[x, y] - 1;
+				int index = grid[x * cols + y] - 1;
 
 				if (index != -1)
 				{
