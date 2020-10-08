@@ -2,10 +2,15 @@
 
 size_t Material::idCounter = 0;
 
-Material::Material() : id(idCounter++) {}
+Material::Material() : id(idCounter++) {  }
 
 Material::Material(Shader* shader) : shader(shader), id(idCounter++) {}
 Material::~Material() {}
+
+void Material::UnbindToContext(ID3D11DeviceContext* context) const
+{
+	shader.Unbind(context);
+}
 
 void Material::BindToContext(ID3D11DeviceContext* context) const
 {
@@ -24,6 +29,12 @@ void Material::BindToContext(ID3D11DeviceContext* context) const
 			if ((i.first & (int)ShaderBindFlag::VERTEX) != 0)
 				context->VSSetShaderResources(slot, 1, &srv);
 
+			if ((i.first & (int)ShaderBindFlag::HULL) != 0)
+				context->HSSetShaderResources(slot, 1, &srv);
+
+			if ((i.first & (int)ShaderBindFlag::DOMAINS) != 0)
+				context->DSSetShaderResources(slot, 1, &srv);
+
 			if ((i.first & (int)ShaderBindFlag::GEOMETRY) != 0)
 				context->GSSetShaderResources(slot, 1, &srv);
 		}
@@ -41,6 +52,12 @@ void Material::BindToContext(ID3D11DeviceContext* context) const
 
 			if ((i.first & (int)ShaderBindFlag::VERTEX) != 0)
 				context->VSSetSamplers(slot, 1, &srv);
+
+			if ((i.first & (int)ShaderBindFlag::HULL) != 0)
+				context->HSSetSamplers(slot, 1, &srv);
+
+			if ((i.first & (int)ShaderBindFlag::DOMAINS) != 0)
+				context->DSSetSamplers(slot, 1, &srv);
 
 			if ((i.first & (int)ShaderBindFlag::GEOMETRY) != 0)
 				context->GSSetSamplers(slot, 1, &srv);

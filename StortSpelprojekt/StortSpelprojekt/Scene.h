@@ -17,8 +17,12 @@
 #include "WorldGenerator.h"
 #include "SaveState.h"
 #include "DShape.h"
+#include "GUIManager.h"
+#include <string>
 
 #include "ResourceManager.h"
+class GUIFont;
+class SpriteRenderPass;
 class Scene
 {
 public:
@@ -48,13 +52,18 @@ private:
 	Object* root;
 	CameraComponent* camera;
 	Renderer* renderer;
-
+	GameClock clock;
 	Input& input;
 
+	dx::SpriteBatch* spriteBatch;
+	WorldGenerator worldGenerator;
+	SpriteRenderPass* spritePass;	
+
+	GUIManager* guiManager;		
+
 	/* Test skybox in class */
-	Object* skybox;
+	//Object* skybox;
 	Skybox* skyboxClass;		
 
-	WorldGenerator worldGenerator;	
 	ResourceManager* resourceManager;
 };

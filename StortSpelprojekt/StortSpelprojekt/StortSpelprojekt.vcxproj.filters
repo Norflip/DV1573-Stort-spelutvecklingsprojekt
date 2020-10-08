@@ -52,6 +52,21 @@
     <FxCompile Include="Shaders\PhongShading.hlsl">
       <Filter>Resource Files</Filter>
     </FxCompile>
+    <FxCompile Include="Shaders\Grass_vs.hlsl">
+      <Filter>Resource Files</Filter>
+    </FxCompile>
+    <FxCompile Include="Shaders\Grass_ds.hlsl">
+      <Filter>Resource Files</Filter>
+    </FxCompile>
+    <FxCompile Include="Shaders\Grass_gs.hlsl">
+      <Filter>Resource Files</Filter>
+    </FxCompile>
+    <FxCompile Include="Shaders\Grass_hs.hlsl">
+      <Filter>Resource Files</Filter>
+    </FxCompile>
+    <FxCompile Include="Shaders\Grass_ps.hlsl">
+      <Filter>Resource Files</Filter>
+    </FxCompile>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="BoundingBoxes.cpp">
@@ -135,8 +150,23 @@
     <ClCompile Include="NodeWalkerComponent.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="GrassComponent.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
     <ClCompile Include="DShape.cpp">
-      <Filter>Header Files</Filter>
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="GUISprite.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="GameClock.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="GUIManager.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="GUIFont.cpp">
+      <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="ResourceManager.cpp">
       <Filter>Source Files</Filter>
@@ -223,7 +253,7 @@
     </ClInclude>
     <ClInclude Include="ShittyOBJLoader.h">
       <Filter>Header Files</Filter>
-    </ClInclude>
+    </ClInclude>    
     <ClInclude Include="ThirdParty\SimplexNoise.h">
       <Filter>Header Files</Filter>
     </ClInclude>
@@ -267,6 +297,15 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="ResourceManager.h">
+    <Filter>Header Files</Filter>
+      </ClInclude>
+    <ClInclude Include="GrassComponent.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="GUISprite.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="GUIFont.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>

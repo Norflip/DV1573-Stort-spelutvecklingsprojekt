@@ -9,13 +9,13 @@
 #include "Material.h"
 #include "CameraComponent.h"
 #include <time.h>
-
+#include "GUIManager.h"
 namespace dx = DirectX;
 
 class RenderPass;
-
-
-
+class GUISprite;
+class GUIFont;
+class GUIManager;
 class Renderer
 {
 	const FLOAT DEFAULT_BG_COLOR[4] = { 0.3f, 0.1f, 0.2f, 1.0f };
@@ -26,7 +26,8 @@ class Renderer
 		{
 			Default,
 			Instanced,
-			Skeleton
+			Skeleton,
+			Grass
 		};
 
 		const Mesh* mesh;
@@ -34,8 +35,8 @@ class Renderer
 
 		Type type;
 		size_t instanceCount;
-		cb_Skeleton bones;
-
+		
+		std::vector<dx::XMFLOAT4X4>* bones;
 		dx::XMMATRIX world;
 		const CameraComponent* camera;
 	};
@@ -55,10 +56,11 @@ public:
 	void RenderFrame();
 	
 	void AddRenderPass(RenderPass*);
-
+	void SetGUIManager(GUIManager*);
 	void Draw(const Mesh& mesh, const Material& material, const dx::XMMATRIX& model, const CameraComponent& camera);
 	void DrawInstanced(const Mesh& mesh, const size_t& count, const Material& material, const CameraComponent& camera);
-	void DrawSkeleton(const Mesh& mesh, const Material& material, const dx::XMMATRIX& model, const CameraComponent& camera, cb_Skeleton& bones);
+	void DrawSkeleton(const Mesh& mesh, const Material& material, const dx::XMMATRIX& model, const CameraComponent& camera, std::vector<dx::XMFLOAT4X4>& bones);
+	void DrawGrass(const CameraComponent& camera, const Mesh& mesh, const Material& material, const dx::XMMATRIX& model);
 	
 	void SetRSToCullNone(bool);
 
@@ -71,6 +73,7 @@ public:
 	void ClearRenderTarget(const RenderTexture& target);
 	void SetRenderTarget(const RenderTexture& target);
 
+	void UpdateTime(float time);
 	bool IsDrawingShapes() const { return this->drawShapes; }
 	void DrawShaped(bool draw) { this->drawShapes = draw; }
 
@@ -79,7 +82,7 @@ private:
 	void DrawRenderItem(const RenderItem& item);
 	void DrawRenderItemInstanced(const RenderItem& item);
 	void DrawRenderItemSkeleton(const RenderItem& item);
-	
+	void DrawRenderItemGrass(const RenderItem& item);
 	
 	
 private:
@@ -96,9 +99,9 @@ private:
 	cb_Object cb_object_data;
 	ID3D11Buffer* obj_cbuffer;
 
-	cb_Skeleton cb_skeleton_data;
-	ID3D11Buffer* skeleton_cbuffer;
-	
+	std::vector<dx::XMFLOAT4X4> srv_skeleton_data;
+	ID3D11Buffer* skeleton_srvbuffer;
+	ID3D11ShaderResourceView* skeleton_srv;
 	
 	cb_Scene cb_scene;
 	ID3D11Buffer* light_cbuffer;
@@ -112,9 +115,13 @@ private:
 	RenderQueue transparentItemQueue;
 	std::vector<RenderPass*> passes;
 
+	// GUI
+	GUIManager* guiManager;
 	//blendstate
 	ID3D11BlendState* blendStateOn;
 	ID3D11BlendState* blendStateOff;
+
+	ID3D11DepthStencilState* dss;
 
 	const float BLENDSTATEMASK[4] = { 0.0f };
 

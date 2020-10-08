@@ -2,7 +2,7 @@
 #include "RenderPass.h"
 #include "DShape.h"
 
-Renderer::Renderer() : device(nullptr), context(nullptr), swapchain(nullptr), obj_cbuffer(nullptr), skeleton_cbuffer(nullptr)
+Renderer::Renderer() : device(nullptr), context(nullptr), swapchain(nullptr), obj_cbuffer(nullptr), skeleton_srvbuffer(nullptr),skeleton_srv(nullptr)
 {
 	srand(unsigned int(time(0)));
 }
@@ -20,13 +20,15 @@ Renderer::~Renderer()
 		delete (*i);
 
 	obj_cbuffer->Release();
-	skeleton_cbuffer->Release();
+	skeleton_srvbuffer->Release();
 	light_cbuffer->Release();
 	material_cbuffer->Release();
 
 	rasterizerStateCullBack->Release();
 	rasterizerStateCullNone->Release();
 
+	skeleton_srv->Release();
+	dss->Release();
 }
 
 void Renderer::Initialize(Window* window)
@@ -35,23 +37,28 @@ void Renderer::Initialize(Window* window)
 
 	DXHelper::CreateSwapchain(*window, &device, &context, &swapchain);
 	this->backbuffer = DXHelper::CreateBackbuffer(window->GetWidth(), window->GetHeight(), device, swapchain);
-	this->midbuffers[0] = DXHelper::CreateRenderTexture(window->GetWidth(), window->GetHeight(), device);
-	this->midbuffers[1] = DXHelper::CreateRenderTexture(window->GetWidth(), window->GetHeight(), device);
 
+	this->midbuffers[0] = DXHelper::CreateRenderTexture(window->GetWidth(), window->GetHeight(), device, context, &dss);
+	this->midbuffers[1] = DXHelper::CreateRenderTexture(window->GetWidth(), window->GetHeight(), device, context, &dss);
+  srv_skeleton_data.resize(60);
+
+	dx::XMFLOAT4X4 bone;
+	dx::XMStoreFloat4x4(&bone, dx::XMMatrixIdentity());
+	
 	DXHelper::CreateRSState(device, &rasterizerStateCullBack, &rasterizerStateCullNone);
 
 
-	for (int bone = 0; bone < 60; bone++) //set id matrix as default for the bones. So if no animation is happening the character is not funky.
+	for (int boneNr = 0; boneNr < 60; boneNr++) //set id matrix as default for the bones. So if no animation is happening the character is not funky.
 	{
-		dx::XMStoreFloat4x4(&cb_skeleton_data.bones[bone], dx::XMMatrixIdentity());
+		srv_skeleton_data[boneNr] = bone;//set id matrix as default for the bones. So if no animation is happening the character is not funky. I need to bind them as well.
 	}
-
+	
 	DXHelper::CreateConstBuffer(device, &obj_cbuffer, &cb_object_data, sizeof(cb_object_data));
 	DXHelper::CreateConstBuffer(device, &light_cbuffer, &cb_scene, sizeof(cb_scene));
 	DXHelper::CreateConstBuffer(device, &material_cbuffer, &cb_material_data, sizeof(cb_material_data));
-	DXHelper::CreateConstBuffer(device, &skeleton_cbuffer, &cb_skeleton_data, sizeof(cb_skeleton_data));
-
-
+	
+	DXHelper::CreateStructuredBuffer(device, &skeleton_srvbuffer, srv_skeleton_data, sizeof(dx::XMFLOAT4X4), srv_skeleton_data.size(), &skeleton_srv);
+	DXHelper::BindStructuredBuffer(context, skeleton_srvbuffer, srv_skeleton_data, BONES_SRV_SLOT, ShaderBindFlag::VERTEX, &skeleton_srv);
 	DXHelper::CreateBlendState(device, &blendStateOn, &blendStateOff);
 
 	/* Screenquad shader */
@@ -70,7 +77,11 @@ void Renderer::Initialize(Window* window)
 	//EXEMPEL
 	///AddRenderPass(new PSRenderPass(1, L"Shaders/TestPass.hlsl"));
 	//AddRenderPass(new PSRenderPass(0, L"Shaders/TestPass2.hlsl"));
+
+	
 }
+
+
 
 void Renderer::BeginManualRenderPass(RenderTexture& target)
 {
@@ -90,28 +101,39 @@ void Renderer::DrawQueueToTarget(RenderQueue& queue)
 		auto queue = i.second;
 		if (!queue.empty())
 		{
-			queue.front().material->BindToContext(context);
+			const Material* mat = queue.front().material;
+			mat->BindToContext(context);
 
 			while (!queue.empty())
 			{
+				
 				auto item = queue.front();
+
+				
 
 				switch (item.type)
 				{
 					case RenderItem::Type::Instanced:
+						
 						DrawRenderItemInstanced(item); break;
-
+					case RenderItem::Type::Grass:
+						context->RSSetState(rasterizerStateCullNone);
+						DrawRenderItemGrass(item); break;
+						context->RSSetState(rasterizerStateCullBack);
 					case RenderItem::Type::Skeleton:
+						
 						DrawRenderItemSkeleton(item); break;
 
 					case RenderItem::Type::Default:
 					default:
+						
 						DrawRenderItem(item);
 						break;
 				}
 
 				queue.pop();
 			}
+			mat->UnbindToContext(context);
 		}
 	}
 
@@ -129,16 +151,21 @@ void Renderer::RenderFrame()
 	ClearRenderTarget(midbuffers[bufferIndex]);
 	SetRenderTarget(midbuffers[bufferIndex]);
   
+	context->OMSetDepthStencilState(dss,0);
+
 	context->RSSetState(rasterizerStateCullBack);
 	context->OMSetBlendState(blendStateOff, BLENDSTATEMASK, 0xffffffff);
+	
 	DrawQueueToTarget(opaqueItemQueue);
 	DShape::Instance().m_Draw(context);
 	context->RSSetState(rasterizerStateCullNone);
 	context->OMSetBlendState(blendStateOn, BLENDSTATEMASK, 0xffffffff);
-
+	
 	DrawQueueToTarget(transparentItemQueue);
+	
 	context->OMSetBlendState(blendStateOff, BLENDSTATEMASK, 0xffffffff);
 	context->RSSetState(rasterizerStateCullBack);
+	
 	for (auto i = passes.begin(); i < passes.end(); i++)
 	{
 		if ((*i)->IsEnabled())
@@ -153,7 +180,7 @@ void Renderer::RenderFrame()
 				bufferIndex = nextBufferIndex;
 
 			// overkill? Gives the correct result if outside the loop but errors in output
-			context->PSSetShaderResources(0, 1, nullSRV);
+			//context->PSSetShaderResources(0, 1, nullSRV);
 		}
 	}
 
@@ -161,7 +188,9 @@ void Renderer::RenderFrame()
 	SetRenderTarget(backbuffer);
 	context->PSSetShaderResources(0, 1, &midbuffers[bufferIndex].srv);
 	DrawScreenQuad(screenQuadMaterial);
-
+  
+	guiManager->DrawAll();
+  
 	HRESULT hr = swapchain->Present(0, 0); //1 here?
 	assert(SUCCEEDED(hr));
 }
@@ -173,6 +202,11 @@ void Renderer::AddRenderPass(RenderPass* pass)
 
 	if (passes.size() > 1)
 		std::sort(passes.begin(), passes.end(), [](const RenderPass* a, const RenderPass* b) -> bool { return a->GetPriority() < b->GetPriority(); });
+}
+
+void Renderer::SetGUIManager(GUIManager* manager)
+{
+	this->guiManager = manager;
 }
 
 void Renderer::Draw(const Mesh& mesh, const Material& material, const dx::XMMATRIX& model, const CameraComponent& camera)
@@ -197,15 +231,28 @@ void Renderer::DrawInstanced(const Mesh& mesh, const size_t& count, const Materi
 	AddItem(item, material.IsTransparent());
 }
 
-void Renderer::DrawSkeleton(const Mesh& mesh, const Material& material, const dx::XMMATRIX& model, const CameraComponent& camera, cb_Skeleton& bones)
+void Renderer::DrawSkeleton(const Mesh& mesh, const Material& material, const dx::XMMATRIX& model, const CameraComponent& camera, std::vector<dx::XMFLOAT4X4>& bones)
 {
+	
 	RenderItem item;
 	item.mesh = &mesh;
 	item.material = &material;
 	item.type = RenderItem::Type::Skeleton;
-	item.bones = bones;
+	item.bones = &bones;
 	item.world = model;
 	item.camera = &camera;
+	AddItem(item, false);
+	
+}
+
+void Renderer::DrawGrass(const CameraComponent& camera, const Mesh& mesh, const Material& material, const dx::XMMATRIX& model)
+{
+	RenderItem item;
+	item.type = RenderItem::Type::Grass;
+	item.camera = &camera;
+	item.mesh = &mesh;
+	item.material = &material;
+	item.world = model;
 	AddItem(item, false);
 }
 
@@ -224,13 +271,19 @@ void Renderer::SetRSToCullNone(bool cullNone)
 void Renderer::ClearRenderTarget(const RenderTexture& target)
 {
 	context->ClearRenderTargetView(target.rtv, DEFAULT_BG_COLOR);
-	context->ClearDepthStencilView(target.dsv, D3D11_CLEAR_DEPTH, 1.0f, 0);
+	context->ClearDepthStencilView(target.dsv, D3D11_CLEAR_DEPTH | D3D11_CLEAR_STENCIL, 1.0f, 0);
+	
 }
 
 void Renderer::SetRenderTarget(const RenderTexture& target)
 {
 	context->OMSetRenderTargets(1, &target.rtv, target.dsv);
 	context->RSSetViewports(1, &target.viewport);
+}
+
+void Renderer::UpdateTime(float time)
+{
+	cb_scene.time = time;
 }
 
 void Renderer::AddItem(const RenderItem& item, bool transparent)
@@ -292,7 +345,7 @@ void Renderer::DrawRenderItem(const RenderItem& item)
 	cb_scene.factor = color;
 
 	/**********************************/
-
+	
 	cb_scene.nrOfPointLights = 2;
 	dx::XMStoreFloat3(&cb_scene.cameraPosition, item.camera->GetOwner()->GetTransform().GetPosition());
 	DXHelper::BindConstBuffer(context, light_cbuffer, &cb_scene, CB_SCENE_SLOT, ShaderBindFlag::PIXEL);
@@ -310,6 +363,8 @@ void Renderer::DrawRenderItem(const RenderItem& item)
 void Renderer::DrawRenderItemInstanced(const RenderItem& item)
 {
 	
+
+
 	dx::XMMATRIX vp =dx::XMMatrixMultiply(item.camera->GetViewMatrix(), item.camera->GetProjectionMatrix());
 	dx::XMStoreFloat4x4(&cb_object_data.vp, dx::XMMatrixTranspose(vp));
 	
@@ -330,27 +385,65 @@ void Renderer::DrawRenderItemInstanced(const RenderItem& item)
 
 void Renderer::DrawRenderItemSkeleton(const RenderItem& item)
 {
-	/*dx::XMMATRIX mvp = dx::XMMatrixMultiply(item.world, dx::XMMatrixMultiply(item.camera->GetViewMatrix(), item.camera->GetProjectionMatrix()));
-	dx::XMStoreFloat4x4(&cb_object_data.mvp, dx::XMMatrixTranspose(mvp));
-	dx::XMStoreFloat4x4(&cb_object_data.world, dx::XMMatrixTranspose(item.world));
+	
+	dx::XMMATRIX mvp = dx::XMMatrixMultiply(item.world, dx::XMMatrixMultiply(item.camera->GetViewMatrix(), item.camera->GetProjectionMatrix()));
+	dx::XMStoreFloat4x4(&cb_object_data.mvp, mvp);
+	dx::XMStoreFloat4x4(&cb_object_data.world,item.world);
 	DXHelper::BindConstBuffer(context, obj_cbuffer, &cb_object_data, CB_OBJECT_SLOT, ShaderBindFlag::VERTEX);
 
-	cb_skeleton_data = item.bones;
-	DXHelper::BindConstBuffer(context, skeleton_cbuffer, &cb_skeleton_data, CB_SKELETON_SLOT, ShaderBindFlag::VERTEX);
+	srv_skeleton_data = *item.bones;
+	DXHelper::BindStructuredBuffer(context, skeleton_srvbuffer, srv_skeleton_data, BONES_SRV_SLOT, ShaderBindFlag::VERTEX, &skeleton_srv);
+
+	cb_material_data = item.material->GetMaterialData();
+	DXHelper::BindConstBuffer(context, material_cbuffer, &cb_material_data, CB_MATERIAL_SLOT, ShaderBindFlag::PIXEL);
+	UINT stride = sizeof(Mesh::Vertex);
+	UINT offset = 0;
+
+	context->IASetVertexBuffers(0, 1, &item.mesh->vertexBuffer, &stride, &offset);
+	context->IASetIndexBuffer(item.mesh->indexBuffer, DXGI_FORMAT_R32_UINT, 0);
+	context->IASetPrimitiveTopology(item.mesh->topology);
+
+	context->DrawIndexed(item.mesh->indices.size(), 0, 0);
+}
+
+void Renderer::DrawRenderItemGrass(const RenderItem& item)
+{
+	
+	dx::XMMATRIX mvp = dx::XMMatrixMultiply(item.world, dx::XMMatrixMultiply(item.camera->GetViewMatrix(), item.camera->GetProjectionMatrix()));
+	dx::XMStoreFloat4x4(&cb_object_data.mvp,mvp);
+
+	
+
+	dx::XMMATRIX wv = dx::XMMatrixMultiply(item.world, item.camera->GetViewMatrix());
+	dx::XMStoreFloat4x4(&cb_object_data.wv, wv);
+
+	DXHelper::BindConstBuffer(context, obj_cbuffer, &cb_object_data, CB_OBJECT_SLOT, ShaderBindFlag::VERTEX);
+
+	DXHelper::BindConstBuffer(context, obj_cbuffer, &cb_object_data, CB_OBJECT_SLOT, ShaderBindFlag::HULL);
+
+	DXHelper::BindConstBuffer(context, obj_cbuffer, &cb_object_data, CB_OBJECT_SLOT, ShaderBindFlag::GEOMETRY);
+
+	dx::XMStoreFloat3(&cb_scene.cameraPosition,item.camera->GetOwner()->GetTransform().GetPosition());
+	
+	DXHelper::BindConstBuffer(context, light_cbuffer, &cb_scene, CB_SCENE_SLOT, ShaderBindFlag::DOMAINS);
+	DXHelper::BindConstBuffer(context, light_cbuffer, &cb_scene, CB_SCENE_SLOT, ShaderBindFlag::PIXEL);
+	/*cb_material_data = item.material->GetMaterialData();
+	DXHelper::BindConstBuffer(context, material_cbuffer, &cb_material_data, CB_MATERIAL_SLOT, ShaderBindFlag::PIXEL);*/
+
+	context->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_1_CONTROL_POINT_PATCHLIST);
 
 	UINT stride = sizeof(Mesh::Vertex);
 	UINT offset = 0;
 
-	context->IASetVertexBuffers(0, 1, &item.mesh.vertexBuffer, &stride, &offset);
-	context->IASetIndexBuffer(item.mesh.indexBuffer, DXGI_FORMAT_R32_UINT, 0);
-	context->IASetPrimitiveTopology(item.mesh.topology);
+	context->IASetVertexBuffers(0, 1, &item.mesh->vertexBuffer, &stride, &offset);
+	context->IASetIndexBuffer(item.mesh->indexBuffer, DXGI_FORMAT_R32_UINT, 0);
+	
+	context->DrawIndexed(item.mesh->indices.size(), 0, 0);
 
-	context->DrawIndexed(item.mesh.indices.size(), 0, 0);*/
 }
 
 void Renderer::DrawScreenQuad(const Material& material)
 {
-	
 	
 	material.BindToContext(context);
 	UINT stride = sizeof(Mesh::Vertex);
