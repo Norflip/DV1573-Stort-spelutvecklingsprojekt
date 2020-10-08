@@ -1,7 +1,7 @@
 #pragma once
 #include "Renderer.h"
 #include "Texture.h"
-
+#include "GUISprite.h"
 class RenderPass
 {
 public:
@@ -46,3 +46,20 @@ private:
 	LPCWSTR path;
 	LPCSTR entry;
 };
+
+// GUIMANAGER
+
+class SpriteRenderPass : public RenderPass
+{
+public:
+	SpriteRenderPass(int priority,GUISprite* spiriteTest): RenderPass(priority), spiriteTest(spiriteTest){}
+	
+	bool Pass(Renderer* renderer, RenderTexture& inTexture, RenderTexture& outTexture) override
+	{
+		spiriteTest->Draw();
+		return true;
+	}
+private:
+	GUISprite* spiriteTest;
+};
+

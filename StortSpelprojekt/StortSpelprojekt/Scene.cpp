@@ -1,5 +1,7 @@
 #include "Scene.h"
-
+#include "RenderPass.h"
+#include "GUISprite.h"
+#include "GUIFont.h"
 Scene::Scene() : input(Input::Instance())
 {
 	skyboxClass = nullptr;
@@ -25,7 +27,7 @@ Scene::~Scene()
 void Scene::Initialize(Renderer* renderer)
 {
 	this->renderer = renderer;
-
+	
 	// TEMP
 	// Should change values on resize event
 	Window* window = renderer->GetOutputWindow();
@@ -33,13 +35,32 @@ void Scene::Initialize(Renderer* renderer)
 	Physics& physics = Physics::Instance();
 	physics.Initialize({ 0, -0.001f, 0 });
 
+	Window* window = renderer->GetOutputWindow();
+	spriteBatch = new DirectX::SpriteBatch(renderer->GetContext());
+	GUISprite* normalSprite = new GUISprite(*renderer, "Textures/EquipmentBox.png", 0, 0, DrawDirection::BottomLeft, ClickFunction::Clickable);
+	GUISprite* buttonSprite = new GUISprite(*renderer, "Textures/EquipmentBox.png", 0, 0, DrawDirection::BottomRight, ClickFunction::Clickable);
+	GUISprite* normalSprite2 = new GUISprite(*renderer, "Textures/EquipmentBox.png", 0, 0, DrawDirection::TopLeft, ClickFunction::Clickable);
+	GUISprite* buttonSprite2 = new GUISprite(*renderer, "Textures/EquipmentBox.png", 0, 0, DrawDirection::TopRight, ClickFunction::Clickable);
+	GUIFont* fpsDisplay = new GUIFont(*renderer, "test", 300, 300);
+	normalSprite->SetActive();
+
+
+	guiManager = new GUIManager(renderer);
+	renderer->SetGUIManager(guiManager);
+	guiManager->AddGUIObject(fpsDisplay, "fps");
+	guiManager->AddGUIObject(normalSprite, "normalSprite");
+	guiManager->AddGUIObject(buttonSprite, "buttonSprite");
+	guiManager->AddGUIObject(normalSprite2, "normalSprite2");
+	guiManager->AddGUIObject(buttonSprite2, "buttonSprite2");
+	guiManager->GetGUIObject("normalSprite")->SetPosition(100, 100);
 	SaveState state;
 	state.seed = 1337;
 	state.segment = 0;
 
 	worldGenerator.Initialize(renderer->GetDevice());
-	worldGenerator.Generate(state, physics, renderer->GetDevice());
-
+	worldGenerator.Generate(state, renderer->GetDevice(), root);
+	
+	worldGenerator.InitalizeGrass(renderer->GetDevice(), renderer->GetContext());
 
 	Object* cameraObject = new Object("camera", ObjectFlag::ENABLED);
 	camera = cameraObject->AddComponent<CameraComponent>(60.0f, true);
@@ -55,7 +76,10 @@ void Scene::Initialize(Renderer* renderer)
 	shader.SetPixelShader(L"Shaders/Default_ps.hlsl");
 	shader.SetVertexShader(L"Shaders/Default_vs.hlsl");
 	skeletonShader.SetVertexShader(L"Shaders/Skeleton_vs.hlsl");
+	skeletonShader.SetPixelShader(L"Shaders/Default_ps.hlsl");
+	skeletonShader.SetInputLayoutStructure(8, skeletonShader.SKELETON_INPUT_LAYOUTd);
 	shader.Compile(renderer->GetDevice());
+	skeletonShader.Compile(renderer->GetDevice());
 
 	std::vector<Mesh> zwebMeshes = ZWEBLoader::LoadMeshes(ZWEBLoadType::NoAnimation, "Models/brickSphere.ZWEB", renderer->GetDevice());
 	std::vector<Material> zwebMaterials = ZWEBLoader::LoadMaterials("Models/brickSphere.ZWEB", shader, renderer->GetDevice());
@@ -106,7 +130,9 @@ void Scene::Initialize(Renderer* renderer)
 	skyboxClass->GetThisObject()->AddFlag(ObjectFlag::NO_CULL);
 	//AddObject(skyboxClass->GetThisObject());
 
-	/*************************INSTANCING*******************/
+	
+
+	/* NEW TREE TEST INSTANCED*/
 	Shader instanceShader;
 	Shader alphaInstanceShader;
 
@@ -120,84 +146,72 @@ void Scene::Initialize(Renderer* renderer)
 	alphaInstanceShader.Compile(renderer->GetDevice());
 	
 	//0 base 1 branch 2 leaves
-	std::vector<Mesh> treeModels = ZWEBLoader::LoadMeshes(ZWEBLoadType::NoAnimation, "Models/treeEmil.ZWEB", renderer->GetDevice());
+	std::vector<Mesh> stylizedTreeModel = ZWEBLoader::LoadMeshes(ZWEBLoadType::NoAnimation, "Models/tree.ZWEB", renderer->GetDevice());
 	//0 tree 1 leaves
-	std::vector<Material> treeMaterials = ZWEBLoader::LoadMaterials("Models/treeEmil.ZWEB", instanceShader, renderer->GetDevice());
+	std::vector<Material> stylizedTreeMaterial = ZWEBLoader::LoadMaterials("Models/tree.ZWEB", instanceShader, renderer->GetDevice());
 
 	
-	treeMaterials[0].SetSampler(sampler, 0, ShaderBindFlag::PIXEL);
-	treeMaterials[1].SetSampler(sampler, 0, ShaderBindFlag::PIXEL);
+	stylizedTreeMaterial[0].SetSampler(sampler, 0, ShaderBindFlag::PIXEL);
+	stylizedTreeMaterial[1].SetSampler(sampler, 0, ShaderBindFlag::PIXEL);
 
-	treeMaterials[0].SetShader(instanceShader);
-	treeMaterials[1].SetShader(alphaInstanceShader);
+	stylizedTreeMaterial[0].SetShader(instanceShader);
+	stylizedTreeMaterial[1].SetShader(alphaInstanceShader);
 
-	size_t nrOfInstances =10;
-	std::vector<Mesh::InstanceData> treeInstances(nrOfInstances);
-	std::vector<Mesh::InstanceData> treeBranchInstances(nrOfInstances);
-	std::vector<Mesh::InstanceData> treeLeaveInstances(nrOfInstances);
+	worldGenerator.InitializeTrees(stylizedTreeModel, stylizedTreeMaterial, renderer->GetDevice());
 
-	
+	//size_t nrOfInstancedStyTrees =5;
+	//std::vector<Mesh::InstanceData> styTreesInstanced(nrOfInstancedStyTrees);
+	//std::vector<Mesh::InstanceData> styLeavesInstanced(nrOfInstancedStyTrees);
 
-	std::vector<unsigned int> r;
-	for (size_t i = 0; i < nrOfInstances; i++)
-	{
-		r.push_back(rand() % 10 + 1);
-	
+	//
+	//std::vector<unsigned int> randNr;
+	//for (size_t i = 0; i < nrOfInstancedStyTrees; i++)
+	//{
+	//	randNr.push_back(rand() % 5 + 1);
+	//}
+
+
+	/*for (size_t i = 0; i < nrOfInstancedStyTrees; i++)
+	{		
+		dx::XMStoreFloat4x4(&styLeavesInstanced[i].instanceWorld, dx::XMMatrixScaling(0.5f, 0.5f, 0.5f) * dx::XMMatrixTranslation((i + 6 * randNr[i]) + stylizedTreeModel[1].GetT().x, 0 + stylizedTreeModel[1].GetT().y, (i + 1 * randNr[i]) + stylizedTreeModel[1].GetT().z));
+		styLeavesInstanced[i].instancePosition = dx::XMFLOAT3((i + 1 * randNr[i]) + stylizedTreeModel[1].GetT().x, 0 + stylizedTreeModel[1].GetT().y, (i + 1 * randNr[i]) + stylizedTreeModel[1].GetT().z);
+
+		dx::XMStoreFloat4x4(&styTreesInstanced[i].instanceWorld,dx::XMMatrixScaling(0.5f, 0.5f, 0.5f) * dx::XMMatrixTranslation((i + 6 * randNr[i]) + stylizedTreeModel[0].GetT().x, 0 + stylizedTreeModel[0].GetT().y, (i + 1 * randNr[i]) + stylizedTreeModel[0].GetT().z));
+		styTreesInstanced[i].instancePosition = dx::XMFLOAT3((i + 1 * randNr[i]) + stylizedTreeModel[0].GetT().x, 0 + stylizedTreeModel[0].GetT().y, (i + 1 * randNr[i]) + stylizedTreeModel[0].GetT().z);
 	}
 
-
-	for (size_t i = 0; i < nrOfInstances; i++)
-	{
+	stylizedTreeModel[0].CreateInstanceBuffer(renderer->GetDevice(), styTreesInstanced);
+	stylizedTreeModel[1].CreateInstanceBuffer(renderer->GetDevice(), styLeavesInstanced);
 		
+	stylizedTreeModel[0].SetInstanceNr(nrOfInstancedStyTrees);
+	stylizedTreeModel[1].SetInstanceNr(nrOfInstancedStyTrees);
 
-		dx::XMStoreFloat4x4(&treeBranchInstances[i].instanceWorld, dx::XMMatrixScaling(0.5f, 0.5f, 0.5f) * dx::XMMatrixTranslation((i + 1 * r[i]) + treeModels[1].GetT().x, 0 + treeModels[0].GetT().y, (i + 1 * r[i]) + treeModels[1].GetT().z));
-		treeBranchInstances[i].instancePosition = dx::XMFLOAT3((i + 1 * r[i]) + treeModels[1].GetT().x, 0 + treeModels[1].GetT().y, (i + 1 * r[i]) + treeModels[1].GetT().z);
+	Object* styTreeBase = new Object("treeBase");
+	Object* styLeavesBase = new Object("leaves");
 
-		dx::XMStoreFloat4x4(&treeLeaveInstances[i].instanceWorld, dx::XMMatrixScaling(0.5f, 0.5f, 0.5f) * dx::XMMatrixTranslation((i + 1 * r[i]) + treeModels[2].GetT().x, 0 + treeModels[2].GetT().y, (i + 1 * r[i]) + treeModels[2].GetT().z));
-		treeLeaveInstances[i].instancePosition = dx::XMFLOAT3((i + 1 * r[i]) + treeModels[2].GetT().x, 0 + treeModels[2].GetT().y, (i + 1 * r[i]) + treeModels[2].GetT().z);
+	stylizedTreeMaterial[1].SetTransparent(true);
+	styTreeBase->AddComponent<InstancedMeshComponent>(stylizedTreeModel[0], stylizedTreeMaterial[0]);
+	styLeavesBase->AddComponent<InstancedMeshComponent>(stylizedTreeModel[1], stylizedTreeMaterial[1]);
 
-		dx::XMStoreFloat4x4(&treeInstances[i].instanceWorld,dx::XMMatrixScaling(0.5f, 0.5f, 0.5f) * dx::XMMatrixTranslation((i + 1 * r[i]) + treeModels[0].GetT().x, 0 + treeModels[2].GetT().y, (i + 1 * r[i]) + treeModels[0].GetT().z));
-		treeInstances[i].instancePosition = dx::XMFLOAT3((i + 1 * r[i]) + treeModels[0].GetT().x, 0 + treeModels[0].GetT().y, (i + 1 * r[i]) + treeModels[0].GetT().z);
-	}
-	treeModels[0].CreateInstanceBuffer(renderer->GetDevice(), treeInstances );
-
-	treeModels[1].CreateInstanceBuffer(renderer->GetDevice(), treeBranchInstances );
-
-
-	treeModels[2].CreateInstanceBuffer(renderer->GetDevice(), treeLeaveInstances);
-
-	
-
-	treeModels[0].SetInstanceNr(nrOfInstances);
-
-	treeModels[1].SetInstanceNr(nrOfInstances);
-
-
-	treeModels[2].SetInstanceNr(nrOfInstances);
-
-	Object* treeBase = new Object("treeBase");
-
-	Object* treeBranches = new Object("treeBranches");
-
-	Object* leaves = new Object("leaves");
-
-	treeMaterials[1].SetTransparent(true);
-	treeBase->AddComponent<InstancedMeshComponent>(treeModels[0], treeMaterials[0]);
-	treeBranches->AddComponent<InstancedMeshComponent>(treeModels[1], treeMaterials[0]);
-	leaves->AddComponent<InstancedMeshComponent>(treeModels[2], treeMaterials[1]);
-
-	leaves->AddFlag(ObjectFlag::NO_CULL);
+	styLeavesBase->AddFlag(ObjectFlag::NO_CULL);
 	
 	
 
+	AddObject(styTreeBase);
+	AddObject(styLeavesBase);*/
+
+	/* NEW TREE TEST INSTANCED*/
+
+
 	
-	AddObject(treeBase);
 
-	AddObject(treeBranches);
 
-	AddObject(leaves);
-	/*************************INSTANCING****************/
 
+
+	
+
+	//AddObject(testMesh2);
+	//AddObject(testMesh3);
 	Object* testMesh4 = new Object("test4");
 	testMesh4->AddComponent<NodeWalkerComponent>();
 	testMesh4->GetTransform().SetPosition(dx::XMLoadFloat3(&miniTranslation4));
@@ -216,6 +230,9 @@ void Scene::Initialize(Renderer* renderer)
 
 	physics.RegisterRigidBody(rigidBody);
 
+	clock.Update();
+	clock.Start();
+	clock.Update();
 	/* * * * * * * * ** * * * * */
 
 	//Log::Add("PRINTING SCENE HIERARCHY ----");
@@ -225,16 +242,7 @@ void Scene::Initialize(Renderer* renderer)
 
 void Scene::Update(const float& deltaTime)
 {
-	//dx::XMFLOAT3 positionA = { 0,0,2 };
-	//dx::XMFLOAT3 positionB = { 0, 2,-5};
-
-	//DShape::DrawBox(positionA, { 2,2,2 }, { 0, 1, 1 });
-	//DShape::DrawWireBox(positionB, { 4,4,4 }, { 1,0,0 });
-
-	//DShape::DrawSphere({ -4,0,0 }, 1.0f, { 0, 0, 1 });
-	//DShape::DrawWireSphere({ -4,0,5 }, 1.0f, { 0,1,0 });
-
-	//DShape::DrawLine(positionA, positionB, { 1,1,0 });
+	clock.Update();
 
 	input.UpdateInputs();
 	POINT p = input.GetMousePos();
@@ -258,8 +266,15 @@ void Scene::Update(const float& deltaTime)
 	root->Update(deltaTime);
 	skyboxClass->GetThisObject()->GetTransform().SetPosition(camera->GetOwner()->GetTransform().GetPosition());
 	GameClock::Instance().Update();
-
+	guiManager->UpdateAll();
 	//std::cout << "FPS: " << GameClock::Instance().GetFramesPerSecond() << std::endl;
+	renderer->UpdateTime((float)clock.GetSeconds());
+	float t = (float)clock.GetSeconds();
+	t = t;
+	if (clock.GetSeconds() > 60)
+	{
+		clock.Restart();
+	}
 }
 
 void Scene::FixedUpdate(const float& fixedDeltaTime)
@@ -273,12 +288,11 @@ void Scene::FixedUpdate(const float& fixedDeltaTime)
 void Scene::Render()
 {	
 	// skybox draw object
-	renderer->SetRSToCullNone(true);
+	//renderer->SetRSToCullNone(true);
 	skyboxClass->GetThisObject()->Draw(renderer, camera);
 
 	root->Draw(renderer, camera);
-
-	worldGenerator.Draw(renderer, camera);
+	worldGenerator.DrawShapes();
 
 	renderer->RenderFrame();
 }
