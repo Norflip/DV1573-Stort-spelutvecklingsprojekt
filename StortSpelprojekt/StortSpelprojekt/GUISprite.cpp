@@ -46,7 +46,7 @@ GUISprite::GUISprite(Renderer& renderer , std::string filePath, float xPos, floa
 
 
 	//directions
-	setPos(xPos, yPos, dir);
+	SetPos(xPos, yPos, dir);
 
 }
 
@@ -78,7 +78,7 @@ void GUISprite::Draw()
 
 void GUISprite::SetPosition(float xPos, float yPos)
 {
-	setPos(xPos, yPos,direction);
+	SetPos(xPos, yPos,direction);
 }
 
 void GUISprite::SetWICSprite(ID3D11Device* device,std::string spriteFile)
@@ -133,7 +133,7 @@ void GUISprite::Update()
 		SetPosition(500, 500);
 }
 
-void GUISprite::setPos(float xPos, float yPos, DrawDirection dir)
+void GUISprite::SetPos(float xPos, float yPos, DrawDirection dir)
 {
 	switch (dir)
 	{

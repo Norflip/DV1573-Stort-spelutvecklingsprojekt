@@ -55,7 +55,7 @@ public:
 	void RenderFrame();
 	
 	void AddRenderPass(RenderPass*);
-	void setGUIManager(GUIManager*);
+	void SetGUIManager(GUIManager*);
 	void Draw(const Mesh& mesh, const Material& material, const dx::XMMATRIX& model, const CameraComponent& camera);
 	void DrawInstanced(const Mesh& mesh, const size_t& count, const Material& material, const CameraComponent& camera);
 	void DrawSkeleton(const Mesh& mesh, const Material& material, const dx::XMMATRIX& model, const CameraComponent& camera, cb_Skeleton& bones);

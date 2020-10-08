@@ -183,7 +183,7 @@ void Renderer::AddRenderPass(RenderPass* pass)
 		std::sort(passes.begin(), passes.end(), [](const RenderPass* a, const RenderPass* b) -> bool { return a->GetPriority() < b->GetPriority(); });
 }
 
-void Renderer::setGUIManager(GUIManager* manager)
+void Renderer::SetGUIManager(GUIManager* manager)
 {
 	this->guiManager = manager;
 }
