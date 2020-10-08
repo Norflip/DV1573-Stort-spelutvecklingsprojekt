@@ -59,7 +59,7 @@ void ControllerComponent::Update(const float& deltaTime)
 {
 	DirectX::XMFLOAT3 dir = { 0.f,0.f,0.f };
 	float speed = 1.f;
-	if (LMOUSE_DOWN)
+	if (KEY_DOWN(F))
 	{
 		this->canRotate = !this->canRotate;
 		if (this->canRotate)
@@ -77,7 +77,7 @@ void ControllerComponent::Update(const float& deltaTime)
 	//else
 	//	Input::Instance().FreeMouse();
 
-	if (KEY_DOWN(H))
+	if (KEY_DOWN(F))
 	{
 		this->showCursor = !this->showCursor;
 		ShowCursor(this->showCursor);
