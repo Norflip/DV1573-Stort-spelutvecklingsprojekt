@@ -27,12 +27,6 @@ float4 main(VS_OUTPUT input) : SV_TARGET
 
 	finalColor = saturate(finalColor * textureColor);
 
-	/*float3 reflectVector = reflect(-viewDirection, input.normal);
-
-	float4 envColor = skymap.SampleLevel(defaultSampleType, reflectVector, 0);
-
-	envColor *= 1;*/
-
-	//return float4(input.normal, 1.0f);
+	
 	return finalColor;
 }

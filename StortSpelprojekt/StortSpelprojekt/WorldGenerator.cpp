@@ -294,18 +294,17 @@ Chunk* WorldGenerator::CreateChunk(ChunkType type, dx::XMINT2 index, const Noise
 
 	Chunk* chunk = chunkObject->AddComponent<Chunk>(index, type);
 
-	/****************************EMIL KOD*/
 
 
 	GrassComponent* grassComponent = chunkObject->AddComponent<GrassComponent>(device, grassV, grassI, grassShader);
 
 	grassComponent->GetMaterial().SetTexture(Texture(chunkDataSRV), 6, ShaderBindFlag::DOMAINS);
 
+	grassComponent->SetType(type);
 
 	grassComponents.push_back(grassComponent);
 
 
-	/****************************EMIL KOD*/
 
 
 	Transform::SetParentChild(root->GetTransform(), chunk->GetOwner()->GetTransform());

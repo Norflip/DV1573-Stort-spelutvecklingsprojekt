@@ -1,6 +1,5 @@
 #pragma once
-#include <DirectXMath.h>
-namespace dx = DirectX;
+#include "Chunk.h"
 #include "Mesh.h"
 #include "Component.h"
 #include "Texture.h"
@@ -26,7 +25,7 @@ public:
 
 	Material& GetMaterial();
 
-	void SetModel(dx::XMMATRIX& model);
+	void SetType(ChunkType type);
 
 
 private:
@@ -42,6 +41,6 @@ private:
 	ID3D11Buffer* grassBCBfr = nullptr;
 	ID3D11ShaderResourceView* grassBCSRV = nullptr;
 	ID3D11Buffer* grassCBuffer = nullptr;
-	
+	ChunkType chunkType;
 };
 
