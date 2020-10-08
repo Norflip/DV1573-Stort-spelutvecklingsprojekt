@@ -188,6 +188,7 @@ void WorldGenerator::Draw(Renderer* renderer, CameraComponent* camera)
 	
 	for (auto i = chunks.begin(); i < chunks.end(); i++)
 	{
+		
 		(*i)->GetOwner()->Draw(renderer, camera);
 	}
 
@@ -370,18 +371,18 @@ Chunk* WorldGenerator::CreateChunk(ChunkType type, dx::XMINT2 index, const Path&
 	
 	Chunk* chunk = chunkObject->AddComponent<Chunk>(index, type);
 
-	/****************************EMIL KOD*/
 
 
 	GrassComponent* grassComponent = chunkObject->AddComponent<GrassComponent>(device, grassV, grassI, grassShader);
 
 	grassComponent->GetMaterial().SetTexture(Texture(srv), 6, ShaderBindFlag::DOMAINS);
 
+	grassComponent->SetType(type);
 
 	grassComponents.push_back(grassComponent);
 
 
-		/****************************EMIL KOD*/
+
 
 	chunk->SetHeightMap(heightMap);
 	
