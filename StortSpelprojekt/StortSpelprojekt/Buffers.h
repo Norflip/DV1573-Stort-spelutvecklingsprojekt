@@ -59,6 +59,7 @@ struct cb_Lights
 __declspec(align(16))
 struct cb_Scene
 {
+	float time;
 };
 
 __declspec(align(16))
