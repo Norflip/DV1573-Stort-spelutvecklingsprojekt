@@ -1,6 +1,12 @@
 #include "DXHelper.h"
 
+
+
+
+
+
 void DXHelper::CreateSwapchain(const Window& window, _Out_ ID3D11Device** device, _Out_ ID3D11DeviceContext** context, _Out_ IDXGISwapChain** swapchain)
+
 {
 
 	size_t width = window.GetWidth();
@@ -76,6 +82,12 @@ void DXHelper::BindConstBuffer(ID3D11DeviceContext* context, ID3D11Buffer* buffe
 
 	if ((bflag & (int)ShaderBindFlag::GEOMETRY) != 0)
 		context->GSSetConstantBuffers(slot, 1, &buffer);
+
+	if ((bflag & (int)ShaderBindFlag::HULL) != 0)
+		context->HSSetConstantBuffers(slot, 1, &buffer);
+
+	if ((bflag & (int)ShaderBindFlag::DOMAINS) != 0)
+		context->DSSetConstantBuffers(slot, 1, &buffer);
 
 
 }
@@ -440,6 +452,7 @@ ID3D11SamplerState* DXHelper::CreateSampler(D3D11_FILTER filter, D3D11_TEXTURE_A
 	return m_samplerCache[hash];
 }
 
+
 ID3D11RasterizerState* DXHelper::CreateRasterizerState(D3D11_CULL_MODE cullMode, D3D11_FILL_MODE fillMode, ID3D11Device* device)
 {
 	// DEFAULT RASTERIZER STATE
@@ -457,6 +470,7 @@ ID3D11RasterizerState* DXHelper::CreateRasterizerState(D3D11_CULL_MODE cullMode,
 
 	return rasterizerState;
 }
+
 
 void DXHelper::CreateInstanceBuffer(ID3D11Device* device, size_t instanceCount, size_t instanceDataSize, void* instanceData, ID3D11Buffer** instanceBuffer)
 {

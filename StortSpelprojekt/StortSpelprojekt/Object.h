@@ -4,14 +4,14 @@
 #include <algorithm>
 #include <bitset>
 #include <array>
-
+#include "GrassComponent.h"
 #include "MeshComponent.h"
 #include "SkeletonMeshComponent.h"
 #include "InstancedMeshComponent.h"
 //#include "Transform.h"
 //#include "Mesh.h"
 //#include "Material.h"
-#include "Renderer.h"
+//#include "Renderer.h"
 //#include "Component.h"
 
 class CameraComponent;
@@ -22,7 +22,7 @@ enum class ObjectFlag : unsigned int
 	ENABLED = 1 << 0,
 	RENDER = 1 << 1,
 	REMOVED = 1 << 2,
-	NO_CULL = 1<<3,
+	NO_CULL = 1 << 3,
 	DEFAULT = ENABLED | RENDER
 };
 
@@ -106,7 +106,14 @@ inline T* Object::GetComponent() const
 template<typename T>
 inline std::vector<T*> Object::GetComponents() const
 {
-	auto ptr(componentArray[GetComponentTypeID<T>()]);
-	return std::vector<T*>(ptr);
+	std::vector<T*> items;
+	if (HasComponent<T>())
+	{
+		auto ptr(componentArray[GetComponentTypeID<T>()]);
+
+		for (auto i = ptr.cbegin(); i < ptr.cend(); i++)
+			items.push_back(static_cast<T*>(*i));
+	}
+	return items;
 }
 

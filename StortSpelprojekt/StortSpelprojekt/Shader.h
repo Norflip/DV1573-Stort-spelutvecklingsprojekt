@@ -54,10 +54,13 @@ public:
 public:
 	Shader();
 	virtual ~Shader();
-
+	void Unbind(ID3D11DeviceContext* context) const;
 	void SetPixelShader(LPCWSTR path, LPCSTR entry = "main"); 
 	void SetVertexShader(LPCWSTR path, LPCSTR entry = "main");
+	void SetHullShader(LPCWSTR path, LPCSTR entry = "main");
+	void SetDomainShader(LPCWSTR path, LPCSTR entry = "main");
 	void SetGeometryShader(LPCWSTR path, LPCSTR entry = "main");
+	
 	
 	void SetInputLayoutStructure(size_t arraySize, D3D11_INPUT_ELEMENT_DESC* inputLayoutDesc);
 
@@ -67,10 +70,13 @@ public:
 	void CompilePS(ID3D11Device*);
 	void CompileVS(ID3D11Device*);
 	void CompileGS(ID3D11Device*);
+	void CompileHS(ID3D11Device*);
+	void CompileDS(ID3D11Device*);
+
 
 private:
-	LPCWSTR pixelPath, vertexPath, geometryPath;
-	LPCSTR pixelEntry, vertexEntry, geometryEntry;
+	LPCWSTR pixelPath, vertexPath, geometryPath, hullPath, domainPath;
+	LPCSTR pixelEntry, vertexEntry, geometryEntry, hullEntry, domainEntry;
 
 	DWORD shaderCompilationFlag;
 	ShaderBindFlag shaderFlags;
@@ -83,4 +89,7 @@ private:
 	ID3D11InputLayout* inputLayout;
 	ID3D11PixelShader* pixelShader;
 	ID3D11GeometryShader* geometryShader;
+	ID3D11HullShader* hullShader;
+	ID3D11DomainShader* domainShader;
+
 };

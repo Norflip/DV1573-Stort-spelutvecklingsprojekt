@@ -27,7 +27,7 @@ Scene::~Scene()
 void Scene::Initialize(Renderer* renderer)
 {
 	this->renderer = renderer;
-
+	
 	// TEMP
 	// Should change values on resize event
 
@@ -54,7 +54,11 @@ void Scene::Initialize(Renderer* renderer)
 	state.segment = 0;
 
 	worldGenerator.Initialize(renderer->GetDevice());
+	
 	worldGenerator.Generate(state, renderer->GetDevice());
+	
+	
+	worldGenerator.InitalizeGrass(renderer->GetDevice(), renderer->GetContext());
 
 
 	Object* cameraObject = new Object("camera", ObjectFlag::ENABLED);
@@ -70,7 +74,10 @@ void Scene::Initialize(Renderer* renderer)
 	shader.SetPixelShader(L"Shaders/Default_ps.hlsl");
 	shader.SetVertexShader(L"Shaders/Default_vs.hlsl");
 	skeletonShader.SetVertexShader(L"Shaders/Skeleton_vs.hlsl");
+	skeletonShader.SetPixelShader(L"Shaders/Default_ps.hlsl");
+	skeletonShader.SetInputLayoutStructure(8, skeletonShader.SKELETON_INPUT_LAYOUTd);
 	shader.Compile(renderer->GetDevice());
+	skeletonShader.Compile(renderer->GetDevice());
 
 	std::vector<Mesh> zwebMeshes = ZWEBLoader::LoadMeshes(ZWEBLoadType::NoAnimation, "Models/brickSphere.ZWEB", renderer->GetDevice());
 	std::vector<Material> zwebMaterials = ZWEBLoader::LoadMaterials("Models/brickSphere.ZWEB", shader, renderer->GetDevice());
@@ -191,78 +198,24 @@ void Scene::Initialize(Renderer* renderer)
 	/* NEW TREE TEST INSTANCED*/
 
 
-	/*************************INSTANCING****************/
-	
-	//0 base 1 branch 2 leaves
-	std::vector<Mesh> treeModels = ZWEBLoader::LoadMeshes(ZWEBLoadType::NoAnimation, "Models/treeEmil.ZWEB", renderer->GetDevice());
-	//0 tree 1 leaves
-	std::vector<Material> treeMaterials = ZWEBLoader::LoadMaterials("Models/treeEmil.ZWEB", instanceShader, renderer->GetDevice());
-
-
-	treeMaterials[0].SetSampler(sampler, 0, ShaderBindFlag::PIXEL);
-	treeMaterials[1].SetSampler(sampler, 0, ShaderBindFlag::PIXEL);
-
-	treeMaterials[0].SetShader(instanceShader);
-	treeMaterials[1].SetShader(alphaInstanceShader);
-
-	size_t nrOfInstances = 10;
-	std::vector<Mesh::InstanceData> treeInstances(nrOfInstances);
-	std::vector<Mesh::InstanceData> treeBranchInstances(nrOfInstances);
-	std::vector<Mesh::InstanceData> treeLeaveInstances(nrOfInstances);
-
-
-
-	std::vector<unsigned int> r;
-	for (size_t i = 0; i < nrOfInstances; i++)
-	{
-		r.push_back(rand() % 10 + 1);
-	}
-
-
-	for (size_t i = 0; i < nrOfInstances; i++)
-	{
-		dx::XMStoreFloat4x4(&treeBranchInstances[i].instanceWorld, dx::XMMatrixScaling(0.5f, 0.5f, 0.5f) * dx::XMMatrixTranslation((i + 1 * r[i]) + treeModels[1].GetT().x, 0 + treeModels[0].GetT().y, (i + 1 * r[i]) + treeModels[1].GetT().z));
-		treeBranchInstances[i].instancePosition = dx::XMFLOAT3((i + 1 * r[i]) + treeModels[1].GetT().x, 0 + treeModels[1].GetT().y, (i + 1 * r[i]) + treeModels[1].GetT().z);
-
-		dx::XMStoreFloat4x4(&treeLeaveInstances[i].instanceWorld, dx::XMMatrixScaling(0.5f, 0.5f, 0.5f) * dx::XMMatrixTranslation((i + 1 * r[i]) + treeModels[2].GetT().x, 0 + treeModels[2].GetT().y, (i + 1 * r[i]) + treeModels[2].GetT().z));
-		treeLeaveInstances[i].instancePosition = dx::XMFLOAT3((i + 1 * r[i]) + treeModels[2].GetT().x, 0 + treeModels[2].GetT().y, (i + 1 * r[i]) + treeModels[2].GetT().z);
-
-		dx::XMStoreFloat4x4(&treeInstances[i].instanceWorld, dx::XMMatrixScaling(0.5f, 0.5f, 0.5f) * dx::XMMatrixTranslation((i + 1 * r[i]) + treeModels[0].GetT().x, 0 + treeModels[2].GetT().y, (i + 1 * r[i]) + treeModels[0].GetT().z));
-		treeInstances[i].instancePosition = dx::XMFLOAT3((i + 1 * r[i]) + treeModels[0].GetT().x, 0 + treeModels[0].GetT().y, (i + 1 * r[i]) + treeModels[0].GetT().z);
-	}
-	treeModels[0].CreateInstanceBuffer(renderer->GetDevice(), treeInstances);
-	treeModels[1].CreateInstanceBuffer(renderer->GetDevice(), treeBranchInstances);
-	treeModels[2].CreateInstanceBuffer(renderer->GetDevice(), treeLeaveInstances);
-
-	treeModels[0].SetInstanceNr(nrOfInstances);
-	treeModels[1].SetInstanceNr(nrOfInstances);
-	treeModels[2].SetInstanceNr(nrOfInstances);
-
-	Object* treeBase = new Object("treeBase");
-	Object* treeBranches = new Object("treeBranches");
-	Object* leaves = new Object("leaves");
-
-	treeMaterials[1].SetTransparent(true);
-	treeBase->AddComponent<InstancedMeshComponent>(treeModels[0], treeMaterials[0]);
-	treeBranches->AddComponent<InstancedMeshComponent>(treeModels[1], treeMaterials[0]);
-	leaves->AddComponent<InstancedMeshComponent>(treeModels[2], treeMaterials[1]);
-
-	leaves->AddFlag(ObjectFlag::NO_CULL);
-
-	AddObject(treeBase);
-	AddObject(treeBranches);
-	AddObject(leaves);
-
-	/*************************INSTANCING*******************/
-	
 	
 
+
+
+
+	
+
+	//AddObject(testMesh2);
+	//AddObject(testMesh3);
 	Object* testMesh4 = new Object("test4");
 	testMesh4->AddComponent<NodeWalkerComponent>();
 	testMesh4->GetTransform().SetPosition(dx::XMLoadFloat3(&miniTranslation4));
 	testMesh4->AddComponent<MeshComponent>(zwebMeshes[0], sylvanasMat[0]);
 	AddObject(testMesh4);
 
+	clock.Update();
+	clock.Start();
+	clock.Update();
 	/* * * * * * * * ** * * * * */
 
 	//Log::Add("PRINTING SCENE HIERARCHY ----");
@@ -272,6 +225,7 @@ void Scene::Initialize(Renderer* renderer)
 
 void Scene::Update(const float& deltaTime)
 {
+	clock.Update();
 	dx::XMFLOAT3 positionA = { 0,0,2 };
 	dx::XMFLOAT3 positionB = { 0, 2,-5};
 
@@ -289,12 +243,19 @@ void Scene::Update(const float& deltaTime)
 	GameClock::Instance().Update();
 	guiManager->UpdateAll();
 	//std::cout << "FPS: " << GameClock::Instance().GetFramesPerSecond() << std::endl;
+	renderer->UpdateTime((float)clock.GetSeconds());
+	float t = (float)clock.GetSeconds();
+	t = t;
+	if (clock.GetSeconds() > 60)
+	{
+		clock.Restart();
+	}
 }
 
 void Scene::FixedUpdate(const float& fixedDeltaTime)
 {
 	//Log::Add(std::to_string(fixedDeltaTime));
-//	root->FixedUpdate(fixedDeltaTime);
+	//root->FixedUpdate(fixedDeltaTime);
 }
 
 void Scene::Render()
@@ -305,7 +266,7 @@ void Scene::Render()
 
 	root->Draw(renderer, camera);
 	worldGenerator.Draw(renderer, camera);
-
+	
 	renderer->RenderFrame();
 }
 

@@ -50,7 +50,7 @@ private:
 	Object* root;
 	CameraComponent* camera;
 	Renderer* renderer;
-
+	GameClock clock;
 	Input& input;
 
 	dx::SpriteBatch* spriteBatch;

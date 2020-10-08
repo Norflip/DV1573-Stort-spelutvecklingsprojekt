@@ -1,6 +1,6 @@
 #include "SkeletonAni.h"
 
-DirectX::XMMATRIX& SkeletonAni::Lerp(float elapsedTime, std::vector<Bone>& keys)
+dx::SimpleMath::Matrix& SkeletonAni::Lerp(float elapsedTime, std::vector<Bone>& keys)
 {
     animationTime = elapsedTime * fps;
     //animationTime += elapsedTime;
@@ -42,15 +42,23 @@ DirectX::XMMATRIX& SkeletonAni::Lerp(float elapsedTime, std::vector<Bone>& keys)
     assert(t >= 0.0f && t <= 1.0f);
 
     
-    rotQ = DirectX::XMQuaternionSlerp(keys[firstIndex].rotationQuaternion, keys[secondIndex].rotationQuaternion, t); 
+    
+    dx::SimpleMath::Quaternion slerpedQ = rotQ.Slerp(keys[firstIndex].rotationQuaternion, keys[secondIndex].rotationQuaternion, t);
+    
+    dx::SimpleMath::Vector3 lerpedTrans = transV.Lerp(keys[firstIndex].translationVector, keys[secondIndex].translationVector, t);
+    
+    RT = rotQM.CreateFromQuaternion(slerpedQ) * transM.CreateTranslation(lerpedTrans);
+    //dx::XMStoreFloat4(&rotQ, DirectX::XMQuaternionSlerp(dx::XMLoadFloat4(&keys[firstIndex].rotationQuaternion), dx::XMLoadFloat4(&keys[secondIndex].rotationQuaternion), t));
+    //
+    //dx::XMStoreFloat4x4(&rotQM, DirectX::XMMatrixRotationQuaternion(dx::XMLoadFloat4(&rotQ)));
+    //
+    //dx::XMStoreFloat4(&transV, DirectX::XMVectorLerp(dx::XMLoadFloat4(&keys[firstIndex].translationVector), dx::XMLoadFloat4(&keys[secondIndex].translationVector), t));
+    //
+    //dx::XMStoreFloat4x4(&transM, DirectX::XMMatrixTranslationFromVector(dx::XMLoadFloat4(&transV)));
 
-    rotQM = DirectX::XMMatrixRotationQuaternion(rotQ);
+    // 
 
-    transV = DirectX::XMVectorLerp(keys[firstIndex].translationVector, keys[secondIndex].translationVector, t);
-
-    transM = DirectX::XMMatrixTranslationFromVector(transV);
-
-    RT = rotQM * transM; //I have omitted scale
+    //dx::XMStoreFloat4x4(&RT, dx::XMLoadFloat4x4(&rotQM) * dx::XMLoadFloat4x4(&transM)); //I have omitted scale
 
 
 
@@ -63,23 +71,25 @@ DirectX::XMMATRIX& SkeletonAni::Lerp(float elapsedTime, std::vector<Bone>& keys)
 
 SkeletonAni::SkeletonAni()
 {
-    animationTime = 0.0f;
     
+    animationTime = 0.0f;
+    bones.resize(60); //Maximum number of bones, the animation doesn't need to have this many.
 }
 
-void SkeletonAni::Makeglobal(float elapsedTime, const DirectX::XMMATRIX& globalParent, std::vector<Bone>& keys)
+std::vector<dx::XMFLOAT4X4>& SkeletonAni::Makeglobal(float elapsedTime, const DirectX::XMMATRIX& globalParent, std::vector<Bone>& keys)
 {
-    DirectX::XMMATRIX toRoot = Lerp(elapsedTime, keys) * globalParent; //These matrices are local, need to make them global recursively.
+    DirectX::SimpleMath::Matrix toRoot = Lerp(elapsedTime, keys) * globalParent; //These matrices are local, need to make them global recursively.
 
+    //simple math
 
 
     unsigned int ftIndex = keys[0].index; //all of these indices have the same index number.
 
-    DirectX::XMMATRIX finalTransform = offsetM[ftIndex] * toRoot;
+    DirectX::SimpleMath::Matrix finalTransform = offsetM[ftIndex] * toRoot;
     
-   
+  
 
-    XMStoreFloat4x4(&skeletonDataB.bones[ftIndex], DirectX::XMMatrixTranspose(finalTransform));
+    XMStoreFloat4x4(&bones[ftIndex], finalTransform.Transpose());
     
 
     for (unsigned int i = 0; i < keyBones.size(); i++) //recursively find all the children and repeat.
@@ -90,7 +100,7 @@ void SkeletonAni::Makeglobal(float elapsedTime, const DirectX::XMMATRIX& globalP
         }
     }
 
-   
+    return bones;
     
 }
 
@@ -123,12 +133,12 @@ void SkeletonAni::SetUpOffsetsFromMatrices(std::vector<SkeletonOffsetsHeader>& o
     for (unsigned int i = 0; i < offsets.size(); i++)
     {
 
-        DirectX::XMMATRIX mat = DirectX::XMMatrixSet(offsets[i].m[0], offsets[i].m[1], offsets[i].m[2], offsets[i].m[3]
+        DirectX::SimpleMath::Matrix mat = DirectX::XMMatrixSet(offsets[i].m[0], offsets[i].m[1], offsets[i].m[2], offsets[i].m[3]
             , offsets[i].m[4], offsets[i].m[5], offsets[i].m[6], offsets[i].m[7]
             , offsets[i].m[8], offsets[i].m[9], offsets[i].m[10], offsets[i].m[11]
             , offsets[i].m[12], offsets[i].m[13], offsets[i].m[14], offsets[i].m[15]);
 
-
+        /*dx::XMStoreFloat4x4(&offsetM[boneIDMap[(std::string)offsets[i].linkName]], mat);*/
         offsetM[boneIDMap[(std::string)offsets[i].linkName]] = mat;
     }
 }
@@ -165,15 +175,15 @@ void SkeletonAni::SetUpKeys(std::string boneName, std::vector<SkeletonKeysHeader
         joint.frame = keys[i].currentKeyFrameIndex;
         joint.name = (std::string)keys[i].linkName;
         joint.parentName = (std::string)keys[i].parentName;
-        DirectX::XMVECTOR rot = DirectX::XMVectorSet(keys[i].r[0], keys[i].r[1], keys[i].r[2], keys[i].r[3]);
-        DirectX::XMVECTOR trans = DirectX::XMVectorSet(keys[i].t[0], keys[i].t[1], keys[i].t[2], keys[i].t[3]); //konverteras till left handed i fbx
+        DirectX::SimpleMath::Quaternion rot(keys[i].r[0], keys[i].r[1], keys[i].r[2], keys[i].r[3]);// = DirectX::XMVectorSet(keys[i].r[0], keys[i].r[1], keys[i].r[2], keys[i].r[3]);
+        DirectX::SimpleMath::Vector3 trans(keys[i].t[0], keys[i].t[1], keys[i].t[2]);// = DirectX::XMVectorSet(keys[i].t[0], keys[i].t[1], keys[i].t[2], keys[i].t[3]); //konverteras till left handed i fbx
 
 
-
+       /* dx::XMStoreFloat4(&joint.rotationQuaternion, rot);
+        dx::XMStoreFloat4(&joint.translationVector, trans);*/
+        
         joint.rotationQuaternion = rot;
         joint.translationVector = trans;
-
-
 
         jointKeysVector.push_back(joint); //every joint contains all the keyframes.
 
@@ -192,11 +202,7 @@ void SkeletonAni::SetUpKeys(std::string boneName, std::vector<SkeletonKeysHeader
 
 }
 
-cb_Skeleton& SkeletonAni::GetSkeletonData()
-{
 
-    return skeletonDataB;
-}
 
 std::map<std::string, unsigned int>& SkeletonAni::getBoneIDMap()
 {
