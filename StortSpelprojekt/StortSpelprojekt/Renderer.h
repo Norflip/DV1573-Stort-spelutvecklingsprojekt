@@ -9,13 +9,13 @@
 #include "Material.h"
 #include "CameraComponent.h"
 #include <time.h>
-
+#include "GUIManager.h"
 namespace dx = DirectX;
 
 class RenderPass;
-
-
-
+class GUISprite;
+class GUIFont;
+class GUIManager;
 class Renderer
 {
 	const FLOAT DEFAULT_BG_COLOR[4] = { 0.3f, 0.1f, 0.2f, 1.0f };
@@ -56,7 +56,7 @@ public:
 	void RenderFrame();
 	
 	void AddRenderPass(RenderPass*);
-
+	void SetGUIManager(GUIManager*);
 	void Draw(const Mesh& mesh, const Material& material, const dx::XMMATRIX& model, const CameraComponent& camera);
 	void DrawInstanced(const Mesh& mesh, const size_t& count, const Material& material, const CameraComponent& camera);
 	void DrawSkeleton(const Mesh& mesh, const Material& material, const dx::XMMATRIX& model, const CameraComponent& camera, std::vector<dx::XMFLOAT4X4>& bones);
@@ -115,9 +115,13 @@ private:
 	RenderQueue transparentItemQueue;
 	std::vector<RenderPass*> passes;
 
+	// GUI
+	GUIManager* guiManager;
 	//blendstate
 	ID3D11BlendState* blendStateOn;
 	ID3D11BlendState* blendStateOff;
+
+	ID3D11DepthStencilState* dss;
 
 	const float BLENDSTATEMASK[4] = { 0.0f };
 

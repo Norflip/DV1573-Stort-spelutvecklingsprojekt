@@ -65,6 +65,11 @@ void DXHelper::CreateConstBuffer(ID3D11Device* device, ID3D11Buffer** buffer, vo
 
 void DXHelper::BindConstBuffer(ID3D11DeviceContext* context, ID3D11Buffer* buffer, void* data, size_t slot, ShaderBindFlag flag)
 {
+	/*ID3D11Buffer* buff = NULL;
+	context->PSSetConstantBuffers(slot, 1, &buff);
+	context->VSSetConstantBuffers(slot, 1, &buff);
+	context->GSSetConstantBuffers(slot, 1, &buff);*/
+
 	context->UpdateSubresource(buffer, 0, 0, data, 0, 0);
 
 	int bflag = static_cast<int>(flag);
@@ -217,7 +222,7 @@ RenderTexture DXHelper::CreateBackbuffer(size_t width, size_t height, ID3D11Devi
 	return rt;
 }
 
-RenderTexture DXHelper::CreateRenderTexture(size_t width, size_t height, ID3D11Device* device)
+RenderTexture DXHelper::CreateRenderTexture(size_t width, size_t height, ID3D11Device* device, ID3D11DeviceContext* context, ID3D11DepthStencilState** dss)
 {
 	RenderTexture rt;
 	rt.width = width;
@@ -297,12 +302,11 @@ RenderTexture DXHelper::CreateRenderTexture(size_t width, size_t height, ID3D11D
 	depthStencilStateDsc.BackFace.StencilDepthFailOp = D3D11_STENCIL_OP_DECR;
 	depthStencilStateDsc.BackFace.StencilFunc = D3D11_COMPARISON_ALWAYS;
 
-	ID3D11DepthStencilState* dss;
-	HRESULT createDepthStencilResult = device->CreateDepthStencilState(&depthStencilStateDsc, &dss);
+	//ID3D11DepthStencilState* dss;
+	HRESULT createDepthStencilResult = device->CreateDepthStencilState(&depthStencilStateDsc, dss);
 	assert(SUCCEEDED(createDepthStencilResult));
 
-	//context->OMSetDepthStencilState(depthStencilState, 1);
-
+	context->OMSetDepthStencilState(*dss, 1);
 
 
 	ID3D11Texture2D* depthTex;
@@ -330,7 +334,6 @@ RenderTexture DXHelper::CreateRenderTexture(size_t width, size_t height, ID3D11D
 	dsvDesc.Flags = 0;
 	dsvDesc.ViewDimension = D3D11_DSV_DIMENSION_TEXTURE2D;
 	dsvDesc.Texture2D.MipSlice = 0;
-
 
 	hr = device->CreateDepthStencilView(depthTex, &dsvDesc, &rt.dsv);
 	assert(SUCCEEDED(hr));
