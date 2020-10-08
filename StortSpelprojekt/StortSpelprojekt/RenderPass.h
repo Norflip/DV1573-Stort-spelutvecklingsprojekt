@@ -1,7 +1,7 @@
 #pragma once
 #include "Renderer.h"
 #include "Texture.h"
-
+#include "GUISprite.h"
 class RenderPass
 {
 public:
@@ -27,19 +27,39 @@ public:
 
 	void m_Initialize(ID3D11Device* device) override 
 	{
+		Shader shader;
 		shader.SetPixelShader(path, entry);
 		shader.SetVertexShader(L"Shaders/ScreenQuad_vs.hlsl");
 		shader.Compile(device);
+		material = Material(shader);
 	}
 
 	bool Pass(Renderer* renderer, RenderTexture& inTexture, RenderTexture& outTexture) override
 	{
-		renderer->DrawScreenQuad(shader);
+		renderer->DrawScreenQuad(material);
 		return true;
 	}
 
 private:
-	Shader shader;
+	Material material;
+
 	LPCWSTR path;
 	LPCSTR entry;
 };
+
+// GUIMANAGER
+
+class SpriteRenderPass : public RenderPass
+{
+public:
+	SpriteRenderPass(int priority,GUISprite* spiriteTest): RenderPass(priority), spiriteTest(spiriteTest){}
+	
+	bool Pass(Renderer* renderer, RenderTexture& inTexture, RenderTexture& outTexture) override
+	{
+		spiriteTest->Draw();
+		return true;
+	}
+private:
+	GUISprite* spiriteTest;
+};
+

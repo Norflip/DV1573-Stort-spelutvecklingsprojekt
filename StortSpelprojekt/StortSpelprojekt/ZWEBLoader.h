@@ -8,7 +8,7 @@ enum ZWEBLoadType
 	NoAnimation,
 	SkeletonAnimation,
 };
-namespace ZWEBLoader //TO BE ADDED: FUNCTION TO LOAD LIGHTS AND TO LOAD TEXTURES INOT MATERIALS FROM PATHWAY
+namespace ZWEBLoader //TO BE ADDED: FUNCTION TO LOAD LIGHTS
 {
 
 	inline SkeletonAni LoadSkeletonOnly( std::string animationPath, std::map<std::string, unsigned int>& boneIDMap)
@@ -41,6 +41,13 @@ namespace ZWEBLoader //TO BE ADDED: FUNCTION TO LOAD LIGHTS AND TO LOAD TEXTURES
 			skeletonAnimation.SetUpKeys((std::string)keys[0].linkName, keys);
 		}
 
+
+
+		
+
+
+
+
 		return skeletonAnimation;
 
 
@@ -72,7 +79,16 @@ namespace ZWEBLoader //TO BE ADDED: FUNCTION TO LOAD LIGHTS AND TO LOAD TEXTURES
 
 			for (unsigned int vertex = 0; vertex < verticesZweb.size(); vertex++)
 			{
-				vertices[vertex].position = DirectX::XMFLOAT3(verticesZweb[vertex].pos[0], verticesZweb[vertex].pos[1], verticesZweb[vertex].pos[2]);
+				if (type == ZWEBLoadType::SkeletonAnimation)
+				{
+					//vertices[vertex].position = DirectX::XMFLOAT3(verticesZweb[vertex].pos[0], verticesZweb[vertex].pos[2], verticesZweb[vertex].pos[1]);
+					vertices[vertex].position = DirectX::XMFLOAT3(verticesZweb[vertex].pos[0], verticesZweb[vertex].pos[1], verticesZweb[vertex].pos[2]);
+				}
+				else
+				{
+					vertices[vertex].position = DirectX::XMFLOAT3(verticesZweb[vertex].pos[0], verticesZweb[vertex].pos[1], verticesZweb[vertex].pos[2]);
+				}
+				
 
 				vertices[vertex].uv = DirectX::XMFLOAT2(verticesZweb[vertex].uv[0], 1.0f - verticesZweb[vertex].uv[1]);
 
@@ -86,7 +102,7 @@ namespace ZWEBLoader //TO BE ADDED: FUNCTION TO LOAD LIGHTS AND TO LOAD TEXTURES
 			}
 			std::map<std::string, unsigned int> boneIDMap; //This is to make sure correct Vertex is mapped to the Correct Bone/Joint.
 			boneIDMap.clear();
-
+			
 			if (type == ZWEBLoadType::SkeletonAnimation)
 			{
 				std::vector<VertexHeader> controlVerticesZweb = importer.getControlPoints(mesh); //Controlpoints are indexed, converting them into non indexed here.
@@ -114,7 +130,20 @@ namespace ZWEBLoader //TO BE ADDED: FUNCTION TO LOAD LIGHTS AND TO LOAD TEXTURES
 					}
 					controlVertices[controlVertex].position = DirectX::XMFLOAT3(controlVerticesZweb[controlVertex].pos[0], controlVerticesZweb[controlVertex].pos[1]
 						, controlVerticesZweb[controlVertex].pos[2]);
+
+					
+
+					
 				}
+
+
+
+				
+
+
+
+
+
 
 				std::vector<Mesh::Vertex>::iterator it;
 				for (unsigned int vertex = 0; vertex < vertices.size(); vertex++) //for every vertex
@@ -128,9 +157,13 @@ namespace ZWEBLoader //TO BE ADDED: FUNCTION TO LOAD LIGHTS AND TO LOAD TEXTURES
 						UINT index = (UINT)std::distance(controlVertices.begin(), it); //find wich one
 
 						vertices[vertex].boneID = controlVertices[index].boneID; //add it to the list
-						vertices[vertex].skinWeight.x = controlVertices[index].skinWeight.x;
-						vertices[vertex].skinWeight.y = controlVertices[index].skinWeight.y;
-						vertices[vertex].skinWeight.z = controlVertices[index].skinWeight.z;
+						vertices[vertex].skinWeight = controlVertices[index].skinWeight;
+						
+
+						
+
+
+
 					}
 
 
@@ -139,7 +172,7 @@ namespace ZWEBLoader //TO BE ADDED: FUNCTION TO LOAD LIGHTS AND TO LOAD TEXTURES
 
 			
 			}
-
+			
 			
 
 			Mesh meshObject(device, vertices, indicesZweb);
@@ -250,7 +283,25 @@ namespace ZWEBLoader //TO BE ADDED: FUNCTION TO LOAD LIGHTS AND TO LOAD TEXTURES
 				materialData.hasNormalMap = 0;
 
 			}
-			
+			if (opacityName != " ")
+			{
+				Texture texture;
+				std::string path = "Textures/" + opacityName;
+				std::wstring pathWSTR(path.begin(), path.end());
+				bool success = texture.LoadTexture(device, pathWSTR.c_str());
+				assert(success);
+
+
+				mat.SetTexture(texture, 1, ShaderBindFlag::PIXEL); //This is default but can be manually changed afterwards.
+
+
+				
+			}
+
+
+
+
+
 			mat.SetMaterialData(materialData);
 			materials.push_back(mat);
 		}

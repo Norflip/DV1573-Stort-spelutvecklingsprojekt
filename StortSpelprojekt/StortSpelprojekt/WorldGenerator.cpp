@@ -2,15 +2,30 @@
 
 WorldGenerator::WorldGenerator() : chunkMesh()
 {
-
+	grassComponents.clear();
 }
 
 WorldGenerator::~WorldGenerator()
 {
+	
 	for (size_t i = 0; i < chunks.size(); i++)
 		delete chunks[i]->GetOwner();
 
 	chunks.clear();
+
+
+}
+
+void WorldGenerator::InitalizeGrass(ID3D11Device* device, ID3D11DeviceContext* context)
+{
+
+	
+
+	for (int grass = 0; grass < grassComponents.size(); grass++)
+	{
+		grassComponents[grass]->InitializeGrass(chunkMesh.vertices, chunkMesh.indices, device, context);
+	}
+	
 }
 
 void WorldGenerator::Initialize(ID3D11Device* device)
@@ -63,6 +78,48 @@ void WorldGenerator::Initialize(ID3D11Device* device)
 
 	chunkMesh = Mesh(device, vertices, indicies);
 
+	
+
+	/****************EMILKOD****************/
+
+
+	
+	
+
+	grassShader.SetVertexShader(L"Shaders/Grass_vs.hlsl");
+	grassShader.SetHullShader(L"Shaders/Grass_hs.hlsl");
+	grassShader.SetDomainShader(L"Shaders/Grass_ds.hlsl");
+	grassShader.SetGeometryShader(L"Shaders/Grass_gs.hlsl");
+	grassShader.SetPixelShader(L"Shaders/Grass_ps.hlsl");
+	grassShader.Compile(device);
+	
+
+	Mesh::Vertex v;
+	v.normal = dx::XMFLOAT3(0, 1, 0);
+	v.position = dx::XMFLOAT3(0, 0, 0);
+	v.uv = dx::XMFLOAT2(1, 0);
+	grassV.push_back(v);
+	
+	for (int index = 0; index < chunkMesh.indices.size() / 3; index++)
+	{
+		grassI.push_back(0);
+	}
+	
+	
+
+
+	
+	
+
+	
+	
+
+
+
+
+
+	/**********************************/
+
 	/*if (CHUNK_SIZE == 64U)
 	{
 		chunkMesh = ShittyOBJLoader::Load("Models/plane64x64.obj", device);
@@ -71,6 +128,10 @@ void WorldGenerator::Initialize(ID3D11Device* device)
 	{
 		chunkMesh = ShittyOBJLoader::Load("Models/plane32x32.obj", device);
 	}*/
+
+
+	
+
 }
 
 void WorldGenerator::Generate(const SaveState& levelState, ID3D11Device* device)
@@ -120,16 +181,21 @@ void WorldGenerator::Generate(const SaveState& levelState, ID3D11Device* device)
 		indexCount++;
 	}
 
-	//Log::Add("Created " + std::to_string(chunkCount) + " chunks with " + std::to_string(collisionCount) + " collisions.");
 }
 
 void WorldGenerator::Draw(Renderer* renderer, CameraComponent* camera)
 {
+	
 	for (auto i = chunks.begin(); i < chunks.end(); i++)
 	{
 		(*i)->GetOwner()->Draw(renderer, camera);
 	}
+
+
+	
 }
+
+
 
 std::vector<dx::XMINT2> WorldGenerator::CalculatePath(size_t steps, int seed)
 {
@@ -166,7 +232,7 @@ dx::XMINT2 WorldGenerator::GetDirection(dx::XMINT2 direction, float value, const
 {
 	dx::XMINT2 newDirection = direction;
 
-	// Filip: Kolla genom logiken här
+	// Filip: Kolla genom logiken hï¿½r
 	if (newDirection.y == 0)
 	{
 		if (value < 0.8f)
@@ -213,7 +279,7 @@ dx::XMFLOAT2 WorldGenerator::PathIndexToWorld(const dx::XMINT2& i) const
 
 Chunk* WorldGenerator::CreateChunk(ChunkType type, dx::XMINT2 index, const Path& path, ID3D11Device* device)
 {
-	// + 1 för height map
+	// + 1 fï¿½r height map
 	size_t size = CHUNK_SIZE + 1;
 
 	Noise::Settings settings (0);
@@ -231,6 +297,10 @@ Chunk* WorldGenerator::CreateChunk(ChunkType type, dx::XMINT2 index, const Path&
 	size_t bufferIndex = 0;
 
 	const float MAX_DISTANCE = 10.0f;
+
+	
+
+
 
 	for (size_t y = 0; y < size; y++)
 	{
@@ -266,24 +336,55 @@ Chunk* WorldGenerator::CreateChunk(ChunkType type, dx::XMINT2 index, const Path&
 	auto srv = DXHelper::CreateTexture(buffer, size, size, 4, DXGI_FORMAT_R8G8B8A8_UNORM_SRGB, device);
 	auto nsrv = DXHelper::CreateTexture(normalBuffer, size, size, 4, DXGI_FORMAT_R8G8B8A8_UNORM_SRGB, device);
 
+	
+	
+
 	//delete[] heightMap;
 	delete[] buffer;
 	delete[] normalBuffer;
+
+	
 
 	Material material(shader);
 	material.SetTexture(Texture(srv), 0, ShaderBindFlag::PIXEL);
 	material.SetTexture(Texture(srv), 0, ShaderBindFlag::VERTEX);
 	material.SetTexture(Texture(nsrv), 1, ShaderBindFlag::VERTEX);
 
+	auto sampler = DXHelper::CreateSampler(D3D11_FILTER_MIN_MAG_MIP_LINEAR, D3D11_TEXTURE_ADDRESS_WRAP, device);
+	material.SetSampler(sampler, 0, ShaderBindFlag::PIXEL);
+	material.SetSampler(sampler, 0, ShaderBindFlag::VERTEX);
+
 	std::string name = "chunk " + std::to_string(index.x) + ", " + std::to_string(index.y);
 	Object* chunkObject = new Object(name, ObjectFlag::DEFAULT);
+	
+	
 
-	chunkObject->GetTransform().SetPosition(Chunk::IndexToWorld(index, -5.0f));
+	dx::XMVECTOR indexPos = Chunk::IndexToWorld(index, -5.0f);
+	indexPos.m128_f32[0] -= 40.0f;
+	indexPos.m128_f32[2] -= 120.0f;
+
+	chunkObject->GetTransform().SetPosition(indexPos);
 	chunkObject->AddComponent<MeshComponent>(chunkMesh, material);
 
-	Chunk* chunk = chunkObject->AddComponent<Chunk>(index, type);
-	chunk->SetHeightMap(heightMap);
 
+	
+	Chunk* chunk = chunkObject->AddComponent<Chunk>(index, type);
+
+	/****************************EMIL KOD*/
+
+
+	GrassComponent* grassComponent = chunkObject->AddComponent<GrassComponent>(device, grassV, grassI, grassShader);
+
+	grassComponent->GetMaterial().SetTexture(Texture(srv), 6, ShaderBindFlag::DOMAINS);
+
+
+	grassComponents.push_back(grassComponent);
+
+
+		/****************************EMIL KOD*/
+
+	chunk->SetHeightMap(heightMap);
+	
 	chunks.push_back(chunk);
 	chunkMap.insert({ HASH2D_I(index.x, index.y), chunk });
 
@@ -314,3 +415,6 @@ dx::XMFLOAT3 WorldGenerator::CalculateNormal(float x, float y, const Noise::Sett
 	dx::XMStoreFloat3(&ret, dx::XMVector3Cross(horizontal, vertical));
 	return ret;
 }
+
+
+

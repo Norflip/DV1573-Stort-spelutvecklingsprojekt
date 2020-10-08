@@ -1,6 +1,5 @@
 #pragma once
 #include "Component.h"
-#include "Input.h"
 #include "Object.h"
 //#include <DirectXMath.h>
 namespace dx = DirectX;

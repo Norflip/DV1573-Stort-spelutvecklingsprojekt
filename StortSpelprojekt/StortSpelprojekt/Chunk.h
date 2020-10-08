@@ -3,8 +3,7 @@
 namespace dx = DirectX;
 
 #include "Component.h"
-#include "Texture.h"
-#include "Math.h"
+
 
 constexpr size_t CHUNK_SIZE = 64;
 constexpr float TERRAIN_SCALE = 10.0f;
@@ -17,6 +16,7 @@ enum class ChunkType
 	Event
 };
 
+
 class Chunk : public Component
 {
 public:
@@ -25,7 +25,7 @@ public:
 
 	float SampleHeight(float x, float z);
 
-	void SetHeightMap(float* heightmap) { this->heightMap = heightMap; }
+	void SetHeightMap(float* heightmap) { this->heightMap = heightmap; }
 	dx::XMINT2 GetIndex() const { return this->index; }
 	ChunkType GetType() const { return this->type; }
 

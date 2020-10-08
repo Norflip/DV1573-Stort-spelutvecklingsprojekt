@@ -12,11 +12,17 @@
 #include "ZWEBLoader.h"
 #include "SkeletonMeshComponent.h"
 #include "PointLightComponent.h"
+#include "NodeWalkerComponent.h"
 
 #include "Skybox.h"
 #include "WorldGenerator.h"
 #include "SaveState.h"
+#include "DShape.h"
+#include "GUIManager.h"
+#include <string>
 
+class GUIFont;
+class SpriteRenderPass;
 class Scene
 {
 public:
@@ -31,10 +37,7 @@ public:
 	void Update(const float& deltaTime);
 	void FixedUpdate(const float& fixedDeltaTime);
 	void Render();
-
-	/* new - render scene to texture */
-	void RenderSceneToTexture();
-
+	
 	void AddObject(Object* object);
 	void AddObject(Object* object, Object* parent);
 
@@ -48,11 +51,17 @@ private:
 	Object* root;
 	CameraComponent* camera;
 	Renderer* renderer;
-
+	GameClock clock;
 	Input& input;
 
+	dx::SpriteBatch* spriteBatch;
 	WorldGenerator worldGenerator;
+	SpriteRenderPass* spritePass;	
 
-	/* test sky */
-	Object* testSkybox;
+	GUIManager* guiManager;		
+
+	/* Test skybox in class */
+	Object* skybox;
+	Skybox* skyboxClass;		
+
 };
