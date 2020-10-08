@@ -51,5 +51,6 @@ void LightManager::UpdateBuffers(ID3D11DeviceContext* context, dx::XMVECTOR camP
 
 	cb_light.nrOfPointLights = 2;
 	dx::XMStoreFloat3(&cb_light.cameraPosition, camPos);
+	DXHelper::BindConstBuffer(context, light_cbuffer, &cb_light, CB_SCENE_SLOT, ShaderBindFlag::DOMAINS);
 	DXHelper::BindConstBuffer(context, light_cbuffer, &cb_light, CB_SCENE_SLOT, ShaderBindFlag::PIXEL);
 }

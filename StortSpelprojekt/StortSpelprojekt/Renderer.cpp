@@ -21,7 +21,7 @@ Renderer::~Renderer()
 
 	obj_cbuffer->Release();
 
-	skeleton_cbuffer->Release();
+	//skeleton_cbuffer->Release();
 
 	skeleton_srvbuffer->Release();
 
@@ -417,10 +417,10 @@ void Renderer::DrawRenderItemGrass(const RenderItem& item)
 
 	DXHelper::BindConstBuffer(context, obj_cbuffer, &cb_object_data, CB_OBJECT_SLOT, ShaderBindFlag::GEOMETRY);
 
-	dx::XMStoreFloat3(&cb_scene.cameraPosition,item.camera->GetOwner()->GetTransform().GetPosition());
+	dx::XMStoreFloat3(&cb_light.cameraPosition,item.camera->GetOwner()->GetTransform().GetPosition());
 	
-	DXHelper::BindConstBuffer(context, light_cbuffer, &cb_scene, CB_SCENE_SLOT, ShaderBindFlag::DOMAINS);
-	DXHelper::BindConstBuffer(context, light_cbuffer, &cb_scene, CB_SCENE_SLOT, ShaderBindFlag::PIXEL);
+	//DXHelper::BindConstBuffer(context, light_cbuffer, &cb_scene, CB_SCENE_SLOT, ShaderBindFlag::DOMAINS);
+	//DXHelper::BindConstBuffer(context, light_cbuffer, &cb_scene, CB_SCENE_SLOT, ShaderBindFlag::PIXEL);
 	/*cb_material_data = item.material->GetMaterialData();
 	DXHelper::BindConstBuffer(context, material_cbuffer, &cb_material_data, CB_MATERIAL_SLOT, ShaderBindFlag::PIXEL);*/
 
