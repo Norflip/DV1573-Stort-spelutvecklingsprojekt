@@ -11,7 +11,6 @@
 #include "MeshComponent.h"
 #include "ZWEBLoader.h"
 #include "SkeletonMeshComponent.h"
-#include "PointLightComponent.h"
 #include "NodeWalkerComponent.h"
 
 #include "Skybox.h"

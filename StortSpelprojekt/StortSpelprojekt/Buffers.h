@@ -30,7 +30,7 @@ struct cb_Material
 };
 
 __declspec(align(16))
-struct s_PointLight
+struct PointLight
 {
 	dx::XMFLOAT4 lightColor;
 	dx::XMFLOAT3 lightPosition;
@@ -38,30 +38,26 @@ struct s_PointLight
 	dx::XMFLOAT3 attenuation;
 };
 
-struct cb_Lights
+__declspec(align(16))
+struct cb_Scene
 {
-	s_PointLight pointLights[POINT_LIGHT_COUNT];
+	PointLight pointLights[POINT_LIGHT_COUNT];
 	int nrOfPointLights;
 	dx::XMFLOAT3 sunDirection;
 	float sunIntensity;
 	dx::XMFLOAT3 cameraPosition;
-};
 
-
-__declspec(align(16))
-struct cb_Scene
-{
 	// new stuff
 	int id;
 	float factor;
 	dx::XMFLOAT2 padding10;
-
+	
 	float time;
 	dx::XMFLOAT3 padding11;
 };
 
-__declspec(align(16))
 
+__declspec(align(16))
 struct cb_grass
 {
 	float pixelSize;

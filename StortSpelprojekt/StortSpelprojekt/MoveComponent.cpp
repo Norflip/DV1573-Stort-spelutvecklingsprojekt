@@ -21,9 +21,7 @@ void MoveComponent::Update(const float& deltaTime)
 		direction.z *= -1;
 	}
 
-	/*dx::XMVECTOR move = dx::XMVectorScale(dx::XMLoadFloat3(&this->direction), deltaTime);
+	dx::XMVECTOR move = dx::XMVectorScale(dx::XMLoadFloat3(&this->direction), deltaTime);
 	dx::XMVECTOR newPos = dx::XMVectorAdd(GetOwner()->GetTransform().GetPosition(), move);
-	GetOwner()->GetTransform().SetPosition(newPos);*/
-	GetOwner()->GetTransform().Translate(this->direction.x * deltaTime, this->direction.y * deltaTime, this->direction.z * deltaTime);
-
+	GetOwner()->GetTransform().SetPosition(newPos);
 }

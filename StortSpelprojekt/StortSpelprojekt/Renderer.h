@@ -8,8 +8,6 @@
 #include "Texture.h"
 #include "Material.h"
 #include "CameraComponent.h"
-#include "LightManager.h"
-
 #include <time.h>
 #include "GUIManager.h"
 namespace dx = DirectX;
@@ -106,7 +104,6 @@ private:
 	ID3D11ShaderResourceView* skeleton_srv;
 	
 	cb_Scene cb_scene;
-	cb_Lights cb_light;
 	ID3D11Buffer* light_cbuffer;
 
 	cb_Material cb_material_data;

@@ -125,38 +125,6 @@ void Scene::InitializeObjects()
 	std::vector<Mesh> stylizedTreeModel = ZWEBLoader::LoadMeshes(ZWEBLoadType::NoAnimation, "Models/tree.ZWEB", renderer->GetDevice());
 	//0 tree 1 leaves
 	std::vector<Material> stylizedTreeMaterial = ZWEBLoader::LoadMaterials("Models/tree.ZWEB", instanceShader, renderer->GetDevice());
-
-	Shader lightSahder;
-	lightSahder.SetVertexShader(L"Shaders/Default_vs.hlsl");
-	lightSahder.SetPixelShader(L"Shaders/Default_ps.hlsl");
-	lightSahder.Compile(renderer->GetDevice());
-
-	//TEST POINT LIGHTS____________________________________________________________________________________________________________________
-	Object* testPointLight = new Object("testPointLight");								
-	dx::XMFLOAT3 lightTranslation = dx::XMFLOAT3(2.0f, 0.0f, 3.0f);						
-	testPointLight->GetTransform().SetPosition(dx::XMLoadFloat3(&lightTranslation));	
-	AddObject(testPointLight);															
-	testPointLight->AddComponent<PointLightComponent>();								
-	testPointLight->GetComponent<PointLightComponent>()->SetColor({ 1.f, 0.f, 0.f, 1.f });
-																						
-	Object* testPointLight2 = new Object("testPointLight2");							
-	dx::XMFLOAT3 lightTranslation2 = dx::XMFLOAT3(0.0f, 2.0f, 3.0f);					
-	testPointLight2->GetTransform().SetPosition(dx::XMLoadFloat3(&lightTranslation2));	
-	AddObject(testPointLight2);															
-	testPointLight2->AddComponent<PointLightComponent>();								
-	testPointLight2->GetComponent<PointLightComponent>()->SetColor({ 0.f, 1.f, 0.f, 1.f });
-																						
-	Object* testPointLight3 = new Object("testPointLight3");							
-	dx::XMFLOAT3 lightTranslation3 = dx::XMFLOAT3(-2.0f, 0.0f, 3.0f);					
-	testPointLight3->GetTransform().SetPosition(dx::XMLoadFloat3(&lightTranslation3));	
-	AddObject(testPointLight3);															
-	testPointLight3->AddComponent<PointLightComponent>();								
-	testPointLight3->GetComponent<PointLightComponent>()->SetColor({ 0.f, 0.f, 1.f, 1.f });
-	//_____________________________________________________________________________________________________________________________________
-	Shader skyboxShader;
-	skyboxShader.SetPixelShader(L"Shaders/Sky_ps.hlsl");
-	skyboxShader.SetVertexShader(L"Shaders/Sky_vs.hlsl");
-	skyboxShader.Compile(renderer->GetDevice());
 	
 	stylizedTreeMaterial[0].SetSampler(sampler, 0, ShaderBindFlag::PIXEL);
 	stylizedTreeMaterial[1].SetSampler(sampler, 0, ShaderBindFlag::PIXEL);
@@ -173,6 +141,7 @@ void Scene::InitializeObjects()
 	size_t nrOfInstancedStyTrees =5;
 	std::vector<Mesh::InstanceData> styTreesInstanced(nrOfInstancedStyTrees);
 	std::vector<Mesh::InstanceData> styLeavesInstanced(nrOfInstancedStyTrees);
+
 	
 	std::vector<unsigned int> randNr;
 	for (size_t i = 0; i < nrOfInstancedStyTrees; i++)
