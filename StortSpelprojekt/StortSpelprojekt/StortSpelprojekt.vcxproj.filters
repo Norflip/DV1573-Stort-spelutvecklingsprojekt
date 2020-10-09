@@ -168,7 +168,14 @@
     <ClCompile Include="GUIFont.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    
+    <ClCompile Include="PointLightComponent.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="LightManager.cpp">
+
     <ClCompile Include="ResourceManager.cpp">
+
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>
@@ -306,6 +313,12 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="GUIFont.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="PointLightComponent.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="LightManager.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>

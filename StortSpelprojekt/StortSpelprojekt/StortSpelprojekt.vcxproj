@@ -163,6 +163,7 @@
     <ClCompile Include="GUIManager.cpp" />
     <ClCompile Include="GUISprite.cpp" />
     <ClCompile Include="Input.cpp" />
+    <ClCompile Include="LightManager.cpp" />
     <ClCompile Include="InstancedMeshComponent.cpp" />
     <ClCompile Include="main.cpp" />
     <ClCompile Include="Material.cpp" />
@@ -170,6 +171,7 @@
     <ClCompile Include="MoveComponent.cpp" />
     <ClCompile Include="NodeWalkerComponent.cpp" />
     <ClCompile Include="Object.cpp" />
+    <ClCompile Include="PointLightComponent.cpp" />
     <ClCompile Include="Renderer.cpp" />
     <ClCompile Include="ResourceManager.cpp" />
     <ClCompile Include="Scene.cpp" />
@@ -198,6 +200,7 @@
     <ClInclude Include="GrassComponent.h" />
     <ClInclude Include="GUIFont.h" />
     <ClInclude Include="GUIManager.h" />
+    <ClInclude Include="LightManager.h" />
     <ClInclude Include="GUISprite.h" />
     <ClInclude Include="InstancedMeshComponent.h" />
     <ClInclude Include="Math.h" />
@@ -215,6 +218,7 @@
     <ClInclude Include="NodeWalkerComponent.h" />
     <ClInclude Include="Noise.h" />
     <ClInclude Include="Object.h" />
+    <ClInclude Include="PointLightComponent.h" />
     <ClInclude Include="Renderer.h" />
     <ClInclude Include="RenderPass.h" />
     <ClInclude Include="SaveState.h" />
