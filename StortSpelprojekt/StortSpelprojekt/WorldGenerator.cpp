@@ -12,23 +12,18 @@ WorldGenerator::~WorldGenerator()
 		delete chunks[i]->GetOwner();
 
 	chunks.clear();
-
-
 }
 
 void WorldGenerator::InitalizeGrass(ID3D11Device* device, ID3D11DeviceContext* context)
 {
-
-	
-
 	for (int grass = 0; grass < grassComponents.size(); grass++)
 	{
 		grassComponents[grass]->InitializeGrass(chunkMesh.vertices, chunkMesh.indices, device, context);
 	}
-	
+
 }
 
-void WorldGenerator::Initialize(ID3D11Device* device)
+void WorldGenerator::Initialize(ID3D11Device* device, Shader* shader, Shader* grassShader)
 {
 	// CREATE CHUNK MESH
 	std::vector<Mesh::Vertex> vertices;
@@ -72,27 +67,16 @@ void WorldGenerator::Initialize(ID3D11Device* device)
 		}
 	}
 
-	shader.SetPixelShader(L"Shaders/Terrain_ps.hlsl");
-	shader.SetVertexShader(L"Shaders/Terrain_vs.hlsl");
-	shader.Compile(device);
-
-	chunkMesh = Mesh(device, vertices, indicies);
-
+	/*shader->SetPixelShader(L"Shaders/Terrain_ps.hlsl");
+	shader->SetVertexShader(L"Shaders/Terrain_vs.hlsl");
+	shader->Compile(device);*/
 	
+	this->shader = shader;
+	chunkMesh = Mesh(device, vertices, indicies);
 
 	/****************EMILKOD****************/
 
-
-	
-	
-
-	grassShader.SetVertexShader(L"Shaders/Grass_vs.hlsl");
-	grassShader.SetHullShader(L"Shaders/Grass_hs.hlsl");
-	grassShader.SetDomainShader(L"Shaders/Grass_ds.hlsl");
-	grassShader.SetGeometryShader(L"Shaders/Grass_gs.hlsl");
-	grassShader.SetPixelShader(L"Shaders/Grass_ps.hlsl");
-	grassShader.Compile(device);
-	
+	this->grassShader = grassShader;
 
 	Mesh::Vertex v;
 	v.normal = dx::XMFLOAT3(0, 1, 0);
@@ -105,17 +89,6 @@ void WorldGenerator::Initialize(ID3D11Device* device)
 		grassI.push_back(0);
 	}
 	
-	
-
-
-	
-	
-
-	
-	
-
-
-
 
 
 	/**********************************/
@@ -128,9 +101,6 @@ void WorldGenerator::Initialize(ID3D11Device* device)
 	{
 		chunkMesh = ShittyOBJLoader::Load("Models/plane32x32.obj", device);
 	}*/
-
-
-	
 
 }
 
@@ -192,11 +162,7 @@ void WorldGenerator::Draw(Renderer* renderer, CameraComponent* camera)
 		(*i)->GetOwner()->Draw(renderer, camera);
 	}
 
-
-	
 }
-
-
 
 std::vector<dx::XMINT2> WorldGenerator::CalculatePath(size_t steps, int seed)
 {
@@ -298,10 +264,6 @@ Chunk* WorldGenerator::CreateChunk(ChunkType type, dx::XMINT2 index, const Path&
 	size_t bufferIndex = 0;
 
 	const float MAX_DISTANCE = 10.0f;
-
-	
-
-
 
 	for (size_t y = 0; y < size; y++)
 	{

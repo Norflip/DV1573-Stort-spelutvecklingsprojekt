@@ -23,14 +23,14 @@ private:
 class PSRenderPass : public RenderPass
 {
 public:
-	PSRenderPass(int priority, LPCWSTR pixelShaderPath, LPCSTR pixelShaderEntry = "main") : RenderPass(priority), path(pixelShaderPath), entry(pixelShaderEntry) {}
+	PSRenderPass(int priority, std::string pixelShaderPath, LPCSTR pixelShaderEntry = "main") : RenderPass(priority), path(pixelShaderPath), entry(pixelShaderEntry) {}
 
 	void m_Initialize(ID3D11Device* device) override 
 	{
-		Shader shader;
-		shader.SetPixelShader(path, entry);
-		shader.SetVertexShader(L"Shaders/ScreenQuad_vs.hlsl");
-		shader.Compile(device);
+		Shader* shader = new Shader;
+		shader->SetPixelShader(path, entry);
+		shader->SetVertexShader("Shaders/ScreenQuad_vs.hlsl");
+		shader->Compile(device);
 		material = Material(shader);
 	}
 
@@ -43,7 +43,8 @@ public:
 private:
 	Material material;
 
-	LPCWSTR path;
+	//LPCWSTR path;
+	std::string path;
 	LPCSTR entry;
 };
 
