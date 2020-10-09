@@ -43,10 +43,10 @@ void LightManager::UpdateBuffers(ID3D11DeviceContext* context, dx::XMVECTOR camP
 	cb_light.sunIntensity = 0.4f;*/
 	for (auto i = pointLightMap.begin(); i != pointLightMap.end(); i++)
 	{
-		cb_light.pointLights[i->first].lightColor = GetPointLight(i->first)->GetColor();
-		dx::XMStoreFloat3(&cb_light.pointLights[i->first].lightPosition, (GetPointLight(i->first)->GetOwner()->GetTransform().GetPosition()));
-		cb_light.pointLights[i->first].attenuation = GetPointLight(i->first)->GetAttenuation();
-		cb_light.pointLights[i->first].range = GetPointLight(i->first)->GetRange();
+		cb_light.pointLights[i->first].lightColor = i->second->GetColor();
+		dx::XMStoreFloat3(&cb_light.pointLights[i->first].lightPosition, (i->second->GetOwner()->GetTransform().GetPosition()));
+		cb_light.pointLights[i->first].attenuation = i->second->GetAttenuation();
+		cb_light.pointLights[i->first].range = i->second->GetRange();
 	}
 	cb_light.nrOfPointLights = pointLightMap.size();
 
