@@ -1,10 +1,6 @@
 #include "CommonBuffers.hlsl"
 #include "IO.hlsl"
 
-
-
-
-
 VS_OUTPUT main(VS_INPUT_SKELETON input)
 {
 	VS_OUTPUT output;
@@ -31,15 +27,6 @@ VS_OUTPUT main(VS_INPUT_SKELETON input)
 
 	float4 outpos = mul(float4(p.xyz, 1), mvp);
 	float3 outputWorldpos = mul(p,world).xyz;
-
-
-
-
-
-
-
-
-
 
 
 	output.uv = input.uv;

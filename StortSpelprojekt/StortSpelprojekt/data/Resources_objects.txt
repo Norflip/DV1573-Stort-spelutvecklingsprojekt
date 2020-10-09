@@ -1,0 +1,13 @@
+Objects: 3
+
+Test: Models/brickSphere.ZWEB
+Shader: defaultShader
+
+Test2: Models/sylvanas.ZWEB
+Shader: defaultShader
+
+Test3: Models/cylinder.ZWEB
+Shader: defaultShader
+
+
+

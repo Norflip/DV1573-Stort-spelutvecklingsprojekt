@@ -4,18 +4,17 @@ size_t Material::idCounter = 0;
 
 Material::Material() : id(idCounter++) {  }
 
-Material::Material(Shader shader) : shader(shader), id(idCounter++) {  }
+Material::Material(Shader* shader) : shader(shader), id(idCounter++) {}
 Material::~Material() {}
 
 void Material::UnbindToContext(ID3D11DeviceContext* context) const
 {
-	shader.Unbind(context);
+	shader->Unbind(context);
 }
 
 void Material::BindToContext(ID3D11DeviceContext* context) const
 {
-	this->shader.BindToContext(context);
-
+	this->shader->BindToContext(context);
 
 	for (auto i : textures)
 	{
