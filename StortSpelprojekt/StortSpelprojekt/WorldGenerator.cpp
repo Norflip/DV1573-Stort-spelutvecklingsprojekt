@@ -71,7 +71,7 @@ void WorldGenerator::InitializeTrees(std::vector<Mesh> models, std::vector<Mater
 	}
 }
 
-void WorldGenerator::Initialize(ID3D11Device* device)
+void WorldGenerator::Initialize(ID3D11Device* device, Shader* shader, Shader* grassShader)
 {
 	// CREATE CHUNK MESH
 	std::vector<Mesh::Vertex> vertices;
@@ -115,23 +115,14 @@ void WorldGenerator::Initialize(ID3D11Device* device)
 		}
 	}
 
-	shader.SetPixelShader(L"Shaders/Terrain_ps.hlsl");
-	shader.SetVertexShader(L"Shaders/Terrain_vs.hlsl");
-	shader.Compile(device);
-
-	chunkMesh = Mesh(device, vertices, indicies);
-
-
 
 	/****************EMILKOD****************/
+  
+	this->shader = shader;
+	chunkMesh = Mesh(device, vertices, indicies);
 
-	grassShader.SetVertexShader(L"Shaders/Grass_vs.hlsl");
-	grassShader.SetHullShader(L"Shaders/Grass_hs.hlsl");
-	grassShader.SetDomainShader(L"Shaders/Grass_ds.hlsl");
-	grassShader.SetGeometryShader(L"Shaders/Grass_gs.hlsl");
-	grassShader.SetPixelShader(L"Shaders/Grass_ps.hlsl");
-	grassShader.Compile(device);
-
+	this->grassShader = grassShader;
+  
 	Mesh::Vertex v;
 	v.normal = dx::XMFLOAT3(0, 1, 0);
 	v.position = dx::XMFLOAT3(0, 0, 0);

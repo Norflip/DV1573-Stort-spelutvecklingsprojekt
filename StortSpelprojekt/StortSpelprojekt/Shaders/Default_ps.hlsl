@@ -11,7 +11,7 @@ float4 main(VS_OUTPUT input) : SV_TARGET
 {
 	float4 textureColor = float4(0.5f, 0.5f, 0.5f, 1.0f);
 	float4 normalmap = float4(1.0f, 1.0f, 1.0f, 1.0f);
-
+	
 	if (hasAlbedo)
 		textureColor = diffuseMap.Sample(defaultSampleType, input.uv);
 
@@ -35,9 +35,6 @@ float4 main(VS_OUTPUT input) : SV_TARGET
 	}
 
 	finalColor = saturate(finalColor * textureColor);
-
-
-
 
 	//return float4(input.normal, 1.0f);
 	return finalColor; //  float4(finalColor.r, finalColor.g, finalColor.b * 5, finalColor.a);

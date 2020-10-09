@@ -62,10 +62,10 @@ void Renderer::Initialize(Window* window)
 	DXHelper::CreateBlendState(device, &blendStateOn, &blendStateOff);
 
 	/* Screenquad shader */
-	Shader screenQuadShader;
-	screenQuadShader.SetPixelShader(L"Shaders/ScreenQuad_ps.hlsl");
-	screenQuadShader.SetVertexShader(L"Shaders/ScreenQuad_vs.hlsl");
-	screenQuadShader.Compile(device);
+	Shader* screenQuadShader = new Shader;
+	screenQuadShader->SetPixelShader("Shaders/ScreenQuad_ps.hlsl");
+	screenQuadShader->SetVertexShader("Shaders/ScreenQuad_vs.hlsl");
+	screenQuadShader->Compile(device);
 
 	screenQuadMaterial = Material(screenQuadShader);
 	screenQuadMaterial.SetSampler(DXHelper::CreateSampler(D3D11_FILTER_MIN_MAG_MIP_LINEAR, D3D11_TEXTURE_ADDRESS_CLAMP, device), 0, ShaderBindFlag::VERTEX);
@@ -157,8 +157,7 @@ void Renderer::RenderFrame()
 	context->OMSetBlendState(blendStateOff, BLENDSTATEMASK, 0xffffffff);
 	
 	DrawQueueToTarget(opaqueItemQueue);
-  
-  DShape::Instance().m_Draw(context);
+	DShape::Instance().m_Draw(context);
 	context->RSSetState(rasterizerStateCullNone);
 	context->OMSetBlendState(blendStateOn, BLENDSTATEMASK, 0xffffffff);
 	
@@ -267,10 +266,7 @@ void Renderer::SetRSToCullNone(bool cullNone)
 	{
 		context->RSSetState(rasterizerStateCullBack);
 	}
-	
 }
-
-
 
 void Renderer::ClearRenderTarget(const RenderTexture& target)
 {
@@ -309,7 +305,6 @@ void Renderer::DrawRenderItem(const RenderItem& item)
 	dx::XMStoreFloat4x4(&cb_object_data.world, dx::XMMatrixTranspose(item.world));
 	DXHelper::BindConstBuffer(context, obj_cbuffer, &cb_object_data, CB_OBJECT_SLOT, ShaderBindFlag::VERTEX);
 
-
 	cb_material_data = item.material->GetMaterialData();
 	DXHelper::BindConstBuffer(context, material_cbuffer, &cb_material_data, CB_MATERIAL_SLOT, ShaderBindFlag::PIXEL);
 		
@@ -330,13 +325,13 @@ void Renderer::DrawRenderItem(const RenderItem& item)
 	/**********************************/
 
 	/* This is a temporary solution to lerp between textures in the shader 
-	   This is jsut ot check if the ids (gonna be our different levels later) works
+	   This is just to check if the ids (gonna be our different levels later) works
 	*/
 
 	static int ids = 0;
 	static float color = 0.0f;
 
-	color += (float)0.0005f;
+	color += (float)0.00005f;
 	if (color > 1.0f)
 	{
 		color -= 1.0f;

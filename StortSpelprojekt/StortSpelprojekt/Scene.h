@@ -20,6 +20,7 @@
 #include "GUIManager.h"
 #include <string>
 
+#include "ResourceManager.h"
 class GUIFont;
 class SpriteRenderPass;
 class Scene
@@ -29,7 +30,8 @@ public:
 	virtual ~Scene();
 
 	void Initialize(Renderer* renderer);
-	
+	void InitializeObjects();
+
 	void OnActivate() {}
 	void OnDeactivate() {}
 	
@@ -60,7 +62,8 @@ private:
 	GUIManager* guiManager;		
 
 	/* Test skybox in class */
-	Object* skybox;
+	//Object* skybox;
 	Skybox* skyboxClass;		
 
+	ResourceManager* resourceManager;
 };

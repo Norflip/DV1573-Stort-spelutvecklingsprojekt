@@ -23,11 +23,11 @@ class WorldGenerator
 public:
 	WorldGenerator();
 	virtual ~WorldGenerator();
-
+  
 	void InitalizeGrass(ID3D11Device* device,ID3D11DeviceContext* context);
 	void InitializeTrees(std::vector<Mesh> models, std::vector<Material> materials, ID3D11Device* device);
 	void Initialize(ID3D11Device* device);
-
+  
 	void Generate(const SaveState& levelState, ID3D11Device* device, Object* root);
 	void DrawShapes ();
 	
@@ -38,17 +38,16 @@ private:
 
 private:
 	Mesh chunkMesh;
-	Shader shader;
 	Path path;
+	Shader* shader;
 
 	std::unordered_map<int, float*> chunkData;
 	std::unordered_map<int, Chunk*> chunkMap;
 	std::vector<Chunk*> chunks;
 
 	std::vector<GrassComponent*> grassComponents;
-	Shader grassShader;
+	Shader* grassShader;
 	std::vector<Mesh::Vertex> grassV;
 	std::vector<unsigned int> grassI;
-	
 	
 };

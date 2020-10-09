@@ -172,6 +172,11 @@
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="Path.cpp" />
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="ResourceManager.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="BoundingBoxes.h">
@@ -297,6 +302,9 @@
     <ClInclude Include="DShape.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="ResourceManager.h">
+    <Filter>Header Files</Filter>
+      </ClInclude>
     <ClInclude Include="GrassComponent.h">
       <Filter>Header Files</Filter>
     </ClInclude>
