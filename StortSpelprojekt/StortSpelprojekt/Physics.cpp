@@ -35,7 +35,7 @@ void Physics::RegisterRigidBody(RigidBodyComp* rigidBodyComp)
 
 	rigidBodyComp->m_InitializeBody();
 	int group = static_cast<int>(rigidBodyComp->GetGroup());
-	dynamicsWorld->addRigidBody(rigidBodyComp->GetRigidBody(), group, 0);
+	dynamicsWorld->addRigidBody(rigidBodyComp->GetRigidBody(), 1, 1);
 
 	bodyMap.insert({ rigidBodyComp->GetOwner()->GetID(), rigidBodyComp });
 }
@@ -75,7 +75,7 @@ void Physics::FixedUpdate(const float& fixedDeltaTime)
 	CheckForCollisions();
 }
 
-RayHit Physics::RaytestSingle(const Ray& ray, float maxDistance, PhysicsGroup layer) const
+bool Physics::RaytestSingle(const Ray& ray, float maxDistance, RayHit& hit, PhysicsGroup layer) const
 {
 	//std::cout << "origin: " << ray.origin.x << ", " << ray.origin.y << ", " << ray.origin.z << std::endl;
 	//std::cout << "direction: " << ray.direction.x << ", " << ray.direction.y << ", " << ray.direction.z << std::endl;
@@ -92,13 +92,11 @@ RayHit Physics::RaytestSingle(const Ray& ray, float maxDistance, PhysicsGroup la
 
 	btCollisionWorld::ClosestRayResultCallback closestResults(from, to);
 	closestResults.m_flags |= btTriangleRaycastCallback::kF_FilterBackfaces;
-	closestResults.m_collisionFilterGroup = static_cast<int>(layer);
-	closestResults.m_collisionFilterMask = -1;
+	//closestResults.m_collisionFilterGroup = static_cast<int>(layer);
+	//closestResults.m_collisionFilterMask = 1;
 
 	dynamicsWorld->rayTest(from, to, closestResults);
 	bool didHit = closestResults.hasHit();
-	RayHit hit;
-	hit.ray = ray;
 
 	if (didHit)
 	{
@@ -114,7 +112,7 @@ RayHit Physics::RaytestSingle(const Ray& ray, float maxDistance, PhysicsGroup la
 	}
 
 	hit.hit = didHit;
-	return hit;
+	return didHit;
 }
 
 void Physics::CheckForCollisions()

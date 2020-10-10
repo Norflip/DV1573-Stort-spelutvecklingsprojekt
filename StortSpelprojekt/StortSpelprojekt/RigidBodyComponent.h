@@ -13,6 +13,7 @@
 #include <vector>
 #include <functional>
 #include "CollisionInfo.h"
+#include "DShape.h"
 
 namespace dx = DirectX;
 
@@ -48,6 +49,9 @@ public:
 
 	bool IsDynamic() const { return mass != 0.0f; }
 	PhysicsGroup GetGroup() const { return this->group; }
+
+
+	void Update(const float& deltaTime) override;
 
 private:
 	btTransform ConvertToBtTransform(const Transform& transform) const;

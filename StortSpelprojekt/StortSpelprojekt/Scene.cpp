@@ -33,9 +33,8 @@ void Scene::Initialize(Renderer* renderer)
 	Window* window = renderer->GetOutputWindow();
 	
 	Physics& physics = Physics::Instance();
-	physics.Initialize({ 0, -0.001f, 0 });
+	physics.Initialize({ 0, -10.0f, 0 });
 
-	Window* window = renderer->GetOutputWindow();
 	spriteBatch = new DirectX::SpriteBatch(renderer->GetContext());
 	GUISprite* normalSprite = new GUISprite(*renderer, "Textures/EquipmentBox.png", 0, 0, DrawDirection::BottomLeft, ClickFunction::Clickable);
 	GUISprite* buttonSprite = new GUISprite(*renderer, "Textures/EquipmentBox.png", 0, 0, DrawDirection::BottomRight, ClickFunction::Clickable);
@@ -245,22 +244,10 @@ void Scene::Update(const float& deltaTime)
 	clock.Update();
 
 	input.UpdateInputs();
-	POINT p = input.GetMousePos();
-	//std::cout << p.x << ", " << p.y << std::endl;
+	
 
-	Ray ray = camera->MouseToRay(p.x, p.y);
-	RayHit hit = Physics::Instance().RaytestSingle(ray, 1000.0f, PhysicsGroup::DEFAULT);
 
-	if (hit.hit)
-	{
-		DShape::DrawLine(ray.origin, hit.position, { 1,1,0 });
-		DShape::DrawSphere(hit.position, 1.0f, { 0, 0, 1 });
 
-		if (hit.body != nullptr)
-		{
-			std::cout << hit.body->GetOwner()->GetName() << std::endl;
-		}
-	}
 
 
 	root->Update(deltaTime);
@@ -275,6 +262,74 @@ void Scene::Update(const float& deltaTime)
 	{
 		clock.Restart();
 	}
+
+
+	if (KEY_PRESSED(H))
+	{
+		dx::XMVECTOR cameraPosition = camera->GetOwner()->GetTransform().GetPosition();
+
+		Physics& phy = Physics::Instance();
+		const int ra = 3;
+
+		for (int y = -ra; y <= ra; y++)
+		{
+			for (int x = -ra; x <= ra; x++)
+			{
+				dx::XMVECTOR position = dx::XMVectorAdd(cameraPosition, { (float)x * 1.5f, -1.0f, (float)y * 1.5f });
+
+				Object* object = new Object("item");
+				object->GetTransform().SetPosition(position);
+				
+
+
+				object->AddComponent<BoxColliderComponent>(dx::XMFLOAT3(1, 1, 1), dx::XMFLOAT3(0, 0, 0), dx::XMFLOAT4(0, 0, 0, 0));
+				RigidBodyComp* rd = object->AddComponent<RigidBodyComp>(10.0f, PhysicsGroup::DEFAULT);
+		
+				phy.RegisterRigidBody(rd);
+
+				AddObject(object);
+			}
+		}
+
+
+		const int a = 100;
+	}
+
+
+	POINT p = input.GetMousePos();
+	//std::cout << p.x << ", " << p.y << std::endl;
+	Window* window = renderer->GetOutputWindow();
+	//Ray ray = camera->MouseToRay(window->GetWidth() / 2.0f, window->GetHeight() / 2.0f);
+	Ray ray = camera->MouseToRay(p.x, p.y);
+
+	Physics& phy = Physics::Instance();
+	RayHit hit;
+
+	if (LMOUSE_PRESSED)
+	{
+		DShape::DrawLine(ray.origin, ray.GetPoint(1000.0f), { 1,1,0 });
+
+		if (phy.RaytestSingle(ray, 1000.0f, hit, PhysicsGroup::DEFAULT))
+		{
+			DShape::DrawLine(ray.origin, hit.position, { 1,1,0 });
+			DShape::DrawSphere(hit.position, 1.0f, { 0, 0, 1 });
+
+			if (hit.body != nullptr)
+			{
+				std::cout << hit.body->GetOwner()->GetName() << std::endl;
+			}
+		}
+
+		//DShape::DrawSphere(ray.GetPoint(10.0f), 0.2f, { 0, 0, 1 });
+	
+	}
+	else
+	{
+		DShape::DrawSphere(ray.GetPoint(10.0f), 0.2f, { 0, 0, 1 });
+
+	}
+
+
 }
 
 void Scene::FixedUpdate(const float& fixedDeltaTime)

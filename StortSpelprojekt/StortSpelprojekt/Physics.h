@@ -22,13 +22,10 @@ DEFINE_ENUM_FLAG_OPERATORS(PhysicsGroup)
 
 struct RayHit
 {
-	Ray ray;
 	dx::XMFLOAT3 position;
 	dx::XMFLOAT3 normal;
 	RigidBodyComp* body;
 	bool hit;
-	
-	RayHit() {}
 };
 
 class Physics
@@ -51,7 +48,7 @@ public:
 
 	void FixedUpdate(const float& fixedDeltaTime);
 	
-	RayHit RaytestSingle(const Ray& ray, float maxDistance, PhysicsGroup layer = PhysicsGroup::DEFAULT) const;
+	bool RaytestSingle(const Ray& ray, float maxDistance, RayHit& hit, PhysicsGroup layer = PhysicsGroup::DEFAULT) const;
 
 	static Physics& Instance() // singleton
 	{

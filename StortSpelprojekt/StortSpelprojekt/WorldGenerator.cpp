@@ -242,6 +242,7 @@ Chunk* WorldGenerator::CreateChunk(ChunkType type, dx::XMINT2 index, const Noise
 
 	unsigned char* buffer = new unsigned char[size * size * 4];
 	float* heightMap = new float[size * size];
+	std::vector<float> heightMap2(size * size);
 
 	size_t bufferIndex = 0;
 	const float MAX_DISTANCE = 10.0f;
@@ -257,6 +258,9 @@ Chunk* WorldGenerator::CreateChunk(ChunkType type, dx::XMINT2 index, const Noise
 
 			float height = Noise::Sample(chunkPosXZ.x + x, chunkPosXZ.y + y, settings);
 			heightMap[bufferIndex] = height;
+			heightMap2.push_back(height);
+
+			std::cout << height << std::endl;
 
 			buffer[bufferIndex * 4 + 0] = static_cast<unsigned char>(255 * height * distance);
 			buffer[bufferIndex * 4 + 1] = static_cast<unsigned char>(255 * distance);
@@ -309,15 +313,18 @@ Chunk* WorldGenerator::CreateChunk(ChunkType type, dx::XMINT2 index, const Noise
 
 
 
+	size_t elem0 = sizeof(*heightMap);
+	size_t elem1 = sizeof(heightMap);
+
 
 	Transform::SetParentChild(root->GetTransform(), chunk->GetOwner()->GetTransform());
-	chunk->SetHeightMap(heightMap);
+	chunk->SetHeightMap(heightMap2.data());
 
 	chunkObject->AddComponent<ChunkCollider>(chunk);
 	RigidBodyComp* rigidBody = chunkObject->AddComponent<RigidBodyComp>(STATIC_BODY, PhysicsGroup::TERRAIN);
 
 	//remember to remove when loading new map
-	physics.RegisterRigidBody(rigidBody);
+	Physics::Instance().RegisterRigidBody(rigidBody);
 
 	chunks.push_back(chunk);
 	chunkMap.insert({ HASH2D_I(index.x, index.y), chunk });

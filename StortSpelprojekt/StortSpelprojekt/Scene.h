@@ -65,7 +65,7 @@ private:
 	SpriteRenderPass* spritePass;	
 
 	GUIManager* guiManager;		
-
+	
 	/* Test skybox in class */
 	Object* skybox;
 	Skybox* skyboxClass;		

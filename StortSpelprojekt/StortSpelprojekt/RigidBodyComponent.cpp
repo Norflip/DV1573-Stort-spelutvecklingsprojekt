@@ -10,6 +10,13 @@ RigidBodyComp::~RigidBodyComp()
 {
 }
 
+void RigidBodyComp::Update(const float& deltaTime)
+{
+	dx::XMFLOAT3 position;
+	dx::XMStoreFloat3(&position, GetOwner()->GetTransform().GetPosition());
+	DShape::DrawBox(position, { 1,1,1 }, { 0,0,1 });
+}
+
 btTransform RigidBodyComp::ConvertToBtTransform(const Transform& transform) const
 {
 	btTransform temp;
@@ -107,10 +114,10 @@ void RigidBodyComp::m_InitializeBody()
 		//compShape->calculatePrincipalAxisTransform(masses, t, inertia);
 	}
 
-	btCollisionShape* groundShape = new btBoxShape(btVector3(btScalar(50.), btScalar(50.), btScalar(50.)));
+	//btCollisionShape* groundShape = new btBoxShape(btVector3(btScalar(50.), btScalar(50.), btScalar(50.)));
 
 	btDefaultMotionState* myMotionState = new btDefaultMotionState(rbTransform);
-	btRigidBody::btRigidBodyConstructionInfo cInfo(mass, myMotionState, groundShape, inertia);
+	btRigidBody::btRigidBodyConstructionInfo cInfo(mass, myMotionState, compShape, inertia);
 	body = new btRigidBody(cInfo);
 	body->setUserPointer(this);
 	body->setFriction(1);

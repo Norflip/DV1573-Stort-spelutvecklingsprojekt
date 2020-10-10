@@ -20,9 +20,12 @@ void ChunkCollider::Initialize()
 	const int m_upAxis = 1;
 
 	float* gridData = chunk->GetHeightMap();	
-	btHeightfieldTerrainShape* heightShape = new btHeightfieldTerrainShape(gridSize, gridSize, static_cast<void*>(gridData), 1, 0, TERRAIN_SCALE, m_upAxis, PHY_FLOAT, false);
 
 
+
+
+
+	btHeightfieldTerrainShape* heightShape = new btHeightfieldTerrainShape(gridSize, gridSize, static_cast<void*>(gridData), 1, -TERRAIN_SCALE, TERRAIN_SCALE, m_upAxis, PHY_FLOAT, false);
 
 	//if (m_upAxis == 2)
 	//	heightShape->setFlipTriangleWinding(true);
