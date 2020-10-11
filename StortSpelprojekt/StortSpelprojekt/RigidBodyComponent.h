@@ -8,7 +8,7 @@
 #include "BoxColliderComponent.h"
 #include "SphereColliderComponent.h"
 #include "CapsuleColliderComponent.h"
-#include "ChunkCollider.h"
+//#include "ChunkCollider.h"
 
 #include <vector>
 #include <functional>

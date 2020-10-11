@@ -15,4 +15,6 @@ void BoxColliderComponent::Initialize()
    // transform = btTransform(btRotation, btPosition);
     transform.setIdentity();
     transform.setOrigin(btPosition);
+
+
 }

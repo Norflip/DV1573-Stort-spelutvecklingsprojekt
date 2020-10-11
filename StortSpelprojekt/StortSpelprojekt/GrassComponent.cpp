@@ -157,10 +157,10 @@ void GrassComponent::InitializeGrass(std::vector<Mesh::Vertex>& vertices, std::v
 
 void GrassComponent::Draw(Renderer* renderer, CameraComponent* camera)
 {
-	if (chunkType==ChunkType::Start)
+	/*if (chunkType==ChunkType::Start)
 	{
 		renderer->DrawGrass(*camera, grassMesh, grassMat, this->GetOwner()->GetTransform().GetWorldMatrix());
-	}
+	}*/
 	
 	
 	
@@ -173,9 +173,9 @@ Material& GrassComponent::GetMaterial()
 	return grassMat;
 }
 
-void GrassComponent::SetType(ChunkType type)
-{
-	this->chunkType = type;
-}
-
-
+//void GrassComponent::SetType(ChunkType type)
+//{
+//	this->chunkType = type;
+//}
+//
+//

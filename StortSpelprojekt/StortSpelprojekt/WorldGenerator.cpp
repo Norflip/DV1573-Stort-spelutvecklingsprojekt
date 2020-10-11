@@ -177,6 +177,9 @@ void WorldGenerator::Generate(const SaveState& levelState, ID3D11Device* device,
 
 	std::vector<dx::XMINT2>& indexes = path.GetIndexes();
 
+	Physics& physics = Physics::Instance();
+	physics.MutexLock();
+
 	for (auto i = indexes.cbegin(); i < indexes.cend(); i++)
 	{
 		// load around
@@ -212,6 +215,7 @@ void WorldGenerator::Generate(const SaveState& levelState, ID3D11Device* device,
 		indexCount++;
 	}
 
+	physics.MutexUnlock();
 }
 
 void WorldGenerator::DrawShapes ()
@@ -243,8 +247,8 @@ Chunk* WorldGenerator::CreateChunk(ChunkType type, dx::XMINT2 index, const Noise
 	unsigned char* buffer = new unsigned char[size * size * 4];
 	float* heightMap = new float[size * size];
 	std::vector<float> heightMap2(size * size);
+	//heightMap2.resize(size * size);
 
-	size_t bufferIndex = 0;
 	const float MAX_DISTANCE = 10.0f;
 
 	for (size_t y = 0; y < size; y++)
@@ -256,8 +260,10 @@ Chunk* WorldGenerator::CreateChunk(ChunkType type, dx::XMINT2 index, const Noise
 			float distance = path.ClosestDistance(tilePos);
 			distance = min(distance, MAX_DISTANCE) / MAX_DISTANCE;
 
+			int bufferIndex = x + size * y;
+
 			float height = Noise::Sample(chunkPosXZ.x + x, chunkPosXZ.y + y, settings);
-			heightMap[bufferIndex] = height;
+			heightMap[x + size * y] = height;// *TERRAIN_SCALE;
 			heightMap2.push_back(height);
 
 			std::cout << height << std::endl;
@@ -274,7 +280,7 @@ Chunk* WorldGenerator::CreateChunk(ChunkType type, dx::XMINT2 index, const Noise
 			//	std::cout << "index: " << d << " | " << bufferIndex << std::endl;
 			//}
 
-			bufferIndex++;
+			///bufferIndex++;
 		}
 	}
 
@@ -283,48 +289,41 @@ Chunk* WorldGenerator::CreateChunk(ChunkType type, dx::XMINT2 index, const Noise
 
 
 	Material material(shader);
-	material.SetTexture(Texture(chunkDataSRV), 0, ShaderBindFlag::PIXEL);
-	material.SetTexture(Texture(chunkDataSRV), 0, ShaderBindFlag::VERTEX);
+	material.SetTexture(Texture(chunkDataSRV), 0, ShaderBindFlag::PIXEL | ShaderBindFlag::VERTEX);
 	
 	auto sampler = DXHelper::CreateSampler(D3D11_FILTER_MIN_MAG_MIP_POINT, D3D11_TEXTURE_ADDRESS_CLAMP, device);
-	material.SetSampler(sampler, 0, ShaderBindFlag::PIXEL);
-	material.SetSampler(sampler, 0, ShaderBindFlag::VERTEX);
-
+	material.SetSampler(sampler, 0, ShaderBindFlag::PIXEL | ShaderBindFlag::VERTEX);
 
 
 	std::string name = "chunk " + std::to_string(index.x) + ", " + std::to_string(index.y);
+	
 	Object* chunkObject = new Object(name, ObjectFlag::DEFAULT);
+	Transform::SetParentChild(root->GetTransform(), chunkObject->GetTransform());
 
 	dx::XMVECTOR chunkPosition = Chunk::IndexToWorld(index, 0.0f);
 	chunkObject->GetTransform().SetPosition(chunkPosition);
+	
 	chunkObject->AddComponent<MeshComponent>(chunkMesh, material);
 
 	Chunk* chunk = chunkObject->AddComponent<Chunk>(index, type);
-
-
+	
 
 	GrassComponent* grassComponent = chunkObject->AddComponent<GrassComponent>(device, grassV, grassI, grassShader);
 
 	grassComponent->GetMaterial().SetTexture(Texture(chunkDataSRV), 6, ShaderBindFlag::DOMAINS);
 
-	grassComponent->SetType(type);
+	//grassComponent->SetType(type);
 
 	grassComponents.push_back(grassComponent);
 
 
+	chunk->SetupCollisionObject(heightMap2.data());
 
-	size_t elem0 = sizeof(*heightMap);
-	size_t elem1 = sizeof(heightMap);
-
-
-	Transform::SetParentChild(root->GetTransform(), chunk->GetOwner()->GetTransform());
-	chunk->SetHeightMap(heightMap2.data());
-
-	chunkObject->AddComponent<ChunkCollider>(chunk);
-	RigidBodyComp* rigidBody = chunkObject->AddComponent<RigidBodyComp>(STATIC_BODY, PhysicsGroup::TERRAIN);
+	//chunkObject->AddComponent<ChunkCollider>(chunk);
+	//RigidBodyComp* rigidBody = chunkObject->AddComponent<RigidBodyComp>(STATIC_BODY, PhysicsGroup::TERRAIN);
 
 	//remember to remove when loading new map
-	Physics::Instance().RegisterRigidBody(rigidBody);
+	//Physics::Instance().RegisterRigidBody(rigidBody);
 
 	chunks.push_back(chunk);
 	chunkMap.insert({ HASH2D_I(index.x, index.y), chunk });

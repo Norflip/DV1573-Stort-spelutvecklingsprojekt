@@ -23,14 +23,29 @@ void Physics::SetGravity(float x, float y, float z)
 void Physics::CreateDynamicWorld()
 {
 	collisionConfiguration = new btDefaultCollisionConfiguration();
+	collisionConfiguration->setConvexConvexMultipointIterations();
+
 	dispatcher = new btCollisionDispatcher(collisionConfiguration);
 	overlappingPairCache = new btDbvtBroadphase();
 	solver = new btSequentialImpulseConstraintSolver;
+	
 	dynamicsWorld = new btDiscreteDynamicsWorld(dispatcher, overlappingPairCache, solver, collisionConfiguration);
+	
+}
+
+void Physics::MutexLock()
+{
+	physicsThreadMutex.lock();
+}
+
+void Physics::MutexUnlock()
+{
+	physicsThreadMutex.unlock();
 }
 
 void Physics::RegisterRigidBody(RigidBodyComp* rigidBodyComp)
 {
+	
 	assert(dynamicsWorld != nullptr);
 
 	rigidBodyComp->m_InitializeBody();
@@ -54,25 +69,25 @@ void Physics::UnregisterRigidBody(RigidBodyComp* rigidBodyComp)
 
 void Physics::FixedUpdate(const float& fixedDeltaTime)
 {
-	
-	
+	MutexLock();
 
-	const float internalTimeStep = 1. / 240.f;
-	dynamicsWorld->stepSimulation(fixedDeltaTime, 4, internalTimeStep);
 
 	// neccesary? 
-	dynamicsWorld->updateAabbs();
-	dynamicsWorld->computeOverlappingPairs();
+	//dynamicsWorld->updateAabbs();
+	//dynamicsWorld->computeOverlappingPairs();
 
-	for (auto i : bodyMap)
+	dynamicsWorld->stepSimulation(fixedDeltaTime, 10, fixedDeltaTime);
+
+	/*for (auto i : bodyMap)
 	{
 		if (i.second->GetOwner()->HasFlag(ObjectFlag::ENABLED))
 		{
 			i.second->UpdateWorldTransform(dynamicsWorld);
 		}
-	}
+	}*/
 
 	CheckForCollisions();
+	MutexUnlock();
 }
 
 bool Physics::RaytestSingle(const Ray& ray, float maxDistance, RayHit& hit, PhysicsGroup layer) const
@@ -84,14 +99,15 @@ bool Physics::RaytestSingle(const Ray& ray, float maxDistance, RayHit& hit, Phys
 	//r.direction = { 0,0,1 };
 
 	dx::XMFLOAT3 furthestPoint = r.GetPoint(maxDistance);
-	btVector3 from = btVector3(r.origin.x, r.origin.y, r.origin.z);
 	btVector3 to = btVector3(furthestPoint.x, furthestPoint.y, furthestPoint.z);
-
+	btVector3 from = btVector3(r.origin.x, r.origin.y, r.origin.z);
+	
 	//btCollisionWorld::AllHitsRayResultCallback allResults(from, to);
 	//allResults.m_flags |= btTriangleRaycastCallback::kF_KeepUnflippedNormal;
 
 	btCollisionWorld::ClosestRayResultCallback closestResults(from, to);
 	closestResults.m_flags |= btTriangleRaycastCallback::kF_FilterBackfaces;
+
 	//closestResults.m_collisionFilterGroup = static_cast<int>(layer);
 	//closestResults.m_collisionFilterMask = 1;
 
@@ -101,6 +117,8 @@ bool Physics::RaytestSingle(const Ray& ray, float maxDistance, RayHit& hit, Phys
 	if (didHit)
 	{
 		btVector3 position = from.lerp(to, closestResults.m_closestHitFraction);
+		position = closestResults.m_hitPointWorld;
+
 		btVector3 normal = closestResults.m_hitNormalWorld;
 		//dynamicsWorld->getDebugDrawer()->drawSphere(p, 0.1, btVector3(0,0,1));
 		//dynamicsWorld->getDebugDrawer()->drawLine(p, p + closestResults.m_hitNormalWorld, btVector3(0, 0, 1));
@@ -126,7 +144,7 @@ void Physics::CheckForCollisions()
 		const btCollisionObject* objA = contactManifold->getBody0();
 		const btCollisionObject* objB = contactManifold->getBody1();
 
-		CollisionInfo tmp;
+		/*CollisionInfo tmp;
 		RigidBodyComp* rbA = static_cast<RigidBodyComp*>(objA->getUserPointer());
 		RigidBodyComp* rbB = static_cast<RigidBodyComp*>(objB->getUserPointer());
 
@@ -141,7 +159,7 @@ void Physics::CheckForCollisions()
 			tmp.other = rbA;
 			rbB->m_OnCollision(tmp);
 		}
-
+*/
 
 		/*int numContacts = contactManifold->getNumContacts();
 		for (int j = 0; j < numContacts; j++)

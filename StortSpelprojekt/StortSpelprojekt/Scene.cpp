@@ -264,12 +264,14 @@ void Scene::Update(const float& deltaTime)
 	}
 
 
-	if (KEY_PRESSED(H))
+	if (KEY_DOWN(H))
 	{
 		dx::XMVECTOR cameraPosition = camera->GetOwner()->GetTransform().GetPosition();
 
 		Physics& phy = Physics::Instance();
 		const int ra = 3;
+
+		phy.MutexLock();
 
 		for (int y = -ra; y <= ra; y++)
 		{
@@ -282,7 +284,7 @@ void Scene::Update(const float& deltaTime)
 				
 
 
-				object->AddComponent<BoxColliderComponent>(dx::XMFLOAT3(1, 1, 1), dx::XMFLOAT3(0, 0, 0), dx::XMFLOAT4(0, 0, 0, 0));
+				object->AddComponent<BoxColliderComponent>(dx::XMFLOAT3(0.5f, 0.5f, 0.5f), dx::XMFLOAT3(0, 0, 0), dx::XMFLOAT4(0, 0, 0, 0));
 				RigidBodyComp* rd = object->AddComponent<RigidBodyComp>(10.0f, PhysicsGroup::DEFAULT);
 		
 				phy.RegisterRigidBody(rd);
@@ -291,6 +293,7 @@ void Scene::Update(const float& deltaTime)
 			}
 		}
 
+		phy.MutexUnlock();
 
 		const int a = 100;
 	}

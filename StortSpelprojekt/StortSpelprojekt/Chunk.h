@@ -4,6 +4,10 @@ namespace dx = DirectX;
 
 #include "Component.h"
 #include "Math.h"
+#include "Physics.h"
+
+#include "Bulletphysics/btBulletDynamicsCommon.h"
+#include "BulletCollision/CollisionShapes/btHeightfieldTerrainShape.h"
 
 constexpr int CHUNK_SIZE = 32;
 constexpr float TERRAIN_SCALE = 10.0f;
@@ -22,6 +26,9 @@ class Chunk : public Component
 public:
 	Chunk(dx::XMINT2 index, ChunkType type);
 	virtual ~Chunk();
+
+
+	void SetupCollisionObject(float* heightMap);
 
 	float SampleHeight(float x, float z);
 

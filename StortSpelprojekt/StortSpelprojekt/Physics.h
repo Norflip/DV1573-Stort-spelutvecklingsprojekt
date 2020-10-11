@@ -9,6 +9,7 @@
 #include "CollisionInfo.h"
 #include "Ray.h"
 #include <unordered_map>
+#include <mutex>
 
 enum class PhysicsGroup : int
 {
@@ -41,6 +42,10 @@ public:
 	
 	// remove rigidbody on chunk and add shape?
 	//void ReigsterCollisionObject();
+	btDiscreteDynamicsWorld* GetWorld() const { return this->dynamicsWorld; }
+
+	void MutexLock();
+	void MutexUnlock();
 
 	void RegisterRigidBody(RigidBodyComp* rigidBodyComp);
 	void UnregisterRigidBody(Object* object);
@@ -72,6 +77,9 @@ private:
 	btSequentialImpulseConstraintSolver* solver;
 	btDiscreteDynamicsWorld* dynamicsWorld;
 	std::vector<btVector3> collisions;
+
+
+	std::mutex physicsThreadMutex;
 
 	std::unordered_map<size_t, RigidBodyComp*> bodyMap;
 };

@@ -12,6 +12,8 @@ RigidBodyComp::~RigidBodyComp()
 
 void RigidBodyComp::Update(const float& deltaTime)
 {
+	UpdateWorldTransform(nullptr);
+
 	dx::XMFLOAT3 position;
 	dx::XMStoreFloat3(&position, GetOwner()->GetTransform().GetPosition());
 	DShape::DrawBox(position, { 1,1,1 }, { 0,0,1 });
@@ -69,12 +71,12 @@ void RigidBodyComp::RecursiveAddShapes(Object* obj, btCompoundShape* shape)
 		shape->addChildShape(capsules[i]->GetTransform(), capsules[i]->GetCollisionShape());
 	}
 
-	//CHUNK
-	const std::vector<ChunkCollider*>& chunks = obj->GetComponents<ChunkCollider>();
-	for (size_t i = 0; i < chunks.size(); i++)
-	{
-		shape->addChildShape(chunks[i]->GetTransform(), chunks[i]->GetCollisionShape());
-	}
+	////CHUNK
+	//const std::vector<ChunkCollider*>& chunks = obj->GetComponents<ChunkCollider>();
+	//for (size_t i = 0; i < chunks.size(); i++)
+	//{
+	//	shape->addChildShape(chunks[i]->GetTransform(), chunks[i]->GetCollisionShape());
+	//}
 
 
 	////CHILDREN
@@ -101,8 +103,8 @@ void RigidBodyComp::m_InitializeBody()
 	t.setIdentity();
 	t.setOrigin({ 0,0,0 });
 
-	if (IsDynamic())
-	{
+	//if (IsDynamic())
+	//{
 		int children = compShape->getNumChildShapes();
 		btScalar* masses = new btScalar[children];
 		for (size_t i = 0; i < children; i++)
@@ -112,7 +114,8 @@ void RigidBodyComp::m_InitializeBody()
 
 		compShape->calculateLocalInertia(mass, inertia);
 		//compShape->calculatePrincipalAxisTransform(masses, t, inertia);
-	}
+	//}
+
 
 	//btCollisionShape* groundShape = new btBoxShape(btVector3(btScalar(50.), btScalar(50.), btScalar(50.)));
 
