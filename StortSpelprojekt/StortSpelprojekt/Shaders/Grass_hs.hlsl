@@ -46,9 +46,9 @@ HS_CONSTANT_DATA_OUTPUT_GRASS hsPerIsoLinePatch(InputPatch<VS_OUTPUT_GRASS,1> in
 
 	float2 uv = (uv1 + uv2 + uv3) / 3.0f;
 
-	float len = chunkData.SampleLevel(linearSampler, uv, 0).r;
+	float len = chunkData.SampleLevel(linearSampler, uv, 0).b;
 
-	if (len < 0.1)
+	if (len > 0.4)
 	{
 		output.edgeTesselation[0] = 0;
 	}
