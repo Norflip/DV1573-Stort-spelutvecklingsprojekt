@@ -26,13 +26,13 @@ public:
 
 	PointLightComponent* GetPointLight(size_t index);
 	void RemovePointLight(size_t index);
-	void UpdateBuffers(ID3D11DeviceContext* context, dx::XMVECTOR camPos);
+	void UpdateBuffers(ID3D11DeviceContext* context, dx::XMVECTOR);
 
 private:
 
 	//cb_Scene cb_scene;
 	ID3D11Buffer* light_cbuffer;
-	cb_Lights cb_light;
+	cb_Scene cb_scene;
 	size_t index;
 	bool dirty;
 	std::unordered_map<size_t, PointLightComponent*> pointLightMap;

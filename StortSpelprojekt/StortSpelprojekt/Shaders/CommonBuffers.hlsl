@@ -36,13 +36,9 @@ cbuffer cb_Scene : register(b2)
 
 	int id;
 	float factor;
-	float2 pad2;
 	float time;
-	float3 pad3;
+	float pad;
 }
-
-
-
 
 StructuredBuffer<float4x4> bones : register(t2);
 
@@ -58,7 +54,6 @@ StructuredBuffer<Grass> grassStraws : register(t3);
 StructuredBuffer<float4> grassIndices : register(t4);
 
 StructuredBuffer<float4>   BCCoordinates : register(t5);
-
 
 cbuffer cb_grass : register(b3)
 {

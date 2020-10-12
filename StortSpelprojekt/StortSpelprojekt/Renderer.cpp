@@ -43,7 +43,7 @@ void Renderer::Initialize(Window* window)
 
 	this->midbuffers[0] = DXHelper::CreateRenderTexture(window->GetWidth(), window->GetHeight(), device, context, &dss);
 	this->midbuffers[1] = DXHelper::CreateRenderTexture(window->GetWidth(), window->GetHeight(), device, context, &dss);
-  srv_skeleton_data.resize(60);
+	srv_skeleton_data.resize(60);
 
 	dx::XMFLOAT4X4 bone;
 	dx::XMStoreFloat4x4(&bone, dx::XMMatrixIdentity());
@@ -80,11 +80,7 @@ void Renderer::Initialize(Window* window)
 	//EXEMPEL
 	///AddRenderPass(new PSRenderPass(1, L"Shaders/TestPass.hlsl"));
 	//AddRenderPass(new PSRenderPass(0, L"Shaders/TestPass2.hlsl"));
-
-	
 }
-
-
 
 void Renderer::BeginManualRenderPass(RenderTexture& target)
 {
@@ -144,10 +140,10 @@ void Renderer::DrawQueueToTarget(RenderQueue& queue)
 	queue.clear();
 }
 
-void Renderer::RenderFrame()
+void Renderer::RenderFrame(dx::XMVECTOR camPos)
 {
 
-	LightManager::Instance().UpdateBuffers(context, { 1, 1, 1 });
+	LightManager::Instance().UpdateBuffers(context, camPos);
 
 	//We need to clear Depth Stencil View as well.//Emil
 
@@ -315,29 +311,6 @@ void Renderer::DrawRenderItem(const RenderItem& item)
 	cb_material_data = item.material->GetMaterialData();
 	DXHelper::BindConstBuffer(context, material_cbuffer, &cb_material_data, CB_MATERIAL_SLOT, ShaderBindFlag::PIXEL);
 
-	/**********************************/
-
-	/* This is a temporary solution to lerp between textures in the shader 
-	   This is just to check if the ids (gonna be our different levels later) works
-	*/
-
-	static int ids = 0;
-	static float color = 0.0f;
-
-	color += (float)0.00005f;
-	if (color > 1.0f)
-	{
-		color -= 1.0f;
-		if (ids != 3)
-			ids += 1;
-		else
-			ids = 0;
-	}
-		
-	cb_scene.id = ids;
-	cb_scene.factor = color;
-
-	/**********************************/
 
 	UINT stride = sizeof(Mesh::Vertex);
 	UINT offset = 0;
@@ -351,8 +324,6 @@ void Renderer::DrawRenderItem(const RenderItem& item)
 
 void Renderer::DrawRenderItemInstanced(const RenderItem& item)
 {
-	
-
 
 	dx::XMMATRIX vp =dx::XMMatrixMultiply(item.camera->GetViewMatrix(), item.camera->GetProjectionMatrix());
 	dx::XMStoreFloat4x4(&cb_object_data.vp, dx::XMMatrixTranspose(vp));
@@ -412,7 +383,7 @@ void Renderer::DrawRenderItemGrass(const RenderItem& item)
 
 	DXHelper::BindConstBuffer(context, obj_cbuffer, &cb_object_data, CB_OBJECT_SLOT, ShaderBindFlag::GEOMETRY);
 
-	dx::XMStoreFloat3(&cb_light.cameraPosition,item.camera->GetOwner()->GetTransform().GetPosition());
+	dx::XMStoreFloat3(&cb_scene.cameraPosition,item.camera->GetOwner()->GetTransform().GetPosition());
 	
 	//DXHelper::BindConstBuffer(context, light_cbuffer, &cb_scene, CB_SCENE_SLOT, ShaderBindFlag::DOMAINS);
 	//DXHelper::BindConstBuffer(context, light_cbuffer, &cb_scene, CB_SCENE_SLOT, ShaderBindFlag::PIXEL);

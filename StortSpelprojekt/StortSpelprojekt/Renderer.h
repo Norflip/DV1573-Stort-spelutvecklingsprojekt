@@ -55,7 +55,7 @@ public:
 	void EndManualRenderPass();
 
 	void DrawQueueToTarget(RenderQueue& queue);
-	void RenderFrame();
+	void RenderFrame(dx::XMVECTOR camPos);
 	
 	void AddRenderPass(RenderPass*);
 	void SetGUIManager(GUIManager*);
@@ -106,7 +106,7 @@ private:
 	ID3D11ShaderResourceView* skeleton_srv;
 	
 	cb_Scene cb_scene;
-	cb_Lights cb_light;
+	//cb_Lights cb_light;
 	ID3D11Buffer* light_cbuffer;
 
 	cb_Material cb_material_data;
