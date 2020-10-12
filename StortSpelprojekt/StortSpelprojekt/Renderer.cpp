@@ -63,6 +63,7 @@ void Renderer::Initialize(Window* window)
 	DXHelper::CreateStructuredBuffer(device, &skeleton_srvbuffer, srv_skeleton_data, sizeof(dx::XMFLOAT4X4), srv_skeleton_data.size(), &skeleton_srv);
 	DXHelper::BindStructuredBuffer(context, skeleton_srvbuffer, srv_skeleton_data, BONES_SRV_SLOT, ShaderBindFlag::VERTEX, &skeleton_srv);
 	DXHelper::CreateBlendState(device, &blendStateOn, &blendStateOff);
+	DXHelper::CreateConstBuffer(device, &scene_buffer, &cb_scene, sizeof(cb_scene));
 
 	/* Screenquad shader */
 	Shader* screenQuadShader = new Shader;
@@ -140,10 +141,27 @@ void Renderer::DrawQueueToTarget(RenderQueue& queue)
 	queue.clear();
 }
 
-void Renderer::RenderFrame(dx::XMVECTOR camPos)
+void Renderer::RenderFrame()
 {
 
-	LightManager::Instance().UpdateBuffers(context, camPos);
+	LightManager::Instance().UpdateBuffers(context);
+
+	// Temporärt för att ändra skybox texture
+	static int ids = 0;
+	static float color = 0.0f;
+
+	color += (float)0.005f;
+	if (color > 1.0f)
+	{
+		color -= 1.0f;
+		if (ids != 3)
+			ids += 1;
+		else
+			ids = 0;
+	}
+
+	cb_scene.id = ids;
+	cb_scene.factor = color;
 
 	//We need to clear Depth Stencil View as well.//Emil
 
@@ -311,6 +329,8 @@ void Renderer::DrawRenderItem(const RenderItem& item)
 	cb_material_data = item.material->GetMaterialData();
 	DXHelper::BindConstBuffer(context, material_cbuffer, &cb_material_data, CB_MATERIAL_SLOT, ShaderBindFlag::PIXEL);
 
+	dx::XMStoreFloat3(&cb_scene.cameraPosition, item.camera->GetOwner()->GetTransform().GetPosition());
+	DXHelper::BindConstBuffer(context, scene_buffer, &cb_scene, CB_SCENE_SLOT, ShaderBindFlag::PIXEL);
 
 	UINT stride = sizeof(Mesh::Vertex);
 	UINT offset = 0;
@@ -330,9 +350,11 @@ void Renderer::DrawRenderItemInstanced(const RenderItem& item)
 	
 	DXHelper::BindConstBuffer(context, obj_cbuffer, &cb_object_data, CB_OBJECT_SLOT, ShaderBindFlag::VERTEX);
 
-
 	cb_material_data = item.material->GetMaterialData();
 	DXHelper::BindConstBuffer(context, material_cbuffer, &cb_material_data, CB_MATERIAL_SLOT, ShaderBindFlag::PIXEL);
+
+	dx::XMStoreFloat3(&cb_scene.cameraPosition, item.camera->GetOwner()->GetTransform().GetPosition());
+	DXHelper::BindConstBuffer(context, scene_buffer, &cb_scene, CB_SCENE_SLOT, ShaderBindFlag::PIXEL);
 
 	UINT stride[2] = { sizeof(Mesh::Vertex), sizeof(Mesh::InstanceData) };
 	UINT offset[2] = { 0 };
@@ -359,6 +381,9 @@ void Renderer::DrawRenderItemSkeleton(const RenderItem& item)
 	UINT stride = sizeof(Mesh::Vertex);
 	UINT offset = 0;
 
+	dx::XMStoreFloat3(&cb_scene.cameraPosition, item.camera->GetOwner()->GetTransform().GetPosition());
+	DXHelper::BindConstBuffer(context, scene_buffer, &cb_scene, CB_SCENE_SLOT, ShaderBindFlag::PIXEL);
+
 	context->IASetVertexBuffers(0, 1, &item.mesh->vertexBuffer, &stride, &offset);
 	context->IASetIndexBuffer(item.mesh->indexBuffer, DXGI_FORMAT_R32_UINT, 0);
 	context->IASetPrimitiveTopology(item.mesh->topology);
@@ -372,8 +397,6 @@ void Renderer::DrawRenderItemGrass(const RenderItem& item)
 	dx::XMMATRIX mvp = dx::XMMatrixMultiply(item.world, dx::XMMatrixMultiply(item.camera->GetViewMatrix(), item.camera->GetProjectionMatrix()));
 	dx::XMStoreFloat4x4(&cb_object_data.mvp,mvp);
 
-	
-
 	dx::XMMATRIX wv = dx::XMMatrixMultiply(item.world, item.camera->GetViewMatrix());
 	dx::XMStoreFloat4x4(&cb_object_data.wv, wv);
 
@@ -383,7 +406,10 @@ void Renderer::DrawRenderItemGrass(const RenderItem& item)
 
 	DXHelper::BindConstBuffer(context, obj_cbuffer, &cb_object_data, CB_OBJECT_SLOT, ShaderBindFlag::GEOMETRY);
 
-	dx::XMStoreFloat3(&cb_scene.cameraPosition,item.camera->GetOwner()->GetTransform().GetPosition());
+	dx::XMStoreFloat3(&cb_scene.cameraPosition, item.camera->GetOwner()->GetTransform().GetPosition());
+	DXHelper::BindConstBuffer(context, scene_buffer, &cb_scene, CB_SCENE_SLOT, ShaderBindFlag::PIXEL);
+
+	//dx::XMStoreFloat3(&cb_scene.cameraPosition,item.camera->GetOwner()->GetTransform().GetPosition());
 	
 	//DXHelper::BindConstBuffer(context, light_cbuffer, &cb_scene, CB_SCENE_SLOT, ShaderBindFlag::DOMAINS);
 	//DXHelper::BindConstBuffer(context, light_cbuffer, &cb_scene, CB_SCENE_SLOT, ShaderBindFlag::PIXEL);

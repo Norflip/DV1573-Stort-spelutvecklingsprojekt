@@ -28,17 +28,23 @@ cbuffer cb_Material : register(b1)
 
 cbuffer cb_Scene : register(b2)
 {
-    PointLight pointLights[POINT_LIGHT_COUNT];
-    int nrOfPointLights;
-    float3 sunDirection;
-    float sunIntensity;
 	float3 cameraPosition;
 
 	int id;
 	float factor;
 	float time;
-	float pad;
+	float2 pad2;
 }
+
+cbuffer cb_Lights : register(b3)
+{
+	PointLight pointLights[POINT_LIGHT_COUNT];
+	int nrOfPointLights;
+	float3 sunDirection;
+	float sunIntensity;
+
+	float3 pad3;
+};
 
 StructuredBuffer<float4x4> bones : register(t2);
 

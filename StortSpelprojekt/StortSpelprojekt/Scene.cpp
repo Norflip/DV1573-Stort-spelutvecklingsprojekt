@@ -268,7 +268,7 @@ void Scene::Render()
 	root->Draw(renderer, camera);
 	worldGenerator.DrawShapes();
 
-	renderer->RenderFrame(camera->GetOwner()->GetTransform().GetPosition());
+	renderer->RenderFrame();
 }
 
 void Scene::AddObject(Object* object)
