@@ -11,15 +11,19 @@
 #include <unordered_map>
 #include <mutex>
 
-enum class PhysicsGroup : int
+enum class FilterGroups : int
 {
-	ALL = -1,
+	EVERYTHING = -1,
 	NOTHING = 0,
+	
 	DEFAULT = 1 << 0,
 	TERRAIN = 1 << 1,
+
+	TEST_0 = 1 << 2,
+	TEST_1 = 1 << 3
 };
 
-DEFINE_ENUM_FLAG_OPERATORS(PhysicsGroup)
+DEFINE_ENUM_FLAG_OPERATORS(FilterGroups)
 
 struct RayHit
 {
@@ -42,18 +46,20 @@ public:
 	
 	// remove rigidbody on chunk and add shape?
 	//void ReigsterCollisionObject();
-	btDiscreteDynamicsWorld* GetWorld() const { return this->dynamicsWorld; }
+	btDiscreteDynamicsWorld* GetWorld() const { return this->world; }
 
 	void MutexLock();
 	void MutexUnlock();
 
 	void RegisterRigidBody(RigidBodyComp* rigidBodyComp);
+	void RegisterRigidBody(int id, btTransform& transform, btRigidBody* body, int group, int mask);
+
 	void UnregisterRigidBody(Object* object);
 	void UnregisterRigidBody(RigidBodyComp* rigidBodyComp);
 
 	void FixedUpdate(const float& fixedDeltaTime);
 	
-	bool RaytestSingle(const Ray& ray, float maxDistance, RayHit& hit, PhysicsGroup layer = PhysicsGroup::DEFAULT) const;
+	bool RaytestSingle(const Ray& ray, float maxDistance, RayHit& hit, FilterGroups group = FilterGroups::EVERYTHING) const;
 
 	static Physics& Instance() // singleton
 	{
@@ -75,11 +81,11 @@ private:
 	btCollisionDispatcher* dispatcher;
 	btBroadphaseInterface* overlappingPairCache;
 	btSequentialImpulseConstraintSolver* solver;
-	btDiscreteDynamicsWorld* dynamicsWorld;
+	btDiscreteDynamicsWorld* world;
 	std::vector<btVector3> collisions;
 
 
 	std::mutex physicsThreadMutex;
 
-	std::unordered_map<size_t, RigidBodyComp*> bodyMap;
+	std::unordered_map<size_t, btRigidBody*> bodyMap;
 };

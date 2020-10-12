@@ -57,12 +57,9 @@ public:
 
 	template <typename T>
 	std::vector<T*> GetComponents() const;
-
+	
 	template <typename T>
-	T* GetComponentUpwards() const;
-
-	template <typename T>
-	std::vector<T*> GetComponentsUpwards() const;
+	std::vector<T*> GetComponentsOfSubType() const;
 
 	bool HasFlag(ObjectFlag flag) const;
 	void AddFlag(ObjectFlag flag);
@@ -128,29 +125,30 @@ inline std::vector<T*> Object::GetComponents() const
 }
 
 template<typename T>
-inline T* Object::GetComponentUpwards() const
+inline std::vector<T*> Object::GetComponentsOfSubType() const
 {
-	std::vector<T*> components = GetComponentsUpwards();
-	return components.size() > 0 ? components[0] : nullptr;
-}
+	std::vector<T*> items;
 
-template<typename T>
-inline std::vector<T*> Object::GetComponentsUpwards() const
-{
-	std::vector<T*> components;
-
-	if (HasComponent<T>())
+	for (size_t i = 0; i < maxComponents; i++)
 	{
-		components = GetComponents<T>();
-	}
-	else
-	{
-		Transform* parent = transform.GetParent();
-		if (parent != nullptr)
-			components = transform.GetParent()->GetOwner()->GetComponentsUpwards();
+		size_t size = componentArray[i].size();
+
+		if (componentBitSet[i] && size > 0)
+		{
+			T* t = dynamic_cast<T*>(*componentArray[i].begin());
+
+			if (t != nullptr)	// valid 
+			{
+				items.push_back(t);
+				for (size_t j = 1; j < size; j++)
+				{
+					items.push_back(dynamic_cast<T*>(componentArray[i][j]));
+				}
+			}
+		}
 	}
 
-	return components;
+	return items;
 }
 
 

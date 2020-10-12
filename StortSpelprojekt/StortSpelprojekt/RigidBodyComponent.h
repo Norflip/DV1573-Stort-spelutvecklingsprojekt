@@ -23,21 +23,22 @@ enum class ForceMode
 	IMPULSE
 };
 
-enum class PhysicsGroup : int;
+enum class FilterGroups : int;
 
 #define STATIC_BODY 0
 
 class RigidBodyComp : public Component
 {
 public:
-	RigidBodyComp(float mass, PhysicsGroup group);
+	RigidBodyComp(float mass, FilterGroups group, FilterGroups mask);
 	virtual ~RigidBodyComp();
 
 	void m_InitializeBody();
 	btRigidBody* GetRigidBody() const { return body; }
+	btTransform& GetBodyTransform() { return this->bodyTransform; }
 
-	void SetMass(float mass) { this->mass = btScalar(mass); }
-	float GetMass() const { return static_cast<float>(this->mass); }
+	void SetMass(float mass) { this->totalMass = btScalar(mass); }
+	float GetMass() const { return static_cast<float>(this->totalMass); }
 
 	void m_GenerateCompoundShape(btTransform& transform, btVector3& inertia, btScalar* masses);
 	virtual void UpdateWorldTransform(const btDynamicsWorld* world);	
@@ -47,9 +48,9 @@ public:
 	virtual void AddForce(const dx::XMFLOAT3& force, const ForceMode& mode);
 	virtual void AddForceAtPoint(const dx::XMFLOAT3& force, const dx::XMFLOAT3& offset, const ForceMode& mode);
 
-	bool IsDynamic() const { return mass != 0.0f; }
-	PhysicsGroup GetGroup() const { return this->group; }
-
+	bool IsDynamic() const { return totalMass != 0.0f; }
+	FilterGroups GetGroup() const { return this->group; }
+	FilterGroups GetMask() const { return this->mask; }
 
 	void Update(const float& deltaTime) override;
 
@@ -57,13 +58,17 @@ private:
 	btTransform ConvertToBtTransform(const Transform& transform) const;
 	dx::XMVECTOR ConvertToPosition(const btVector3& position) const;
 	dx::XMVECTOR ConvertToRotation(const btQuaternion& rotation) const;
-	void RecursiveAddShapes(Object* obj, btCompoundShape* shape);
+	void AddShapesToCompound(Object* obj, btCompoundShape* shape);
 
-	PhysicsGroup group;
+	FilterGroups group;
+	FilterGroups mask;
+
+	btTransform bodyTransform;
 	btCompoundShape* compShape;
 	btRigidBody* body;
 
-	btScalar mass;
+	btScalar totalMass;
+	btScalar* masses;
 
 	std::vector<std::function<void(CollisionInfo)>> callbacks;
 };

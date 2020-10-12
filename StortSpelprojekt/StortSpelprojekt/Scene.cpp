@@ -221,7 +221,7 @@ void Scene::Initialize(Renderer* renderer)
 	AddObject(testMesh3);
 	AddObject(testMesh4);
 
-	RigidBodyComp* rigidBody = testMesh2->AddComponent<RigidBodyComp>(4.0f, PhysicsGroup::DEFAULT);
+	RigidBodyComp* rigidBody = testMesh2->AddComponent<RigidBodyComp>(4.0f, FilterGroups::DEFAULT, FilterGroups::EVERYTHING);
 	BoxColliderComponent* boxCol = testMesh2->AddComponent<BoxColliderComponent>(dx::XMFLOAT3( 1,1,1 ), dx::XMFLOAT3(0,0,0), dx::XMFLOAT4(0,0,0,0));
 
 	//rigidBody->m_GenerateCompoundShape();
@@ -285,7 +285,7 @@ void Scene::Update(const float& deltaTime)
 
 
 				object->AddComponent<BoxColliderComponent>(dx::XMFLOAT3(0.5f, 0.5f, 0.5f), dx::XMFLOAT3(0, 0, 0), dx::XMFLOAT4(0, 0, 0, 0));
-				RigidBodyComp* rd = object->AddComponent<RigidBodyComp>(10.0f, PhysicsGroup::DEFAULT);
+				RigidBodyComp* rd = object->AddComponent<RigidBodyComp>(1.0f, FilterGroups::DEFAULT, FilterGroups::EVERYTHING);
 		
 				phy.RegisterRigidBody(rd);
 
@@ -300,19 +300,17 @@ void Scene::Update(const float& deltaTime)
 
 
 	POINT p = input.GetMousePos();
-	//std::cout << p.x << ", " << p.y << std::endl;
-	Window* window = renderer->GetOutputWindow();
-	//Ray ray = camera->MouseToRay(window->GetWidth() / 2.0f, window->GetHeight() / 2.0f);
 	Ray ray = camera->MouseToRay(p.x, p.y);
-
-	Physics& phy = Physics::Instance();
-	RayHit hit;
+	//std::cout << p.x << ", " << p.y << std::endl;
 
 	if (LMOUSE_PRESSED)
 	{
+		Physics& phy = Physics::Instance();
+		RayHit hit;
+
 		DShape::DrawLine(ray.origin, ray.GetPoint(1000.0f), { 1,1,0 });
 
-		if (phy.RaytestSingle(ray, 1000.0f, hit, PhysicsGroup::DEFAULT))
+		if (phy.RaytestSingle(ray, 1000.0f, hit, FilterGroups::EVERYTHING))
 		{
 			DShape::DrawLine(ray.origin, hit.position, { 1,1,0 });
 			DShape::DrawSphere(hit.position, 1.0f, { 0, 0, 1 });
@@ -322,13 +320,10 @@ void Scene::Update(const float& deltaTime)
 				std::cout << hit.body->GetOwner()->GetName() << std::endl;
 			}
 		}
-
-		//DShape::DrawSphere(ray.GetPoint(10.0f), 0.2f, { 0, 0, 1 });
-	
 	}
 	else
 	{
-		DShape::DrawSphere(ray.GetPoint(10.0f), 0.2f, { 0, 0, 1 });
+		DShape::DrawSphere(ray.GetPoint(10.0f), 0.2f, { 1, 0, 0 });
 
 	}
 

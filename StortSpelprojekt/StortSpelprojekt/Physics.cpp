@@ -6,6 +6,20 @@ Physics::Physics() : collisionConfiguration(nullptr), dispatcher(nullptr), overl
 
 Physics::~Physics()
 {
+	int i;
+
+	for (i = world->getNumCollisionObjects() - 1; i >= 0; i--)
+	{
+		btCollisionObject* obj = world->getCollisionObjectArray()[i];
+		btRigidBody* body = btRigidBody::upcast(obj);
+		if (body && body->getMotionState())
+		{
+			delete body->getMotionState();
+		}
+
+		world->removeCollisionObject(obj);
+		delete obj;
+	}
 }
 
 void Physics::Initialize(dx::XMFLOAT3 gravity)
@@ -17,20 +31,31 @@ void Physics::Initialize(dx::XMFLOAT3 gravity)
 void Physics::SetGravity(float x, float y, float z)
 {
 	this->gravity = btVector3(x, y, z);
-    dynamicsWorld->setGravity(this->gravity);
+    world->setGravity(this->gravity);
 }
 
 void Physics::CreateDynamicWorld()
 {
-	collisionConfiguration = new btDefaultCollisionConfiguration();
-	collisionConfiguration->setConvexConvexMultipointIterations();
+	btDefaultCollisionConstructionInfo cci;
+	//cci.m_defaultMaxPersistentManifoldPoolSize = 80000;
+	//cci.m_defaultMaxCollisionAlgorithmPoolSize = 80000;
+	
 
+	collisionConfiguration = new btDefaultCollisionConfiguration(cci);
 	dispatcher = new btCollisionDispatcher(collisionConfiguration);
+
+	
+
+	//overlappingPairCache = new btAxisSweep3(btVector3(-1000, -1000, -1000), btVector3(1000, 1000, 1000));
 	overlappingPairCache = new btDbvtBroadphase();
-	solver = new btSequentialImpulseConstraintSolver;
-	
-	dynamicsWorld = new btDiscreteDynamicsWorld(dispatcher, overlappingPairCache, solver, collisionConfiguration);
-	
+
+	//new btAxisSweep3();
+
+	solver = new btSequentialImpulseConstraintSolver();
+	world = new btDiscreteDynamicsWorld(dispatcher, overlappingPairCache, solver, collisionConfiguration);
+	//world->getSolverInfo().m_solverMode = btSolverMode::SOLVER_SIMD || btSolverMode::SOLVER_USE_WARMSTARTING;
+	//world->getSolverInfo().m_numIterations = 1;
+
 }
 
 void Physics::MutexLock()
@@ -45,14 +70,30 @@ void Physics::MutexUnlock()
 
 void Physics::RegisterRigidBody(RigidBodyComp* rigidBodyComp)
 {
-	
-	assert(dynamicsWorld != nullptr);
+	assert(world != nullptr);
 
-	rigidBodyComp->m_InitializeBody();
 	int group = static_cast<int>(rigidBodyComp->GetGroup());
-	dynamicsWorld->addRigidBody(rigidBodyComp->GetRigidBody(), 1, 1);
+	int mask = static_cast<int>(rigidBodyComp->GetMask());
+	rigidBodyComp->m_InitializeBody();
 
-	bodyMap.insert({ rigidBodyComp->GetOwner()->GetID(), rigidBodyComp });
+	RegisterRigidBody(rigidBodyComp->GetOwner()->GetID(), rigidBodyComp->GetBodyTransform(), rigidBodyComp->GetRigidBody(), group, mask);
+}
+
+void Physics::RegisterRigidBody(int id, btTransform& transform, btRigidBody* body, int group, int mask)
+{
+	//body->setCcdMotionThreshold(1e-7);
+	//body->setCcdSweptSphereRadius(1.0f * 0.2);
+	
+	btVector3 min, max;
+	body->getCollisionShape()->getAabb(transform, min, max);
+
+	btVector3 extends = max - min;
+
+	body->setCcdSweptSphereRadius(extends.m_floats[extends.minAxis()] * 0.5f);
+	body->setCcdMotionThreshold(0.0001f);
+
+	world->addRigidBody(body, group, mask);
+	bodyMap.insert({ id, body });
 }
 
 void Physics::UnregisterRigidBody(Object* object)
@@ -71,47 +112,36 @@ void Physics::FixedUpdate(const float& fixedDeltaTime)
 {
 	MutexLock();
 
+	world->updateAabbs();
+	world->computeOverlappingPairs();
 
 	// neccesary? 
-	//dynamicsWorld->updateAabbs();
-	//dynamicsWorld->computeOverlappingPairs();
-
-	dynamicsWorld->stepSimulation(fixedDeltaTime, 10, fixedDeltaTime);
-
-	/*for (auto i : bodyMap)
-	{
-		if (i.second->GetOwner()->HasFlag(ObjectFlag::ENABLED))
-		{
-			i.second->UpdateWorldTransform(dynamicsWorld);
-		}
-	}*/
-
+	world->stepSimulation(fixedDeltaTime);
+	
+	
 	CheckForCollisions();
 	MutexUnlock();
 }
 
-bool Physics::RaytestSingle(const Ray& ray, float maxDistance, RayHit& hit, PhysicsGroup layer) const
+bool Physics::RaytestSingle(const Ray& ray, float maxDistance, RayHit& hit, FilterGroups group) const
 {
 	//std::cout << "origin: " << ray.origin.x << ", " << ray.origin.y << ", " << ray.origin.z << std::endl;
 	//std::cout << "direction: " << ray.direction.x << ", " << ray.direction.y << ", " << ray.direction.z << std::endl;
 
-	Ray r = ray;
-	//r.direction = { 0,0,1 };
-
-	dx::XMFLOAT3 furthestPoint = r.GetPoint(maxDistance);
+	dx::XMFLOAT3 furthestPoint = ray.GetPoint(maxDistance);
 	btVector3 to = btVector3(furthestPoint.x, furthestPoint.y, furthestPoint.z);
-	btVector3 from = btVector3(r.origin.x, r.origin.y, r.origin.z);
+	btVector3 from = btVector3(ray.origin.x, ray.origin.y, ray.origin.z);
 	
 	//btCollisionWorld::AllHitsRayResultCallback allResults(from, to);
 	//allResults.m_flags |= btTriangleRaycastCallback::kF_KeepUnflippedNormal;
 
-	btCollisionWorld::ClosestRayResultCallback closestResults(from, to);
-	closestResults.m_flags |= btTriangleRaycastCallback::kF_FilterBackfaces;
 
-	//closestResults.m_collisionFilterGroup = static_cast<int>(layer);
+	btCollisionWorld::ClosestRayResultCallback closestResults(from, to);
+	closestResults.m_flags |= btTriangleRaycastCallback::kF_FilterBackfaces | btTriangleRaycastCallback::kF_KeepUnflippedNormal;
+	closestResults.m_collisionFilterGroup = static_cast<int>(group);
 	//closestResults.m_collisionFilterMask = 1;
 
-	dynamicsWorld->rayTest(from, to, closestResults);
+	world->rayTest(from, to, closestResults);
 	bool didHit = closestResults.hasHit();
 
 	if (didHit)
@@ -136,10 +166,10 @@ bool Physics::RaytestSingle(const Ray& ray, float maxDistance, RayHit& hit, Phys
 void Physics::CheckForCollisions()
 {
 	collisions.clear();
-	int numManifolds = dynamicsWorld->getDispatcher()->getNumManifolds();
+	int numManifolds = world->getDispatcher()->getNumManifolds();
 	for (int i = 0; i < numManifolds; i++)
 	{
-		btPersistentManifold* contactManifold = dynamicsWorld->getDispatcher()->getManifoldByIndexInternal(i);
+		btPersistentManifold* contactManifold = world->getDispatcher()->getManifoldByIndexInternal(i);
 
 		const btCollisionObject* objA = contactManifold->getBody0();
 		const btCollisionObject* objB = contactManifold->getBody1();

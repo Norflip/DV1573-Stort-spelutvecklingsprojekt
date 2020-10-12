@@ -55,6 +55,7 @@ void Engine::Run()
 			if (activeScene != nullptr)
 			{
 				float deltaTime = currentTime - timeLastFrame;
+
 				activeScene->Update(deltaTime);
 				activeScene->Render();
 			}

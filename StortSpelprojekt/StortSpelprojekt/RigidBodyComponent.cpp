@@ -1,7 +1,7 @@
 #include "RigidBodyComponent.h"
 #include "Physics.h"
 
-RigidBodyComp::RigidBodyComp(float mass, PhysicsGroup group) : mass(mass), group(group), compShape(nullptr)
+RigidBodyComp::RigidBodyComp(float mass, FilterGroups group, FilterGroups mask) : totalMass(mass), group(group), mask(mask), compShape(nullptr), masses(nullptr)
 {
 
 }
@@ -48,79 +48,53 @@ dx::XMVECTOR RigidBodyComp::ConvertToRotation(const btQuaternion& rotation) cons
 	return { x,y,z,w };
 }
 
-void RigidBodyComp::RecursiveAddShapes(Object* obj, btCompoundShape* shape)
+void RigidBodyComp::AddShapesToCompound(Object* obj, btCompoundShape* shape)
 {
-	//BOXES
-	const std::vector<BoxColliderComponent*>& boxes = obj->GetComponents<BoxColliderComponent>();
-	for (size_t i = 0; i < boxes.size(); i++)
+	const std::vector<Collider*> colliders = obj->GetComponentsOfSubType<Collider>();
+	for (size_t i = 0; i < colliders.size(); i++)
 	{
-		shape->addChildShape(boxes[i]->GetTransform(), boxes[i]->GetCollisionShape());
+		shape->addChildShape(colliders[i]->GetTransform(), colliders[i]->GetCollisionShape());
 	}
 
-	//SPHERES
-	const std::vector<SphereColliderComponent*>& spheres = obj->GetComponents<SphereColliderComponent>();
-	for (size_t i = 0; i < spheres.size(); i++)
+	std::cout << obj->GetName() << " has colliders: " << colliders.size() << std::endl;
+
+	//CHILDREN
+	const std::vector<Transform*>& children = GetOwner()->GetTransform().GetChildren();
+
+	for (size_t i = 0; i < children.size(); i++)
 	{
-		shape->addChildShape(spheres[i]->GetTransform(), spheres[i]->GetCollisionShape());
+		AddShapesToCompound(children[i]->GetOwner(), shape);
 	}
-
-	//CAPSULES
-	const std::vector<CapsuleColliderComponent*>& capsules = obj->GetComponents<CapsuleColliderComponent>();
-	for (size_t i = 0; i < capsules.size(); i++)
-	{
-		shape->addChildShape(capsules[i]->GetTransform(), capsules[i]->GetCollisionShape());
-	}
-
-	////CHUNK
-	//const std::vector<ChunkCollider*>& chunks = obj->GetComponents<ChunkCollider>();
-	//for (size_t i = 0; i < chunks.size(); i++)
-	//{
-	//	shape->addChildShape(chunks[i]->GetTransform(), chunks[i]->GetCollisionShape());
-	//}
-
-
-	////CHILDREN
-	//const std::vector<Transform*>& children = GetOwner()->GetTransform().GetChildren();
-
-	//for (size_t i = 0; i < children.size(); i++)
-	//{
-	//	RecursiveAddShapes(children[i]->GetOwner(), shape);
-	//}
 }
 
 void RigidBodyComp::m_InitializeBody()
 {
 	Transform& transform = GetOwner()->GetTransform();
-	btTransform rbTransform = ConvertToBtTransform(transform);
+	bodyTransform = ConvertToBtTransform(transform);
 	btVector3 inertia(0, 0, 0);
 
 	compShape = new btCompoundShape();
-	RecursiveAddShapes(GetOwner(), compShape);
+	AddShapesToCompound(GetOwner(), compShape);
 
 	std::cout << GetOwner()->GetName() << " has " << compShape->getNumChildShapes() << " children. " << std::endl;
 
-	btTransform t;
-	t.setIdentity();
-	t.setOrigin({ 0,0,0 });
-
-	//if (IsDynamic())
-	//{
+	if (IsDynamic())
+	{
 		int children = compShape->getNumChildShapes();
-		btScalar* masses = new btScalar[children];
+		masses = new btScalar[children];
 		for (size_t i = 0; i < children; i++)
 		{
-			masses[i] = mass / children;
+			masses[i] = totalMass / children;
 		}
 
-		compShape->calculateLocalInertia(mass, inertia);
+		compShape->calculateLocalInertia(totalMass, inertia);
 		//compShape->calculatePrincipalAxisTransform(masses, t, inertia);
-	//}
-
+	}
 
 	//btCollisionShape* groundShape = new btBoxShape(btVector3(btScalar(50.), btScalar(50.), btScalar(50.)));
 
-	btDefaultMotionState* myMotionState = new btDefaultMotionState(rbTransform);
-	btRigidBody::btRigidBodyConstructionInfo cInfo(mass, myMotionState, compShape, inertia);
+	btDefaultMotionState* myMotionState = new btDefaultMotionState(bodyTransform);
+	btRigidBody::btRigidBodyConstructionInfo cInfo(totalMass, myMotionState, compShape, inertia);
 	body = new btRigidBody(cInfo);
 	body->setUserPointer(this);
 	body->setFriction(1);
@@ -135,12 +109,11 @@ void RigidBodyComp::UpdateWorldTransform(const btDynamicsWorld* world)
 	// loopa collision shiet
 
 	//rbTransform.setIdentity();
-	btTransform rbTransform;
-	body->getMotionState()->getWorldTransform(rbTransform);
+	body->getMotionState()->getWorldTransform(bodyTransform);
 
 	Transform& transform = GetOwner()->GetTransform();
-	transform.SetPosition(ConvertToPosition(rbTransform.getOrigin()));
-	transform.SetRotation(ConvertToRotation(rbTransform.getRotation()));
+	transform.SetPosition(ConvertToPosition(bodyTransform.getOrigin()));
+	transform.SetRotation(ConvertToRotation(bodyTransform.getRotation()));
 
 	//std::cout << std::to_string(rbTransform.getOrigin().getX()) << ", " << std::to_string(rbTransform.getOrigin().getY()) << ", " << std::to_string(rbTransform.getOrigin().getZ()) << std::endl;
 
@@ -149,16 +122,14 @@ void RigidBodyComp::UpdateWorldTransform(const btDynamicsWorld* world)
 void RigidBodyComp::m_GenerateCompoundShape(btTransform& transform, btVector3& inertia, btScalar* masses)
 {
 	compShape = new btCompoundShape(true, 1);
-	RecursiveAddShapes(GetOwner(), compShape);
+	AddShapesToCompound(GetOwner(), compShape);
 
 	int children = compShape->getNumChildShapes();
-
-	std::cout << "CHILDREN: " << children << std::endl;
-
 	masses = new btScalar[children];
+
 	for (size_t i = 0; i < children; i++)
 	{
-		masses[i] = mass;
+		masses[i] = totalMass;
 	}
 }
 

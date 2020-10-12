@@ -25,7 +25,7 @@ void Chunk::SetupCollisionObject(float* heightMap)
 	transform.setIdentity();
 
 	const float offset = CHUNK_SIZE / 2.0f;
-	btVector3 btPosition (worldPosition.x + offset, worldPosition.y + 5, worldPosition.z + offset);
+	btVector3 btPosition (worldPosition.x + offset, worldPosition.y, worldPosition.z + offset);
 	transform.setOrigin(btPosition);
 
 	Chunk* chunk = GetOwner()->GetComponent<Chunk>();
@@ -34,33 +34,29 @@ void Chunk::SetupCollisionObject(float* heightMap)
 
 	float* gridData = chunk->GetHeightMap();
 
-
-	btHeightfieldTerrainShape* heightShape = new btHeightfieldTerrainShape(gridSize, gridSize, static_cast<void*>(gridData), 1, 0, TERRAIN_SCALE, m_upAxis, PHY_FLOAT, true);
-	
+	btHeightfieldTerrainShape* heightShape = new btHeightfieldTerrainShape(gridSize, gridSize, static_cast<void*>(gridData), 1, -TERRAIN_SCALE, TERRAIN_SCALE, m_upAxis, PHY_FLOAT, true);
 	heightShape->setUseDiamondSubdivision();
-	heightShape->buildAccelerator();
+	heightShape->setFlipTriangleWinding(false);
 
 	float mass = 0.0f;
 	btVector3 inertia(0, 0, 0);
-
-
 	
-	btDefaultMotionState* myMotionState = new btDefaultMotionState(transform);
-	btRigidBody::btRigidBodyConstructionInfo cInfo(mass, myMotionState, heightShape, inertia);
-	btRigidBody* body = new btRigidBody(cInfo);
-	body->setUserPointer(this);
-	body->setFriction(1);
-	body->setRestitution(0);
-	
+//	btDefaultMotionState* myMotionState = new btDefaultMotionState(transform);
+//	btRigidBody::btRigidBodyConstructionInfo cInfo(mass, myMotionState, heightShape, inertia);
+//	btRigidBody* body = new btRigidBody(cInfo);
+//	body->setUserPointer(this);
+////	body->setFriction(1);
+////	body->setRestitution(0);
+//	
+//	Physics& physics = Physics::Instance();
+//	physics.GetWorld()->addRigidBody(body, static_cast<int>(FilterGroups::TERRAIN), static_cast<int>(FilterGroups::EVERYTHING));
 
-	Physics::Instance().GetWorld()->addRigidBody(body, 1, 1);
-
-	//btCollisionObject* body = new btCollisionObject();
-	//body->setCollisionShape(heightShape);
-	//body->setWorldTransform(transform);
+	btCollisionObject* body = new btCollisionObject();
+	body->setCollisionShape(heightShape);
+	body->setWorldTransform(transform);
 
 
-	//Physics::Instance().GetWorld()->addCollisionObject(body, 1, 1);
+	Physics::Instance().GetWorld()->addCollisionObject(body, static_cast<int>(FilterGroups::TERRAIN), static_cast<int>(FilterGroups::EVERYTHING));
 }
 
 float Chunk::SampleHeight(float x, float z)

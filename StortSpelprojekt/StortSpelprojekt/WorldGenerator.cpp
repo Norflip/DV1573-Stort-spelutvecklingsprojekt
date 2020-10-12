@@ -66,7 +66,7 @@ void WorldGenerator::InitializeTrees(std::vector<Mesh> models, std::vector<Mater
 			Transform::SetParentChild(chunk->GetOwner()->GetTransform(), styLeavesBase->GetTransform());
 
 			// just the first one for testing 
-			break;
+			//break;
 		}
 	}
 }
@@ -263,10 +263,10 @@ Chunk* WorldGenerator::CreateChunk(ChunkType type, dx::XMINT2 index, const Noise
 			int bufferIndex = x + size * y;
 
 			float height = Noise::Sample(chunkPosXZ.x + x, chunkPosXZ.y + y, settings);
-			heightMap[x + size * y] = height;// *TERRAIN_SCALE;
-			heightMap2.push_back(height);
+			heightMap[x + size * y] = height * TERRAIN_SCALE;
+			heightMap2.push_back(height * TERRAIN_SCALE);
 
-			std::cout << height << std::endl;
+			//std::cout << height << std::endl;
 
 			buffer[bufferIndex * 4 + 0] = static_cast<unsigned char>(255 * height * distance);
 			buffer[bufferIndex * 4 + 1] = static_cast<unsigned char>(255 * distance);
