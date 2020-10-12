@@ -5,6 +5,7 @@
 
 
 Texture2D grassHeightMap : register (t1);
+Texture2D chunkData : register (t6);
 SamplerState linearSampler : register(s0);
 
 
@@ -45,11 +46,11 @@ HS_CONSTANT_DATA_OUTPUT_GRASS hsPerIsoLinePatch(InputPatch<VS_OUTPUT_GRASS,1> in
 
 	float2 uv = (uv1 + uv2 + uv3) / 3.0f;
 
-	float len = grassHeightMap.SampleLevel(linearSampler, uv, 0).r;
+	float len = chunkData.SampleLevel(linearSampler, uv, 0).r;
 
 	if (len < 0.1)
 	{
-		//output.edgeTesselation[0] = 0;
+		output.edgeTesselation[0] = 0;
 	}
 
 	return output;
