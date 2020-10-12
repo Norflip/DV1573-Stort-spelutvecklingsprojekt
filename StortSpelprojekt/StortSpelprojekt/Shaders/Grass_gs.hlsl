@@ -20,7 +20,7 @@ void main(line DS_OUTPUT_GRASS input[2], inout TriangleStream<GS_OUTPUT_GRASS> T
 	grassDirection = grassDirection;
 
 	
-	float grassBladeScale = 1.0f;
+	float grassBladeScale = 1.5f;//grassWidth
 	float powfactor = 1;
 	float maxHeightPow = pow(bladeHeight, powfactor);
 	float origWidth1 = grassBladeScale * (maxHeightPow - pow(input[0].height, powfactor));

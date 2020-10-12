@@ -36,6 +36,38 @@ Renderer::~Renderer()
 
 void Renderer::Initialize(Window* window)
 {
+
+	if (sizeof(cb_grass) % 16 != 0)
+	{
+		OutputDebugStringA("WRONG WITH GRASS");
+	}
+	if (sizeof(cb_Lights) % 16 != 0)
+	{
+		OutputDebugStringA("WRONG WITH LIGHT");
+	}
+	if (sizeof(cb_Material) % 16 != 0)
+	{
+		OutputDebugStringA("WRONG WITH MATERIAL");
+	}
+	if (sizeof(cb_Object) % 16 != 0)
+	{
+		OutputDebugStringA("WRONG WITH Object");
+	}
+	if (sizeof(cb_Scene) % 16 != 0)
+	{
+		OutputDebugStringA("WRONG WITH SCENE");
+	}
+	if (sizeof(s_PointLight) % 16 != 0)
+	{
+		OutputDebugStringA("WRONG WITH GRASS");
+	}
+	if (sizeof(cb_grass) % 16 != 0)
+	{
+		OutputDebugStringA("WRONG WITH PLIGHT");
+	}
+	
+
+
 	this->outputWindow = window;
 
 	DXHelper::CreateSwapchain(*window, &device, &context, &swapchain);

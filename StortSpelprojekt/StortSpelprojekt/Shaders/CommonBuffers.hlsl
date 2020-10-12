@@ -5,7 +5,7 @@ struct PointLight
     float3 lightPosition;
 	float range;
     float3 attenuation;
-	float pad;
+	float paddingThree;
 };
 
 cbuffer cb_Object : register(b0)
@@ -24,6 +24,8 @@ cbuffer cb_Material : register(b1)
 	
 	bool hasAlbedo;
 	bool hasNormalMap;
+	float paddingOne;
+	float paddingTwo;
 }
 
 cbuffer cb_Scene : register(b2)
@@ -42,8 +44,8 @@ cbuffer cb_Lights : register(b3)
 	int nrOfPointLights;
 	float3 sunDirection;
 	float sunIntensity;
-
 	float3 pad3;
+	
 };
 
 StructuredBuffer<float4x4> bones : register(t2);

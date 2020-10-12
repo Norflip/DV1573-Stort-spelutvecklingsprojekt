@@ -289,6 +289,7 @@ Chunk* WorldGenerator::CreateChunk(ChunkType type, dx::XMINT2 index, const Noise
 
 	grassComponent->GetMaterial().SetTexture(Texture(chunkDataSRV), 6, ShaderBindFlag::DOMAINS);
 
+
 	grassComponent->SetType(type);
 
 	grassComponents.push_back(grassComponent);
