@@ -20,8 +20,11 @@ Renderer::~Renderer()
 		delete (*i);
 
 	obj_cbuffer->Release();
+
+	//skeleton_cbuffer->Release();
+
 	skeleton_srvbuffer->Release();
-	light_cbuffer->Release();
+
 	material_cbuffer->Release();
 
 	rasterizerStateCullBack->Release();
@@ -54,7 +57,7 @@ void Renderer::Initialize(Window* window)
 	}
 	
 	DXHelper::CreateConstBuffer(device, &obj_cbuffer, &cb_object_data, sizeof(cb_object_data));
-	DXHelper::CreateConstBuffer(device, &light_cbuffer, &cb_scene, sizeof(cb_scene));
+	LightManager::Instance().Initialize(device);
 	DXHelper::CreateConstBuffer(device, &material_cbuffer, &cb_material_data, sizeof(cb_material_data));
 	
 	DXHelper::CreateStructuredBuffer(device, &skeleton_srvbuffer, srv_skeleton_data, sizeof(dx::XMFLOAT4X4), srv_skeleton_data.size(), &skeleton_srv);
@@ -143,7 +146,11 @@ void Renderer::DrawQueueToTarget(RenderQueue& queue)
 
 void Renderer::RenderFrame()
 {
+
+	LightManager::Instance().UpdateBuffers(context, { 1, 1, 1 });
+
 	//We need to clear Depth Stencil View as well.//Emil
+
 	size_t bufferIndex = 0;
 	ID3D11ShaderResourceView* nullSRV[1] = { nullptr };
 	context->PSSetShaderResources(0, 1, nullSRV);
@@ -307,20 +314,6 @@ void Renderer::DrawRenderItem(const RenderItem& item)
 
 	cb_material_data = item.material->GetMaterialData();
 	DXHelper::BindConstBuffer(context, material_cbuffer, &cb_material_data, CB_MATERIAL_SLOT, ShaderBindFlag::PIXEL);
-		
-
-	cb_scene.sunDirection = dx::XMFLOAT3(0.0f, 100.0f, -45.0f);
-	cb_scene.sunIntensity = 0.4f;
-
-	cb_scene.pointLights[0].lightColor = dx::XMFLOAT4(0.5f, 0.5f, 0.5f, 1.0f);
-	cb_scene.pointLights[0].lightPosition = dx::XMFLOAT3(15.0f, -5.0f, -5.0f);
-	cb_scene.pointLights[0].attenuation = dx::XMFLOAT3(1.0f, 0.02f, 0.0f);
-	cb_scene.pointLights[0].range = 25.0f;
-
-	cb_scene.pointLights[1].lightColor = dx::XMFLOAT4(0.3f, 0.3f, 0.3f, 1.0f);
-	cb_scene.pointLights[1].lightPosition = dx::XMFLOAT3(-10.0f, 10.0f, -5.0f);
-	cb_scene.pointLights[1].attenuation = dx::XMFLOAT3(1.0f, 0.02f, 0.0f);
-	cb_scene.pointLights[1].range = 25.0f;
 
 	/**********************************/
 
@@ -345,10 +338,6 @@ void Renderer::DrawRenderItem(const RenderItem& item)
 	cb_scene.factor = color;
 
 	/**********************************/
-	
-	cb_scene.nrOfPointLights = 2;
-	dx::XMStoreFloat3(&cb_scene.cameraPosition, item.camera->GetOwner()->GetTransform().GetPosition());
-	DXHelper::BindConstBuffer(context, light_cbuffer, &cb_scene, CB_SCENE_SLOT, ShaderBindFlag::PIXEL);
 
 	UINT stride = sizeof(Mesh::Vertex);
 	UINT offset = 0;
@@ -423,10 +412,10 @@ void Renderer::DrawRenderItemGrass(const RenderItem& item)
 
 	DXHelper::BindConstBuffer(context, obj_cbuffer, &cb_object_data, CB_OBJECT_SLOT, ShaderBindFlag::GEOMETRY);
 
-	dx::XMStoreFloat3(&cb_scene.cameraPosition,item.camera->GetOwner()->GetTransform().GetPosition());
+	dx::XMStoreFloat3(&cb_light.cameraPosition,item.camera->GetOwner()->GetTransform().GetPosition());
 	
-	DXHelper::BindConstBuffer(context, light_cbuffer, &cb_scene, CB_SCENE_SLOT, ShaderBindFlag::DOMAINS);
-	DXHelper::BindConstBuffer(context, light_cbuffer, &cb_scene, CB_SCENE_SLOT, ShaderBindFlag::PIXEL);
+	//DXHelper::BindConstBuffer(context, light_cbuffer, &cb_scene, CB_SCENE_SLOT, ShaderBindFlag::DOMAINS);
+	//DXHelper::BindConstBuffer(context, light_cbuffer, &cb_scene, CB_SCENE_SLOT, ShaderBindFlag::PIXEL);
 	/*cb_material_data = item.material->GetMaterialData();
 	DXHelper::BindConstBuffer(context, material_cbuffer, &cb_material_data, CB_MATERIAL_SLOT, ShaderBindFlag::PIXEL);*/
 
