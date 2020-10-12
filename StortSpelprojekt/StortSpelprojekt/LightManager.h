@@ -26,7 +26,7 @@ public:
 
 	PointLightComponent* GetPointLight(size_t index);
 	void RemovePointLight(size_t index);
-	void UpdateBuffers(ID3D11DeviceContext* context, dx::XMVECTOR camPos);
+	void UpdateBuffers(ID3D11DeviceContext* context);
 
 private:
 

@@ -12,7 +12,6 @@ LightManager::~LightManager()
 void LightManager::Initialize(ID3D11Device* device)
 {
 	DXHelper::CreateConstBuffer(device, &light_cbuffer, &cb_light, sizeof(cb_light));
-
 }
 
 size_t LightManager::RegisterPointLight(PointLightComponent* pointLight)
@@ -37,10 +36,11 @@ void LightManager::RemovePointLight(size_t index)
 		pointLightMap.erase(temp);
 }
 
-void LightManager::UpdateBuffers(ID3D11DeviceContext* context, dx::XMVECTOR camPos)
+void LightManager::UpdateBuffers(ID3D11DeviceContext* context)
 {
-	/*cb_light.sunDirection = dx::XMFLOAT3(0.0f, 100.0f, -45.0f);
-	cb_light.sunIntensity = 0.4f;*/
+	cb_light.sunDirection = dx::XMFLOAT3(0.0f, 100.0f, -45.0f);
+	cb_light.sunIntensity = 0.4f;
+
 	for (auto i = pointLightMap.begin(); i != pointLightMap.end(); i++)
 	{
 		cb_light.pointLights[i->first].lightColor = i->second->GetColor();
@@ -50,7 +50,6 @@ void LightManager::UpdateBuffers(ID3D11DeviceContext* context, dx::XMVECTOR camP
 	}
 	cb_light.nrOfPointLights = pointLightMap.size();
 
-	dx::XMStoreFloat3(&cb_light.cameraPosition, camPos);
-	DXHelper::BindConstBuffer(context, light_cbuffer, &cb_light, CB_SCENE_SLOT, ShaderBindFlag::DOMAINS);
-	DXHelper::BindConstBuffer(context, light_cbuffer, &cb_light, CB_SCENE_SLOT, ShaderBindFlag::PIXEL);
+	DXHelper::BindConstBuffer(context, light_cbuffer, &cb_light, CB_LIGHT_SLOT, ShaderBindFlag::DOMAINS);
+	DXHelper::BindConstBuffer(context, light_cbuffer, &cb_light, CB_LIGHT_SLOT, ShaderBindFlag::PIXEL);
 }

@@ -54,8 +54,8 @@ void Scene::Initialize(Renderer* renderer)
 	state.seed = 1337;
 	state.segment = 0;
 
-	worldGenerator.Initialize(renderer->GetDevice(), resourceManager->GetShaderResource("terrainShader"), resourceManager->GetShaderResource("grassShader"));	worldGenerator.Generate(state, renderer->GetDevice());
-  worldGenerator.Generate(state, renderer->GetDevice(), root);
+	worldGenerator.Initialize(renderer->GetDevice(), resourceManager->GetShaderResource("terrainShader"), resourceManager->GetShaderResource("grassShader"));
+	worldGenerator.Generate(state, renderer->GetDevice(), root);
 	worldGenerator.InitalizeGrass(renderer->GetDevice(), renderer->GetContext());
 
 	Object* cameraObject = new Object("camera", ObjectFlag::ENABLED);
@@ -200,8 +200,6 @@ void Scene::InitializeObjects()
 
 	styLeavesBase->AddFlag(ObjectFlag::NO_CULL);
 	
-	
-
 	AddObject(styTreeBase);
 	AddObject(styLeavesBase);*/
 
@@ -212,11 +210,9 @@ void Scene::InitializeObjects()
 	clock.Update();
 
 	/* * * * * * * * ** * * * * */
-
 	//Log::Add("PRINTING SCENE HIERARCHY ----");
 	//PrintSceneHierarchy(root, 0);
 	/*Log::Add("----");*/
-	
 }
 
 void Scene::Update(const float& deltaTime)

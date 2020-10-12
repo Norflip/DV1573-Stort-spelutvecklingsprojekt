@@ -26,7 +26,7 @@ public:
   
 	void InitalizeGrass(ID3D11Device* device,ID3D11DeviceContext* context);
 	void InitializeTrees(std::vector<Mesh> models, std::vector<Material> materials, ID3D11Device* device);
-	void Initialize(ID3D11Device* device);
+	void Initialize(ID3D11Device* device, Shader* shader, Shader* grassShader);
   
 	void Generate(const SaveState& levelState, ID3D11Device* device, Object* root);
 	void DrawShapes ();

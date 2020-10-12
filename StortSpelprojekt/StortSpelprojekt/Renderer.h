@@ -106,6 +106,7 @@ private:
 	ID3D11ShaderResourceView* skeleton_srv;
 	
 	cb_Scene cb_scene;
+	ID3D11Buffer* scene_buffer;
 	cb_Lights cb_light;
 	ID3D11Buffer* light_cbuffer;
 
