@@ -64,5 +64,7 @@ __declspec(align(16))
 struct cb_grass
 {
 	float pixelSize;
-	dx::XMFLOAT3 padding;
-};	
+	float grassWidth;
+	float grassRadius;
+	float grassDisplacement;
+};

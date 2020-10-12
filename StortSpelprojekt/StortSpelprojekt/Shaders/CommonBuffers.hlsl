@@ -64,5 +64,7 @@ StructuredBuffer<float4>   BCCoordinates : register(t5);
 cbuffer cb_grass : register(b3)
 {
 	float pixelSize;
-	float3 pad4;
+	float grassWidth;
+	float grassRadius;
+	float grassDisplacement;
 };

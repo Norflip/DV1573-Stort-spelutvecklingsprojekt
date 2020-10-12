@@ -70,7 +70,7 @@ DS_OUTPUT_GRASS main(HS_CONSTANT_DATA_OUTPUT_GRASS input,
 	float4 colour = grassColorMap.SampleLevel(LinearSampler, uvPlane, 0);
 
 
-	output.bladeHeight = grassHeightMap.SampleLevel(LinearSampler, uvPlane, 0).r *1.0f;
+	output.bladeHeight = grassHeightMap.SampleLevel(LinearSampler, uvPlane, 0).r * 1;// grassRadius;
 	output.height = uv.x * output.bladeHeight;
 
 	output.expandVector = normalize(pos - position1);
@@ -80,10 +80,14 @@ DS_OUTPUT_GRASS main(HS_CONSTANT_DATA_OUTPUT_GRASS input,
 
 	float noiseSample = noiseMap.SampleLevel(LinearSampler, 4 * uvPlane, 0).r;
 
-	float disp = 1.0f * pow(uv.x, 1) * (noiseSample + 0.1 * abs(sin(/*time*/ 1.0f+ noiseSample)));
+	float disp = grassDisplacement * pow(uv.x, 1.0);
+
+	float dispT = grassDisplacement * pow(uv.x, 1.0) * (noiseSample + 5 * abs(sin((time * 0.25) + noiseSample)));
+
+	dispT *= 0.1;
 
 	output.position = float4(pos.xyz, 1.0f);
-	output.displacement = float3(0, disp, 0);
+	output.displacement = float3(dispT, disp, dispT);
 	output.tex.y = uv.x;
 	output.normal = mul(float4(normal, 0), world);
 

@@ -16,8 +16,8 @@ HS_CONSTANT_DATA_OUTPUT_GRASS hsPerIsoLinePatch(InputPatch<VS_OUTPUT_GRASS,1> in
 
 
 
-	output.edgeTesselation[1] = (input[0].tessFactor * fmod(1, 64)); //2
-	output.edgeTesselation[0] = (input[0].tessFactor * fmod(1, 64)); //max times max per triangle fmod
+	output.edgeTesselation[1] = input[0].tessFactor;  //2
+	output.edgeTesselation[0] = input[0].tessFactor;  //max times max per triangle fmod
 	
 	
 
@@ -49,7 +49,7 @@ HS_CONSTANT_DATA_OUTPUT_GRASS hsPerIsoLinePatch(InputPatch<VS_OUTPUT_GRASS,1> in
 
 	if (len < 0.1)
 	{
-		output.edgeTesselation[0] = 0;
+		//output.edgeTesselation[0] = 0;
 	}
 
 	return output;
