@@ -10,6 +10,7 @@ namespace Math
 {
 	constexpr float ToRadians = 0.017453f;
 	constexpr float ToDegree = 57.295779f;
+	constexpr float PI = 3.14159265359f;
 
 	template<typename T> 
 	inline T InverseLerp(T a, T b, T t)
@@ -21,6 +22,16 @@ namespace Math
 	inline T Lerp(T a, T b, T t)
 	{
 		return a + (b - a) * t;
+	}
+
+	inline dx::XMFLOAT2 Lerp(dx::XMFLOAT2 a, dx::XMFLOAT2 b, float t)
+	{
+		return dx::XMFLOAT2(Lerp(a.x, b.x, t), Lerp(a.y, b.y, t));
+	}
+
+	inline dx::XMFLOAT3 Lerp(dx::XMFLOAT3 a, dx::XMFLOAT3 b, float t)
+	{
+		return dx::XMFLOAT3(Lerp(a.x, b.x, t), Lerp(a.y, b.y, t), Lerp(a.z, b.z, t));
 	}
 
 	template<typename T>

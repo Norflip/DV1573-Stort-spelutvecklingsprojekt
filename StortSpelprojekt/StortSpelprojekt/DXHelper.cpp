@@ -474,7 +474,7 @@ ID3D11RasterizerState* DXHelper::CreateRasterizerState(D3D11_CULL_MODE cullMode,
 
 void DXHelper::CreateInstanceBuffer(ID3D11Device* device, size_t instanceCount, size_t instanceDataSize, void* instanceData, ID3D11Buffer** instanceBuffer)
 {
-
+	assert(instanceCount != 0);
 
 	D3D11_BUFFER_DESC instanceBufferDescription;
 	ZeroMemory(&instanceBufferDescription, sizeof(D3D11_BUFFER_DESC));

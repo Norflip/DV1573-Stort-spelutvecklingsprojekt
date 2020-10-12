@@ -57,7 +57,7 @@ VS_OUTPUT main(VS_INPUT input)
 	*/
 
 	float4 tes = chunkData.SampleLevel(m_samplerState, input.uv, 0);
-	input.position.y += tes.x * terrainHeight;
+	input.position.y += tes.x * tes.y * terrainHeight;
 
 	output.worldPosition = mul(world, input.position).xyz;
 	output.position = mul(mvp, input.position);

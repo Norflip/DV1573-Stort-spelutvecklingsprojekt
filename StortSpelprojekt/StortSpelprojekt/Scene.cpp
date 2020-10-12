@@ -42,7 +42,6 @@ void Scene::Initialize(Renderer* renderer)
 	GUIFont* fpsDisplay = new GUIFont(*renderer, "test", 300, 300);
 	normalSprite->SetActive();
 
-
 	guiManager = new GUIManager(renderer);
 	renderer->SetGUIManager(guiManager);
 	guiManager->AddGUIObject(fpsDisplay, "fps");
@@ -56,7 +55,7 @@ void Scene::Initialize(Renderer* renderer)
 	state.segment = 0;
 
 	worldGenerator.Initialize(renderer->GetDevice(), resourceManager->GetShaderResource("terrainShader"), resourceManager->GetShaderResource("grassShader"));	worldGenerator.Generate(state, renderer->GetDevice());
-
+  worldGenerator.Generate(state, renderer->GetDevice(), root);
 	worldGenerator.InitalizeGrass(renderer->GetDevice(), renderer->GetContext());
 
 	Object* cameraObject = new Object("camera", ObjectFlag::ENABLED);
@@ -72,6 +71,7 @@ void Scene::Initialize(Renderer* renderer)
 	//Log::Add("PRINTING SCENE HIERARCHY ----");
 	//PrintSceneHierarchy(root, 0);
 	/*Log::Add("----");*/
+  
 }
 
 void Scene::InitializeObjects()
@@ -126,10 +126,7 @@ void Scene::InitializeObjects()
 	//0 tree 1 leaves
 	std::vector<Material> stylizedTreeMaterial = ZWEBLoader::LoadMaterials("Models/tree.ZWEB", instanceShader, renderer->GetDevice());
 
-	Shader lightSahder;
-	lightSahder.SetVertexShader(L"Shaders/Default_vs.hlsl");
-	lightSahder.SetPixelShader(L"Shaders/Default_ps.hlsl");
-	lightSahder.Compile(renderer->GetDevice());
+	Shader* lightShader = resourceManager->GetShaderResource("defaultShader");
 
 	//TEST POINT LIGHTS____________________________________________________________________________________________________________________
 	Object* testPointLight = new Object("testPointLight");								
@@ -153,16 +150,14 @@ void Scene::InitializeObjects()
 	testPointLight3->AddComponent<PointLightComponent>();								
 	testPointLight3->GetComponent<PointLightComponent>()->SetColor({ 0.f, 0.f, 1.f, 1.f });
 	//_____________________________________________________________________________________________________________________________________
-	Shader skyboxShader;
-	skyboxShader.SetPixelShader(L"Shaders/Sky_ps.hlsl");
-	skyboxShader.SetVertexShader(L"Shaders/Sky_vs.hlsl");
-	skyboxShader.Compile(renderer->GetDevice());
 	
 	stylizedTreeMaterial[0].SetSampler(sampler, 0, ShaderBindFlag::PIXEL);
 	stylizedTreeMaterial[1].SetSampler(sampler, 0, ShaderBindFlag::PIXEL);
 
 	stylizedTreeMaterial[0].SetShader(instanceShader);
 	stylizedTreeMaterial[1].SetShader(alphaInstanceShader);
+  
+	worldGenerator.InitializeTrees(stylizedTreeModel, stylizedTreeMaterial, renderer->GetDevice());
 
 	//for (size_t i = 0; i < nrOfInstances; i++)
 	//{
@@ -170,18 +165,18 @@ void Scene::InitializeObjects()
 	//	treeBranchInstances[i].instancePosition = dx::XMFLOAT3((i + 1 * r[i]) + treeModels[1].GetT().x, 0 + treeModels[1].GetT().y, (i + 1 * r[i]) + treeModels[1].GetT().z);
 	//}
 
-	size_t nrOfInstancedStyTrees =5;
-	std::vector<Mesh::InstanceData> styTreesInstanced(nrOfInstancedStyTrees);
-	std::vector<Mesh::InstanceData> styLeavesInstanced(nrOfInstancedStyTrees);
-	
-	std::vector<unsigned int> randNr;
-	for (size_t i = 0; i < nrOfInstancedStyTrees; i++)
-	{
-		randNr.push_back(rand() % 5 + 1);
-	}
+	//size_t nrOfInstancedStyTrees =5;
+	//std::vector<Mesh::InstanceData> styTreesInstanced(nrOfInstancedStyTrees);
+	//std::vector<Mesh::InstanceData> styLeavesInstanced(nrOfInstancedStyTrees);
 
+	//
+	//std::vector<unsigned int> randNr;
+	//for (size_t i = 0; i < nrOfInstancedStyTrees; i++)
+	//{
+	//	randNr.push_back(rand() % 5 + 1);
+	//}
 
-	for (size_t i = 0; i < nrOfInstancedStyTrees; i++)
+	/*for (size_t i = 0; i < nrOfInstancedStyTrees; i++)
 	{		
 		dx::XMStoreFloat4x4(&styLeavesInstanced[i].instanceWorld, dx::XMMatrixScaling(0.5f, 0.5f, 0.5f) * dx::XMMatrixTranslation((i + 6 * randNr[i]) + stylizedTreeModel[1].GetT().x, 0 + stylizedTreeModel[1].GetT().y, (i + 1 * randNr[i]) + stylizedTreeModel[1].GetT().z));
 		styLeavesInstanced[i].instancePosition = dx::XMFLOAT3((i + 1 * randNr[i]) + stylizedTreeModel[1].GetT().x, 0 + stylizedTreeModel[1].GetT().y, (i + 1 * randNr[i]) + stylizedTreeModel[1].GetT().z);
@@ -208,7 +203,7 @@ void Scene::InitializeObjects()
 	
 
 	AddObject(styTreeBase);
-	AddObject(styLeavesBase);
+	AddObject(styLeavesBase);*/
 
 	/* NEW TREE TEST INSTANCED*/
 
@@ -227,15 +222,16 @@ void Scene::InitializeObjects()
 void Scene::Update(const float& deltaTime)
 {
 	clock.Update();
-	dx::XMFLOAT3 positionA = { 0,0,2 };
-	dx::XMFLOAT3 positionB = { 0, 2,-5};
 
-	DShape::DrawBox(positionA, { 2,2,2 }, { 0, 1, 1 });
-	DShape::DrawWireBox(positionB, { 4,4,4 }, { 1,0,0 });
-	DShape::DrawSphere({ -4,0,0 }, 1.0f, { 0, 0, 1 });
-	DShape::DrawWireSphere({ -4,0,5 }, 1.0f, { 0,1,0 });
-	DShape::DrawLine(positionA, positionB, { 1,1,0 });
+	//dx::XMFLOAT3 positionA = { 0,0,2 };
+	//dx::XMFLOAT3 positionB = { 0, 2,-5};
 
+	//DShape::DrawBox(positionA, { 2,2,2 }, { 0, 1, 1 });
+	//DShape::DrawWireBox(positionB, { 4,4,4 }, { 1,0,0 });
+	//DShape::DrawSphere({ -4,0,0 }, 1.0f, { 0, 0, 1 });
+	//DShape::DrawWireSphere({ -4,0,5 }, 1.0f, { 0,1,0 });
+	//DShape::DrawLine(positionA, positionB, { 1,1,0 });
+  
 	input.UpdateInputs();
 	root->Update(deltaTime);
 
@@ -274,8 +270,8 @@ void Scene::Render()
 	skyboxClass->GetThisObject()->Draw(renderer, camera);
 
 	root->Draw(renderer, camera);
-	worldGenerator.Draw(renderer, camera);
-	
+	worldGenerator.DrawShapes();
+
 	renderer->RenderFrame();
 }
 

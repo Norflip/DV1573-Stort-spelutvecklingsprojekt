@@ -13,8 +13,5 @@ SamplerState m_samplerState : register(s0);
 
 float4 main(VS_OUTPUT input) : SV_TARGET
 {
-	float3 testSunDirection = -normalize(float3(1,-1,0));
-
-	float d = dot(input.normal, testSunDirection);
-	return float4(d, d, d, 0);
+	return float4(testTexture.Sample(m_samplerState, input.uv).rgb, 1.0f);
 }
