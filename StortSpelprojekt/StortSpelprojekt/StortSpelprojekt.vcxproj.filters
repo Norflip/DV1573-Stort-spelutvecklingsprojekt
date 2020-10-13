@@ -192,7 +192,9 @@
     <ClCompile Include="PossionDiscSampler.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="Path.cpp" />
+    <ClCompile Include="Path.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="BoundingBoxes.h">
@@ -334,7 +336,7 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="ChunkCollider.h">
-    <Filter>Header Files</Filter>
+      <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="Shapes.h">
       <Filter>Header Files</Filter>
@@ -358,6 +360,9 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="Path.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="DebugBoxShapeComponent.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>

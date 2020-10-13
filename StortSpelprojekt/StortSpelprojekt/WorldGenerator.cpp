@@ -258,13 +258,13 @@ Chunk* WorldGenerator::CreateChunk(ChunkType type, dx::XMINT2 index, const Noise
 			dx::XMFLOAT2 tilePos = dx::XMFLOAT2(chunkPosXZ.x + static_cast<float>(x), chunkPosXZ.y + static_cast<float>(y));
 
 			float distance = path.ClosestDistance(tilePos);
-			distance = min(distance, MAX_DISTANCE) / MAX_DISTANCE;
+			distance = std::min(distance, MAX_DISTANCE) / MAX_DISTANCE;
 
 			int bufferIndex = x + size * y;
 
 			float height = Noise::Sample(chunkPosXZ.x + x, chunkPosXZ.y + y, settings);
-			heightMap[x + size * y] = height * TERRAIN_SCALE;
-			heightMap2.push_back(height * TERRAIN_SCALE);
+			heightMap[x + size * y] = height;
+			heightMap2.push_back(height);
 
 			//std::cout << height << std::endl;
 
@@ -317,7 +317,7 @@ Chunk* WorldGenerator::CreateChunk(ChunkType type, dx::XMINT2 index, const Noise
 	grassComponents.push_back(grassComponent);
 
 
-	chunk->SetupCollisionObject(heightMap2.data());
+	chunk->SetupCollisionObject(heightMap);
 
 	//chunkObject->AddComponent<ChunkCollider>(chunk);
 	//RigidBodyComp* rigidBody = chunkObject->AddComponent<RigidBodyComp>(STATIC_BODY, PhysicsGroup::TERRAIN);

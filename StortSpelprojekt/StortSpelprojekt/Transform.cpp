@@ -40,11 +40,14 @@ void Transform::Rotate(float pitch, float yaw, float roll)
 	{
 		changedThisFrame = true;
 
+		dx::XMVECTOR right = TransformDirection({ 1,0,0 });
+		dx::XMVECTOR eulerRotation = dx::XMQuaternionMultiply(dx::XMQuaternionRotationAxis(right, pitch), dx::XMQuaternionRotationAxis({ 0,1,0 }, yaw));
 
-		dx::XMVECTOR eulerRotation = dx::XMQuaternionRotationRollPitchYaw(pitch, yaw, roll);
+
+		//dx::XMVECTOR eulerRotation = dx::XMQuaternionRotationRollPitchYaw(pitch, yaw, roll);
 		dx::XMVECTOR newRotation = dx::XMQuaternionMultiply(dx::XMLoadFloat4(&rotation), eulerRotation);
 
-		dx::XMStoreFloat4(&rotation, eulerRotation);
+		dx::XMStoreFloat4(&rotation, newRotation);
 
 		//rotationQuaternion.x += pitch;
 		//rotationQuaternion.y += yaw;

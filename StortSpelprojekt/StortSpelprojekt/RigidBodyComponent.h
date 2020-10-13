@@ -1,5 +1,5 @@
 #pragma once
-#include "Bulletphysics/btBulletDynamicsCommon.h"
+#include <reactphysics3d.h>
 #include <DirectXMath.h>
 #include "Transform.h"
 #include "Component.h"
@@ -16,6 +16,7 @@
 #include "DShape.h"
 
 namespace dx = DirectX;
+namespace rp = reactphysics3d;
 
 enum class ForceMode
 {
@@ -25,47 +26,52 @@ enum class ForceMode
 
 enum class FilterGroups : int;
 
+typedef rp::Quaternion Quaternion;
+typedef rp::Vector3 Vector3;
+typedef rp::Transform dTransform;
+typedef rp::RigidBody RigidBody;
+typedef double Scalar;
+typedef rp::PhysicsWorld World;
+
 #define STATIC_BODY 0
 
 class RigidBodyComp : public Component
 {
 public:
-	RigidBodyComp(float mass, FilterGroups group, FilterGroups mask);
+	RigidBodyComp(float mass, FilterGroups group, FilterGroups collidesWith);
 	virtual ~RigidBodyComp();
 
-	void m_InitializeBody();
-	btRigidBody* GetRigidBody() const { return body; }
+	void m_InitializeBody(rp::PhysicsWorld* world);
+	RigidBody* GetRigidBody() const { return body; }
 
-	void SetMass(float mass) { this->totalMass = btScalar(mass); }
+	void SetMass(float mass) { this->totalMass = Scalar(mass); }
 	float GetMass() const { return static_cast<float>(this->totalMass); }
 
-	void m_GenerateCompoundShape(btTransform& transform, btVector3& inertia, btScalar* masses);
-	virtual void UpdateWorldTransform(const btDynamicsWorld* world);	
+	virtual void UpdateWorldTransform();
 	virtual void m_OnCollision(const CollisionInfo& collision);
 	virtual void AddCollisionCallback(std::function<void(CollisionInfo)> callback);
 
-	virtual void AddForce(const dx::XMFLOAT3& force, const ForceMode& mode);
-	virtual void AddForceAtPoint(const dx::XMFLOAT3& force, const dx::XMFLOAT3& offset, const ForceMode& mode);
+	//virtual void AddForce(const dx::XMFLOAT3& force, const ForceMode& mode);
+	//virtual void AddForceAtPoint(const dx::XMFLOAT3& force, const dx::XMFLOAT3& offset, const ForceMode& mode);
 
 	bool IsDynamic() const { return totalMass != 0.0f; }
 	FilterGroups GetGroup() const { return this->group; }
-	FilterGroups GetMask() const { return this->mask; }
+	FilterGroups GetCollidesWith() const { return this->collisionMask; }
 
 	void Update(const float& deltaTime) override;
 
 private:
-	btTransform ConvertToBtTransform(const Transform& transform) const;
-	void AddShapesToCompound(Object* obj, btCompoundShape* shape);
+	dTransform ConvertToBtTransform(const Transform& transform) const;
+	void AddShapesToCompound(Object* obj, rp::RigidBody* body);
 
 	FilterGroups group;
-	FilterGroups mask;
+	FilterGroups collisionMask;
 
-	btTransform bodyTransform;
-	btCompoundShape* compShape;
-	btRigidBody* body;
+	dTransform bodyTransform;
+	RigidBody* body;
 
-	btScalar totalMass;
-	btScalar* masses;
+	Scalar totalMass;
 
+	std::vector<rp::Collider*> colliders;
 	std::vector<std::function<void(CollisionInfo)>> callbacks;
 };

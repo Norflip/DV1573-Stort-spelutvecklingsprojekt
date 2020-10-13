@@ -25,6 +25,7 @@
 #include "BoxColliderComponent.h"
 #include "SphereColliderComponent.h"
 #include "CapsuleColliderComponent.h"
+#include "DebugBoxShapeComponent.h"
 
 class GUIFont;
 class SpriteRenderPass;

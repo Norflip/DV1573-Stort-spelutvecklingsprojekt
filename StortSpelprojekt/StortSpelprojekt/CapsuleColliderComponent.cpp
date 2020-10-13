@@ -1,5 +1,5 @@
 #include "CapsuleColliderComponent.h"
-
+#include "Physics.h"
 
 CapsuleColliderComponent::CapsuleColliderComponent(float radius, float height, dx::XMFLOAT3 position)
 	: radius(radius), height(height), position(position)
@@ -8,9 +8,8 @@ CapsuleColliderComponent::CapsuleColliderComponent(float radius, float height, d
 
 void CapsuleColliderComponent::Initialize()
 {
-	shape = new btCapsuleShape(radius, height);
+	this->transform = rp::Transform(rp::Vector3(position.x, position.y, position.z), rp::Quaternion::identity());
 
-	btVector3 btPosition(position.x, position.y, position.z);
-	transform.setIdentity();
-	transform.setOrigin(btPosition);
+	rp::PhysicsCommon& common = Physics::Instance().GetCommon();
+	shape = common.createCapsuleShape(radius, height);
 }

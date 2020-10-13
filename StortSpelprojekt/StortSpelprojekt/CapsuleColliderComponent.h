@@ -15,6 +15,4 @@ public:
 private:
 	float radius, height;
 	dx::XMFLOAT3 position;
-	btCollisionShape* shape;
-	btTransform transform;
 };

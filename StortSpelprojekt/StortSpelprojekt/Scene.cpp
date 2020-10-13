@@ -282,7 +282,7 @@ void Scene::Update(const float& deltaTime)
 				Object* object = new Object("item");
 				object->GetTransform().SetPosition(position);
 				
-
+				object->AddComponent<DebugBoxShapeComponent>();
 
 				object->AddComponent<BoxColliderComponent>(dx::XMFLOAT3(0.5f, 0.5f, 0.5f), dx::XMFLOAT3(0, 0, 0), dx::XMFLOAT4(0, 0, 0, 0));
 				RigidBodyComp* rd = object->AddComponent<RigidBodyComp>(10.0f, FilterGroups::DEFAULT, FilterGroups::EVERYTHING);

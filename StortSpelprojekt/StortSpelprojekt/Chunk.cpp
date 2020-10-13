@@ -22,12 +22,12 @@ void Chunk::SetupCollisionObject(float* heightMap)
 	dx::XMFLOAT3 worldPosition;
 	dx::XMStoreFloat3(&worldPosition, GetOwner()->GetTransform().GetPosition());
 
-	btTransform transform;
-	transform.setIdentity();
+
+	rp::Transform transform;
 
 	const float offset = CHUNK_SIZE / 2.0f;
-	btVector3 btPosition (worldPosition.x + offset, worldPosition.y, worldPosition.z + offset);
-	transform.setOrigin(btPosition);
+	rp::Vector3 btPosition (worldPosition.x + offset, worldPosition.y, worldPosition.z + offset);
+	transform.setPosition(btPosition);
 
 	Chunk* chunk = GetOwner()->GetComponent<Chunk>();
 	const int gridSize = static_cast<int>(CHUNK_SIZE) + 1;
@@ -36,42 +36,58 @@ void Chunk::SetupCollisionObject(float* heightMap)
 	float min, max;
 	GetHeightFieldMinMax(heightMap, gridSize, min, max);
 
+	min = -1.0f;
+	max = 1.0f;
 
-
-	btHeightfieldTerrainShape* heightShape = new btHeightfieldTerrainShape(gridSize, gridSize, static_cast<void*>(heightMap), 1.0f, min, max, m_upAxis, PHY_FLOAT, true);
+	rp::PhysicsCommon& common = Physics::Instance().GetCommon();
+	rp::HeightFieldShape* shape = common.createHeightFieldShape(gridSize, gridSize, min, max, static_cast<void*>(heightMap), rp::HeightFieldShape::HeightDataType::HEIGHT_FLOAT_TYPE);
 	
-	heightShape->setUseDiamondSubdivision();
-	//heightShape->setFlipTriangleWinding(false);
-	heightShape->buildAccelerator();
-
-	const int group = static_cast<int>(FilterGroups::TERRAIN);
-	const int mask = static_cast<int>(FilterGroups::EVERYTHING & ~FilterGroups::TERRAIN);
-	Physics& physics = Physics::Instance();
-
-#if USE_RIGIDBODY
-
-	float mass = 0.0f;
-	btVector3 inertia(0, 0, 0);
 	
-	btDefaultMotionState* myMotionState = new btDefaultMotionState(transform);
-	btRigidBody::btRigidBodyConstructionInfo cInfo(mass, myMotionState, heightShape, inertia);
-	btRigidBody* body = new btRigidBody(cInfo);
-	body->setFriction(0.8f);
-	body->setHitFraction(0.8f);
-	body->setRestitution(0.6f);
-	body->setUserPointer(this);
-	body->setCollisionFlags(body->getCollisionFlags() | btCollisionObject::CF_STATIC_OBJECT);
-	physics.GetWorld()->addRigidBody(body, group, mask);
+	rp::PhysicsWorld* world = Physics::Instance().GetWorld();
+	rp::RigidBody* body = world->createRigidBody(transform);
+	body->setType(rp::BodyType::STATIC);
+	body->enableGravity(false);
 
-#endif
-#if !USE_RIGIDBODY
+	rp::Collider* collider = body->addCollider(shape, rp::Transform());
 
-	btCollisionObject* body = new btCollisionObject();
-	body->setCollisionShape(heightShape);
-	body->setWorldTransform(transform);
+	//collider->setCollideWithMaskBits(static_cast<int>(FilterGroups::EVERYTHING));
+	//collider->setCollisionCategoryBits(static_cast<int>(FilterGroups::TERRAIN));
 
-	physics.GetWorld()->addCollisionObject(body, group, mask);
-#endif
+//
+//	btHeightfieldTerrainShape* heightShape = new btHeightfieldTerrainShape(gridSize, gridSize, static_cast<void*>(heightMap), 1.0f, min, max, m_upAxis, PHY_FLOAT, true);
+//	
+//	heightShape->setUseDiamondSubdivision();
+//	//heightShape->setFlipTriangleWinding(false);
+//	heightShape->buildAccelerator();
+//
+//	const int group = static_cast<int>(FilterGroups::TERRAIN);
+//	const int mask = static_cast<int>(FilterGroups::EVERYTHING & ~FilterGroups::TERRAIN);
+//	Physics& physics = Physics::Instance();
+//
+//#if USE_RIGIDBODY
+//
+//	float mass = 0.0f;
+//	btVector3 inertia(0, 0, 0);
+//	
+//	btDefaultMotionState* myMotionState = new btDefaultMotionState(transform);
+//	btRigidBody::btRigidBodyConstructionInfo cInfo(mass, myMotionState, heightShape, inertia);
+//	btRigidBody* body = new btRigidBody(cInfo);
+//	body->setFriction(0.8f);
+//	body->setHitFraction(0.8f);
+//	body->setRestitution(0.6f);
+//	body->setUserPointer(this);
+//	body->setCollisionFlags(body->getCollisionFlags() | btCollisionObject::CF_STATIC_OBJECT);
+//	physics.GetWorld()->addRigidBody(body, group, mask);
+//
+//#endif
+//#if !USE_RIGIDBODY
+//
+//	btCollisionObject* body = new btCollisionObject();
+//	body->setCollisionShape(heightShape);
+//	body->setWorldTransform(transform);
+//
+//	physics.GetWorld()->addCollisionObject(body, group, mask);
+//#endif
 
 }
 
@@ -121,8 +137,8 @@ void Chunk::GetHeightFieldMinMax(float* heightMap, size_t size, float& minv, flo
 	for (size_t i = 0; i < size * size; i++)
 	{
 		float height = heightMap[i];
-		minv = min(height, minv);
-		maxv = max(height, maxv);
+		minv = std::min(height, minv);
+		maxv = std::max(height, maxv);
 	}
 
 	std::cout << "min: " << minv << ", max: " << maxv << std::endl;

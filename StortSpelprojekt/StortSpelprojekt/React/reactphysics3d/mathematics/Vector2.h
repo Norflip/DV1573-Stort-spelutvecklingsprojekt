@@ -23,8 +23,14 @@
 *                                                                               *
 ********************************************************************************/
 
+#ifndef NOMINMAX
+#define NOMINMAX
+#endif
+
 #ifndef REACTPHYSICS3D_VECTOR2_H
 #define REACTPHYSICS3D_VECTOR2_H
+
+
 
 // Libraries
 #include <cassert>

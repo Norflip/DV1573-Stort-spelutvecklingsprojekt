@@ -1,4 +1,5 @@
 #include "BoxColliderComponent.h"
+#include "Physics.h"
 
 BoxColliderComponent::BoxColliderComponent(dx::XMFLOAT3 extends, dx::XMFLOAT3 position, dx::XMFLOAT4 quaterionRotation)
     : extends(extends), position(position), rotation(quaterionRotation)
@@ -8,13 +9,10 @@ BoxColliderComponent::BoxColliderComponent(dx::XMFLOAT3 extends, dx::XMFLOAT3 po
 
 void BoxColliderComponent::Initialize()
 {
-    shape = new btBoxShape(btVector3(extends.x, extends.y, extends.z));
+    this->transform = rp::Transform(rp::Vector3(position.x, position.y, position.z), rp::Quaternion::identity());
 
-   // btQuaternion btRotation (rotation.x, rotation.y, rotation.z, rotation.w);
-    btVector3 btPosition (position.x, position.y, position.z);
-   // transform = btTransform(btRotation, btPosition);
-    transform.setIdentity();
-    transform.setOrigin(btPosition);
 
+    rp::PhysicsCommon& common = Physics::Instance().GetCommon();
+    shape = common.createBoxShape(rp::Vector3(extends.x, extends.y, extends.z));
 
 }

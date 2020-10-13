@@ -23,6 +23,8 @@
 *                                                                               *
 ********************************************************************************/
 
+#pragma warning(disable : 4996) //_CRT_SECURE_NO_WARNINGS
+
 #ifndef REACTPHYSICS3D_DEFAULT_LOGGER_H
 #define REACTPHYSICS3D_DEFAULT_LOGGER_H
 

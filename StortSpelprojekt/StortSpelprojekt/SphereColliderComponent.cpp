@@ -1,4 +1,5 @@
 #include "SphereColliderComponent.h"
+#include "Physics.h"
 
 SphereColliderComponent::SphereColliderComponent(float radius, dx::XMFLOAT3 position)
 	:radius(radius), position(position)
@@ -7,9 +8,8 @@ SphereColliderComponent::SphereColliderComponent(float radius, dx::XMFLOAT3 posi
 
 void SphereColliderComponent::Initialize()
 {
-	shape = new btSphereShape(radius);
+	this->transform = rp::Transform(rp::Vector3(position.x, position.y, position.z), rp::Quaternion::identity());
 
-	btVector3 btPosition(position.x, position.y, position.z);
-	transform.setIdentity();
-	transform.setOrigin(btPosition);
+	rp::PhysicsCommon& common = Physics::Instance().GetCommon();
+	shape = common.createSphereShape(radius);
 }
