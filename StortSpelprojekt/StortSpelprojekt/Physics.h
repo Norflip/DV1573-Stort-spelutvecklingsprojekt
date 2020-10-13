@@ -13,14 +13,16 @@
 
 enum class FilterGroups : int
 {
-	EVERYTHING = -1,
+	//EVERYTHING = -1,
 	NOTHING = 0,
 	
 	DEFAULT = 1 << 0,
 	TERRAIN = 1 << 1,
 
 	TEST_0 = 1 << 2,
-	TEST_1 = 1 << 3
+	TEST_1 = 1 << 3,
+
+	EVERYTHING = DEFAULT | TERRAIN | TEST_0 | TEST_1
 };
 
 DEFINE_ENUM_FLAG_OPERATORS(FilterGroups)
@@ -52,7 +54,7 @@ public:
 	void MutexUnlock();
 
 	void RegisterRigidBody(RigidBodyComp* rigidBodyComp);
-	void RegisterRigidBody(int id, btTransform& transform, btRigidBody* body, int group, int mask);
+	void RegisterRigidBody(int id, btRigidBody* body, int group, int mask);
 
 	void UnregisterRigidBody(Object* object);
 	void UnregisterRigidBody(RigidBodyComp* rigidBodyComp);

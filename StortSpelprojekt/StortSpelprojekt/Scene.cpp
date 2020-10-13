@@ -285,7 +285,7 @@ void Scene::Update(const float& deltaTime)
 
 
 				object->AddComponent<BoxColliderComponent>(dx::XMFLOAT3(0.5f, 0.5f, 0.5f), dx::XMFLOAT3(0, 0, 0), dx::XMFLOAT4(0, 0, 0, 0));
-				RigidBodyComp* rd = object->AddComponent<RigidBodyComp>(1.0f, FilterGroups::DEFAULT, FilterGroups::EVERYTHING);
+				RigidBodyComp* rd = object->AddComponent<RigidBodyComp>(10.0f, FilterGroups::DEFAULT, FilterGroups::EVERYTHING);
 		
 				phy.RegisterRigidBody(rd);
 
@@ -310,7 +310,7 @@ void Scene::Update(const float& deltaTime)
 
 		DShape::DrawLine(ray.origin, ray.GetPoint(1000.0f), { 1,1,0 });
 
-		if (phy.RaytestSingle(ray, 1000.0f, hit, FilterGroups::EVERYTHING))
+		if (phy.RaytestSingle(ray, 1000.0f, hit, FilterGroups::DEFAULT))
 		{
 			DShape::DrawLine(ray.origin, hit.position, { 1,1,0 });
 			DShape::DrawSphere(hit.position, 1.0f, { 0, 0, 1 });
@@ -323,11 +323,8 @@ void Scene::Update(const float& deltaTime)
 	}
 	else
 	{
-		DShape::DrawSphere(ray.GetPoint(10.0f), 0.2f, { 1, 0, 0 });
-
+		DShape::DrawSphere(ray.GetPoint(10.0f), 0.2f, { 1, 0, 1 });
 	}
-
-
 }
 
 void Scene::FixedUpdate(const float& fixedDeltaTime)

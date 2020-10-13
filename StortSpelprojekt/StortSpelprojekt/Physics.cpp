@@ -37,8 +37,8 @@ void Physics::SetGravity(float x, float y, float z)
 void Physics::CreateDynamicWorld()
 {
 	btDefaultCollisionConstructionInfo cci;
-	//cci.m_defaultMaxPersistentManifoldPoolSize = 80000;
-	//cci.m_defaultMaxCollisionAlgorithmPoolSize = 80000;
+	cci.m_defaultMaxPersistentManifoldPoolSize = 80000;
+	cci.m_defaultMaxCollisionAlgorithmPoolSize = 80000;
 	
 
 	collisionConfiguration = new btDefaultCollisionConfiguration(cci);
@@ -49,12 +49,11 @@ void Physics::CreateDynamicWorld()
 	//overlappingPairCache = new btAxisSweep3(btVector3(-1000, -1000, -1000), btVector3(1000, 1000, 1000));
 	overlappingPairCache = new btDbvtBroadphase();
 
-	//new btAxisSweep3();
 
 	solver = new btSequentialImpulseConstraintSolver();
 	world = new btDiscreteDynamicsWorld(dispatcher, overlappingPairCache, solver, collisionConfiguration);
-	//world->getSolverInfo().m_solverMode = btSolverMode::SOLVER_SIMD || btSolverMode::SOLVER_USE_WARMSTARTING;
-	//world->getSolverInfo().m_numIterations = 1;
+	world->getSolverInfo().m_solverMode = btSolverMode::SOLVER_SIMD || btSolverMode::SOLVER_USE_WARMSTARTING;
+	world->getSolverInfo().m_numIterations = 1;
 
 }
 
@@ -76,21 +75,13 @@ void Physics::RegisterRigidBody(RigidBodyComp* rigidBodyComp)
 	int mask = static_cast<int>(rigidBodyComp->GetMask());
 	rigidBodyComp->m_InitializeBody();
 
-	RegisterRigidBody(rigidBodyComp->GetOwner()->GetID(), rigidBodyComp->GetBodyTransform(), rigidBodyComp->GetRigidBody(), group, mask);
+	RegisterRigidBody(rigidBodyComp->GetOwner()->GetID(),  rigidBodyComp->GetRigidBody(), group, mask);
 }
 
-void Physics::RegisterRigidBody(int id, btTransform& transform, btRigidBody* body, int group, int mask)
+void Physics::RegisterRigidBody(int id, btRigidBody* body, int group, int mask)
 {
 	//body->setCcdMotionThreshold(1e-7);
 	//body->setCcdSweptSphereRadius(1.0f * 0.2);
-	
-	btVector3 min, max;
-	body->getCollisionShape()->getAabb(transform, min, max);
-
-	btVector3 extends = max - min;
-
-	body->setCcdSweptSphereRadius(extends.m_floats[extends.minAxis()] * 0.5f);
-	body->setCcdMotionThreshold(0.0001f);
 
 	world->addRigidBody(body, group, mask);
 	bodyMap.insert({ id, body });
@@ -112,12 +103,14 @@ void Physics::FixedUpdate(const float& fixedDeltaTime)
 {
 	MutexLock();
 
+	// neccesary? 
 	world->updateAabbs();
 	world->computeOverlappingPairs();
 
-	// neccesary? 
-	world->stepSimulation(fixedDeltaTime);
-	
+	float internalTimeStep = 1. / 240.f;
+	world->stepSimulation(fixedDeltaTime, 4, internalTimeStep);
+
+	//world->stepSimulation(fixedDeltaTime);
 	
 	CheckForCollisions();
 	MutexUnlock();
@@ -171,8 +164,50 @@ void Physics::CheckForCollisions()
 	{
 		btPersistentManifold* contactManifold = world->getDispatcher()->getManifoldByIndexInternal(i);
 
-		const btCollisionObject* objA = contactManifold->getBody0();
-		const btCollisionObject* objB = contactManifold->getBody1();
+		const btCollisionObject* colObj0 = contactManifold->getBody0();
+		const btCollisionObject* colObj1 = contactManifold->getBody1();
+
+		int numContacts = contactManifold->getNumContacts();
+		for (int j = 0; j < numContacts; j++)
+		{
+			btManifoldPoint& pt = contactManifold->getContactPoint(j);
+
+			//// one-sided triangles
+			//if (colObj0->getCollisionShape()->getShapeType() == TRIANGLE_SHAPE_PROXYTYPE)
+			//{
+			//	auto triShape = static_cast<const btTriangleShape*>(colObj0->getCollisionShape());
+			//	const btVector3* v = triShape->m_vertices1;
+			//	btVector3 faceNormalLs = btCross(v[1] - v[0], v[2] - v[0]);
+			//	faceNormalLs.normalize();
+			//	btVector3 faceNormalWs = colObj0->getWorldTransform().getBasis() * faceNormalLs;
+			//	float nDotF = btDot(faceNormalWs, pt.m_normalWorldOnB);
+
+			//	if (nDotF <= 0.0f)
+			//	{
+			//		// flip the contact normal to be aligned with the face normal
+			//		pt.m_normalWorldOnB += -2.0f * nDotF * faceNormalWs;
+			//	}
+			//}
+
+
+			if (colObj0->getCollisionShape()->getShapeType() == TRIANGLE_SHAPE_PROXYTYPE)
+			{
+				btVector3 tempNorm;
+				((btTriangleShape*)colObj0->getCollisionShape())->calcNormal(tempNorm);
+				float dot = tempNorm.dot(pt.m_normalWorldOnB);
+				pt.m_normalWorldOnB = dot > 0.0f ? tempNorm : -tempNorm;
+			}
+			else if (colObj1->getCollisionShape()->getShapeType() == TRIANGLE_SHAPE_PROXYTYPE)
+			{
+				btVector3 tempNorm;
+				((btTriangleShape*)colObj1->getCollisionShape())->calcNormal(tempNorm);
+				float dot = tempNorm.dot(pt.m_normalWorldOnB);
+				pt.m_normalWorldOnB = dot > 0.0f ? tempNorm : -tempNorm;
+			}
+		}
+
+
+
 
 		/*CollisionInfo tmp;
 		RigidBodyComp* rbA = static_cast<RigidBodyComp*>(objA->getUserPointer());
@@ -191,18 +226,7 @@ void Physics::CheckForCollisions()
 		}
 */
 
-		/*int numContacts = contactManifold->getNumContacts();
-		for (int j = 0; j < numContacts; j++)
-		{
-			btManifoldPoint& pt = contactManifold->getContactPoint(j);
-			
-			const btVector3& ptA = pt.getPositionWorldOnA();
-			const btVector3& ptB = pt.getPositionWorldOnB();
-			const btVector3& normalOnB = pt.m_normalWorldOnB;
-			collisions.push_back(ptA);
-			collisions.push_back(ptB);
-			collisions.push_back(normalOnB);
-		}*/
+		
 	}
 }
 

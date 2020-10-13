@@ -35,7 +35,6 @@ public:
 
 	void m_InitializeBody();
 	btRigidBody* GetRigidBody() const { return body; }
-	btTransform& GetBodyTransform() { return this->bodyTransform; }
 
 	void SetMass(float mass) { this->totalMass = btScalar(mass); }
 	float GetMass() const { return static_cast<float>(this->totalMass); }
@@ -56,8 +55,6 @@ public:
 
 private:
 	btTransform ConvertToBtTransform(const Transform& transform) const;
-	dx::XMVECTOR ConvertToPosition(const btVector3& position) const;
-	dx::XMVECTOR ConvertToRotation(const btQuaternion& rotation) const;
 	void AddShapesToCompound(Object* obj, btCompoundShape* shape);
 
 	FilterGroups group;

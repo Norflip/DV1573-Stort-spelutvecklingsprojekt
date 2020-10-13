@@ -41,6 +41,10 @@ public:
 	static dx::XMVECTOR IndexToWorld(const dx::XMINT2& index, float y);
 	static dx::XMFLOAT2 IndexToXZ(const dx::XMINT2& index);
 
+
+private:
+	void GetHeightFieldMinMax(float* heightMap, size_t size, float& min, float& max);
+
 private:
 	dx::XMINT2 index;
 	ChunkType type;

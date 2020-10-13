@@ -1,6 +1,6 @@
 #pragma once
 #include <vector>
-#include <DirectXMath.h>
+#include <SimpleMath.h>
 namespace dx = DirectX;
 
 class Object;
@@ -48,7 +48,7 @@ public:
 	dx::XMVECTOR GetScale() const { return dx::XMLoadFloat3(&this->scale); }
 	void SetScale(dx::XMVECTOR scale);
 
-	dx::XMVECTOR GetRotation() const { return dx::XMLoadFloat3(&this->rotation); }
+	dx::XMVECTOR GetRotation() const { return dx::XMLoadFloat4(&this->rotation); }
 	void SetRotation(dx::XMVECTOR rotation);
 	
 
@@ -61,6 +61,6 @@ private:
 	Object* owner;
 
 	dx::XMFLOAT3 position;
-	dx::XMFLOAT3 rotation;
+	dx::XMFLOAT4 rotation;
 	dx::XMFLOAT3 scale;
 };

@@ -17,6 +17,7 @@ public:
 	virtual btTransform GetTransform() const { return this->transform; }
 
 protected:
+	
 	btTransform transform;
 	btCollisionShape* shape;
 };

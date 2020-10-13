@@ -71,8 +71,8 @@
   <PropertyGroup Label="UserMacros" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <LinkIncremental>true</LinkIncremental>
-    <IncludePath>$(SolutionDir)\StortSpelprojekt\Bulletphysics;$(IncludePath)</IncludePath>
-    <LibraryPath>$(SolutionDir)\StortSpelprojekt\Bulletphysics\LinearMath;$(SolutionDir)\StortSpelprojekt\Bulletphysics\Bullet3Collision;$(SolutionDir)\StortSpelprojekt\Bulletphysics\Bullet3Dynamics;$(LibraryPath)</LibraryPath>
+    <IncludePath>D:\Programming\Repos\StortSpelprojekt\StortSpelprojekt\StortSpelprojekt\React;$(SolutionDir)\StortSpelprojekt\Bulletphysics;$(IncludePath)</IncludePath>
+    <LibraryPath>$(SolutionDir)\StortSpelprojekt\React\libs\Debug;$(SolutionDir)\StortSpelprojekt\Bulletphysics\LinearMath;$(SolutionDir)\StortSpelprojekt\Bulletphysics\Bullet3Collision;$(SolutionDir)\StortSpelprojekt\Bulletphysics\Bullet3Dynamics;$(LibraryPath)</LibraryPath>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
     <LinkIncremental>true</LinkIncremental>
@@ -82,7 +82,7 @@
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
     <LinkIncremental>false</LinkIncremental>
     <IncludePath>$(SolutionDir)\StortSpelprojekt\Bulletphysics;$(IncludePath)</IncludePath>
-    <LibraryPath>$(SolutionDir)\StortSpelprojekt\Bulletphysics\LinearMath;$(SolutionDir)\StortSpelprojekt\Bulletphysics\Bullet3Collision;$(SolutionDir)\StortSpelprojekt\Bulletphysics\Bullet3Dynamics;$(LibraryPath)</LibraryPath>
+    <LibraryPath>$(SolutionDir)\StortSpelprojekt\React\libs\Release;$(SolutionDir)\StortSpelprojekt\Bulletphysics\LinearMath;$(SolutionDir)\StortSpelprojekt\Bulletphysics\Bullet3Collision;$(SolutionDir)\StortSpelprojekt\Bulletphysics\Bullet3Dynamics;$(LibraryPath)</LibraryPath>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
     <LinkIncremental>false</LinkIncremental>
@@ -95,14 +95,14 @@
       <SDLCheck>true</SDLCheck>
       <PreprocessorDefinitions>BT_THREADSAFE=1;BT_USE_DOUBLE_PRECISION;_DEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
-      <AdditionalIncludeDirectories>../ZWEB/ZWEBBuild/include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(SolutionDir)\StortSpelprojekt\React\reactphysics3d;../ZWEB/ZWEBBuild/include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <RuntimeLibrary>MultiThreadedDebug</RuntimeLibrary>
     </ClCompile>
     <Link>
       <SubSystem>Windows</SubSystem>
       <GenerateDebugInformation>true</GenerateDebugInformation>
       <AdditionalLibraryDirectories>..\ZWEB\ZWEBBuild\bin\win64;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
-      <AdditionalDependencies>ZWEBImporter.lib;BulletCollision_vs2010_debug.lib;LinearMath_vs2010_debug.lib;BulletDynamics_vs2010_debug.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>ZWEBImporter.lib;reactphysics3d.lib;BulletCollision_vs2010_debug.lib;LinearMath_vs2010_debug.lib;BulletDynamics_vs2010_debug.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
@@ -128,7 +128,7 @@
       <SDLCheck>true</SDLCheck>
       <PreprocessorDefinitions>BT_THREADSAFE=1;BT_USE_DOUBLE_PRECISION;NDEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
-      <AdditionalIncludeDirectories>../ZWEB/ZWEBBuild/include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(SolutionDir)\StortSpelprojekt\React\reactphysics3d;../ZWEB/ZWEBBuild/include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <RuntimeLibrary>MultiThreaded</RuntimeLibrary>
     </ClCompile>
     <Link>
@@ -137,7 +137,7 @@
       <OptimizeReferences>true</OptimizeReferences>
       <GenerateDebugInformation>true</GenerateDebugInformation>
       <AdditionalLibraryDirectories>$(SolutionDir)\StortSpelprojekt\Bulletphysics\Bullet3Collision;$(SolutionDir)\StortSpelprojekt\Bulletphysics\LinearMath;$(SolutionDir)\StortSpelprojekt\Bulletphysics\Bullet3Dynamics;..\ZWEB\ZWEBBuild\bin\release;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
-      <AdditionalDependencies>ZWEBImporter.lib;BulletDynamics.lib;BulletCollision.lib;LinearMath.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>ZWEBImporter.lib;reactphysics3d.lib;BulletDynamics.lib;BulletCollision.lib;LinearMath.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">

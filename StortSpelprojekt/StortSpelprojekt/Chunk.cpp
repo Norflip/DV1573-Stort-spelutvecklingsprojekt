@@ -1,5 +1,6 @@
 #include "Chunk.h"
 #include <iostream>
+#define USE_RIGIDBODY 1
 
 Chunk::Chunk(dx::XMINT2 index, ChunkType type) : index(index), type(type), heightMap(nullptr)
 {
@@ -32,31 +33,46 @@ void Chunk::SetupCollisionObject(float* heightMap)
 	const int gridSize = static_cast<int>(CHUNK_SIZE) + 1;
 	const int m_upAxis = 1;
 
-	float* gridData = chunk->GetHeightMap();
+	float min, max;
+	GetHeightFieldMinMax(heightMap, gridSize, min, max);
 
-	btHeightfieldTerrainShape* heightShape = new btHeightfieldTerrainShape(gridSize, gridSize, static_cast<void*>(gridData), 1, -TERRAIN_SCALE, TERRAIN_SCALE, m_upAxis, PHY_FLOAT, true);
+
+
+	btHeightfieldTerrainShape* heightShape = new btHeightfieldTerrainShape(gridSize, gridSize, static_cast<void*>(heightMap), 1.0f, min, max, m_upAxis, PHY_FLOAT, true);
+	
 	heightShape->setUseDiamondSubdivision();
-	heightShape->setFlipTriangleWinding(false);
+	//heightShape->setFlipTriangleWinding(false);
+	heightShape->buildAccelerator();
+
+	const int group = static_cast<int>(FilterGroups::TERRAIN);
+	const int mask = static_cast<int>(FilterGroups::EVERYTHING & ~FilterGroups::TERRAIN);
+	Physics& physics = Physics::Instance();
+
+#if USE_RIGIDBODY
 
 	float mass = 0.0f;
 	btVector3 inertia(0, 0, 0);
 	
-//	btDefaultMotionState* myMotionState = new btDefaultMotionState(transform);
-//	btRigidBody::btRigidBodyConstructionInfo cInfo(mass, myMotionState, heightShape, inertia);
-//	btRigidBody* body = new btRigidBody(cInfo);
-//	body->setUserPointer(this);
-////	body->setFriction(1);
-////	body->setRestitution(0);
-//	
-//	Physics& physics = Physics::Instance();
-//	physics.GetWorld()->addRigidBody(body, static_cast<int>(FilterGroups::TERRAIN), static_cast<int>(FilterGroups::EVERYTHING));
+	btDefaultMotionState* myMotionState = new btDefaultMotionState(transform);
+	btRigidBody::btRigidBodyConstructionInfo cInfo(mass, myMotionState, heightShape, inertia);
+	btRigidBody* body = new btRigidBody(cInfo);
+	body->setFriction(0.8f);
+	body->setHitFraction(0.8f);
+	body->setRestitution(0.6f);
+	body->setUserPointer(this);
+	body->setCollisionFlags(body->getCollisionFlags() | btCollisionObject::CF_STATIC_OBJECT);
+	physics.GetWorld()->addRigidBody(body, group, mask);
+
+#endif
+#if !USE_RIGIDBODY
 
 	btCollisionObject* body = new btCollisionObject();
 	body->setCollisionShape(heightShape);
 	body->setWorldTransform(transform);
 
+	physics.GetWorld()->addCollisionObject(body, group, mask);
+#endif
 
-	Physics::Instance().GetWorld()->addCollisionObject(body, static_cast<int>(FilterGroups::TERRAIN), static_cast<int>(FilterGroups::EVERYTHING));
 }
 
 float Chunk::SampleHeight(float x, float z)
@@ -95,6 +111,22 @@ dx::XMFLOAT2 Chunk::IndexToXZ(const dx::XMINT2& index)
 	float y = (float)index.y * (float)CHUNK_SIZE;// -CHUNK_SIZE;
 
 	return dx::XMFLOAT2(x, y);
+}
+
+void Chunk::GetHeightFieldMinMax(float* heightMap, size_t size, float& minv, float& maxv)
+{
+	minv = FLT_MAX;
+	maxv = FLT_MIN;
+
+	for (size_t i = 0; i < size * size; i++)
+	{
+		float height = heightMap[i];
+		minv = min(height, minv);
+		maxv = max(height, maxv);
+	}
+
+	std::cout << "min: " << minv << ", max: " << maxv << std::endl;
+
 }
 
 

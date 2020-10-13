@@ -19,11 +19,10 @@ dx::XMMATRIX CameraComponent::GetViewMatrix() const
 {
 	Transform& transform = GetOwner()->GetTransform();
 
-	return dx::XMMatrixLookToLH(
-		transform.GetPosition(),
-		transform.TransformDirection({ 0,0,1 }),
-		transform.TransformDirection({ 0,1,0 })
-	);
+	dx::XMVECTOR forward = transform.TransformDirection({ 0,0,1 });
+	dx::XMVECTOR up = transform.TransformDirection({ 0,1,0 });
+
+	return dx::XMMatrixLookToLH(transform.GetPosition(), forward, up);
 }
 
 dx::XMMATRIX CameraComponent::GetProjectionMatrix() const

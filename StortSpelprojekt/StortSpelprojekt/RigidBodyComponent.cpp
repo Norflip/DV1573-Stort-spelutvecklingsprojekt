@@ -24,28 +24,14 @@ btTransform RigidBodyComp::ConvertToBtTransform(const Transform& transform) cons
 	btTransform temp;
 	temp.setIdentity();
 
-	dx::XMFLOAT3 tempFloat;
-	dx::XMStoreFloat3(&tempFloat, transform.GetPosition());
-	temp.setOrigin(btVector3(tempFloat.x, tempFloat.y, tempFloat.z));
+	dx::XMFLOAT3 tmpPosition;
+	dx::XMStoreFloat3(&tmpPosition, transform.GetPosition());
+	temp.setOrigin(btVector3(tmpPosition.x, tmpPosition.y, tmpPosition.z));
 
-	dx::XMStoreFloat3(&tempFloat, transform.GetRotation());
-	temp.setRotation(btQuaternion(tempFloat.x, tempFloat.y, tempFloat.z));
+	dx::XMFLOAT4 tmpRotation;
+	dx::XMStoreFloat4(&tmpRotation, transform.GetRotation());
+	temp.setRotation(btQuaternion(tmpRotation.x, tmpRotation.y, tmpRotation.z, tmpRotation.w));
 	return temp;
-}
-
-dx::XMVECTOR RigidBodyComp::ConvertToPosition(const btVector3& position) const
-{
-	return { static_cast <float>(position.getX()), static_cast <float>(position.getY()), static_cast <float>(position.getZ()) };
-}
-
-dx::XMVECTOR RigidBodyComp::ConvertToRotation(const btQuaternion& rotation) const
-{
-	float x = static_cast <float>(rotation.getX());
-	float y = static_cast <float>(rotation.getY());
-	float z = static_cast <float>(rotation.getZ());
-	float w = static_cast <float>(rotation.getW());
-
-	return { x,y,z,w };
 }
 
 void RigidBodyComp::AddShapesToCompound(Object* obj, btCompoundShape* shape)
@@ -98,25 +84,35 @@ void RigidBodyComp::m_InitializeBody()
 	body = new btRigidBody(cInfo);
 	body->setUserPointer(this);
 	body->setFriction(1);
-	body->setRestitution(0);
+	//body->setRestitution(0);
 
+	btVector3 min, max;
+	body->getCollisionShape()->getAabb(bodyTransform, min, max);
 
+	btVector3 extends = max - min;
+	body->setCcdSweptSphereRadius(extends.m_floats[extends.minAxis()] * 0.5f);
+	body->setCcdMotionThreshold(0.0001f);
+
+	//body->getCollisionShape().
 }
 
 void RigidBodyComp::UpdateWorldTransform(const btDynamicsWorld* world)
 {
-
-	// loopa collision shiet
-
-	//rbTransform.setIdentity();
+	bodyTransform.setIdentity();
 	body->getMotionState()->getWorldTransform(bodyTransform);
-
 	Transform& transform = GetOwner()->GetTransform();
-	transform.SetPosition(ConvertToPosition(bodyTransform.getOrigin()));
-	transform.SetRotation(ConvertToRotation(bodyTransform.getRotation()));
 
-	//std::cout << std::to_string(rbTransform.getOrigin().getX()) << ", " << std::to_string(rbTransform.getOrigin().getY()) << ", " << std::to_string(rbTransform.getOrigin().getZ()) << std::endl;
+	btVector3 btPos = bodyTransform.getOrigin();
+	dx::XMVECTOR position = dx::XMVectorSet(static_cast <float>(btPos.getX()), static_cast <float>(btPos.getY()), static_cast <float>(btPos.getZ()), 0.0f);
+	transform.SetPosition(position);
 
+	btQuaternion btRotation = bodyTransform.getRotation();
+	float x = static_cast <float>(btRotation.getX());
+	float y = static_cast <float>(btRotation.getY());
+	float z = static_cast <float>(btRotation.getZ());
+	float w = static_cast <float>(btRotation.getW());
+
+	transform.SetRotation(dx::XMVectorSet(x, y, z, w));
 }
 
 void RigidBodyComp::m_GenerateCompoundShape(btTransform& transform, btVector3& inertia, btScalar* masses)

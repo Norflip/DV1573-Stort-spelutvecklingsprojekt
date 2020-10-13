@@ -1,7 +1,7 @@
 #include "Transform.h"
 #include "Object.h"
 
-Transform::Transform(Object* owner) : Transform(owner,dx::XMVectorZero(), dx::XMVectorZero(), dx::XMVectorSplatOne())
+Transform::Transform(Object* owner) : Transform(owner,dx::XMVectorZero(), dx::XMQuaternionIdentity(), dx::XMVectorSplatOne())
 {
 	changedThisFrame = true;
 }
@@ -9,7 +9,7 @@ Transform::Transform(Object* owner) : Transform(owner,dx::XMVectorZero(), dx::XM
 Transform::Transform(Object* owner, dx::XMVECTOR position, dx::XMVECTOR rotation, dx::XMVECTOR scale) : owner(owner), parent(nullptr)
 {
 	dx::XMStoreFloat3(&this->position, position);
-	dx::XMStoreFloat3(&this->rotation, rotation);
+	dx::XMStoreFloat4(&this->rotation, rotation);
 	dx::XMStoreFloat3(&this->scale, scale);
 	changedThisFrame = true;
 }
@@ -40,9 +40,15 @@ void Transform::Rotate(float pitch, float yaw, float roll)
 	{
 		changedThisFrame = true;
 
-		rotation.x += pitch;
-		rotation.y += yaw;
-		rotation.z += roll;
+
+		dx::XMVECTOR eulerRotation = dx::XMQuaternionRotationRollPitchYaw(pitch, yaw, roll);
+		dx::XMVECTOR newRotation = dx::XMQuaternionMultiply(dx::XMLoadFloat4(&rotation), eulerRotation);
+
+		dx::XMStoreFloat4(&rotation, eulerRotation);
+
+		//rotationQuaternion.x += pitch;
+		//rotationQuaternion.y += yaw;
+		//rotationQuaternion.z += roll;
 	}
 }
 
@@ -112,7 +118,7 @@ void Transform::SetScale(dx::XMVECTOR scale)
 void Transform::SetRotation(dx::XMVECTOR rotation)
 {
 	ASSERT_STATIC_OBJECT;
-	dx::XMStoreFloat3(&this->rotation, rotation); 
+	dx::XMStoreFloat4(&this->rotation, rotation); 
 	changedThisFrame = true;
 }
 
@@ -128,7 +134,7 @@ dx::XMMATRIX Transform::GetWorldMatrix() const
 dx::XMMATRIX Transform::GetLocalWorldMatrix() const
 {
 	return dx::XMMatrixScalingFromVector(dx::XMLoadFloat3(&this->scale)) *
-		dx::XMMatrixRotationRollPitchYawFromVector(dx::XMLoadFloat3(&this->rotation)) *
+		dx::XMMatrixRotationQuaternion(dx::XMLoadFloat4(&this->rotation)) *
 		dx::XMMatrixTranslationFromVector(dx::XMLoadFloat3(&this->position));
 }
 
@@ -136,6 +142,7 @@ dx::XMMATRIX Transform::GetLocalWorldMatrix() const
 
 DirectX::XMVECTOR Transform::TransformDirection(DirectX::XMVECTOR direction) const
 {
-	dx::XMMATRIX rot = dx::XMMatrixRotationRollPitchYawFromVector(dx::XMLoadFloat3(&this->rotation));		// rotation matrix
-	return dx::XMVector3Normalize(DirectX::XMVector3TransformNormal(direction, rot));	// rotates the direction with the matrix
+
+	//dx::XMMATRIX rot = dx::XMMatrixRotationQuaternion();		// rotation matrix
+	return DirectX::XMVector3Rotate(dx::XMVector3Normalize(direction), dx::XMLoadFloat4(&this->rotation));	// rotates the direction with the matrix
 }
