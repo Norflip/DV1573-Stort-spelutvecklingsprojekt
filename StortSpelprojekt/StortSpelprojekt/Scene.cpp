@@ -162,7 +162,7 @@ void Scene::InitializeObjects()
 	stylizedTreeMaterial[1].SetShader(alphaInstanceShader);
   
 	worldGenerator.InitializeTrees(stylizedTreeModel, stylizedTreeMaterial, renderer->GetDevice());
-
+	//
 	Shader* skeletonShader = resourceManager->GetShaderResource("skeletonShader");
 
 	std::vector<Mesh> skeletonMesh = ZWEBLoader::LoadMeshes(ZWEBLoadType::SkeletonAnimation, "Models/baseMonster.ZWEB", renderer->GetDevice());
