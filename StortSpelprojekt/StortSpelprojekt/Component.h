@@ -22,7 +22,7 @@ inline size_t GetComponentTypeID() noexcept
 class Component
 {
 public:
-	Component() : owner(nullptr) {}
+	Component() : owner(nullptr), enable(true) {}
 	virtual ~Component() {};
 
 	virtual void Initialize() {};
@@ -32,7 +32,10 @@ public:
 
 	void SetOwner(Object* owner) { this->owner = owner; }
 	Object* GetOwner() const { return this->owner; }
+	bool IsEnabled() const {return enable;}
+	void SetEnabled(bool enable) { this->enable = enable; }
 
 private:
 	Object* owner;
+	bool enable;
 };

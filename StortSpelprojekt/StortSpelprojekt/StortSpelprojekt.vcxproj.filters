@@ -138,6 +138,21 @@
     <ClCompile Include="DShape.cpp">
       <Filter>Header Files</Filter>
     </ClCompile>
+    <ClCompile Include="AIIdle.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="AIMove.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="StateMachineComponent.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="StatsComponent.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="AIAttack.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="BoundingBoxes.h">
@@ -261,6 +276,21 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="DShape.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="StatsComponent.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="StateMachineComponent.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="AIMove.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="AIIdle.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="AIAttack.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>

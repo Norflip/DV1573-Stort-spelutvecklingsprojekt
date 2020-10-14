@@ -74,11 +74,11 @@ void Scene::Initialize(Renderer* renderer)
 	testMesh->GetTransform().SetPosition(dx::XMLoadFloat3(&miniTranslation));
 	
 	testMesh2->GetTransform().SetPosition(dx::XMLoadFloat3(&miniTranslation2));
-	AddObject(testMesh2, testMesh);
+	//AddObject(testMesh2, testMesh);
 
 
 	testMesh3->GetTransform().SetPosition(dx::XMLoadFloat3(&miniTranslation3));
-	AddObject(testMesh3, testMesh2);
+	//AddObject(testMesh3, testMesh2);
 
 	testMesh2->AddComponent<MoveComponent>();
 
@@ -202,6 +202,18 @@ void Scene::Initialize(Renderer* renderer)
 	testMesh4->GetTransform().SetPosition(dx::XMLoadFloat3(&miniTranslation4));
 	testMesh4->AddComponent<MeshComponent>(zwebMeshes[0], sylvanasMat[0]);
 	AddObject(testMesh4);
+
+	//Enemy object
+	Object* enemy = new Object("enemy");
+	dx::XMFLOAT3 enemyTranslation = dx::XMFLOAT3(0, 2, 10);
+	enemy->GetTransform().SetPosition(dx::XMLoadFloat3(&enemyTranslation));
+	enemy->AddComponent<MeshComponent>(zwebMeshes[0], zwebMaterials[0]);
+	enemy->AddComponent<StatsComponent>(100, 2, 10);
+	StateMachineComponent* stateMachine = enemy->AddComponent<StateMachineComponent>(AIState::idle);
+	stateMachine->RegisterState(AIState::idle, enemy->AddComponent<AIIdle>());
+	stateMachine->RegisterState(AIState::move, enemy->AddComponent<AIMove>());
+	stateMachine->RegisterState(AIState::attack, enemy->AddComponent<AIAttack>(camera));
+	AddObject(enemy);
 
 	/* * * * * * * * ** * * * * */
 

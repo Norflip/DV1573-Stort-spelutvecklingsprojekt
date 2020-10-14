@@ -151,6 +151,9 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="AIAttack.cpp" />
+    <ClCompile Include="AIIdle.cpp" />
+    <ClCompile Include="AIMove.cpp" />
     <ClCompile Include="BoundingBoxes.cpp" />
     <ClCompile Include="CameraComponent.cpp" />
     <ClCompile Include="Chunk.cpp" />
@@ -172,6 +175,8 @@
     <ClCompile Include="Scene.cpp" />
     <ClCompile Include="Shader.cpp" />
     <ClCompile Include="Skybox.cpp" />
+    <ClCompile Include="StateMachineComponent.cpp" />
+    <ClCompile Include="StatsComponent.cpp" />
     <ClCompile Include="Texture.cpp" />
     <ClCompile Include="SkeletonAni.cpp" />
     <ClCompile Include="SkeletonMeshComponent.cpp" />
@@ -181,6 +186,9 @@
     <ClCompile Include="WorldGenerator.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="AIAttack.h" />
+    <ClInclude Include="AIIdle.h" />
+    <ClInclude Include="AIMove.h" />
     <ClInclude Include="BoundingBoxes.h" />
     <ClInclude Include="Buffers.h" />
     <ClInclude Include="BusNode.h" />
@@ -214,6 +222,8 @@
     <ClInclude Include="Shader.h" />
     <ClInclude Include="ShittyOBJLoader.h" />
     <ClInclude Include="Skybox.h" />
+    <ClInclude Include="StateMachineComponent.h" />
+    <ClInclude Include="StatsComponent.h" />
     <ClInclude Include="Texture.h" />
     <ClInclude Include="SkeletonAni.h" />
     <ClInclude Include="SkeletonMeshComponent.h" />

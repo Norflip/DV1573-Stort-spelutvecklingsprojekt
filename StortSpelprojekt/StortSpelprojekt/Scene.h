@@ -12,6 +12,8 @@
 #include "ZWEBLoader.h"
 #include "SkeletonMeshComponent.h"
 #include "NodeWalkerComponent.h"
+#include "StatsComponent.h"
+#include "StateMachineComponent.h"
 
 #include "Skybox.h"
 #include "WorldGenerator.h"
