@@ -15,7 +15,6 @@
 #include "DShape.h"
 
 namespace dx = DirectX;
-namespace rp = reactphysics3d;
 
 enum class ForceMode
 {
@@ -24,13 +23,6 @@ enum class ForceMode
 };
 
 enum class FilterGroups : unsigned short;
-
-typedef rp::Quaternion Quaternion;
-typedef rp::Vector3 Vector3;
-typedef rp::Transform dTransform;
-typedef rp::RigidBody RigidBody;
-typedef double Scalar;
-typedef rp::PhysicsWorld World;
 
 #define STATIC_BODY 0
 
@@ -41,9 +33,9 @@ public:
 	virtual ~RigidBodyComponent();
 
 	void m_InitializeBody(rp::PhysicsWorld* world);
-	RigidBody* GetRigidBody() const { return body; }
+	rp::RigidBody* GetRigidBody() const { return body; }
 
-	void SetMass(float mass) { this->mass = Scalar(mass); }
+	void SetMass(float mass) { this->mass = mass; }
 	float GetMass() const { return static_cast<float>(this->mass); }
 
 	virtual void UpdateWorldTransform();
@@ -61,16 +53,16 @@ public:
 	void SetPosition(dx::XMVECTOR position);
 
 private:
-	dTransform ConvertToBtTransform(const Transform& transform) const;
+	rp::Transform ConvertToBtTransform(const Transform& transform) const;
 	void AddCollidersToBody(Object* obj, rp::RigidBody* body);
 
 	FilterGroups group;
 	FilterGroups collisionMask;
 
-	dTransform bodyTransform;
-	RigidBody* body;
+	rp::Transform bodyTransform;
+	rp::RigidBody* body;
 	bool dynamic;
-	Scalar mass;
+	float mass;
 
 	std::vector<std::function<void(CollisionInfo)>> callbacks;
 };

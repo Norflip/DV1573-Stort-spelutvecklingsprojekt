@@ -86,7 +86,7 @@ void ObjectPooler::Clear()
 				delete obj;
 			}
 
-			for (auto j : pool->outside) delete j;
+			//for (auto j : pool->outside) delete j;
 			delete pool;
 		}
 

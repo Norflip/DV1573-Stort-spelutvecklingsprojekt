@@ -24,17 +24,17 @@ void RigidBodyComponent::SetPosition(dx::XMVECTOR position)
 	body->setTransform(transform);
 }
 
-dTransform RigidBodyComponent::ConvertToBtTransform(const Transform& transform) const
+rp::Transform RigidBodyComponent::ConvertToBtTransform(const Transform& transform) const
 {
-	dTransform temp;
+	rp::Transform temp;
 
 	dx::XMFLOAT3 tmpPosition;
 	dx::XMStoreFloat3(&tmpPosition, transform.GetPosition());
-	temp.setPosition(Vector3(tmpPosition.x, tmpPosition.y, tmpPosition.z));
+	temp.setPosition(rp::Vector3(tmpPosition.x, tmpPosition.y, tmpPosition.z));
 
 	dx::XMFLOAT4 tmpRotation;
 	dx::XMStoreFloat4(&tmpRotation, transform.GetRotation());
-	temp.setOrientation(Quaternion(tmpRotation.x, tmpRotation.y, tmpRotation.z, tmpRotation.w));
+	temp.setOrientation(rp::Quaternion(tmpRotation.x, tmpRotation.y, tmpRotation.z, tmpRotation.w));
 	return temp;
 }
 

@@ -1,6 +1,5 @@
 #pragma once
 #include <react3d.h>
-namespace rp = reactphysics3d;
 
 #include "CollisionInfo.h"
 #include "Ray.h"

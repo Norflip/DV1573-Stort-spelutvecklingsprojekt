@@ -2,7 +2,6 @@
 #include "Component.h"
 #include <react3d.h>
 
-namespace rp = reactphysics3d;
 namespace dx = DirectX;
 
 class Collider

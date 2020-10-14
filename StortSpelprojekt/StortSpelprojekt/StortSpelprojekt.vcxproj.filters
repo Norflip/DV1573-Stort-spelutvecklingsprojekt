@@ -391,6 +391,9 @@
     <Filter Include="Source Files">
       <UniqueIdentifier>{fc4097e4-11ed-434b-927c-b1e1fd9cd99d}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Source Files\SpawnSystems">
+      <UniqueIdentifier>{5552950f-3623-49fb-b848-f9f6029a934a}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <None Include="packages.config">
