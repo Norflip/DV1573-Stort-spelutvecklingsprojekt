@@ -1,0 +1,48 @@
+#pragma once
+#include "Component.h"
+#include "Mesh.h"
+#include "Material.h"
+#include "Transform.h"
+#include "CameraComponent.h"
+#include "BoundingBoxes.h"
+#include "Object.h"
+
+enum StateMachine
+{
+	IDLE,
+	RUN,
+	ATTACK,
+	NONE
+};
+
+
+class SkeletonMeshComponent : public Component
+{
+public:
+	SkeletonMeshComponent(Mesh mesh, Material material);
+	virtual ~SkeletonMeshComponent();
+
+	Mesh GetMesh() const { return this->mesh; }
+	Material GetMaterial() const { return this->material; }
+
+	void Update(const float& deltaTime) override;
+	void Draw(Renderer* renderer, CameraComponent* camera) override;
+	void RunAnimation(const float& deltaTime);
+	void SetAnimationTrack(const SkeletonAni& skeletonAni, const StateMachine& type);
+
+	SkeletonAni& GetAnimationTrack(unsigned int trackNr);
+
+	void play(const StateMachine& type);
+	
+private:
+	Mesh mesh;
+	Material material;
+	std::vector<SkeletonAni> skeletonAnimations;
+	float elapsedTime = 0.0f;
+	std::unordered_map<StateMachine, unsigned int> trackMap;
+	std::vector<dx::XMFLOAT4X4> finalTransforms;
+	StateMachine currentAni = StateMachine::NONE;
+	BoundingBoxes boundingBoxes;
+	float componentDeltaTime = 0.0f;
+};
+

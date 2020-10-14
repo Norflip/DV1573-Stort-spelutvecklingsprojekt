@@ -1,0 +1,37 @@
+Shaders: 8
+
+Name: default
+
+Name: skeletonShader
+Input: skeleton
+VS: Shaders/Skeleton_vs.hlsl
+PS: Shaders/Default_ps.hlsl
+
+Name: instanceShader
+Input: instance
+VS: Shaders/Instance_vs.hlsl
+PS: Shaders/Default_ps.hlsl
+
+Name: alphaInstanceShader
+Input: instance
+VS: Shaders/Instance_vs.hlsl
+PS: Shaders/Alpha_ps.hlsl
+
+Name: terrainShader
+VS: Shaders/Terrain_vs.hlsl
+PS: Shaders/Terrain_ps.hlsl
+
+Name: screenquadShader
+VS: Shaders/ScreenQuad_vs.hlsl
+PS: Shaders/ScreenQuad_ps.hlsl
+
+Name: skyboxShader
+VS: Shaders/Sky_vs.hlsl
+PS: Shaders/Sky_ps.hlsl
+
+Name: grassShader
+VS: Shaders/Grass_vs.hlsl
+HS: Shaders/Grass_hs.hlsl
+DS: Shaders/Grass_ds.hlsl
+GS: Shaders/Grass_gs.hlsl
+PS: Shaders/Grass_ps.hlsl

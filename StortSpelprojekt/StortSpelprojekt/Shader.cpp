@@ -1,34 +1,72 @@
 #include "Shader.h"
 
-Shader::Shader() : pixelShader(nullptr), vertexShader(nullptr), inputLayout(nullptr), geometryShader(nullptr)
+Shader::Shader() : pixelShader(nullptr), vertexShader(nullptr), inputLayout(nullptr), geometryShader(nullptr), hullShader(nullptr), domainShader(nullptr)
 {
 	shaderCompilationFlag = D3DCOMPILE_ENABLE_STRICTNESS;
 #ifdef _DEBUG
 	shaderCompilationFlag = shaderCompilationFlag | D3DCOMPILE_DEBUG;
 #endif
 
-	SetInputLayoutStructure(5, DEFAULT_INPUT_LAYOUTd);
+	SetInputLayoutStructure(6, DEFAULT_INPUT_LAYOUTd);
 }
 
 Shader::~Shader()
 {
+	//if (pixelShader)
+	//{
+	//	pixelShader->Release();
+	//}
+	//if (vertexShader)
+	//{
+	//	vertexShader->Release();
+	//}
+	//if (inputLayout)
+	//{
+	//	inputLayout->Release();
+	//}
+	//if (geometryShader)
+	//{
+	//	geometryShader->Release();
+	//}
+	//if (hullShader)
+	//{
+	//	hullShader->Release();
+	//}
+	//if (domainShader)
+	//{
+	//	domainShader->Release();
+	//}
 }
 
-void Shader::SetPixelShader(LPCWSTR path, LPCSTR entry)
+void Shader::SetPixelShader(std::string path, LPCSTR entry)
 {
 	this->pixelPath = path;
 	this->pixelEntry = entry;
 	shaderFlags |= ShaderBindFlag::PIXEL;
 }
 
-void Shader::SetVertexShader(LPCWSTR path, LPCSTR entry)
+void Shader::SetVertexShader(std::string path, LPCSTR entry)
 {
 	this->vertexPath = path;
 	this->vertexEntry = entry;
 	shaderFlags |= ShaderBindFlag::VERTEX;
 }
 
-void Shader::SetGeometryShader(LPCWSTR path, LPCSTR entry)
+void Shader::SetHullShader(std::string path, LPCSTR entry)
+{
+	this->hullPath = path;
+	this->hullEntry = entry;
+	shaderFlags |= ShaderBindFlag::HULL;
+}
+
+void Shader::SetDomainShader(std::string path, LPCSTR entry)
+{
+	this->domainPath = path;
+	this->domainEntry = entry;
+	shaderFlags |= ShaderBindFlag::DOMAINS;
+}
+
+void Shader::SetGeometryShader(std::string path, LPCSTR entry)
 {
 	this->geometryPath = path;
 	this->geometryEntry = entry;
@@ -46,9 +84,11 @@ void Shader::Compile(ID3D11Device* device)
 	CompileVS(device);
 	CompilePS(device);
 	CompileGS(device);
+	CompileHS(device);
+	CompileDS(device);
 }
 
-void Shader::BindToContext(ID3D11DeviceContext* context)
+void Shader::BindToContext(ID3D11DeviceContext* context) const
 {
 	int flag = static_cast<int>(shaderFlags);
 
@@ -69,6 +109,15 @@ void Shader::BindToContext(ID3D11DeviceContext* context)
 	{
 		context->GSSetShader(geometryShader, 0, 0);
 	}
+
+	if ((flag & (int)ShaderBindFlag::HULL) != 0)
+	{
+		context->HSSetShader(hullShader, 0, 0);
+	}
+	if ((flag & (int)ShaderBindFlag::DOMAINS) != 0)
+	{
+		context->DSSetShader(domainShader, 0, 0);
+	}
 }
 
 void Shader::CompilePS(ID3D11Device* device)
@@ -77,16 +126,20 @@ void Shader::CompilePS(ID3D11Device* device)
 	{
 		if (pixelShader != nullptr)
 		{
-			delete pixelShader;
-			pixelShader = nullptr;
+			pixelShader->Release();
+			//delete pixelShader;
+			//pixelShader = nullptr;
 		}
 
 		ID3DBlob* errorBlob = nullptr;
 		ID3DBlob* PSBlob = nullptr;
 		
+		// Convert the string to a wstring locally, without changing the content
+		std::wstring wPixel = std::wstring(pixelPath.begin(), pixelPath.end());
+
 		HRESULT PSCompileResult = D3DCompileFromFile
 		(
-			pixelPath,
+			wPixel.c_str(),
 			nullptr,
 			D3D_COMPILE_STANDARD_FILE_INCLUDE,
 			pixelEntry,
@@ -118,17 +171,21 @@ void Shader::CompileVS(ID3D11Device* device)
 
 		if (vertexShader != nullptr)
 		{
-			delete vertexShader;
-			vertexShader = nullptr;
+			vertexShader->Release();
+			//delete vertexShader;
+			//vertexShader = nullptr;
 		}
 
 		ID3DBlob* errorBlob = nullptr;
 		ID3DBlob* VSBlob = nullptr;
 		
+		// Convert the string to a wstring locally, without changing the content
+		std::wstring wVertex = std::wstring(vertexPath.begin(), vertexPath.end());
+
 		// VERTEX SHADER
 		HRESULT	VSCompileResult = D3DCompileFromFile
 		(
-			vertexPath,
+			wVertex.c_str(),
 			nullptr,
 			D3D_COMPILE_STANDARD_FILE_INCLUDE,
 			vertexEntry,
@@ -161,16 +218,20 @@ void Shader::CompileGS(ID3D11Device* device)
 
 		if (geometryShader != nullptr)
 		{
-			delete geometryShader;
-			geometryShader = nullptr;
+			geometryShader->Release();
+			//delete geometryShader;
+			//geometryShader = nullptr;
 		}
 
 		ID3DBlob* errorBlob = nullptr;
 		ID3DBlob* GSBlob = nullptr;
 
+		// Convert the string to a wstring locally, without changing the content
+		std::wstring wGeometry = std::wstring(geometryPath.begin(), geometryPath.end());
+
 		HRESULT GSCompileResult = D3DCompileFromFile
 		(
-			geometryPath,
+			wGeometry.c_str(),
 			nullptr,
 			D3D_COMPILE_STANDARD_FILE_INCLUDE,
 			geometryEntry,
@@ -191,4 +252,111 @@ void Shader::CompileGS(ID3D11Device* device)
 		HRESULT GSCreateResult = device->CreateGeometryShader(GSBlob->GetBufferPointer(), GSBlob->GetBufferSize(), nullptr, &this->geometryShader);
 		assert(SUCCEEDED(GSCreateResult));
 	}
+}
+
+void Shader::CompileHS(ID3D11Device* device)
+{
+	if (((int)shaderFlags & (int)ShaderBindFlag::HULL) != 0)
+	{
+
+		if (hullShader != nullptr)
+		{
+			//delete hullShader;
+			//hullShader = nullptr;
+			hullShader->Release();
+		}
+
+		ID3DBlob* errorBlob = nullptr;
+		ID3DBlob* HSBlob = nullptr;
+
+		// Convert the string to a wstring locally, without changing the content
+		std::wstring wHull = std::wstring(hullPath.begin(), hullPath.end());
+
+		HRESULT HSCompileResult = D3DCompileFromFile
+		(
+			wHull.c_str(),
+			nullptr,
+			D3D_COMPILE_STANDARD_FILE_INCLUDE,
+			hullEntry,
+			"hs_5_0",
+			shaderCompilationFlag,
+			0,
+			&HSBlob,
+			&errorBlob
+		);
+
+		if (FAILED(HSCompileResult) && errorBlob)
+		{
+			OutputDebugStringA((char*)errorBlob->GetBufferPointer());
+			Log::Add(Log::LogLevel::Error, (char*)errorBlob->GetBufferPointer());
+			errorBlob->Release();
+		}
+
+		HRESULT HSCreateResult = device->CreateHullShader(HSBlob->GetBufferPointer(), HSBlob->GetBufferSize(), nullptr, &this->hullShader);
+		assert(SUCCEEDED(HSCreateResult));
+	}
+}
+
+void Shader::CompileDS(ID3D11Device* device)
+{
+
+	if (((int)shaderFlags & (int)ShaderBindFlag::DOMAINS) != 0)
+	{
+
+		if (domainShader != nullptr)
+		{
+			/*delete domainShader;
+			domainShader = nullptr;*/
+			domainShader->Release();
+		}
+
+		ID3DBlob* errorBlob = nullptr;
+		ID3DBlob* DSBlob = nullptr;
+
+		// Convert the string to a wstring locally, without changing the content
+		std::wstring wDomain = std::wstring(domainPath.begin(), domainPath.end());
+
+		HRESULT DSCompileResult = D3DCompileFromFile
+		(
+			wDomain.c_str(),
+			nullptr,
+			D3D_COMPILE_STANDARD_FILE_INCLUDE,
+			domainEntry,
+			"ds_5_0",
+			shaderCompilationFlag,
+			0,
+			&DSBlob,
+			&errorBlob
+		);
+
+		if (FAILED(DSCompileResult) && errorBlob)
+		{
+			OutputDebugStringA((char*)errorBlob->GetBufferPointer());
+			Log::Add(Log::LogLevel::Error, (char*)errorBlob->GetBufferPointer());
+			errorBlob->Release();
+		}
+
+		HRESULT DSCreateResult = device->CreateDomainShader(DSBlob->GetBufferPointer(), DSBlob->GetBufferSize(), nullptr, &this->domainShader);
+		assert(SUCCEEDED(DSCreateResult));
+	}
+}
+
+void Shader::Unbind(ID3D11DeviceContext* context) const
+{
+	
+
+	int flag = static_cast<int>(shaderFlags);
+
+	
+
+	if ((flag & (int)ShaderBindFlag::HULL) != 0)
+		context->HSSetShader(nullptr, 0, 0);
+
+	if ((flag & (int)ShaderBindFlag::DOMAINS) != 0)
+		context->DSSetShader(nullptr, 0, 0);
+
+	if ((flag & (int)ShaderBindFlag::GEOMETRY) != 0)
+		context->GSSetShader(nullptr, 0, 0);
+
+
 }

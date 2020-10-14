@@ -1,9 +1,11 @@
 #pragma once
 #include <vector>
-#include <DirectXMath.h>
+#include <SimpleMath.h>
 namespace dx = DirectX;
 
 class Object;
+
+#define ASSERT_STATIC_OBJECT assert(!GetOwner()->HasFlag(ObjectFlag::STATIC))
 
 class Transform
 {
@@ -14,13 +16,13 @@ public:
 
 	dx::XMMATRIX GetWorldMatrix() const;
 	dx::XMMATRIX GetLocalWorldMatrix() const;
-
 	DirectX::XMVECTOR TransformDirection(DirectX::XMVECTOR direction) const;
 	
+	void Translate(float x, float y, float z);
 	void Rotate(float pitch, float yaw, float roll);
 
 	bool HasParent() const { return this->parent != nullptr; }
-	void SetParent(Transform* parent) { this->parent = parent; }
+	void SetParent(Transform* parent) { this->parent = parent; changedThisFrame = true; }
 
 	void AddChild(Transform* child);
 	void RemoveChild(Transform* child);
@@ -29,22 +31,26 @@ public:
 	size_t CountChildren() const { return this->children.size(); }
 	std::vector<Transform*> GetChildren() const { return this->children; }
 
-	static void SkapaPäron(Transform& parent, Transform& child);
+	static void SetParentChild(Transform& parent, Transform& child);
+	static void RemoveParentChild(Transform& parent, Transform& child);
 
+	Transform* GetParent() const { return this->parent; }
 	Object* GetOwner() const { return this->owner; }
 
 	bool ChangedThisFrame() const { return this->changedThisFrame; }
 	void MarkNotChanged() { this->changedThisFrame = false; }
 
 #pragma region SETTERS AND GETTERS
-	dx::XMVECTOR GetPosition() const { return this->position; }
-	void SetPosition(dx::XMVECTOR position) { this->position = position; changedThisFrame = true; }
+	dx::XMVECTOR GetWorldPosition() const;
+	dx::XMVECTOR GetPosition() const { return dx::XMLoadFloat3(&this->position); }
+	void SetPosition(dx::XMVECTOR position);
 
-	dx::XMVECTOR GetScale() const { return this->scale; }
-	void SetScale(dx::XMVECTOR scale) { this->scale = scale; changedThisFrame = true; }
+	dx::XMVECTOR GetScale() const { return dx::XMLoadFloat3(&this->scale); }
+	void SetScale(dx::XMVECTOR scale);
 
-	dx::XMVECTOR GetRotation() const { return this->rotation; }
-	void SetRotation(dx::XMVECTOR rotation) { this->rotation = rotation; changedThisFrame = true; }
+	dx::XMVECTOR GetRotation() const { return dx::XMLoadFloat4(&this->rotation); }
+	void SetRotation(dx::XMVECTOR rotation);
+	
 
 #pragma endregion
 
@@ -54,7 +60,7 @@ private:
 	Transform* parent;
 	Object* owner;
 
-	dx::XMVECTOR position;
-	dx::XMVECTOR rotation;
-	dx::XMVECTOR scale;
+	dx::XMFLOAT3 position;
+	dx::XMFLOAT4 rotation;
+	dx::XMFLOAT3 scale;
 };
