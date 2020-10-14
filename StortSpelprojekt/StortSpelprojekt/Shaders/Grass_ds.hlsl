@@ -5,14 +5,13 @@ Texture2D grassHeightMap : register (t1);
 Texture2D grassColorMap : register (t0);
 Texture2D noiseMap : register (t2);
 Texture2D chunkData : register (t6);
-//could add normals here as well to add variation.
+
 SamplerState LinearSampler : register(s0);
 
 
 
 
-
-
+/*Alter the commented values to change the grass*/
 [domain("isoline")]
 DS_OUTPUT_GRASS main(HS_CONSTANT_DATA_OUTPUT_GRASS input,
 	OutputPatch<HS_OUTPUT_GRASS, 1> op,
@@ -37,12 +36,12 @@ DS_OUTPUT_GRASS main(HS_CONSTANT_DATA_OUTPUT_GRASS input,
 	float2 uvPlane = BCC.x * uv1 + BCC.y * uv2 + BCC.z * uv3;
 
 
-	float h = chunkData.SampleLevel(LinearSampler, uvPlane, 0).r;
-	float y = h * 10.0f;
+	float4 h = chunkData.SampleLevel(LinearSampler, uvPlane, 0);
+	float y = h.x *h.y* 10.0f;
 
 	
 	
-
+	
 	
 
 	float3 position1 = grassStraws[v1].position.xyz;
@@ -70,7 +69,7 @@ DS_OUTPUT_GRASS main(HS_CONSTANT_DATA_OUTPUT_GRASS input,
 	float4 colour = grassColorMap.SampleLevel(LinearSampler, uvPlane, 0);
 
 
-	output.bladeHeight = grassHeightMap.SampleLevel(LinearSampler, uvPlane, 0).r *1.0f;
+	output.bladeHeight = grassHeightMap.SampleLevel(LinearSampler, uvPlane, 0).r * /*grassRadius*/0.25;
 	output.height = uv.x * output.bladeHeight;
 
 	output.expandVector = normalize(pos - position1);
@@ -80,10 +79,14 @@ DS_OUTPUT_GRASS main(HS_CONSTANT_DATA_OUTPUT_GRASS input,
 
 	float noiseSample = noiseMap.SampleLevel(LinearSampler, 4 * uvPlane, 0).r;
 
-	float disp = 1.0f * pow(uv.x, 1) * (noiseSample + 0.1 * abs(sin(/*time*/ 1.0f+ noiseSample)));
+	float disp = /*grassDisplacement*/ 0.5* pow(uv.x, 1.0); //grassDisplacement == Length
+
+	float dispT = /*grassDisplacement*/0.5* pow(uv.x, 1.0) * (noiseSample + 2.5 * abs(sin((time * 0.25) + noiseSample)));
+
+	dispT *= 0.1;
 
 	output.position = float4(pos.xyz, 1.0f);
-	output.displacement = float3(0, disp, 0);
+	output.displacement = float3(dispT, disp, dispT);
 	output.tex.y = uv.x;
 	output.normal = mul(float4(normal, 0), world);
 

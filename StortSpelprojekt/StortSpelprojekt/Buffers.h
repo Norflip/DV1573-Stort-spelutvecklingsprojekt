@@ -29,6 +29,8 @@ struct cb_Material
 	
 	int hasAlbedo;
 	int hasNormalMap;
+	float paddingOne;
+	float paddingTwo;
 };
 
 __declspec(align(16))
@@ -38,6 +40,7 @@ struct s_PointLight
 	dx::XMFLOAT3 lightPosition;
 	float range;
 	dx::XMFLOAT3 attenuation;
+	float paddingThree;
 };
 
 __declspec(align(16))
@@ -48,6 +51,8 @@ struct cb_Lights
 	dx::XMFLOAT3 sunDirection;
 	float sunIntensity;
 	dx::XMFLOAT3 pad;
+	
+
 };
 
 __declspec(align(16))
@@ -64,5 +69,9 @@ __declspec(align(16))
 struct cb_grass
 {
 	float pixelSize;
-	dx::XMFLOAT3 padding;
-};	
+	float grassWidth;
+	float grassRadius;
+	float grassDisplacement;
+};
+
+

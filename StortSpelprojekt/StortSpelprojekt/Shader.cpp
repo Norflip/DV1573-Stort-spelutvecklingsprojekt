@@ -261,8 +261,9 @@ void Shader::CompileHS(ID3D11Device* device)
 
 		if (hullShader != nullptr)
 		{
-			delete hullShader;
-			hullShader = nullptr;
+			//delete hullShader;
+			//hullShader = nullptr;
+			hullShader->Release();
 		}
 
 		ID3DBlob* errorBlob = nullptr;
@@ -304,8 +305,9 @@ void Shader::CompileDS(ID3D11Device* device)
 
 		if (domainShader != nullptr)
 		{
-			delete domainShader;
-			domainShader = nullptr;
+			/*delete domainShader;
+			domainShader = nullptr;*/
+			domainShader->Release();
 		}
 
 		ID3DBlob* errorBlob = nullptr;

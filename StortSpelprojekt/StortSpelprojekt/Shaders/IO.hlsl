@@ -6,6 +6,7 @@ struct VS_INPUT
 	float3 tangent	: TANGENT;
 	float3 binormal : BINORMAL;
 	uint id	: SV_InstanceID;
+	uint i : SV_VertexID;
 };
 
 struct VS_INPUT_SKELETON
