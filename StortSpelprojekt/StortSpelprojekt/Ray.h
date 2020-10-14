@@ -16,3 +16,15 @@ struct Ray
 		return dx::XMFLOAT3(x, y, z);
 	}
 };
+
+struct RayHit
+{
+	dx::XMFLOAT3 position;
+	dx::XMFLOAT3 normal;
+
+//	RigidBodyComp* body;
+	Object* object;
+
+	bool didHit;
+};
+

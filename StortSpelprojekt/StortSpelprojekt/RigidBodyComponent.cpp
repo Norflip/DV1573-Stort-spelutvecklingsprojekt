@@ -1,7 +1,7 @@
 #include "RigidBodyComponent.h"
 #include "Physics.h"
 
-RigidBodyComp::RigidBodyComp(float mass, FilterGroups group, FilterGroups mask) : totalMass(mass), group(group), collisionMask(collisionMask)
+RigidBodyComp::RigidBodyComp(float mass, FilterGroups group, FilterGroups mask) : totalMass(mass), group(group), collisionMask(mask)
 {
 }
 
@@ -12,10 +12,6 @@ RigidBodyComp::~RigidBodyComp()
 void RigidBodyComp::Update(const float& deltaTime)
 {
 	UpdateWorldTransform();
-
-	dx::XMFLOAT3 position;
-	dx::XMStoreFloat3(&position, GetOwner()->GetTransform().GetPosition());
-	DShape::DrawBox(position, { 1,1,1 }, { 0,0,1 });
 }
 
 dTransform RigidBodyComp::ConvertToBtTransform(const Transform& transform) const
@@ -32,14 +28,14 @@ dTransform RigidBodyComp::ConvertToBtTransform(const Transform& transform) const
 	return temp;
 }
 
-void RigidBodyComp::AddShapesToCompound(Object* obj, rp::RigidBody* body)
+void RigidBodyComp::AddCollidersToBody(Object* obj, rp::RigidBody* body)
 {
 	const std::vector<Collider*> colliders = obj->GetComponentsOfSubType<Collider>();
 	for (size_t i = 0; i < colliders.size(); i++)
 	{		
 		rp::Collider* collider = body->addCollider(colliders[i]->GetCollisionShape(), colliders[i]->GetTransform());
-		//collider->setCollisionCategoryBits(static_cast<int>(group));
-		//collider->setCollideWithMaskBits(static_cast<int>(collisionMask));
+		collider->setCollisionCategoryBits(static_cast<unsigned short>(group));
+		collider->setCollideWithMaskBits(static_cast<unsigned short>(collisionMask));
 	}
 
 	std::cout << obj->GetName() << " has colliders: " << colliders.size() << std::endl;
@@ -48,7 +44,7 @@ void RigidBodyComp::AddShapesToCompound(Object* obj, rp::RigidBody* body)
 	const std::vector<Transform*>& children = GetOwner()->GetTransform().GetChildren();
 	for (size_t i = 0; i < children.size(); i++)
 	{
-		AddShapesToCompound(children[i]->GetOwner(), body);
+		AddCollidersToBody(children[i]->GetOwner(), body);
 	}
 }
 
@@ -69,52 +65,15 @@ void RigidBodyComp::m_InitializeBody(rp::PhysicsWorld* world)
 	body = world->createRigidBody(bodyTransform);
 	body->setType(type);
 	body->setMass(totalMass);
+	body->setUserData(static_cast<void*>(GetOwner()));
 	
-	AddShapesToCompound(GetOwner(), body);
-
-	//std::cout << GetOwner()->GetName() << " has " << compShape->getNumChildShapes() << " children. " << std::endl;
-
-	//if (IsDynamic())
-	//{
-	//	int children = compShape->getNumChildShapes();
-	//	masses = new btScalar[children];
-	//	for (size_t i = 0; i < children; i++)
-	//	{
-	//		masses[i] = totalMass / children;
-	//	}
-
-	//	compShape->calculateLocalInertia(totalMass, inertia);
-	//	//compShape->calculatePrincipalAxisTransform(masses, t, inertia);
-	//}
-
-	////btCollisionShape* groundShape = new btBoxShape(btVector3(btScalar(50.), btScalar(50.), btScalar(50.)));
-
-	//btDefaultMotionState* myMotionState = new btDefaultMotionState(bodyTransform);
-	//btRigidBody::btRigidBodyConstructionInfo cInfo(totalMass, myMotionState, compShape, inertia);
-	//body = new btRigidBody(cInfo);
-	//body->setUserPointer(this);
-	//body->setFriction(1);
-	////body->setRestitution(0);
-
-	//btVector3 min, max;
-	//body->getCollisionShape()->getAabb(bodyTransform, min, max);
-
-	//btVector3 extends = max - min;
-	//body->setCcdSweptSphereRadius(extends.m_floats[extends.minAxis()] * 0.5f);
-	//body->setCcdMotionThreshold(0.0001f);
-
-	////body->getCollisionShape().
+	AddCollidersToBody(GetOwner(), body);
 }
 
 void RigidBodyComp::UpdateWorldTransform()
 {
 	rp::Transform bodyTransform = body->getTransform();
 
-
-
-	/*bodyTransform.setIdentity();
-	body->getMotionState()->getWorldTransform(bodyTransform);
-	*/
 	Transform& transform = GetOwner()->GetTransform();
 	rp::Vector3 bodyPosition = bodyTransform.getPosition();
 

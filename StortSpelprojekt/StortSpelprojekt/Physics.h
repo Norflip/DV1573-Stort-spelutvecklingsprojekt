@@ -9,31 +9,24 @@ namespace rp = reactphysics3d;
 #include "Ray.h"
 #include <unordered_map>
 #include <mutex>
+#include "PhysicCallbacks.h"
 
-enum class FilterGroups : int
+enum class FilterGroups : unsigned short
 {
 	//EVERYTHING = -1,
 	NOTHING = 0,
-	
 	DEFAULT = 1 << 0,
 	TERRAIN = 1 << 1,
-
-	TEST_0 = 1 << 2,
-	TEST_1 = 1 << 3,
-
-	EVERYTHING = DEFAULT | TERRAIN | TEST_0 | TEST_1
+	PICKUPS = 1 << 2,
+	PLAYER = 1 << 3,
+	ENEMIES = 1 << 4,
+	TEST_0 = 1 << 5,
+	EVERYTHING = DEFAULT | TERRAIN | PICKUPS | PLAYER | ENEMIES | TEST_0
 };
 
 
 DEFINE_ENUM_FLAG_OPERATORS(FilterGroups)
 
-struct RayHit
-{
-	dx::XMFLOAT3 position;
-	dx::XMFLOAT3 normal;
-	RigidBodyComp* body;
-	bool hit;
-};
 
 class Physics
 {
@@ -42,7 +35,6 @@ public:
 	virtual ~Physics();
 
 	void Initialize(dx::XMFLOAT3 gravity);
-	void CreateDynamicWorld();
 	
 	// remove rigidbody on chunk and add shape?
 	//void ReigsterCollisionObject();
@@ -63,6 +55,7 @@ public:
 
 	bool RaytestSingle(const Ray& ray, float maxDistance, RayHit& hit, FilterGroups group = FilterGroups::EVERYTHING) const;
 
+
 	static Physics& Instance() // singleton
 	{
 		static Physics instance;
@@ -76,8 +69,9 @@ public:
 	//static btVector3 ToVector3(const dx::XMFLOAT3& xm3) { return btVector3(xm3.x, xm3.y, xm3.z); }
 
 private:
-	void CheckForCollisions();
+	void CheckCollisions();
 
+	CollisionEventListener listener;
 	rp::Vector3 gravity;
 	rp::PhysicsWorld* world;
 	rp::PhysicsCommon common;

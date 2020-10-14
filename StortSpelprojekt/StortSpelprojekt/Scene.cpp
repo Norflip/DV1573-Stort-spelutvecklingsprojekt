@@ -222,7 +222,7 @@ void Scene::Initialize(Renderer* renderer)
 	AddObject(testMesh4);
 
 	RigidBodyComp* rigidBody = testMesh2->AddComponent<RigidBodyComp>(4.0f, FilterGroups::DEFAULT, FilterGroups::EVERYTHING);
-	BoxColliderComponent* boxCol = testMesh2->AddComponent<BoxColliderComponent>(dx::XMFLOAT3( 1,1,1 ), dx::XMFLOAT3(0,0,0), dx::XMFLOAT4(0,0,0,0));
+	BoxColliderComponent* boxCol = testMesh2->AddComponent<BoxColliderComponent>(dx::XMFLOAT3( 1,1,1 ), dx::XMFLOAT3(0,0,0));
 
 	//rigidBody->m_GenerateCompoundShape();
 
@@ -283,8 +283,7 @@ void Scene::Update(const float& deltaTime)
 				object->GetTransform().SetPosition(position);
 				
 				object->AddComponent<DebugBoxShapeComponent>();
-
-				object->AddComponent<BoxColliderComponent>(dx::XMFLOAT3(0.5f, 0.5f, 0.5f), dx::XMFLOAT3(0, 0, 0), dx::XMFLOAT4(0, 0, 0, 0));
+				object->AddComponent<BoxColliderComponent>(dx::XMFLOAT3(0.5f, 0.5f, 0.5f), dx::XMFLOAT3(0, 0, 0));
 				RigidBodyComp* rd = object->AddComponent<RigidBodyComp>(10.0f, FilterGroups::DEFAULT, FilterGroups::EVERYTHING);
 		
 				phy.RegisterRigidBody(rd);
@@ -307,7 +306,7 @@ void Scene::Update(const float& deltaTime)
 	{
 		Physics& phy = Physics::Instance();
 		RayHit hit;
-
+		
 		DShape::DrawLine(ray.origin, ray.GetPoint(1000.0f), { 1,1,0 });
 
 		if (phy.RaytestSingle(ray, 1000.0f, hit, FilterGroups::DEFAULT))
@@ -315,9 +314,9 @@ void Scene::Update(const float& deltaTime)
 			DShape::DrawLine(ray.origin, hit.position, { 1,1,0 });
 			DShape::DrawSphere(hit.position, 1.0f, { 0, 0, 1 });
 
-			if (hit.body != nullptr)
+			if (hit.object != nullptr)
 			{
-				std::cout << hit.body->GetOwner()->GetName() << std::endl;
+				std::cout << hit.object->GetName() << std::endl;
 			}
 		}
 	}

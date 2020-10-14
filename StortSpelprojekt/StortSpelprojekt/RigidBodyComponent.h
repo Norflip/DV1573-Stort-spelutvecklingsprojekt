@@ -24,7 +24,7 @@ enum class ForceMode
 	IMPULSE
 };
 
-enum class FilterGroups : int;
+enum class FilterGroups : unsigned short;
 
 typedef rp::Quaternion Quaternion;
 typedef rp::Vector3 Vector3;
@@ -62,7 +62,7 @@ public:
 
 private:
 	dTransform ConvertToBtTransform(const Transform& transform) const;
-	void AddShapesToCompound(Object* obj, rp::RigidBody* body);
+	void AddCollidersToBody(Object* obj, rp::RigidBody* body);
 
 	FilterGroups group;
 	FilterGroups collisionMask;

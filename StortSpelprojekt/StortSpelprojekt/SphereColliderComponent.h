@@ -13,5 +13,4 @@ public:
 
 private:
 	float radius;
-	dx::XMFLOAT3 position;
 };

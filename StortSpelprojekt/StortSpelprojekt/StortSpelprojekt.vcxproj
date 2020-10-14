@@ -165,7 +165,7 @@
     <ClCompile Include="CameraComponent.cpp" />
     <ClCompile Include="CapsuleColliderComponent.cpp" />
     <ClCompile Include="Chunk.cpp" />
-    <ClCompile Include="ChunkCollider.cpp" />
+    <ClCompile Include="Collider.cpp" />
     <ClCompile Include="ControllerComponent.cpp" />
     <ClCompile Include="DXHelper.cpp" />
     <ClCompile Include="DShape.cpp" />
@@ -208,13 +208,13 @@
     <ClInclude Include="CameraComponent.h" />
     <ClInclude Include="CapsuleColliderComponent.h" />
     <ClInclude Include="Chunk.h" />
-    <ClInclude Include="ChunkCollider.h" />
     <ClInclude Include="Collider.h" />
     <ClInclude Include="CollisionInfo.h" />
     <ClInclude Include="ControllerComponent.h" />
     <ClInclude Include="DebugBoxShapeComponent.h" />
     <ClInclude Include="DShape.h" />
     <ClInclude Include="Path.h" />
+    <ClInclude Include="PhysicCallbacks.h" />
     <ClInclude Include="PossionDiscSampler.h" />
     <ClInclude Include="Shapes.h" />
     <ClInclude Include="GameClock.h" />
