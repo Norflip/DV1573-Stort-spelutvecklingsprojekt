@@ -159,12 +159,23 @@ void Scene::InitializeObjects()
   
 	worldGenerator.InitializeTrees(stylizedTreeModel, stylizedTreeMaterial, renderer->GetDevice());
 
-	
+	Shader* skeletonShader = resourceManager->GetShaderResource("skeletonShader");
+
+	std::vector<Mesh> skeletonMesh = ZWEBLoader::LoadMeshes(ZWEBLoadType::SkeletonAnimation, "Models/baseMonster.ZWEB", renderer->GetDevice());
+	std::vector<Material> skeletonMat = ZWEBLoader::LoadMaterials("Models/baseMonster.ZWEB", skeletonShader, renderer->GetDevice());
+
+	SkeletonAni skeletonbaseMonsterIdle = ZWEBLoader::LoadSkeletonOnly("Models/baseMonsterIdle.ZWEB", skeletonMesh[0].GetBoneIDS());
 
 
-	
-	
+	Object* baseMonsterObject = new Object("baseMonster");
 
+	SkeletonMeshComponent* baseMonsterComp = baseMonsterObject->AddComponent<SkeletonMeshComponent>(skeletonMesh[0], skeletonMat[0]);
+
+	baseMonsterComp->SetAnimationTrack(skeletonbaseMonsterIdle, StateMachine::IDLE);
+
+	baseMonsterObject->GetTransform().SetScale({ 0.125f, 0.125f, 0.125f });
+	baseMonsterObject->GetTransform().SetPosition({ 0.0f, 2.5f, 0.0f });
+	AddObject(baseMonsterObject);
 
 
 
