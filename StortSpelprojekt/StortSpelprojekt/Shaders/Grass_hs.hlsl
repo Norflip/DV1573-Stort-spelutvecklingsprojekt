@@ -5,10 +5,11 @@
 
 
 Texture2D grassHeightMap : register (t1);
+Texture2D chunkData : register (t6);
 SamplerState linearSampler : register(s0);
 
 
-
+/*Alter the commented values to change the grass*/
 // Patch Constant Function
 HS_CONSTANT_DATA_OUTPUT_GRASS hsPerIsoLinePatch(InputPatch<VS_OUTPUT_GRASS,1> input, uint i : SV_PrimitiveID)
 {
@@ -16,8 +17,8 @@ HS_CONSTANT_DATA_OUTPUT_GRASS hsPerIsoLinePatch(InputPatch<VS_OUTPUT_GRASS,1> in
 
 
 
-	output.edgeTesselation[1] = (input[0].tessFactor * fmod(1, 64)); //2
-	output.edgeTesselation[0] = (input[0].tessFactor * fmod(1, 64)); //max times max per triangle fmod
+	output.edgeTesselation[1] = input[0].tessFactor;  //
+	output.edgeTesselation[0] = input[0].tessFactor;  //max grass per triangles
 	
 	
 
@@ -34,10 +35,10 @@ HS_CONSTANT_DATA_OUTPUT_GRASS hsPerIsoLinePatch(InputPatch<VS_OUTPUT_GRASS,1> in
 	float3 normal = (normal1 + normal2 + normal2) / 3.0f;
 	float3 viewNormal = mul(float4(normal, 0.0f), wv).xyz;
 
-	if (viewNormal.z >= 0.3f)
-	{
-		output.edgeTesselation[0] = 0;
-	}
+	//if (viewNormal.z >= 0.3f)
+	//{
+	//	//output.edgeTesselation[0] = 0;
+	//}
 
 	float2 uv1 = grassStraws[v1].uv.xy;
 	float2 uv2 = grassStraws[v2].uv.xy;
@@ -45,9 +46,9 @@ HS_CONSTANT_DATA_OUTPUT_GRASS hsPerIsoLinePatch(InputPatch<VS_OUTPUT_GRASS,1> in
 
 	float2 uv = (uv1 + uv2 + uv3) / 3.0f;
 
-	float len = grassHeightMap.SampleLevel(linearSampler, uv, 0).r;
+	float len = chunkData.SampleLevel(linearSampler, uv, 0).b;//change this to make the grass tesselate on selected areas
 
-	if (len < 0.1)
+	if (len > 0.3) //change this to make the grass tesselate on selected areas
 	{
 		output.edgeTesselation[0] = 0;
 	}

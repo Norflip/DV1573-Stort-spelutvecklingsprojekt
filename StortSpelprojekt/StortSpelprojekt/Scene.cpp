@@ -159,49 +159,14 @@ void Scene::InitializeObjects()
   
 	worldGenerator.InitializeTrees(stylizedTreeModel, stylizedTreeMaterial, renderer->GetDevice());
 
-	//for (size_t i = 0; i < nrOfInstances; i++)
-	//{
-	//	dx::XMStoreFloat4x4(&treeBranchInstances[i].instanceWorld, dx::XMMatrixScaling(0.5f, 0.5f, 0.5f) * dx::XMMatrixTranslation((i + 1 * r[i]) + treeModels[1].GetT().x, 0 + treeModels[0].GetT().y, (i + 1 * r[i]) + treeModels[1].GetT().z));
-	//	treeBranchInstances[i].instancePosition = dx::XMFLOAT3((i + 1 * r[i]) + treeModels[1].GetT().x, 0 + treeModels[1].GetT().y, (i + 1 * r[i]) + treeModels[1].GetT().z);
-	//}
-
-	//size_t nrOfInstancedStyTrees =5;
-	//std::vector<Mesh::InstanceData> styTreesInstanced(nrOfInstancedStyTrees);
-	//std::vector<Mesh::InstanceData> styLeavesInstanced(nrOfInstancedStyTrees);
-
-	//
-	//std::vector<unsigned int> randNr;
-	//for (size_t i = 0; i < nrOfInstancedStyTrees; i++)
-	//{
-	//	randNr.push_back(rand() % 5 + 1);
-	//}
-
-	/*for (size_t i = 0; i < nrOfInstancedStyTrees; i++)
-	{		
-		dx::XMStoreFloat4x4(&styLeavesInstanced[i].instanceWorld, dx::XMMatrixScaling(0.5f, 0.5f, 0.5f) * dx::XMMatrixTranslation((i + 6 * randNr[i]) + stylizedTreeModel[1].GetT().x, 0 + stylizedTreeModel[1].GetT().y, (i + 1 * randNr[i]) + stylizedTreeModel[1].GetT().z));
-		styLeavesInstanced[i].instancePosition = dx::XMFLOAT3((i + 1 * randNr[i]) + stylizedTreeModel[1].GetT().x, 0 + stylizedTreeModel[1].GetT().y, (i + 1 * randNr[i]) + stylizedTreeModel[1].GetT().z);
-
-		dx::XMStoreFloat4x4(&styTreesInstanced[i].instanceWorld,dx::XMMatrixScaling(0.5f, 0.5f, 0.5f) * dx::XMMatrixTranslation((i + 6 * randNr[i]) + stylizedTreeModel[0].GetT().x, 0 + stylizedTreeModel[0].GetT().y, (i + 1 * randNr[i]) + stylizedTreeModel[0].GetT().z));
-		styTreesInstanced[i].instancePosition = dx::XMFLOAT3((i + 1 * randNr[i]) + stylizedTreeModel[0].GetT().x, 0 + stylizedTreeModel[0].GetT().y, (i + 1 * randNr[i]) + stylizedTreeModel[0].GetT().z);
-	}
-
-	stylizedTreeModel[0].CreateInstanceBuffer(renderer->GetDevice(), styTreesInstanced);
-	stylizedTreeModel[1].CreateInstanceBuffer(renderer->GetDevice(), styLeavesInstanced);
-		
-	stylizedTreeModel[0].SetInstanceNr(nrOfInstancedStyTrees);
-	stylizedTreeModel[1].SetInstanceNr(nrOfInstancedStyTrees);
-
-	Object* styTreeBase = new Object("treeBase");
-	Object* styLeavesBase = new Object("leaves");
-
-	stylizedTreeMaterial[1].SetTransparent(true);
-	styTreeBase->AddComponent<InstancedMeshComponent>(stylizedTreeModel[0], stylizedTreeMaterial[0]);
-	styLeavesBase->AddComponent<InstancedMeshComponent>(stylizedTreeModel[1], stylizedTreeMaterial[1]);
-
-	styLeavesBase->AddFlag(ObjectFlag::NO_CULL);
 	
-	AddObject(styTreeBase);
-	AddObject(styLeavesBase);*/
+
+
+	
+	
+
+
+
 
 	/* NEW TREE TEST INSTANCED*/
 

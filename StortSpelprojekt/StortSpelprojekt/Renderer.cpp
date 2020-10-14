@@ -36,6 +36,38 @@ Renderer::~Renderer()
 
 void Renderer::Initialize(Window* window)
 {
+
+	if (sizeof(cb_grass) % 16 != 0)
+	{
+		OutputDebugStringA("WRONG WITH GRASS");
+	}
+	if (sizeof(cb_Lights) % 16 != 0)
+	{
+		OutputDebugStringA("WRONG WITH LIGHT");
+	}
+	if (sizeof(cb_Material) % 16 != 0)
+	{
+		OutputDebugStringA("WRONG WITH MATERIAL");
+	}
+	if (sizeof(cb_Object) % 16 != 0)
+	{
+		OutputDebugStringA("WRONG WITH Object");
+	}
+	if (sizeof(cb_Scene) % 16 != 0)
+	{
+		OutputDebugStringA("WRONG WITH SCENE");
+	}
+	if (sizeof(s_PointLight) % 16 != 0)
+	{
+		OutputDebugStringA("WRONG WITH GRASS");
+	}
+	if (sizeof(cb_grass) % 16 != 0)
+	{
+		OutputDebugStringA("WRONG WITH PLIGHT");
+	}
+	
+
+
 	this->outputWindow = window;
 
 	DXHelper::CreateSwapchain(*window, &device, &context, &swapchain);
@@ -400,6 +432,8 @@ void Renderer::DrawRenderItemGrass(const RenderItem& item)
 	dx::XMMATRIX wv = dx::XMMatrixMultiply(item.world, item.camera->GetViewMatrix());
 	dx::XMStoreFloat4x4(&cb_object_data.wv, wv);
 
+	dx::XMStoreFloat4x4(&cb_object_data.world, item.world);
+
 	DXHelper::BindConstBuffer(context, obj_cbuffer, &cb_object_data, CB_OBJECT_SLOT, ShaderBindFlag::VERTEX);
 
 	DXHelper::BindConstBuffer(context, obj_cbuffer, &cb_object_data, CB_OBJECT_SLOT, ShaderBindFlag::HULL);
@@ -408,13 +442,8 @@ void Renderer::DrawRenderItemGrass(const RenderItem& item)
 
 	dx::XMStoreFloat3(&cb_scene.cameraPosition, item.camera->GetOwner()->GetTransform().GetPosition());
 	DXHelper::BindConstBuffer(context, scene_buffer, &cb_scene, CB_SCENE_SLOT, ShaderBindFlag::PIXEL);
-
-	//dx::XMStoreFloat3(&cb_scene.cameraPosition,item.camera->GetOwner()->GetTransform().GetPosition());
-	
-	//DXHelper::BindConstBuffer(context, light_cbuffer, &cb_scene, CB_SCENE_SLOT, ShaderBindFlag::DOMAINS);
-	//DXHelper::BindConstBuffer(context, light_cbuffer, &cb_scene, CB_SCENE_SLOT, ShaderBindFlag::PIXEL);
-	/*cb_material_data = item.material->GetMaterialData();
-	DXHelper::BindConstBuffer(context, material_cbuffer, &cb_material_data, CB_MATERIAL_SLOT, ShaderBindFlag::PIXEL);*/
+	DXHelper::BindConstBuffer(context, scene_buffer, &cb_scene, CB_SCENE_SLOT, ShaderBindFlag::DOMAINS);
+	DXHelper::BindConstBuffer(context, scene_buffer, &cb_scene, CB_SCENE_SLOT, ShaderBindFlag::VERTEX);
 
 	context->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_1_CONTROL_POINT_PATCHLIST);
 

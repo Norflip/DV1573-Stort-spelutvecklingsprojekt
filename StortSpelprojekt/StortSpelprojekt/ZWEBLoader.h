@@ -60,15 +60,7 @@ namespace ZWEBLoader //TO BE ADDED: FUNCTION TO LOAD LIGHTS
 
 			for (unsigned int vertex = 0; vertex < verticesZweb.size(); vertex++)
 			{
-				if (type == ZWEBLoadType::SkeletonAnimation)
-				{
-					//vertices[vertex].position = DirectX::XMFLOAT3(verticesZweb[vertex].pos[0], verticesZweb[vertex].pos[2], verticesZweb[vertex].pos[1]);
-					vertices[vertex].position = DirectX::XMFLOAT3(verticesZweb[vertex].pos[0], verticesZweb[vertex].pos[1], verticesZweb[vertex].pos[2]);
-				}
-				else
-				{
-					vertices[vertex].position = DirectX::XMFLOAT3(verticesZweb[vertex].pos[0], verticesZweb[vertex].pos[1], verticesZweb[vertex].pos[2]);
-				}
+				vertices[vertex].position = DirectX::XMFLOAT3(verticesZweb[vertex].pos[0], verticesZweb[vertex].pos[1], verticesZweb[vertex].pos[2]);
 				
 				vertices[vertex].uv = DirectX::XMFLOAT2(verticesZweb[vertex].uv[0], 1.0f - verticesZweb[vertex].uv[1]);
 				vertices[vertex].normal = DirectX::XMFLOAT3(verticesZweb[vertex].normal[0], verticesZweb[vertex].normal[1], verticesZweb[vertex].normal[2]);// *-1.0f);

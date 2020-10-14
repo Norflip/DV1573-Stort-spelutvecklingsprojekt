@@ -124,14 +124,12 @@ void WorldGenerator::Initialize(ID3D11Device* device, Shader* shader, Shader* gr
 	this->grassShader = grassShader;
   
 	Mesh::Vertex v;
-	v.normal = dx::XMFLOAT3(0, 1, 0);
-	v.position = dx::XMFLOAT3(0, 0, 0);
-	v.uv = dx::XMFLOAT2(1, 0);
 	grassV.push_back(v);
-
-	for (int index = 0; index < chunkMesh.indices.size() / 3; index++)
+	for (int triangle = 0; triangle < chunkMesh.indices.size() / 3; triangle++)
 	{
-		grassI.push_back(0);
+
+		grassI.push_back(triangle);
+
 	}
 
 	/**********************************/
@@ -289,7 +287,10 @@ Chunk* WorldGenerator::CreateChunk(ChunkType type, dx::XMINT2 index, const Noise
 
 	GrassComponent* grassComponent = chunkObject->AddComponent<GrassComponent>(device, grassV, grassI, grassShader);
 
+	grassComponent->GetMaterial().SetTexture(Texture(chunkDataSRV), 6, ShaderBindFlag::HULL);
+
 	grassComponent->GetMaterial().SetTexture(Texture(chunkDataSRV), 6, ShaderBindFlag::DOMAINS);
+
 
 	grassComponent->SetType(type);
 
