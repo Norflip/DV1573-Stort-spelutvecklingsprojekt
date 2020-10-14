@@ -1,7 +1,10 @@
 #include "Object.h"
 #include "Component.h"
 
-Object::Object(const std::string& name, ObjectFlag flag) : name(name), flags(flag), transform(this)
+size_t Object::idCounter = 0;
+
+
+Object::Object(const std::string& name, ObjectFlag flag) : name(name), flags(flag), transform(this), id(idCounter++)
 {
 
 }
@@ -37,7 +40,12 @@ void Object::FixedUpdate(const float& fixedDeltaTime)
 {
 	if (HasFlag(ObjectFlag::ENABLED))
 	{
+		for (auto i = components.begin(); i < components.end(); i++)
+			(*i)->FixedUpdate(fixedDeltaTime);
 
+		auto children = transform.GetChildren();
+		for (auto i = children.begin(); i < children.end(); i++)
+			(*i)->GetOwner()->FixedUpdate(fixedDeltaTime);
 	}
 }
 

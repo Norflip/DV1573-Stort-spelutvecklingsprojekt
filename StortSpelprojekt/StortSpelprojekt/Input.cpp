@@ -47,7 +47,11 @@ void Input::SetWindow(HWND hwnd, size_t height, size_t width)
 
 void Input::ConfineMouse()
 {
-	ClipCursor(&windowRect);
+	RECT mouseConfineRect = {};
+	mouseConfineRect.top = mouseConfineRect.bottom = height / 2;
+	mouseConfineRect.left = mouseConfineRect.right = width / 2;
+
+	ClipCursor(&mouseConfineRect);
 }
 
 void Input::FreeMouse()
@@ -62,7 +66,7 @@ bool Input::GetLeftMouseKey() const
 
 bool Input::GetLeftMouseKeyDown() const
 {
-	
+
 	return mouseButtons.leftButton == DirectX::Mouse::ButtonStateTracker::PRESSED;
 }
 
@@ -88,6 +92,8 @@ bool Input::GetRightMouseKeyUp() const
 
 POINT Input::GetMousePos() const
 {
+	int x = mouse.GetState().x;
+	int y = mouse.GetState().y;
 
 	return POINT{ mouse.GetState().x,mouse.GetState().y };
 }
@@ -122,18 +128,18 @@ void Input::UpdateMsg(UINT umsg, WPARAM wParam, LPARAM lParam)
 	//could not get values from mouse class so an own implementation was made
 	switch (umsg)
 	{
-	case WM_INPUT:
-	{
-		UINT dwSize = sizeof(RAWINPUT);
-		static BYTE lpb[sizeof(RAWINPUT)];
-		GetRawInputData((HRAWINPUT)lParam, RID_INPUT, lpb, &dwSize, sizeof(RAWINPUTHEADER));
-		RAWINPUT* raw = (RAWINPUT*)lpb;
-
-		if (raw->header.dwType == RIM_TYPEMOUSE) //if xy is reversed check here, mouse, input, x, y
+		case WM_INPUT:
 		{
-			this->yPosRelative = raw->data.mouse.lLastX;
-			this->xPosRelative = raw->data.mouse.lLastY;
+			UINT dwSize = sizeof(RAWINPUT);
+			static BYTE lpb[sizeof(RAWINPUT)];
+			GetRawInputData((HRAWINPUT)lParam, RID_INPUT, lpb, &dwSize, sizeof(RAWINPUTHEADER));
+			RAWINPUT* raw = (RAWINPUT*)lpb;
+
+			if (raw->header.dwType == RIM_TYPEMOUSE) //if xy is reversed check here, mouse, input, x, y
+			{
+				this->yPosRelative = raw->data.mouse.lLastX;
+				this->xPosRelative = raw->data.mouse.lLastY;
+			}
 		}
-	}
 	}
 }

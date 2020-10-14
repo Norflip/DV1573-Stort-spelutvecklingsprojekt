@@ -6,6 +6,7 @@
 #include <Keyboard.h>
 #include <Mouse.h>
 
+namespace dx = DirectX;
 
 #define KEY(T) DirectX::Keyboard::T
 #define KEY_DOWN(T) Input::Instance().GetKeyDown(DirectX::Keyboard::T)

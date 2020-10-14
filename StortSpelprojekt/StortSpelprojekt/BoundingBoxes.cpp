@@ -28,14 +28,14 @@ void BoundingBoxes::CalcAABB(const Mesh& mesh)
 
 	for (UINT v = 0; v < mesh.vertices.size(); v++)
 	{
-		minVertex.x = min(minVertex.x, mesh.vertices[v].position.x);    // Find smallest x value in model
-		minVertex.y = min(minVertex.y, mesh.vertices[v].position.y);    // Find smallest y value in model
-		minVertex.z = min(minVertex.z, mesh.vertices[v].position.z);    // Find smallest z value in model
+		minVertex.x = std::min(minVertex.x, mesh.vertices[v].position.x);    // Find smallest x value in model
+		minVertex.y = std::min(minVertex.y, mesh.vertices[v].position.y);    // Find smallest y value in model
+		minVertex.z = std::min(minVertex.z, mesh.vertices[v].position.z);    // Find smallest z value in model
 
 		//Get the largest vertex 
-		maxVertex.x = max(maxVertex.x, mesh.vertices[v].position.x);    // Find largest x value in model
-		maxVertex.y = max(maxVertex.y, mesh.vertices[v].position.y);    // Find largest y value in model
-		maxVertex.z = max(maxVertex.z, mesh.vertices[v].position.z);    // Find largest z value in model
+		maxVertex.x = std::max(maxVertex.x, mesh.vertices[v].position.x);    // Find largest x value in model
+		maxVertex.y = std::max(maxVertex.y, mesh.vertices[v].position.y);    // Find largest y value in model
+		maxVertex.z = std::max(maxVertex.z, mesh.vertices[v].position.z);    // Find largest z value in model
 	}
 
 	
@@ -72,14 +72,14 @@ void BoundingBoxes::CalcAABB()
 
 	for (UINT v = 0; v < basicMesh.vertices.size(); v++)
 	{
-		minVertex.x = min(minVertex.x, basicMesh.vertices[v].position.x);    // Find smallest x value in model
-		minVertex.y = min(minVertex.y, basicMesh.vertices[v].position.y);    // Find smallest y value in model
-		minVertex.z = min(minVertex.z, basicMesh.vertices[v].position.z);    // Find smallest z value in model
+		minVertex.x = std::min(minVertex.x, basicMesh.vertices[v].position.x);    // Find smallest x value in model
+		minVertex.y = std::min(minVertex.y, basicMesh.vertices[v].position.y);    // Find smallest y value in model
+		minVertex.z = std::min(minVertex.z, basicMesh.vertices[v].position.z);    // Find smallest z value in model
 
 		//Get the largest vertex 
-		maxVertex.x = max(maxVertex.x, basicMesh.vertices[v].position.x);    // Find largest x value in model
-		maxVertex.y = max(maxVertex.y, basicMesh.vertices[v].position.y);    // Find largest y value in model
-		maxVertex.z = max(maxVertex.z, basicMesh.vertices[v].position.z);    // Find largest z value in model
+		maxVertex.x = std::max(maxVertex.x, basicMesh.vertices[v].position.x);    // Find largest x value in model
+		maxVertex.y = std::max(maxVertex.y, basicMesh.vertices[v].position.y);    // Find largest y value in model
+		maxVertex.z = std::max(maxVertex.z, basicMesh.vertices[v].position.z);    // Find largest z value in model
 	}
 
 	

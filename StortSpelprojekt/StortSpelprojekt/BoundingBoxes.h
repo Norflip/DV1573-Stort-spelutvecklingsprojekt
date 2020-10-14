@@ -1,5 +1,6 @@
 #pragma once
 #include "Mesh.h"
+#include <algorithm>
 struct AABB //OBB can be added too if someone knows how.
 {
 	dx::XMFLOAT3 min;

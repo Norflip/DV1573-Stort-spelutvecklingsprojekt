@@ -85,10 +85,10 @@ bool PossionDiscSampler::IsValid(dx::XMFLOAT2 point, dx::XMFLOAT2 regionSize, fl
 		int cellX = static_cast<int>(point.x / cellSize);
 		int cellY = static_cast<int>(point.y / cellSize);
 
-		int xmin = max(0, cellX - 2);
-		int xmax = min(cellX + 2, cols - 1);
-		int ymin = max(0, cellY - 2);
-		int ymax = min(cellY + 2, rows - 1);
+		int xmin = std::max(0, cellX - 2);
+		int xmax = std::min(cellX + 2, cols - 1);
+		int ymin = std::max(0, cellY - 2);
+		int ymax = std::min(cellY + 2, rows - 1);
 
 		for (int x = xmin; x <= xmax; x++)
 		{

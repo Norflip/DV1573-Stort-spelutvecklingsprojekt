@@ -63,15 +63,19 @@ void ControllerComponent::Update(const float& deltaTime)
 	{
 		this->canRotate = !this->canRotate;
 		if (this->canRotate)
+		{
 			Input::Instance().SetMouseMode(dx::Mouse::MODE_RELATIVE);
+		}
 		else
+		{
 			Input::Instance().SetMouseMode(dx::Mouse::MODE_ABSOLUTE);
+		}
 	}
 	if (this->canRotate)
 	{
 		//Input::Instance().ConfineMouse();
 		SetCursorPos(400, 400); //set this to coordinates middle of screen? get height/width from input?
-		GetOwner()->GetTransform().Rotate(Input::Instance().GetMousePosRelative().x * deltaTime, Input::Instance().GetMousePosRelative().y * deltaTime, 0.f);
+		GetOwner()->GetTransform().Rotate(Input::Instance().GetMousePosRelative().x * deltaTime, Input::Instance().GetMousePosRelative().y * deltaTime, 0.0f);
 		Input::Instance().ResetRelative();
 	}
 	//else

@@ -1,5 +1,4 @@
 #pragma once
-#include "DirectXHelpers.h"
 #include <DirectXMath.h>
 namespace dx = DirectX;
 
