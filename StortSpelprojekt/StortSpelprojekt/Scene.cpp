@@ -5,7 +5,6 @@
 Scene::Scene() : input(Input::Instance())
 {
 	skyboxClass = nullptr;
-	skybox = nullptr;
 	renderer = nullptr;
 	camera = nullptr;
 
@@ -14,20 +13,23 @@ Scene::Scene() : input(Input::Instance())
 
 Scene::~Scene()
 {	
-	delete skybox;
-	skybox = nullptr;
-
 	delete skyboxClass;
 	skyboxClass = nullptr;
 
 	delete root;
 	root = nullptr;	
+
+	if (resourceManager)
+		delete resourceManager;
 }
 
 void Scene::Initialize(Renderer* renderer)
 {
 	this->renderer = renderer;
-	
+
+	resourceManager = new ResourceManager;
+	resourceManager->InitializeResources(renderer->GetDevice());
+
 	// TEMP
 	// Should change values on resize event
 	Window* window = renderer->GetOutputWindow();
@@ -43,7 +45,6 @@ void Scene::Initialize(Renderer* renderer)
 	GUIFont* fpsDisplay = new GUIFont(*renderer, "test", 300, 300);
 	normalSprite->SetActive();
 
-
 	guiManager = new GUIManager(renderer);
 	renderer->SetGUIManager(guiManager);
 	guiManager->AddGUIObject(fpsDisplay, "fps");
@@ -56,9 +57,8 @@ void Scene::Initialize(Renderer* renderer)
 	state.seed = 1337;
 	state.segment = 0;
 
-	worldGenerator.Initialize(renderer->GetDevice());
+	worldGenerator.Initialize(renderer->GetDevice(), resourceManager->GetShaderResource("terrainShader"), resourceManager->GetShaderResource("grassShader"));
 	worldGenerator.Generate(state, renderer->GetDevice(), root);
-	
 	worldGenerator.InitalizeGrass(renderer->GetDevice(), renderer->GetContext());
 
 	Object* cameraObject = new Object("camera", ObjectFlag::ENABLED);
@@ -70,93 +70,104 @@ void Scene::Initialize(Renderer* renderer)
 	Input::Instance().SetWindow(window->GetHWND(), window->GetHeight(), window->GetWidth());
 	AddObject(cameraObject);
 
-	Shader shader;
-	Shader skeletonShader;
-	shader.SetPixelShader(L"Shaders/Default_ps.hlsl");
-	shader.SetVertexShader(L"Shaders/Default_vs.hlsl");
-	skeletonShader.SetVertexShader(L"Shaders/Skeleton_vs.hlsl");
-	skeletonShader.SetPixelShader(L"Shaders/Default_ps.hlsl");
-	skeletonShader.SetInputLayoutStructure(8, skeletonShader.SKELETON_INPUT_LAYOUTd);
-	shader.Compile(renderer->GetDevice());
-	skeletonShader.Compile(renderer->GetDevice());
+	InitializeObjects();
 
-	std::vector<Mesh> zwebMeshes = ZWEBLoader::LoadMeshes(ZWEBLoadType::NoAnimation, "Models/brickSphere.ZWEB", renderer->GetDevice());
-	std::vector<Material> zwebMaterials = ZWEBLoader::LoadMaterials("Models/brickSphere.ZWEB", shader, renderer->GetDevice());
-	
-	std::vector<Mesh> sylvanas = ZWEBLoader::LoadMeshes(ZWEBLoadType::NoAnimation, "Models/sylvanas.ZWEB", renderer->GetDevice());
-	std::vector<Material> sylvanasMat = ZWEBLoader::LoadMaterials("Models/sylvanas.ZWEB", shader, renderer->GetDevice());
+	//Log::Add("PRINTING SCENE HIERARCHY ----");
+	//PrintSceneHierarchy(root, 0);
+	/*Log::Add("----");*/
+  
+}
 
-	std::vector<Mesh> cylinder = ZWEBLoader::LoadMeshes(ZWEBLoadType::NoAnimation, "Models/cylinder.ZWEB", renderer->GetDevice());
-	std::vector<Material> cylinderMat = ZWEBLoader::LoadMaterials("Models/cylinder.ZWEB", shader, renderer->GetDevice());
+void Scene::InitializeObjects()
+{
+	Mesh* mesh1 = resourceManager->GetResource<Mesh>("Test");
+	Mesh* mesh2 = resourceManager->GetResource<Mesh>("Test2");
+	Mesh* mesh3 = resourceManager->GetResource<Mesh>("Test3");
 
-	Object* testMesh = new Object("test");
-	Object* testMesh2 = new Object("test2");
-	Object* testMesh3 = new Object("test3");
-	
+	Material* material1 = resourceManager->GetResource<Material>("TestMaterial");
+	Material* material2 = resourceManager->GetResource<Material>("Test2Material");
+	Material* material3 = resourceManager->GetResource<Material>("Test3Material");
+
+	Object* testObject = new Object("test");
+	Object* testObject2 = new Object("test2");
+	Object* testObject3 = new Object("test3");
+
+	testObject->AddComponent<MeshComponent>(*mesh1, *material1);
+	testObject2->AddComponent<MeshComponent>(*mesh2, *material2);
+	testObject3->AddComponent<MeshComponent>(*mesh3, *material3);
+
 	dx::XMFLOAT3 miniTranslation = dx::XMFLOAT3(0, 0, 6);
 	dx::XMFLOAT3 miniTranslation2 = dx::XMFLOAT3(2, 2, 2);
 	dx::XMFLOAT3 miniTranslation3 = dx::XMFLOAT3(-4, -3, -4);
 	dx::XMFLOAT3 miniTranslation4 = dx::XMFLOAT3(0.f, -7.f, 0.f);
 
-	testMesh->GetTransform().SetPosition(dx::XMLoadFloat3(&miniTranslation));
-	
-	testMesh2->GetTransform().SetPosition(dx::XMLoadFloat3(&miniTranslation2));
+	testObject->GetTransform().SetPosition(dx::XMLoadFloat3(&miniTranslation));
+	testObject2->GetTransform().SetPosition(dx::XMLoadFloat3(&miniTranslation2));
+	testObject3->GetTransform().SetPosition(dx::XMLoadFloat3(&miniTranslation3));
 
+	AddObject(testObject2, testObject);
+	AddObject(testObject3, testObject2);
 
-	testMesh3->GetTransform().SetPosition(dx::XMLoadFloat3(&miniTranslation3));
+	AddObject(testObject);
 
-	//testMesh2->AddComponent<MoveComponent>();
-
-	auto sampler = DXHelper::CreateSampler(D3D11_FILTER_MIN_MAG_MIP_LINEAR, D3D11_TEXTURE_ADDRESS_WRAP, renderer->GetDevice());
-	zwebMaterials[0].SetSampler(sampler, 0, ShaderBindFlag::PIXEL);
-	sylvanasMat[0].SetSampler(sampler, 0, ShaderBindFlag::PIXEL);
-	cylinderMat[0].SetSampler(sampler, 0, ShaderBindFlag::PIXEL);
-
-	testMesh->AddComponent<MeshComponent>(zwebMeshes[0], zwebMaterials[0]);
-	testMesh2->AddComponent<MeshComponent>(sylvanas[0], sylvanasMat[0]);
-	testMesh3->AddComponent<MeshComponent>(cylinder[0], cylinderMat[0]);
-	
-	
-
-	//AddObject(testMesh2);
-	//AddObject(testMesh3);
-
-	/* * * * * * * * ** * * * * */
-	
-
-	skybox = new Object("Skybox");
-	skyboxClass = new Skybox(renderer->GetDevice(), renderer->GetContext(), skybox);
+	skyboxClass = new Skybox(renderer->GetDevice(), renderer->GetContext(), resourceManager->GetShaderResource("skyboxShader"));
 	skyboxClass->GetThisObject()->AddFlag(ObjectFlag::NO_CULL);
-	//AddObject(skyboxClass->GetThisObject());
 
-	
+	Object* testMesh4 = new Object("test4");
+	testMesh4->AddComponent<NodeWalkerComponent>();
+	testMesh4->GetTransform().SetPosition(dx::XMLoadFloat3(&miniTranslation4));
+	testMesh4->AddComponent<MeshComponent>(*mesh1, *material2);
+	AddObject(testMesh4);
 
-	/* NEW TREE TEST INSTANCED*/
-	Shader instanceShader;
-	Shader alphaInstanceShader;
+	/*************************INSTANCING*******************/
+	auto sampler = DXHelper::CreateSampler(D3D11_FILTER_MIN_MAG_MIP_LINEAR, D3D11_TEXTURE_ADDRESS_WRAP, renderer->GetDevice());
 
-	instanceShader.SetVertexShader(L"Shaders/Instance_vs.hlsl");
-	instanceShader.SetPixelShader(L"Shaders/Default_ps.hlsl");
-	alphaInstanceShader.SetVertexShader(L"Shaders/Instance_vs.hlsl");
-	alphaInstanceShader.SetPixelShader(L"Shaders/Alpha_ps.hlsl");
-	alphaInstanceShader.SetInputLayoutStructure(10, alphaInstanceShader.INSTANCE_INPUT_LAYOUTd);
-	instanceShader.SetInputLayoutStructure(10, instanceShader.INSTANCE_INPUT_LAYOUTd);
-	instanceShader.Compile(renderer->GetDevice());
-	alphaInstanceShader.Compile(renderer->GetDevice());
-	
+	Shader* instanceShader = resourceManager->GetShaderResource("instanceShader");
+	Shader* alphaInstanceShader = resourceManager->GetShaderResource("alphaInstanceShader");
+
 	//0 base 1 branch 2 leaves
 	std::vector<Mesh> stylizedTreeModel = ZWEBLoader::LoadMeshes(ZWEBLoadType::NoAnimation, "Models/tree.ZWEB", renderer->GetDevice());
 	//0 tree 1 leaves
 	std::vector<Material> stylizedTreeMaterial = ZWEBLoader::LoadMaterials("Models/tree.ZWEB", instanceShader, renderer->GetDevice());
 
+	Shader* lightShader = resourceManager->GetShaderResource("defaultShader");
+
+	//TEST POINT LIGHTS____________________________________________________________________________________________________________________
+	Object* testPointLight = new Object("testPointLight");								
+	dx::XMFLOAT3 lightTranslation = dx::XMFLOAT3(2.0f, 0.0f, 3.0f);						
+	testPointLight->GetTransform().SetPosition(dx::XMLoadFloat3(&lightTranslation));	
+	AddObject(testPointLight);															
+	testPointLight->AddComponent<PointLightComponent>();								
+	testPointLight->GetComponent<PointLightComponent>()->SetColor({ 1.f, 0.f, 0.f, 1.f });
+																						
+	Object* testPointLight2 = new Object("testPointLight2");							
+	dx::XMFLOAT3 lightTranslation2 = dx::XMFLOAT3(0.0f, 2.0f, 3.0f);					
+	testPointLight2->GetTransform().SetPosition(dx::XMLoadFloat3(&lightTranslation2));	
+	AddObject(testPointLight2);															
+	testPointLight2->AddComponent<PointLightComponent>();								
+	testPointLight2->GetComponent<PointLightComponent>()->SetColor({ 0.f, 1.f, 0.f, 1.f });
+																						
+	Object* testPointLight3 = new Object("testPointLight3");							
+	dx::XMFLOAT3 lightTranslation3 = dx::XMFLOAT3(-2.0f, 0.0f, 3.0f);					
+	testPointLight3->GetTransform().SetPosition(dx::XMLoadFloat3(&lightTranslation3));	
+	AddObject(testPointLight3);															
+	testPointLight3->AddComponent<PointLightComponent>();								
+	testPointLight3->GetComponent<PointLightComponent>()->SetColor({ 0.f, 0.f, 1.f, 1.f });
+	//_____________________________________________________________________________________________________________________________________
 	
 	stylizedTreeMaterial[0].SetSampler(sampler, 0, ShaderBindFlag::PIXEL);
 	stylizedTreeMaterial[1].SetSampler(sampler, 0, ShaderBindFlag::PIXEL);
 
 	stylizedTreeMaterial[0].SetShader(instanceShader);
 	stylizedTreeMaterial[1].SetShader(alphaInstanceShader);
-
+  
 	worldGenerator.InitializeTrees(stylizedTreeModel, stylizedTreeMaterial, renderer->GetDevice());
+
+	//for (size_t i = 0; i < nrOfInstances; i++)
+	//{
+	//	dx::XMStoreFloat4x4(&treeBranchInstances[i].instanceWorld, dx::XMMatrixScaling(0.5f, 0.5f, 0.5f) * dx::XMMatrixTranslation((i + 1 * r[i]) + treeModels[1].GetT().x, 0 + treeModels[0].GetT().y, (i + 1 * r[i]) + treeModels[1].GetT().z));
+	//	treeBranchInstances[i].instancePosition = dx::XMFLOAT3((i + 1 * r[i]) + treeModels[1].GetT().x, 0 + treeModels[1].GetT().y, (i + 1 * r[i]) + treeModels[1].GetT().z);
+	//}
 
 	//size_t nrOfInstancedStyTrees =5;
 	//std::vector<Mesh::InstanceData> styTreesInstanced(nrOfInstancedStyTrees);
@@ -168,7 +179,6 @@ void Scene::Initialize(Renderer* renderer)
 	//{
 	//	randNr.push_back(rand() % 5 + 1);
 	//}
-
 
 	/*for (size_t i = 0; i < nrOfInstancedStyTrees; i++)
 	{		
@@ -194,8 +204,6 @@ void Scene::Initialize(Renderer* renderer)
 
 	styLeavesBase->AddFlag(ObjectFlag::NO_CULL);
 	
-	
-
 	AddObject(styTreeBase);
 	AddObject(styLeavesBase);*/
 
@@ -232,8 +240,8 @@ void Scene::Initialize(Renderer* renderer)
 	clock.Update();
 	clock.Start();
 	clock.Update();
-	/* * * * * * * * ** * * * * */
 
+	/* * * * * * * * ** * * * * */
 	//Log::Add("PRINTING SCENE HIERARCHY ----");
 	//PrintSceneHierarchy(root, 0);
 	/*Log::Add("----");*/
@@ -243,6 +251,15 @@ void Scene::Update(const float& deltaTime)
 {
 	clock.Update();
 
+	//dx::XMFLOAT3 positionA = { 0,0,2 };
+	//dx::XMFLOAT3 positionB = { 0, 2,-5};
+
+	//DShape::DrawBox(positionA, { 2,2,2 }, { 0, 1, 1 });
+	//DShape::DrawWireBox(positionB, { 4,4,4 }, { 1,0,0 });
+	//DShape::DrawSphere({ -4,0,0 }, 1.0f, { 0, 0, 1 });
+	//DShape::DrawWireSphere({ -4,0,5 }, 1.0f, { 0,1,0 });
+	//DShape::DrawLine(positionA, positionB, { 1,1,0 });
+  
 	input.UpdateInputs();
 	
 
@@ -251,10 +268,14 @@ void Scene::Update(const float& deltaTime)
 
 
 	root->Update(deltaTime);
+
 	skyboxClass->GetThisObject()->GetTransform().SetPosition(camera->GetOwner()->GetTransform().GetPosition());
+
 	GameClock::Instance().Update();
-	guiManager->UpdateAll();
 	//std::cout << "FPS: " << GameClock::Instance().GetFramesPerSecond() << std::endl;
+
+	guiManager->UpdateAll();
+	
 	renderer->UpdateTime((float)clock.GetSeconds());
 	float t = (float)clock.GetSeconds();
 	t = t;
@@ -323,6 +344,12 @@ void Scene::Update(const float& deltaTime)
 	else
 	{
 		DShape::DrawSphere(ray.GetPoint(10.0f), 0.2f, { 1, 0, 1 });
+	}
+	
+	// Press P to recompile shaders
+	if (KEY_PRESSED(P))
+	{
+		resourceManager->CompileShaders(renderer->GetDevice());
 	}
 }
 

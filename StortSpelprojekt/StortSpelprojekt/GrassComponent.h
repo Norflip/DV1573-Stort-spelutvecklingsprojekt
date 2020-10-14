@@ -19,7 +19,7 @@ class GrassComponent :
     public Component
 {
 public:
-	GrassComponent(ID3D11Device* device, std::vector<Mesh::Vertex>& vertex, std::vector<unsigned int>& index, Shader& shader);
+	GrassComponent(ID3D11Device* device, std::vector<Mesh::Vertex>& vertex, std::vector<unsigned int>& index, Shader* shader);
 	virtual ~GrassComponent();
 
 	void InitializeGrass(std::vector<Mesh::Vertex>& vertices, std::vector<unsigned int>& indices, ID3D11Device* device, ID3D11DeviceContext* context);

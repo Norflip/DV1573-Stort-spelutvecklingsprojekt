@@ -20,8 +20,11 @@ Renderer::~Renderer()
 		delete (*i);
 
 	obj_cbuffer->Release();
+
+	//skeleton_cbuffer->Release();
+
 	skeleton_srvbuffer->Release();
-	light_cbuffer->Release();
+
 	material_cbuffer->Release();
 
 	rasterizerStateCullBack->Release();
@@ -40,7 +43,7 @@ void Renderer::Initialize(Window* window)
 
 	this->midbuffers[0] = DXHelper::CreateRenderTexture(window->GetWidth(), window->GetHeight(), device, context, &dss);
 	this->midbuffers[1] = DXHelper::CreateRenderTexture(window->GetWidth(), window->GetHeight(), device, context, &dss);
-  srv_skeleton_data.resize(60);
+	srv_skeleton_data.resize(60);
 
 	dx::XMFLOAT4X4 bone;
 	dx::XMStoreFloat4x4(&bone, dx::XMMatrixIdentity());
@@ -54,18 +57,19 @@ void Renderer::Initialize(Window* window)
 	}
 	
 	DXHelper::CreateConstBuffer(device, &obj_cbuffer, &cb_object_data, sizeof(cb_object_data));
-	DXHelper::CreateConstBuffer(device, &light_cbuffer, &cb_scene, sizeof(cb_scene));
+	LightManager::Instance().Initialize(device);
 	DXHelper::CreateConstBuffer(device, &material_cbuffer, &cb_material_data, sizeof(cb_material_data));
 	
 	DXHelper::CreateStructuredBuffer(device, &skeleton_srvbuffer, srv_skeleton_data, sizeof(dx::XMFLOAT4X4), srv_skeleton_data.size(), &skeleton_srv);
 	DXHelper::BindStructuredBuffer(context, skeleton_srvbuffer, srv_skeleton_data, BONES_SRV_SLOT, ShaderBindFlag::VERTEX, &skeleton_srv);
 	DXHelper::CreateBlendState(device, &blendStateOn, &blendStateOff);
+	DXHelper::CreateConstBuffer(device, &scene_buffer, &cb_scene, sizeof(cb_scene));
 
 	/* Screenquad shader */
-	Shader screenQuadShader;
-	screenQuadShader.SetPixelShader(L"Shaders/ScreenQuad_ps.hlsl");
-	screenQuadShader.SetVertexShader(L"Shaders/ScreenQuad_vs.hlsl");
-	screenQuadShader.Compile(device);
+	Shader* screenQuadShader = new Shader;
+	screenQuadShader->SetPixelShader("Shaders/ScreenQuad_ps.hlsl");
+	screenQuadShader->SetVertexShader("Shaders/ScreenQuad_vs.hlsl");
+	screenQuadShader->Compile(device);
 
 	screenQuadMaterial = Material(screenQuadShader);
 	screenQuadMaterial.SetSampler(DXHelper::CreateSampler(D3D11_FILTER_MIN_MAG_MIP_LINEAR, D3D11_TEXTURE_ADDRESS_CLAMP, device), 0, ShaderBindFlag::VERTEX);
@@ -77,11 +81,7 @@ void Renderer::Initialize(Window* window)
 	//EXEMPEL
 	///AddRenderPass(new PSRenderPass(1, L"Shaders/TestPass.hlsl"));
 	//AddRenderPass(new PSRenderPass(0, L"Shaders/TestPass2.hlsl"));
-
-	
 }
-
-
 
 void Renderer::BeginManualRenderPass(RenderTexture& target)
 {
@@ -143,7 +143,28 @@ void Renderer::DrawQueueToTarget(RenderQueue& queue)
 
 void Renderer::RenderFrame()
 {
+
+	LightManager::Instance().UpdateBuffers(context);
+
+	// Temporärt för att ändra skybox texture
+	static int ids = 0;
+	static float color = 0.0f;
+
+	color += (float)0.005f;
+	if (color > 1.0f)
+	{
+		color -= 1.0f;
+		if (ids != 3)
+			ids += 1;
+		else
+			ids = 0;
+	}
+
+	cb_scene.id = ids;
+	cb_scene.factor = color;
+
 	//We need to clear Depth Stencil View as well.//Emil
+
 	size_t bufferIndex = 0;
 	ID3D11ShaderResourceView* nullSRV[1] = { nullptr };
 	context->PSSetShaderResources(0, 1, nullSRV);
@@ -157,8 +178,7 @@ void Renderer::RenderFrame()
 	context->OMSetBlendState(blendStateOff, BLENDSTATEMASK, 0xffffffff);
 	
 	DrawQueueToTarget(opaqueItemQueue);
-  
-  DShape::Instance().m_Draw(context);
+	DShape::Instance().m_Draw(context);
 	context->RSSetState(rasterizerStateCullNone);
 	context->OMSetBlendState(blendStateOn, BLENDSTATEMASK, 0xffffffff);
 	
@@ -267,10 +287,7 @@ void Renderer::SetRSToCullNone(bool cullNone)
 	{
 		context->RSSetState(rasterizerStateCullBack);
 	}
-	
 }
-
-
 
 void Renderer::ClearRenderTarget(const RenderTexture& target)
 {
@@ -309,51 +326,11 @@ void Renderer::DrawRenderItem(const RenderItem& item)
 	dx::XMStoreFloat4x4(&cb_object_data.world, dx::XMMatrixTranspose(item.world));
 	DXHelper::BindConstBuffer(context, obj_cbuffer, &cb_object_data, CB_OBJECT_SLOT, ShaderBindFlag::VERTEX);
 
-
 	cb_material_data = item.material->GetMaterialData();
 	DXHelper::BindConstBuffer(context, material_cbuffer, &cb_material_data, CB_MATERIAL_SLOT, ShaderBindFlag::PIXEL);
-		
 
-	cb_scene.sunDirection = dx::XMFLOAT3(0.0f, 100.0f, -45.0f);
-	cb_scene.sunIntensity = 0.4f;
-
-	cb_scene.pointLights[0].lightColor = dx::XMFLOAT4(0.5f, 0.5f, 0.5f, 1.0f);
-	cb_scene.pointLights[0].lightPosition = dx::XMFLOAT3(15.0f, -5.0f, -5.0f);
-	cb_scene.pointLights[0].attenuation = dx::XMFLOAT3(1.0f, 0.02f, 0.0f);
-	cb_scene.pointLights[0].range = 25.0f;
-
-	cb_scene.pointLights[1].lightColor = dx::XMFLOAT4(0.3f, 0.3f, 0.3f, 1.0f);
-	cb_scene.pointLights[1].lightPosition = dx::XMFLOAT3(-10.0f, 10.0f, -5.0f);
-	cb_scene.pointLights[1].attenuation = dx::XMFLOAT3(1.0f, 0.02f, 0.0f);
-	cb_scene.pointLights[1].range = 25.0f;
-
-	/**********************************/
-
-	/* This is a temporary solution to lerp between textures in the shader 
-	   This is jsut ot check if the ids (gonna be our different levels later) works
-	*/
-
-	static int ids = 0;
-	static float color = 0.0f;
-
-	color += (float)0.0005f;
-	if (color > 1.0f)
-	{
-		color -= 1.0f;
-		if (ids != 3)
-			ids += 1;
-		else
-			ids = 0;
-	}
-		
-	cb_scene.id = ids;
-	cb_scene.factor = color;
-
-	/**********************************/
-	
-	cb_scene.nrOfPointLights = 2;
 	dx::XMStoreFloat3(&cb_scene.cameraPosition, item.camera->GetOwner()->GetTransform().GetPosition());
-	DXHelper::BindConstBuffer(context, light_cbuffer, &cb_scene, CB_SCENE_SLOT, ShaderBindFlag::PIXEL);
+	DXHelper::BindConstBuffer(context, scene_buffer, &cb_scene, CB_SCENE_SLOT, ShaderBindFlag::PIXEL);
 
 	UINT stride = sizeof(Mesh::Vertex);
 	UINT offset = 0;
@@ -367,17 +344,17 @@ void Renderer::DrawRenderItem(const RenderItem& item)
 
 void Renderer::DrawRenderItemInstanced(const RenderItem& item)
 {
-	
-
 
 	dx::XMMATRIX vp =dx::XMMatrixMultiply(item.camera->GetViewMatrix(), item.camera->GetProjectionMatrix());
 	dx::XMStoreFloat4x4(&cb_object_data.vp, dx::XMMatrixTranspose(vp));
 	
 	DXHelper::BindConstBuffer(context, obj_cbuffer, &cb_object_data, CB_OBJECT_SLOT, ShaderBindFlag::VERTEX);
 
-
 	cb_material_data = item.material->GetMaterialData();
 	DXHelper::BindConstBuffer(context, material_cbuffer, &cb_material_data, CB_MATERIAL_SLOT, ShaderBindFlag::PIXEL);
+
+	dx::XMStoreFloat3(&cb_scene.cameraPosition, item.camera->GetOwner()->GetTransform().GetPosition());
+	DXHelper::BindConstBuffer(context, scene_buffer, &cb_scene, CB_SCENE_SLOT, ShaderBindFlag::PIXEL);
 
 	UINT stride[2] = { sizeof(Mesh::Vertex), sizeof(Mesh::InstanceData) };
 	UINT offset[2] = { 0 };
@@ -404,6 +381,9 @@ void Renderer::DrawRenderItemSkeleton(const RenderItem& item)
 	UINT stride = sizeof(Mesh::Vertex);
 	UINT offset = 0;
 
+	dx::XMStoreFloat3(&cb_scene.cameraPosition, item.camera->GetOwner()->GetTransform().GetPosition());
+	DXHelper::BindConstBuffer(context, scene_buffer, &cb_scene, CB_SCENE_SLOT, ShaderBindFlag::PIXEL);
+
 	context->IASetVertexBuffers(0, 1, &item.mesh->vertexBuffer, &stride, &offset);
 	context->IASetIndexBuffer(item.mesh->indexBuffer, DXGI_FORMAT_R32_UINT, 0);
 	context->IASetPrimitiveTopology(item.mesh->topology);
@@ -417,8 +397,6 @@ void Renderer::DrawRenderItemGrass(const RenderItem& item)
 	dx::XMMATRIX mvp = dx::XMMatrixMultiply(item.world, dx::XMMatrixMultiply(item.camera->GetViewMatrix(), item.camera->GetProjectionMatrix()));
 	dx::XMStoreFloat4x4(&cb_object_data.mvp,mvp);
 
-	
-
 	dx::XMMATRIX wv = dx::XMMatrixMultiply(item.world, item.camera->GetViewMatrix());
 	dx::XMStoreFloat4x4(&cb_object_data.wv, wv);
 
@@ -428,10 +406,13 @@ void Renderer::DrawRenderItemGrass(const RenderItem& item)
 
 	DXHelper::BindConstBuffer(context, obj_cbuffer, &cb_object_data, CB_OBJECT_SLOT, ShaderBindFlag::GEOMETRY);
 
-	dx::XMStoreFloat3(&cb_scene.cameraPosition,item.camera->GetOwner()->GetTransform().GetPosition());
+	dx::XMStoreFloat3(&cb_scene.cameraPosition, item.camera->GetOwner()->GetTransform().GetPosition());
+	DXHelper::BindConstBuffer(context, scene_buffer, &cb_scene, CB_SCENE_SLOT, ShaderBindFlag::PIXEL);
+
+	//dx::XMStoreFloat3(&cb_scene.cameraPosition,item.camera->GetOwner()->GetTransform().GetPosition());
 	
-	DXHelper::BindConstBuffer(context, light_cbuffer, &cb_scene, CB_SCENE_SLOT, ShaderBindFlag::DOMAINS);
-	DXHelper::BindConstBuffer(context, light_cbuffer, &cb_scene, CB_SCENE_SLOT, ShaderBindFlag::PIXEL);
+	//DXHelper::BindConstBuffer(context, light_cbuffer, &cb_scene, CB_SCENE_SLOT, ShaderBindFlag::DOMAINS);
+	//DXHelper::BindConstBuffer(context, light_cbuffer, &cb_scene, CB_SCENE_SLOT, ShaderBindFlag::PIXEL);
 	/*cb_material_data = item.material->GetMaterialData();
 	DXHelper::BindConstBuffer(context, material_cbuffer, &cb_material_data, CB_MATERIAL_SLOT, ShaderBindFlag::PIXEL);*/
 

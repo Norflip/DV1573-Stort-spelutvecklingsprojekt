@@ -11,6 +11,7 @@
 #include "MeshComponent.h"
 #include "ZWEBLoader.h"
 #include "SkeletonMeshComponent.h"
+#include "PointLightComponent.h"
 #include "NodeWalkerComponent.h"
 
 #include "Skybox.h"
@@ -27,6 +28,7 @@
 #include "CapsuleColliderComponent.h"
 #include "DebugBoxShapeComponent.h"
 
+#include "ResourceManager.h"
 class GUIFont;
 class SpriteRenderPass;
 
@@ -37,7 +39,8 @@ public:
 	virtual ~Scene();
 
 	void Initialize(Renderer* renderer);
-	
+	void InitializeObjects();
+
 	void OnActivate() {}
 	void OnDeactivate() {}
 	
@@ -68,7 +71,8 @@ private:
 	GUIManager* guiManager;		
 	
 	/* Test skybox in class */
-	Object* skybox;
+	//Object* skybox;
 	Skybox* skyboxClass;		
 
+	ResourceManager* resourceManager;
 };

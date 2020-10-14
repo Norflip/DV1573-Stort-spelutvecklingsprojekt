@@ -4,8 +4,10 @@ namespace dx = DirectX;
 
 constexpr size_t CB_OBJECT_SLOT = 0;
 constexpr size_t CB_MATERIAL_SLOT = 1;
-constexpr size_t CB_SCENE_SLOT = 2;
-constexpr size_t CB_GRASS_PARAMETERS_SLOT = 3;
+constexpr size_t CB_SCENE_SLOT = 2; 
+constexpr size_t CB_LIGHT_SLOT = 3;
+constexpr size_t CB_GRASS_PARAMETERS_SLOT = 4;
+
 
 constexpr size_t POINT_LIGHT_COUNT = 16;
 
@@ -30,7 +32,7 @@ struct cb_Material
 };
 
 __declspec(align(16))
-struct PointLight
+struct s_PointLight
 {
 	dx::XMFLOAT4 lightColor;
 	dx::XMFLOAT3 lightPosition;
@@ -39,23 +41,24 @@ struct PointLight
 };
 
 __declspec(align(16))
-struct cb_Scene
+struct cb_Lights
 {
-	PointLight pointLights[POINT_LIGHT_COUNT];
+	s_PointLight pointLights[POINT_LIGHT_COUNT];
 	int nrOfPointLights;
 	dx::XMFLOAT3 sunDirection;
 	float sunIntensity;
-	dx::XMFLOAT3 cameraPosition;
-
-	// new stuff
-	int id;
-	float factor;
-	dx::XMFLOAT2 padding10;
-	
-	float time;
-	dx::XMFLOAT3 padding11;
+	dx::XMFLOAT3 pad;
 };
 
+__declspec(align(16))
+struct cb_Scene
+{
+	dx::XMFLOAT3 cameraPosition;
+	int id;
+	float factor;
+	float time;
+	dx::XMFLOAT2 padding11;
+};
 
 __declspec(align(16))
 struct cb_grass

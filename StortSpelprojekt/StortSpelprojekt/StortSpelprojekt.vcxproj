@@ -175,6 +175,7 @@
     <ClCompile Include="GUIManager.cpp" />
     <ClCompile Include="GUISprite.cpp" />
     <ClCompile Include="Input.cpp" />
+    <ClCompile Include="LightManager.cpp" />
     <ClCompile Include="InstancedMeshComponent.cpp" />
     <ClCompile Include="main.cpp" />
     <ClCompile Include="Material.cpp" />
@@ -185,8 +186,10 @@
     <ClCompile Include="Physics.cpp" />
     <ClCompile Include="Path.cpp" />
     <ClCompile Include="PossionDiscSampler.cpp" />
+    <ClCompile Include="PointLightComponent.cpp" />
     <ClCompile Include="Renderer.cpp" />
     <ClCompile Include="RigidBodyComponent.cpp" />
+    <ClCompile Include="ResourceManager.cpp" />
     <ClCompile Include="Scene.cpp" />
     <ClCompile Include="Shader.cpp" />
     <ClCompile Include="GUIFont.cpp" />
@@ -216,11 +219,13 @@
     <ClInclude Include="Path.h" />
     <ClInclude Include="PhysicCallbacks.h" />
     <ClInclude Include="PossionDiscSampler.h" />
+    <ClInclude Include="ResourceManager.h" />
     <ClInclude Include="Shapes.h" />
     <ClInclude Include="GameClock.h" />
     <ClInclude Include="GrassComponent.h" />
     <ClInclude Include="GUIFont.h" />
     <ClInclude Include="GUIManager.h" />
+    <ClInclude Include="LightManager.h" />
     <ClInclude Include="GUISprite.h" />
     <ClInclude Include="InstancedMeshComponent.h" />
     <ClInclude Include="Math.h" />
@@ -240,6 +245,7 @@
     <ClInclude Include="Object.h" />
     <ClInclude Include="Physics.h" />
     <ClInclude Include="Ray.h" />
+    <ClInclude Include="PointLightComponent.h" />
     <ClInclude Include="Renderer.h" />
     <ClInclude Include="RenderPass.h" />
     <ClInclude Include="RigidBodyComponent.h" />
