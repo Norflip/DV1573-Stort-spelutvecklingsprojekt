@@ -10,18 +10,18 @@ SamplerState LinearSampler : register(s0);
 
 
 
-float4 GetNormal(float2 uv, float texel, float height)
-{
-	//texel is one uint size, ie 1.0/texture size
-	float t0 = chunkData.SampleLevel(LinearSampler, uv + float2(-texel, 0), 0).x * height;
-	float t1 = chunkData.SampleLevel(LinearSampler, uv + float2(texel, 0), 0).x * height;
-	float t2 = chunkData.SampleLevel(LinearSampler, uv + float2(0, -texel), 0).x * height;
-	float t3 = chunkData.SampleLevel(LinearSampler, uv + float2(0, texel), 0).x * height;
-
-	float3 va = normalize(float3(1.0f, 0.0f, t1 - t0));
-	float3 vb = normalize(float3(0.0f, 1.0f, t3 - t2));
-	return float4(cross(va, vb).rbg, 0.0f);
-}
+//float4 GetNormal(float2 uv, float texel, float height)
+//{
+//	//texel is one uint size, ie 1.0/texture size
+//	float t0 = chunkData.SampleLevel(LinearSampler, uv + float2(-texel, 0), 0).x * height;
+//	float t1 = chunkData.SampleLevel(LinearSampler, uv + float2(texel, 0), 0).x * height;
+//	float t2 = chunkData.SampleLevel(LinearSampler, uv + float2(0, -texel), 0).x * height;
+//	float t3 = chunkData.SampleLevel(LinearSampler, uv + float2(0, texel), 0).x * height;
+//
+//	float3 va = normalize(float3(1.0f, 0.0f, t1 - t0));
+//	float3 vb = normalize(float3(0.0f, 1.0f, t3 - t2));
+//	return float4(cross(va, vb).rbg, 0.0f);
+//}
 
 
 [domain("isoline")]
@@ -53,7 +53,7 @@ DS_OUTPUT_GRASS main(HS_CONSTANT_DATA_OUTPUT_GRASS input,
 
 	
 	
-	float4 normalChunk = GetNormal(uvPlane, 1.0f / 65.0f, 10.0f);
+	//float4 normalChunk = GetNormal(uvPlane, 1.0f / 65.0f, 10.0f);
 	
 
 	float3 position1 = grassStraws[v1].position.xyz;
@@ -68,9 +68,9 @@ DS_OUTPUT_GRASS main(HS_CONSTANT_DATA_OUTPUT_GRASS input,
 
 	float3 pos = BCC.x * position1 + BCC.y * position2 + BCC.z * position3;
 
-	float3 normal1 = normalChunk.x;// grassStraws[v1].normal.xyz;
-	float3 normal2 = normalChunk.y;// grassStraws[v2].normal.xyz;
-	float3 normal3 = normalChunk.z;// grassStraws[v3].normal.xyz;
+	float3 normal1 = grassStraws[v1].normal.xyz;
+	float3 normal2 = grassStraws[v2].normal.xyz;
+	float3 normal3 = grassStraws[v3].normal.xyz;
 
 	
 	float3 normal = BCC.x * normal1 + BCC.y * normal2 + BCC.z * normal3;
