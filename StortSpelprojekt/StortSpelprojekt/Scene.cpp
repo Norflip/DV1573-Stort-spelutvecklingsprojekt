@@ -42,6 +42,7 @@ void Scene::Initialize(Renderer* renderer)
 	camera = cameraObject->AddComponent<CameraComponent>(60.0f, true);
 	camera->Resize(window->GetWidth(), window->GetHeight());
 	cameraObject->AddComponent<ControllerComponent>();
+	cameraObject->AddComponent<StatsComponent>(100, 2, 10, 25);
 
 	Input::Instance().SetWindow(window->GetHWND(), window->GetHeight(), window->GetWidth());
 	AddObject(cameraObject);
@@ -208,7 +209,7 @@ void Scene::Initialize(Renderer* renderer)
 	dx::XMFLOAT3 enemyTranslation = dx::XMFLOAT3(0, 2, 10);
 	enemy->GetTransform().SetPosition(dx::XMLoadFloat3(&enemyTranslation));
 	enemy->AddComponent<MeshComponent>(zwebMeshes[0], zwebMaterials[0]);
-	enemy->AddComponent<StatsComponent>(100, 2, 10);
+	enemy->AddComponent<StatsComponent>(100, 2, 10, 25);
 	StateMachineComponent* stateMachine = enemy->AddComponent<StateMachineComponent>(AIState::idle);
 	stateMachine->RegisterState(AIState::idle, enemy->AddComponent<AIIdle>());
 	stateMachine->RegisterState(AIState::move, enemy->AddComponent<AIMove>());

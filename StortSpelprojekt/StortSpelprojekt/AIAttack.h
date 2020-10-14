@@ -9,5 +9,9 @@ class AIAttack : public Component
 		virtual ~AIAttack();
 		void Update(const float& deltaTime) override;
 	private:
+		bool ChasePlayer(const float& deltaTime);
+		void UpdateAttackPlayer(const float& deltaTime);
+
 		CameraComponent* player;
+		bool attackPlayer = false;
 };
