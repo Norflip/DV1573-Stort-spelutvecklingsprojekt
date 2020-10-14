@@ -32,9 +32,9 @@ VS_OUTPUT_GRASS main(VS_INPUT input)
 
 	float d = distance(output.worldPosition, cameraPosition);
 
-	float tess = saturate((50.0f - d) / (50.0f - 5.0f));
+	float tess = saturate((25.0f - d) / (25.0f - 5.0f));
 
-	output.tessFactor = 0.0f + tess * (2.0f - 0.0f);
+	output.tessFactor = 0.0f + tess * (2.0f/*MAX TESSELEATION FACTOR NEEDS TO BE A MULTIPLE OF 64*/ - 0.0f);
 
 	return output;
 }

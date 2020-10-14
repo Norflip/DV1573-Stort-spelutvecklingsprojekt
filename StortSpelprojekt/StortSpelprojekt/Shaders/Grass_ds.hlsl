@@ -10,20 +10,8 @@ SamplerState LinearSampler : register(s0);
 
 
 
-//float4 GetNormal(float2 uv, float texel, float height)
-//{
-//	//texel is one uint size, ie 1.0/texture size
-//	float t0 = chunkData.SampleLevel(LinearSampler, uv + float2(-texel, 0), 0).x * height;
-//	float t1 = chunkData.SampleLevel(LinearSampler, uv + float2(texel, 0), 0).x * height;
-//	float t2 = chunkData.SampleLevel(LinearSampler, uv + float2(0, -texel), 0).x * height;
-//	float t3 = chunkData.SampleLevel(LinearSampler, uv + float2(0, texel), 0).x * height;
-//
-//	float3 va = normalize(float3(1.0f, 0.0f, t1 - t0));
-//	float3 vb = normalize(float3(0.0f, 1.0f, t3 - t2));
-//	return float4(cross(va, vb).rbg, 0.0f);
-//}
 
-
+/*Alter the commented values to change the grass*/
 [domain("isoline")]
 DS_OUTPUT_GRASS main(HS_CONSTANT_DATA_OUTPUT_GRASS input,
 	OutputPatch<HS_OUTPUT_GRASS, 1> op,
@@ -48,12 +36,12 @@ DS_OUTPUT_GRASS main(HS_CONSTANT_DATA_OUTPUT_GRASS input,
 	float2 uvPlane = BCC.x * uv1 + BCC.y * uv2 + BCC.z * uv3;
 
 
-	float h = chunkData.SampleLevel(LinearSampler, uvPlane, 0).r;
-	float y = h * 10.0f;
+	float4 h = chunkData.SampleLevel(LinearSampler, uvPlane, 0);
+	float y = h.x *h.y* 10.0f;
 
 	
 	
-	//float4 normalChunk = GetNormal(uvPlane, 1.0f / 65.0f, 10.0f);
+	
 	
 
 	float3 position1 = grassStraws[v1].position.xyz;
@@ -81,7 +69,7 @@ DS_OUTPUT_GRASS main(HS_CONSTANT_DATA_OUTPUT_GRASS input,
 	float4 colour = grassColorMap.SampleLevel(LinearSampler, uvPlane, 0);
 
 
-	output.bladeHeight = grassHeightMap.SampleLevel(LinearSampler, uvPlane, 0).r * 0.5;//;grassRadius;// grassRadius;
+	output.bladeHeight = grassHeightMap.SampleLevel(LinearSampler, uvPlane, 0).r * /*grassRadius*/0.25;
 	output.height = uv.x * output.bladeHeight;
 
 	output.expandVector = normalize(pos - position1);
@@ -91,9 +79,9 @@ DS_OUTPUT_GRASS main(HS_CONSTANT_DATA_OUTPUT_GRASS input,
 
 	float noiseSample = noiseMap.SampleLevel(LinearSampler, 4 * uvPlane, 0).r;
 
-	float disp = /*grassDisplacement*/ 2* pow(uv.x, 1.0);
+	float disp = /*grassDisplacement*/ 0.5* pow(uv.x, 1.0); //grassDisplacement == Length
 
-	float dispT = /*grassDisplacement*/2 * pow(uv.x, 1.0) * (noiseSample + 2.5 * abs(sin((time * 0.25) + noiseSample)));
+	float dispT = /*grassDisplacement*/0.5* pow(uv.x, 1.0) * (noiseSample + 2.5 * abs(sin((time * 0.25) + noiseSample)));
 
 	dispT *= 0.1;
 
