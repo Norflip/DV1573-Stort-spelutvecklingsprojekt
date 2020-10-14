@@ -33,6 +33,7 @@ public:
 
 	static void SetParentChild(Transform& parent, Transform& child);
 	static void RemoveParentChild(Transform& parent, Transform& child);
+	static void ClearFromHierarchy(Transform& transform);
 
 	Transform* GetParent() const { return this->parent; }
 	Object* GetOwner() const { return this->owner; }
