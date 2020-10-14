@@ -37,14 +37,14 @@ typedef rp::PhysicsWorld World;
 class RigidBodyComponent : public Component
 {
 public:
-	RigidBodyComponent(float mass, FilterGroups group, FilterGroups collidesWith);
+	RigidBodyComponent(float mass, FilterGroups group, FilterGroups collidesWith, bool dynamic);
 	virtual ~RigidBodyComponent();
 
 	void m_InitializeBody(rp::PhysicsWorld* world);
 	RigidBody* GetRigidBody() const { return body; }
 
-	void SetMass(float mass) { this->totalMass = Scalar(mass); }
-	float GetMass() const { return static_cast<float>(this->totalMass); }
+	void SetMass(float mass) { this->mass = Scalar(mass); }
+	float GetMass() const { return static_cast<float>(this->mass); }
 
 	virtual void UpdateWorldTransform();
 	virtual void m_OnCollision(const CollisionInfo& collision);
@@ -53,7 +53,7 @@ public:
 	virtual void AddForce(const dx::XMFLOAT3& force);
 	virtual void AddForceAtPoint(const dx::XMFLOAT3& force, const dx::XMFLOAT3& offset, bool local = true);
 
-	bool IsDynamic() const { return totalMass != 0.0f; }
+	bool IsDynamic() const { return mass != 0.0f && dynamic; }
 	FilterGroups GetGroup() const { return this->group; }
 	FilterGroups GetCollidesWith() const { return this->collisionMask; }
 
@@ -68,8 +68,8 @@ private:
 
 	dTransform bodyTransform;
 	RigidBody* body;
-
-	Scalar totalMass;
+	bool dynamic;
+	Scalar mass;
 
 	std::vector<std::function<void(CollisionInfo)>> callbacks;
 };

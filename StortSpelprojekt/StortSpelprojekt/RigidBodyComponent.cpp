@@ -1,7 +1,7 @@
 #include "RigidBodyComponent.h"
 #include "Physics.h"
 
-RigidBodyComponent::RigidBodyComponent(float mass, FilterGroups group, FilterGroups mask) : totalMass(mass), group(group), collisionMask(mask)
+RigidBodyComponent::RigidBodyComponent(float mass, FilterGroups group, FilterGroups mask, bool dynamic) : mass(mass), group(group), collisionMask(mask), dynamic(dynamic)
 {
 }
 
@@ -53,15 +53,13 @@ void RigidBodyComponent::m_InitializeBody(rp::PhysicsWorld* world)
 	Transform& transform = GetOwner()->GetTransform();
 	bodyTransform = ConvertToBtTransform(transform);
 	
-	rp::BodyType type = rp::BodyType::DYNAMIC;
-	if (totalMass == 0.0f)
-	{
+	rp::BodyType type = dynamic ? rp::BodyType::DYNAMIC : rp::BodyType::KINEMATIC;
+	if (mass == 0.0f)
 		type = rp::BodyType::STATIC;
-	}
 	
 	body = world->createRigidBody(bodyTransform);
 	body->setType(type);
-	body->setMass(totalMass);
+	body->setMass(mass);
 	body->setUserData(static_cast<void*>(GetOwner()));
 	
 	AddCollidersToBody(GetOwner(), body);

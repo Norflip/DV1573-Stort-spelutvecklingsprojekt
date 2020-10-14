@@ -250,7 +250,7 @@ void Scene::Update(const float& deltaTime)
 				
 				object->AddComponent<DebugBoxShapeComponent>();
 				object->AddComponent<BoxColliderComponent>(dx::XMFLOAT3(0.5f, 0.5f, 0.5f), dx::XMFLOAT3(0, 0, 0));
-				RigidBodyComponent* rd = object->AddComponent<RigidBodyComponent>(10.0f, FilterGroups::DEFAULT, FilterGroups::EVERYTHING);
+				RigidBodyComponent* rd = object->AddComponent<RigidBodyComponent>(rp::BodyType::DYNAMIC, 10.0f, FilterGroups::DEFAULT, FilterGroups::EVERYTHING);
 		
 				phy.RegisterRigidBody(rd);
 
