@@ -5,7 +5,8 @@ Engine::Engine(HINSTANCE hInstance) : window(hInstance), activeScene(nullptr)
 	Log::Open();
 
 	window.Open(1600, 900);
-	renderer.Initialize(&window);
+	renderer = new Renderer();
+	renderer->Initialize(&window);
 
 	HRESULT hr = CoInitializeEx(nullptr, COINIT_MULTITHREADED);
 	assert(SUCCEEDED(hr));		
@@ -78,7 +79,7 @@ void Engine::RegisterScene(size_t id, Scene* scene)
 	auto sceneIt = this->scenes.find(id);
 	assert(sceneIt == scenes.end(), "Conflicting scene IDs");
 
-	scene->Initialize(&renderer);
+	scene->Initialize(renderer);
 	this->scenes.insert({ id, scene });
 }
 

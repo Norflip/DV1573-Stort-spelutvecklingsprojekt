@@ -38,5 +38,5 @@ private:
 	Scene* activeScene;
 
 	Window window;
-	Renderer renderer;
+	Renderer* renderer;
 };
