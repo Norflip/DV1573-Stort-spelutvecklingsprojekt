@@ -1,6 +1,7 @@
 #include "CommonBuffers.hlsl"
 #include "IO.hlsl"
 
+/*Alter the commented values to change the grass*/
 [maxvertexcount(4)]
 void main(line DS_OUTPUT_GRASS input[2], inout TriangleStream<GS_OUTPUT_GRASS> TriangleOutputStream)
 {
@@ -21,7 +22,7 @@ void main(line DS_OUTPUT_GRASS input[2], inout TriangleStream<GS_OUTPUT_GRASS> T
 
 	
 	float grassBladeScale = 1.5f;//grassWidth
-	float powfactor = 0.5;
+	float powfactor = 0.5; //pow factor
 	float maxHeightPow = pow(bladeHeight, powfactor);
 	float origWidth1 = grassBladeScale * (maxHeightPow - pow(input[0].height, powfactor));
 	float origWidth2 = grassBladeScale * (maxHeightPow - pow(input[1].height, powfactor));
