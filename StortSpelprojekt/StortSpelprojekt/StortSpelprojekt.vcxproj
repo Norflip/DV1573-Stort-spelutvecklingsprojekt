@@ -71,39 +71,47 @@
   <PropertyGroup Label="UserMacros" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <LinkIncremental>true</LinkIncremental>
+    <IncludePath>$(SolutionDir)\React;$(IncludePath)</IncludePath>
+    <LibraryPath>$(SolutionDir)\React\libs\Debug;$(LibraryPath)</LibraryPath>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
     <LinkIncremental>true</LinkIncremental>
+    <IncludePath>$(SolutionDir)\StortSpelprojekt\Bulletphysics;$(IncludePath)</IncludePath>
+    <LibraryPath>$(SolutionDir)\StortSpelprojekt\Bulletphysics\LinearMath;$(SolutionDir)\StortSpelprojekt\Bulletphysics\Bullet3Collision;$(SolutionDir)\StortSpelprojekt\Bulletphysics\Bullet3Dynamics;$(LibraryPath)</LibraryPath>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
     <LinkIncremental>false</LinkIncremental>
+    <IncludePath>$(SolutionDir)\React;$(IncludePath)</IncludePath>
+    <LibraryPath>$(SolutionDir)\React\libs\Release;$(LibraryPath)</LibraryPath>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
     <LinkIncremental>false</LinkIncremental>
+    <IncludePath>$(SolutionDir)\StortSpelprojekt\Bulletphysics;$(IncludePath)</IncludePath>
+    <LibraryPath>$(SolutionDir)\StortSpelprojekt\Bulletphysics\LinearMath;$(SolutionDir)\StortSpelprojekt\Bulletphysics\Bullet3Collision;$(SolutionDir)\StortSpelprojekt\Bulletphysics\Bullet3Dynamics;$(LibraryPath)</LibraryPath>
   </PropertyGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <ClCompile>
       <WarningLevel>Level3</WarningLevel>
       <SDLCheck>true</SDLCheck>
-      <PreprocessorDefinitions>_DEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <PreprocessorDefinitions>NOMINMAX;_DEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
-      <AdditionalIncludeDirectories>../ZWEB/ZWEBBuild/include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(SolutionDir)\React\reactphysics3d;../ZWEB/ZWEBBuild/include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <RuntimeLibrary>MultiThreadedDebug</RuntimeLibrary>
     </ClCompile>
     <Link>
       <SubSystem>Windows</SubSystem>
       <GenerateDebugInformation>true</GenerateDebugInformation>
       <AdditionalLibraryDirectories>..\ZWEB\ZWEBBuild\bin\win64;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
-      <AdditionalDependencies>ZWEBImporter.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>ZWEBImporter.lib;reactphysics3d.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
     <ClCompile>
       <WarningLevel>Level3</WarningLevel>
       <SDLCheck>true</SDLCheck>
-      <PreprocessorDefinitions>_DEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <PreprocessorDefinitions>BT_THREADSAFE=1;BT_USE_DOUBLE_PRECISION;_DEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
-      <AdditionalIncludeDirectories>../ZWEB/ZWEBBuild/include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>../ZWEB/ZWEBBuild/include;%(AdditionalIncludeDirectories);$(SolutionDir)\StortSpelprojekt\Bulletphysics</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
       <SubSystem>Windows</SubSystem>
@@ -118,9 +126,9 @@
       <FunctionLevelLinking>true</FunctionLevelLinking>
       <IntrinsicFunctions>true</IntrinsicFunctions>
       <SDLCheck>true</SDLCheck>
-      <PreprocessorDefinitions>NDEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <PreprocessorDefinitions>NOMINMAX;NDEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
-      <AdditionalIncludeDirectories>../ZWEB/ZWEBBuild/include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(SolutionDir)\React\reactphysics3d;../ZWEB/ZWEBBuild/include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <RuntimeLibrary>MultiThreaded</RuntimeLibrary>
     </ClCompile>
     <Link>
@@ -129,7 +137,7 @@
       <OptimizeReferences>true</OptimizeReferences>
       <GenerateDebugInformation>true</GenerateDebugInformation>
       <AdditionalLibraryDirectories>..\ZWEB\ZWEBBuild\bin\release;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
-      <AdditionalDependencies>ZWEBImporter.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>ZWEBImporter.lib;reactphysics3d.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
@@ -138,9 +146,9 @@
       <FunctionLevelLinking>true</FunctionLevelLinking>
       <IntrinsicFunctions>true</IntrinsicFunctions>
       <SDLCheck>true</SDLCheck>
-      <PreprocessorDefinitions>NDEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <PreprocessorDefinitions>BT_THREADSAFE=1;BT_USE_DOUBLE_PRECISION;NDEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
-      <AdditionalIncludeDirectories>../ZWEB/ZWEBBuild/include</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>../ZWEB/ZWEBBuild/include;;$(SolutionDir)\StortSpelprojekt\Bulletphysics</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>
@@ -153,8 +161,11 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClCompile Include="BoundingBoxes.cpp" />
+    <ClCompile Include="BoxColliderComponent.cpp" />
     <ClCompile Include="CameraComponent.cpp" />
+    <ClCompile Include="CapsuleColliderComponent.cpp" />
     <ClCompile Include="Chunk.cpp" />
+    <ClCompile Include="Collider.cpp" />
     <ClCompile Include="ControllerComponent.cpp" />
     <ClCompile Include="DXHelper.cpp" />
     <ClCompile Include="DShape.cpp" />
@@ -172,15 +183,18 @@
     <ClCompile Include="MoveComponent.cpp" />
     <ClCompile Include="NodeWalkerComponent.cpp" />
     <ClCompile Include="Object.cpp" />
+    <ClCompile Include="Physics.cpp" />
     <ClCompile Include="Path.cpp" />
     <ClCompile Include="PossionDiscSampler.cpp" />
     <ClCompile Include="PointLightComponent.cpp" />
     <ClCompile Include="Renderer.cpp" />
+    <ClCompile Include="RigidBodyComponent.cpp" />
     <ClCompile Include="ResourceManager.cpp" />
     <ClCompile Include="Scene.cpp" />
     <ClCompile Include="Shader.cpp" />
     <ClCompile Include="GUIFont.cpp" />
     <ClCompile Include="Skybox.cpp" />
+    <ClCompile Include="SphereColliderComponent.cpp" />
     <ClCompile Include="Texture.cpp" />
     <ClCompile Include="SkeletonAni.cpp" />
     <ClCompile Include="SkeletonMeshComponent.cpp" />
@@ -191,13 +205,19 @@
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="BoundingBoxes.h" />
+    <ClInclude Include="BoxColliderComponent.h" />
     <ClInclude Include="Buffers.h" />
     <ClInclude Include="BusNode.h" />
     <ClInclude Include="CameraComponent.h" />
+    <ClInclude Include="CapsuleColliderComponent.h" />
     <ClInclude Include="Chunk.h" />
+    <ClInclude Include="Collider.h" />
+    <ClInclude Include="CollisionInfo.h" />
     <ClInclude Include="ControllerComponent.h" />
+    <ClInclude Include="DebugBoxShapeComponent.h" />
     <ClInclude Include="DShape.h" />
     <ClInclude Include="Path.h" />
+    <ClInclude Include="PhysicCallbacks.h" />
     <ClInclude Include="PossionDiscSampler.h" />
     <ClInclude Include="ResourceManager.h" />
     <ClInclude Include="Shapes.h" />
@@ -223,14 +243,18 @@
     <ClInclude Include="NodeWalkerComponent.h" />
     <ClInclude Include="Noise.h" />
     <ClInclude Include="Object.h" />
+    <ClInclude Include="Physics.h" />
+    <ClInclude Include="Ray.h" />
     <ClInclude Include="PointLightComponent.h" />
     <ClInclude Include="Renderer.h" />
     <ClInclude Include="RenderPass.h" />
+    <ClInclude Include="RigidBodyComponent.h" />
     <ClInclude Include="SaveState.h" />
     <ClInclude Include="Scene.h" />
     <ClInclude Include="Shader.h" />
     <ClInclude Include="ShittyOBJLoader.h" />
     <ClInclude Include="Skybox.h" />
+    <ClInclude Include="SphereColliderComponent.h" />
     <ClInclude Include="Texture.h" />
     <ClInclude Include="SkeletonAni.h" />
     <ClInclude Include="SkeletonMeshComponent.h" />
@@ -238,7 +262,10 @@
     <ClInclude Include="Transform.h" />
     <ClInclude Include="Window.h" />
     <ClInclude Include="WorldGenerator.h" />
-    <ClInclude Include="ZWEBLoader.h" />
+    <ClInclude Include="ZWEBLoader.h">
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">false</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">true</ExcludedFromBuild>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <FxCompile Include="Shaders\Alpha_ps.hlsl">

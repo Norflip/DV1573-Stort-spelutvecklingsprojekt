@@ -5,6 +5,9 @@
 #include "Texture.h"
 #include "Material.h"
 #include "Renderer.h"
+
+
+
 struct GrassStraw
 {
 	dx::XMFLOAT4 position;
@@ -25,7 +28,7 @@ public:
 
 	Material& GetMaterial();
 
-	void SetType(ChunkType type);
+	//void SetType(ChunkType type);
 
 
 private:
@@ -41,6 +44,6 @@ private:
 	ID3D11Buffer* grassBCBfr = nullptr;
 	ID3D11ShaderResourceView* grassBCSRV = nullptr;
 	ID3D11Buffer* grassCBuffer = nullptr;
-	ChunkType chunkType;
+	//ChunkType chunkType;
 };
 

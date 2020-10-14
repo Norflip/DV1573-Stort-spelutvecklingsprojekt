@@ -1,5 +1,5 @@
 #pragma once
-
+#include <DirectXMath.h>
 
 class Component;
 class Renderer;

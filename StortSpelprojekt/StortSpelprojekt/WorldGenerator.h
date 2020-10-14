@@ -11,9 +11,13 @@
 #include "ShittyOBJLoader.h"
 #include "Math.h"
 #include "SaveState.h"
+//#include "ChunkCollider.h"
+#include "RigidBodyComponent.h"
+#include "Physics.h"
 #include "DShape.h"
 #include "PossionDiscSampler.h"
 #include "Path.h"
+
 
 constexpr int LOAD_RADIUS = 1;
 constexpr size_t MAX_CHUNK_RENDER = 16;

@@ -32,8 +32,11 @@ void Scene::Initialize(Renderer* renderer)
 
 	// TEMP
 	// Should change values on resize event
-
 	Window* window = renderer->GetOutputWindow();
+	
+	Physics& physics = Physics::Instance();
+	physics.Initialize({ 0, -10.0f, 0 });
+
 	spriteBatch = new DirectX::SpriteBatch(renderer->GetContext());
 	GUISprite* normalSprite = new GUISprite(*renderer, "Textures/EquipmentBox.png", 0, 0, DrawDirection::BottomLeft, ClickFunction::Clickable);
 	GUISprite* buttonSprite = new GUISprite(*renderer, "Textures/EquipmentBox.png", 0, 0, DrawDirection::BottomRight, ClickFunction::Clickable);
@@ -62,6 +65,7 @@ void Scene::Initialize(Renderer* renderer)
 	camera = cameraObject->AddComponent<CameraComponent>(60.0f, true);
 	camera->Resize(window->GetWidth(), window->GetHeight());
 	cameraObject->AddComponent<ControllerComponent>();
+
 
 	Input::Instance().SetWindow(window->GetHWND(), window->GetHeight(), window->GetWidth());
 	AddObject(cameraObject);
@@ -181,6 +185,14 @@ void Scene::InitializeObjects()
 
 	/* NEW TREE TEST INSTANCED*/
 
+
+	
+
+
+
+
+	
+
 	clock.Update();
 	clock.Start();
 	clock.Update();
@@ -205,6 +217,12 @@ void Scene::Update(const float& deltaTime)
 	//DShape::DrawLine(positionA, positionB, { 1,1,0 });
   
 	input.UpdateInputs();
+	
+
+
+
+
+
 	root->Update(deltaTime);
 
 	skyboxClass->GetThisObject()->GetTransform().SetPosition(camera->GetOwner()->GetTransform().GetPosition());
@@ -222,6 +240,68 @@ void Scene::Update(const float& deltaTime)
 		clock.Restart();
 	}
 
+
+	if (KEY_DOWN(H))
+	{
+		dx::XMVECTOR cameraPosition = camera->GetOwner()->GetTransform().GetPosition();
+
+		Physics& phy = Physics::Instance();
+		const int ra = 3;
+
+		phy.MutexLock();
+
+		for (int y = -ra; y <= ra; y++)
+		{
+			for (int x = -ra; x <= ra; x++)
+			{
+				dx::XMVECTOR position = dx::XMVectorAdd(cameraPosition, { (float)x * 1.5f, -1.0f, (float)y * 1.5f });
+
+				Object* object = new Object("item");
+				object->GetTransform().SetPosition(position);
+				
+				object->AddComponent<DebugBoxShapeComponent>();
+				object->AddComponent<BoxColliderComponent>(dx::XMFLOAT3(0.5f, 0.5f, 0.5f), dx::XMFLOAT3(0, 0, 0));
+				RigidBodyComponent* rd = object->AddComponent<RigidBodyComponent>(10.0f, FilterGroups::DEFAULT, FilterGroups::EVERYTHING);
+		
+				phy.RegisterRigidBody(rd);
+
+				AddObject(object);
+			}
+		}
+
+		phy.MutexUnlock();
+
+		const int a = 100;
+	}
+
+
+	POINT p = input.GetMousePos();
+	Ray ray = camera->MouseToRay(p.x, p.y);
+	//std::cout << p.x << ", " << p.y << std::endl;
+
+	if (LMOUSE_PRESSED)
+	{
+		Physics& phy = Physics::Instance();
+		RayHit hit;
+		
+		DShape::DrawLine(ray.origin, ray.GetPoint(1000.0f), { 1,1,0 });
+
+		if (phy.RaytestSingle(ray, 1000.0f, hit, FilterGroups::DEFAULT))
+		{
+			DShape::DrawLine(ray.origin, hit.position, { 1,1,0 });
+			DShape::DrawSphere(hit.position, 1.0f, { 0, 0, 1 });
+
+			if (hit.object != nullptr)
+			{
+				std::cout << hit.object->GetName() << std::endl;
+			}
+		}
+	}
+	else
+	{
+		DShape::DrawSphere(ray.GetPoint(10.0f), 0.2f, { 1, 0, 1 });
+	}
+	
 	// Press P to recompile shaders
 	if (KEY_PRESSED(P))
 	{
@@ -231,8 +311,10 @@ void Scene::Update(const float& deltaTime)
 
 void Scene::FixedUpdate(const float& fixedDeltaTime)
 {
+	Physics::Instance().FixedUpdate(fixedDeltaTime);
+	
 	//Log::Add(std::to_string(fixedDeltaTime));
-	//root->FixedUpdate(fixedDeltaTime);
+	root->FixedUpdate(fixedDeltaTime);
 }
 
 void Scene::Render()

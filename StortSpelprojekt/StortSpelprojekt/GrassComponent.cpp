@@ -156,30 +156,27 @@ void GrassComponent::InitializeGrass(std::vector<Mesh::Vertex>& vertices, std::v
 	DXHelper::BindConstBuffer(context, grassCBuffer, &grassCBufferData, CB_GRASS_PARAMETERS_SLOT, ShaderBindFlag::DOMAINS);
 	DXHelper::BindConstBuffer(context, grassCBuffer, &grassCBufferData, CB_GRASS_PARAMETERS_SLOT, ShaderBindFlag::GEOMETRY);
 
-	
-
-	
 }
 
 void GrassComponent::Draw(Renderer* renderer, CameraComponent* camera)
 {
+	/*if (chunkType==ChunkType::Start)
+	{
+		renderer->DrawGrass(*camera, grassMesh, grassMat, this->GetOwner()->GetTransform().GetWorldMatrix());
+	}*/
 
-	renderer->DrawGrass(*camera, grassMesh, grassMat, this->GetOwner()->GetTransform().GetWorldMatrix());
-	
-	
-	
+	//renderer->DrawGrass(*camera, grassMesh, grassMat, this->GetOwner()->GetTransform().GetWorldMatrix());
+
 }
-
-
 
 Material& GrassComponent::GetMaterial()
 {
 	return grassMat;
 }
 
-void GrassComponent::SetType(ChunkType type)
-{
-	this->chunkType = type;
-}
-
-
+//void GrassComponent::SetType(ChunkType type)
+//{
+//	this->chunkType = type;
+//}
+//
+//

@@ -21,9 +21,17 @@
 #include "GUIManager.h"
 #include <string>
 
+#include "Physics.h"
+#include "RigidBodyComponent.h"
+#include "BoxColliderComponent.h"
+#include "SphereColliderComponent.h"
+#include "CapsuleColliderComponent.h"
+#include "DebugBoxShapeComponent.h"
+
 #include "ResourceManager.h"
 class GUIFont;
 class SpriteRenderPass;
+
 class Scene
 {
 public:
@@ -61,7 +69,7 @@ private:
 	SpriteRenderPass* spritePass;	
 
 	GUIManager* guiManager;		
-
+	
 	/* Test skybox in class */
 	//Object* skybox;
 	Skybox* skyboxClass;		
