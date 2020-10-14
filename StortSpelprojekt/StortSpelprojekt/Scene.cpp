@@ -164,7 +164,19 @@ void Scene::InitializeObjects()
   
 	worldGenerator.InitializeTrees(stylizedTreeModel, stylizedTreeMaterial, renderer->GetDevice());
 
-	
+	//Enemy object
+	Object* enemy = new Object("enemy");
+	dx::XMFLOAT3 enemyTranslation = dx::XMFLOAT3(0, 2, 10);
+	enemy->GetTransform().SetPosition(dx::XMLoadFloat3(&enemyTranslation));
+	enemy->AddComponent<MeshComponent>(*mesh1, *material1);
+	enemy->AddComponent<StatsComponent>(100, 2, 10, 25);
+	StateMachineComponent* stateMachine = enemy->AddComponent<StateMachineComponent>(AIState::idle);
+	stateMachine->RegisterState(AIState::idle, enemy->AddComponent<AIIdle>());
+	stateMachine->RegisterState(AIState::move, enemy->AddComponent<AIMove>());
+	stateMachine->RegisterState(AIState::attack, enemy->AddComponent<AIAttack>(camera));
+	AddObject(enemy);
+
+	/* * * * * * * * ** * * * * */
 
 
 	
@@ -220,6 +232,8 @@ void Scene::Update(const float& deltaTime)
 	GameClock::Instance().Update();
 	//std::cout << "FPS: " << GameClock::Instance().GetFramesPerSecond() << std::endl;
 
+	GUIFont* fps = static_cast<GUIFont*>(guiManager->GetGUIObject("fps"));
+	fps->SetString(std::to_string((int)GameClock::Instance().GetFramesPerSecond()));
 	guiManager->UpdateAll();
 	
 	renderer->UpdateTime((float)clock.GetSeconds());
@@ -240,19 +254,6 @@ void Scene::Update(const float& deltaTime)
 
 		phy.MutexLock();
 
-	//Enemy object
-	Object* enemy = new Object("enemy");
-	dx::XMFLOAT3 enemyTranslation = dx::XMFLOAT3(0, 2, 10);
-	enemy->GetTransform().SetPosition(dx::XMLoadFloat3(&enemyTranslation));
-	enemy->AddComponent<MeshComponent>(zwebMeshes[0], zwebMaterials[0]);
-	enemy->AddComponent<StatsComponent>(100, 2, 10, 25);
-	StateMachineComponent* stateMachine = enemy->AddComponent<StateMachineComponent>(AIState::idle);
-	stateMachine->RegisterState(AIState::idle, enemy->AddComponent<AIIdle>());
-	stateMachine->RegisterState(AIState::move, enemy->AddComponent<AIMove>());
-	stateMachine->RegisterState(AIState::attack, enemy->AddComponent<AIAttack>(camera));
-	AddObject(enemy);
-
-	/* * * * * * * * ** * * * * */
 		for (int y = -ra; y <= ra; y++)
 		{
 			for (int x = -ra; x <= ra; x++)

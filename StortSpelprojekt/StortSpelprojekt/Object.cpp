@@ -32,9 +32,6 @@ void Object::Update(const float& deltaTime)
 			if((*i)->IsEnabled())
 				(*i)->Update(deltaTime);
 		}
-			
-
-			(*i)->Update(deltaTime);
 		
 		auto children = transform.GetChildren();
 		for (auto i = children.begin(); i < children.end(); i++)
