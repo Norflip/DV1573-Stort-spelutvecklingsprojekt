@@ -217,26 +217,6 @@ void Scene::InitializeObjects()
 
 	
 
-	//AddObject(testMesh2);
-	//AddObject(testMesh3);
-	Object* testMesh4 = new Object("test4");
-	testMesh4->AddComponent<NodeWalkerComponent>();
-	testMesh4->GetTransform().SetPosition(dx::XMLoadFloat3(&miniTranslation4));
-	testMesh4->AddComponent<MeshComponent>(zwebMeshes[0], sylvanasMat[0]);
-	
-	AddObject(testMesh);
-	AddObject(testMesh2);
-	AddObject(testMesh3);
-	AddObject(testMesh4);
-
-	RigidBodyComponent* rigidBody = testMesh2->AddComponent<RigidBodyComponent>(4.0f, FilterGroups::DEFAULT, FilterGroups::EVERYTHING);
-	BoxColliderComponent* boxCol = testMesh2->AddComponent<BoxColliderComponent>(dx::XMFLOAT3( 1,1,1 ), dx::XMFLOAT3(0,0,0));
-
-	//rigidBody->m_GenerateCompoundShape();
-
-
-	physics.RegisterRigidBody(rigidBody);
-
 	clock.Update();
 	clock.Start();
 	clock.Update();
