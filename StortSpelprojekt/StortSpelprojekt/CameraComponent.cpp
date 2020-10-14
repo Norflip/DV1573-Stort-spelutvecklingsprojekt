@@ -19,11 +19,10 @@ dx::XMMATRIX CameraComponent::GetViewMatrix() const
 {
 	Transform& transform = GetOwner()->GetTransform();
 
-	return dx::XMMatrixLookToLH(
-		transform.GetPosition(),
-		transform.TransformDirection({ 0,0,1 }),
-		transform.TransformDirection({ 0,1,0 })
-	);
+	dx::XMVECTOR forward = transform.TransformDirection({ 0,0,1 });
+	dx::XMVECTOR up = transform.TransformDirection({ 0,1,0 });
+
+	return dx::XMMatrixLookToLH(transform.GetPosition(), forward, up);
 }
 
 dx::XMMATRIX CameraComponent::GetProjectionMatrix() const
@@ -117,7 +116,7 @@ std::vector<dx::XMFLOAT4>& CameraComponent::GetFrustumPlanes()
 	return frustumPlanes;
 }
 
-bool CameraComponent::CullAgainstAABB(const AABB& aabb, const dx::XMFLOAT3& worldPos)
+bool CameraComponent::CullAgainstAABB(const AABB& aabb, const dx::XMFLOAT3 worldPos)
 {
 	auto planes = GetFrustumPlanes();
 	bool inViewResult = true;
@@ -186,3 +185,18 @@ bool CameraComponent::CullAgainstAABB(const AABB& aabb, const dx::XMFLOAT3& worl
 	return !inViewResult;
 }
 
+Ray CameraComponent::MouseToRay(const float& x, const float& y) const
+{
+	dx::XMVECTOR screenPosition = dx::XMVectorSet(x, y, 0.0f, 0.0f);
+
+
+	dx::XMVECTOR worldPosition = dx::XMVector3Unproject(screenPosition, 0, 0, (float)width, (float)height, 0.0f, 1.0f, GetProjectionMatrix(), GetViewMatrix(), dx::XMMatrixIdentity());
+
+	dx::XMVECTOR position = GetOwner()->GetTransform().GetPosition();
+	dx::XMVECTOR dir = dx::XMVectorSubtract(worldPosition, position);
+
+	dx::XMFLOAT3 direction, origin;
+	dx::XMStoreFloat3(&direction, dx::XMVector3Normalize(dir));
+	dx::XMStoreFloat3(&origin, position);
+	return Ray(origin, direction);
+}

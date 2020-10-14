@@ -4,6 +4,7 @@
 #include <DirectXMath.h>
 #include "Object.h"
 #include "BoundingBoxes.h"
+#include "Ray.h"
 
 namespace dx = DirectX;
 constexpr float CAMERA_NEAR_Z = 0.01f;
@@ -20,7 +21,8 @@ public:
 	dx::XMMATRIX GetViewMatrix() const;
 	dx::XMMATRIX GetProjectionMatrix() const;
 
-	bool CullAgainstAABB(const AABB& aabb, const dx::XMFLOAT3& worldPos);
+	bool CullAgainstAABB(const AABB& aabb, const dx::XMFLOAT3 worldPos);
+	Ray MouseToRay(const float& x, const float& y) const;
 	static CameraComponent* mainCamera;
 
 private:

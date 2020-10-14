@@ -55,10 +55,15 @@ public:
 	Shader();
 	virtual ~Shader();
 
-	void SetPixelShader(LPCWSTR path, LPCSTR entry = "main"); 
-	void SetVertexShader(LPCWSTR path, LPCSTR entry = "main");
-	void SetGeometryShader(LPCWSTR path, LPCSTR entry = "main");
-	
+	void Unbind(ID3D11DeviceContext* context) const;
+
+	// Changed from LPCWSTR to regular string
+	void SetPixelShader(std::string path, LPCSTR entry = "main");
+	void SetVertexShader(std::string path, LPCSTR entry = "main");
+	void SetGeometryShader(std::string path, LPCSTR entry = "main");
+	void SetHullShader(std::string path, LPCSTR entry = "main");
+	void SetDomainShader(std::string path, LPCSTR entry = "main");
+
 	void SetInputLayoutStructure(size_t arraySize, D3D11_INPUT_ELEMENT_DESC* inputLayoutDesc);
 
 	void Compile(ID3D11Device*);
@@ -67,10 +72,16 @@ public:
 	void CompilePS(ID3D11Device*);
 	void CompileVS(ID3D11Device*);
 	void CompileGS(ID3D11Device*);
+	void CompileHS(ID3D11Device*);
+	void CompileDS(ID3D11Device*);
+
 
 private:
-	LPCWSTR pixelPath, vertexPath, geometryPath;
-	LPCSTR pixelEntry, vertexEntry, geometryEntry;
+	// Had to change from LPCWSTR to regular strings, since LPCWSTR wouldnt save the data when compiling the shaders
+	std::string pixelPath, vertexPath, geometryPath, hullPath, domainPath;
+
+	//LPCWSTR pixelPath, vertexPath, geometryPath;
+	LPCSTR pixelEntry, vertexEntry, geometryEntry, hullEntry, domainEntry;;
 
 	DWORD shaderCompilationFlag;
 	ShaderBindFlag shaderFlags;
@@ -83,4 +94,7 @@ private:
 	ID3D11InputLayout* inputLayout;
 	ID3D11PixelShader* pixelShader;
 	ID3D11GeometryShader* geometryShader;
+	ID3D11HullShader* hullShader;
+	ID3D11DomainShader* domainShader;
+
 };

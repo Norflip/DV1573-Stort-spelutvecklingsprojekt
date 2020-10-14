@@ -11,6 +11,7 @@
 #include "MeshComponent.h"
 #include "ZWEBLoader.h"
 #include "SkeletonMeshComponent.h"
+#include "PointLightComponent.h"
 #include "NodeWalkerComponent.h"
 #include "StatsComponent.h"
 #include "StateMachineComponent.h"
@@ -19,6 +20,19 @@
 #include "WorldGenerator.h"
 #include "SaveState.h"
 #include "DShape.h"
+#include "GUIManager.h"
+#include <string>
+
+#include "Physics.h"
+#include "RigidBodyComponent.h"
+#include "BoxColliderComponent.h"
+#include "SphereColliderComponent.h"
+#include "CapsuleColliderComponent.h"
+#include "DebugBoxShapeComponent.h"
+
+#include "ResourceManager.h"
+class GUIFont;
+class SpriteRenderPass;
 
 class Scene
 {
@@ -27,7 +41,8 @@ public:
 	virtual ~Scene();
 
 	void Initialize(Renderer* renderer);
-	
+	void InitializeObjects();
+
 	void OnActivate() {}
 	void OnDeactivate() {}
 	
@@ -48,13 +63,18 @@ private:
 	Object* root;
 	CameraComponent* camera;
 	Renderer* renderer;
-
+	GameClock clock;
 	Input& input;
-		
 
+	dx::SpriteBatch* spriteBatch;
+	WorldGenerator worldGenerator;
+	SpriteRenderPass* spritePass;	
+
+	GUIManager* guiManager;		
+	
 	/* Test skybox in class */
-	Object* skybox;
+	//Object* skybox;
 	Skybox* skyboxClass;		
 
-	WorldGenerator worldGenerator;	
+	ResourceManager* resourceManager;
 };

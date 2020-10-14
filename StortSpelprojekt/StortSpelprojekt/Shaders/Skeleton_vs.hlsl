@@ -1,42 +1,32 @@
 #include "CommonBuffers.hlsl"
 #include "IO.hlsl"
 
-
-
-StructuredBuffer<float4x4> bones : register(t0);
-
 VS_OUTPUT main(VS_INPUT_SKELETON input)
 {
 	VS_OUTPUT output;
 
+	float w1 = saturate(1 - (input.skinWeight.y + input.skinWeight.z));
+	float w2 = saturate(1 - (w1 + input.skinWeight.z));
+	float w3 = saturate(1 - (w2 + w1));
 
-	float4 p = mul(input.position, bones[input.boneID.x]) * input.skinWeight.x;
-	p += mul(input.position, bones[input.boneID.y]) * input.skinWeight.y;
-	p += mul(input.position, bones[input.boneID.z]) * input.skinWeight.z;
+	float4 p = mul(float4(input.position,1), bones[input.boneID.x]) * w1;
+	p += mul(float4(input.position,1), bones[input.boneID.y]) * w2;
+	p += mul(float4(input.position,1), bones[input.boneID.z]) * w3;
 
-	float3 n = mul(float4(input.normal,0), bones[input.boneID.x]).xyz * input.skinWeight.x;
-	n += mul(float4(input.normal, 0), bones[input.boneID.y]).xyz * input.skinWeight.y;
-	n += mul(float4(input.normal, 0), bones[input.boneID.z]).xyz * input.skinWeight.z;
+	float3 n = mul(float4(input.normal,0), bones[input.boneID.x]).xyz * w1;
+	n += mul(float4(input.normal, 0), bones[input.boneID.y]).xyz * w2;
+	n += mul(float4(input.normal, 0), bones[input.boneID.z]).xyz * w3;
 
-	float3 t = mul(float4(input.tangent, 0), bones[input.boneID.x]).xyz * input.skinWeight.x;
-	t += mul(float4(input.tangent, 0), bones[input.boneID.y]).xyz * input.skinWeight.y;
-	t += mul(float4(input.tangent, 0), bones[input.boneID.z]).xyz * input.skinWeight.z;
+	float3 t = mul(float4(input.tangent, 0), bones[input.boneID.x]).xyz * w1;
+	t += mul(float4(input.tangent, 0), bones[input.boneID.y]).xyz * w2;
+	t += mul(float4(input.tangent, 0), bones[input.boneID.z]).xyz * w3;
 
-	float3 b = mul(float4(input.binormal, 0), bones[input.boneID.x]).xyz * input.skinWeight.x;
-	b += mul(float4(input.binormal, 0), bones[input.boneID.y]).xyz * input.skinWeight.y;
-	b += mul(float4(input.binormal, 0), bones[input.boneID.z]).xyz * input.skinWeight.z;
+	float3 b = mul(float4(input.binormal, 0), bones[input.boneID.x]).xyz * w1;
+	b += mul(float4(input.binormal, 0), bones[input.boneID.y]).xyz * w2;
+	b += mul(float4(input.binormal, 0), bones[input.boneID.z]).xyz * w3;
 
 	float4 outpos = mul(float4(p.xyz, 1), mvp);
 	float3 outputWorldpos = mul(p,world).xyz;
-
-
-
-
-
-
-
-
-
 
 
 	output.uv = input.uv;
