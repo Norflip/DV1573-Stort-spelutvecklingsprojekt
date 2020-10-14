@@ -2,14 +2,14 @@
 #include <reactphysics3d.h>
 namespace rp = reactphysics3d;
 
-#include "RigidBodyComponent.h"
-#include <vector>
-#include <iostream>
 #include "CollisionInfo.h"
 #include "Ray.h"
+#include "PhysicCallbacks.h"
+
+#include <vector>
+#include <iostream>
 #include <unordered_map>
 #include <mutex>
-#include "PhysicCallbacks.h"
 
 enum class FilterGroups : unsigned short
 {
@@ -27,6 +27,7 @@ enum class FilterGroups : unsigned short
 
 DEFINE_ENUM_FLAG_OPERATORS(FilterGroups)
 
+class RigidBodyComponent;
 
 class Physics
 {
@@ -43,9 +44,9 @@ public:
 	void MutexLock();
 	void MutexUnlock();
 
-	void RegisterRigidBody(RigidBodyComp* rigidBodyComp);
+	void RegisterRigidBody(RigidBodyComponent* rigidBodyComp);
 	void UnregisterRigidBody(Object* object);
-	void UnregisterRigidBody(RigidBodyComp* rigidBodyComp);
+	void UnregisterRigidBody(RigidBodyComponent* rigidBodyComp);
 
 	void FixedUpdate(const float& fixedDeltaTime);
 
@@ -77,5 +78,5 @@ private:
 	rp::PhysicsCommon common;
 	
 	std::mutex physicsThreadMutex;
-	std::unordered_map<size_t, RigidBodyComp*> bodyMap;
+	std::unordered_map<size_t, RigidBodyComponent*> bodyMap;
 };

@@ -1,8 +1,9 @@
 #pragma once
+#include "Object.h"
+#include "RigidBodyComponent.h"
 #include "Ray.h"
 #include <reactphysics3d.h>
 namespace rp = reactphysics3d;
-
 
 class RaycastSingleResultCallback : public rp::RaycastCallback {
 
@@ -45,7 +46,7 @@ class CollisionEventListener : public rp::EventListener
 				Object* object0 = static_cast<Object*>(contactPair.getBody1()->getUserData());
 				Object* object1 = static_cast<Object*>(contactPair.getBody2()->getUserData());
 
-				if (object0 != nullptr && object1 != nullptr)
+				/*if (object0 != nullptr && object1 != nullptr)
 				{
 					CollisionInfo info;
 					
@@ -56,13 +57,13 @@ class CollisionEventListener : public rp::EventListener
 						body0->m_OnCollision(info);
 					}
 
-					RigidBodyComp* body1 = object0->GetComponent<RigidBodyComp>();
+					RigidBodyComp* body1 = object1->GetComponent<RigidBodyComp>();
 					if (body1 != nullptr && body1->IsDynamic())
 					{
 						info.other = object0;
 						body1->m_OnCollision(info);
 					}
-				}
+				}*/
             }
         }
     }

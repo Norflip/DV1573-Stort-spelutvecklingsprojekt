@@ -1,4 +1,5 @@
 #include "Physics.h"
+#include "RigidBodyComponent.h"
 
 Physics::Physics() : world(nullptr)
 {
@@ -35,7 +36,7 @@ void Physics::MutexUnlock()
 	physicsThreadMutex.unlock();
 }
 
-void Physics::RegisterRigidBody(RigidBodyComp* rigidBodyComp)
+void Physics::RegisterRigidBody(RigidBodyComponent* rigidBodyComp)
 {
 	assert(world != nullptr);
 	rigidBodyComp->m_InitializeBody(world);
@@ -48,7 +49,7 @@ void Physics::UnregisterRigidBody(Object* object)
 		bodyMap.erase(find);
 }
 
-void Physics::UnregisterRigidBody(RigidBodyComp* rigidBodyComp)
+void Physics::UnregisterRigidBody(RigidBodyComponent* rigidBodyComp)
 {
 	UnregisterRigidBody(rigidBodyComp->GetOwner());
 }

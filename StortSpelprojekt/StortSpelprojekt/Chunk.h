@@ -6,9 +6,6 @@ namespace dx = DirectX;
 #include "Math.h"
 #include "Physics.h"
 
-#include "Bulletphysics/btBulletDynamicsCommon.h"
-#include "BulletCollision/CollisionShapes/btHeightfieldTerrainShape.h"
-
 constexpr int CHUNK_SIZE = 32;
 constexpr float TERRAIN_SCALE = 10.0f;
 

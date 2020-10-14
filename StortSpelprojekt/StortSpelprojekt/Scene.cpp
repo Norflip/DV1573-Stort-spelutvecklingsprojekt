@@ -221,7 +221,7 @@ void Scene::Initialize(Renderer* renderer)
 	AddObject(testMesh3);
 	AddObject(testMesh4);
 
-	RigidBodyComp* rigidBody = testMesh2->AddComponent<RigidBodyComp>(4.0f, FilterGroups::DEFAULT, FilterGroups::EVERYTHING);
+	RigidBodyComponent* rigidBody = testMesh2->AddComponent<RigidBodyComponent>(4.0f, FilterGroups::DEFAULT, FilterGroups::EVERYTHING);
 	BoxColliderComponent* boxCol = testMesh2->AddComponent<BoxColliderComponent>(dx::XMFLOAT3( 1,1,1 ), dx::XMFLOAT3(0,0,0));
 
 	//rigidBody->m_GenerateCompoundShape();
@@ -284,7 +284,7 @@ void Scene::Update(const float& deltaTime)
 				
 				object->AddComponent<DebugBoxShapeComponent>();
 				object->AddComponent<BoxColliderComponent>(dx::XMFLOAT3(0.5f, 0.5f, 0.5f), dx::XMFLOAT3(0, 0, 0));
-				RigidBodyComp* rd = object->AddComponent<RigidBodyComp>(10.0f, FilterGroups::DEFAULT, FilterGroups::EVERYTHING);
+				RigidBodyComponent* rd = object->AddComponent<RigidBodyComponent>(10.0f, FilterGroups::DEFAULT, FilterGroups::EVERYTHING);
 		
 				phy.RegisterRigidBody(rd);
 

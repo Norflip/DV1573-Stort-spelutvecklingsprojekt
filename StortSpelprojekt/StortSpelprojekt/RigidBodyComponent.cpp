@@ -1,20 +1,20 @@
 #include "RigidBodyComponent.h"
 #include "Physics.h"
 
-RigidBodyComp::RigidBodyComp(float mass, FilterGroups group, FilterGroups mask) : totalMass(mass), group(group), collisionMask(mask)
+RigidBodyComponent::RigidBodyComponent(float mass, FilterGroups group, FilterGroups mask) : totalMass(mass), group(group), collisionMask(mask)
 {
 }
 
-RigidBodyComp::~RigidBodyComp()
+RigidBodyComponent::~RigidBodyComponent()
 {
 }
 
-void RigidBodyComp::Update(const float& deltaTime)
+void RigidBodyComponent::Update(const float& deltaTime)
 {
 	UpdateWorldTransform();
 }
 
-dTransform RigidBodyComp::ConvertToBtTransform(const Transform& transform) const
+dTransform RigidBodyComponent::ConvertToBtTransform(const Transform& transform) const
 {
 	dTransform temp;
 
@@ -28,7 +28,7 @@ dTransform RigidBodyComp::ConvertToBtTransform(const Transform& transform) const
 	return temp;
 }
 
-void RigidBodyComp::AddCollidersToBody(Object* obj, rp::RigidBody* body)
+void RigidBodyComponent::AddCollidersToBody(Object* obj, rp::RigidBody* body)
 {
 	const std::vector<Collider*> colliders = obj->GetComponentsOfSubType<Collider>();
 	for (size_t i = 0; i < colliders.size(); i++)
@@ -48,13 +48,10 @@ void RigidBodyComp::AddCollidersToBody(Object* obj, rp::RigidBody* body)
 	}
 }
 
-void RigidBodyComp::m_InitializeBody(rp::PhysicsWorld* world)
+void RigidBodyComponent::m_InitializeBody(rp::PhysicsWorld* world)
 {
 	Transform& transform = GetOwner()->GetTransform();
 	bodyTransform = ConvertToBtTransform(transform);
-	btVector3 inertia(0, 0, 0);
-
-
 	
 	rp::BodyType type = rp::BodyType::DYNAMIC;
 	if (totalMass == 0.0f)
@@ -70,7 +67,7 @@ void RigidBodyComp::m_InitializeBody(rp::PhysicsWorld* world)
 	AddCollidersToBody(GetOwner(), body);
 }
 
-void RigidBodyComp::UpdateWorldTransform()
+void RigidBodyComponent::UpdateWorldTransform()
 {
 	rp::Transform bodyTransform = body->getTransform();
 
@@ -93,14 +90,31 @@ void RigidBodyComp::UpdateWorldTransform()
 	transform.SetRotation(dx::XMVectorSet(x, y, z, w));
 }
 
-void RigidBodyComp::m_OnCollision(const CollisionInfo& collision)
+void RigidBodyComponent::m_OnCollision(const CollisionInfo& collision)
 {
 	for (auto it = callbacks.begin(); it < callbacks.end(); it++)
 		(*it)(collision);
 }
 
-void RigidBodyComp::AddCollisionCallback(std::function<void(CollisionInfo)> callback)
+void RigidBodyComponent::AddCollisionCallback(std::function<void(CollisionInfo)> callback)
 {
 	callbacks.push_back(callback);
+}
+
+void RigidBodyComponent::AddForce(const dx::XMFLOAT3& force)
+{
+	rp::Vector3 rpForce(force.x, force.y, force.z);
+	body->applyForceToCenterOfMass(rpForce);
+}
+
+void RigidBodyComponent::AddForceAtPoint(const dx::XMFLOAT3& force, const dx::XMFLOAT3& offset, bool local)
+{
+	rp::Vector3 rpForce(force.x, force.y, force.z);
+	rp::Vector3 rpOffset(offset.x, offset.y, offset.z);
+
+	if (local)
+		body->applyForceAtLocalPosition(rpForce, rpOffset);
+	else
+		body->applyForceAtWorldPosition(rpForce, rpOffset);
 }
 
