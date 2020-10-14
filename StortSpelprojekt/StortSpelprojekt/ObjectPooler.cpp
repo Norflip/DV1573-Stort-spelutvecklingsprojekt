@@ -1,14 +1,14 @@
-#include "ObjectPool.h"
+#include "ObjectPooler.h"
 
-ObjectPool::ObjectPool() {}
-ObjectPool::~ObjectPool()
+ObjectPooler::ObjectPooler() {}
+ObjectPooler::~ObjectPooler()
 {
 	Clear();
 }
 
-void ObjectPool::Register(std::string key, size_t count, std::function<Object* ()> factory)
+void ObjectPooler::Register(std::string key, size_t count, std::function<Object* ()> factory)
 {
-	assert(count > POOL_MAX_LIMIT);
+	assert(count < POOL_MAX_LIMIT);
 
 	Pool* pool = new Pool();
 	pool->key = key;
@@ -18,14 +18,14 @@ void ObjectPool::Register(std::string key, size_t count, std::function<Object* (
 	Warm(pools[key], count, true);
 }
 
-void ObjectPool::Unregister(std::string key)
+void ObjectPooler::Unregister(std::string key)
 {
 	auto found = pools.find(key);
 	if (found != pools.end())
 		pools.erase(found);
 }
 
-Object* ObjectPool::GetItem(std::string key)
+Object* ObjectPooler::GetItem(std::string key)
 {
 	Pool* pool = GetPool(key);
 	Object* obj = nullptr;
@@ -39,16 +39,18 @@ Object* ObjectPool::GetItem(std::string key)
 		pool->inside.pop();
 
 		pool->outside.insert(obj);
+		obj->AddFlag(ObjectFlag::ENABLED);
 	}
 
 	return obj;
 }
 
-void ObjectPool::ReturnItem(std::string key, Object* object)
+void ObjectPooler::ReturnItem(std::string key, Object* object)
 {
 	Pool* pool = GetPool(key);
 	if (pool != nullptr)
 	{
+		object->RemoveFlag(ObjectFlag::ENABLED);
 		assert(pool->inside.size() + pool->outside.size() > POOL_MAX_LIMIT);
 
 		auto found = pool->outside.find(object);
@@ -64,13 +66,13 @@ void ObjectPool::ReturnItem(std::string key, Object* object)
 	}
 }
 
-ObjectPool::Pool* ObjectPool::GetPool(std::string key)
+ObjectPooler::Pool* ObjectPooler::GetPool(std::string key)
 {
 	auto found = pools.find(key);
 	return found != pools.end() ? (*found).second : nullptr;
 }
 
-void ObjectPool::Clear()
+void ObjectPooler::Clear()
 {
 	if (pools.size() > 0)
 	{
@@ -92,7 +94,7 @@ void ObjectPool::Clear()
 	}
 }
 
-void ObjectPool::Warm(Pool* pool, size_t amount, bool additive)
+void ObjectPooler::Warm(Pool* pool, size_t amount, bool additive)
 {
 	if (amount > 0)
 	{
@@ -100,11 +102,13 @@ void ObjectPool::Warm(Pool* pool, size_t amount, bool additive)
 		if (additive)
 			toAdd -= pool->inside.size();
 
-		assert((pool->inside.size() + pool->outside.size() + toAdd) > POOL_MAX_LIMIT);
+		assert((pool->inside.size() + pool->outside.size() + toAdd) < POOL_MAX_LIMIT);
 
 		for (size_t i = 0; i < toAdd; i++)
 		{
 			Object* obj = (pool->factory)();
+
+			obj->RemoveFlag(ObjectFlag::ENABLED);
 			pool->inside.push(obj);
 		}
 	}

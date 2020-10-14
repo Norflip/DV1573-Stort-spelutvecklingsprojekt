@@ -27,15 +27,28 @@ void Scene::Initialize(Renderer* renderer)
 {
 	this->renderer = renderer;
 
-	resourceManager = new ResourceManager;
-	resourceManager->InitializeResources(renderer->GetDevice());
-
 	// TEMP
 	// Should change values on resize event
 	Window* window = renderer->GetOutputWindow();
-	
+
 	Physics& physics = Physics::Instance();
 	physics.Initialize({ 0, -10.0f, 0 });
+
+
+	resourceManager = new ResourceManager;
+	resourceManager->InitializeResources(renderer->GetDevice());
+
+	pooler.Register("test_body_cube", 10, []() {
+
+		Object* object = new Object("fuel");
+
+		object->AddComponent<DebugBoxShapeComponent>();
+		object->AddComponent<BoxColliderComponent>(dx::XMFLOAT3(0.5f, 0.5f, 0.5f), dx::XMFLOAT3(0, 0, 0));
+		RigidBodyComponent* rd = object->AddComponent<RigidBodyComponent>(10.0f, FilterGroups::DEFAULT, FilterGroups::EVERYTHING, true);
+
+		Physics::Instance().RegisterRigidBody(rd);
+		return object;
+	});
 
 	spriteBatch = new DirectX::SpriteBatch(renderer->GetContext());
 	GUISprite* normalSprite = new GUISprite(*renderer, "Textures/EquipmentBox.png", 0, 0, DrawDirection::BottomLeft, ClickFunction::Clickable);
@@ -245,22 +258,13 @@ void Scene::Update(const float& deltaTime)
 			{
 				dx::XMVECTOR position = dx::XMVectorAdd(cameraPosition, { (float)x * 1.5f, -1.0f, (float)y * 1.5f });
 
-				Object* object = new Object("item");
-				object->GetTransform().SetPosition(position);
-				
-				object->AddComponent<DebugBoxShapeComponent>();
-				object->AddComponent<BoxColliderComponent>(dx::XMFLOAT3(0.5f, 0.5f, 0.5f), dx::XMFLOAT3(0, 0, 0));
-				RigidBodyComponent* rd = object->AddComponent<RigidBodyComponent>(rp::BodyType::DYNAMIC, 10.0f, FilterGroups::DEFAULT, FilterGroups::EVERYTHING);
-		
-				phy.RegisterRigidBody(rd);
-
+				Object* object = pooler.GetItem("test_body_cube");
+				object->GetComponent<RigidBodyComponent>()->SetPosition(position);
 				AddObject(object);
 			}
 		}
 
 		phy.MutexUnlock();
-
-		const int a = 100;
 	}
 
 

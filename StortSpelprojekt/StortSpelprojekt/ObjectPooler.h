@@ -9,7 +9,7 @@
 
 constexpr size_t POOL_MAX_LIMIT = 8000;
 
-class ObjectPool
+class ObjectPooler
 {
 	struct Pool
 	{ 
@@ -20,8 +20,8 @@ class ObjectPool
 	};
 
 public:
-	ObjectPool();
-	virtual ~ObjectPool();
+	ObjectPooler();
+	virtual ~ObjectPooler();
 
 	void Register(std::string key, size_t count, std::function<Object* ()> factory);
 	void Unregister(std::string key);

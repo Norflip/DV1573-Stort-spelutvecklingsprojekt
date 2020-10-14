@@ -1,5 +1,5 @@
 #pragma once
-#include <reactphysics3d.h>
+#include <react3d.h>
 #include <DirectXMath.h>
 #include "Transform.h"
 #include "Component.h"
@@ -58,6 +58,7 @@ public:
 	FilterGroups GetCollidesWith() const { return this->collisionMask; }
 
 	void Update(const float& deltaTime) override;
+	void SetPosition(dx::XMVECTOR position);
 
 private:
 	dTransform ConvertToBtTransform(const Transform& transform) const;

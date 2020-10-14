@@ -183,7 +183,7 @@
     <ClCompile Include="MoveComponent.cpp" />
     <ClCompile Include="NodeWalkerComponent.cpp" />
     <ClCompile Include="Object.cpp" />
-    <ClCompile Include="ObjectPool.cpp" />
+    <ClCompile Include="ObjectPooler.cpp" />
     <ClCompile Include="Physics.cpp" />
     <ClCompile Include="Path.cpp" />
     <ClCompile Include="PossionDiscSampler.cpp" />
@@ -217,7 +217,7 @@
     <ClInclude Include="ControllerComponent.h" />
     <ClInclude Include="DebugBoxShapeComponent.h" />
     <ClInclude Include="DShape.h" />
-    <ClInclude Include="ObjectPool.h" />
+    <ClInclude Include="ObjectPooler.h" />
     <ClInclude Include="Path.h" />
     <ClInclude Include="PhysicCallbacks.h" />
     <ClInclude Include="PossionDiscSampler.h" />

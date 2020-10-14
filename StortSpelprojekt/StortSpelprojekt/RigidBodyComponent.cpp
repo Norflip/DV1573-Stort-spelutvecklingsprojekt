@@ -14,6 +14,16 @@ void RigidBodyComponent::Update(const float& deltaTime)
 	UpdateWorldTransform();
 }
 
+void RigidBodyComponent::SetPosition(dx::XMVECTOR position)
+{
+	dx::XMFLOAT3 pos;
+	dx::XMStoreFloat3(&pos, position);
+
+	rp::Transform transform = body->getTransform();
+	transform.setPosition(rp::Vector3(pos.x, pos.y, pos.z));
+	body->setTransform(transform);
+}
+
 dTransform RigidBodyComponent::ConvertToBtTransform(const Transform& transform) const
 {
 	dTransform temp;

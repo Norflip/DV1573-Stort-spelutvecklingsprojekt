@@ -1,6 +1,6 @@
 #pragma once
 #include "Component.h"
-#include <reactphysics3d.h>
+#include <react3d.h>
 
 namespace rp = reactphysics3d;
 namespace dx = DirectX;
