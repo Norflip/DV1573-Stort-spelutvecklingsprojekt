@@ -48,7 +48,7 @@ HS_CONSTANT_DATA_OUTPUT_GRASS hsPerIsoLinePatch(InputPatch<VS_OUTPUT_GRASS,1> in
 
 	float len = chunkData.SampleLevel(linearSampler, uv, 0).b;//change this to make the grass tesselate on selected areas
 
-	if (len > 0.4) //change this to make the grass tesselate on selected areas
+	if (len > 0.3) //change this to make the grass tesselate on selected areas
 	{
 		output.edgeTesselation[0] = 0;
 	}
