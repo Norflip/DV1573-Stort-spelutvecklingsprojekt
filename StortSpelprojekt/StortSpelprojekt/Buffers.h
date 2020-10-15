@@ -18,7 +18,6 @@ struct cb_Object
 	dx::XMFLOAT4X4 world;
 	dx::XMFLOAT4X4 vp;
 	dx::XMFLOAT4X4 wv;
-	dx::XMFLOAT4X4 invProjection;
 };
 
 __declspec(align(16))
@@ -59,6 +58,8 @@ struct cb_Lights
 __declspec(align(16))
 struct cb_Scene
 {
+	dx::XMFLOAT4X4 invProjection;
+	dx::XMFLOAT4X4 invView;
 	dx::XMFLOAT3 cameraPosition;
 	int id;
 	float factor;

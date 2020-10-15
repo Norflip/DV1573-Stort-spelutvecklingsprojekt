@@ -370,9 +370,6 @@ void Renderer::DrawRenderItem(const RenderItem& item)
 	dx::XMMATRIX mvp = dx::XMMatrixMultiply(item.world, dx::XMMatrixMultiply(item.camera->GetViewMatrix(), item.camera->GetProjectionMatrix()));
 	dx::XMStoreFloat4x4(&cb_object_data.mvp, dx::XMMatrixTranspose(mvp));
 	dx::XMStoreFloat4x4(&cb_object_data.world, dx::XMMatrixTranspose(item.world));
-	
-	dx::XMMATRIX invProjection = dx::XMMatrixInverse(NULL, item.camera->GetProjectionMatrix());
-	dx::XMStoreFloat4x4(&cb_object_data.invProjection, dx::XMMatrixTranspose(invProjection));
 
 	dx::XMMATRIX vp = dx::XMMatrixMultiply(item.camera->GetViewMatrix(), item.camera->GetProjectionMatrix());
 	dx::XMStoreFloat4x4(&cb_object_data.vp, dx::XMMatrixTranspose(vp));
@@ -382,6 +379,13 @@ void Renderer::DrawRenderItem(const RenderItem& item)
 
 	cb_material_data = item.material->GetMaterialData();
 	DXHelper::BindConstBuffer(context, material_cbuffer, &cb_material_data, CB_MATERIAL_SLOT, ShaderBindFlag::PIXEL);
+
+
+	dx::XMMATRIX invProjection = dx::XMMatrixInverse(NULL, item.camera->GetProjectionMatrix());
+	dx::XMStoreFloat4x4(&cb_scene.invProjection, dx::XMMatrixTranspose(invProjection));
+
+	dx::XMMATRIX invView = dx::XMMatrixInverse(NULL, item.camera->GetViewMatrix());
+	dx::XMStoreFloat4x4(&cb_scene.invView, dx::XMMatrixTranspose(invView));
 
 	dx::XMStoreFloat3(&cb_scene.cameraPosition, item.camera->GetOwner()->GetTransform().GetPosition());
 	DXHelper::BindConstBuffer(context, scene_buffer, &cb_scene, CB_SCENE_SLOT, ShaderBindFlag::PIXEL);
@@ -401,15 +405,19 @@ void Renderer::DrawRenderItemInstanced(const RenderItem& item)
 
 	dx::XMMATRIX vp =dx::XMMatrixMultiply(item.camera->GetViewMatrix(), item.camera->GetProjectionMatrix());
 	dx::XMStoreFloat4x4(&cb_object_data.vp, dx::XMMatrixTranspose(vp));
-	dx::XMMATRIX invProjection = dx::XMMatrixInverse(NULL, item.camera->GetProjectionMatrix());
-	dx::XMStoreFloat4x4(&cb_object_data.invProjection, dx::XMMatrixTranspose(invProjection));
-
+	
 
 	DXHelper::BindConstBuffer(context, obj_cbuffer, &cb_object_data, CB_OBJECT_SLOT, ShaderBindFlag::VERTEX);
 	DXHelper::BindConstBuffer(context, obj_cbuffer, &cb_object_data, CB_OBJECT_SLOT, ShaderBindFlag::PIXEL);
 
 	cb_material_data = item.material->GetMaterialData();
 	DXHelper::BindConstBuffer(context, material_cbuffer, &cb_material_data, CB_MATERIAL_SLOT, ShaderBindFlag::PIXEL);
+
+	dx::XMMATRIX invProjection = dx::XMMatrixInverse(NULL, item.camera->GetProjectionMatrix());
+	dx::XMStoreFloat4x4(&cb_scene.invProjection, dx::XMMatrixTranspose(invProjection));
+
+	dx::XMMATRIX invView = dx::XMMatrixInverse(NULL, item.camera->GetViewMatrix());
+	dx::XMStoreFloat4x4(&cb_scene.invView, dx::XMMatrixTranspose(invView));
 
 	dx::XMStoreFloat3(&cb_scene.cameraPosition, item.camera->GetOwner()->GetTransform().GetPosition());
 	DXHelper::BindConstBuffer(context, scene_buffer, &cb_scene, CB_SCENE_SLOT, ShaderBindFlag::PIXEL);
@@ -432,9 +440,7 @@ void Renderer::DrawRenderItemSkeleton(const RenderItem& item)
 	
 	dx::XMMATRIX vp = dx::XMMatrixMultiply(item.camera->GetViewMatrix(), item.camera->GetProjectionMatrix());
 	dx::XMStoreFloat4x4(&cb_object_data.vp, dx::XMMatrixTranspose(vp));
-	dx::XMMATRIX invProjection = dx::XMMatrixInverse(NULL, item.camera->GetProjectionMatrix());
-	dx::XMStoreFloat4x4(&cb_object_data.invProjection, dx::XMMatrixTranspose(invProjection));
-
+	
 	DXHelper::BindConstBuffer(context, obj_cbuffer, &cb_object_data, CB_OBJECT_SLOT, ShaderBindFlag::VERTEX);
 	DXHelper::BindConstBuffer(context, obj_cbuffer, &cb_object_data, CB_OBJECT_SLOT, ShaderBindFlag::PIXEL);
 

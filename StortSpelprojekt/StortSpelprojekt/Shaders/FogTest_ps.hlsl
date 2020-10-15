@@ -91,6 +91,37 @@ float2 SphericalMapping(float3 direction)
     //return float2(tu, tv);
 }
 
+// this is supposed to get the world position from the depth buffer
+float3 WorldPosFromDepth(float depth, float2 uv) {
+    float z = depth;// *2.0 - 1.0;
+
+    float4 clipSpacePosition = float4(uv * 2.0 - 1.0, 0.0f, z);
+    float4 viewSpacePosition = mul(clipSpacePosition, invProjection);
+
+    // Perspective division
+    viewSpacePosition /= viewSpacePosition.w;
+
+    float4 worldSpacePosition = mul(viewSpacePosition, invView);
+    return worldSpacePosition.xyz;
+}
+
+float raySphereIntersect(float3 r0, float3 rd, float3 s0, float sr) {
+    // - r0: ray origin
+    // - rd: normalized ray direction
+    // - s0: sphere center
+    // - sr: sphere radius
+    // - Returns distance from r0 to first intersecion with sphere,
+    //   or -1.0 if no intersection.
+    float a = dot(rd, rd);
+    float3 s0_r0 = r0 - s0;
+    float b = 2.0 * dot(rd, s0_r0);
+    float c = dot(s0_r0, s0_r0) - (sr * sr);
+    if (b * b - 4.0 * a * c < 0.0) {
+        return -1.0;
+    }
+    return (-b - sqrt((b * b) - 4.0 * a * c)) / (2.0 * a);
+}
+
 
 float4 main(PixelInputType input) : SV_TARGET
 {
@@ -114,26 +145,49 @@ float4 main(PixelInputType input) : SV_TARGET
     float far = 500.0f;
 
     float D = ((2.0f * near) / (far + near - depth * (far - near)));
-    float fogFactor = saturate(((D * far) - start) / (end - start));
+    
+    float3 position = WorldPosFromDepth(D, input.uv);
+    
+    
+    float3 o = cameraPosition;
+    float3 d = normalize(position - cameraPosition);
 
+    float3 p = o;
+    float3 c = p + d * far;
+
+    // - r0: ray origin
+// - rd: normalized ray direction
+// - s0: sphere center
+// - sr: sphere radius
+
+
+    float a = raySphereIntersect(o, d, float3(0, 0, 0), 20.0f);
+
+    if (a > 0.9f)
+    {
+        return float4(1, 0, 0, 1);
+    }
+
+    float2 post = SphericalMapping(d);
+    //return float4(post, 0.0f, 1.0f);
+    
+    
+    float fogFactor = saturate(((D * far) - start) / (end - start));
     float distance = D * far;
 
-    float3 direction = normalize(float3(0,0,1));
+
+
+    //float4 position = float4(input.uv.x, input.uv.y, 1.0f);
+    //loat3 viewRay = mul(position, invProjection).xyz;
+
+   // return float4(viewRay, 1.0f);
 
     // BROWNIAN
-
-    float2 uv = input.uv * 2.0f - 1.0f;
-    float3 cam_pos = float3(0, 0, -5);
-    float3 rd = mul(float3(input.uv.x, -input.uv.y, 1.0f), mvp);
-
-
-    float4 position = float4(input.uv.x, input.uv.y, 1.0f);
-    float3 viewRay = mul(position, invProjection).xyz;
-
-    return float4(viewRay, 1.0f);
+    // BROWNIAN
+    // BROWNIAN
 
     float2 st = input.uv.xy;// / float2(1600, 800) * 3.;
-   // st = SphericalMapping(rd);
+    //st = post;
 
     //st += st * abs(sin(time * 0.1)*3.0);
 
