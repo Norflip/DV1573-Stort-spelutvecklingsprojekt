@@ -1,6 +1,7 @@
 #pragma once
 #include "Object.h"
 #include "StatsComponent.h"
+#include "GameClock.h"
 
 class AIAttack : public Component
 {
@@ -14,4 +15,6 @@ class AIAttack : public Component
 
 		CameraComponent* player;
 		bool attackPlayer = false;
+		GameClock timer;
+		float playerRadius = 2.0f;
 };

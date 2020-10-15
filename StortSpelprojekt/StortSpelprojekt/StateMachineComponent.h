@@ -1,6 +1,6 @@
 #pragma once
 #include <map>
-#include "AIMove.h"
+#include "AIPatrol.h"
 #include "AIIdle.h"
 #include "AIAttack.h"
 #include "Input.h"
@@ -10,7 +10,7 @@ enum class AIState
 {
 	none,
 	idle,
-	move,
+	patrol,
 	attack
 };
 
@@ -19,8 +19,8 @@ class StateMachineComponent : public Component
 	public:
 		std::map<AIState, AIState> switchState =
 		{
-			{AIState::idle, AIState::move},
-			{AIState::move, AIState::attack},
+			{AIState::idle, AIState::patrol},
+			{AIState::patrol, AIState::attack},
 			{AIState::attack, AIState::idle}
 		};
 

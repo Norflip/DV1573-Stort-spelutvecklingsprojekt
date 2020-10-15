@@ -1,13 +1,14 @@
 #pragma once
 #include "Object.h"
 
-class AIMove : public Component
+class AIPatrol : public Component
 {
 	public:
-		AIMove();
-		virtual ~AIMove();
+		AIPatrol();
+		virtual ~AIPatrol();
 
 		void Update(const float& deltaTime) override;
 	private:
 		dx::XMFLOAT3 direction;
+		float positionA = 3.0f, positionB = -3.0f;
 };

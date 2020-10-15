@@ -1,20 +1,20 @@
-#include "AIMove.h"
+#include "AIPatrol.h"
 
-AIMove::AIMove()
+AIPatrol::AIPatrol()
 {
 	direction = { 0, 1.f, 0 };
 }
 
-AIMove::~AIMove()
+AIPatrol::~AIPatrol()
 {
 }
 
-void AIMove::Update(const float& deltaTime)
+void AIPatrol::Update(const float& deltaTime)
 {
 	DirectX::XMFLOAT3 pos;
 	dx::XMStoreFloat3(&pos, GetOwner()->GetTransform().GetPosition());
 
-	if (pos.y > 3.f || pos.y < -3.f)
+	if (pos.y > positionA || pos.y < positionB)
 	{
 		direction.x *= -1;
 		direction.y *= -1;

@@ -43,11 +43,13 @@ void Scene::Initialize(Renderer* renderer)
 	GUISprite* normalSprite2 = new GUISprite(*renderer, "Textures/EquipmentBox.png", 0, 0, DrawDirection::TopLeft, ClickFunction::Clickable);
 	GUISprite* buttonSprite2 = new GUISprite(*renderer, "Textures/EquipmentBox.png", 0, 0, DrawDirection::TopRight, ClickFunction::Clickable);
 	GUIFont* fpsDisplay = new GUIFont(*renderer, "test", 300, 300);
+	GUIFont* healthDisplay = new GUIFont(*renderer, "playerHealth", 300, 350);
 	normalSprite->SetActive();
 
 	guiManager = new GUIManager(renderer);
 	renderer->SetGUIManager(guiManager);
 	guiManager->AddGUIObject(fpsDisplay, "fps");
+	guiManager->AddGUIObject(healthDisplay, "playerHealth");
 	guiManager->AddGUIObject(normalSprite, "normalSprite");
 	guiManager->AddGUIObject(buttonSprite, "buttonSprite");
 	guiManager->AddGUIObject(normalSprite2, "normalSprite2");
@@ -65,7 +67,7 @@ void Scene::Initialize(Renderer* renderer)
 	camera = cameraObject->AddComponent<CameraComponent>(60.0f, true);
 	camera->Resize(window->GetWidth(), window->GetHeight());
 	cameraObject->AddComponent<ControllerComponent>();
-	cameraObject->AddComponent<StatsComponent>(100, 2, 10, 25);
+	cameraObject->AddComponent<StatsComponent>(100, 2, 10, 25, 3);
 
 
 	Input::Instance().SetWindow(window->GetHWND(), window->GetHeight(), window->GetWidth());
@@ -169,10 +171,10 @@ void Scene::InitializeObjects()
 	dx::XMFLOAT3 enemyTranslation = dx::XMFLOAT3(0, 2, 10);
 	enemy->GetTransform().SetPosition(dx::XMLoadFloat3(&enemyTranslation));
 	enemy->AddComponent<MeshComponent>(*mesh1, *material1);
-	enemy->AddComponent<StatsComponent>(100, 2, 10, 25);
+	enemy->AddComponent<StatsComponent>(100, 2, 10, 25, 3);
 	StateMachineComponent* stateMachine = enemy->AddComponent<StateMachineComponent>(AIState::idle);
 	stateMachine->RegisterState(AIState::idle, enemy->AddComponent<AIIdle>());
-	stateMachine->RegisterState(AIState::move, enemy->AddComponent<AIMove>());
+	stateMachine->RegisterState(AIState::patrol, enemy->AddComponent<AIPatrol>());
 	stateMachine->RegisterState(AIState::attack, enemy->AddComponent<AIAttack>(camera));
 	AddObject(enemy);
 
@@ -234,6 +236,8 @@ void Scene::Update(const float& deltaTime)
 
 	GUIFont* fps = static_cast<GUIFont*>(guiManager->GetGUIObject("fps"));
 	fps->SetString(std::to_string((int)GameClock::Instance().GetFramesPerSecond()));
+	GUIFont* playerHealth = static_cast<GUIFont*>(guiManager->GetGUIObject("playerHealth"));
+	playerHealth->SetString(std::to_string((int)camera->GetOwner()->GetComponent<StatsComponent>()->GetHealth()));
 	guiManager->UpdateAll();
 	
 	renderer->UpdateTime((float)clock.GetSeconds());
