@@ -216,12 +216,12 @@ void WorldGenerator::DrawShapes ()
 	{
 		dx::XMFLOAT2 point0 = points[i];
 		dx::XMFLOAT3 worldPoint (point0.x + offset, 5, point0.y + offset);
-		DShape::DrawSphere(worldPoint, 0.5f, { 0,0,0 });
+		DShape::DrawSphere(worldPoint, 0.5f, { 1,0,1 });
 
 		if (i < points.size() - 1)
 		{
 			dx::XMFLOAT2 point1 = points[i + 1];
-			DShape::DrawLine({ point1.x + offset, 5, point1.y + offset }, worldPoint, { 1,0,0 });
+		//	DShape::DrawLine({ point1.x + offset, 5, point1.y + offset }, worldPoint, { 1,0,0 });
 		}
 	}
 }
@@ -252,8 +252,8 @@ Chunk* WorldGenerator::CreateChunk(ChunkType type, dx::XMINT2 index, const Noise
 			int bufferIndex = x + size * y;
 
 			float height = Noise::Sample(chunkPosXZ.x + x, chunkPosXZ.y + y, settings);
-			heightMap[x + size * y] = height;
-			heightMap2.push_back(height);
+			heightMap[x + size * y] = height * distance;
+			heightMap2.push_back(height * distance);
 
 			//std::cout << height << std::endl;
 

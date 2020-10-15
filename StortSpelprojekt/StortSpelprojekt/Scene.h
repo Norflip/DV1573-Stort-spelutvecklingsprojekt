@@ -31,6 +31,8 @@
 #include "DebugBoxShapeComponent.h"
 
 #include "ResourceManager.h"
+#include "ObjectPooler.h"
+
 class GUIFont;
 class SpriteRenderPass;
 
@@ -70,6 +72,7 @@ private:
 	WorldGenerator worldGenerator;
 	SpriteRenderPass* spritePass;	
 
+	ObjectPooler pooler;
 	GUIManager* guiManager;		
 	
 	/* Test skybox in class */
