@@ -27,15 +27,28 @@ void Scene::Initialize(Renderer* renderer)
 {
 	this->renderer = renderer;
 
-	resourceManager = new ResourceManager;
-	resourceManager->InitializeResources(renderer->GetDevice());
-
 	// TEMP
 	// Should change values on resize event
 	Window* window = renderer->GetOutputWindow();
-	
+
 	Physics& physics = Physics::Instance();
 	physics.Initialize({ 0, -10.0f, 0 });
+
+
+	resourceManager = new ResourceManager;
+	resourceManager->InitializeResources(renderer->GetDevice());
+
+	pooler.Register("test_body_cube", 10, []() {
+
+		Object* object = new Object("fuel");
+
+		object->AddComponent<DebugBoxShapeComponent>();
+		object->AddComponent<BoxColliderComponent>(dx::XMFLOAT3(0.5f, 0.5f, 0.5f), dx::XMFLOAT3(0, 0, 0));
+		RigidBodyComponent* rd = object->AddComponent<RigidBodyComponent>(10.0f, FilterGroups::DEFAULT, FilterGroups::EVERYTHING, true);
+
+		Physics::Instance().RegisterRigidBody(rd);
+		return object;
+	});
 
 	spriteBatch = new DirectX::SpriteBatch(renderer->GetContext());
 	GUISprite* normalSprite = new GUISprite(*renderer, "Textures/EquipmentBox.png", 0, 0, DrawDirection::BottomLeft, ClickFunction::Clickable);
@@ -47,7 +60,7 @@ void Scene::Initialize(Renderer* renderer)
 	normalSprite->SetActive();
 
 	guiManager = new GUIManager(renderer);
-	renderer->SetGUIManager(guiManager);
+	
 	guiManager->AddGUIObject(fpsDisplay, "fps");
 	guiManager->AddGUIObject(healthDisplay, "playerHealth");
 	guiManager->AddGUIObject(normalSprite, "normalSprite");
@@ -55,6 +68,8 @@ void Scene::Initialize(Renderer* renderer)
 	guiManager->AddGUIObject(normalSprite2, "normalSprite2");
 	guiManager->AddGUIObject(buttonSprite2, "buttonSprite2");
 	guiManager->GetGUIObject("normalSprite")->SetPosition(100, 100);
+	renderer->AddRenderPass(new GUIRenderPass(100, guiManager));
+
 	SaveState state;
 	state.seed = 1337;
 	state.segment = 0;
@@ -133,29 +148,27 @@ void Scene::InitializeObjects()
 	//0 tree 1 leaves
 	std::vector<Material> stylizedTreeMaterial = ZWEBLoader::LoadMaterials("Models/tree.ZWEB", instanceShader, renderer->GetDevice());
 
-	Shader* lightShader = resourceManager->GetShaderResource("defaultShader");
 
 	//TEST POINT LIGHTS____________________________________________________________________________________________________________________
 	Object* testPointLight = new Object("testPointLight");								
 	dx::XMFLOAT3 lightTranslation = dx::XMFLOAT3(2.0f, 0.0f, 3.0f);						
-	testPointLight->GetTransform().SetPosition(dx::XMLoadFloat3(&lightTranslation));	
-	AddObject(testPointLight);															
-	testPointLight->AddComponent<PointLightComponent>();								
-	testPointLight->GetComponent<PointLightComponent>()->SetColor({ 1.f, 0.f, 0.f, 1.f });
-																						
+	testPointLight->GetTransform().SetPosition(dx::XMLoadFloat3(&lightTranslation));		
+	testPointLight->AddComponent<PointLightComponent>(dx::XMFLOAT4(1.f, 0.f, 0.f, 1.f), 25);
+	AddObject(testPointLight);
+
 	Object* testPointLight2 = new Object("testPointLight2");							
 	dx::XMFLOAT3 lightTranslation2 = dx::XMFLOAT3(0.0f, 2.0f, 3.0f);					
 	testPointLight2->GetTransform().SetPosition(dx::XMLoadFloat3(&lightTranslation2));	
-	AddObject(testPointLight2);															
-	testPointLight2->AddComponent<PointLightComponent>();								
-	testPointLight2->GetComponent<PointLightComponent>()->SetColor({ 0.f, 1.f, 0.f, 1.f });
-																						
+	testPointLight2->AddComponent<PointLightComponent>(dx::XMFLOAT4(0.f, 1.f, 0.f, 1.f), 25);
+	AddObject(testPointLight2);
+
 	Object* testPointLight3 = new Object("testPointLight3");							
 	dx::XMFLOAT3 lightTranslation3 = dx::XMFLOAT3(-2.0f, 0.0f, 3.0f);					
 	testPointLight3->GetTransform().SetPosition(dx::XMLoadFloat3(&lightTranslation3));	
-	AddObject(testPointLight3);															
-	testPointLight3->AddComponent<PointLightComponent>();								
-	testPointLight3->GetComponent<PointLightComponent>()->SetColor({ 0.f, 0.f, 1.f, 1.f });
+	testPointLight3->AddComponent<PointLightComponent>(dx::XMFLOAT4(0.f, 0.f, 1.f, 1.f), 25);
+	
+	AddObject(testPointLight3);
+
 	//_____________________________________________________________________________________________________________________________________
 	
 	stylizedTreeMaterial[0].SetSampler(sampler, 0, ShaderBindFlag::PIXEL);
@@ -192,7 +205,7 @@ void Scene::InitializeObjects()
 
 	SkeletonMeshComponent* baseMonsterComp = baseMonsterObject->AddComponent<SkeletonMeshComponent>(skeletonMesh[0], skeletonMat[0]);
 
-	baseMonsterComp->SetAnimationTrack(skeletonbaseMonsterIdle, StateMachine::IDLE);
+	baseMonsterComp->SetAnimationTrack(skeletonbaseMonsterIdle, SkeletonStateMachine::IDLE);
 
 	baseMonsterObject->GetTransform().SetScale({ 0.125f, 0.125f, 0.125f });
 	baseMonsterObject->GetTransform().SetPosition({ 0.0f, 2.5f, 0.0f });
@@ -231,8 +244,8 @@ void Scene::Update(const float& deltaTime)
 	GUIFont* playerHealth = static_cast<GUIFont*>(guiManager->GetGUIObject("playerHealth"));
 	playerHealth->SetString(std::to_string((int)camera->GetOwner()->GetComponent<StatsComponent>()->GetHealth()));
 	guiManager->UpdateAll();
-	
-	renderer->UpdateTime((float)clock.GetSeconds());
+
+
 	float t = (float)clock.GetSeconds();
 	t = t;
 	if (clock.GetSeconds() > 60)
@@ -256,22 +269,13 @@ void Scene::Update(const float& deltaTime)
 			{
 				dx::XMVECTOR position = dx::XMVectorAdd(cameraPosition, { (float)x * 1.5f, -1.0f, (float)y * 1.5f });
 
-				Object* object = new Object("item");
-				object->GetTransform().SetPosition(position);
-				
-				object->AddComponent<DebugBoxShapeComponent>();
-				object->AddComponent<BoxColliderComponent>(dx::XMFLOAT3(0.5f, 0.5f, 0.5f), dx::XMFLOAT3(0, 0, 0));
-				RigidBodyComponent* rd = object->AddComponent<RigidBodyComponent>(10.0f, FilterGroups::DEFAULT, FilterGroups::EVERYTHING);
-		
-				phy.RegisterRigidBody(rd);
-
+				Object* object = pooler.GetItem("test_body_cube");
+				object->GetComponent<RigidBodyComponent>()->SetPosition(position);
 				AddObject(object);
 			}
 		}
 
 		phy.MutexUnlock();
-
-		const int a = 100;
 	}
 
 
@@ -326,7 +330,7 @@ void Scene::Render()
 	root->Draw(renderer, camera);
 	worldGenerator.DrawShapes();
 
-	renderer->RenderFrame();
+	renderer->RenderFrame(camera, (float)clock.GetSeconds());
 }
 
 void Scene::AddObject(Object* object)

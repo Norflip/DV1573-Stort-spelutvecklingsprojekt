@@ -1,5 +1,5 @@
 #pragma once
-#include <reactphysics3d.h>
+#include <react3d.h>
 #include <DirectXMath.h>
 #include "Transform.h"
 #include "Component.h"
@@ -15,7 +15,6 @@
 #include "DShape.h"
 
 namespace dx = DirectX;
-namespace rp = reactphysics3d;
 
 enum class ForceMode
 {
@@ -25,26 +24,19 @@ enum class ForceMode
 
 enum class FilterGroups : unsigned short;
 
-typedef rp::Quaternion Quaternion;
-typedef rp::Vector3 Vector3;
-typedef rp::Transform dTransform;
-typedef rp::RigidBody RigidBody;
-typedef double Scalar;
-typedef rp::PhysicsWorld World;
-
 #define STATIC_BODY 0
 
 class RigidBodyComponent : public Component
 {
 public:
-	RigidBodyComponent(float mass, FilterGroups group, FilterGroups collidesWith);
+	RigidBodyComponent(float mass, FilterGroups group, FilterGroups collidesWith, bool dynamic);
 	virtual ~RigidBodyComponent();
 
 	void m_InitializeBody(rp::PhysicsWorld* world);
-	RigidBody* GetRigidBody() const { return body; }
+	rp::RigidBody* GetRigidBody() const { return body; }
 
-	void SetMass(float mass) { this->totalMass = Scalar(mass); }
-	float GetMass() const { return static_cast<float>(this->totalMass); }
+	void SetMass(float mass) { this->mass = mass; }
+	float GetMass() const { return static_cast<float>(this->mass); }
 
 	virtual void UpdateWorldTransform();
 	virtual void m_OnCollision(const CollisionInfo& collision);
@@ -53,23 +45,27 @@ public:
 	virtual void AddForce(const dx::XMFLOAT3& force);
 	virtual void AddForceAtPoint(const dx::XMFLOAT3& force, const dx::XMFLOAT3& offset, bool local = true);
 
-	bool IsDynamic() const { return totalMass != 0.0f; }
+	bool IsDynamic() const { return mass != 0.0f && dynamic; }
 	FilterGroups GetGroup() const { return this->group; }
 	FilterGroups GetCollidesWith() const { return this->collisionMask; }
 
 	void Update(const float& deltaTime) override;
+	void SetPosition(dx::XMVECTOR position);
+	bool IsRotationLocked() const { return this->lockRotation; }
+	void LockRotation(bool lock) { this->lockRotation = lock; }
 
 private:
-	dTransform ConvertToBtTransform(const Transform& transform) const;
+	rp::Transform ConvertToBtTransform(const Transform& transform) const;
 	void AddCollidersToBody(Object* obj, rp::RigidBody* body);
 
 	FilterGroups group;
 	FilterGroups collisionMask;
 
-	dTransform bodyTransform;
-	RigidBody* body;
-
-	Scalar totalMass;
+	rp::Transform bodyTransform;
+	rp::RigidBody* body;
+	bool dynamic;
+	float mass;
+	bool lockRotation;
 
 	std::vector<std::function<void(CollisionInfo)>> callbacks;
 };
