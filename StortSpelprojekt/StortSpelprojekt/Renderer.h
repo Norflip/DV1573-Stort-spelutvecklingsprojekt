@@ -134,4 +134,5 @@ private:
 	//rasterizer
 	ID3D11RasterizerState* rasterizerStateCullBack;
 	ID3D11RasterizerState* rasterizerStateCullNone;
+	ID3D11RasterizerState* rasterizerStateCCWO;
 };

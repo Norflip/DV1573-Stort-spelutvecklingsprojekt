@@ -192,7 +192,7 @@ void Scene::InitializeObjects()
 
 	SkeletonMeshComponent* baseMonsterComp = baseMonsterObject->AddComponent<SkeletonMeshComponent>(skeletonMesh[0], skeletonMat[0]);
 
-	baseMonsterComp->SetAnimationTrack(skeletonbaseMonsterIdle, StateMachine::IDLE);
+	baseMonsterComp->SetAnimationTrack(skeletonbaseMonsterIdle, SkeletonStateMachine::IDLE);
 
 	baseMonsterObject->GetTransform().SetScale({ 0.125f, 0.125f, 0.125f });
 	baseMonsterObject->GetTransform().SetPosition({ 0.0f, 2.5f, 0.0f });

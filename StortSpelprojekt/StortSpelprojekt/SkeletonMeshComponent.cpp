@@ -3,7 +3,7 @@
 SkeletonMeshComponent::SkeletonMeshComponent(Mesh mesh, Material material) : mesh(mesh), material(material), boundingBoxes(mesh)
 {
 	boundingBoxes.CalcAABB();
-	currentAni = StateMachine::IDLE; // need to figure out where to edit this.
+	currentAni = SkeletonStateMachine::IDLE; // need to figure out where to edit this.
 }
 
 SkeletonMeshComponent::~SkeletonMeshComponent()
@@ -40,16 +40,16 @@ void SkeletonMeshComponent::RunAnimation(const float& deltaTime)
 	{
 		elapsedTime = 0.0f; //I just dont like the idea of it running to infinity.
 	}
-	if (currentAni != StateMachine::NONE)
+	if (currentAni == SkeletonStateMachine::IDLE)
 	{	
-		finalTransforms = skeletonAnimations[trackMap[currentAni]].Makeglobal(elapsedTime, dx::XMMatrixIdentity(), skeletonAnimations[trackMap[currentAni]].GetRootKeyJoints());
+		finalTransforms = skeletonAnimations[0].Makeglobal(elapsedTime, dx::XMMatrixIdentity(), skeletonAnimations[0].GetRootKeyJoints());
 		
 		 
 	}
 	//Need to add functionality for multiple flags in one.
 }
 
-void SkeletonMeshComponent::SetAnimationTrack(const SkeletonAni& skeletonAni, const StateMachine& type)
+void SkeletonMeshComponent::SetAnimationTrack(const SkeletonAni& skeletonAni, const SkeletonStateMachine& type)
 {
 	trackMap.insert({ type, skeletonAnimations.size() });
 
@@ -63,7 +63,7 @@ SkeletonAni& SkeletonMeshComponent::GetAnimationTrack(unsigned int trackNr)
 	return skeletonAnimations[trackNr];
 }
 
-void SkeletonMeshComponent::play(const StateMachine& type)
+void SkeletonMeshComponent::play(const SkeletonStateMachine& type)
 {
 	currentAni = type;
 }
