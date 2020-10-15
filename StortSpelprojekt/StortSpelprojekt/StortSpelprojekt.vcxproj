@@ -171,6 +171,7 @@
     <ClCompile Include="DShape.cpp" />
     <ClCompile Include="Engine.cpp" />
     <ClCompile Include="GameClock.cpp" />
+    <ClCompile Include="GameScene.cpp" />
     <ClCompile Include="GrassComponent.cpp" />
     <ClCompile Include="GUIManager.cpp" />
     <ClCompile Include="GUISprite.cpp" />
@@ -216,6 +217,7 @@
     <ClInclude Include="ControllerComponent.h" />
     <ClInclude Include="DebugBoxShapeComponent.h" />
     <ClInclude Include="DShape.h" />
+    <ClInclude Include="GameScene.h" />
     <ClInclude Include="Path.h" />
     <ClInclude Include="PhysicCallbacks.h" />
     <ClInclude Include="PossionDiscSampler.h" />

@@ -38,15 +38,16 @@ public:
 	Scene();
 	virtual ~Scene();
 
-	void Initialize(Renderer* renderer);
-	void InitializeObjects();
+	virtual void Initialize(Renderer* renderer) = 0;
+	virtual void InitializeObjects() = 0;
 
-	void OnActivate() {}
-	void OnDeactivate() {}
+	// What is this for?
+	virtual void OnActivate() {}
+	virtual void OnDeactivate() {}
 	
-	void Update(const float& deltaTime);
-	void FixedUpdate(const float& fixedDeltaTime);
-	void Render();
+	virtual void Update(const float& deltaTime);
+	virtual void FixedUpdate(const float& fixedDeltaTime);
+	virtual void Render();
 	
 	void AddObject(Object* object);
 	void AddObject(Object* object, Object* parent);
@@ -57,7 +58,9 @@ public:
 	void PrintSceneHierarchy(Object* object, size_t level) const;
 
 	
-private:	
+private:
+
+protected:
 	Object* root;
 	CameraComponent* camera;
 	Renderer* renderer;
@@ -70,8 +73,6 @@ private:
 
 	GUIManager* guiManager;		
 	
-	/* Test skybox in class */
-	//Object* skybox;
 	Skybox* skyboxClass;		
 
 	ResourceManager* resourceManager;
