@@ -181,6 +181,8 @@ void GameScene::Update(const float& deltaTime)
 {
 	Scene::Update(deltaTime);
 
+	guiManager->UpdateAll();
+
 	if (KEY_DOWN(H))
 	{
 		dx::XMVECTOR cameraPosition = camera->GetOwner()->GetTransform().GetPosition();
@@ -250,6 +252,13 @@ void GameScene::FixedUpdate(const float& fixedDeltaTime)
 
 }
 
-//void GameScene::Render()
-//{
-//}
+void GameScene::Render()
+{
+	skyboxClass->GetThisObject()->Draw(renderer, camera);
+
+	root->Draw(renderer, camera);
+	worldGenerator.DrawShapes();
+
+	renderer->RenderFrame();
+}
+

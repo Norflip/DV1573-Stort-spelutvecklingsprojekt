@@ -1,16 +1,13 @@
 #pragma once
 #include "Scene.h"
 
-class GUIFont;
-class SpriteRenderPass;
-
-class GameScene : public Scene
+class GameOverScene : public Scene
 {
 private:
 
 public:
-	GameScene();
-	~GameScene();
+	GameOverScene();
+	~GameOverScene();
 
 	void Initialize(Renderer* renderer) override;
 	void InitializeObjects() override;

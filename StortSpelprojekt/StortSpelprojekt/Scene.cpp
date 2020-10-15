@@ -64,6 +64,7 @@ void Scene::Update(const float& deltaTime)
 	// Press P to recompile shaders
 	if (KEY_PRESSED(P))
 	{
+		std::cout << "Compiling: " << std::endl;
 		resourceManager->CompileShaders(renderer->GetDevice());
 	}
 }

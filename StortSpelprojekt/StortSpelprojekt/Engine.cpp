@@ -11,8 +11,10 @@ Engine::Engine(HINSTANCE hInstance) : window(hInstance), activeScene(nullptr)
 	HRESULT hr = CoInitializeEx(nullptr, COINIT_MULTITHREADED);
 	assert(SUCCEEDED(hr));		
 
-	RegisterScene(0, new GameScene());
-	SwitchScene(0);
+	RegisterScene(0, new IntroScene());
+	RegisterScene(1, new GameOverScene());
+	RegisterScene(2, new GameScene());
+	SwitchScene(2);
 }
 
 Engine::~Engine()
