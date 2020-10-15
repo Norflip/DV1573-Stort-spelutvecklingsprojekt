@@ -143,7 +143,7 @@ void Renderer::DrawQueueToTarget(RenderQueue& queue)
 void Renderer::RenderFrame(CameraComponent* camera, float time)
 {
 	// UPDATE SCENE
-	RenderFrame(camera, time, backbuffer, true, true);
+	RenderFrame(camera, time, backbuffer, false, false);
 	HRESULT hr = swapchain->Present(0, 0); //1 here?
 	assert(SUCCEEDED(hr));
 }
@@ -211,11 +211,19 @@ void Renderer::RenderFrame(CameraComponent* camera, float time, RenderTexture& t
 	size_t passCount = 0;
 	size_t bufferIndex = 0;
 
-	if (applyRenderPasses)
+	if (drawGUI || applyRenderPasses)
 	{
+
 		for (auto i = passes.begin(); i < passes.end(); i++)
 		{
 			RenderPass* pass = *i;
+
+			if (!drawGUI && pass->GetType() == RenderPass::PassType::UI_OVERLAY)
+				continue;
+
+			if (!applyRenderPasses && pass->GetType() == RenderPass::PassType::POST_PROCESSING)
+				continue;
+
 			if (pass->IsEnabled())
 			{
 				size_t nextBufferIndex = 1 - bufferIndex;
@@ -233,10 +241,11 @@ void Renderer::RenderFrame(CameraComponent* camera, float time, RenderTexture& t
 		}
 	}
 
+	RenderTexture& lastBuffer = (passCount == 0) ? midbuffer : renderPassSwapBuffers[bufferIndex];
 	ClearRenderTarget(target);
 	SetRenderTarget(target, false);
 
-	context->PSSetShaderResources(0, 1, &renderPassSwapBuffers[bufferIndex].srv);
+	context->PSSetShaderResources(0, 1, &lastBuffer.srv);
 	DrawScreenQuad(screenQuadMaterial);
 }
 
