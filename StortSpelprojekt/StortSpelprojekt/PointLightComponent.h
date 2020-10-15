@@ -21,8 +21,11 @@ public:
 	dx::XMFLOAT3 GetAttenuation();
 	void SetAttenuation(dx::XMFLOAT3 attenuation);
 
-private:
+	bool IsDirty() { return this->dirty || GetOwner()->GetTransform().ChangedThisFrame(); }
+	void MarkAsNotDirty() { this->dirty = false; }
 
+private:
+	bool dirty;
 	dx::XMFLOAT4 lightColor;
 	dx::XMFLOAT3 lightPosition;
 	float range;

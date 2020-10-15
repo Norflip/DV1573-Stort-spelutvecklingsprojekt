@@ -2,7 +2,9 @@
 #include "Buffers.h"
 #include <unordered_map>
 #include "DXHelper.h"
+
 class PointLightComponent;
+
 class LightManager
 {
 public:
@@ -21,7 +23,6 @@ public:
 	LightManager(LightManager const&) = delete;
 	void operator=(LightManager const&) = delete;
 
-	bool IsDirty() { return dirty; }; // kollar ifall den har skräpväreden
 	size_t RegisterPointLight(PointLightComponent* pointLight);
 
 	PointLightComponent* GetPointLight(size_t index);

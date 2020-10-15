@@ -9,6 +9,7 @@
 #include "Material.h"
 #include "CameraComponent.h"
 #include "LightManager.h"
+#include "ConstantBuffer.h"
 
 #include <time.h>
 #include "GUIManager.h"
@@ -55,10 +56,10 @@ public:
 	void EndManualRenderPass();
 
 	void DrawQueueToTarget(RenderQueue& queue);
-	void RenderFrame();
-	
+	void RenderFrame(CameraComponent* camera, float time);
+	void RenderFrame(CameraComponent* camera, float time, RenderTexture& target, bool drawGUI = false, bool applyRenderPasses = true);
+
 	void AddRenderPass(RenderPass*);
-	void SetGUIManager(GUIManager*);
 	void Draw(const Mesh& mesh, const Material& material, const dx::XMMATRIX& model, const CameraComponent& camera);
 	void DrawInstanced(const Mesh& mesh, const size_t& count, const Material& material, const CameraComponent& camera);
 	void DrawSkeleton(const Mesh& mesh, const Material& material, const dx::XMMATRIX& model, const CameraComponent& camera, std::vector<dx::XMFLOAT4X4>& bones);
@@ -73,11 +74,10 @@ public:
 	void DrawScreenQuad(const Material& Material);
 
 	void ClearRenderTarget(const RenderTexture& target);
-	void SetRenderTarget(const RenderTexture& target);
+	void SetRenderTarget(const RenderTexture& target, bool setDepth = true);
 
-	void UpdateTime(float time);
 	bool IsDrawingShapes() const { return this->drawShapes; }
-	void DrawShaped(bool draw) { this->drawShapes = draw; }
+	void DrawShapes(bool draw) { this->drawShapes = draw; }
 
 private:
 	void AddItem(const RenderItem& item, bool transparent);
@@ -86,6 +86,7 @@ private:
 	void DrawRenderItemSkeleton(const RenderItem& item);
 	void DrawRenderItemGrass(const RenderItem& item);
 	
+	void SetObjectBufferValues(const CameraComponent* camera, dx::XMMATRIX world);
 	
 private:
 	IDXGISwapChain* swapchain;
@@ -93,25 +94,20 @@ private:
 	ID3D11DeviceContext* context;
 
 	RenderTexture backbuffer;
-	RenderTexture midbuffers [2];
+	RenderTexture midbuffer;
+	RenderTexture renderPassSwapBuffers [2];
 	
 	Material screenQuadMaterial;
 	Mesh screenQuadMesh;
 
-	cb_Object cb_object_data;
-	ID3D11Buffer* obj_cbuffer;
+	ConstantBuffer<cb_Object> objectBuffer;
+	ConstantBuffer<cb_Scene> sceneBuffer;
+	ConstantBuffer<cb_Material> materialBuffer;
+
 
 	std::vector<dx::XMFLOAT4X4> srv_skeleton_data;
 	ID3D11Buffer* skeleton_srvbuffer;
 	ID3D11ShaderResourceView* skeleton_srv;
-	
-	cb_Scene cb_scene;
-	ID3D11Buffer* scene_buffer;
-	cb_Lights cb_light;
-	ID3D11Buffer* light_cbuffer;
-
-	cb_Material cb_material_data;
-	ID3D11Buffer* material_cbuffer;
 
 	Window* outputWindow;
 
@@ -119,8 +115,6 @@ private:
 	RenderQueue transparentItemQueue;
 	std::vector<RenderPass*> passes;
 
-	// GUI
-	GUIManager* guiManager;
 	//blendstate
 	ID3D11BlendState* blendStateOn;
 	ID3D11BlendState* blendStateOff;

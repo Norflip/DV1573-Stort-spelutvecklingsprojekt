@@ -6,6 +6,7 @@ PointLightComponent::PointLightComponent()
 	this->lightColor = { 0.5f, 0.5f, 0.5f, 0.5f };
 	this->range = 25;
 	this->attenuation = { 1.0f, 0.02f, 0.0f };
+	this->dirty = true;
 }
 
 PointLightComponent::~PointLightComponent()
@@ -24,6 +25,7 @@ dx::XMFLOAT4 PointLightComponent::GetColor()
 
 void PointLightComponent::SetColor(dx::XMFLOAT4 color)
 {
+	this->dirty = true;
 	this->lightColor = color;
 }
 
@@ -34,6 +36,7 @@ float PointLightComponent::GetRange()
 
 void PointLightComponent::SetRange(float range)
 {
+	this->dirty = true;
 	this->range = range;
 }
 
@@ -44,5 +47,6 @@ dx::XMFLOAT3 PointLightComponent::GetAttenuation()
 
 void PointLightComponent::SetAttenuation(dx::XMFLOAT3 attenuation)
 {
+	this->dirty = true;
 	this->attenuation = attenuation;
 }

@@ -59,13 +59,15 @@ void Scene::Initialize(Renderer* renderer)
 	normalSprite->SetActive();
 
 	guiManager = new GUIManager(renderer);
-	renderer->SetGUIManager(guiManager);
+	
 	guiManager->AddGUIObject(fpsDisplay, "fps");
 	guiManager->AddGUIObject(normalSprite, "normalSprite");
 	guiManager->AddGUIObject(buttonSprite, "buttonSprite");
 	guiManager->AddGUIObject(normalSprite2, "normalSprite2");
 	guiManager->AddGUIObject(buttonSprite2, "buttonSprite2");
 	guiManager->GetGUIObject("normalSprite")->SetPosition(100, 100);
+	renderer->AddRenderPass(new GUIRenderPass(100, guiManager));
+
 	SaveState state;
 	state.seed = 1337;
 	state.segment = 0;
@@ -233,8 +235,8 @@ void Scene::Update(const float& deltaTime)
 	//std::cout << "FPS: " << GameClock::Instance().GetFramesPerSecond() << std::endl;
 
 	guiManager->UpdateAll();
-	
-	renderer->UpdateTime((float)clock.GetSeconds());
+
+
 	float t = (float)clock.GetSeconds();
 	t = t;
 	if (clock.GetSeconds() > 60)
@@ -319,7 +321,7 @@ void Scene::Render()
 	root->Draw(renderer, camera);
 	worldGenerator.DrawShapes();
 
-	renderer->RenderFrame();
+	renderer->RenderFrame(camera, (float)clock.GetSeconds());
 }
 
 void Scene::AddObject(Object* object)
