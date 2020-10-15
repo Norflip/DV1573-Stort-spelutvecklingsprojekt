@@ -129,69 +129,56 @@ float3 SphereNormal(float3 p, float3 center, float radius)
 float4 main(PixelInputType input) : SV_TARGET
 {
     float4 diffuseColor = float4(1.0f, 1.0f, 1.0f, 1.0f);
-
-   // if (input.uv.x < 0.5f)
-      //  return float4(0, 1, 0, 1);
-
-
     float depth = depthTexture.Sample(defaultSampleType, input.uv).x;
 
-    float start = 10;
-    float end = 40;
+    const float start = 10; // FOG START
+    const float end = 40; // FOG END
 
-    float near = 0.01f;
-    float far = 500.0f;
+    const float near = 0.01f; // NEAR PLANE
+    const float far = 500.0f; // FAR PLANE
 
     float D = ((2.0f * near) / (far + near - depth * (far - near)));
-    
-    float3 position = mul(world, WorldPosFromDepth(D, input.uv));
-
-    float3 o = cameraPosition;
-    float3 d = normalize(position - cameraPosition);
-    float3 center = float3(0, 0, 0);
-    float radius = 10.0f;
-
-    float a = raySphereIntersect(o, d, center, radius);
-
-    float3 positionB = o + d * a;
-    
-    if (positionB.y < 5.0f)
-    {
-        return float4(0, 0, 0, 1);
-    }
-
-    float3 normal = SphereNormal(positionB, center, radius);
-    static const float PI = 3.14159265f;
-
-    float u = atan2(normal.x, normal.z) / (2 * PI) + 0.5;
-    float v = normal.y * 0.5 + 0.5;
-
-    // - r0: ray origin
-// - rd: normalized ray direction
-// - s0: sphere center
-// - sr: sphere radius
-
-
-
-
-    float2 post = SphericalMapping(d);
-    //return float4(post, 0.0f, 1.0f);
-    
-    
     float fogFactor = saturate(((D * far) - start) / (end - start));
-    float distance = D * far;
 
-
-
-    //float4 position = float4(input.uv.x, input.uv.y, 1.0f);
-    //loat3 viewRay = mul(position, invProjection).xyz;
-
-   // return float4(viewRay, 1.0f);
-
+//    
+//    float3 position = mul(world, WorldPosFromDepth(D, input.uv));
+//
+//    float3 o = cameraPosition;
+//    float3 d = normalize(position - cameraPosition);
+//    float3 center = float3(0, 0, 0);
+//    float radius = 10.0f;
+//
+//    float a = raySphereIntersect(o, d, center, radius);
+//
+//    float3 positionB = o + d * a;
+//    
+//    if (positionB.y < 5.0f)
+//    {
+//        return float4(0, 0, 0, 1);
+//    }
+//
+//    float3 normal = SphereNormal(positionB, center, radius);
+//    static const float PI = 3.14159265f;
+//
+//    float u = atan2(normal.x, normal.z) / (2 * PI) + 0.5;
+//    float v = normal.y * 0.5 + 0.5;
+//
+//    // - r0: ray origin
+//// - rd: normalized ray direction
+//// - s0: sphere center
+//// - sr: sphere radius
+//
+//
+//
+//
+//    float2 post = SphericalMapping(d);
+//    //return float4(post, 0.0f, 1.0f);
+//    
+    
+    
     // BROWNIAN
     // BROWNIAN
     // BROWNIAN
-
 
     float2 st = input.uv.xy;// / float2(1600, 800) * 3.;
     
