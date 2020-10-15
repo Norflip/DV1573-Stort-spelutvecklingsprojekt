@@ -9,7 +9,6 @@
 #include "Material.h"
 #include "CameraComponent.h"
 #include "LightManager.h"
-
 #include <time.h>
 #include "GUIManager.h"
 namespace dx = DirectX;
@@ -73,11 +72,13 @@ public:
 	void DrawScreenQuad(const Material& Material);
 
 	void ClearRenderTarget(const RenderTexture& target);
-	void SetRenderTarget(const RenderTexture& target);
+	void SetRenderTarget(const RenderTexture& target, bool setDepth = true);
 
 	void UpdateTime(float time);
 	bool IsDrawingShapes() const { return this->drawShapes; }
 	void DrawShaped(bool draw) { this->drawShapes = draw; }
+
+	RenderTexture& GetMidbuffer() { return this->midbuffer; }
 
 private:
 	void AddItem(const RenderItem& item, bool transparent);
@@ -93,7 +94,8 @@ private:
 	ID3D11DeviceContext* context;
 
 	RenderTexture backbuffer;
-	RenderTexture midbuffers [2];
+	RenderTexture midbuffer;
+	RenderTexture renderPassSwapBuffers [2];
 	
 	Material screenQuadMaterial;
 	Mesh screenQuadMesh;

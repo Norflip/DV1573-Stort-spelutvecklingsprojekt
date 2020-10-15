@@ -319,9 +319,9 @@ RenderTexture DXHelper::CreateRenderTexture(size_t width, size_t height, ID3D11D
 	depthTexDesc.ArraySize = 1;
 	depthTexDesc.SampleDesc.Count = 1;
 	depthTexDesc.SampleDesc.Quality = 0;
-	depthTexDesc.Format = DXGI_FORMAT_D32_FLOAT;
+	depthTexDesc.Format = DXGI_FORMAT_R24G8_TYPELESS;
 	depthTexDesc.Usage = D3D11_USAGE_DEFAULT;
-	depthTexDesc.BindFlags = D3D11_BIND_DEPTH_STENCIL;
+	depthTexDesc.BindFlags = D3D11_BIND_DEPTH_STENCIL | D3D11_BIND_SHADER_RESOURCE;
 	depthTexDesc.CPUAccessFlags = 0;
 	depthTexDesc.MiscFlags = 0;
 
@@ -330,7 +330,7 @@ RenderTexture DXHelper::CreateRenderTexture(size_t width, size_t height, ID3D11D
 	assert(SUCCEEDED(hr));
 
 	D3D11_DEPTH_STENCIL_VIEW_DESC dsvDesc;
-	dsvDesc.Format = depthTexDesc.Format;
+	dsvDesc.Format = DXGI_FORMAT_D24_UNORM_S8_UINT; //DXGI_FORMAT_D32_FLOAT;//DXGI_FORMAT_D24_UNORM_S8_UINT; // DXGI_FORMAT_D32_FLOAT;//DXGI_FORMAT_D24_UNORM_S8_UINT; // DXGI_FORMAT_D24_UNORM_S8_UINT;
 	dsvDesc.Flags = 0;
 	dsvDesc.ViewDimension = D3D11_DSV_DIMENSION_TEXTURE2D;
 	dsvDesc.Texture2D.MipSlice = 0;
@@ -338,8 +338,24 @@ RenderTexture DXHelper::CreateRenderTexture(size_t width, size_t height, ID3D11D
 	hr = device->CreateDepthStencilView(depthTex, &dsvDesc, &rt.dsv);
 	assert(SUCCEEDED(hr));
 
+
+	// SHADER RESOURCE
+	D3D11_SHADER_RESOURCE_VIEW_DESC shaderResourceDescription;
+	ZeroMemory(&shaderResourceDescription, sizeof(D3D11_SHADER_RESOURCE_VIEW_DESC));
+
+	shaderResourceDescription.Format = DXGI_FORMAT_R24_UNORM_X8_TYPELESS; ///DXGI_FORMAT_R24_UNORM_X8_TYPELESS; // DXGI_FORMAT_R32_UINT;//depthTexDesc.Format;//DXGI_FORMAT_R32G32B32A32_FLOAT;// DXGI_FORMAT_R24_UNORM_X8_TYPELESS;
+	shaderResourceDescription.ViewDimension = D3D11_SRV_DIMENSION_TEXTURE2D;
+	//shaderResourceDescription.Texture2D.MostDetailedMip = 0;
+	shaderResourceDescription.Texture2D.MipLevels = 1;
+
+	HRESULT shaderResourceView = device->CreateShaderResourceView(depthTex, &shaderResourceDescription, &rt.depthSRV);
+
+
 	depthTex->Release();
 	depthTex = nullptr;
+
+
+
 
 	return rt;
 }

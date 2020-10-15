@@ -1,5 +1,6 @@
 #include "Renderer.h"
 #include "RenderPass.h"
+#include "FogRenderPass.h"
 #include "DShape.h"
 
 Renderer::Renderer() : device(nullptr), context(nullptr), swapchain(nullptr), obj_cbuffer(nullptr), skeleton_srvbuffer(nullptr),skeleton_srv(nullptr)
@@ -13,8 +14,9 @@ Renderer::~Renderer()
 	blendStateOn->Release();
 
 	backbuffer.Release();
-	midbuffers[0].Release();
-	midbuffers[1].Release();
+	renderPassSwapBuffers[0].Release();
+	renderPassSwapBuffers[1].Release();
+	midbuffer.Release();
 
 	for (auto i = passes.begin(); i < passes.end(); i++)
 		delete (*i);
@@ -73,9 +75,11 @@ void Renderer::Initialize(Window* window)
 	DXHelper::CreateSwapchain(*window, &device, &context, &swapchain);
 	this->backbuffer = DXHelper::CreateBackbuffer(window->GetWidth(), window->GetHeight(), device, swapchain);
 
-	this->midbuffers[0] = DXHelper::CreateRenderTexture(window->GetWidth(), window->GetHeight(), device, context, &dss);
-	this->midbuffers[1] = DXHelper::CreateRenderTexture(window->GetWidth(), window->GetHeight(), device, context, &dss);
+	this->renderPassSwapBuffers[0] = DXHelper::CreateRenderTexture(window->GetWidth(), window->GetHeight(), device, context, &dss);
+	this->renderPassSwapBuffers[1] = DXHelper::CreateRenderTexture(window->GetWidth(), window->GetHeight(), device, context, &dss);
 	srv_skeleton_data.resize(60);
+
+	midbuffer = DXHelper::CreateRenderTexture(window->GetWidth(), window->GetHeight(), device, context, &dss);
 
 	dx::XMFLOAT4X4 bone;
 	dx::XMStoreFloat4x4(&bone, dx::XMMatrixIdentity());
@@ -112,7 +116,7 @@ void Renderer::Initialize(Window* window)
 
 	//EXEMPEL
 	///AddRenderPass(new PSRenderPass(1, L"Shaders/TestPass.hlsl"));
-	//AddRenderPass(new PSRenderPass(0, L"Shaders/TestPass2.hlsl"));
+	AddRenderPass(new FogRenderPass(0));
 }
 
 void Renderer::BeginManualRenderPass(RenderTexture& target)
@@ -201,8 +205,8 @@ void Renderer::RenderFrame()
 	ID3D11ShaderResourceView* nullSRV[1] = { nullptr };
 	context->PSSetShaderResources(0, 1, nullSRV);
 
-	ClearRenderTarget(midbuffers[bufferIndex]);
-	SetRenderTarget(midbuffers[bufferIndex]);
+	ClearRenderTarget(midbuffer);
+	SetRenderTarget(midbuffer);
   
 	context->OMSetDepthStencilState(dss,0);
 
@@ -219,27 +223,33 @@ void Renderer::RenderFrame()
 	context->OMSetBlendState(blendStateOff, BLENDSTATEMASK, 0xffffffff);
 	context->RSSetState(rasterizerStateCullBack);
 	
+	int index = 0;
+
 	for (auto i = passes.begin(); i < passes.end(); i++)
 	{
 		if ((*i)->IsEnabled())
 		{
 			size_t nextBufferIndex = 1 - bufferIndex;
-			ClearRenderTarget(midbuffers[nextBufferIndex]);
-			SetRenderTarget(midbuffers[nextBufferIndex]);
+			RenderTexture& previous = (index == 0) ? midbuffer : renderPassSwapBuffers[bufferIndex];
+			RenderTexture& next = renderPassSwapBuffers[nextBufferIndex];
 
-			GetContext()->PSSetShaderResources(0, 1, &midbuffers[bufferIndex].srv);
+			ClearRenderTarget(next);
+			SetRenderTarget(next, false);
 
-			if ((*i)->Pass(this, midbuffers[bufferIndex], midbuffers[nextBufferIndex]))
+			GetContext()->PSSetShaderResources(0, 1, &previous.srv);
+			
+			if ((*i)->Pass(this, previous, next))
 				bufferIndex = nextBufferIndex;
 
 			// overkill? Gives the correct result if outside the loop but errors in output
-			//context->PSSetShaderResources(0, 1, nullSRV);
+			context->PSSetShaderResources(0, 1, nullSRV);
+			index++;
 		}
 	}
 
 	ClearRenderTarget(backbuffer);
 	SetRenderTarget(backbuffer);
-	context->PSSetShaderResources(0, 1, &midbuffers[bufferIndex].srv);
+	context->PSSetShaderResources(0, 1, &renderPassSwapBuffers[bufferIndex].srv);
 	DrawScreenQuad(screenQuadMaterial);
   
 	guiManager->DrawAll();
@@ -328,9 +338,13 @@ void Renderer::ClearRenderTarget(const RenderTexture& target)
 	
 }
 
-void Renderer::SetRenderTarget(const RenderTexture& target)
+void Renderer::SetRenderTarget(const RenderTexture& target, bool setDepth)
 {
-	context->OMSetRenderTargets(1, &target.rtv, target.dsv);
+	if (setDepth)
+		context->OMSetRenderTargets(1, &target.rtv, target.dsv);
+	else
+		context->OMSetRenderTargets(1, &target.rtv, NULL);
+
 	context->RSSetViewports(1, &target.viewport);
 }
 
@@ -356,7 +370,15 @@ void Renderer::DrawRenderItem(const RenderItem& item)
 	dx::XMMATRIX mvp = dx::XMMatrixMultiply(item.world, dx::XMMatrixMultiply(item.camera->GetViewMatrix(), item.camera->GetProjectionMatrix()));
 	dx::XMStoreFloat4x4(&cb_object_data.mvp, dx::XMMatrixTranspose(mvp));
 	dx::XMStoreFloat4x4(&cb_object_data.world, dx::XMMatrixTranspose(item.world));
+	
+	dx::XMMATRIX invProjection = dx::XMMatrixInverse(NULL, item.camera->GetProjectionMatrix());
+	dx::XMStoreFloat4x4(&cb_object_data.invProjection, dx::XMMatrixTranspose(invProjection));
+
+	dx::XMMATRIX vp = dx::XMMatrixMultiply(item.camera->GetViewMatrix(), item.camera->GetProjectionMatrix());
+	dx::XMStoreFloat4x4(&cb_object_data.vp, dx::XMMatrixTranspose(vp));
+
 	DXHelper::BindConstBuffer(context, obj_cbuffer, &cb_object_data, CB_OBJECT_SLOT, ShaderBindFlag::VERTEX);
+	DXHelper::BindConstBuffer(context, obj_cbuffer, &cb_object_data, CB_OBJECT_SLOT, ShaderBindFlag::PIXEL);
 
 	cb_material_data = item.material->GetMaterialData();
 	DXHelper::BindConstBuffer(context, material_cbuffer, &cb_material_data, CB_MATERIAL_SLOT, ShaderBindFlag::PIXEL);
@@ -379,8 +401,12 @@ void Renderer::DrawRenderItemInstanced(const RenderItem& item)
 
 	dx::XMMATRIX vp =dx::XMMatrixMultiply(item.camera->GetViewMatrix(), item.camera->GetProjectionMatrix());
 	dx::XMStoreFloat4x4(&cb_object_data.vp, dx::XMMatrixTranspose(vp));
-	
+	dx::XMMATRIX invProjection = dx::XMMatrixInverse(NULL, item.camera->GetProjectionMatrix());
+	dx::XMStoreFloat4x4(&cb_object_data.invProjection, dx::XMMatrixTranspose(invProjection));
+
+
 	DXHelper::BindConstBuffer(context, obj_cbuffer, &cb_object_data, CB_OBJECT_SLOT, ShaderBindFlag::VERTEX);
+	DXHelper::BindConstBuffer(context, obj_cbuffer, &cb_object_data, CB_OBJECT_SLOT, ShaderBindFlag::PIXEL);
 
 	cb_material_data = item.material->GetMaterialData();
 	DXHelper::BindConstBuffer(context, material_cbuffer, &cb_material_data, CB_MATERIAL_SLOT, ShaderBindFlag::PIXEL);
@@ -403,7 +429,15 @@ void Renderer::DrawRenderItemSkeleton(const RenderItem& item)
 	dx::XMMATRIX mvp = dx::XMMatrixMultiply(item.world, dx::XMMatrixMultiply(item.camera->GetViewMatrix(), item.camera->GetProjectionMatrix()));
 	dx::XMStoreFloat4x4(&cb_object_data.mvp, mvp);
 	dx::XMStoreFloat4x4(&cb_object_data.world,item.world);
+	
+	dx::XMMATRIX vp = dx::XMMatrixMultiply(item.camera->GetViewMatrix(), item.camera->GetProjectionMatrix());
+	dx::XMStoreFloat4x4(&cb_object_data.vp, dx::XMMatrixTranspose(vp));
+	dx::XMMATRIX invProjection = dx::XMMatrixInverse(NULL, item.camera->GetProjectionMatrix());
+	dx::XMStoreFloat4x4(&cb_object_data.invProjection, dx::XMMatrixTranspose(invProjection));
+
 	DXHelper::BindConstBuffer(context, obj_cbuffer, &cb_object_data, CB_OBJECT_SLOT, ShaderBindFlag::VERTEX);
+	DXHelper::BindConstBuffer(context, obj_cbuffer, &cb_object_data, CB_OBJECT_SLOT, ShaderBindFlag::PIXEL);
+
 
 	srv_skeleton_data = *item.bones;
 	DXHelper::BindStructuredBuffer(context, skeleton_srvbuffer, srv_skeleton_data, BONES_SRV_SLOT, ShaderBindFlag::VERTEX, &skeleton_srv);

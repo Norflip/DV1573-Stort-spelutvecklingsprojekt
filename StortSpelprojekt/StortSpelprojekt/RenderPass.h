@@ -2,6 +2,7 @@
 #include "Renderer.h"
 #include "Texture.h"
 #include "GUISprite.h"
+
 class RenderPass
 {
 public:

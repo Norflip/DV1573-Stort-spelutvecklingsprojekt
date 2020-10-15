@@ -18,6 +18,7 @@ struct cb_Object
 	dx::XMFLOAT4X4 world;
 	dx::XMFLOAT4X4 vp;
 	dx::XMFLOAT4X4 wv;
+	dx::XMFLOAT4X4 invProjection;
 };
 
 __declspec(align(16))

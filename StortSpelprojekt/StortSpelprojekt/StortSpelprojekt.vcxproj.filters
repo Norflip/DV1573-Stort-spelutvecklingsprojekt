@@ -67,6 +67,9 @@
     <FxCompile Include="Shaders\TestPass2.hlsl">
       <Filter>Resource Files</Filter>
     </FxCompile>
+    <FxCompile Include="Shaders\FogTest_ps.hlsl">
+      <Filter>Resource Files</Filter>
+    </FxCompile>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="BoundingBoxes.cpp">
@@ -372,6 +375,9 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="ZWEBLoader.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="FogRenderPass.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>
