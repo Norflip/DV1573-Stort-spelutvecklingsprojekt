@@ -2,11 +2,19 @@
 #include "Renderer.h"
 #include "Texture.h"
 #include "GUISprite.h"
+#include "GUIManager.h"
 
 class RenderPass
 {
 public:
-	RenderPass(int priority) : priority(priority), enabled(true) {}
+	enum class PassType
+	{
+		UI_OVERLAY,
+		POST_PROCESSING
+	};
+
+public:
+	RenderPass(int priority, PassType type) : priority(priority), type(type), enabled(true) {}
 	virtual ~RenderPass() {}
 
 	virtual void m_Initialize(ID3D11Device*) {};
@@ -16,15 +24,18 @@ public:
 	bool IsEnabled() const { return this->enabled; }
 	void SetEnabled(bool enabled) { this->enabled = enabled; }
 
+	PassType GetType() const { return this->type; }
+
 private:
 	int priority;
 	bool enabled;
+	PassType type;
 };
 
 class PSRenderPass : public RenderPass
 {
 public:
-	PSRenderPass(int priority, std::string pixelShaderPath, LPCSTR pixelShaderEntry = "main") : RenderPass(priority), path(pixelShaderPath), entry(pixelShaderEntry) {}
+	PSRenderPass(int priority, std::string pixelShaderPath, LPCSTR pixelShaderEntry = "main") : RenderPass(priority, RenderPass::PassType::POST_PROCESSING), path(pixelShaderPath), entry(pixelShaderEntry) {}
 
 	void m_Initialize(ID3D11Device* device) override 
 	{
@@ -51,10 +62,25 @@ private:
 
 // GUIMANAGER
 
+class GUIRenderPass : public RenderPass
+{
+public:
+	GUIRenderPass(int priority, GUIManager* manager) : RenderPass(priority, RenderPass::PassType::UI_OVERLAY), manager(manager) {}
+
+	bool Pass(Renderer* renderer, RenderTexture& inTexture, RenderTexture& outTexture) override
+	{
+		manager->DrawAll();
+		return false;
+	}
+
+private:
+	GUIManager* manager;
+};
+
 class SpriteRenderPass : public RenderPass
 {
 public:
-	SpriteRenderPass(int priority,GUISprite* spiriteTest): RenderPass(priority), spiriteTest(spiriteTest){}
+	SpriteRenderPass(int priority,GUISprite* spiriteTest): RenderPass(priority, RenderPass::PassType::UI_OVERLAY), spiriteTest(spiriteTest){}
 	
 	bool Pass(Renderer* renderer, RenderTexture& inTexture, RenderTexture& outTexture) override
 	{

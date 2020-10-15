@@ -105,10 +105,13 @@
     <ClCompile Include="GameClock.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="GrassComponent.cpp">
+    <ClCompile Include="GUIManager.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="GUIManager.cpp">
+    <ClCompile Include="Input.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="GrassComponent.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="GUIFont.cpp">
@@ -196,6 +199,24 @@
       <Filter>Header Files</Filter>
     </ClCompile>
     <ClCompile Include="Scene.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="ObjectPooler.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="AIAttack.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="AIIdle.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="StatsComponent.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="StateMachineComponent.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="AIPatrol.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>
@@ -378,6 +399,27 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="FogRenderPass.h">
+    <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="ObjectPooler.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="ConstantBuffer.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="AIAttack.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="AIIdle.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="StateMachineComponent.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="StatsComponent.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="AIPatrol.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>
@@ -390,6 +432,9 @@
     </Filter>
     <Filter Include="Source Files">
       <UniqueIdentifier>{fc4097e4-11ed-434b-927c-b1e1fd9cd99d}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\SpawnSystems">
+      <UniqueIdentifier>{5552950f-3623-49fb-b848-f9f6029a934a}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
   <ItemGroup>

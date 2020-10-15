@@ -37,7 +37,7 @@ void Chunk::SetupCollisionObject(float* heightMap)
 	GetHeightFieldMinMax(heightMap, gridSize, min, max);
 
 	min = 0.0f;
-	max = 1.0f;
+	max = TERRAIN_SCALE;
 
 	rp::PhysicsCommon& common = Physics::Instance().GetCommon();
 	rp::HeightFieldShape* shape = common.createHeightFieldShape(gridSize, gridSize, min, max, static_cast<void*>(heightMap), rp::HeightFieldShape::HeightDataType::HEIGHT_FLOAT_TYPE);
@@ -49,7 +49,10 @@ void Chunk::SetupCollisionObject(float* heightMap)
 	body->enableGravity(false);
 	body->setUserData(static_cast<void*>(GetOwner()));
 
-	rp::Collider* collider = body->addCollider(shape, rp::Transform());
+	rp::Transform colliderTransform;
+	colliderTransform.setPosition(rp::Vector3(0, TERRAIN_SCALE / 2.0f, 0));
+
+	rp::Collider* collider = body->addCollider(shape, colliderTransform);
 	collider->setCollisionCategoryBits(static_cast<unsigned short>(FilterGroups::TERRAIN));
 	collider->setCollideWithMaskBits(static_cast<unsigned short>(FilterGroups::EVERYTHING));
 
