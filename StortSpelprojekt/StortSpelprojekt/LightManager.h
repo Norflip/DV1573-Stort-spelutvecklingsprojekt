@@ -2,6 +2,7 @@
 #include "Buffers.h"
 #include <unordered_map>
 #include "DXHelper.h"
+#include "ConstantBuffer.h"
 
 class PointLightComponent;
 
@@ -32,8 +33,8 @@ public:
 private:
 
 	//cb_Scene cb_scene;
-	ID3D11Buffer* light_cbuffer;
-	cb_Lights cb_light;
+	ConstantBuffer<cb_Lights> lightBuffer;
+
 	size_t index;
 	bool dirty;
 	std::unordered_map<size_t, PointLightComponent*> pointLightMap;

@@ -19,10 +19,7 @@ Renderer::~Renderer()
 	for (auto i = passes.begin(); i < passes.end(); i++)
 		delete (*i);
 
-
 	skeleton_srvbuffer->Release();
-
-
 	rasterizerStateCullBack->Release();
 	rasterizerStateCullNone->Release();
 
