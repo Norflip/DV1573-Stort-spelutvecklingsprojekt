@@ -13,6 +13,8 @@
 #include "SkeletonMeshComponent.h"
 #include "PointLightComponent.h"
 #include "NodeWalkerComponent.h"
+#include "StatsComponent.h"
+#include "StateMachineComponent.h"
 
 #include "Skybox.h"
 #include "WorldGenerator.h"
