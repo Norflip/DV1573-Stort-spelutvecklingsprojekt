@@ -61,11 +61,20 @@ void Scene::Initialize(Renderer* renderer)
 	worldGenerator.Generate(state, renderer->GetDevice(), root);
 	worldGenerator.InitalizeGrass(renderer->GetDevice(), renderer->GetContext());
 
+	dx::XMFLOAT3 pos = { 10,20,10 };
+	dx::XMVECTOR temp = dx::XMLoadFloat3(&pos);
 	Object* cameraObject = new Object("camera", ObjectFlag::ENABLED);
 	camera = cameraObject->AddComponent<CameraComponent>(60.0f, true);
 	camera->Resize(window->GetWidth(), window->GetHeight());
+	dx::XMFLOAT3 camPos;
+	dx::XMStoreFloat3(&camPos,cameraObject->GetTransform().GetPosition());
+	cameraObject->GetTransform().SetPosition(temp);
+	//cameraObject->AddComponent<CapsuleColliderComponent>(0.4f, 1.8f,camPos);
+	//RigidBodyComponent* rd = cameraObject->AddComponent<RigidBodyComponent>(0.4f, FilterGroups::PLAYER, FilterGroups::EVERYTHING);
+	//Physics& phy = Physics::Instance();
+	//phy.RegisterRigidBody(rd);
 	cameraObject->AddComponent<ControllerComponent>();
-
+	cameraObject->GetComponent<ControllerComponent>()->AssignCameraComponent(cameraObject->GetComponent<CameraComponent>());
 
 	Input::Instance().SetWindow(window->GetHWND(), window->GetHeight(), window->GetWidth());
 	AddObject(cameraObject);

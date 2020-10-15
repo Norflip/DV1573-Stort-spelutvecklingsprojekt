@@ -1,9 +1,9 @@
 #pragma once
 #include "Component.h"
-#include "Transform.h"
-#include <DirectXMath.h>
+//#include "Transform.h"
+//#include <DirectXMath.h>
 #include "Object.h"
-#include "Input.h"
+#include "Input.h" //remove when not needed
 
 namespace dx = DirectX;
 class NodeWalkerComponent :public Component

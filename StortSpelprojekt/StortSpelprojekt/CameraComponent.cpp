@@ -8,6 +8,12 @@ CameraComponent::CameraComponent(float fieldOfView, bool main) : fieldOfView(fie
 }
 CameraComponent::~CameraComponent() {}
 
+void CameraComponent::SetFOV(float fieldOFiew)
+{
+	this->fieldOfView = fieldOFiew;
+	UpdateProjectionMatrix();
+}
+
 void CameraComponent::Resize(size_t width, size_t height)
 {
 	this->width = width;

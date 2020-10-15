@@ -149,3 +149,10 @@ DirectX::XMVECTOR Transform::TransformDirection(DirectX::XMVECTOR direction) con
 	//dx::XMMATRIX rot = dx::XMMatrixRotationQuaternion();		// rotation matrix
 	return DirectX::XMVector3Rotate(dx::XMVector3Normalize(direction), dx::XMLoadFloat4(&this->rotation));	// rotates the direction with the matrix
 }
+
+//DirectX::XMVECTOR Transform::TransformDirectionCustomRotation(DirectX::XMVECTOR direction, DirectX::XMVECTOR cRotation) const
+//{
+//
+//	//dx::XMMATRIX rot = dx::XMMatrixRotationQuaternion();		// rotation matrix
+//	return DirectX::XMVector3Rotate(dx::XMVector3Normalize(direction), cRotation);	// rotates the direction with the matrix
+//}
