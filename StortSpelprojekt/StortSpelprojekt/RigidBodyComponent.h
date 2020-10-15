@@ -51,6 +51,8 @@ public:
 
 	void Update(const float& deltaTime) override;
 	void SetPosition(dx::XMVECTOR position);
+	bool IsRotationLocked() const { return this->lockRotation; }
+	void LockRotation(bool lock) { this->lockRotation = lock; }
 
 private:
 	rp::Transform ConvertToBtTransform(const Transform& transform) const;
@@ -63,6 +65,7 @@ private:
 	rp::RigidBody* body;
 	bool dynamic;
 	float mass;
+	bool lockRotation;
 
 	std::vector<std::function<void(CollisionInfo)>> callbacks;
 };

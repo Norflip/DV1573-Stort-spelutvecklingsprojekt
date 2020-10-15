@@ -25,8 +25,8 @@ VS_OUTPUT main(VS_INPUT_SKELETON input)
 	b += mul(float4(input.binormal, 0), bones[input.boneID.y]).xyz * w2;
 	b += mul(float4(input.binormal, 0), bones[input.boneID.z]).xyz * w3;
 
-	float4 outpos = mul(float4(p.xyz, 1), mvp);
-	float3 outputWorldpos = mul(p,world).xyz;
+	float4 outpos = mul(float4(p.xyz, 1), transpose(mvp));
+	float3 outputWorldpos = mul(p, transpose(world)).xyz;
 
 
 	output.uv = input.uv;
