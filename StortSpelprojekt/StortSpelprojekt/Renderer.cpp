@@ -31,14 +31,6 @@ Renderer::~Renderer()
 
 void Renderer::Initialize(Window* window)
 {
-	assert(sizeof(cb_grass) % 16 == 0);
-	assert(sizeof(cb_Lights) % 16 == 0);
-	assert(sizeof(cb_Material) % 16 == 0);
-	assert(sizeof(cb_Object) % 16 == 0);
-	assert(sizeof(cb_Scene) % 16 == 0);
-	assert(sizeof(s_PointLight) % 16 == 0);
-	assert(sizeof(cb_grass) % 16 == 0);
-
 	this->outputWindow = window;
 
 	DXHelper::CreateSwapchain(*window, &device, &context, &swapchain);
@@ -182,6 +174,8 @@ void Renderer::RenderFrame(CameraComponent* camera, float time, RenderTexture& t
 	data.factor = color;
 	data.time = time;
 	dx::XMStoreFloat3(&data.cameraPosition, camera->GetOwner()->GetTransform().GetPosition());
+	dx::XMStoreFloat4x4(&data.invProjection, dx::XMMatrixTranspose(dx::XMMatrixInverse(NULL, camera->GetProjectionMatrix())));
+	dx::XMStoreFloat4x4(&data.invView, dx::XMMatrixTranspose(dx::XMMatrixInverse(NULL, camera->GetViewMatrix())));
 
 	sceneBuffer.SetData(data);
 	sceneBuffer.UpdateBuffer(context);
@@ -204,45 +198,18 @@ void Renderer::RenderFrame(CameraComponent* camera, float time, RenderTexture& t
 	//ID3D11ShaderResourceView* depthSRV = renderPassSwapBuffers[bufferIndex].depthSRV;
 
 	context->OMSetDepthStencilState(dss, 0);
-	context->RSSetState(rasterizerStateCullBack);
-	context->OMSetBlendState(blendStateOff, BLENDSTATEMASK, 0xffffffff);
 
+
+	SetCullBack(true);
 	DrawQueueToTarget(opaqueItemQueue);
-
 	DShape::Instance().m_Draw(context);
 
-	context->RSSetState(rasterizerStateCullNone);
-	context->OMSetBlendState(blendStateOn, BLENDSTATEMASK, 0xffffffff);
-
+	SetCullBack(false);
 	DrawQueueToTarget(transparentItemQueue);
 
-	context->OMSetBlendState(blendStateOff, BLENDSTATEMASK, 0xffffffff);
-	context->RSSetState(rasterizerStateCullBack);
-
+	SetCullBack(true);
 	size_t passCount = 0;
 	size_t bufferIndex = 0;
-
-	/*
-				size_t nextBufferIndex = 1 - bufferIndex;
-			RenderTexture& previous = (index == 0) ? midbuffer : renderPassSwapBuffers[bufferIndex];
-			RenderTexture& next = renderPassSwapBuffers[nextBufferIndex];
-
-			ClearRenderTarget(next);
-			SetRenderTarget(next, false);
-
-			GetContext()->PSSetShaderResources(0, 1, &previous.srv);
-
-			if ((*i)->Pass(this, previous, next))
-				bufferIndex = nextBufferIndex;
-
-			// overkill? Gives the correct result if outside the loop but errors in output
-			context->PSSetShaderResources(0, 1, nullSRV);
-			index++;
-		}
-	}
-	*/
-
-//	RenderTexture& last = midbuffer;
 
 	if (applyRenderPasses)
 	{
@@ -255,20 +222,12 @@ void Renderer::RenderFrame(CameraComponent* camera, float time, RenderTexture& t
 				RenderTexture& passTarget = renderPassSwapBuffers[nextBufferIndex];
 				RenderTexture& previous = (passCount == 0) ? midbuffer : renderPassSwapBuffers[bufferIndex];
 
-				/*
-				ClearRenderTarget(passTarget);
-				SetRenderTarget(passTarget, false);
-
-				context->PSSetShaderResources(0, 1, &previous.srv);
-				*/
-
 				pass->Pass(this, previous, passTarget);
 				if (pass->GetType() == RenderPass::PassType::POST_PROCESSING)
 					bufferIndex = nextBufferIndex;
 
-
 				// overkill? Gives the correct result if outside the loop but errors in output
-				context->PSSetShaderResources(0, 1, nullSRV);
+				//context->PSSetShaderResources(0, 1, nullSRV);
 				passCount++;
 			}
 		}
@@ -279,23 +238,7 @@ void Renderer::RenderFrame(CameraComponent* camera, float time, RenderTexture& t
 
 	context->PSSetShaderResources(0, 1, &renderPassSwapBuffers[bufferIndex].srv);
 	DrawScreenQuad(screenQuadMaterial);
-
-	/*if (drawGUI)
-	{
-		for (auto i = passes.begin(); i < passes.end(); i++)
-		{
-			if ((*i)->IsEnabled() && (*i)->GetType() == RenderPass::PassType::UI_OVERLAY)
-			{
-				RenderTexture& previous = renderPassSwapBuffers[bufferIndex];
-				(*i)->Pass(this, previous, previous);
-			}
-		}
-	}*/
-
-	//	guiManager->DrawAll();
 }
-
-
 
 void Renderer::AddRenderPass(RenderPass* pass)
 {
@@ -353,15 +296,17 @@ void Renderer::DrawGrass(const CameraComponent& camera, const Mesh& mesh, const 
 	AddItem(item, false);
 }
 
-void Renderer::SetRSToCullNone(bool cullNone)
+void Renderer::SetCullBack(bool cullNone)
 {
-	if (cullNone)
+	if (!cullNone)
 	{
 		context->RSSetState(rasterizerStateCullNone);
+		context->OMSetBlendState(blendStateOn, BLENDSTATEMASK, 0xffffffff);
 	}
 	else
 	{
 		context->RSSetState(rasterizerStateCullBack);
+		context->OMSetBlendState(blendStateOff, BLENDSTATEMASK, 0xffffffff);
 	}
 }
 

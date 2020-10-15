@@ -96,12 +96,10 @@ float3 WorldPosFromDepth(float depth, float2 uv) {
     float z = depth;// *2.0 - 1.0;
 
     float4 clipSpacePosition = float4(uv * 2.0 - 1.0, 0.0f, z);
-    float4 viewSpacePosition = mul(clipSpacePosition, invProjection);
+    float4 viewSpacePosition = mul(invProjection, clipSpacePosition);
+    viewSpacePosition /= viewSpacePosition.w; // Perspective division
 
-    // Perspective division
-    viewSpacePosition /= viewSpacePosition.w;
-
-    float4 worldSpacePosition = mul(viewSpacePosition, invView);
+    float4 worldSpacePosition = mul(invView, viewSpacePosition);
     return worldSpacePosition.xyz;
 }
 
@@ -122,6 +120,11 @@ float raySphereIntersect(float3 r0, float3 rd, float3 s0, float sr) {
     return (-b - sqrt((b * b) - 4.0 * a * c)) / (2.0 * a);
 }
 
+float3 SphereNormal(float3 p, float3 center, float radius)
+{
+    float3 normal = float3((p.x - center.x) / radius, (p.y - center.x) / radius, (p.z - center.x) / radius);
+    return normalize(normal);
+}
 
 float4 main(PixelInputType input) : SV_TARGET
 {
@@ -131,12 +134,7 @@ float4 main(PixelInputType input) : SV_TARGET
       //  return float4(0, 1, 0, 1);
 
 
-
-
     float depth = depthTexture.Sample(defaultSampleType, input.uv).x;
-    //d = remap01(0.96f, 1.0f, d);
-    // return float4(d, d, d, 1.0f);
-
 
     float start = 10;
     float end = 40;
@@ -146,14 +144,27 @@ float4 main(PixelInputType input) : SV_TARGET
 
     float D = ((2.0f * near) / (far + near - depth * (far - near)));
     
-    float3 position = WorldPosFromDepth(D, input.uv);
-    
-    
+    float3 position = mul(world, WorldPosFromDepth(D, input.uv));
+
     float3 o = cameraPosition;
     float3 d = normalize(position - cameraPosition);
+    float3 center = float3(0, 0, 0);
+    float radius = 10.0f;
 
-    float3 p = o;
-    float3 c = p + d * far;
+    float a = raySphereIntersect(o, d, center, radius);
+
+    float3 positionB = o + d * a;
+    
+    if (positionB.y < 5.0f)
+    {
+        return float4(0, 0, 0, 1);
+    }
+
+    float3 normal = SphereNormal(positionB, center, radius);
+    static const float PI = 3.14159265f;
+
+    float u = atan2(normal.x, normal.z) / (2 * PI) + 0.5;
+    float v = normal.y * 0.5 + 0.5;
 
     // - r0: ray origin
 // - rd: normalized ray direction
@@ -161,7 +172,7 @@ float4 main(PixelInputType input) : SV_TARGET
 // - sr: sphere radius
 
 
-    float a = raySphereIntersect(o, d, float3(0, 0, 0), 20.0f);
+
 
     float2 post = SphericalMapping(d);
     //return float4(post, 0.0f, 1.0f);
@@ -181,9 +192,9 @@ float4 main(PixelInputType input) : SV_TARGET
     // BROWNIAN
     // BROWNIAN
 
-    float2 st = input.uv.xy;// / float2(1600, 800) * 3.;
-    //st = post;
 
+    float2 st = input.uv.xy;// / float2(1600, 800) * 3.;
+    
     //st += st * abs(sin(time * 0.1)*3.0);
 
     float2 q = float2(0,0);

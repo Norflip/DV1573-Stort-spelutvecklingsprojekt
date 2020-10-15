@@ -33,6 +33,7 @@ cbuffer cb_Scene : register(b2)
 {
 	row_major matrix invProjection;
 	row_major matrix invView;
+
 	float3 cameraPosition;
 	int id;
 	float factor;

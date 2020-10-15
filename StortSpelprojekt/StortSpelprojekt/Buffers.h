@@ -60,6 +60,7 @@ struct cb_Scene
 {
 	dx::XMFLOAT4X4 invProjection;
 	dx::XMFLOAT4X4 invView;
+
 	dx::XMFLOAT3 cameraPosition;
 	int id;
 	float factor;
