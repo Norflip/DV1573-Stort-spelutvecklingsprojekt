@@ -1,17 +1,8 @@
 #include "PointLightComponent.h"
 #include "LightManager.h"
 
-PointLightComponent::PointLightComponent()
-{
-	this->lightColor = { 0.5f, 0.5f, 0.5f, 0.5f };
-	this->range = 25;
-	this->attenuation = { 1.0f, 0.02f, 0.0f };
-	this->dirty = true;
-}
-
-PointLightComponent::~PointLightComponent()
-{
-}
+PointLightComponent::PointLightComponent(dx::XMFLOAT4 color, float range, dx::XMFLOAT3 attenuation) : lightColor(color), range(range), attenuation(attenuation), dirty(true) {}
+PointLightComponent::~PointLightComponent() {}
 
 void PointLightComponent::Initialize()
 {

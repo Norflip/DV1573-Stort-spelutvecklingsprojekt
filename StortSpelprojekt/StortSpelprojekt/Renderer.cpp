@@ -411,6 +411,7 @@ void Renderer::DrawRenderItemSkeleton(const RenderItem& item)
 void Renderer::DrawRenderItemGrass(const RenderItem& item)
 {
 	SetObjectBufferValues(item.camera, item.world);
+	objectBuffer.UpdateBuffer(context);
 
 	ShaderBindFlag def = objectBuffer.GetFlag();
 	objectBuffer.SetBindFlag(def | ShaderBindFlag::VERTEX | ShaderBindFlag::HULL | ShaderBindFlag::GEOMETRY);
@@ -436,7 +437,7 @@ void Renderer::SetObjectBufferValues(const CameraComponent* camera, dx::XMMATRIX
 	dx::XMMATRIX view = camera->GetViewMatrix();
 
 	dx::XMMATRIX wv = dx::XMMatrixMultiply(world, view);
-	dx::XMStoreFloat4x4(&data.wv, wv);
+	dx::XMStoreFloat4x4(&data.wv, dx::XMMatrixTranspose(wv));
 
 	dx::XMMATRIX vp = dx::XMMatrixMultiply(view, camera->GetProjectionMatrix());
 	dx::XMStoreFloat4x4(&data.vp, dx::XMMatrixTranspose(vp));

@@ -148,29 +148,27 @@ void Scene::InitializeObjects()
 	//0 tree 1 leaves
 	std::vector<Material> stylizedTreeMaterial = ZWEBLoader::LoadMaterials("Models/tree.ZWEB", instanceShader, renderer->GetDevice());
 
-	Shader* lightShader = resourceManager->GetShaderResource("defaultShader");
 
 	//TEST POINT LIGHTS____________________________________________________________________________________________________________________
 	Object* testPointLight = new Object("testPointLight");								
 	dx::XMFLOAT3 lightTranslation = dx::XMFLOAT3(2.0f, 0.0f, 3.0f);						
-	testPointLight->GetTransform().SetPosition(dx::XMLoadFloat3(&lightTranslation));	
-	AddObject(testPointLight);															
-	testPointLight->AddComponent<PointLightComponent>();								
-	testPointLight->GetComponent<PointLightComponent>()->SetColor({ 1.f, 0.f, 0.f, 1.f });
-																						
+	testPointLight->GetTransform().SetPosition(dx::XMLoadFloat3(&lightTranslation));		
+	testPointLight->AddComponent<PointLightComponent>(dx::XMFLOAT4(1.f, 0.f, 0.f, 1.f), 25);
+	AddObject(testPointLight);
+
 	Object* testPointLight2 = new Object("testPointLight2");							
 	dx::XMFLOAT3 lightTranslation2 = dx::XMFLOAT3(0.0f, 2.0f, 3.0f);					
 	testPointLight2->GetTransform().SetPosition(dx::XMLoadFloat3(&lightTranslation2));	
-	AddObject(testPointLight2);															
-	testPointLight2->AddComponent<PointLightComponent>();								
-	testPointLight2->GetComponent<PointLightComponent>()->SetColor({ 0.f, 1.f, 0.f, 1.f });
-																						
+	testPointLight2->AddComponent<PointLightComponent>(dx::XMFLOAT4(0.f, 1.f, 0.f, 1.f), 25);
+	AddObject(testPointLight2);
+
 	Object* testPointLight3 = new Object("testPointLight3");							
 	dx::XMFLOAT3 lightTranslation3 = dx::XMFLOAT3(-2.0f, 0.0f, 3.0f);					
 	testPointLight3->GetTransform().SetPosition(dx::XMLoadFloat3(&lightTranslation3));	
-	AddObject(testPointLight3);															
-	testPointLight3->AddComponent<PointLightComponent>();								
-	testPointLight3->GetComponent<PointLightComponent>()->SetColor({ 0.f, 0.f, 1.f, 1.f });
+	testPointLight3->AddComponent<PointLightComponent>(dx::XMFLOAT4(0.f, 0.f, 1.f, 1.f), 25);
+	
+	AddObject(testPointLight3);
+
 	//_____________________________________________________________________________________________________________________________________
 	
 	stylizedTreeMaterial[0].SetSampler(sampler, 0, ShaderBindFlag::PIXEL);
