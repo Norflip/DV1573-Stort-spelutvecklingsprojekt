@@ -56,11 +56,13 @@ void Scene::Initialize(Renderer* renderer)
 	GUISprite* normalSprite2 = new GUISprite(*renderer, "Textures/EquipmentBox.png", 0, 0, DrawDirection::TopLeft, ClickFunction::Clickable);
 	GUISprite* buttonSprite2 = new GUISprite(*renderer, "Textures/EquipmentBox.png", 0, 0, DrawDirection::TopRight, ClickFunction::Clickable);
 	GUIFont* fpsDisplay = new GUIFont(*renderer, "test", 300, 300);
+	GUIFont* healthDisplay = new GUIFont(*renderer, "playerHealth", 300, 350);
 	normalSprite->SetActive();
 
 	guiManager = new GUIManager(renderer);
 	
 	guiManager->AddGUIObject(fpsDisplay, "fps");
+	guiManager->AddGUIObject(healthDisplay, "playerHealth");
 	guiManager->AddGUIObject(normalSprite, "normalSprite");
 	guiManager->AddGUIObject(buttonSprite, "buttonSprite");
 	guiManager->AddGUIObject(normalSprite2, "normalSprite2");
@@ -80,6 +82,7 @@ void Scene::Initialize(Renderer* renderer)
 	camera = cameraObject->AddComponent<CameraComponent>(60.0f, true);
 	camera->Resize(window->GetWidth(), window->GetHeight());
 	cameraObject->AddComponent<ControllerComponent>();
+	cameraObject->AddComponent<StatsComponent>(100, 2, 10, 25, 3);
 
 
 	Input::Instance().SetWindow(window->GetHWND(), window->GetHeight(), window->GetWidth());
@@ -177,34 +180,43 @@ void Scene::InitializeObjects()
 	stylizedTreeMaterial[1].SetShader(alphaInstanceShader);
   
 	worldGenerator.InitializeTrees(stylizedTreeModel, stylizedTreeMaterial, renderer->GetDevice());
-
 	
+	//Enemy object
+	Object* enemy = new Object("enemy");
+	dx::XMFLOAT3 enemyTranslation = dx::XMFLOAT3(0, 2, 10);
+	enemy->GetTransform().SetPosition(dx::XMLoadFloat3(&enemyTranslation));
+	enemy->AddComponent<MeshComponent>(*mesh1, *material1);
+	enemy->AddComponent<StatsComponent>(100, 2, 10, 25, 3);
+	StateMachineComponent* stateMachine = enemy->AddComponent<StateMachineComponent>(AIState::idle);
+	stateMachine->RegisterState(AIState::idle, enemy->AddComponent<AIIdle>());
+	stateMachine->RegisterState(AIState::patrol, enemy->AddComponent<AIPatrol>());
+	stateMachine->RegisterState(AIState::attack, enemy->AddComponent<AIAttack>(camera));
+	AddObject(enemy);
+
+	/* * * * * * * * ** * * * * */
+
+  Shader* skeletonShader = resourceManager->GetShaderResource("skeletonShader");
+  
+	std::vector<Mesh> skeletonMesh = ZWEBLoader::LoadMeshes(ZWEBLoadType::SkeletonAnimation, "Models/baseMonster.ZWEB", renderer->GetDevice());
+	std::vector<Material> skeletonMat = ZWEBLoader::LoadMaterials("Models/baseMonster.ZWEB", skeletonShader, renderer->GetDevice());
+
+	SkeletonAni skeletonbaseMonsterIdle = ZWEBLoader::LoadSkeletonOnly("Models/baseMonsterIdle.ZWEB", skeletonMesh[0].GetBoneIDS());
 
 
-	
-	
+	Object* baseMonsterObject = new Object("baseMonster");
 
+	SkeletonMeshComponent* baseMonsterComp = baseMonsterObject->AddComponent<SkeletonMeshComponent>(skeletonMesh[0], skeletonMat[0]);
 
+	baseMonsterComp->SetAnimationTrack(skeletonbaseMonsterIdle, StateMachine::IDLE);
 
-
-	/* NEW TREE TEST INSTANCED*/
-
-
-	
-
-
-
-
-	
+	baseMonsterObject->GetTransform().SetScale({ 0.125f, 0.125f, 0.125f });
+	baseMonsterObject->GetTransform().SetPosition({ 0.0f, 2.5f, 0.0f });
+	AddObject(baseMonsterObject);
 
 	clock.Update();
 	clock.Start();
 	clock.Update();
 
-	/* * * * * * * * ** * * * * */
-	//Log::Add("PRINTING SCENE HIERARCHY ----");
-	//PrintSceneHierarchy(root, 0);
-	/*Log::Add("----");*/
 }
 
 void Scene::Update(const float& deltaTime)
@@ -222,11 +234,6 @@ void Scene::Update(const float& deltaTime)
   
 	input.UpdateInputs();
 	
-
-
-
-
-
 	root->Update(deltaTime);
 
 	skyboxClass->GetThisObject()->GetTransform().SetPosition(camera->GetOwner()->GetTransform().GetPosition());
@@ -234,6 +241,10 @@ void Scene::Update(const float& deltaTime)
 	GameClock::Instance().Update();
 	//std::cout << "FPS: " << GameClock::Instance().GetFramesPerSecond() << std::endl;
 
+	GUIFont* fps = static_cast<GUIFont*>(guiManager->GetGUIObject("fps"));
+	fps->SetString(std::to_string((int)GameClock::Instance().GetFramesPerSecond()));
+	GUIFont* playerHealth = static_cast<GUIFont*>(guiManager->GetGUIObject("playerHealth"));
+	playerHealth->SetString(std::to_string((int)camera->GetOwner()->GetComponent<StatsComponent>()->GetHealth()));
 	guiManager->UpdateAll();
 
 

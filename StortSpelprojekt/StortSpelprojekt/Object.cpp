@@ -28,7 +28,10 @@ void Object::Update(const float& deltaTime)
 		transform.MarkNotChanged();
 
 		for (auto i = components.begin(); i < components.end(); i++)
-			(*i)->Update(deltaTime);
+		{
+			if((*i)->IsEnabled())
+				(*i)->Update(deltaTime);
+		}
 		
 		auto children = transform.GetChildren();
 		for (auto i = children.begin(); i < children.end(); i++)
