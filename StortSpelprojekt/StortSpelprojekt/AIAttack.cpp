@@ -65,6 +65,5 @@ void AIAttack::UpdateAttackPlayer(const float& deltaTime)
 {
 	if (ChasePlayer(deltaTime) && attackPlayer)
 	{
-
 	}
 }
