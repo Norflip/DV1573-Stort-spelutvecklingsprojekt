@@ -12,13 +12,10 @@
 #include "ConstantBuffer.h"
 
 #include <time.h>
-#include "GUIManager.h"
 namespace dx = DirectX;
 
 class RenderPass;
-class GUISprite;
-class GUIFont;
-class GUIManager;
+
 class Renderer
 {
 	const FLOAT DEFAULT_BG_COLOR[4] = { 0.3f, 0.1f, 0.2f, 1.0f };
@@ -73,7 +70,7 @@ public:
 
 	void DrawScreenQuad(const Material& Material);
 
-	void ClearRenderTarget(const RenderTexture& target);
+	void ClearRenderTarget(const RenderTexture& target, bool clearDepth = true);
 	void SetRenderTarget(const RenderTexture& target, bool setDepth = true);
 
 	bool IsDrawingShapes() const { return this->drawShapes; }

@@ -163,11 +163,6 @@ float4 main(PixelInputType input) : SV_TARGET
 
     float a = raySphereIntersect(o, d, float3(0, 0, 0), 20.0f);
 
-    if (a > 0.9f)
-    {
-        return float4(1, 0, 0, 1);
-    }
-
     float2 post = SphericalMapping(d);
     //return float4(post, 0.0f, 1.0f);
     

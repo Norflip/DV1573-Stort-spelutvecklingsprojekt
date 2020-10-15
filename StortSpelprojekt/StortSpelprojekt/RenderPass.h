@@ -1,8 +1,5 @@
 #pragma once
 #include "Renderer.h"
-#include "Texture.h"
-#include "GUISprite.h"
-#include "GUIManager.h"
 
 class RenderPass
 {
@@ -18,7 +15,7 @@ public:
 	virtual ~RenderPass() {}
 
 	virtual void m_Initialize(ID3D11Device*) {};
-	virtual bool Pass(Renderer* renderer, RenderTexture& current, RenderTexture& target) = 0;
+	virtual void Pass(Renderer* renderer, RenderTexture& current, RenderTexture& target) = 0;
 
 	int GetPriority() const { return this->priority; }
 	bool IsEnabled() const { return this->enabled; }
@@ -46,10 +43,13 @@ public:
 		material = Material(shader);
 	}
 
-	bool Pass(Renderer* renderer, RenderTexture& inTexture, RenderTexture& outTexture) override
+	void Pass(Renderer* renderer, RenderTexture& inTexture, RenderTexture& outTexture) override
 	{
+		renderer->ClearRenderTarget(outTexture, false);
+		renderer->SetRenderTarget(outTexture, false);
+
+		renderer->GetContext()->PSSetShaderResources(0, 1, &inTexture.srv);
 		renderer->DrawScreenQuad(material);
-		return true;
 	}
 
 private:
@@ -59,35 +59,3 @@ private:
 	std::string path;
 	LPCSTR entry;
 };
-
-// GUIMANAGER
-
-class GUIRenderPass : public RenderPass
-{
-public:
-	GUIRenderPass(int priority, GUIManager* manager) : RenderPass(priority, RenderPass::PassType::UI_OVERLAY), manager(manager) {}
-
-	bool Pass(Renderer* renderer, RenderTexture& inTexture, RenderTexture& outTexture) override
-	{
-		manager->DrawAll();
-		return false;
-	}
-
-private:
-	GUIManager* manager;
-};
-
-class SpriteRenderPass : public RenderPass
-{
-public:
-	SpriteRenderPass(int priority,GUISprite* spiriteTest): RenderPass(priority, RenderPass::PassType::UI_OVERLAY), spiriteTest(spiriteTest){}
-	
-	bool Pass(Renderer* renderer, RenderTexture& inTexture, RenderTexture& outTexture) override
-	{
-		spiriteTest->Draw();
-		return true;
-	}
-private:
-	GUISprite* spiriteTest;
-};
-

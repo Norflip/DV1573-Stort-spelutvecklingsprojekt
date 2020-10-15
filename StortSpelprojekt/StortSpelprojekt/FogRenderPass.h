@@ -4,7 +4,7 @@
 class FogRenderPass : public RenderPass
 {
 public:
-	FogRenderPass(int priority) : RenderPass(priority)  {}
+	FogRenderPass(int priority) : RenderPass(priority, RenderPass::PassType::POST_PROCESSING)  {}
 
 	void m_Initialize(ID3D11Device* device) override
 	{
@@ -15,12 +15,17 @@ public:
 		material = Material(shader);
 	}
 
-	bool Pass(Renderer* renderer, RenderTexture& inTexture, RenderTexture& outTexture) override
+	void Pass(Renderer* renderer, RenderTexture& inTexture, RenderTexture& outTexture) override
 	{
-		renderer->GetContext()->PSSetShaderResources(1, 1, &renderer->GetMidbuffer().depthSRV);
+		renderer->ClearRenderTarget(outTexture, false);
+		renderer->SetRenderTarget(outTexture, false);
 
+		renderer->GetContext()->PSSetShaderResources(0, 1, &inTexture.srv);
+		renderer->GetContext()->PSSetShaderResources(1, 1, &renderer->GetMidbuffer().depthSRV);
 		renderer->DrawScreenQuad(material);
-		return true;
+
+		ID3D11ShaderResourceView* nullSRV[1] = { nullptr };
+		renderer->GetContext()->PSSetShaderResources(1, 1, nullSRV);
 	}
 
 private:
