@@ -2,7 +2,10 @@
 #include "Buffers.h"
 #include <unordered_map>
 #include "DXHelper.h"
+#include "ConstantBuffer.h"
+
 class PointLightComponent;
+
 class LightManager
 {
 public:
@@ -21,7 +24,6 @@ public:
 	LightManager(LightManager const&) = delete;
 	void operator=(LightManager const&) = delete;
 
-	bool IsDirty() { return dirty; }; // kollar ifall den har skräpväreden
 	size_t RegisterPointLight(PointLightComponent* pointLight);
 
 	PointLightComponent* GetPointLight(size_t index);
@@ -31,8 +33,8 @@ public:
 private:
 
 	//cb_Scene cb_scene;
-	ID3D11Buffer* light_cbuffer;
-	cb_Lights cb_light;
+	ConstantBuffer<cb_Lights> lightBuffer;
+
 	size_t index;
 	bool dirty;
 	std::unordered_map<size_t, PointLightComponent*> pointLightMap;
