@@ -65,11 +65,11 @@ void AIAttack::UpdateAttackPlayer(const float& deltaTime)
 	static float counter = GetOwner()->GetComponent<StatsComponent>()->GetAttackSpeed();
 	if (ChasePlayer(deltaTime) && attackPlayer)
 	{
- 		/*timer.Restart();
-		counter += timer.GetMiliseconds();
+	/*	counter += timer.GetMiliseconds();
 		if (counter >= GetOwner()->GetComponent<StatsComponent>()->GetAttackSpeed())
 		{
 			counter = 0;
+			timer.Restart();
 			player->GetOwner()->GetComponent<StatsComponent>()->LoseHealth(GetOwner()->GetComponent<StatsComponent>()->GetAttack());
 
 		}*/
