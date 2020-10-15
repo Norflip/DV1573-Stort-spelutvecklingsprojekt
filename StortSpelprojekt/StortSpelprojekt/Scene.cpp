@@ -86,12 +86,14 @@ void Scene::Initialize(Renderer* renderer)
 	dx::XMFLOAT3 camPos;
 	dx::XMStoreFloat3(&camPos,cameraObject->GetTransform().GetPosition());
 	cameraObject->GetTransform().SetPosition(temp);
-	//cameraObject->AddComponent<CapsuleColliderComponent>(0.4f, 1.8f,camPos);
-	//RigidBodyComponent* rd = cameraObject->AddComponent<RigidBodyComponent>(0.4f, FilterGroups::PLAYER, FilterGroups::EVERYTHING);
+	//cameraObject->AddComponent<CapsuleColliderComponent>(0.5f, 4.5f,camPos);
+	//RigidBodyComponent* rd = cameraObject->AddComponent<RigidBodyComponent>(5.f, FilterGroups::PLAYER, FilterGroups::EVERYTHING,false);
+	//rd->LockRotation(true);
 	//Physics& phy = Physics::Instance();
 	//phy.RegisterRigidBody(rd);
 	cameraObject->AddComponent<ControllerComponent>();
-	cameraObject->GetComponent<ControllerComponent>()->AssignCameraComponent(cameraObject->GetComponent<CameraComponent>());
+	cameraObject->GetComponent<ControllerComponent>()->AssignCamComponent(cameraObject->GetComponent<CameraComponent>());
+	//cameraObject->GetComponent<ControllerComponent>()->AssignRBComponent(rd);
 	cameraObject->AddComponent<StatsComponent>(100, 2, 10, 25, 3);
 
 

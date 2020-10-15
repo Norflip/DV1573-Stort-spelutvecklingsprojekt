@@ -3,36 +3,32 @@
 ControllerComponent::ControllerComponent()
 {
 	//this->move =1.f;
-	this->boost = 8.f;// *this->move;
+	this->boost = 20.f;// *this->move;
 	this->crouchSpeed = 0.3f;// *this->move;
 
 	this->freeCam = true;
 	this->showCursor = true;
 	this->canRotate = false;
-	this->sensetivity = 1.f;
+	//this->sensetivity = 1.f;
 	this->fov = 60.f;
 	this->fovTimer = 0.f;
 	this->theCamera = nullptr;
+	this->groundQuaterion = { 0.f,0.f,0.f,1.f };
 }
 
 ControllerComponent::~ControllerComponent()
 {
 }
 
-void ControllerComponent::AssignCameraComponent(CameraComponent* component)
+void ControllerComponent::AssignCamComponent(CameraComponent* camComp)
 {
-	this->theCamera = component;
+	this->theCamera = camComp;
 }
 
-//void ControllerComponent::SetMoveSpeed(float speed) //sets move speed
-//{
-//	this->move = speed;
-//}
-//
-//float ControllerComponent::GetMoveSpeed() const
-//{
-//	return this->move;
-//}
+void ControllerComponent::AssignRBComponent( RigidBodyComponent* rbComp)
+{
+	this->theRB = rbComp;
+}
 
 void ControllerComponent::SetBoostSpeed(float speed) //sets boost multiplier (boost*move)
 {
@@ -54,45 +50,29 @@ float ControllerComponent::GetCrouchSpeed() const
 	return crouchSpeed;
 }
 
-void ControllerComponent::SetSensetivity(float sensetivity)
-{
-	this->sensetivity = sensetivity;
-}
-
-float ControllerComponent::GetSensetivity() const
-{
-	return this->sensetivity;
-}
+//void ControllerComponent::SetSensetivity(float sensetivity)
+//{
+//	this->sensetivity = sensetivity;
+//}
+//
+//float ControllerComponent::GetSensetivity() const
+//{
+//	return this->sensetivity;
+//}
 
 void ControllerComponent::Update(const float& deltaTime)
 {
 	DirectX::XMFLOAT3 dir = { 0.f,0.f,0.f };
-	float speed = 1.f;
+	float speed = 10.f;
 	this->fovTimer += deltaTime;
 	dx::XMVECTOR groundRotation;
-	//float fov = 60.f;
-	//dx::XMFLOAT3 origin;
-	//dx::XMStoreFloat3(&origin, GetOwner()->GetTransform().GetPosition());
-	//Ray ray(origin,DOWN);
-	//DShape::DrawLine(ray.origin, ray.GetPoint(1000.0f), { 1,1,0 });
 
-	//Physics& phy = Physics::Instance();
-	//RayHit hit;
-
-	//if (phy.RaytestSingle(ray, 1000.0f, hit, FilterGroups::DEFAULT))
-	//{
-	//	DShape::DrawLine(ray.origin, hit.position, { 1,1,0 });
-	//	DShape::DrawSphere(hit.position, 1.0f, { 0, 0, 1 });
-
-	//	if (hit.object != nullptr)
-	//	{
-	//		std::cout <<"yo "<< hit.object->GetName() << std::endl;
-	//	}
-	//}
+	//dx::XMFLOAT4 temp;
+	//dx::XMStoreFloat4(&temp, GetOwner()->GetTransform().GetRotation());
+	//std::cout << "x: " << temp.x << ", y: " << temp.y << ", z: " << temp.z << ", w: " << temp.w << std::endl;
 
 	if (KEY_DOWN(V))
 		this->freeCam = !this->freeCam;
-
 
 	if (KEY_DOWN(F))
 	{
@@ -125,28 +105,13 @@ void ControllerComponent::Update(const float& deltaTime)
 		Transform& transform = GetOwner()->GetTransform();
 		dx::XMVECTOR right = transform.TransformDirection({ 1,0,0 });
 		dx::XMVECTOR eulerRotation = dx::XMQuaternionMultiply(dx::XMQuaternionRotationAxis(right, x), dx::XMQuaternionRotationAxis({ 0,1,0 }, y));
-
-		//float x2 = Input::Instance().GetMousePosRelative().x * deltaTime;
-		//xClamp2 += x2;
-		//if (xClamp2 > CLAMP_X2)
-		//{
-		//	xClamp2 = CLAMP_X2;
-		//	x2 = 0.f;
-		//}
-		//else if (xClamp2 < -CLAMP_X2)
-		//{
-		//	xClamp2 = -CLAMP_X2;
-		//	x2 = 0.f;
-		//}
-
-		//groundRotation = dx::XMQuaternionMultiply(dx::XMQuaternionRotationAxis(right, x2), dx::XMQuaternionRotationAxis({ 0,1,0 }, y));
-		//groundRotation = dx::XMQuaternionMultiply(transform.GetRotation(), groundRotation);
-
+		
+		groundRotation = dx::XMQuaternionMultiply(dx::XMQuaternionRotationAxis(right, 0), dx::XMQuaternionRotationAxis({ 0,1,0 }, y));
+		groundRotation = dx::XMQuaternionMultiply(dx::XMLoadFloat4(&this->groundQuaterion), groundRotation);
+		dx::XMStoreFloat4(&groundQuaterion, groundRotation);
 
 		transform.SetRotation(dx::XMQuaternionMultiply(transform.GetRotation(), eulerRotation));
 		Input::Instance().ResetRelative();
-
-
 
 
 		if (KEY_DOWN(O))
@@ -185,7 +150,6 @@ void ControllerComponent::Update(const float& deltaTime)
 		if (KEY_PRESSED(D))
 			dir.x += 1.f;// move;
 
-
 		if (freeCam)
 		{
 			if (KEY_PRESSED(Space)) //Free cam
@@ -193,8 +157,6 @@ void ControllerComponent::Update(const float& deltaTime)
 			if (KEY_PRESSED(C))
 				dir.y -= 1.f;// move;
 
-	
-			//direction = GetOwner()->GetTransform().TransformDirection(direction);
 		}
 		else
 		{
@@ -208,11 +170,6 @@ void ControllerComponent::Update(const float& deltaTime)
 				speed = 1.f;// move;
 				GetOwner()->GetTransform().Translate(CROUCH.x, CROUCH.y, CROUCH.z);
 			}
-
-			//dx::XMFLOAT4 temp;
-			//dx::XMStoreFloat4(&temp, groundRotation);
-			//std::cout << "x: " << temp.x << ", y: " << temp.y << ", z: " << temp.z << ", w: " << temp.w << std::endl;
-			//direction = GetOwner()->GetTransform().TransformDirectionCustomRotation(direction, groundRotation);
 		}
 
 		dx::XMVECTOR direction = dx::XMLoadFloat3(&dir);
@@ -221,11 +178,13 @@ void ControllerComponent::Update(const float& deltaTime)
 		//dx::XMFLOAT4 temp;
 		//dx::XMStoreFloat4(&temp, groundRotation);
 		//std::cout << "x: " << temp.x << ", y: " << temp.y << ", z: " << temp.z << ", w: " << temp.w << std::endl;
-		//direction = GetOwner()->GetTransform().TransformDirectionCustomRotation(direction, groundRotation);
-		direction = GetOwner()->GetTransform().TransformDirection(direction);
+		direction = GetOwner()->GetTransform().TransformDirectionCustomRotation(direction, groundRotation);
+		//direction = GetOwner()->GetTransform().TransformDirection(direction);
 		direction = dx::XMVectorScale(direction, speed * deltaTime);
 		dx::XMStoreFloat3(&dir, direction);
 		GetOwner()->GetTransform().Translate(dir.x, dir.y, dir.z);
+		if(theRB)
+			theRB->SetPosition(GetOwner()->GetTransform().GetPosition()); //bs solution fix to replace rigidbody position
 
 	}
 	//else

@@ -17,7 +17,7 @@ public:
 	dx::XMMATRIX GetWorldMatrix() const;
 	dx::XMMATRIX GetLocalWorldMatrix() const;
 	DirectX::XMVECTOR TransformDirection(DirectX::XMVECTOR direction) const;
-	//DirectX::XMVECTOR TransformDirectionCustomRotation(DirectX::XMVECTOR direction, DirectX::XMVECTOR cRotation) const;
+	DirectX::XMVECTOR TransformDirectionCustomRotation(DirectX::XMVECTOR direction, DirectX::XMVECTOR cRotation) const;
 
 	void Translate(float x, float y, float z);
 	void Rotate(float pitch, float yaw, float roll);
