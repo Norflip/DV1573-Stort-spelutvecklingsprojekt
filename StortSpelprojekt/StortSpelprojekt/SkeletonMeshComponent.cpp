@@ -41,9 +41,9 @@ void SkeletonMeshComponent::RunAnimation(const float& deltaTime)
 		elapsedTime = 0.0f; //I just dont like the idea of it running to infinity.
 	}
 	if (currentAni != StateMachine::NONE)
-	{	//I AM USING MAP HERE THIS MIGHT CREATE COPIES!!!
+	{	
 		finalTransforms = skeletonAnimations[trackMap[currentAni]].Makeglobal(elapsedTime, dx::XMMatrixIdentity(), skeletonAnimations[trackMap[currentAni]].GetRootKeyJoints());
-		//I AM COPYING HERE I DONT KNOW HOW ELSE TO DO IT!!
+		
 		 
 	}
 	//Need to add functionality for multiple flags in one.
