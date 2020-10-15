@@ -11,9 +11,12 @@ Engine::Engine(HINSTANCE hInstance) : window(hInstance), activeScene(nullptr)
 	HRESULT hr = CoInitializeEx(nullptr, COINIT_MULTITHREADED);
 	assert(SUCCEEDED(hr));		
 
-	RegisterScene(0, new IntroScene());
-	RegisterScene(1, new GameOverScene());
-	RegisterScene(2, new GameScene());
+	resourceManager = new ResourceManager;
+	resourceManager->InitializeResources(renderer->GetDevice());
+
+	RegisterScene(0, new IntroScene(resourceManager));
+	RegisterScene(1, new GameOverScene(resourceManager));
+	RegisterScene(2, new GameScene(resourceManager));
 	SwitchScene(2);
 }
 

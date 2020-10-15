@@ -43,4 +43,6 @@ private:
 
 	Window window;
 	Renderer* renderer;
+
+	ResourceManager* resourceManager;
 };

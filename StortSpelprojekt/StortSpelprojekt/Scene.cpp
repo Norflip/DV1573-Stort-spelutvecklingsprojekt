@@ -3,13 +3,14 @@
 #include "GUISprite.h"
 #include "GUIFont.h"
 
-Scene::Scene() : input(Input::Instance())
+Scene::Scene(ResourceManager* manager) : input(Input::Instance())
 {
 	skyboxClass = nullptr;
 	renderer = nullptr;
 	camera = nullptr;
 
 	root = new Object("sceneRoot", ObjectFlag::DEFAULT);
+	resourceManager = manager;
 }
 
 Scene::~Scene()
@@ -19,9 +20,6 @@ Scene::~Scene()
 
 	delete root;
 	root = nullptr;	
-
-	if (resourceManager)
-		delete resourceManager;
 }
 
 void Scene::Initialize(Renderer* renderer)

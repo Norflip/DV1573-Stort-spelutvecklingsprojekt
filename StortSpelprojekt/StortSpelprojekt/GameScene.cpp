@@ -2,7 +2,7 @@
 #include "GUISprite.h"
 #include "GUIFont.h"
 
-GameScene::GameScene() : Scene()
+GameScene::GameScene(ResourceManager* manager) : Scene(manager)
 {
 }
 
@@ -14,31 +14,12 @@ void GameScene::Initialize(Renderer* renderer)
 {
 	this->renderer = renderer;
 
-	resourceManager = new ResourceManager;
-	resourceManager->InitializeResources(renderer->GetDevice());
-
 	// Should change values on resize event
 	Window* window = renderer->GetOutputWindow();
 
 	Physics& physics = Physics::Instance();
 	physics.Initialize({ 0, -10.0f, 0 });
 
-	spriteBatch = new DirectX::SpriteBatch(renderer->GetContext());
-	GUISprite* normalSprite = new GUISprite(*renderer, "Textures/EquipmentBox.png", 0, 0, DrawDirection::BottomLeft, ClickFunction::Clickable);
-	GUISprite* buttonSprite = new GUISprite(*renderer, "Textures/EquipmentBox.png", 0, 0, DrawDirection::BottomRight, ClickFunction::Clickable);
-	GUISprite* normalSprite2 = new GUISprite(*renderer, "Textures/EquipmentBox.png", 0, 0, DrawDirection::TopLeft, ClickFunction::Clickable);
-	GUISprite* buttonSprite2 = new GUISprite(*renderer, "Textures/EquipmentBox.png", 0, 0, DrawDirection::TopRight, ClickFunction::Clickable);
-	GUIFont* fpsDisplay = new GUIFont(*renderer, "test", 300, 300);
-	normalSprite->SetActive();
-
-	guiManager = new GUIManager(renderer);
-	renderer->SetGUIManager(guiManager);
-	guiManager->AddGUIObject(fpsDisplay, "fps");
-	guiManager->AddGUIObject(normalSprite, "normalSprite");
-	guiManager->AddGUIObject(buttonSprite, "buttonSprite");
-	guiManager->AddGUIObject(normalSprite2, "normalSprite2");
-	guiManager->AddGUIObject(buttonSprite2, "buttonSprite2");
-	guiManager->GetGUIObject("normalSprite")->SetPosition(100, 100);
 	SaveState state;
 	state.seed = 1337;
 	state.segment = 0;
@@ -56,11 +37,6 @@ void GameScene::Initialize(Renderer* renderer)
 	Input::Instance().SetWindow(window->GetHWND(), window->GetHeight(), window->GetWidth());
 	AddObject(cameraObject);
 
-	InitializeObjects();
-
-	//Log::Add("PRINTING SCENE HIERARCHY ----");
-	//PrintSceneHierarchy(root, 0);
-	/*Log::Add("----");*/
 }
 
 void GameScene::InitializeObjects()
@@ -175,6 +151,36 @@ void GameScene::InitializeObjects()
 	//Log::Add("PRINTING SCENE HIERARCHY ----");
 	//PrintSceneHierarchy(root, 0);
 	/*Log::Add("----");*/
+}
+
+void GameScene::InitializeGUI()
+{
+	spriteBatch = new DirectX::SpriteBatch(renderer->GetContext());
+	GUISprite* normalSprite = new GUISprite(*renderer, "Textures/EquipmentBox.png", 0, 0, DrawDirection::BottomLeft, ClickFunction::Clickable);
+	GUISprite* buttonSprite = new GUISprite(*renderer, "Textures/EquipmentBox.png", 0, 0, DrawDirection::BottomRight, ClickFunction::Clickable);
+	GUISprite* normalSprite2 = new GUISprite(*renderer, "Textures/EquipmentBox.png", 0, 0, DrawDirection::TopLeft, ClickFunction::Clickable);
+	GUISprite* buttonSprite2 = new GUISprite(*renderer, "Textures/EquipmentBox.png", 0, 0, DrawDirection::TopRight, ClickFunction::Clickable);
+	GUIFont* fpsDisplay = new GUIFont(*renderer, "test", 300, 300);
+	normalSprite->SetActive();
+
+	guiManager = new GUIManager(renderer);
+	renderer->SetGUIManager(guiManager);
+	guiManager->AddGUIObject(fpsDisplay, "fps");
+	guiManager->AddGUIObject(normalSprite, "normalSprite");
+	guiManager->AddGUIObject(buttonSprite, "buttonSprite");
+	guiManager->AddGUIObject(normalSprite2, "normalSprite2");
+	guiManager->AddGUIObject(buttonSprite2, "buttonSprite2");
+	guiManager->GetGUIObject("normalSprite")->SetPosition(100, 100);
+}
+
+void GameScene::OnActivate()
+{
+	InitializeGUI();
+	InitializeObjects();
+}
+
+void GameScene::OnDeactivate()
+{
 }
 
 void GameScene::Update(const float& deltaTime)

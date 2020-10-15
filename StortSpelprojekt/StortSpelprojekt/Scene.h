@@ -35,15 +35,16 @@ class SpriteRenderPass;
 class Scene
 {
 public:
-	Scene();
+	Scene(ResourceManager* manager);
 	virtual ~Scene();
 
 	virtual void Initialize(Renderer* renderer) = 0;
 	virtual void InitializeObjects() = 0;
+	virtual void InitializeGUI() = 0;
 
 	// What is this for?
-	virtual void OnActivate() {}
-	virtual void OnDeactivate() {}
+	virtual void OnActivate() = 0;
+	virtual void OnDeactivate() = 0;
 	
 	virtual void Update(const float& deltaTime);
 	virtual void FixedUpdate(const float& fixedDeltaTime);
