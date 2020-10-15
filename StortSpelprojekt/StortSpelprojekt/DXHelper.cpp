@@ -145,7 +145,7 @@ void DXHelper::CreateBlendState(ID3D11Device* device, ID3D11BlendState** blendOn
 
 }
 
-void DXHelper::CreateRSState(ID3D11Device* device, ID3D11RasterizerState** cullBack, ID3D11RasterizerState** cullNone)
+void DXHelper::CreateRSState(ID3D11Device* device, ID3D11RasterizerState** cullBack, ID3D11RasterizerState** cullNone, ID3D11RasterizerState** CCWO)
 {
 	// DEFAULT RASTERIZER STATE
 	D3D11_RASTERIZER_DESC rasterizerDescription;
@@ -163,6 +163,13 @@ void DXHelper::CreateRSState(ID3D11Device* device, ID3D11RasterizerState** cullB
 	rasterizerDescription.CullMode = D3D11_CULL_NONE;
 
 	resultCreateRasterizer = device->CreateRasterizerState(&rasterizerDescription, cullNone);
+	assert(SUCCEEDED(resultCreateRasterizer));
+
+	rasterizerDescription.CullMode = D3D11_CULL_BACK;
+
+	rasterizerDescription.FrontCounterClockwise = true;
+
+	resultCreateRasterizer = device->CreateRasterizerState(&rasterizerDescription, CCWO);
 	assert(SUCCEEDED(resultCreateRasterizer));
 }
 

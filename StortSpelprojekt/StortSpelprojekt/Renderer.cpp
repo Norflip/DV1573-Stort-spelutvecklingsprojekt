@@ -25,6 +25,7 @@ Renderer::~Renderer()
 
 	skeleton_srv->Release();
 	dss->Release();
+	rasterizerStateCCWO->Release();
 }
 
 void Renderer::Initialize(Window* window)
@@ -49,8 +50,8 @@ void Renderer::Initialize(Window* window)
 
 	dx::XMFLOAT4X4 bone;
 	dx::XMStoreFloat4x4(&bone, dx::XMMatrixIdentity());
-
-	DXHelper::CreateRSState(device, &rasterizerStateCullBack, &rasterizerStateCullNone);
+	
+	DXHelper::CreateRSState(device, &rasterizerStateCullBack, &rasterizerStateCullNone,&rasterizerStateCCWO);
 
 
 	for (int boneNr = 0; boneNr < 60; boneNr++) //set id matrix as default for the bones. So if no animation is happening the character is not funky.
@@ -123,8 +124,9 @@ void Renderer::DrawQueueToTarget(RenderQueue& queue)
 						DrawRenderItemGrass(item); break;
 
 					case RenderItem::Type::Skeleton:
+						context->RSSetState(rasterizerStateCCWO);
 						DrawRenderItemSkeleton(item); break;
-
+						context->RSSetState(rasterizerStateCullBack);
 					case RenderItem::Type::Default:
 					default:
 
@@ -157,7 +159,7 @@ void Renderer::RenderFrame(CameraComponent* camera, float time, RenderTexture& t
 	// UPPDATERA SCENE
 	// ----------
 
-	// Temporärt för att ändra skybox texture
+	// Temporï¿½rt fï¿½r att ï¿½ndra skybox texture
 	static int ids = 0;
 	static float color = 0.0f;
 
