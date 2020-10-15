@@ -3,6 +3,7 @@
 StateMachineComponent::StateMachineComponent(AIState state) :
 	currentState(state)
 {
+	
 }
 
 StateMachineComponent::~StateMachineComponent()
