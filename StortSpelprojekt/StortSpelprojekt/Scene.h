@@ -13,6 +13,8 @@
 #include "SkeletonMeshComponent.h"
 #include "PointLightComponent.h"
 #include "NodeWalkerComponent.h"
+#include "StatsComponent.h"
+#include "StateMachineComponent.h"
 
 #include "Skybox.h"
 #include "WorldGenerator.h"
@@ -29,6 +31,8 @@
 #include "DebugBoxShapeComponent.h"
 
 #include "ResourceManager.h"
+#include "ObjectPooler.h"
+
 class GUIFont;
 class SpriteRenderPass;
 
@@ -68,6 +72,7 @@ private:
 	WorldGenerator worldGenerator;
 	SpriteRenderPass* spritePass;	
 
+	ObjectPooler pooler;
 	GUIManager* guiManager;		
 	
 	/* Test skybox in class */

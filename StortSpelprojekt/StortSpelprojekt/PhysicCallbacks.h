@@ -2,8 +2,7 @@
 #include "Object.h"
 #include "RigidBodyComponent.h"
 #include "Ray.h"
-#include <reactphysics3d.h>
-namespace rp = reactphysics3d;
+#include <react3d.h>
 
 class RaycastSingleResultCallback : public rp::RaycastCallback {
 
