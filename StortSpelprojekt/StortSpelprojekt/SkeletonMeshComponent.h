@@ -32,7 +32,7 @@ public:
 
 	SkeletonAni& GetAnimationTrack(unsigned int trackNr);
 
-	void play(const SkeletonStateMachine& type);
+	void Play(const SkeletonStateMachine& type);
 	
 private:
 	Mesh mesh;

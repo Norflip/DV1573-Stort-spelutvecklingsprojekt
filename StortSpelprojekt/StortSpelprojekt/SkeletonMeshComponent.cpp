@@ -63,7 +63,7 @@ SkeletonAni& SkeletonMeshComponent::GetAnimationTrack(unsigned int trackNr)
 	return skeletonAnimations[trackNr];
 }
 
-void SkeletonMeshComponent::play(const SkeletonStateMachine& type)
+void SkeletonMeshComponent::Play(const SkeletonStateMachine& type)
 {
 	currentAni = type;
 }
