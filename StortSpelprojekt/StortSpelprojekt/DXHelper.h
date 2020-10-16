@@ -30,6 +30,7 @@ struct RenderTexture
 	ID3D11RenderTargetView* rtv;
 	ID3D11ShaderResourceView* srv;
 	ID3D11DepthStencilView* dsv;
+	ID3D11ShaderResourceView* depthSRV;
 	D3D11_VIEWPORT viewport;
 
 	RenderTexture() : rtv(nullptr), srv(nullptr), dsv(nullptr), width(-1), height(-1) {}

@@ -14,6 +14,7 @@ cbuffer cb_Object : register(b0)
 	row_major matrix world;
 	row_major matrix vp;
 	row_major matrix wv;
+
 };
 
 cbuffer cb_Material : register(b1)
@@ -30,8 +31,10 @@ cbuffer cb_Material : register(b1)
 
 cbuffer cb_Scene : register(b2)
 {
-	float3 cameraPosition;
+	row_major matrix invProjection;
+	row_major matrix invView;
 
+	float3 cameraPosition;
 	int id;
 	float factor;
 	float time;

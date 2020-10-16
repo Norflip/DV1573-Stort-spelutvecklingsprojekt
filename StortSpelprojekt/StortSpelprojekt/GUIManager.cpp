@@ -1,6 +1,6 @@
 #include "GUIManager.h"
 
-GUIManager::GUIManager(Renderer* renderer): renderer(renderer)
+GUIManager::GUIManager(Renderer* renderer, int priority): RenderPass(priority, RenderPass::PassType::UI_OVERLAY), renderer(renderer)
 {
 	spriteBatch = new DirectX::SpriteBatch(this->renderer->GetContext());
 }
@@ -37,7 +37,7 @@ void GUIManager::RemoveGUIObject(std::string name)
 		GUIObjects.erase(temp);
 }
 
-void GUIManager::DrawAll()
+void GUIManager::Pass(Renderer* renderer, RenderTexture& inTexture, RenderTexture& outTexture)
 {
 	spriteBatch->Begin();
 	for (auto i : GUIObjects)
