@@ -12,23 +12,23 @@ ControllerComponent::ControllerComponent()
 	//this->sensetivity = 1.f;
 	this->fov = 60.f;
 	this->fovTimer = 0.f;
-	this->theCamera = nullptr;
+	//this->theCamera = nullptr;
 	this->groundQuaterion = { 0.f,0.f,0.f,1.f };
 }
 
 ControllerComponent::~ControllerComponent()
 {
 }
-
-void ControllerComponent::AssignCamComponent(CameraComponent* camComp)
-{
-	this->theCamera = camComp;
-}
-
-void ControllerComponent::AssignRBComponent( RigidBodyComponent* rbComp)
-{
-	this->theRB = rbComp;
-}
+//
+//void ControllerComponent::AssignCamComponent(CameraComponent* camComp)
+//{
+//	this->theCamera = camComp;
+//}
+//
+//void ControllerComponent::AssignRBComponent( RigidBodyComponent* rbComp)
+//{
+//	this->theRB = rbComp;
+//}
 
 void ControllerComponent::SetBoostSpeed(float speed) //sets boost multiplier (boost*move)
 {
@@ -137,8 +137,8 @@ void ControllerComponent::Update(const float& deltaTime)
 				this->fovTimer = 0.f;
 			}
 		}
-		if (theCamera)
-			theCamera->SetFOV(fov);
+		if (GetOwner()->HasComponent<CameraComponent>())
+			GetOwner()->GetComponent<CameraComponent>()->SetFOV(fov);
 
 
 		if (KEY_PRESSED(W))
@@ -174,17 +174,14 @@ void ControllerComponent::Update(const float& deltaTime)
 
 		dx::XMVECTOR direction = dx::XMLoadFloat3(&dir);
 		direction = dx::XMVector3Normalize(direction);
-
-		//dx::XMFLOAT4 temp;
-		//dx::XMStoreFloat4(&temp, groundRotation);
-		//std::cout << "x: " << temp.x << ", y: " << temp.y << ", z: " << temp.z << ", w: " << temp.w << std::endl;
 		direction = GetOwner()->GetTransform().TransformDirectionCustomRotation(direction, groundRotation);
 		//direction = GetOwner()->GetTransform().TransformDirection(direction);
 		direction = dx::XMVectorScale(direction, speed * deltaTime);
 		dx::XMStoreFloat3(&dir, direction);
 		GetOwner()->GetTransform().Translate(dir.x, dir.y, dir.z);
-		if(theRB)
-			theRB->SetPosition(GetOwner()->GetTransform().GetPosition()); //bs solution fix to replace rigidbody position
+		
+		if (GetOwner()->HasComponent<RigidBodyComponent>())
+			GetOwner()->GetComponent<RigidBodyComponent>()->SetPosition(GetOwner()->GetTransform().GetPosition());
 
 	}
 	//else
