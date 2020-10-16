@@ -16,5 +16,5 @@ class AIAttack : public Component
 		CameraComponent* player;
 		bool attackPlayer = false;
 		GameClock timer;
-		float playerRadius = 2.0f;
+		float playerRadius;
 };

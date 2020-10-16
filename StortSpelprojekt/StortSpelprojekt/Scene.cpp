@@ -180,11 +180,11 @@ void Scene::InitializeObjects()
 	worldGenerator.InitializeTrees(stylizedTreeModel, stylizedTreeMaterial, renderer->GetDevice());
 	
 	//Enemy object
-	Object* enemy = new Object("enemy");
+	enemy = new Object("enemy");
 	dx::XMFLOAT3 enemyTranslation = dx::XMFLOAT3(0, 2, 10);
 	enemy->GetTransform().SetPosition(dx::XMLoadFloat3(&enemyTranslation));
 	enemy->AddComponent<MeshComponent>(*mesh1, *material1);
-	enemy->AddComponent<StatsComponent>(100, 2, 10, 25, 3);
+	enemy->AddComponent<StatsComponent>(100, 2, 15, 25, 3);
 	StateMachineComponent* stateMachine = enemy->AddComponent<StateMachineComponent>(AIState::idle);
 	stateMachine->RegisterState(AIState::idle, enemy->AddComponent<AIIdle>());
 	stateMachine->RegisterState(AIState::patrol, enemy->AddComponent<AIPatrol>());
