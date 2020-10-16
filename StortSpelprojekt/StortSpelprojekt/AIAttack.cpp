@@ -1,7 +1,7 @@
 #include "AIAttack.h"
 
 AIAttack::AIAttack(CameraComponent* player)
-	: player(player)
+	: player(player), playerRadius(2.0f)
 {
 	timer.Start();
 }
@@ -12,6 +12,7 @@ AIAttack::~AIAttack()
 
 void AIAttack::Update(const float& deltaTime)
 {
+	timer.Update();
 	UpdateAttackPlayer(deltaTime);
 }
 
@@ -51,7 +52,8 @@ bool AIAttack::ChasePlayer(const float& deltaTime)
 		}
 	}
 
-	if (distanceF.x <= playerRadius || distanceF.z <= playerRadius)
+	if (distanceF.x <= playerRadius && distanceF.z <= playerRadius
+		&& distanceF.x >= -playerRadius && distanceF.z >= -playerRadius)
 		attackPlayer = true;
 
 	GetOwner()->GetTransform().Translate(moveDir.x * GetOwner()->GetComponent<StatsComponent>()->GetSpeed() * deltaTime, 0.0f,
@@ -62,16 +64,13 @@ bool AIAttack::ChasePlayer(const float& deltaTime)
 
 void AIAttack::UpdateAttackPlayer(const float& deltaTime)
 {
-	static float counter = GetOwner()->GetComponent<StatsComponent>()->GetAttackSpeed();
 	if (ChasePlayer(deltaTime) && attackPlayer)
 	{
-	/*	counter += timer.GetMiliseconds();
-		if (counter >= GetOwner()->GetComponent<StatsComponent>()->GetAttackSpeed())
+		if (timer.GetSeconds() >= GetOwner()->GetComponent<StatsComponent>()->GetAttackSpeed())
 		{
-			counter = 0;
 			timer.Restart();
 			player->GetOwner()->GetComponent<StatsComponent>()->LoseHealth(GetOwner()->GetComponent<StatsComponent>()->GetAttack());
 
-		}*/
+		}
 	}
 }

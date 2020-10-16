@@ -67,6 +67,7 @@ private:
 	Renderer* renderer;
 	GameClock clock;
 	Input& input;
+	Object* enemy;
 
 	dx::SpriteBatch* spriteBatch;
 	WorldGenerator worldGenerator;
