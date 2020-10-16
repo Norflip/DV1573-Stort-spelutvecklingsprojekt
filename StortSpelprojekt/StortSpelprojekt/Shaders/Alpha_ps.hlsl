@@ -12,6 +12,8 @@ float4 main(VS_OUTPUT input) : SV_TARGET
 
 	float3 normalized = normalize(input.normal);
 
+	return float4(normalized, 1.0f);
+
 	float3 viewDirection = cameraPosition - input.worldPosition;
 
 	float4 finalColor = float4(0.0f, 0.0f, 0.0f, 0.0);
