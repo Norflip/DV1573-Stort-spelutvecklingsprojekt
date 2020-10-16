@@ -49,7 +49,7 @@ float Path::ClosestDistance(const dx::XMFLOAT2& position) const
 			shortest = tmpDistance;
 	}
 
-	std::cout << shortest << std::endl;
+	//std::cout << shortest << std::endl;
 	return sqrtf(shortest);
 }
 
