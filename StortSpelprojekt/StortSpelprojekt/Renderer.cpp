@@ -78,9 +78,7 @@ void Renderer::Initialize(Window* window)
 
 	//EXEMPEL
 	///AddRenderPass(new PSRenderPass(1, L"Shaders/TestPass.hlsl"));
-	AddRenderPass(new FogRenderPass(0));
-
-	//AddRenderPass(new PSRenderPass(1, "Shaders/TestPass.hlsl"));
+	//AddRenderPass(new FogRenderPass(0));
 }
 
 void Renderer::BeginManualRenderPass(RenderTexture& target)
@@ -143,7 +141,7 @@ void Renderer::DrawQueueToTarget(RenderQueue& queue)
 void Renderer::RenderFrame(CameraComponent* camera, float time)
 {
 	// UPDATE SCENE
-	RenderFrame(camera, time, backbuffer, false, false);
+	RenderFrame(camera, time, backbuffer, true, true);
 	HRESULT hr = swapchain->Present(0, 0); //1 here?
 	assert(SUCCEEDED(hr));
 }
@@ -211,20 +209,12 @@ void Renderer::RenderFrame(CameraComponent* camera, float time, RenderTexture& t
 	size_t passCount = 0;
 	size_t bufferIndex = 0;
 
-	if (drawGUI || applyRenderPasses)
+	if (applyRenderPasses)
 	{
-
 		for (auto i = passes.begin(); i < passes.end(); i++)
 		{
 			RenderPass* pass = *i;
-
-			if (!drawGUI && pass->GetType() == RenderPass::PassType::UI_OVERLAY)
-				continue;
-
-			if (!applyRenderPasses && pass->GetType() == RenderPass::PassType::POST_PROCESSING)
-				continue;
-
-			if (pass->IsEnabled())
+			if (pass->IsEnabled() && pass->GetType() == RenderPass::PassType::POST_PROCESSING)
 			{
 				size_t nextBufferIndex = 1 - bufferIndex;
 				RenderTexture& passTarget = renderPassSwapBuffers[nextBufferIndex];
@@ -247,6 +237,18 @@ void Renderer::RenderFrame(CameraComponent* camera, float time, RenderTexture& t
 
 	context->PSSetShaderResources(0, 1, &lastBuffer.srv);
 	DrawScreenQuad(screenQuadMaterial);
+
+	if (drawGUI)
+	{
+		for (auto i = passes.begin(); i < passes.end(); i++)
+		{
+			RenderPass* pass = *i;
+			if (pass->IsEnabled() && pass->GetType() == RenderPass::PassType::UI_OVERLAY)
+			{
+				pass->Pass(this, renderPassSwapBuffers[0], renderPassSwapBuffers[0]);
+			}
+		}
+	}
 }
 
 void Renderer::AddRenderPass(RenderPass* pass)

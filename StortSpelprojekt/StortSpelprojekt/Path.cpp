@@ -49,6 +49,7 @@ float Path::ClosestDistance(const dx::XMFLOAT2& position) const
 			shortest = tmpDistance;
 	}
 
+	std::cout << shortest << std::endl;
 	return sqrtf(shortest);
 }
 
@@ -79,7 +80,7 @@ void Path::CalculateIndexes(int steps, int directionalSteps)
 
 void Path::CalculatePoints()
 {
-	const size_t cuts = 1;
+	const size_t cuts = 2;
 	points.resize(indexes.size() * cuts);
 
 	for (size_t i = 0; i < indexes.size() - 1; i++)
@@ -97,7 +98,7 @@ void Path::CalculatePoints()
 	// add last
 	points.push_back(Chunk::IndexToXZ(indexes[indexes.size() - 1]));
 
-	points = SmoothPoints(points, 3.0f, 1.0f);
+//	points = SmoothPoints(points, 3.0f, 1.0f);
 
 
 	const int a = 0;
