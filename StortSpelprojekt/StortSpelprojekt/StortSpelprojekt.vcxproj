@@ -189,6 +189,7 @@
     <ClCompile Include="ObjectPooler.cpp" />
     <ClCompile Include="Physics.cpp" />
     <ClCompile Include="Path.cpp" />
+    <ClCompile Include="PlayerStatComp.cpp" />
     <ClCompile Include="PossionDiscSampler.cpp" />
     <ClCompile Include="PointLightComponent.cpp" />
     <ClCompile Include="Renderer.cpp" />
@@ -230,6 +231,7 @@
     <ClInclude Include="ObjectPooler.h" />
     <ClInclude Include="Path.h" />
     <ClInclude Include="PhysicCallbacks.h" />
+    <ClInclude Include="PlayerStatComp.h" />
     <ClInclude Include="PossionDiscSampler.h" />
     <ClInclude Include="ResourceManager.h" />
     <ClInclude Include="Shapes.h" />

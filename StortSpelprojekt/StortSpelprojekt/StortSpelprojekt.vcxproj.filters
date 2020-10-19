@@ -64,9 +64,6 @@
     <FxCompile Include="Shaders\TestPass.hlsl">
       <Filter>Resource Files</Filter>
     </FxCompile>
-    <FxCompile Include="Shaders\TestPass2.hlsl">
-      <Filter>Resource Files</Filter>
-    </FxCompile>
     <FxCompile Include="Shaders\FogTest_ps.hlsl">
       <Filter>Resource Files</Filter>
     </FxCompile>
@@ -219,6 +216,7 @@
     <ClCompile Include="AIPatrol.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="PlayerStatComp.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="BoundingBoxes.h">
@@ -399,7 +397,7 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="FogRenderPass.h">
-    <Filter>Header Files</Filter>
+      <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="ObjectPooler.h">
       <Filter>Header Files</Filter>
@@ -422,6 +420,7 @@
     <ClInclude Include="AIPatrol.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="PlayerStatComp.h" />
   </ItemGroup>
   <ItemGroup>
     <Filter Include="Header Files">
