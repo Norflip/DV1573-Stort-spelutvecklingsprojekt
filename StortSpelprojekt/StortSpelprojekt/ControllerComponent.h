@@ -10,15 +10,29 @@ constexpr float RUN_FOV = 90.f;
 constexpr float FOV_INC = 0.5f; //how much fov increments each time
 constexpr float FOV_INC_RATE = 0.01f; //rate of fov incrementation in seconds (so
 
-class ControllerComponent :public Component
+
+constexpr float CROUCH_VELOCITY = 0.5f;
+constexpr float CROUCH_ACCELERATION = 1.f;
+constexpr float WALK_VELOCITY = 8.f;
+constexpr float WALK_ACCELERATION = 1.5f;
+constexpr float RUN_VELOCITY = 20.f;
+constexpr float RUN_ACCELERATION = 3.5f;
+constexpr float VELOCITY_INC_RATE = 3.5f;
+
+
+class ControllerComponent :public Component //PlayerControllerComp
 {
 private:
 
+	//float acceleration;
+	//float deacceleration;
+	float velocity;
+	float velocityTimer;
 	//acceleration //when walking (slowly) increase speed etc
 	//deacceleraion
 	//jump
-	float boost;
-	float crouchSpeed; 
+	//float boost;
+	//float crouchSpeed; 
 	const dx::XMFLOAT3 CROUCH = { 0.f,2.f,0.f }; //eventually fix gradient crouch like how fov works
 	const dx::XMFLOAT3 DOWN = { 0.f,-1.f,0.f };
 
@@ -30,24 +44,19 @@ private:
 
 	float fov;
 	float fovTimer; //use timer
-	//CameraComponent* theCamera;
-	//RigidBodyComponent* theRB;
 
 public:
 	ControllerComponent();
 	virtual ~ControllerComponent();
 
-	//void AssignCamComponent(CameraComponent*);
-	//void AssignRBComponent(RigidBodyComponent*);
+	//void SetBoostSpeed(float);
+	//float GetBoostSpeed()const;
 
-	void SetBoostSpeed(float);
-	float GetBoostSpeed()const;
+	//void SetCrouchSpeed(float);
+	//float GetCrouchSpeed()const;
 
-	void SetCrouchSpeed(float);
-	float GetCrouchSpeed()const;
-
-	void SetSensetivity(float);
-	float GetSensetivity()const;
+	//void SetSensetivity(float);
+	//float GetSensetivity()const;
 
 	void Update(const float& deltaTime);
 

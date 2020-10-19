@@ -3,8 +3,10 @@
 ControllerComponent::ControllerComponent()
 {
 	//this->move =1.f;
-	this->boost = 20.f;// *this->move;
-	this->crouchSpeed = 0.3f;// *this->move;
+	//this->boost = 20.f;// *this->move;
+	//this->crouchSpeed = 0.3f;// *this->move;
+	this->velocity = 0.f;
+	this->velocityTimer = 0.f;
 
 	this->freeCam = true;
 	this->showCursor = true;
@@ -30,25 +32,25 @@ ControllerComponent::~ControllerComponent()
 //	this->theRB = rbComp;
 //}
 
-void ControllerComponent::SetBoostSpeed(float speed) //sets boost multiplier (boost*move)
-{
-	this->boost = speed;
-}
-
-float ControllerComponent::GetBoostSpeed() const
-{
-	return this->boost;
-}
-
-void ControllerComponent::SetCrouchSpeed(float speed) //sets crouch multiplier (crouch*move)
-{
-	this->crouchSpeed = speed;
-}
-
-float ControllerComponent::GetCrouchSpeed() const
-{
-	return crouchSpeed;
-}
+//void ControllerComponent::SetBoostSpeed(float speed) //sets boost multiplier (boost*move)
+//{
+//	this->boost = speed;
+//}
+//
+//float ControllerComponent::GetBoostSpeed() const
+//{
+//	return this->boost;
+//}
+//
+//void ControllerComponent::SetCrouchSpeed(float speed) //sets crouch multiplier (crouch*move)
+//{
+//	this->crouchSpeed = speed;
+//}
+//
+//float ControllerComponent::GetCrouchSpeed() const
+//{
+//	return crouchSpeed;
+//}
 
 //void ControllerComponent::SetSensetivity(float sensetivity)
 //{
@@ -63,9 +65,12 @@ float ControllerComponent::GetCrouchSpeed() const
 void ControllerComponent::Update(const float& deltaTime)
 {
 	DirectX::XMFLOAT3 dir = { 0.f,0.f,0.f };
-	float speed = 10.f;
+	//float speed = 10.f;
 	this->fovTimer += deltaTime;
+	this->velocityTimer += deltaTime;
 	dx::XMVECTOR groundRotation;
+
+	
 
 	//dx::XMFLOAT4 temp;
 	//dx::XMStoreFloat4(&temp, GetOwner()->GetTransform().GetRotation());
@@ -119,10 +124,17 @@ void ControllerComponent::Update(const float& deltaTime)
 			this->showCursor = !this->showCursor;
 			ShowCursor(this->showCursor);
 		}
+
 		//std::cout << "Timer : " << fovTimer <<", fov: "<<this->fov<< std::endl;
 		if (KEY_PRESSED(LeftShift)) //sprint
 		{
-			speed = boost;
+			/*speed = boost;*/
+
+			if (this->velocity < RUN_VELOCITY && this->velocityTimer >= VELOCITY_INC_RATE)
+			{
+				this->velocity += RUN_ACCELERATION;
+				this->velocityTimer = 0.f;
+			}
 			if (this->fov < RUN_FOV && this->fovTimer >= FOV_INC_RATE)
 			{
 				this->fov += FOV_INC;
@@ -131,6 +143,11 @@ void ControllerComponent::Update(const float& deltaTime)
 		}
 		else
 		{
+			if (this->velocity > WALK_VELOCITY && this->velocityTimer >= VELOCITY_INC_RATE)
+			{
+				this->velocity -= RUN_ACCELERATION;
+				this->velocityTimer = 0.f;
+			}
 			if (this->fov > WALK_FOV && this->fovTimer >= FOV_INC_RATE)
 			{
 				this->fov -= FOV_INC;
@@ -140,15 +157,28 @@ void ControllerComponent::Update(const float& deltaTime)
 		if (GetOwner()->HasComponent<CameraComponent>())
 			GetOwner()->GetComponent<CameraComponent>()->SetFOV(fov);
 
-
-		if (KEY_PRESSED(W))
-			dir.z += 1.f;// move;
-		if (KEY_PRESSED(S))
-			dir.z -= 1.f;// move;
-		if (KEY_PRESSED(A))
-			dir.x -= 1.f;// move;
-		if (KEY_PRESSED(D))
-			dir.x += 1.f;// move;
+		if (KEY_PRESSED(W) || KEY_PRESSED(S) || KEY_PRESSED(A) || KEY_PRESSED(D))
+		{
+			if (KEY_PRESSED(W))
+				dir.z += 1.f;// move;
+			if (KEY_PRESSED(S))
+				dir.z -= 1.f;// move;
+			if (KEY_PRESSED(A))
+				dir.x -= 1.f;// move;
+			if (KEY_PRESSED(D))
+				dir.x += 1.f;// move;
+			if (this->velocity < WALK_VELOCITY && velocityTimer >= VELOCITY_INC_RATE)
+			{
+				this->velocity += WALK_ACCELERATION;
+				this->velocityTimer = 0.f;
+			}
+		}
+		else 
+			if (this->velocity > 0.f && velocityTimer >= VELOCITY_INC_RATE)
+			{
+				this->velocity -= WALK_ACCELERATION;
+				this->velocityTimer = 0.f;
+			}
 
 		if (freeCam)
 		{
@@ -162,21 +192,32 @@ void ControllerComponent::Update(const float& deltaTime)
 		{
 			if (KEY_DOWN(LeftControl))
 			{
-				speed = crouchSpeed;
+				if (this->velocity > CROUCH_VELOCITY && velocityTimer >= VELOCITY_INC_RATE)
+				{
+					this->velocity -= CROUCH_ACCELERATION;
+					this->velocityTimer = 0.f;
+				}
 				GetOwner()->GetTransform().Translate(-CROUCH.x, -CROUCH.y, -CROUCH.z);
 			}
 			if (KEY_UP(LeftControl))
 			{
-				speed = 1.f;// move;
+				if (this->velocity < WALK_VELOCITY && velocityTimer >= VELOCITY_INC_RATE)
+				{
+					this->velocity += CROUCH_ACCELERATION;
+					this->velocityTimer = 0.f;
+				}
 				GetOwner()->GetTransform().Translate(CROUCH.x, CROUCH.y, CROUCH.z);
 			}
 		}
 
 		dx::XMVECTOR direction = dx::XMLoadFloat3(&dir);
 		direction = dx::XMVector3Normalize(direction);
-		direction = GetOwner()->GetTransform().TransformDirectionCustomRotation(direction, groundRotation);
-		//direction = GetOwner()->GetTransform().TransformDirection(direction);
-		direction = dx::XMVectorScale(direction, speed * deltaTime);
+		if (freeCam)
+			direction = GetOwner()->GetTransform().TransformDirection(direction);
+		else
+			direction = GetOwner()->GetTransform().TransformDirectionCustomRotation(direction, groundRotation);
+	
+		direction = dx::XMVectorScale(direction, this->velocity * deltaTime);
 		dx::XMStoreFloat3(&dir, direction);
 		GetOwner()->GetTransform().Translate(dir.x, dir.y, dir.z);
 		
