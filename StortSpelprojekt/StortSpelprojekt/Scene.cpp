@@ -60,8 +60,7 @@ void Scene::Initialize(Renderer* renderer)
 	GUIFont* enemyHealthDisplay = new GUIFont(*renderer, "playerHealth", 600, 350);
 	normalSprite->SetActive();
 
-	guiManager = new GUIManager(renderer);
-	
+	guiManager = new GUIManager(renderer, 100);
 	guiManager->AddGUIObject(fpsDisplay, "fps");
 	guiManager->AddGUIObject(playerHealthDisplay, "playerHealth");
 	guiManager->AddGUIObject(enemyHealthDisplay, "enemyHealth");
@@ -70,7 +69,7 @@ void Scene::Initialize(Renderer* renderer)
 	guiManager->AddGUIObject(normalSprite2, "normalSprite2");
 	guiManager->AddGUIObject(buttonSprite2, "buttonSprite2");
 	guiManager->GetGUIObject("normalSprite")->SetPosition(100, 100);
-	renderer->AddRenderPass(new GUIRenderPass(100, guiManager));
+	renderer->AddRenderPass(guiManager);
 
 	SaveState state;
 	state.seed = 1337;
