@@ -27,6 +27,6 @@ float4 main(VS_OUTPUT input) : SV_TARGET
 
 	finalColor = saturate(finalColor * textureColor);
 
-	
+	//return float4(normalized, 1.0f);
 	return finalColor;
 }

@@ -32,8 +32,11 @@
 class GUIFont;
 class SpriteRenderPass;
 
+enum NEXT_SCENE { INTRO, WIN, GAME, LOSE };
+
 class Scene
 {
+	
 public:
 	Scene(ResourceManager* manager);
 	virtual ~Scene();
@@ -58,6 +61,7 @@ public:
 
 	void PrintSceneHierarchy(Object* object, size_t level) const;
 
+	NEXT_SCENE nextScene;
 	
 private:
 
@@ -77,4 +81,6 @@ protected:
 	Skybox* skyboxClass;		
 
 	ResourceManager* resourceManager;
+
+	float windowHeight, windowWidth;
 };

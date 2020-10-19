@@ -4,6 +4,7 @@
 
 GameScene::GameScene(ResourceManager* manager) : Scene(manager)
 {
+	nextScene = GAME;
 }
 
 GameScene::~GameScene()
@@ -17,8 +18,24 @@ void GameScene::Initialize(Renderer* renderer)
 	// Should change values on resize event
 	Window* window = renderer->GetOutputWindow();
 
+	windowHeight = window->GetHeight();
+	windowWidth = window->GetWidth();
+
 	Physics& physics = Physics::Instance();
 	physics.Initialize({ 0, -10.0f, 0 });
+
+	//Input::Instance().SetWindow(window->GetHWND(), window->GetHeight(), window->GetWidth());
+	input.SetWindow(window->GetHWND(), window->GetHeight(), window->GetWidth());
+}
+
+void GameScene::InitializeObjects()
+{
+	Object* cameraObject = new Object("camera", ObjectFlag::ENABLED);
+	camera = cameraObject->AddComponent<CameraComponent>(60.0f, true);
+	camera->Resize(windowWidth, windowHeight);
+	AddObject(cameraObject);
+
+	cameraObject->AddComponent<ControllerComponent>();
 
 	SaveState state;
 	state.seed = 1337;
@@ -28,19 +45,6 @@ void GameScene::Initialize(Renderer* renderer)
 	worldGenerator.Generate(state, renderer->GetDevice(), root);
 	worldGenerator.InitalizeGrass(renderer->GetDevice(), renderer->GetContext());
 
-	Object* cameraObject = new Object("camera", ObjectFlag::ENABLED);
-	camera = cameraObject->AddComponent<CameraComponent>(60.0f, true);
-	camera->Resize(window->GetWidth(), window->GetHeight());
-	cameraObject->AddComponent<ControllerComponent>();
-
-
-	Input::Instance().SetWindow(window->GetHWND(), window->GetHeight(), window->GetWidth());
-	AddObject(cameraObject);
-
-}
-
-void GameScene::InitializeObjects()
-{
 	Mesh* mesh1 = resourceManager->GetResource<Mesh>("Test");
 	Mesh* mesh2 = resourceManager->GetResource<Mesh>("Test2");
 	Mesh* mesh3 = resourceManager->GetResource<Mesh>("Test3");
@@ -175,6 +179,7 @@ void GameScene::InitializeGUI()
 
 void GameScene::OnActivate()
 {
+	nextScene = GAME;
 	InitializeGUI();
 	InitializeObjects();
 }
@@ -249,13 +254,21 @@ void GameScene::Update(const float& deltaTime)
 		DShape::DrawSphere(ray.GetPoint(10.0f), 0.2f, { 1, 0, 1 });
 	}
 
+	if (KEY_PRESSED(N))
+	{
+		nextScene = WIN;
+	}
+	else if (KEY_PRESSED(M))
+	{
+		nextScene = INTRO;
+	}
+
 	skyboxClass->GetThisObject()->GetTransform().SetPosition(camera->GetOwner()->GetTransform().GetPosition());
 }
 
 void GameScene::FixedUpdate(const float& fixedDeltaTime)
 {
 	Scene::FixedUpdate(fixedDeltaTime);
-
 }
 
 void GameScene::Render()

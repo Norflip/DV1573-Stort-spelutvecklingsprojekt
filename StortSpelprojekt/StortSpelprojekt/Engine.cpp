@@ -64,10 +64,12 @@ void Engine::Run()
 
 				activeScene->Update(deltaTime);
 				activeScene->Render();
+
+				SwitchScene((int)activeScene->nextScene);
+
 			}
 
 			timeLastFrame = currentTime;
-
 		}
 	}
 
@@ -100,11 +102,20 @@ void Engine::SwitchScene(size_t id)
 	auto sceneIt = this->scenes.find(id);
 	assert(sceneIt != scenes.end(), "No scene with ID " + std::to_string(id));
 
-	if (activeScene != nullptr)
-		activeScene->OnDeactivate();
-
-	activeScene = (*sceneIt).second;
-	activeScene->OnActivate();
+	if (activeScene == nullptr)
+	{
+		activeScene = (*sceneIt).second;
+		activeScene->OnActivate();
+	}
+	else
+	{
+		if (activeScene != (*sceneIt).second)
+		{
+			activeScene->OnDeactivate();
+			activeScene = (*sceneIt).second;
+			activeScene->OnActivate();
+		}
+	}
 }
 
 void Engine::FixedUpdateLoop(Engine* engine)
