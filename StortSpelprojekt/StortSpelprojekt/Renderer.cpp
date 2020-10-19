@@ -1,5 +1,6 @@
 #include "Renderer.h"
 #include "RenderPass.h"
+#include "FogRenderPass.h"
 #include "DShape.h"
 
 Renderer::Renderer() : device(nullptr), context(nullptr), swapchain(nullptr), skeleton_srvbuffer(nullptr), skeleton_srv(nullptr)
@@ -30,19 +31,10 @@ Renderer::~Renderer()
 
 void Renderer::Initialize(Window* window)
 {
-	assert(sizeof(cb_grass) % 16 == 0);
-	assert(sizeof(cb_Lights) % 16 == 0);
-	assert(sizeof(cb_Material) % 16 == 0);
-	assert(sizeof(cb_Object) % 16 == 0);
-	assert(sizeof(cb_Scene) % 16 == 0);
-	assert(sizeof(s_PointLight) % 16 == 0);
-	assert(sizeof(cb_grass) % 16 == 0);
-
 	this->outputWindow = window;
 
 	DXHelper::CreateSwapchain(*window, &device, &context, &swapchain);
 	this->backbuffer = DXHelper::CreateBackbuffer(window->GetWidth(), window->GetHeight(), device, swapchain);
-
 	this->midbuffer = DXHelper::CreateRenderTexture(window->GetWidth(), window->GetHeight(), device, context, &dss);
 	this->renderPassSwapBuffers[0] = DXHelper::CreateRenderTexture(window->GetWidth(), window->GetHeight(), device, context, &dss);
 	this->renderPassSwapBuffers[1] = DXHelper::CreateRenderTexture(window->GetWidth(), window->GetHeight(), device, context, &dss);
@@ -50,8 +42,8 @@ void Renderer::Initialize(Window* window)
 
 	dx::XMFLOAT4X4 bone;
 	dx::XMStoreFloat4x4(&bone, dx::XMMatrixIdentity());
-	
-	DXHelper::CreateRSState(device, &rasterizerStateCullBack, &rasterizerStateCullNone,&rasterizerStateCCWO);
+
+	DXHelper::CreateRSState(device, &rasterizerStateCullBack, &rasterizerStateCullNone, &rasterizerStateCCWO);
 
 
 	for (int boneNr = 0; boneNr < 60; boneNr++) //set id matrix as default for the bones. So if no animation is happening the character is not funky.
@@ -60,6 +52,7 @@ void Renderer::Initialize(Window* window)
 	}
 
 	LightManager::Instance().Initialize(device);
+
 
 	sceneBuffer.Initialize(CB_SCENE_SLOT, ShaderBindFlag::PIXEL | ShaderBindFlag::DOMAINS | ShaderBindFlag::VERTEX, device);
 	objectBuffer.Initialize(CB_OBJECT_SLOT, ShaderBindFlag::VERTEX, device);
@@ -84,8 +77,8 @@ void Renderer::Initialize(Window* window)
 	DShape::Instance().m_Initialize(device);
 
 	//EXEMPEL
-
-	//AddRenderPass(new PSRenderPass(1, "Shaders/TestPass.hlsl"));
+	///AddRenderPass(new PSRenderPass(1, L"Shaders/TestPass.hlsl"));
+	//AddRenderPass(new FogRenderPass(0));
 }
 
 void Renderer::BeginManualRenderPass(RenderTexture& target)
@@ -179,6 +172,8 @@ void Renderer::RenderFrame(CameraComponent* camera, float time, RenderTexture& t
 	data.factor = color;
 	data.time = time;
 	dx::XMStoreFloat3(&data.cameraPosition, camera->GetOwner()->GetTransform().GetPosition());
+	dx::XMStoreFloat4x4(&data.invProjection, dx::XMMatrixTranspose(dx::XMMatrixInverse(NULL, camera->GetProjectionMatrix())));
+	dx::XMStoreFloat4x4(&data.invView, dx::XMMatrixTranspose(dx::XMMatrixInverse(NULL, camera->GetViewMatrix())));
 
 	sceneBuffer.SetData(data);
 	sceneBuffer.UpdateBuffer(context);
@@ -191,81 +186,70 @@ void Renderer::RenderFrame(CameraComponent* camera, float time, RenderTexture& t
 
 	//We need to clear Depth Stencil View as well.//Emil
 
-	size_t bufferIndex = 0;
 	ID3D11ShaderResourceView* nullSRV[1] = { nullptr };
 	context->PSSetShaderResources(0, 1, nullSRV);
 
-	ClearRenderTarget(renderPassSwapBuffers[bufferIndex]);
-	SetRenderTarget(renderPassSwapBuffers[bufferIndex]);
+	ClearRenderTarget(midbuffer);
+	SetRenderTarget(midbuffer);
 
 	// ADD LATER WITH FOG
 	//ID3D11ShaderResourceView* depthSRV = renderPassSwapBuffers[bufferIndex].depthSRV;
 
 	context->OMSetDepthStencilState(dss, 0);
-	context->RSSetState(rasterizerStateCullBack);
-	context->OMSetBlendState(blendStateOff, BLENDSTATEMASK, 0xffffffff);
 
+
+	SetCullBack(true);
 	DrawQueueToTarget(opaqueItemQueue);
-
 	DShape::Instance().m_Draw(context);
 
-	context->RSSetState(rasterizerStateCullNone);
-	context->OMSetBlendState(blendStateOn, BLENDSTATEMASK, 0xffffffff);
-
+	SetCullBack(false);
 	DrawQueueToTarget(transparentItemQueue);
 
-	context->OMSetBlendState(blendStateOff, BLENDSTATEMASK, 0xffffffff);
-	context->RSSetState(rasterizerStateCullBack);
-	int passCount = 0;
+	SetCullBack(true);
+	size_t passCount = 0;
+	size_t bufferIndex = 0;
 
 	if (applyRenderPasses)
 	{
 		for (auto i = passes.begin(); i < passes.end(); i++)
 		{
-			if ((*i)->IsEnabled() && (*i)->GetType() == RenderPass::PassType::POST_PROCESSING)
+			RenderPass* pass = *i;
+			if (pass->IsEnabled() && pass->GetType() == RenderPass::PassType::POST_PROCESSING)
 			{
-				RenderTexture& previous = renderPassSwapBuffers[bufferIndex];
-				//context->PSSetShaderResources(0, 1, nullSRV);
-
 				size_t nextBufferIndex = 1 - bufferIndex;
 				RenderTexture& passTarget = renderPassSwapBuffers[nextBufferIndex];
-				ClearRenderTarget(passTarget);
-				SetRenderTarget(passTarget, false);
+				RenderTexture& previous = (passCount == 0) ? midbuffer : renderPassSwapBuffers[bufferIndex];
 
-				context->PSSetShaderResources(0, 1, &previous.srv);
-
-				if ((*i)->Pass(this, previous, passTarget))
+				pass->Pass(this, previous, passTarget);
+				if (pass->GetType() == RenderPass::PassType::POST_PROCESSING)
 					bufferIndex = nextBufferIndex;
 
 				// overkill? Gives the correct result if outside the loop but errors in output
-
+				//context->PSSetShaderResources(0, 1, nullSRV);
 				passCount++;
 			}
 		}
 	}
 
+	RenderTexture& lastBuffer = (passCount == 0) ? midbuffer : renderPassSwapBuffers[bufferIndex];
 	ClearRenderTarget(target);
 	SetRenderTarget(target, false);
 
-	context->PSSetShaderResources(0, 1, &renderPassSwapBuffers[bufferIndex].srv);
+	context->PSSetShaderResources(0, 1, &lastBuffer.srv);
 	DrawScreenQuad(screenQuadMaterial);
 
 	if (drawGUI)
 	{
 		for (auto i = passes.begin(); i < passes.end(); i++)
 		{
-			if ((*i)->IsEnabled() && (*i)->GetType() == RenderPass::PassType::UI_OVERLAY)
+			RenderPass* pass = *i;
+			if (pass->IsEnabled() && pass->GetType() == RenderPass::PassType::UI_OVERLAY)
 			{
-				RenderTexture& previous = renderPassSwapBuffers[bufferIndex];
-				(*i)->Pass(this, previous, previous);
+				pass->Pass(this, renderPassSwapBuffers[0], renderPassSwapBuffers[0]);
 			}
 		}
 	}
-
-	//	guiManager->DrawAll();
 }
-
-
 
 void Renderer::AddRenderPass(RenderPass* pass)
 {
@@ -323,23 +307,25 @@ void Renderer::DrawGrass(const CameraComponent& camera, const Mesh& mesh, const 
 	AddItem(item, false);
 }
 
-void Renderer::SetRSToCullNone(bool cullNone)
+void Renderer::SetCullBack(bool cullNone)
 {
-	if (cullNone)
+	if (!cullNone)
 	{
 		context->RSSetState(rasterizerStateCullNone);
+		context->OMSetBlendState(blendStateOn, BLENDSTATEMASK, 0xffffffff);
 	}
 	else
 	{
 		context->RSSetState(rasterizerStateCullBack);
+		context->OMSetBlendState(blendStateOff, BLENDSTATEMASK, 0xffffffff);
 	}
 }
 
-void Renderer::ClearRenderTarget(const RenderTexture& target)
+void Renderer::ClearRenderTarget(const RenderTexture& target, bool clearDepth)
 {
 	context->ClearRenderTargetView(target.rtv, DEFAULT_BG_COLOR);
-	context->ClearDepthStencilView(target.dsv, D3D11_CLEAR_DEPTH | D3D11_CLEAR_STENCIL, 1.0f, 0);
-
+	if (clearDepth)
+		context->ClearDepthStencilView(target.dsv, D3D11_CLEAR_DEPTH | D3D11_CLEAR_STENCIL, 1.0f, 0);
 }
 
 void Renderer::SetRenderTarget(const RenderTexture& target, bool setDepth)

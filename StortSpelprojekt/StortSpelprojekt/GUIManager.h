@@ -2,13 +2,14 @@
 #include <unordered_map>
 #include <SpriteBatch.h>
 #include <SpriteFont.h>
-#include "DirectXHelpers.h"
-#include "Renderer.h"
 #include <string>
 
+#include "DirectXHelpers.h"
+#include "Renderer.h"
+#include "RenderPass.h"
 #include "Input.h"
-namespace dx = DirectX;
 
+namespace dx = DirectX;
 
 // Virtual base class to inherit from
 class GUIObject
@@ -27,16 +28,16 @@ private:
 	float yPos;
 };
 
-class GUIManager
+class GUIManager : public RenderPass
 {
 public:
-	GUIManager(Renderer* renderer);
+	GUIManager(Renderer* renderer, int priority);
 	void AddGUIObject(GUIObject* addObj, std::string name);
 	void AddGUIObject(GUIObject* addObj, std::string name, float x, float y);
 	void AddGUIObject(std::string texture, std::string name, float x, float y);
 	GUIObject* GetGUIObject(std::string name);
 	void RemoveGUIObject(std::string name);
-	void DrawAll();
+	void Pass(Renderer* renderer, RenderTexture& inTexture, RenderTexture& outTexture) override;
 
 	void UpdateAll();
 
