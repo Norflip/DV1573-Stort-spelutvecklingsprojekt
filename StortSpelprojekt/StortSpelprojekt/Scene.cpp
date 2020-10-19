@@ -199,7 +199,6 @@ void Scene::InitializeObjects()
 
 	SkeletonAni skeletonbaseMonsterIdle = ZWEBLoader::LoadSkeletonOnly("Models/baseMonsterIdle.ZWEB", skeletonMesh[0].GetBoneIDS());
 
-
 	Object* baseMonsterObject = new Object("baseMonster");
 
 	SkeletonMeshComponent* baseMonsterComp = baseMonsterObject->AddComponent<SkeletonMeshComponent>(skeletonMesh[0], skeletonMat[0]);
@@ -209,6 +208,18 @@ void Scene::InitializeObjects()
 	baseMonsterObject->GetTransform().SetScale({ 0.125f, 0.125f, 0.125f });
 	baseMonsterObject->GetTransform().SetPosition({ 0.0f, 2.5f, 0.0f });
 	AddObject(baseMonsterObject);
+
+	//Character reference
+	std::vector<Mesh> charRefMesh = ZWEBLoader::LoadMeshes(ZWEBLoadType::NoAnimation, "Models/char_ref.ZWEB", renderer->GetDevice());
+	std::vector<Material> charRefMat = ZWEBLoader::LoadMaterials("Models/char_ref.ZWEB", skeletonShader, renderer->GetDevice());
+
+	Object* characterReferenceObject = new Object("characterReference");
+
+	characterReferenceObject->AddComponent<MeshComponent>(charRefMesh[0], charRefMat[0]);
+	characterReferenceObject->GetTransform().SetScale({ 1, 1, 1 });
+	characterReferenceObject->GetTransform().SetPosition({ 0.0f, 0.0f, 4.0f });
+	AddObject(characterReferenceObject);
+
 
 	clock.Update();
 	clock.Start();
