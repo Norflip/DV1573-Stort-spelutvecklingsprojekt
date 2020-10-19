@@ -40,7 +40,7 @@ private:
 	dx::SimpleMath::Vector3 transV;
 	dx::SimpleMath::Quaternion rotQ;
 	dx::SimpleMath::Matrix RT;
-	
+	std::vector<dx::XMFLOAT4X4> bones;
 	/*DirectX::XMFLOAT4X4&*/dx::SimpleMath::Matrix& Lerp(float elapsedTime, std::vector<Bone>& keys);
 public:
 	SkeletonAni();
@@ -51,11 +51,10 @@ public:
 	std::vector<Bone>& GetRootKeyJoints();
 	void SetUpIDMapAndFrames(std::map<std::string, unsigned int> boneIDMap, float fps, float aniLenght);
 	void SetUpKeys(std::string boneName, std::vector<SkeletonKeysHeader>& keys);
-	//cb_Skeleton& GetSkeletonData();
-	std::map<std::string, unsigned int>& getBoneIDMap();//This is useful in case you have multiple animations.
-	//cb_Skeleton skeletonDataB;
-	std::vector<dx::XMFLOAT4X4>& GetSkeletonData();
-	std::vector<dx::XMFLOAT4X4> bones;
+	std::map<std::string, unsigned int>& getBoneIDMap();
+	std::vector<std::vector<Bone>>& GetKeyFrames();
+	std::vector<dx::SimpleMath::Matrix>& GetOffsets();
+	float GetFPS();
+	float GetAniLength();
 };
 
-//imgui

@@ -7,13 +7,15 @@
 #include "BoundingBoxes.h"
 #include "Object.h"
 
+
 enum SkeletonStateMachine
 {
 	IDLE,
 	WALK,
 	RUN,
 	ATTACK,
-	NONE
+	NONE,
+	DEATH
 };
 
 
@@ -45,5 +47,6 @@ private:
 	SkeletonStateMachine currentAni = SkeletonStateMachine::NONE;
 	BoundingBoxes boundingBoxes;
 	float componentDeltaTime = 0.0f;
+	
 };
 

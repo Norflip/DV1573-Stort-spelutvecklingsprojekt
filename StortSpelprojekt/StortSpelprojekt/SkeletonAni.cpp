@@ -209,4 +209,24 @@ std::map<std::string, unsigned int>& SkeletonAni::getBoneIDMap()
     return boneIDMap;
 }
 
+std::vector<std::vector<Bone>>& SkeletonAni::GetKeyFrames()
+{
+    return this->keyBones;
+}
+
+std::vector<dx::SimpleMath::Matrix>& SkeletonAni::GetOffsets()
+{
+    return this->offsetM;
+}
+
+float SkeletonAni::GetFPS()
+{
+    return this->fps;
+}
+
+float SkeletonAni::GetAniLength()
+{
+    return this->lenght;
+}
+
 

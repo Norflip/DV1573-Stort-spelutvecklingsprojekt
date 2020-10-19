@@ -206,6 +206,8 @@ void Scene::InitializeObjects()
 
 	SkeletonAni skeletonbaseMonsterAttack = ZWEBLoader::LoadSkeletonOnly("Models/baseMonsterAttack.ZWEB", skeletonMesh[0].GetBoneIDS(), defaultAnimation);
 
+	SkeletonAni skeletonbaseMonsterDeath = ZWEBLoader::LoadSkeletonOnly("Models/baseMonsterDeath.ZWEB", skeletonMesh[0].GetBoneIDS(), defaultAnimation);
+
 	Object* baseMonsterObject = new Object("baseMonster");
 
 	SkeletonMeshComponent* baseMonsterComp = baseMonsterObject->AddComponent<SkeletonMeshComponent>(skeletonMesh[0], skeletonMat[0]);
@@ -218,10 +220,12 @@ void Scene::InitializeObjects()
 
 	baseMonsterComp->SetAnimationTrack(skeletonbaseMonsterAttack, SkeletonStateMachine::ATTACK);
 
+	baseMonsterComp->SetAnimationTrack(skeletonbaseMonsterDeath, SkeletonStateMachine::DEATH);
+
 	baseMonsterObject->GetTransform().SetScale({ 0.125f, 0.125f, 0.125f });
 	baseMonsterObject->GetTransform().SetPosition({ 0.0f, 2.5f, 0.0f });
 
-
+	baseMonsterComp->Play(SkeletonStateMachine::NONE);
 	baseMonsterObject->AddComponent<StateMachineComponent>(AIState::idle);
 
 	AddObject(baseMonsterObject);
