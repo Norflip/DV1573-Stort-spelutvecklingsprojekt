@@ -1,11 +1,11 @@
 #pragma once
 #include "Object.h"
 
-class AIPatrol : public Component
+class EnemyPatrolComp : public Component
 {
 	public:
-		AIPatrol();
-		virtual ~AIPatrol();
+		EnemyPatrolComp();
+		virtual ~EnemyPatrolComp();
 
 		void Update(const float& deltaTime) override;
 	private:

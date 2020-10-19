@@ -13,8 +13,9 @@
 #include "SkeletonMeshComponent.h"
 #include "PointLightComponent.h"
 #include "NodeWalkerComponent.h"
-#include "StatsComponent.h"
-#include "StateMachineComponent.h"
+#include "EnemyStatsComp.h"
+#include "EnemySMComp.h"
+#include "PlayerAttackComp.h"
 
 #include "Skybox.h"
 #include "WorldGenerator.h"
@@ -68,6 +69,8 @@ private:
 	GameClock clock;
 	Input& input;
 	Object* enemy;
+	EnemyStatsComp* playerStatsComp;
+	EnemyStatsComp* enemyStatsComp;
 
 	dx::SpriteBatch* spriteBatch;
 	WorldGenerator worldGenerator;
