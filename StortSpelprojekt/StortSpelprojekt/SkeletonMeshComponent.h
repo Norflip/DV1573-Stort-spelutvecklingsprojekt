@@ -10,6 +10,7 @@
 enum SkeletonStateMachine
 {
 	IDLE,
+	WALK,
 	RUN,
 	ATTACK,
 	NONE

@@ -191,14 +191,20 @@ void Scene::InitializeObjects()
 	AddObject(enemy);
 
 	/* * * * * * * * ** * * * * */
-
+	bool defaultAnimation = false;
+	bool parentAnimation = true;
   Shader* skeletonShader = resourceManager->GetShaderResource("skeletonShader");
   
 	std::vector<Mesh> skeletonMesh = ZWEBLoader::LoadMeshes(ZWEBLoadType::SkeletonAnimation, "Models/baseMonster.ZWEB", renderer->GetDevice());
 	std::vector<Material> skeletonMat = ZWEBLoader::LoadMaterials("Models/baseMonster.ZWEB", skeletonShader, renderer->GetDevice());
 
-	SkeletonAni skeletonbaseMonsterIdle = ZWEBLoader::LoadSkeletonOnly("Models/baseMonsterIdle.ZWEB", skeletonMesh[0].GetBoneIDS());
+	SkeletonAni skeletonbaseMonsterIdle = ZWEBLoader::LoadSkeletonOnly("Models/baseMonsterIdle.ZWEB", skeletonMesh[0].GetBoneIDS(), defaultAnimation);
 
+	SkeletonAni skeletonbaseMonsterWalk = ZWEBLoader::LoadSkeletonOnly("Models/baseMonsterWalk.ZWEB", skeletonMesh[0].GetBoneIDS(), defaultAnimation);
+
+	SkeletonAni skeletonbaseMonsterRun = ZWEBLoader::LoadSkeletonOnly("Models/baseMonsterRun.ZWEB", skeletonMesh[0].GetBoneIDS(), defaultAnimation);
+
+	SkeletonAni skeletonbaseMonsterAttack = ZWEBLoader::LoadSkeletonOnly("Models/baseMonsterAttack.ZWEB", skeletonMesh[0].GetBoneIDS(), defaultAnimation);
 
 	Object* baseMonsterObject = new Object("baseMonster");
 
@@ -206,8 +212,18 @@ void Scene::InitializeObjects()
 
 	baseMonsterComp->SetAnimationTrack(skeletonbaseMonsterIdle, SkeletonStateMachine::IDLE);
 
+	baseMonsterComp->SetAnimationTrack(skeletonbaseMonsterWalk, SkeletonStateMachine::WALK);
+
+	baseMonsterComp->SetAnimationTrack(skeletonbaseMonsterRun, SkeletonStateMachine::RUN);
+
+	baseMonsterComp->SetAnimationTrack(skeletonbaseMonsterAttack, SkeletonStateMachine::ATTACK);
+
 	baseMonsterObject->GetTransform().SetScale({ 0.125f, 0.125f, 0.125f });
 	baseMonsterObject->GetTransform().SetPosition({ 0.0f, 2.5f, 0.0f });
+
+
+	baseMonsterObject->AddComponent<StateMachineComponent>(AIState::idle);
+
 	AddObject(baseMonsterObject);
 
 	clock.Update();
