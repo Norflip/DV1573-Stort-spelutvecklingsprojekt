@@ -37,7 +37,6 @@ public:
 	void SetCurrentWeapon(int currentWeapon) { this->currentWeapon = currentWeapon; }// some ui stuff here?
 	void SetguiMan(GUIManager* guiMan) { this->guiMan = guiMan; }
 	void SetScenePtr(int* guiMan) { this->nextScene = nextScene; }
-	void UpdatePayer();
 private:
 	float health, attack, attackSpeed, fuel, food;
 	int currentWeapon;
