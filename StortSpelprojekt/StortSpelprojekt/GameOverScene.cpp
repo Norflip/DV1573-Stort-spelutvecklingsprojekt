@@ -53,8 +53,8 @@ void GameOverScene::InitializeGUI()
 	guiManager = new GUIManager(renderer);
 	renderer->SetGUIManager(guiManager);
 	guiManager->AddGUIObject(fpsDisplay, "fps");
-	guiManager->AddGUIObject(restart, "normalSprite");
-	guiManager->AddGUIObject(quit, "buttonSprite");
+	guiManager->AddGUIObject(restart, "restart");
+	guiManager->AddGUIObject(quit, "quit");
 }
 
 void GameOverScene::OnActivate()
@@ -74,6 +74,11 @@ void GameOverScene::Update(const float& deltaTime)
 
 	static_cast<GUIFont*>(guiManager->GetGUIObject("fps"))->SetString(std::to_string((int)GameClock::Instance().GetFramesPerSecond()));
 
+	if(static_cast<GUISprite*>(guiManager->GetGUIObject("quit"))->IsClicked())
+	{
+		quit = true;
+	}
+
 	guiManager->UpdateAll();
 }
 
@@ -91,3 +96,4 @@ void GameOverScene::Render()
 
 	renderer->RenderFrame();
 }
+

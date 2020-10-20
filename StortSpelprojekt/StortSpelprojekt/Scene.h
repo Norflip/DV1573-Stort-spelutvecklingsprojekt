@@ -61,6 +61,7 @@ public:
 
 	void PrintSceneHierarchy(Object* object, size_t level) const;
 
+	bool Quit();
 	NEXT_SCENE nextScene;
 	
 private:
@@ -83,4 +84,5 @@ protected:
 	ResourceManager* resourceManager;
 
 	float windowHeight, windowWidth;
+	bool quit;
 };

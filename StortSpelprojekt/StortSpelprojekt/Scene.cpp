@@ -11,6 +11,8 @@ Scene::Scene(ResourceManager* manager) : input(Input::Instance())
 
 	root = new Object("sceneRoot", ObjectFlag::DEFAULT);
 	resourceManager = manager;
+
+	quit = false;
 }
 
 Scene::~Scene()
@@ -125,5 +127,10 @@ void Scene::PrintSceneHierarchy(Object* object, size_t level) const
 			PrintSceneHierarchy(children[i]->GetOwner(), level + 1);
 		}
 	}
+}
+
+bool Scene::Quit()
+{
+	return quit;
 }
 

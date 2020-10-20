@@ -17,7 +17,7 @@ Engine::Engine(HINSTANCE hInstance) : window(hInstance), activeScene(nullptr)
 	RegisterScene(0, new IntroScene(resourceManager));
 	RegisterScene(1, new GameOverScene(resourceManager));
 	RegisterScene(2, new GameScene(resourceManager));
-	SwitchScene(2);
+	SwitchScene(0);
 }
 
 Engine::~Engine()
@@ -60,6 +60,10 @@ void Engine::Run()
 			
 			if (activeScene != nullptr)
 			{
+				if (activeScene->Quit())
+				{
+					Exit();
+				}
 				float deltaTime = currentTime - timeLastFrame;
 
 				activeScene->Update(deltaTime);

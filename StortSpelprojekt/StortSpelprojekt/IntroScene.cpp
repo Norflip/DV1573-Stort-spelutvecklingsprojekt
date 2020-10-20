@@ -46,8 +46,8 @@ void IntroScene::InitializeGUI()
 	spriteBatch = new DirectX::SpriteBatch(renderer->GetContext());
 	GUISprite* startSprite = new GUISprite(*renderer, "Textures/start.png", 100, 100, DrawDirection::Default, ClickFunction::Clickable);
 	GUISprite* optionSprite = new GUISprite(*renderer, "Textures/start.png", 100, 300, DrawDirection::Default, ClickFunction::Clickable);
-	GUISprite* quitSprite = new GUISprite(*renderer, "Textures/start.png", 100, 500, DrawDirection::Default, ClickFunction::Clickable);
-	GUISprite* loreSprite = new GUISprite(*renderer, "Textures/start.png", 100, 700, DrawDirection::Default, ClickFunction::Clickable);
+	GUISprite* loreSprite = new GUISprite(*renderer, "Textures/start.png", 100, 500, DrawDirection::Default, ClickFunction::Clickable);
+	GUISprite* quitSprite = new GUISprite(*renderer, "Textures/start.png", 100, 700, DrawDirection::Default, ClickFunction::Clickable);
 	GUIFont* fpsDisplay = new GUIFont(*renderer, "test", windowWidth / 2, 50);
 	startSprite->SetActive();
 	optionSprite->SetActive();
@@ -86,6 +86,10 @@ void IntroScene::Update(const float& deltaTime)
 	{
 		nextScene = GAME;
 	}
+	else if (static_cast<GUISprite*>(guiManager->GetGUIObject("quitSprite"))->IsClicked())
+	{
+		quit = true;
+	}
 	guiManager->UpdateAll();
 
 }
@@ -104,3 +108,4 @@ void IntroScene::Render()
 
 	renderer->RenderFrame();
 }
+
