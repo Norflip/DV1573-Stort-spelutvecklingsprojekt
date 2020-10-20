@@ -39,7 +39,51 @@ void GUIManager::RemoveGUIObject(std::string name)
 
 void GUIManager::Pass(Renderer* renderer, RenderTexture& inTexture, RenderTexture& outTexture)
 {
-	spriteBatch->Begin();
+
+	D3D11_DEPTH_STENCIL_DESC dsDesc;
+
+	dsDesc.DepthEnable = FALSE;
+	dsDesc.DepthWriteMask = D3D11_DEPTH_WRITE_MASK_ALL;
+	dsDesc.DepthFunc = D3D11_COMPARISON_LESS;
+	dsDesc.StencilEnable = false;
+	dsDesc.StencilReadMask = D3D11_DEFAULT_STENCIL_READ_MASK;
+	dsDesc.StencilWriteMask = D3D11_DEFAULT_STENCIL_WRITE_MASK;
+	dsDesc.FrontFace.StencilDepthFailOp = D3D11_STENCIL_OP_KEEP;
+	dsDesc.FrontFace.StencilFailOp = D3D11_STENCIL_OP_KEEP;
+	dsDesc.FrontFace.StencilPassOp = D3D11_STENCIL_OP_REPLACE;
+	dsDesc.FrontFace.StencilFunc = D3D11_COMPARISON_ALWAYS;
+	dsDesc.BackFace = dsDesc.FrontFace;
+
+	ID3D11DepthStencilState* m_depthStencilState;
+	renderer->GetDevice()->CreateDepthStencilState(&dsDesc, &m_depthStencilState);
+
+
+	HRESULT hr;
+	D3D11_BLEND_DESC blendDescOn;
+	ZeroMemory(&blendDescOn, sizeof(D3D11_BLEND_DESC));
+
+
+
+	blendDescOn.RenderTarget[0].BlendEnable = TRUE;
+	blendDescOn.RenderTarget[0].SrcBlend = D3D11_BLEND_SRC_ALPHA;
+	blendDescOn.RenderTarget[0].DestBlend = D3D11_BLEND_INV_SRC_ALPHA;
+	blendDescOn.RenderTarget[0].BlendOp = D3D11_BLEND_OP_ADD;
+	blendDescOn.RenderTarget[0].SrcBlendAlpha = D3D11_BLEND_ONE;
+	blendDescOn.RenderTarget[0].DestBlendAlpha = D3D11_BLEND_ZERO;
+	blendDescOn.RenderTarget[0].BlendOpAlpha = D3D11_BLEND_OP_ADD;
+	blendDescOn.RenderTarget[0].RenderTargetWriteMask = 0x0f;
+
+	D3D11_BLEND_DESC blendDescOff;
+	ZeroMemory(&blendDescOff, sizeof(D3D11_BLEND_DESC));
+
+	blendDescOff.RenderTarget[0].BlendEnable = false;
+	blendDescOff.RenderTarget[0].RenderTargetWriteMask = D3D11_COLOR_WRITE_ENABLE_ALL;
+	ID3D11BlendState* blendOn;
+	hr = renderer->GetDevice()->CreateBlendState(&blendDescOn, &blendOn);
+	assert(SUCCEEDED(hr));
+
+
+	spriteBatch->Begin(dx::SpriteSortMode::SpriteSortMode_Deferred, blendOn,nullptr, m_depthStencilState);
 	for (auto i : GUIObjects)
 		i.second->Draw(spriteBatch);
 	spriteBatch->End();

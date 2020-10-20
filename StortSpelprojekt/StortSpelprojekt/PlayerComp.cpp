@@ -51,4 +51,5 @@ void PlayerComp::Update(const float& deltaTime)
 		if (food < 0 || fuel < 0)
 			std::cout <<"GG";
 	}
+
 }

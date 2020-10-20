@@ -50,23 +50,41 @@ void Scene::Initialize(Renderer* renderer)
 		return object;
 	});
 
+	//GUISTUFF//
+
+	//BUTTONS AT LEFT SIDE
 	spriteBatch = new DirectX::SpriteBatch(renderer->GetContext());
-	GUISprite* normalSprite = new GUISprite(*renderer, "Textures/EquipmentBox.png", 0, 0, DrawDirection::BottomLeft, ClickFunction::Clickable);
-	GUISprite* buttonSprite = new GUISprite(*renderer, "Textures/EquipmentBox.png", 0, 0, DrawDirection::BottomRight, ClickFunction::Clickable);
-	GUISprite* normalSprite2 = new GUISprite(*renderer, "Textures/EquipmentBox.png", 0, 0, DrawDirection::TopLeft, ClickFunction::Clickable);
-	GUISprite* buttonSprite2 = new GUISprite(*renderer, "Textures/EquipmentBox.png", 0, 0, DrawDirection::TopRight, ClickFunction::Clickable);
+	GUISprite* equimpmentSprite1 = new GUISprite(*renderer, "Textures/EquipmentBox.png", 10, 10,0, DrawDirection::BottomLeft, ClickFunction::NotClickable);
+	GUISprite* equimpmentSpriteAxe = new GUISprite(*renderer, "Textures/AxeIcon2.png", 10, 10, 0.1f, DrawDirection::BottomLeft, ClickFunction::NotClickable);
+	GUISprite* equimpmentSprite2 = new GUISprite(*renderer, "Textures/EquipmentBox.png", 90, 10, 0, DrawDirection::BottomLeft, ClickFunction::NotClickable);
+	GUISprite* equimpmentSprite3 = new GUISprite(*renderer, "Textures/EquipmentBox.png", 170, 10, 0, DrawDirection::BottomLeft, ClickFunction::NotClickable);
+	GUISprite* equimpmentSprite4 = new GUISprite(*renderer, "Textures/EquipmentBox.png", 250, 10, 0, DrawDirection::BottomLeft, ClickFunction::NotClickable);
+	//BARS AR RIGHT SIDE
+	GUISprite* fuelBar = new GUISprite(*renderer, "Textures/Health_Fuel_Food.png", 10, 10, 0, DrawDirection::BottomRight, ClickFunction::NotClickable);
+	GUISprite* fuelSprite = new GUISprite(*renderer, "Textures/FireIcon2.png", 10, 10, 1, DrawDirection::BottomRight, ClickFunction::NotClickable);
+	GUISprite* foodBar = new GUISprite(*renderer, "Textures/Health_Fuel_Food.png", 90, 10, 0, DrawDirection::BottomRight, ClickFunction::NotClickable);
+	GUISprite* healthBar = new GUISprite(*renderer, "Textures/Health_Fuel_Food.png", 170, 10, 0, DrawDirection::BottomRight, ClickFunction::NotClickable);
 	GUIFont* fpsDisplay = new GUIFont(*renderer, "test", 300, 300);
 	GUIFont* healthDisplay = new GUIFont(*renderer, "playerHealth", 300, 350);
-	normalSprite->SetActive();
 
 	guiManager = new GUIManager(renderer, 100);
 	guiManager->AddGUIObject(fpsDisplay, "fps");
 	guiManager->AddGUIObject(healthDisplay, "playerHealth");
-	guiManager->AddGUIObject(normalSprite, "normalSprite");
-	guiManager->AddGUIObject(buttonSprite, "buttonSprite");
-	guiManager->AddGUIObject(normalSprite2, "normalSprite2");
-	guiManager->AddGUIObject(buttonSprite2, "buttonSprite2");
-	guiManager->GetGUIObject("normalSprite")->SetPosition(100, 100);
+
+	guiManager->AddGUIObject(equimpmentSpriteAxe, "equimpmentSpriteAxe");
+	guiManager->AddGUIObject(equimpmentSprite1, "equimpmentSprite1");
+
+	guiManager->AddGUIObject(equimpmentSprite2, "equimpmentSprite2");
+
+	guiManager->AddGUIObject(equimpmentSprite3, "equimpmentSprite3");
+	guiManager->AddGUIObject(equimpmentSprite4, "equimpmentSprite4");
+
+	
+	guiManager->AddGUIObject(fuelBar, "fuelBar");
+	guiManager->AddGUIObject(fuelSprite, "fuelSprite");
+	guiManager->AddGUIObject(foodBar, "foodBar");
+	guiManager->AddGUIObject(healthBar, "healthBar");
+
 	renderer->AddRenderPass(guiManager);
 
 	SaveState state;

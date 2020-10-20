@@ -117,9 +117,9 @@ void DXHelper::CreateBlendState(ID3D11Device* device, ID3D11BlendState** blendOn
 	HRESULT hr;
 	D3D11_BLEND_DESC blendDescOn;
 	ZeroMemory(&blendDescOn, sizeof(D3D11_BLEND_DESC));
-
-
-
+	// HERE IS MY GREATEST SUCC
+	blendDescOn.AlphaToCoverageEnable = TRUE;
+	blendDescOn.IndependentBlendEnable = TRUE;
 	blendDescOn.RenderTarget[0].BlendEnable = TRUE;
 	blendDescOn.RenderTarget[0].SrcBlend = D3D11_BLEND_SRC_ALPHA;
 	blendDescOn.RenderTarget[0].DestBlend = D3D11_BLEND_INV_SRC_ALPHA;

@@ -29,7 +29,7 @@ class GUISprite :public GUIObject
 {
 
 public:
-	GUISprite(Renderer& renderer, std::string, float xPos, float yPos , DrawDirection dir, ClickFunction clickFunc);
+	GUISprite(Renderer& renderer, std::string, float xPos, float yPos , float layerDepth = 0, DrawDirection dir = DrawDirection::Default, ClickFunction clickFunc = ClickFunction::NotClickable);
 	~GUISprite();
 	void Draw(DirectX::SpriteBatch*) override;
 	void Draw();
@@ -52,6 +52,7 @@ private:
 	float width, height;
 	float xScale, yScale;
 	float rotation;
+	float layerDepth;
 	std::unique_ptr<dx::SpriteBatch> spriteBatch;
 	Renderer* renderer;
 	dx::XMVECTOR position, baseColor,activeColor, origin, scale; //byt till xmfloat 4
