@@ -3,7 +3,8 @@
 SkeletonMeshComponent::SkeletonMeshComponent(Mesh mesh, Material material) : mesh(mesh), material(material), boundingBoxes(mesh)
 {
 	boundingBoxes.CalcAABB();
-	currentAni = SkeletonStateMachine::IDLE;
+	currentAni = SkeletonStateMachine::NONE;
+	finalTransforms.resize(60);
 }
 
 SkeletonMeshComponent::~SkeletonMeshComponent()
@@ -49,11 +50,11 @@ void SkeletonMeshComponent::RunAnimation(const float& deltaTime)
 	{
 		finalTransforms = skeletonAnimations[1].Makeglobal(elapsedTime, dx::XMMatrixIdentity(), skeletonAnimations[1].GetRootKeyJoints());
 	}
-	else if (currentAni == SkeletonStateMachine::RUN)
+	else if (currentAni == SkeletonStateMachine::RUN|| currentAni == SkeletonStateMachine::UP)
 	{
 		finalTransforms = skeletonAnimations[2].Makeglobal(elapsedTime, dx::XMMatrixIdentity(), skeletonAnimations[2].GetRootKeyJoints());
 	}
-	else if (currentAni == SkeletonStateMachine::ATTACK)
+	else if (currentAni == SkeletonStateMachine::ATTACK || currentAni == SkeletonStateMachine::DOWN)
 	{
 		finalTransforms = skeletonAnimations[3].Makeglobal(elapsedTime, dx::XMMatrixIdentity(), skeletonAnimations[3].GetRootKeyJoints());
 
@@ -65,22 +66,9 @@ void SkeletonMeshComponent::RunAnimation(const float& deltaTime)
 	}
 	else if (currentAni == SkeletonStateMachine::NONE)
 	{
-		/*std::vector<dx::XMFLOAT4X4> ftA = skeletonAnimations[4].Makeglobal(elapsedTime, dx::XMMatrixIdentity(), skeletonAnimations[2].GetRootKeyJoints());
-		std::vector<dx::XMFLOAT4X4> ftB = skeletonAnimations[4].Makeglobal(elapsedTime, dx::XMMatrixIdentity(), skeletonAnimations[3].GetRootKeyJoints());
-		std::vector<dx::SimpleMath::Matrix> A(60);
-		std::vector<dx::SimpleMath::Matrix> B(60);
-
-		for (int i = 0; i < ftA.size(); i++)
-		{
-			A.push_back(ftA[i]);
-			B.push_back(ftB[i]);
-
-			A[i].Lerp(A[i], B[i], 0.5f, A[i]);
-
-			finalTransforms.push_back(A[i]);
-		}*/
-		
+		//BlendAnimations(elapsedTime, 0.1f, 3, 2);
 	}
+	
 }
 
 void SkeletonMeshComponent::SetAnimationTrack(const SkeletonAni& skeletonAni, const SkeletonStateMachine& type)
@@ -101,5 +89,27 @@ void SkeletonMeshComponent::Play(const SkeletonStateMachine& type)
 {
 	currentAni = type;
 
+
+}
+
+void SkeletonMeshComponent::BlendAnimations(float elapsedTime, float t, int a, int b)
+{
+	std::vector<dx::XMFLOAT4X4> ftA = skeletonAnimations[a].Makeglobal(elapsedTime, dx::XMMatrixIdentity(), skeletonAnimations[a].GetRootKeyJoints());
+	std::vector<dx::XMFLOAT4X4> ftB = skeletonAnimations[b].Makeglobal(elapsedTime, dx::XMMatrixIdentity(), skeletonAnimations[b].GetRootKeyJoints());
+
+	for (int bone = 0; bone < ftA.size(); bone++)
+	{
+		DirectX::SimpleMath::Matrix m = ftA[bone];
+		DirectX::SimpleMath::Matrix m2 = ftB[bone];
+
+		m.Decompose(s, r1, t1);
+		m2.Decompose(s, r2, t2);
+
+		translationM = m.CreateTranslation(t3.Lerp(t1, t2, t));
+		rotationM = m.CreateFromQuaternion(r3.Slerp(r1, r2, t));
+
+		finalTransforms[bone] = rotationM * translationM;
+
+	}
 
 }
