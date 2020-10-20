@@ -1,12 +1,12 @@
 #pragma once
 #include "Component.h"
 
-class StatsComponent : public Component
+class EnemyStatsComp : public Component
 {
 	public:
-		StatsComponent();
-		StatsComponent(float health, float movementSpeed, float radius, float attack, float attackSpeed);
-		virtual ~StatsComponent();
+		EnemyStatsComp();
+		EnemyStatsComp(float health, float movementSpeed, float radius, float attack, float attackSpeed);
+		virtual ~EnemyStatsComp();
 		float GetHealth() const { return health; }
 		float GetSpeed() const { return movementSpeed; }
 		float GetRadius() const { return radius; }

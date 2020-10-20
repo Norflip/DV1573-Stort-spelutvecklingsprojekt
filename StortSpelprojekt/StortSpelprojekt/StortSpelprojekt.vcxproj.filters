@@ -195,19 +195,22 @@
     <ClCompile Include="ObjectPooler.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="AIAttack.cpp">
+    <ClCompile Include="EnemyAttackComp.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="AIIdle.cpp">
+    <ClCompile Include="EnemyIdleComp.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="StatsComponent.cpp">
+    <ClCompile Include="EnemyPatrolComp.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="StateMachineComponent.cpp">
+    <ClCompile Include="EnemyStatsComp.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="AIPatrol.cpp">
+    <ClCompile Include="EnemySMComp.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="PlayerAttackComp.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="Path.cpp">
@@ -404,19 +407,22 @@
     <ClInclude Include="ConstantBuffer.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="AIAttack.h">
+    <ClInclude Include="EnemyAttackComp.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="AIIdle.h">
+    <ClInclude Include="EnemyIdleComp.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="StateMachineComponent.h">
+    <ClInclude Include="EnemyPatrolComp.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="StatsComponent.h">
+    <ClInclude Include="EnemyStatsComp.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="AIPatrol.h">
+    <ClInclude Include="EnemySMComp.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="PlayerAttackComp.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>

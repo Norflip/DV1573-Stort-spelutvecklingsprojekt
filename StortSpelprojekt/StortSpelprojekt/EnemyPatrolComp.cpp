@@ -1,15 +1,15 @@
-#include "AIPatrol.h"
+#include "EnemyPatrolComp.h"
 
-AIPatrol::AIPatrol()
+EnemyPatrolComp::EnemyPatrolComp()
 {
 	direction = { 0, 1.f, 0 };
 }
 
-AIPatrol::~AIPatrol()
+EnemyPatrolComp::~EnemyPatrolComp()
 {
 }
 
-void AIPatrol::Update(const float& deltaTime)
+void EnemyPatrolComp::Update(const float& deltaTime)
 {
 	DirectX::XMFLOAT3 pos;
 	dx::XMStoreFloat3(&pos, GetOwner()->GetTransform().GetPosition());
