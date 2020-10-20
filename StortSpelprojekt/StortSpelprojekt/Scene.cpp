@@ -76,23 +76,25 @@ void Scene::Initialize(Renderer* renderer)
 	worldGenerator.Initialize(renderer->GetDevice(), resourceManager->GetShaderResource("terrainShader"), resourceManager->GetShaderResource("grassShader"));
 	worldGenerator.Generate(state, renderer->GetDevice(), root);
 	worldGenerator.InitalizeGrass(renderer->GetDevice(), renderer->GetContext());
-
-	Object* cameraObject = new Object("camera", ObjectFlag::ENABLED);
-	camera = cameraObject->AddComponent<CameraComponent>(60.0f, true);
+	//PLAYER
+	Object* playerObject = new Object("camera", ObjectFlag::ENABLED);
+	this->player = playerObject;
+	camera = playerObject->AddComponent<CameraComponent>(60.0f, true);
 	camera->Resize(window->GetWidth(), window->GetHeight());
-	cameraObject->AddComponent<ControllerComponent>();
-	cameraObject->AddComponent<StatsComponent>(100, 2, 10, 25, 3);
-
+	playerObject->AddComponent<ControllerComponent>();
+	playerObject->AddComponent<PlayerComp>(100, 2, 10, 25, 3);
+	playerObject->AddComponent<PlayerComp>()->SetguiMan(guiManager);
+	//END OF PLAYER
 
 	Input::Instance().SetWindow(window->GetHWND(), window->GetHeight(), window->GetWidth());
-	AddObject(cameraObject);
+	AddObject(playerObject);
 
 	InitializeObjects();
 
 	//Log::Add("PRINTING SCENE HIERARCHY ----");
 	//PrintSceneHierarchy(root, 0);
 	/*Log::Add("----");*/
-  
+	clock.Restart();
 }
 
 void Scene::InitializeObjects()
@@ -210,9 +212,6 @@ void Scene::InitializeObjects()
 	baseMonsterObject->GetTransform().SetPosition({ 0.0f, 2.5f, 0.0f });
 	AddObject(baseMonsterObject);
 
-	clock.Update();
-	clock.Start();
-	clock.Update();
 
 }
 
@@ -236,12 +235,12 @@ void Scene::Update(const float& deltaTime)
 	skyboxClass->GetThisObject()->GetTransform().SetPosition(camera->GetOwner()->GetTransform().GetPosition());
 
 	GameClock::Instance().Update();
-	//std::cout << "FPS: " << GameClock::Instance().GetFramesPerSecond() << std::endl;
+	//std::cout <<GameClock::Instance().GetFrameTime() << std::endl;
 
 	GUIFont* fps = static_cast<GUIFont*>(guiManager->GetGUIObject("fps"));
 	fps->SetString(std::to_string((int)GameClock::Instance().GetFramesPerSecond()));
 	GUIFont* playerHealth = static_cast<GUIFont*>(guiManager->GetGUIObject("playerHealth"));
-	playerHealth->SetString(std::to_string((int)camera->GetOwner()->GetComponent<StatsComponent>()->GetHealth()));
+	playerHealth->SetString(std::to_string((int)camera->GetOwner()->GetComponent<PlayerComp>()->GetHealth()));
 	guiManager->UpdateAll();
 
 

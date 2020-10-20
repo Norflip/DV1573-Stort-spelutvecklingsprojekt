@@ -1,5 +1,7 @@
 #pragma once
 #include "Component.h"
+#include "GUIManager.h"
+#include "GameClock.h"
 class PlayerComp :
     public Component
 {
@@ -7,6 +9,7 @@ public:
 	PlayerComp();
 	PlayerComp(float health, float movementSpeed, float radius, float attack, float attackSpeed);
 	virtual ~PlayerComp();
+	void Update(const float& deltaTime) override;
 	float GetHealth() const { return health; }
 	float GetSpeed() const { return movementSpeed; }
 	float GetAttack() const { return attack; }
@@ -32,12 +35,15 @@ public:
 	void SetFuel(float fuel) { this->fuel = fuel; }
 	void SetFood(float food) { this->fuel = food; }
 	void SetCurrentWeapon(int currentWeapon) { this->currentWeapon = currentWeapon; }// some ui stuff here?
-
+	void SetguiMan(GUIManager* guiMan) { this->guiMan = guiMan; }
+	void SetScenePtr(int* guiMan) { this->nextScene = nextScene; }
 	void UpdatePayer();
 private:
 	float health, attack, attackSpeed, fuel, food;
 	int currentWeapon;
 	float movementSpeed, crouchSpeed, SprintSpeed;
 	float foodLossPerSecond, fuelBurnPerMeter;
+	int* nextScene;
+	GUIManager* guiMan;
 };
 
