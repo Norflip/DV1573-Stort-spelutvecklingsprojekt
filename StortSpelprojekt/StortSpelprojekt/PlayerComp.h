@@ -1,12 +1,12 @@
 #pragma once
 #include "Component.h"
-class PlayerStatComp :
+class PlayerComp :
     public Component
 {
 public:
-	PlayerStatComp();
-	PlayerStatComp(float health, float movementSpeed, float radius, float attack, float attackSpeed);
-	virtual ~PlayerStatComp();
+	PlayerComp();
+	PlayerComp(float health, float movementSpeed, float radius, float attack, float attackSpeed);
+	virtual ~PlayerComp();
 	float GetHealth() const { return health; }
 	float GetSpeed() const { return movementSpeed; }
 	float GetAttack() const { return attack; }
@@ -33,7 +33,7 @@ public:
 	void SetFood(float food) { this->fuel = food; }
 	void SetCurrentWeapon(int currentWeapon) { this->currentWeapon = currentWeapon; }// some ui stuff here?
 
-	
+	void UpdatePayer();
 private:
 	float health, attack, attackSpeed, fuel, food;
 	int currentWeapon;

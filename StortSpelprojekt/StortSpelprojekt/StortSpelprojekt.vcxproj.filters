@@ -216,7 +216,7 @@
     <ClCompile Include="AIPatrol.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="PlayerStatComp.cpp">
+    <ClCompile Include="PlayerComp.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>
@@ -422,7 +422,7 @@
     <ClInclude Include="AIPatrol.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="PlayerStatComp.h">
+    <ClInclude Include="PlayerComp.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>

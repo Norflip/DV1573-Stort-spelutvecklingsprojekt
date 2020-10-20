@@ -1,6 +1,6 @@
-#include "PlayerStatComp.h"
+#include "PlayerComp.h"
 
-PlayerStatComp::PlayerStatComp()
+PlayerComp::PlayerComp()
 {
 	health = 100;
 	movementSpeed = 10;
@@ -8,7 +8,7 @@ PlayerStatComp::PlayerStatComp()
 	attackSpeed = 0;
 }
 
-PlayerStatComp::PlayerStatComp(float health, float movementSpeed, float radius, float attack, float attackSpeed)
+PlayerComp::PlayerComp(float health, float movementSpeed, float radius, float attack, float attackSpeed)
 {
 	this->health = health;
 	this->attack = attack;
@@ -23,6 +23,11 @@ PlayerStatComp::PlayerStatComp(float health, float movementSpeed, float radius, 
 	this->fuelBurnPerMeter = fuelBurnPerMeter;
 }
 
-PlayerStatComp::~PlayerStatComp()
+PlayerComp::~PlayerComp()
+{
+
+}
+
+void PlayerComp::UpdatePayer()
 {
 }
