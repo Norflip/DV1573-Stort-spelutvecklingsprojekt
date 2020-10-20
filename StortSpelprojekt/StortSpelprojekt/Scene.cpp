@@ -216,6 +216,8 @@ void Scene::InitializeObjects()
 
 	Object* baseMonsterObject = new Object("baseMonster");
 
+	baseMonsterObject->AddComponent<EnemySMComp>(EnemyState::ATTACK);
+
 	SkeletonMeshComponent* baseMonsterComp = baseMonsterObject->AddComponent<SkeletonMeshComponent>(skeletonMesh[0], skeletonMat[0]);
 
 	baseMonsterComp->SetAnimationTrack(skeletonbaseMonsterIdle, SkeletonStateMachine::IDLE);
@@ -231,8 +233,8 @@ void Scene::InitializeObjects()
 	baseMonsterObject->GetTransform().SetScale({ 0.0525f, 0.0525f, 0.0525f });
 	baseMonsterObject->GetTransform().SetPosition({ 0.0f, 1.25f, 0.0f });
 
-	baseMonsterComp->Play(SkeletonStateMachine::IDLE);
-	baseMonsterObject->AddComponent<StateMachineComponent>(AIState::idle);
+	//baseMonsterComp->Play(SkeletonStateMachine::IDLE);
+	
 
 	AddObject(baseMonsterObject);
 	Shader* defaultShader = resourceManager->GetShaderResource("defaultShader");
@@ -289,7 +291,7 @@ void Scene::InitializeObjects()
 	AddObject(houseBaseObject);
 	//Character reference
 	std::vector<Mesh> charRefMesh = ZWEBLoader::LoadMeshes(ZWEBLoadType::NoAnimation, "Models/char_ref.ZWEB", renderer->GetDevice());
-	std::vector<Material> charRefMat = ZWEBLoader::LoadMaterials("Models/char_ref.ZWEB", skeletonShader, renderer->GetDevice());
+	std::vector<Material> charRefMat = ZWEBLoader::LoadMaterials("Models/char_ref.ZWEB", defaultShader, renderer->GetDevice());
 
 	Object* characterReferenceObject = new Object("characterReference");
 

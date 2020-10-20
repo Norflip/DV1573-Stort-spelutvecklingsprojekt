@@ -66,7 +66,7 @@ void SkeletonMeshComponent::RunAnimation(const float& deltaTime)
 	}
 	else if (currentAni == SkeletonStateMachine::NONE)
 	{
-		//BlendAnimations(elapsedTime, 0.1f, 3, 2);
+		
 	}
 	
 }
@@ -92,24 +92,79 @@ void SkeletonMeshComponent::Play(const SkeletonStateMachine& type)
 
 }
 
-void SkeletonMeshComponent::BlendAnimations(float elapsedTime, float t, int a, int b)
+void SkeletonMeshComponent::PlayOnce(const SkeletonStateMachine& type)
 {
-	std::vector<dx::XMFLOAT4X4> ftA = skeletonAnimations[a].Makeglobal(elapsedTime, dx::XMMatrixIdentity(), skeletonAnimations[a].GetRootKeyJoints());
-	std::vector<dx::XMFLOAT4X4> ftB = skeletonAnimations[b].Makeglobal(elapsedTime, dx::XMMatrixIdentity(), skeletonAnimations[b].GetRootKeyJoints());
+	timer.Restart();
+	float time = (float)timer.GetSeconds();
 
-	for (int bone = 0; bone < ftA.size(); bone++)
+	
+
+	if (type == SkeletonStateMachine::IDLE)
 	{
-		DirectX::SimpleMath::Matrix m = ftA[bone];
-		DirectX::SimpleMath::Matrix m2 = ftB[bone];
+		float animationTime = time * skeletonAnimations[0].GetFPS();
 
-		m.Decompose(s, r1, t1);
-		m2.Decompose(s, r2, t2);
+		float currentFrame = fmodf(animationTime, skeletonAnimations[0].GetAniLength());
 
-		translationM = m.CreateTranslation(t3.Lerp(t1, t2, t));
-		rotationM = m.CreateFromQuaternion(r3.Slerp(r1, r2, t));
-
-		finalTransforms[bone] = rotationM * translationM;
+		if (currentFrame < skeletonAnimations[0].GetAniLength())
+		{
+			finalTransforms = skeletonAnimations[0].Makeglobal(time, dx::XMMatrixIdentity(), skeletonAnimations[0].GetRootKeyJoints());
+		}
+		
 
 	}
+	else if (type == SkeletonStateMachine::WALK)
+	{
+		float animationTime = time * skeletonAnimations[1].GetFPS();
+
+		float currentFrame = fmodf(animationTime, skeletonAnimations[1].GetAniLength());
+		if (currentFrame < skeletonAnimations[1].GetAniLength())
+		{
+			finalTransforms = skeletonAnimations[1].Makeglobal(time, dx::XMMatrixIdentity(), skeletonAnimations[1].GetRootKeyJoints());
+		}
+		
+	}
+	else if (type == SkeletonStateMachine::RUN || currentAni == SkeletonStateMachine::UP)
+	{
+
+		float animationTime = time * skeletonAnimations[2].GetFPS();
+
+		float currentFrame = fmodf(animationTime, skeletonAnimations[2].GetAniLength());
+		if (currentFrame < skeletonAnimations[2].GetAniLength())
+		{
+			finalTransforms = skeletonAnimations[2].Makeglobal(time, dx::XMMatrixIdentity(), skeletonAnimations[2].GetRootKeyJoints());
+		}
+		
+	}
+	else if (type == SkeletonStateMachine::ATTACK || currentAni == SkeletonStateMachine::DOWN)
+	{
+
+		float animationTime = time * skeletonAnimations[3].GetFPS();
+
+		float currentFrame = fmodf(animationTime, skeletonAnimations[3].GetAniLength());
+		if (currentFrame < skeletonAnimations[3].GetAniLength())
+		{
+			finalTransforms = skeletonAnimations[3].Makeglobal(time, dx::XMMatrixIdentity(), skeletonAnimations[3].GetRootKeyJoints());
+		}
+		
+
+
+	}
+	else if (type == SkeletonStateMachine::DEATH)
+	{
+		float animationTime = time * skeletonAnimations[4].GetFPS();
+
+		float currentFrame = fmodf(animationTime, skeletonAnimations[4].GetAniLength());
+		if (currentFrame < skeletonAnimations[4].GetAniLength())
+		{
+			finalTransforms = skeletonAnimations[4].Makeglobal(time, dx::XMMatrixIdentity(), skeletonAnimations[4].GetRootKeyJoints());
+		}
+		
+	}
+}
+
+void SkeletonMeshComponent::BlendAnimations(float elapsedTime, float t, int a, int b)
+{
+	//skapa ett nytt track.
+	//ta bort alla ben ovanför/under rooten. alla keyframes och offsets. lägg till från andra tracket.
 
 }

@@ -6,7 +6,7 @@
 #include "CameraComponent.h"
 #include "BoundingBoxes.h"
 #include "Object.h"
-
+#include "GameClock.h"
 
 enum SkeletonStateMachine
 {
@@ -34,10 +34,11 @@ public:
 	void Draw(Renderer* renderer, CameraComponent* camera) override;
 	void RunAnimation(const float& deltaTime);
 	void SetAnimationTrack(const SkeletonAni& skeletonAni, const SkeletonStateMachine& type);
-
+	
 	SkeletonAni& GetAnimationTrack(unsigned int trackNr);
 
 	void Play(const SkeletonStateMachine& type);
+	void PlayOnce(const SkeletonStateMachine& type);
 	void BlendAnimations(float elapsedTime, float t, int a, int b);
 private:
 	Mesh mesh;
@@ -49,14 +50,6 @@ private:
 	SkeletonStateMachine currentAni = SkeletonStateMachine::NONE;
 	BoundingBoxes boundingBoxes;
 	float componentDeltaTime = 0.0f;
-	DirectX::SimpleMath::Matrix translationM;
-	DirectX::SimpleMath::Matrix rotationM;
-	DirectX::SimpleMath::Quaternion r1;
-	DirectX::SimpleMath::Quaternion r2;
-	DirectX::SimpleMath::Quaternion r3;
-	DirectX::SimpleMath::Vector3 t1;
-	DirectX::SimpleMath::Vector3 t2;
-	DirectX::SimpleMath::Vector3 t3;
-	DirectX::SimpleMath::Vector3 s;
+	GameClock timer;
 };
 

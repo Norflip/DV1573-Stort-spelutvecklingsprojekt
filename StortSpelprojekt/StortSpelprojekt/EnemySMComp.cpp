@@ -25,12 +25,37 @@ void EnemySMComp::SetState(EnemyState state)
 	}
 }
 
+void EnemySMComp::Animate()
+{
+
+	if (currentState == EnemyState::ATTACK)
+	{
+		GetOwner()->GetComponent<SkeletonMeshComponent>()->Play(SkeletonStateMachine::RUN);
+	}
+	else if (currentState == EnemyState::IDLE)
+	{
+		GetOwner()->GetComponent<SkeletonMeshComponent>()->Play(SkeletonStateMachine::IDLE);
+	}
+	else if (currentState == EnemyState::PATROL)
+	{
+		GetOwner()->GetComponent<SkeletonMeshComponent>()->Play(SkeletonStateMachine::WALK);
+	}
+
+}
+
+
+
 void EnemySMComp::Update(const float& deltaTime)
 {
 	if (KEY_DOWN(K))
 	{
 		SetState(switchState[currentState]);
 	}
+	if (GetOwner()->HasComponent<SkeletonMeshComponent>())
+	{
+		Animate();
+	}
+	
 }
 
 void EnemySMComp::RegisterState(EnemyState state, Component* comp)
