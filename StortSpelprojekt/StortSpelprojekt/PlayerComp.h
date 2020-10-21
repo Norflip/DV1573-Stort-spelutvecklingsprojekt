@@ -40,6 +40,7 @@ public:
 	void SetguiMan(GUIManager* guiMan) { this->guiMan = guiMan; }
 	void SetScenePtr(int* guiMan) { this->nextScene = nextScene; }
 
+	bool GG() { return gg; }
 private:
 	float health, attack, attackSpeed, fuel, food;
 	int currentWeapon;
@@ -50,6 +51,7 @@ private:
 	GUIManager* guiMan;
 	GUISprite* fuelDippingBar, *foodDippingBar,* healthDippingBar;
 
+	bool gg;
 	float ReverseAndClamp(float inputValue);
 };
 

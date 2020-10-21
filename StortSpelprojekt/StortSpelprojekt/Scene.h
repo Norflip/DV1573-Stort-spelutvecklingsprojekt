@@ -37,7 +37,7 @@
 class GUIFont;
 class SpriteRenderPass;
 
-enum NEXT_SCENE { INTRO, WIN, GAME, LOSE };
+enum NEXT_SCENE { INTRO, LOSE, GAME, WIN };
 
 class Scene
 {

@@ -42,13 +42,14 @@ void GameScene::Initialize(Renderer* renderer)
 
 void GameScene::InitializeObjects()
 {
-	Object* cameraObject = new Object("camera", ObjectFlag::ENABLED);
-	camera = cameraObject->AddComponent<CameraComponent>(60.0f, true);
+	Object* playerObject = new Object("camera", ObjectFlag::ENABLED);
+	this->player = playerObject;
+	camera = playerObject->AddComponent<CameraComponent>(60.0f, true);
 	camera->Resize(windowWidth, windowHeight);
-	cameraObject->AddComponent<ControllerComponent>();
-	cameraObject->AddComponent<EnemyStatsComp>(100, 2, 2, 25, 3);
-	playerStatsComp = cameraObject->GetComponent<EnemyStatsComp>();
-	AddObject(cameraObject);
+	playerObject->AddComponent<ControllerComponent>();
+	playerObject->AddComponent<PlayerComp>(guiManager, 100, 2, 10, 25, 3);
+	//playerStatsComp = cameraObject->GetComponent<EnemyStatsComp>();
+	AddObject(playerObject);
 
 	SaveState state;
 	state.seed = 1337;
@@ -124,10 +125,11 @@ void GameScene::InitializeObjects()
 	enemy->AddComponent<MeshComponent>(*mesh1, *material1);
 	enemy->AddComponent<EnemyStatsComp>(100, 2, 15, 25, 3);
 	enemyStatsComp = enemy->GetComponent<EnemyStatsComp>();
+	enemy->AddComponent<EnemyAttackComp>(player->GetComponent<PlayerComp>());
 	EnemySMComp* stateMachine = enemy->AddComponent<EnemySMComp>(EnemyState::IDLE);
 	stateMachine->RegisterState(EnemyState::IDLE, enemy->AddComponent<EnemyIdleComp>());
 	stateMachine->RegisterState(EnemyState::PATROL, enemy->AddComponent<EnemyPatrolComp>());
-	stateMachine->RegisterState(EnemyState::ATTACK, enemy->AddComponent<EnemyAttackComp>(camera));
+	stateMachine->RegisterState(EnemyState::ATTACK, enemy->AddComponent<EnemyAttackComp>(player->GetComponent<PlayerComp>()));
 	AddObject(enemy);
 
 	camera->GetOwner()->AddComponent<PlayerAttackComp>(enemy);
@@ -173,27 +175,75 @@ void GameScene::InitializeObjects()
 
 void GameScene::InitializeGUI()
 {
-	//spriteBatch = new DirectX::SpriteBatch(renderer->GetContext());
-	GUISprite* normalSprite = new GUISprite(*renderer, "Textures/EquipmentBox.png", 0, 0, DrawDirection::BottomLeft, ClickFunction::Clickable);
-	GUISprite* buttonSprite = new GUISprite(*renderer, "Textures/EquipmentBox.png", 0, 0, DrawDirection::BottomRight, ClickFunction::Clickable);
-	GUISprite* normalSprite2 = new GUISprite(*renderer, "Textures/EquipmentBox.png", 0, 0, DrawDirection::TopLeft, ClickFunction::Clickable);
-	GUISprite* buttonSprite2 = new GUISprite(*renderer, "Textures/EquipmentBox.png", 0, 0, DrawDirection::TopRight, ClickFunction::Clickable);
-	GUIFont* fpsDisplay = new GUIFont(*renderer, "fps", windowWidth / 2, 50);
-	GUIFont* playerHealthDisplay = new GUIFont(*renderer, "playerHealth", 300, 350);
-	GUIFont* enemyHealthDisplay = new GUIFont(*renderer, "playerHealth", 600, 350);
-	normalSprite->SetActive();
+	//GUISTUFF//
 
+	//INFO, WE ARE DRAWING BACK TO FRONT. IF YOU WANT SOMETHING TO BE IN FRONT. SET VALUE TO 0. IF YOU WANT IT IN BACK USE 0.1 -> 1
+
+	//BUTTONS AT LEFT SIDE
+	//spriteBatch = new DirectX::SpriteBatch(renderer->GetContext());
+	GUISprite* equimpmentSprite1 = new GUISprite(*renderer, "Textures/EquipmentBox.png", 10, 10, 0, DrawDirection::BottomLeft, ClickFunction::NotClickable);
+	GUISprite* equimpmentSprite2 = new GUISprite(*renderer, "Textures/EquipmentBox.png", 90, 10, 0, DrawDirection::BottomLeft, ClickFunction::NotClickable);
+	GUISprite* equimpmentSprite3 = new GUISprite(*renderer, "Textures/EquipmentBox.png", 170, 10, 0, DrawDirection::BottomLeft, ClickFunction::NotClickable);
+	GUISprite* equimpmentSprite4 = new GUISprite(*renderer, "Textures/EquipmentBox.png", 250, 10, 0, DrawDirection::BottomLeft, ClickFunction::NotClickable);
+
+	//BARS THAT SCALING 
+	GUISprite* foodScalingBar = new GUISprite(*renderer, "Textures/DippingBar.png", 10, 10, 0.5, DrawDirection::BottomRight, ClickFunction::NotClickable);
+	GUISprite* healthScalingBar = new GUISprite(*renderer, "Textures/DippingBar.png", 90, 10, 0.5, DrawDirection::BottomRight, ClickFunction::NotClickable);
+	GUISprite* fuelScalingBar = new GUISprite(*renderer, "Textures/DippingBar.png", 170, 10, 0.5, DrawDirection::BottomRight, ClickFunction::NotClickable);
+
+	//BARS AR RIGHT SIDE
+	GUISprite* fuelBar = new GUISprite(*renderer, "Textures/Health_Fuel_Food.png", 10, 10, 1, DrawDirection::BottomRight, ClickFunction::NotClickable);
+	GUISprite* foodBar = new GUISprite(*renderer, "Textures/Health_Fuel_Food.png", 90, 10, 1, DrawDirection::BottomRight, ClickFunction::NotClickable);
+	GUISprite* healthBar = new GUISprite(*renderer, "Textures/Health_Fuel_Food.png", 170, 10, 1, DrawDirection::BottomRight, ClickFunction::NotClickable);
+
+
+	//ICONS ON TOP OF ITEMS
+	GUISprite* equimpmentSpriteAxe = new GUISprite(*renderer, "Textures/AxeIcon2.png", 10, 10, 0, DrawDirection::BottomLeft, ClickFunction::NotClickable);
+
+	//ICONS ON TOP OF BARS
+	GUISprite* fuelSprite = new GUISprite(*renderer, "Textures/FireIcon.png", 10, 10, 0, DrawDirection::BottomRight, ClickFunction::NotClickable);
+	GUISprite* foodSprite = new GUISprite(*renderer, "Textures/FoodIcon.png", 90, 10, 0, DrawDirection::BottomRight, ClickFunction::NotClickable);
+	GUISprite* healthSprite = new GUISprite(*renderer, "Textures/HealthIcon.png", 170, 10, 0, DrawDirection::BottomRight, ClickFunction::NotClickable);
+
+	//FONTS
+	GUIFont* fpsDisplay = new GUIFont(*renderer, "fps", windowWidth / 2, 50);
+	GUIFont* healthDisplay = new GUIFont(*renderer, "playerHealth", 50, 100);
+	GUIFont* enemyDisplay = new GUIFont(*renderer, "enemyHealth", 50, 150);
+
+	// INSERTIONS
 	guiManager = new GUIManager(renderer, 100);
 	guiManager->AddGUIObject(fpsDisplay, "fps");
-	guiManager->AddGUIObject(playerHealthDisplay, "playerHealth");
-	guiManager->AddGUIObject(enemyHealthDisplay, "enemyHealth");
-	guiManager->AddGUIObject(normalSprite, "normalSprite");
-	guiManager->AddGUIObject(buttonSprite, "buttonSprite");
-	guiManager->AddGUIObject(normalSprite2, "normalSprite2");
-	guiManager->AddGUIObject(buttonSprite2, "buttonSprite2");
-	renderer->AddRenderPass(guiManager);
+	guiManager->AddGUIObject(healthDisplay, "playerHealth");
+	guiManager->AddGUIObject(enemyDisplay, "enemyHealth");
 
-	guiManager->GetGUIObject("normalSprite")->SetPosition(100, 100);
+	//BASE OF EQUIPMENT
+	guiManager->AddGUIObject(equimpmentSprite1, "equimpmentSprite1");
+	guiManager->AddGUIObject(equimpmentSprite2, "equimpmentSprite2");
+	guiManager->AddGUIObject(equimpmentSprite3, "equimpmentSprite3");
+	guiManager->AddGUIObject(equimpmentSprite4, "equimpmentSprite4");
+	//BASE OF DIPPING BARS
+	foodScalingBar->SetScale(1.0f, 0.0f);
+	healthScalingBar->SetScale(1.0f, 0.0f);
+	fuelScalingBar->SetScale(1.0f, 0.0f);
+
+	guiManager->AddGUIObject(foodScalingBar, "fuelDippingBar");
+	guiManager->AddGUIObject(healthScalingBar, "foodDippingBar");
+	guiManager->AddGUIObject(fuelScalingBar, "healthDippingBar");
+
+
+	//ICON OF EQUIPMENT
+	guiManager->AddGUIObject(equimpmentSpriteAxe, "equimpmentSpriteAxe");
+	//BASE OF BARS
+	guiManager->AddGUIObject(fuelBar, "fuelBar");
+	guiManager->AddGUIObject(foodBar, "foodBar");
+	guiManager->AddGUIObject(healthBar, "healthBar");
+
+	//ICON OF BARS
+	guiManager->AddGUIObject(fuelSprite, "fuelSprite");
+	guiManager->AddGUIObject(foodSprite, "foodSprite");
+	guiManager->AddGUIObject(healthSprite, "healthSprite");
+
+	renderer->AddRenderPass(guiManager);
 }
 
 void GameScene::InitializeLights()
@@ -243,8 +293,8 @@ void GameScene::Update(const float& deltaTime)
 	Scene::Update(deltaTime);
 
 	static_cast<GUIFont*>(guiManager->GetGUIObject("fps"))->SetString(std::to_string((int)GameClock::Instance().GetFramesPerSecond()));
-	static_cast<GUIFont*>(guiManager->GetGUIObject("playerHealth"))->SetString(std::to_string((int)playerStatsComp->GetHealth()));
-	static_cast<GUIFont*>(guiManager->GetGUIObject("enemyHealth"))->SetString(std::to_string((int)enemyStatsComp->GetHealth()));
+	static_cast<GUIFont*>(guiManager->GetGUIObject("playerHealth"))->SetString("Player health: " + std::to_string((int)player->GetComponent<PlayerComp>()->GetHealth()));
+	static_cast<GUIFont*>(guiManager->GetGUIObject("enemyHealth"))->SetString("Enemy health: " + std::to_string((int)enemyStatsComp->GetHealth()));
 	guiManager->UpdateAll();
 
 	if (KEY_DOWN(H))
@@ -307,9 +357,13 @@ void GameScene::Update(const float& deltaTime)
 		DShape::DrawSphere(ray.GetPoint(10.0f), 0.2f, { 1, 0, 1 });
 	}
 
-	if (KEY_PRESSED(N))
+	if (player->GetComponent<PlayerComp>()->GG())
 	{
-		nextScene = WIN;
+		nextScene = LOSE;
+	}
+	else if (KEY_PRESSED(N))
+	{
+		nextScene = LOSE;
 	}
 	else if (KEY_PRESSED(M))
 	{
