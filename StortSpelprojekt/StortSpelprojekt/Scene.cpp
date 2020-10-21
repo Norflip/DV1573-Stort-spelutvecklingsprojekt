@@ -231,6 +231,8 @@ void Scene::InitializeObjects()
 
 	baseMonsterComp->SetAnimationTrack(skeletonbaseMonsterDeath, SkeletonStateMachine::DEATH);
 
+	baseMonsterComp->BlendAnimations();
+
 	baseMonsterObject->GetTransform().SetScale({ 0.125f, 0.125f, 0.125f });
 	baseMonsterObject->GetTransform().SetPosition({ 0.0f, 2.5f, 10.0f });
 
@@ -241,7 +243,7 @@ void Scene::InitializeObjects()
 	stateMachine->RegisterState(EnemyState::IDLE, baseMonsterObject->AddComponent<EnemyIdleComp>());
 	stateMachine->RegisterState(EnemyState::PATROL, baseMonsterObject->AddComponent<EnemyPatrolComp>());
 	stateMachine->RegisterState(EnemyState::ATTACK, baseMonsterObject->AddComponent<EnemyAttackComp>(camera));
-
+	stateMachine->initAnimation();
 	AddObject(baseMonsterObject);
 	Shader* defaultShader = resourceManager->GetShaderResource("defaultShader");
 	std::vector<Mesh> meshHouse = ZWEBLoader::LoadMeshes(ZWEBLoadType::SkeletonAnimation, "Models/House_Base.ZWEB", renderer->GetDevice());
@@ -312,7 +314,7 @@ void Scene::InitializeObjects()
 	clock.Update();
 	clock.Start();
 	clock.Update();
-
+	
 }
 
 void Scene::Update(const float& deltaTime)

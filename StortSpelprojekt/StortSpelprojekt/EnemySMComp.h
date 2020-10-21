@@ -28,7 +28,7 @@ class EnemySMComp : public Component
 	public:
 		EnemySMComp(EnemyState state);
 		virtual ~EnemySMComp();
-
+		void initAnimation();
 		void SetState(EnemyState state);
 		
 		void Update(const float& deltaTime);
@@ -37,4 +37,5 @@ class EnemySMComp : public Component
 		EnemyState currentState;
 		std::unordered_map<EnemyState, Component*> stateMap;
 		void Animate();
+		SkeletonMeshComponent* skeletonComponent;
 };

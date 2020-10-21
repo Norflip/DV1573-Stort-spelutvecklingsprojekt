@@ -219,4 +219,14 @@ float SkeletonAni::GetAniLength()
     return this->lenght;
 }
 
+void SkeletonAni::SetOffsetsDirect(std::vector<dx::SimpleMath::Matrix>& directOffsets)
+{
+    this->offsetM = directOffsets;
+}
+
+void SkeletonAni::SetKeyFramesDirect(std::vector<std::vector<Bone>>& directKeys)
+{
+    this->keyBones = directKeys;
+}
+
 
