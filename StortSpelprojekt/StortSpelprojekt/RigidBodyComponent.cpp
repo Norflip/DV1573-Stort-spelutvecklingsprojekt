@@ -24,6 +24,17 @@ void RigidBodyComponent::SetPosition(dx::XMVECTOR position)
 	body->setTransform(transform);
 }
 
+void RigidBodyComponent::SetRotation(dx::XMVECTOR rotation)
+{
+	dx::XMFLOAT4 rot;
+	dx::XMStoreFloat4(&rot, rotation);
+
+	rp::Transform transform = body->getTransform();
+	transform.setOrientation(rp::Quaternion(rot.x, rot.y, rot.z, rot.w));
+	body->setTransform(transform);
+}
+
+
 rp::Transform RigidBodyComponent::ConvertToBtTransform(const Transform& transform) const
 {
 	rp::Transform temp;
@@ -126,5 +137,35 @@ void RigidBodyComponent::AddForceAtPoint(const dx::XMFLOAT3& force, const dx::XM
 		body->applyForceAtLocalPosition(rpForce, rpOffset);
 	else
 		body->applyForceAtWorldPosition(rpForce, rpOffset);
+}
+
+void RigidBodyComponent::SetLinearVelocity(const dx::XMFLOAT3& velocity)
+{
+	body->setLinearVelocity({ velocity.x,velocity.y,velocity.z });
+}
+
+//void RigidBodyComponent::SetLinearDamping(const float damping)
+//{
+//	body->setLinearDamping(damping);
+//}
+
+dx::XMFLOAT3 RigidBodyComponent::GetLinearVelocity() const
+{
+	return { body->getLinearVelocity().x,body->getLinearVelocity().y,body->getLinearVelocity().z };
+}
+
+void RigidBodyComponent::SetAngularVelocity(const dx::XMFLOAT3& velocity)
+{
+	body->setAngularVelocity({ velocity.x,velocity.y,velocity.z });
+}
+
+//void RigidBodyComponent::SetAngularDamping(const float damping)
+//{
+//	body->setAngularDamping(damping);
+//}
+
+dx::XMFLOAT3 RigidBodyComponent::GetAngularVelocity() const
+{
+	return { body->getAngularVelocity().x,body->getAngularVelocity().y,body->getAngularVelocity().z };
 }
 

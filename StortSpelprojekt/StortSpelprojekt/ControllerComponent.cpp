@@ -50,7 +50,7 @@ ControllerComponent::~ControllerComponent()
 //float ControllerComponent::GetCrouchSpeed() const
 //{
 //	return crouchSpeed;
-//}
+//} 
 
 //void ControllerComponent::SetSensetivity(float sensetivity)
 //{
@@ -62,8 +62,29 @@ ControllerComponent::~ControllerComponent()
 //	return this->sensetivity;
 //}
 
+void ControllerComponent::Initialize()
+{
+	if (GetOwner()->HasComponent<RigidBodyComponent>())
+	{
+		
+		GetOwner()->GetComponent<RigidBodyComponent>()->LockRotation(true);
+		//GetOwner()->GetComponent<RigidBodyComponent>()->SetLinearDamping(0.2f);
+		GetOwner()->GetComponent<RigidBodyComponent>()->GetRigidBody()->getCollider(0)->getMaterial().setBounciness(0.f);
+		//GetOwner()->GetComponent<RigidBodyComponent>()->SetAngularDamping(0.5f);
+	}
+	else 
+	{
+		std::cout << "component missing" << std::endl;
+	}
+	//if (GetOwner()->HasComponent<CapsuleColliderComponent>())
+	//{
+	//	GetOwner()->GetComponent<CapsuleColliderComponent>();
+	//}
+}
+
 void ControllerComponent::Update(const float& deltaTime)
 {
+	Physics& phy = Physics::Instance();
 	DirectX::XMFLOAT3 dir = { 0.f,0.f,0.f };
 	//float speed = 10.f;
 	this->fovTimer += deltaTime;
@@ -77,7 +98,13 @@ void ControllerComponent::Update(const float& deltaTime)
 	//std::cout << "x: " << temp.x << ", y: " << temp.y << ", z: " << temp.z << ", w: " << temp.w << std::endl;
 
 	if (KEY_DOWN(V))
+	{
 		this->freeCam = !this->freeCam;
+		if (GetOwner()->HasComponent<RigidBodyComponent>())
+		{
+			GetOwner()->GetComponent<RigidBodyComponent>()->EnableGravity(!this->freeCam);
+		}
+	}
 
 	if (KEY_DOWN(F))
 	{
@@ -110,7 +137,7 @@ void ControllerComponent::Update(const float& deltaTime)
 		Transform& transform = GetOwner()->GetTransform();
 		dx::XMVECTOR right = transform.TransformDirection({ 1,0,0 });
 		dx::XMVECTOR eulerRotation = dx::XMQuaternionMultiply(dx::XMQuaternionRotationAxis(right, x), dx::XMQuaternionRotationAxis({ 0,1,0 }, y));
-		
+
 		groundRotation = dx::XMQuaternionMultiply(dx::XMQuaternionRotationAxis(right, 0), dx::XMQuaternionRotationAxis({ 0,1,0 }, y));
 		groundRotation = dx::XMQuaternionMultiply(dx::XMLoadFloat4(&this->groundQuaterion), groundRotation);
 		dx::XMStoreFloat4(&groundQuaterion, groundRotation);
@@ -118,6 +145,13 @@ void ControllerComponent::Update(const float& deltaTime)
 		transform.SetRotation(dx::XMQuaternionMultiply(transform.GetRotation(), eulerRotation));
 		Input::Instance().ResetRelative();
 
+		if (KEY_DOWN(D0))
+		{
+			dx::XMVECTOR resetPos = dx::XMLoadFloat3(&RESET_POS);
+			GetOwner()->GetTransform().SetPosition(resetPos);
+			GetOwner()->GetComponent<RigidBodyComponent>()->SetPosition(resetPos);
+			GetOwner()->GetComponent<RigidBodyComponent>()->SetLinearVelocity({ 0.f, 0.f, 0.f });
+		}
 
 		if (KEY_DOWN(O))
 		{
@@ -167,13 +201,15 @@ void ControllerComponent::Update(const float& deltaTime)
 				dir.x -= 1.f;// move;
 			if (KEY_PRESSED(D))
 				dir.x += 1.f;// move;
+
+
 			if (this->velocity < WALK_VELOCITY && velocityTimer >= VELOCITY_INC_RATE)
 			{
 				this->velocity += WALK_ACCELERATION;
 				this->velocityTimer = 0.f;
 			}
 		}
-		else 
+		else
 			if (this->velocity > 0.f && velocityTimer >= VELOCITY_INC_RATE)
 			{
 				this->velocity -= WALK_ACCELERATION;
@@ -190,40 +226,72 @@ void ControllerComponent::Update(const float& deltaTime)
 		}
 		else
 		{
-			if (KEY_DOWN(LeftControl))
+			if (KEY_PRESSED(Space)) // FPcam
 			{
-				if (this->velocity > CROUCH_VELOCITY && velocityTimer >= VELOCITY_INC_RATE)
-				{
-					this->velocity -= CROUCH_ACCELERATION;
-					this->velocityTimer = 0.f;
-				}
-				GetOwner()->GetTransform().Translate(-CROUCH.x, -CROUCH.y, -CROUCH.z);
+				phy.MutexLock();
+				if (GetOwner()->HasComponent<RigidBodyComponent>())
+					GetOwner()->GetComponent<RigidBodyComponent>()->AddForce({ 0.f, 200.f, 0.f });
+				phy.MutexUnlock();
 			}
-			if (KEY_UP(LeftControl))
-			{
-				if (this->velocity < WALK_VELOCITY && velocityTimer >= VELOCITY_INC_RATE)
-				{
-					this->velocity += CROUCH_ACCELERATION;
-					this->velocityTimer = 0.f;
-				}
-				GetOwner()->GetTransform().Translate(CROUCH.x, CROUCH.y, CROUCH.z);
-			}
+
+			//if (KEY_DOWN(LeftControl))
+			//{
+			//	if (this->velocity > CROUCH_VELOCITY && velocityTimer >= VELOCITY_INC_RATE)
+			//	{
+			//		this->velocity -= CROUCH_ACCELERATION;
+			//		this->velocityTimer = 0.f;
+			//	}
+			//	GetOwner()->GetTransform().Translate(-CROUCH.x, -CROUCH.y, -CROUCH.z);
+			//}
+			//if (KEY_UP(LeftControl))
+			//{
+			//	if (this->velocity < WALK_VELOCITY && velocityTimer >= VELOCITY_INC_RATE)
+			//	{
+			//		this->velocity += CROUCH_ACCELERATION;
+			//		this->velocityTimer = 0.f;
+			//	}
+			//	GetOwner()->GetTransform().Translate(CROUCH.x, CROUCH.y, CROUCH.z);
+			//}
 		}
 
 		dx::XMVECTOR direction = dx::XMLoadFloat3(&dir);
 		direction = dx::XMVector3Normalize(direction);
 		if (freeCam)
+		{
 			direction = GetOwner()->GetTransform().TransformDirection(direction);
+			direction = dx::XMVectorScale(direction, this->velocity * deltaTime);
+			dx::XMStoreFloat3(&dir, direction);
+			dx::XMFLOAT3 vel = GetOwner()->GetComponent<RigidBodyComponent>()->GetLinearVelocity();
+			GetOwner()->GetComponent<RigidBodyComponent>()->SetLinearVelocity({ dir.x * 50, dir.y * 50, dir.z * 50 });
+		}
 		else
+		{
 			direction = GetOwner()->GetTransform().TransformDirectionCustomRotation(direction, groundRotation);
-	
-		direction = dx::XMVectorScale(direction, this->velocity * deltaTime);
-		dx::XMStoreFloat3(&dir, direction);
-		GetOwner()->GetTransform().Translate(dir.x, dir.y, dir.z);
-		
-		if (GetOwner()->HasComponent<RigidBodyComponent>())
-			GetOwner()->GetComponent<RigidBodyComponent>()->SetPosition(GetOwner()->GetTransform().GetPosition());
+			direction = dx::XMVectorScale(direction, this->velocity * deltaTime);
+			dx::XMStoreFloat3(&dir, direction);
+			dx::XMFLOAT3 vel = GetOwner()->GetComponent<RigidBodyComponent>()->GetLinearVelocity();
+			GetOwner()->GetComponent<RigidBodyComponent>()->SetLinearVelocity({ dir.x * 50, dir.y *50+ vel.y, dir.z * 50 });
+		}
+		//direction = dx::XMVectorScale(direction, this->velocity * deltaTime);
+		//dx::XMStoreFloat3(&dir, direction);
+		////GetOwner()->GetTransform().Translate(dir.x, dir.y, dir.z);
 
+		////GetOwner()->GetComponent<RigidBodyComponent>()
+		//dx::XMFLOAT3 vel = GetOwner()->GetComponent<RigidBodyComponent>()->GetLinearVelocity();
+		//GetOwner()->GetComponent<RigidBodyComponent>()->SetLinearVelocity({ dir.x*50, dir.y+vel.y, dir.z*50 });
+		//
+		//
+		//GetOwner()->GetComponent<RigidBodyComponent>()->AddForce({ 0.f,1000.f,0.f });
+		//phy.MutexLock();
+		//if (GetOwner()->HasComponent<RigidBodyComponent>())
+		//{
+		//	//std::cout << "x: " << dir.x << ", y: " << dir.y << ", z: " << dir.z << std::endl;
+		//	
+		//	//GetOwner()->GetComponent<RigidBodyComponent>()->SetPosition(GetOwner()->GetTransform().GetPosition());
+		//	GetOwner()->GetComponent<RigidBodyComponent>()->SetRotation(GetOwner()->GetTransform().GetRotation());
+		//	
+		//}
+		//phy.MutexUnlock();
 	}
 	//else
 	//	Input::Instance().FreeMouse();

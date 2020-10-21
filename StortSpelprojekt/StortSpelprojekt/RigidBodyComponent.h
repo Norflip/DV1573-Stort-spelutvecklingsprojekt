@@ -45,12 +45,21 @@ public:
 	virtual void AddForce(const dx::XMFLOAT3& force);
 	virtual void AddForceAtPoint(const dx::XMFLOAT3& force, const dx::XMFLOAT3& offset, bool local = true);
 
+	virtual void SetLinearVelocity(const dx::XMFLOAT3& velocity);
+	virtual void SetLinearDamping(const float damping) { body->setLinearDamping(damping); };
+	virtual dx::XMFLOAT3 GetLinearVelocity()const;
+	virtual void SetAngularVelocity(const dx::XMFLOAT3& velocity);
+	virtual void SetAngularDamping(const float damping) { body->setAngularDamping(damping); };
+	virtual dx::XMFLOAT3 GetAngularVelocity()const;
+	void EnableGravity(const bool isEnabled) { body->enableGravity(isEnabled); };
+	
 	bool IsDynamic() const { return mass != 0.0f && dynamic; }
 	FilterGroups GetGroup() const { return this->group; }
 	FilterGroups GetCollidesWith() const { return this->collisionMask; }
 
 	void Update(const float& deltaTime) override;
 	void SetPosition(dx::XMVECTOR position);
+	void SetRotation(dx::XMVECTOR rotation);
 	bool IsRotationLocked() const { return this->lockRotation; }
 	void LockRotation(bool lock) { this->lockRotation = lock; }
 

@@ -87,9 +87,11 @@ void Scene::Initialize(Renderer* renderer)
 	cameraObject->GetTransform().SetPosition(temp);
 
 	cameraObject->AddComponent<CapsuleColliderComponent>(0.5f, 4.5f,camPos);
-	RigidBodyComponent* rb = cameraObject->AddComponent<RigidBodyComponent>(5.f, FilterGroups::PLAYER, FilterGroups::EVERYTHING,false);
-	rb->LockRotation(true);
-	
+	RigidBodyComponent* rb = cameraObject->AddComponent<RigidBodyComponent>(60.f, FilterGroups::PLAYER, FilterGroups::EVERYTHING, true);
+	//rp::RigidBody * bod= rb->GetRigidBody();
+	//rp::Material* test;
+	//test->setBounciness(0);
+	//bod.material
 	physics.RegisterRigidBody(rb);
 	cameraObject->AddComponent<ControllerComponent>();
 	cameraObject->AddComponent<StatsComponent>(100, 2, 10, 25, 3);

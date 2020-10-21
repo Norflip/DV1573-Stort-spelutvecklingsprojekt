@@ -17,8 +17,9 @@ constexpr float WALK_VELOCITY = 8.f;
 constexpr float WALK_ACCELERATION = 1.5f;
 constexpr float RUN_VELOCITY = 20.f;
 constexpr float RUN_ACCELERATION = 3.5f;
-constexpr float VELOCITY_INC_RATE = 3.5f;
+constexpr float VELOCITY_INC_RATE = 0.1f;
 
+constexpr dx::XMFLOAT3 RESET_POS = {20.f,3.f,20.f};
 
 class ControllerComponent :public Component //PlayerControllerComp
 {
@@ -26,6 +27,15 @@ private:
 
 	//float acceleration;
 	//float deacceleration;
+
+	//fixa jump isGrounded/collisioninfo 
+	//addForce fix
+
+
+	//dx::xmfloat3 force
+	//F=C*A*(p*V^2)/2
+	//dx::xmfloat3 drag
+
 	float velocity;
 	float velocityTimer;
 	//acceleration //when walking (slowly) increase speed etc
@@ -57,7 +67,7 @@ public:
 
 	//void SetSensetivity(float);
 	//float GetSensetivity()const;
-
+	void Initialize();
 	void Update(const float& deltaTime);
 
 	/*
