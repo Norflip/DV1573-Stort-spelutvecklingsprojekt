@@ -41,7 +41,7 @@ public:
 	void SetDDSSprite(ID3D11Device* device, std::string spriteFile); // no dds yet
 
 	void SetScale(float x, float y);
-	void SetScaleDipping(float yValue);
+	void SetScaleBars(float yValue);
 
 	bool IsClicked();
 	bool IsMouseOver();

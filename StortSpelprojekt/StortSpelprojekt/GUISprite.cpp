@@ -117,7 +117,7 @@ void GUISprite::SetScale(float x, float y)
 	this->scale = dx::XMVectorSet(this->xScale, this->yScale, 0, 0);
 }
 
-void GUISprite::SetScaleDipping(float yValue)
+void GUISprite::SetScaleBars(float yValue)
 {
 	if (yScale < 1.0f)
 		this->yScale = yValue;
