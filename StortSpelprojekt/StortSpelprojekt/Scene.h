@@ -37,21 +37,26 @@
 class GUIFont;
 class SpriteRenderPass;
 
+enum NEXT_SCENE { INTRO, LOSE, GAME, WIN };
+
 class Scene
 {
+	
 public:
-	Scene();
+	Scene(ResourceManager* manager);
 	virtual ~Scene();
 
-	void Initialize(Renderer* renderer);
-	void InitializeObjects();
-
-	void OnActivate() {}
-	void OnDeactivate() {}
+	virtual void Initialize(Renderer* renderer) = 0;
+	virtual void InitializeObjects() = 0;
+	virtual void InitializeGUI() = 0;
 	
-	void Update(const float& deltaTime);
-	void FixedUpdate(const float& fixedDeltaTime);
-	void Render();
+	// What is this for?
+	virtual void OnActivate() = 0;
+	virtual void OnDeactivate() = 0;
+	
+	virtual void Update(const float& deltaTime);
+	virtual void FixedUpdate(const float& fixedDeltaTime);
+	virtual void Render();
 	
 	void AddObject(Object* object);
 	void AddObject(Object* object, Object* parent);
@@ -61,8 +66,12 @@ public:
 
 	void PrintSceneHierarchy(Object* object, size_t level) const;
 
+	bool Quit();
+	NEXT_SCENE nextScene;
 	
-private:	
+private:
+
+protected:
 	Object* root;
 	CameraComponent* camera;
 	Renderer* renderer;
@@ -79,9 +88,10 @@ private:
 	ObjectPooler pooler;
 	GUIManager* guiManager;		
 	
-	/* Test skybox in class */
-	//Object* skybox;
 	Skybox* skyboxClass;		
 
 	ResourceManager* resourceManager;
+
+	float windowHeight, windowWidth;
+	bool quit;
 };

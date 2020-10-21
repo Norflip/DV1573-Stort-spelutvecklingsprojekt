@@ -10,6 +10,8 @@ PlayerComp::PlayerComp()
 	/*this->fuelDippingBar = static_cast<GUISprite*>(guiMan->GetGUIObject("fuelDippingBar"));
 	this->foodDippingBar = static_cast<GUISprite*>(guiMan->GetGUIObject("foodDippingBar"));
 	this->healthDippingBar = static_cast<GUISprite*>(guiMan->GetGUIObject("healthDippingBar"));*/
+
+	gg = false;
 }
 
 PlayerComp::PlayerComp(GUIManager* guimanager, float health, float movementSpeed, float radius, float attack, float attackSpeed)
@@ -50,24 +52,23 @@ void PlayerComp::Update(const float& deltaTime)
 	{
 		//loose fuel
 		//std::cout << GameClock::Instance().GetFrameTime() / 1000;
-		fuel -= GameClock::Instance().GetFrameTime() / 1000 * fuelBurnPerMeter;
-		std::cout << fuel <<std::endl;
+		fuel -= GameClock::Instance().GetFrameTime() / 1000 * fuelBurnPerMeter * 10;
+		//std::cout << fuel <<std::endl;
 		// loose food
-		food -= GameClock::Instance().GetFrameTime() / 1000 * foodLossPerSecond;
+		food -= GameClock::Instance().GetFrameTime() / 1000 * foodLossPerSecond * 10;
 		//std::cout << food<<std::endl;
 
 		// make better later
-		if (food < 0 || fuel < 0)
-			std::cout <<"GG";
+		if (food < 0 || fuel < 0 || health < 0)
+			gg = true;
+			//std::cout <<"GG";
 	}
-	
 	
 	// Fuel drop
 	fuelDippingBar->SetScaleBars(ReverseAndClamp(fuel));
 
 	// Food drop
 	foodDippingBar->SetScaleBars(ReverseAndClamp(food));
-
 	// Health dipping when hit by enemy
 	//healthDippingBar->SetScaleDipping(0);
 }

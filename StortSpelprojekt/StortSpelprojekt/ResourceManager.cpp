@@ -305,3 +305,4 @@ void ResourceManager::CompileShaders(ID3D11Device* device)
 	}
 }
 
+
