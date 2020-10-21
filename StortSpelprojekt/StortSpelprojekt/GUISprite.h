@@ -29,7 +29,7 @@ class GUISprite :public GUIObject
 {
 
 public:
-	GUISprite(Renderer& renderer, std::string, float xPos, float yPos , DrawDirection dir, ClickFunction clickFunc);
+	GUISprite(Renderer& renderer, std::string, float xPos, float yPos , float layerDepth = 0, DrawDirection dir = DrawDirection::Default, ClickFunction clickFunc = ClickFunction::NotClickable);
 	~GUISprite();
 	void Draw(DirectX::SpriteBatch*) override;
 	void Draw();
@@ -39,7 +39,10 @@ public:
 	void SetActiveColor(dx::XMVECTOR vector = dx::XMVectorSet(0.6f, 0.6f, 1.3f, 1.0f));
 	bool GetActive() { return this->active; };
 	void SetDDSSprite(ID3D11Device* device, std::string spriteFile); // no dds yet
-	
+
+	void SetScale(float x, float y);
+	void SetScaleBars(float yValue);
+
 	bool IsClicked();
 	bool IsMouseOver();
 	void Update();
@@ -52,6 +55,7 @@ private:
 	float width, height;
 	float xScale, yScale;
 	float rotation;
+	float layerDepth;
 	std::unique_ptr<dx::SpriteBatch> spriteBatch;
 	Renderer* renderer;
 	dx::XMVECTOR position, baseColor,activeColor, origin, scale; //byt till xmfloat 4

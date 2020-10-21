@@ -45,4 +45,6 @@ private:
 	dx::SpriteBatch* spriteBatch;
 	Renderer* renderer;
 	std::unordered_map<std::string, GUIObject*> GUIObjects;
+	ID3D11DepthStencilState* depthStencilState;
+	ID3D11BlendState* blendOn;
 };

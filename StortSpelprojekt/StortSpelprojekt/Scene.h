@@ -23,7 +23,7 @@
 #include "DShape.h"
 #include "GUIManager.h"
 #include <string>
-
+#include "PlayerComp.h"
 #include "Physics.h"
 #include "RigidBodyComponent.h"
 #include "BoxColliderComponent.h"
@@ -69,9 +69,9 @@ private:
 	GameClock clock;
 	Input& input;
 	Object* enemy;
-	EnemyStatsComp* playerStatsComp;
-	EnemyStatsComp* enemyStatsComp;
+	Object* player;
 
+	EnemyStatsComp* enemyStatsComp;
 	dx::SpriteBatch* spriteBatch;
 	WorldGenerator worldGenerator;
 	SpriteRenderPass* spritePass;	
