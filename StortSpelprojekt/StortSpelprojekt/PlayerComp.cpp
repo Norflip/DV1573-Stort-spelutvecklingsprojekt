@@ -63,10 +63,10 @@ void PlayerComp::Update(const float& deltaTime)
 	
 	
 	// Fuel drop
-	fuelDippingBar->SetScaleDipping(ReverseAndClamp(fuel));
+	fuelDippingBar->SetScaleBars(ReverseAndClamp(fuel));
 
 	// Food drop
-	foodDippingBar->SetScaleDipping(ReverseAndClamp(food));
+	foodDippingBar->SetScaleBars(ReverseAndClamp(food));
 
 	// Health dipping when hit by enemy
 	//healthDippingBar->SetScaleDipping(0);
