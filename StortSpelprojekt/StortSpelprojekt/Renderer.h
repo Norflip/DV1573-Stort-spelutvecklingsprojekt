@@ -78,6 +78,8 @@ public:
 
 	RenderTexture& GetMidbuffer() { return this->midbuffer; }
 
+	void RemoveRenderPass(RenderPass*);
+
 private:
 	void AddItem(const RenderItem& item, bool transparent);
 	void DrawRenderItem(const RenderItem& item);

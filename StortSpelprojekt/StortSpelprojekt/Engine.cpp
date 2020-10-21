@@ -115,9 +115,10 @@ void Engine::SwitchScene(size_t id)
 	{
 		if (activeScene != (*sceneIt).second)
 		{
-			activeScene->OnDeactivate();
+			previousScene = activeScene;
 			activeScene = (*sceneIt).second;
 			activeScene->OnActivate();
+			previousScene->OnDeactivate();
 		}
 	}
 }

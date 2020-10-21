@@ -24,6 +24,18 @@ void GameScene::Initialize(Renderer* renderer)
 	Physics& physics = Physics::Instance();
 	physics.Initialize({ 0, -10.0f, 0 });
 
+	pooler.Register("test_body_cube", 10, []() {
+
+		Object* object = new Object("fuel");
+
+		object->AddComponent<DebugBoxShapeComponent>();
+		object->AddComponent<BoxColliderComponent>(dx::XMFLOAT3(0.5f, 0.5f, 0.5f), dx::XMFLOAT3(0, 0, 0));
+		RigidBodyComponent* rd = object->AddComponent<RigidBodyComponent>(10.0f, FilterGroups::DEFAULT, FilterGroups::EVERYTHING, true);
+
+		Physics::Instance().RegisterRigidBody(rd);
+		return object;
+	});
+
 	//Input::Instance().SetWindow(window->GetHWND(), window->GetHeight(), window->GetWidth());
 	input.SetWindow(window->GetHWND(), window->GetHeight(), window->GetWidth());
 }
@@ -33,9 +45,10 @@ void GameScene::InitializeObjects()
 	Object* cameraObject = new Object("camera", ObjectFlag::ENABLED);
 	camera = cameraObject->AddComponent<CameraComponent>(60.0f, true);
 	camera->Resize(windowWidth, windowHeight);
-	AddObject(cameraObject);
-
 	cameraObject->AddComponent<ControllerComponent>();
+	cameraObject->AddComponent<EnemyStatsComp>(100, 2, 2, 25, 3);
+	playerStatsComp = cameraObject->GetComponent<EnemyStatsComp>();
+	AddObject(cameraObject);
 
 	SaveState state;
 	state.seed = 1337;
@@ -95,31 +108,6 @@ void GameScene::InitializeObjects()
 	//0 tree 1 leaves
 	std::vector<Material> stylizedTreeMaterial = ZWEBLoader::LoadMaterials("Models/tree.ZWEB", instanceShader, renderer->GetDevice());
 
-	Shader* lightShader = resourceManager->GetShaderResource("defaultShader");
-
-	//TEST POINT LIGHTS____________________________________________________________________________________________________________________
-	Object* testPointLight = new Object("testPointLight");
-	dx::XMFLOAT3 lightTranslation = dx::XMFLOAT3(2.0f, 0.0f, 3.0f);
-	testPointLight->GetTransform().SetPosition(dx::XMLoadFloat3(&lightTranslation));
-	AddObject(testPointLight);
-	testPointLight->AddComponent<PointLightComponent>();
-	testPointLight->GetComponent<PointLightComponent>()->SetColor({ 1.f, 0.f, 0.f, 1.f });
-
-	Object* testPointLight2 = new Object("testPointLight2");
-	dx::XMFLOAT3 lightTranslation2 = dx::XMFLOAT3(0.0f, 2.0f, 3.0f);
-	testPointLight2->GetTransform().SetPosition(dx::XMLoadFloat3(&lightTranslation2));
-	AddObject(testPointLight2);
-	testPointLight2->AddComponent<PointLightComponent>();
-	testPointLight2->GetComponent<PointLightComponent>()->SetColor({ 0.f, 1.f, 0.f, 1.f });
-
-	Object* testPointLight3 = new Object("testPointLight3");
-	dx::XMFLOAT3 lightTranslation3 = dx::XMFLOAT3(-2.0f, 0.0f, 3.0f);
-	testPointLight3->GetTransform().SetPosition(dx::XMLoadFloat3(&lightTranslation3));
-	AddObject(testPointLight3);
-	testPointLight3->AddComponent<PointLightComponent>();
-	testPointLight3->GetComponent<PointLightComponent>()->SetColor({ 0.f, 0.f, 1.f, 1.f });
-	//_____________________________________________________________________________________________________________________________________
-
 	stylizedTreeMaterial[0].SetSampler(sampler, 0, ShaderBindFlag::PIXEL);
 	stylizedTreeMaterial[1].SetSampler(sampler, 0, ShaderBindFlag::PIXEL);
 
@@ -128,6 +116,22 @@ void GameScene::InitializeObjects()
 
 	worldGenerator.InitializeTrees(stylizedTreeModel, stylizedTreeMaterial, renderer->GetDevice());
 	//
+
+	//Enemy object
+	enemy = new Object("enemy");
+	dx::XMFLOAT3 enemyTranslation = dx::XMFLOAT3(0, 2, 10);
+	enemy->GetTransform().SetPosition(dx::XMLoadFloat3(&enemyTranslation));
+	enemy->AddComponent<MeshComponent>(*mesh1, *material1);
+	enemy->AddComponent<EnemyStatsComp>(100, 2, 15, 25, 3);
+	enemyStatsComp = enemy->GetComponent<EnemyStatsComp>();
+	EnemySMComp* stateMachine = enemy->AddComponent<EnemySMComp>(EnemyState::IDLE);
+	stateMachine->RegisterState(EnemyState::IDLE, enemy->AddComponent<EnemyIdleComp>());
+	stateMachine->RegisterState(EnemyState::PATROL, enemy->AddComponent<EnemyPatrolComp>());
+	stateMachine->RegisterState(EnemyState::ATTACK, enemy->AddComponent<EnemyAttackComp>(camera));
+	AddObject(enemy);
+
+	camera->GetOwner()->AddComponent<PlayerAttackComp>(enemy);
+
 	Shader* skeletonShader = resourceManager->GetShaderResource("skeletonShader");
 
 	std::vector<Mesh> skeletonMesh = ZWEBLoader::LoadMeshes(ZWEBLoadType::SkeletonAnimation, "Models/baseMonster.ZWEB", renderer->GetDevice());
@@ -139,13 +143,23 @@ void GameScene::InitializeObjects()
 
 	SkeletonMeshComponent* baseMonsterComp = baseMonsterObject->AddComponent<SkeletonMeshComponent>(skeletonMesh[0], skeletonMat[0]);
 
-	baseMonsterComp->SetAnimationTrack(skeletonbaseMonsterIdle, StateMachine::IDLE);
+	baseMonsterComp->SetAnimationTrack(skeletonbaseMonsterIdle, SkeletonStateMachine::IDLE);
 
 	baseMonsterObject->GetTransform().SetScale({ 0.125f, 0.125f, 0.125f });
 	baseMonsterObject->GetTransform().SetPosition({ 0.0f, 2.5f, 0.0f });
 	AddObject(baseMonsterObject);
 
-	/* NEW TREE TEST INSTANCED*/
+
+	//Character reference
+	std::vector<Mesh> charRefMesh = ZWEBLoader::LoadMeshes(ZWEBLoadType::NoAnimation, "Models/char_ref.ZWEB", renderer->GetDevice());
+	std::vector<Material> charRefMat = ZWEBLoader::LoadMaterials("Models/char_ref.ZWEB", skeletonShader, renderer->GetDevice());
+
+	Object* characterReferenceObject = new Object("characterReference");
+
+	characterReferenceObject->AddComponent<MeshComponent>(charRefMesh[0], charRefMat[0]);
+	characterReferenceObject->GetTransform().SetScale({ 1, 1, 1 });
+	characterReferenceObject->GetTransform().SetPosition({ 0.0f, 0.0f, 4.0f });
+	AddObject(characterReferenceObject);
 
 	clock.Update();
 	clock.Start();
@@ -159,39 +173,78 @@ void GameScene::InitializeObjects()
 
 void GameScene::InitializeGUI()
 {
-	spriteBatch = new DirectX::SpriteBatch(renderer->GetContext());
+	//spriteBatch = new DirectX::SpriteBatch(renderer->GetContext());
 	GUISprite* normalSprite = new GUISprite(*renderer, "Textures/EquipmentBox.png", 0, 0, DrawDirection::BottomLeft, ClickFunction::Clickable);
 	GUISprite* buttonSprite = new GUISprite(*renderer, "Textures/EquipmentBox.png", 0, 0, DrawDirection::BottomRight, ClickFunction::Clickable);
 	GUISprite* normalSprite2 = new GUISprite(*renderer, "Textures/EquipmentBox.png", 0, 0, DrawDirection::TopLeft, ClickFunction::Clickable);
 	GUISprite* buttonSprite2 = new GUISprite(*renderer, "Textures/EquipmentBox.png", 0, 0, DrawDirection::TopRight, ClickFunction::Clickable);
-	GUIFont* fpsDisplay = new GUIFont(*renderer, "test", 300, 300);
+	GUIFont* fpsDisplay = new GUIFont(*renderer, "fps", windowWidth / 2, 50);
+	GUIFont* playerHealthDisplay = new GUIFont(*renderer, "playerHealth", 300, 350);
+	GUIFont* enemyHealthDisplay = new GUIFont(*renderer, "playerHealth", 600, 350);
 	normalSprite->SetActive();
 
-	guiManager = new GUIManager(renderer);
-	renderer->SetGUIManager(guiManager);
+	guiManager = new GUIManager(renderer, 100);
 	guiManager->AddGUIObject(fpsDisplay, "fps");
+	guiManager->AddGUIObject(playerHealthDisplay, "playerHealth");
+	guiManager->AddGUIObject(enemyHealthDisplay, "enemyHealth");
 	guiManager->AddGUIObject(normalSprite, "normalSprite");
 	guiManager->AddGUIObject(buttonSprite, "buttonSprite");
 	guiManager->AddGUIObject(normalSprite2, "normalSprite2");
 	guiManager->AddGUIObject(buttonSprite2, "buttonSprite2");
+	renderer->AddRenderPass(guiManager);
+
 	guiManager->GetGUIObject("normalSprite")->SetPosition(100, 100);
+}
+
+void GameScene::InitializeLights()
+{
+	//TEST POINT LIGHTS____________________________________________________________________________________________________________________
+	Object* testPointLight = new Object("testPointLight");
+	dx::XMFLOAT3 lightTranslation = dx::XMFLOAT3(2.0f, 0.0f, 3.0f);
+	testPointLight->GetTransform().SetPosition(dx::XMLoadFloat3(&lightTranslation));
+	testPointLight->AddComponent<PointLightComponent>(dx::XMFLOAT4(1.f, 0.f, 0.f, 1.f), 25);
+	AddObject(testPointLight);
+
+	Object* testPointLight2 = new Object("testPointLight2");
+	dx::XMFLOAT3 lightTranslation2 = dx::XMFLOAT3(0.0f, 2.0f, 3.0f);
+	testPointLight2->GetTransform().SetPosition(dx::XMLoadFloat3(&lightTranslation2));
+	testPointLight2->AddComponent<PointLightComponent>(dx::XMFLOAT4(0.f, 1.f, 0.f, 1.f), 25);
+	//AddObject(testPointLight2);
+
+	Object* testPointLight3 = new Object("testPointLight3");
+	dx::XMFLOAT3 lightTranslation3 = dx::XMFLOAT3(-2.0f, 0.0f, 3.0f);
+	testPointLight3->GetTransform().SetPosition(dx::XMLoadFloat3(&lightTranslation3));
+	testPointLight3->AddComponent<PointLightComponent>(dx::XMFLOAT4(0.f, 0.f, 1.f, 1.f), 25);
+	//AddObject(testPointLight3);
+	//_____________________________________________________________________________________________________________________________________
 }
 
 void GameScene::OnActivate()
 {
+	root = new Object("sceneRoot", ObjectFlag::DEFAULT);
 	nextScene = GAME;
+	InitializeLights();
 	InitializeGUI();
 	InitializeObjects();
 }
 
 void GameScene::OnDeactivate()
 {
+	renderer->RemoveRenderPass(guiManager);
+	worldGenerator.Clear();
+	LightManager::Instance().Clear();
+
+	delete root;
+	root = nullptr;
 }
 
 void GameScene::Update(const float& deltaTime)
 {
 	Scene::Update(deltaTime);
 
+	static_cast<GUIFont*>(guiManager->GetGUIObject("fps"))->SetString(std::to_string((int)GameClock::Instance().GetFramesPerSecond()));
+	static_cast<GUIFont*>(guiManager->GetGUIObject("playerHealth"))->SetString(std::to_string((int)playerStatsComp->GetHealth()));
+	static_cast<GUIFont*>(guiManager->GetGUIObject("enemyHealth"))->SetString(std::to_string((int)enemyStatsComp->GetHealth()));
 	guiManager->UpdateAll();
 
 	if (KEY_DOWN(H))
@@ -214,7 +267,7 @@ void GameScene::Update(const float& deltaTime)
 
 				object->AddComponent<DebugBoxShapeComponent>();
 				object->AddComponent<BoxColliderComponent>(dx::XMFLOAT3(0.5f, 0.5f, 0.5f), dx::XMFLOAT3(0, 0, 0));
-				RigidBodyComponent* rd = object->AddComponent<RigidBodyComponent>(10.0f, FilterGroups::DEFAULT, FilterGroups::EVERYTHING);
+				RigidBodyComponent* rd = object->AddComponent<RigidBodyComponent>(10.0f, FilterGroups::DEFAULT, FilterGroups::EVERYTHING, true);
 
 				phy.RegisterRigidBody(rd);
 
@@ -278,7 +331,7 @@ void GameScene::Render()
 	root->Draw(renderer, camera);
 	worldGenerator.DrawShapes();
 
-	renderer->RenderFrame();
+	renderer->RenderFrame(camera, (float)clock.GetSeconds());
 }
 
 

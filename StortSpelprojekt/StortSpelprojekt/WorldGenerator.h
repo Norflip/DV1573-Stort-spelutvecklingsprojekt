@@ -34,7 +34,8 @@ public:
   
 	void Generate(const SaveState& levelState, ID3D11Device* device, Object* root);
 	void DrawShapes ();
-	
+	void Clear();
+
 private:
 	Chunk* CreateChunk(ChunkType type, dx::XMINT2 index, const Noise::Settings& settings, ID3D11Device* device, Object* root);
 	int GetSegmentSeed(const SaveState& levelState) { return levelState.seed ^ std::hash<int>()(levelState.segment); }

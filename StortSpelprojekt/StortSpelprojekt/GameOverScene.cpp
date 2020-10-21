@@ -15,16 +15,11 @@ void GameOverScene::Initialize(Renderer* renderer)
 {
 	this->renderer = renderer;
 
-	spriteBatch = new DirectX::SpriteBatch(renderer->GetContext());
-	guiManager = new GUIManager(renderer);
-	renderer->SetGUIManager(guiManager);
-
 	// Should change values on resize event
 	Window* window = renderer->GetOutputWindow();
 
 	windowHeight = window->GetHeight();
 	windowWidth = window->GetWidth();
-
 
 	Input::Instance().SetWindow(window->GetHWND(), window->GetHeight(), window->GetWidth());
 }
@@ -43,22 +38,24 @@ void GameOverScene::InitializeObjects()
 
 void GameOverScene::InitializeGUI()
 {
-	spriteBatch = new DirectX::SpriteBatch(renderer->GetContext());
+	//spriteBatch = new DirectX::SpriteBatch(renderer->GetContext());
 	GUISprite* restart = new GUISprite(*renderer, "Textures/start.png", 100, 200, DrawDirection::Default, ClickFunction::Clickable);
 	GUISprite* quit = new GUISprite(*renderer, "Textures/start.png", 100, 400, DrawDirection::Default, ClickFunction::Clickable);
 	GUIFont* fpsDisplay = new GUIFont(*renderer, "fps", windowWidth / 2, 50);
 	restart->SetActive();
 	quit->SetActive();
 
-	guiManager = new GUIManager(renderer);
-	renderer->SetGUIManager(guiManager);
+	guiManager = new GUIManager(renderer, 100);
+
 	guiManager->AddGUIObject(fpsDisplay, "fps");
 	guiManager->AddGUIObject(restart, "restart");
 	guiManager->AddGUIObject(quit, "quit");
+	renderer->AddRenderPass(guiManager);
 }
 
 void GameOverScene::OnActivate()
 {
+	root = new Object("sceneRoot", ObjectFlag::DEFAULT);
 	nextScene = WIN;
 	InitializeGUI();
 	InitializeObjects();
@@ -66,6 +63,9 @@ void GameOverScene::OnActivate()
 
 void GameOverScene::OnDeactivate()
 {
+	renderer->RemoveRenderPass(guiManager);
+	delete root;
+	root = nullptr;
 }
 
 void GameOverScene::Update(const float& deltaTime)
@@ -77,6 +77,11 @@ void GameOverScene::Update(const float& deltaTime)
 	if(static_cast<GUISprite*>(guiManager->GetGUIObject("quit"))->IsClicked())
 	{
 		quit = true;
+	}
+
+	if (static_cast<GUISprite*>(guiManager->GetGUIObject("restart"))->IsClicked())
+	{
+		nextScene = GAME;
 	}
 
 	guiManager->UpdateAll();
@@ -94,6 +99,6 @@ void GameOverScene::Render()
 	root->Draw(renderer, camera);
 	worldGenerator.DrawShapes();
 
-	renderer->RenderFrame();
+	renderer->RenderFrame(camera, (float)clock.GetSeconds());
 }
 

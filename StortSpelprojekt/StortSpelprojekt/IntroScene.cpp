@@ -43,7 +43,7 @@ void IntroScene::InitializeObjects()
 
 void IntroScene::InitializeGUI()
 {
-	spriteBatch = new DirectX::SpriteBatch(renderer->GetContext());
+	//spriteBatch = new DirectX::SpriteBatch(renderer->GetContext());
 	GUISprite* startSprite = new GUISprite(*renderer, "Textures/start.png", 100, 100, DrawDirection::Default, ClickFunction::Clickable);
 	GUISprite* optionSprite = new GUISprite(*renderer, "Textures/start.png", 100, 300, DrawDirection::Default, ClickFunction::Clickable);
 	GUISprite* loreSprite = new GUISprite(*renderer, "Textures/start.png", 100, 500, DrawDirection::Default, ClickFunction::Clickable);
@@ -54,17 +54,18 @@ void IntroScene::InitializeGUI()
 	quitSprite->SetActive();
 	loreSprite->SetActive();
 
-	guiManager = new GUIManager(renderer);
-	renderer->SetGUIManager(guiManager);
+	guiManager = new GUIManager(renderer, 100);
 	guiManager->AddGUIObject(fpsDisplay, "fps");
 	guiManager->AddGUIObject(startSprite, "startSprite");
 	guiManager->AddGUIObject(optionSprite, "optionSprite");
 	guiManager->AddGUIObject(quitSprite, "quitSprite");
 	guiManager->AddGUIObject(loreSprite, "loreSprite");
+	renderer->AddRenderPass(guiManager);
 }
 
 void IntroScene::OnActivate()
 {
+	root = new Object("sceneRoot", ObjectFlag::DEFAULT);
 	nextScene = INTRO;
 	input.SetMouseMode(dx::Mouse::MODE_ABSOLUTE);
 	InitializeGUI();
@@ -73,6 +74,9 @@ void IntroScene::OnActivate()
 
 void IntroScene::OnDeactivate()
 {
+	renderer->RemoveRenderPass(guiManager);
+	delete root;
+	root = nullptr;
 }
 
 void IntroScene::Update(const float& deltaTime)
@@ -106,6 +110,6 @@ void IntroScene::Render()
 	root->Draw(renderer, camera);
 	worldGenerator.DrawShapes();
 
-	renderer->RenderFrame();
+	renderer->RenderFrame(camera, (float)clock.GetSeconds());
 }
 

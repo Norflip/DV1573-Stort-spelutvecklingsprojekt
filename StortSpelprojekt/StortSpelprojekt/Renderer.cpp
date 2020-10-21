@@ -338,6 +338,13 @@ void Renderer::SetRenderTarget(const RenderTexture& target, bool setDepth)
 	context->RSSetViewports(1, &target.viewport);
 }
 
+void Renderer::RemoveRenderPass(RenderPass* pass)
+{
+	std::vector<RenderPass*>::iterator it = std::find(passes.begin(), passes.end(), pass);
+
+	passes.erase(it);
+}
+
 void Renderer::AddItem(const RenderItem& item, bool transparent)
 {
 	RenderQueue& queue = (transparent) ? transparentItemQueue : opaqueItemQueue;

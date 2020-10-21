@@ -15,6 +15,7 @@ public:
 	void Initialize(Renderer* renderer) override;
 	void InitializeObjects() override;
 	void InitializeGUI() override;
+	void InitializeLights();
 
 	void OnActivate() override;
 	void OnDeactivate() override;

@@ -49,7 +49,7 @@ public:
 	virtual void Initialize(Renderer* renderer) = 0;
 	virtual void InitializeObjects() = 0;
 	virtual void InitializeGUI() = 0;
-
+	
 	// What is this for?
 	virtual void OnActivate() = 0;
 	virtual void OnDeactivate() = 0;
