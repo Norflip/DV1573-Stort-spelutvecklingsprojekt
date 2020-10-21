@@ -2,13 +2,17 @@
 #include "RenderPass.h"
 #include "GUISprite.h"
 #include "GUIFont.h"
-Scene::Scene() : input(Input::Instance())
+
+Scene::Scene(ResourceManager* manager) : input(Input::Instance())
 {
 	skyboxClass = nullptr;
 	renderer = nullptr;
 	camera = nullptr;
 
-	root = new Object("sceneRoot", ObjectFlag::DEFAULT);
+	//root = new Object("sceneRoot", ObjectFlag::DEFAULT);
+	resourceManager = manager;
+
+	quit = false;
 }
 
 Scene::~Scene()
@@ -16,86 +20,12 @@ Scene::~Scene()
 	delete skyboxClass;
 	skyboxClass = nullptr;
 
-	delete root;
-	root = nullptr;	
-
-	if (resourceManager)
-		delete resourceManager;
+	/*delete root;
+	root = nullptr;	*/
 }
 
 void Scene::Initialize(Renderer* renderer)
 {
-	this->renderer = renderer;
-
-	// TEMP
-	// Should change values on resize event
-	Window* window = renderer->GetOutputWindow();
-
-	Physics& physics = Physics::Instance();
-	physics.Initialize({ 0, -10.0f, 0 });
-
-
-	resourceManager = new ResourceManager;
-	resourceManager->InitializeResources(renderer->GetDevice());
-
-	pooler.Register("test_body_cube", 10, []() {
-
-		Object* object = new Object("fuel");
-
-		object->AddComponent<DebugBoxShapeComponent>();
-		object->AddComponent<BoxColliderComponent>(dx::XMFLOAT3(0.5f, 0.5f, 0.5f), dx::XMFLOAT3(0, 0, 0));
-		RigidBodyComponent* rd = object->AddComponent<RigidBodyComponent>(10.0f, FilterGroups::DEFAULT, FilterGroups::EVERYTHING, true);
-
-		Physics::Instance().RegisterRigidBody(rd);
-		return object;
-	});
-
-	spriteBatch = new DirectX::SpriteBatch(renderer->GetContext());
-	GUISprite* normalSprite = new GUISprite(*renderer, "Textures/EquipmentBox.png", 0, 0, DrawDirection::BottomLeft, ClickFunction::Clickable);
-	GUISprite* buttonSprite = new GUISprite(*renderer, "Textures/EquipmentBox.png", 0, 0, DrawDirection::BottomRight, ClickFunction::Clickable);
-	GUISprite* normalSprite2 = new GUISprite(*renderer, "Textures/EquipmentBox.png", 0, 0, DrawDirection::TopLeft, ClickFunction::Clickable);
-	GUISprite* buttonSprite2 = new GUISprite(*renderer, "Textures/EquipmentBox.png", 0, 0, DrawDirection::TopRight, ClickFunction::Clickable);
-	GUIFont* fpsDisplay = new GUIFont(*renderer, "test", 300, 300);
-	GUIFont* playerHealthDisplay = new GUIFont(*renderer, "playerHealth", 300, 350);
-	GUIFont* enemyHealthDisplay = new GUIFont(*renderer, "playerHealth", 600, 350);
-	normalSprite->SetActive();
-
-	guiManager = new GUIManager(renderer, 100);
-	guiManager->AddGUIObject(fpsDisplay, "fps");
-	guiManager->AddGUIObject(playerHealthDisplay, "playerHealth");
-	guiManager->AddGUIObject(enemyHealthDisplay, "enemyHealth");
-	guiManager->AddGUIObject(normalSprite, "normalSprite");
-	guiManager->AddGUIObject(buttonSprite, "buttonSprite");
-	guiManager->AddGUIObject(normalSprite2, "normalSprite2");
-	guiManager->AddGUIObject(buttonSprite2, "buttonSprite2");
-	guiManager->GetGUIObject("normalSprite")->SetPosition(100, 100);
-	renderer->AddRenderPass(guiManager);
-
-	SaveState state;
-	state.seed = 1337;
-	state.segment = 0;
-
-	worldGenerator.Initialize(renderer->GetDevice(), resourceManager->GetShaderResource("terrainShader"), resourceManager->GetShaderResource("grassShader"));
-	worldGenerator.Generate(state, renderer->GetDevice(), root);
-	worldGenerator.InitalizeGrass(renderer->GetDevice(), renderer->GetContext());
-
-	Object* cameraObject = new Object("camera", ObjectFlag::ENABLED);
-	camera = cameraObject->AddComponent<CameraComponent>(60.0f, true);
-	camera->Resize(window->GetWidth(), window->GetHeight());
-	cameraObject->AddComponent<ControllerComponent>();
-	cameraObject->AddComponent<EnemyStatsComp>(100, 2, 2, 25, 3);
-	playerStatsComp = cameraObject->GetComponent<EnemyStatsComp>();
-
-
-	Input::Instance().SetWindow(window->GetHWND(), window->GetHeight(), window->GetWidth());
-	AddObject(cameraObject);
-
-	InitializeObjects();
-
-	//Log::Add("PRINTING SCENE HIERARCHY ----");
-	//PrintSceneHierarchy(root, 0);
-	/*Log::Add("----");*/
-  
 }
 
 void Scene::InitializeObjects()
@@ -320,97 +250,24 @@ void Scene::InitializeObjects()
 void Scene::Update(const float& deltaTime)
 {
 	clock.Update();
-
-	//dx::XMFLOAT3 positionA = { 0,0,2 };
-	//dx::XMFLOAT3 positionB = { 0, 2,-5};
-
-	//DShape::DrawBox(positionA, { 2,2,2 }, { 0, 1, 1 });
-	//DShape::DrawWireBox(positionB, { 4,4,4 }, { 1,0,0 });
-	//DShape::DrawSphere({ -4,0,0 }, 1.0f, { 0, 0, 1 });
-	//DShape::DrawWireSphere({ -4,0,5 }, 1.0f, { 0,1,0 });
-	//DShape::DrawLine(positionA, positionB, { 1,1,0 });
   
 	input.UpdateInputs();
 	
 	root->Update(deltaTime);
 
-	skyboxClass->GetThisObject()->GetTransform().SetPosition(camera->GetOwner()->GetTransform().GetPosition());
-
 	GameClock::Instance().Update();
-	//std::cout << "FPS: " << GameClock::Instance().GetFramesPerSecond() << std::endl;
+	
+	//renderer->UpdateTime((float)clock.GetSeconds());
 
-	GUIFont* fps = static_cast<GUIFont*>(guiManager->GetGUIObject("fps"));
-	fps->SetString(std::to_string((int)GameClock::Instance().GetFramesPerSecond()));
-	GUIFont* playerHealth = static_cast<GUIFont*>(guiManager->GetGUIObject("playerHealth"));
-	playerHealth->SetString(std::to_string((int)playerStatsComp->GetHealth()));
-	GUIFont* enemyHealth = static_cast<GUIFont*>(guiManager->GetGUIObject("enemyHealth"));
-	enemyHealth->SetString(std::to_string((int)enemyStatsComp->GetHealth()));
-	guiManager->UpdateAll();
-
-
-	float t = (float)clock.GetSeconds();
-	t = t;
 	if (clock.GetSeconds() > 60)
 	{
 		clock.Restart();
 	}
 
-
-	if (KEY_DOWN(H))
-	{
-		dx::XMVECTOR cameraPosition = camera->GetOwner()->GetTransform().GetPosition();
-
-		Physics& phy = Physics::Instance();
-		const int ra = 3;
-
-		phy.MutexLock();
-
-		for (int y = -ra; y <= ra; y++)
-		{
-			for (int x = -ra; x <= ra; x++)
-			{
-				dx::XMVECTOR position = dx::XMVectorAdd(cameraPosition, { (float)x * 1.5f, -1.0f, (float)y * 1.5f });
-
-				Object* object = pooler.GetItem("test_body_cube");
-				object->GetComponent<RigidBodyComponent>()->SetPosition(position);
-				AddObject(object);
-			}
-		}
-
-		phy.MutexUnlock();
-	}
-
-
-	POINT p = input.GetMousePos();
-	Ray ray = camera->MouseToRay(p.x, p.y);
-	//std::cout << p.x << ", " << p.y << std::endl;
-
-	if (LMOUSE_PRESSED)
-	{
-		Physics& phy = Physics::Instance();
-		RayHit hit;
-		
-		DShape::DrawLine(ray.origin, ray.GetPoint(1000.0f), { 1,1,0 });
-
-		if (phy.RaytestSingle(ray, 1000.0f, hit, FilterGroups::DEFAULT))
-		{
-			DShape::DrawLine(ray.origin, hit.position, { 1,1,0 });
-			DShape::DrawSphere(hit.position, 1.0f, { 0, 0, 1 });
-
-			if (hit.object != nullptr)
-			{
-				std::cout << hit.object->GetName() << std::endl;
-			}
-		}
-	}
-	else
-	{
-		DShape::DrawSphere(ray.GetPoint(10.0f), 0.2f, { 1, 0, 1 });
-	}
-	
 	// Press P to recompile shaders
 	if (KEY_PRESSED(P))
 	{
+		std::cout << "Compiling: " << std::endl;
 		resourceManager->CompileShaders(renderer->GetDevice());
 	}
 }
@@ -473,5 +330,10 @@ void Scene::PrintSceneHierarchy(Object* object, size_t level) const
 			PrintSceneHierarchy(children[i]->GetOwner(), level + 1);
 		}
 	}
+}
+
+bool Scene::Quit()
+{
+	return quit;
 }
 

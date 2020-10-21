@@ -174,10 +174,13 @@
     <ClCompile Include="DShape.cpp" />
     <ClCompile Include="Engine.cpp" />
     <ClCompile Include="GameClock.cpp" />
+    <ClCompile Include="GameOverScene.cpp" />
+    <ClCompile Include="GameScene.cpp" />
     <ClCompile Include="GrassComponent.cpp" />
     <ClCompile Include="GUIManager.cpp" />
     <ClCompile Include="GUISprite.cpp" />
     <ClCompile Include="Input.cpp" />
+    <ClCompile Include="IntroScene.cpp" />
     <ClCompile Include="LightManager.cpp" />
     <ClCompile Include="InstancedMeshComponent.cpp" />
     <ClCompile Include="main.cpp" />
@@ -189,6 +192,7 @@
     <ClCompile Include="ObjectPooler.cpp" />
     <ClCompile Include="Physics.cpp" />
     <ClCompile Include="Path.cpp" />
+    <ClCompile Include="PlayerComp.cpp" />
     <ClCompile Include="PlayerAttackComp.cpp" />
     <ClCompile Include="PossionDiscSampler.cpp" />
     <ClCompile Include="PointLightComponent.cpp" />
@@ -227,10 +231,14 @@
     <ClInclude Include="ControllerComponent.h" />
     <ClInclude Include="DebugBoxShapeComponent.h" />
     <ClInclude Include="DShape.h" />
+    <ClInclude Include="GameOverScene.h" />
+    <ClInclude Include="GameScene.h" />
+    <ClInclude Include="IntroScene.h" />
     <ClInclude Include="FogRenderPass.h" />
     <ClInclude Include="ObjectPooler.h" />
     <ClInclude Include="Path.h" />
     <ClInclude Include="PhysicCallbacks.h" />
+    <ClInclude Include="PlayerComp.h" />
     <ClInclude Include="PlayerAttackComp.h" />
     <ClInclude Include="PossionDiscSampler.h" />
     <ClInclude Include="ResourceManager.h" />
