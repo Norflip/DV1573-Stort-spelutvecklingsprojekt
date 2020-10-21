@@ -45,9 +45,9 @@ void IntroScene::InitializeGUI()
 {
 	//spriteBatch = new DirectX::SpriteBatch(renderer->GetContext());
 	GUISprite* startSprite = new GUISprite(*renderer, "Textures/start.png", 100, 100, 0, DrawDirection::Default, ClickFunction::Clickable);
-	GUISprite* optionSprite = new GUISprite(*renderer, "Textures/start.png", 100, 300, 0, DrawDirection::Default, ClickFunction::Clickable);
-	GUISprite* loreSprite = new GUISprite(*renderer, "Textures/start.png", 100, 500, 0, DrawDirection::Default, ClickFunction::Clickable);
-	GUISprite* quitSprite = new GUISprite(*renderer, "Textures/start.png", 100, 700, 0, DrawDirection::Default, ClickFunction::Clickable);
+	GUISprite* optionSprite = new GUISprite(*renderer, "Textures/options.png", 100, 300, 0, DrawDirection::Default, ClickFunction::Clickable);
+	GUISprite* loreSprite = new GUISprite(*renderer, "Textures/lord.png", 100, 500, 0, DrawDirection::Default, ClickFunction::Clickable);
+	GUISprite* quitSprite = new GUISprite(*renderer, "Textures/Restart.png", 100, 700, 0, DrawDirection::Default, ClickFunction::Clickable);
 	GUIFont* fpsDisplay = new GUIFont(*renderer, "test", windowWidth / 2, 50);
 	startSprite->SetActive();
 	optionSprite->SetActive();
