@@ -160,6 +160,9 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="EnemyAttackComp.cpp" />
+    <ClCompile Include="EnemyIdleComp.cpp" />
+    <ClCompile Include="EnemyPatrolComp.cpp" />
     <ClCompile Include="BoundingBoxes.cpp" />
     <ClCompile Include="BoxColliderComponent.cpp" />
     <ClCompile Include="CameraComponent.cpp" />
@@ -186,8 +189,10 @@
     <ClCompile Include="MoveComponent.cpp" />
     <ClCompile Include="NodeWalkerComponent.cpp" />
     <ClCompile Include="Object.cpp" />
+    <ClCompile Include="ObjectPooler.cpp" />
     <ClCompile Include="Physics.cpp" />
     <ClCompile Include="Path.cpp" />
+    <ClCompile Include="PlayerAttackComp.cpp" />
     <ClCompile Include="PossionDiscSampler.cpp" />
     <ClCompile Include="PointLightComponent.cpp" />
     <ClCompile Include="Renderer.cpp" />
@@ -197,6 +202,8 @@
     <ClCompile Include="Shader.cpp" />
     <ClCompile Include="GUIFont.cpp" />
     <ClCompile Include="Skybox.cpp" />
+    <ClCompile Include="EnemySMComp.cpp" />
+    <ClCompile Include="EnemyStatsComp.cpp" />
     <ClCompile Include="SphereColliderComponent.cpp" />
     <ClCompile Include="Texture.cpp" />
     <ClCompile Include="SkeletonAni.cpp" />
@@ -207,6 +214,9 @@
     <ClCompile Include="WorldGenerator.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="EnemyAttackComp.h" />
+    <ClInclude Include="EnemyIdleComp.h" />
+    <ClInclude Include="EnemyPatrolComp.h" />
     <ClInclude Include="BoundingBoxes.h" />
     <ClInclude Include="BoxColliderComponent.h" />
     <ClInclude Include="Buffers.h" />
@@ -216,14 +226,18 @@
     <ClInclude Include="Chunk.h" />
     <ClInclude Include="Collider.h" />
     <ClInclude Include="CollisionInfo.h" />
+    <ClInclude Include="ConstantBuffer.h" />
     <ClInclude Include="ControllerComponent.h" />
     <ClInclude Include="DebugBoxShapeComponent.h" />
     <ClInclude Include="DShape.h" />
     <ClInclude Include="GameOverScene.h" />
     <ClInclude Include="GameScene.h" />
     <ClInclude Include="IntroScene.h" />
+    <ClInclude Include="FogRenderPass.h" />
+    <ClInclude Include="ObjectPooler.h" />
     <ClInclude Include="Path.h" />
     <ClInclude Include="PhysicCallbacks.h" />
+    <ClInclude Include="PlayerAttackComp.h" />
     <ClInclude Include="PossionDiscSampler.h" />
     <ClInclude Include="ResourceManager.h" />
     <ClInclude Include="Shapes.h" />
@@ -260,6 +274,8 @@
     <ClInclude Include="Shader.h" />
     <ClInclude Include="ShittyOBJLoader.h" />
     <ClInclude Include="Skybox.h" />
+    <ClInclude Include="EnemySMComp.h" />
+    <ClInclude Include="EnemyStatsComp.h" />
     <ClInclude Include="SphereColliderComponent.h" />
     <ClInclude Include="Texture.h" />
     <ClInclude Include="SkeletonAni.h" />
@@ -304,6 +320,18 @@
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">true</ExcludedFromBuild>
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">true</ExcludedFromBuild>
       <ShaderModel Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">4.0</ShaderModel>
+    </FxCompile>
+    <FxCompile Include="Shaders\FogTest_ps.hlsl">
+      <ShaderType Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Compute</ShaderType>
+      <ShaderModel Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">4.0</ShaderModel>
+      <ShaderType Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Compute</ShaderType>
+      <ShaderModel Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">4.0</ShaderModel>
+      <ShaderType Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">Compute</ShaderType>
+      <ShaderModel Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">4.0</ShaderModel>
+      <ShaderType Condition="'$(Configuration)|$(Platform)'=='Release|x64'">Compute</ShaderType>
+      <ShaderModel Condition="'$(Configuration)|$(Platform)'=='Release|x64'">4.0</ShaderModel>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">true</ExcludedFromBuild>
     </FxCompile>
     <FxCompile Include="Shaders\Grass_ds.hlsl">
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">true</ExcludedFromBuild>
@@ -393,12 +421,6 @@
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|x64'">true</ExcludedFromBuild>
     </FxCompile>
     <FxCompile Include="Shaders\TestPass.hlsl">
-      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">true</ExcludedFromBuild>
-      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">true</ExcludedFromBuild>
-      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">true</ExcludedFromBuild>
-      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|x64'">true</ExcludedFromBuild>
-    </FxCompile>
-    <FxCompile Include="Shaders\TestPass2.hlsl">
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">true</ExcludedFromBuild>
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">true</ExcludedFromBuild>
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">true</ExcludedFromBuild>

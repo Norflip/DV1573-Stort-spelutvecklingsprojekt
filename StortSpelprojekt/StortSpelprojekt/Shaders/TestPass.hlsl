@@ -1,4 +1,4 @@
-Texture2D diffuseMaps : register (t0);
+Texture2D screenTexture : register (t0);
 SamplerState defaultSampleType : register (s0);
 
 struct PixelInputType
@@ -14,7 +14,7 @@ float4 main (PixelInputType input) : SV_TARGET
     if (input.uv.x < 0.5f)
         return float4(0, 1, 0, 1);
 
-    diffuseColor = diffuseMaps.Sample(defaultSampleType, input.uv);
+    diffuseColor = screenTexture.Sample(defaultSampleType, input.uv);
 
     return diffuseColor;
 }

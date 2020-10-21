@@ -1,29 +1,38 @@
 #pragma once
 #include "Renderer.h"
-#include "Texture.h"
-#include "GUISprite.h"
+
 class RenderPass
 {
 public:
-	RenderPass(int priority) : priority(priority), enabled(true) {}
+	enum class PassType
+	{
+		UI_OVERLAY,
+		POST_PROCESSING
+	};
+
+public:
+	RenderPass(int priority, PassType type) : priority(priority), type(type), enabled(true) {}
 	virtual ~RenderPass() {}
 
 	virtual void m_Initialize(ID3D11Device*) {};
-	virtual bool Pass(Renderer* renderer, RenderTexture& current, RenderTexture& target) = 0;
+	virtual void Pass(Renderer* renderer, RenderTexture& current, RenderTexture& target) = 0;
 
 	int GetPriority() const { return this->priority; }
 	bool IsEnabled() const { return this->enabled; }
 	void SetEnabled(bool enabled) { this->enabled = enabled; }
 
+	PassType GetType() const { return this->type; }
+
 private:
 	int priority;
 	bool enabled;
+	PassType type;
 };
 
 class PSRenderPass : public RenderPass
 {
 public:
-	PSRenderPass(int priority, std::string pixelShaderPath, LPCSTR pixelShaderEntry = "main") : RenderPass(priority), path(pixelShaderPath), entry(pixelShaderEntry) {}
+	PSRenderPass(int priority, std::string pixelShaderPath, LPCSTR pixelShaderEntry = "main") : RenderPass(priority, RenderPass::PassType::POST_PROCESSING), path(pixelShaderPath), entry(pixelShaderEntry) {}
 
 	void m_Initialize(ID3D11Device* device) override 
 	{
@@ -34,10 +43,13 @@ public:
 		material = Material(shader);
 	}
 
-	bool Pass(Renderer* renderer, RenderTexture& inTexture, RenderTexture& outTexture) override
+	void Pass(Renderer* renderer, RenderTexture& inTexture, RenderTexture& outTexture) override
 	{
+		renderer->ClearRenderTarget(outTexture, false);
+		renderer->SetRenderTarget(outTexture, false);
+
+		renderer->GetContext()->PSSetShaderResources(0, 1, &inTexture.srv);
 		renderer->DrawScreenQuad(material);
-		return true;
 	}
 
 private:
@@ -47,20 +59,3 @@ private:
 	std::string path;
 	LPCSTR entry;
 };
-
-// GUIMANAGER
-
-class SpriteRenderPass : public RenderPass
-{
-public:
-	SpriteRenderPass(int priority,GUISprite* spiriteTest): RenderPass(priority), spiriteTest(spiriteTest){}
-	
-	bool Pass(Renderer* renderer, RenderTexture& inTexture, RenderTexture& outTexture) override
-	{
-		spiriteTest->Draw();
-		return true;
-	}
-private:
-	GUISprite* spiriteTest;
-};
-

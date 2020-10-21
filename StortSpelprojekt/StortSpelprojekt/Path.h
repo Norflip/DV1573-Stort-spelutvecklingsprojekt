@@ -2,6 +2,9 @@
 #include <random>
 #include <DirectXMath.h>
 namespace dx = DirectX;
+#include "Math.h"
+
+#define Wrap(index, size) (((index) % (size)) + (size)) % (size)
 
 class Path
 {
@@ -24,6 +27,7 @@ private:
 	void CalculateIndexes(int steps, int directionalSteps);
 	void CalculatePoints();
 	void UpdateDirection(dx::XMINT2& direction);
+	std::vector<dx::XMFLOAT2> SmoothPoints(std::vector<dx::XMFLOAT2>& points, float smoothness, float cornerRadius);
 
 private:
 	std::vector<dx::XMINT2> indexes;

@@ -49,6 +49,7 @@ float Path::ClosestDistance(const dx::XMFLOAT2& position) const
 			shortest = tmpDistance;
 	}
 
+	//std::cout << shortest << std::endl;
 	return sqrtf(shortest);
 }
 
@@ -79,7 +80,7 @@ void Path::CalculateIndexes(int steps, int directionalSteps)
 
 void Path::CalculatePoints()
 {
-	const size_t cuts = 7;
+	const size_t cuts = 2;
 	points.resize(indexes.size() * cuts);
 
 	for (size_t i = 0; i < indexes.size() - 1; i++)
@@ -96,6 +97,11 @@ void Path::CalculatePoints()
 
 	// add last
 	points.push_back(Chunk::IndexToXZ(indexes[indexes.size() - 1]));
+
+//	points = SmoothPoints(points, 3.0f, 1.0f);
+
+
+	const int a = 0;
 }
 
 void Path::UpdateDirection(dx::XMINT2& direction)
@@ -114,4 +120,24 @@ void Path::UpdateDirection(dx::XMINT2& direction)
 		else if (value > 0.66f)
 			direction = { 1, 0 };
 	}
+}
+
+std::vector<dx::XMFLOAT2> Path::SmoothPoints(std::vector<dx::XMFLOAT2>& points, float smoothness, float cornerRadius)
+{
+	std::vector<dx::XMFLOAT2> smoothedPoints;
+	smoothedPoints.push_back(points[0]);
+	
+	for (size_t i = 1; i < points.size() - 1; i++)
+	{
+		dx::XMFLOAT2 previous = points[Wrap(i - 1, points.size())];
+		previous = Math::Move(points[i], previous, cornerRadius);
+
+		dx::XMFLOAT2 next = points[Wrap(i + 1, points.size())];
+		next = Math::Move(points[i], next, cornerRadius);
+
+		std::vector<dx::XMFLOAT2> curve = Math::SmoothCurve(previous, next, points[i], smoothness);
+		smoothedPoints.insert(smoothedPoints.end(), curve.begin(), curve.end());
+	}
+
+	return smoothedPoints;
 }

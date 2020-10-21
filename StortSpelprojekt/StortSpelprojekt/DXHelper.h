@@ -30,6 +30,7 @@ struct RenderTexture
 	ID3D11RenderTargetView* rtv;
 	ID3D11ShaderResourceView* srv;
 	ID3D11DepthStencilView* dsv;
+	ID3D11ShaderResourceView* depthSRV;
 	D3D11_VIEWPORT viewport;
 
 	RenderTexture() : rtv(nullptr), srv(nullptr), dsv(nullptr), width(-1), height(-1) {}
@@ -65,7 +66,7 @@ namespace DXHelper
 	RenderTexture CreateBackbuffer(size_t width, size_t height, ID3D11Device* device, IDXGISwapChain* swapchain);
 	RenderTexture CreateRenderTexture(size_t width, size_t height, ID3D11Device* device, ID3D11DeviceContext* context, ID3D11DepthStencilState** dss);
 	void CreateBlendState(ID3D11Device* device, ID3D11BlendState** blendOn, ID3D11BlendState** blendOff);
-	void CreateRSState(ID3D11Device* device, ID3D11RasterizerState** cullBack, ID3D11RasterizerState** cullNone); //can add more in the future.
+	void CreateRSState(ID3D11Device* device, ID3D11RasterizerState** cullBack, ID3D11RasterizerState** cullNone, ID3D11RasterizerState** CCWO); //can add more in the future.
 
 	//void CreateBackbuffer(size_t width, size_t height, ID3D11Device* device, IDXGISwapChain* swapchain, ID3D11RenderTargetView** backbuffer, ID3D11DepthStencilView** depthStencilView);
 

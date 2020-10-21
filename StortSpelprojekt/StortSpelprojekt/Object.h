@@ -30,7 +30,7 @@ enum class ObjectFlag : unsigned int
 DEFINE_ENUM_FLAG_OPERATORS(ObjectFlag)
 
 // max components on entity
-constexpr std::size_t maxComponents = 16;
+constexpr std::size_t maxComponents = 32;
 using ComponentBitSet = std::bitset<maxComponents>;
 using ComponentArray = std::array<std::vector<Component*>, maxComponents>;
 
@@ -96,6 +96,7 @@ inline T* Object::AddComponent(TArgs&& ...mArgs)
 	c->SetOwner(this);
 	c->Initialize();
 
+	assert(GetComponentTypeID<T>() < maxComponents);
 	components.push_back(c);
 	componentArray[GetComponentTypeID<T>()].push_back(c);// = c;
 	componentBitSet[GetComponentTypeID<T>()] = true;

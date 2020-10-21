@@ -13,6 +13,9 @@
 #include "SkeletonMeshComponent.h"
 #include "PointLightComponent.h"
 #include "NodeWalkerComponent.h"
+#include "EnemyStatsComp.h"
+#include "EnemySMComp.h"
+#include "PlayerAttackComp.h"
 
 #include "Skybox.h"
 #include "WorldGenerator.h"
@@ -29,6 +32,8 @@
 #include "DebugBoxShapeComponent.h"
 
 #include "ResourceManager.h"
+#include "ObjectPooler.h"
+
 class GUIFont;
 class SpriteRenderPass;
 
@@ -72,11 +77,15 @@ protected:
 	Renderer* renderer;
 	GameClock clock;
 	Input& input;
+	Object* enemy;
+	EnemyStatsComp* playerStatsComp;
+	EnemyStatsComp* enemyStatsComp;
 
 	dx::SpriteBatch* spriteBatch;
 	WorldGenerator worldGenerator;
 	SpriteRenderPass* spritePass;	
 
+	ObjectPooler pooler;
 	GUIManager* guiManager;		
 	
 	Skybox* skyboxClass;		

@@ -97,6 +97,15 @@ void Transform::RemoveParentChild(Transform& parent, Transform& child)
 	child.SetParent(nullptr);
 }
 
+void Transform::ClearFromHierarchy(Transform& transform)
+{
+	if (transform.parent != nullptr && transform.ContainsChild(&transform))
+	{
+		transform.parent->RemoveChild(&transform);
+		transform.parent = nullptr;
+	}
+}
+
 dx::XMVECTOR Transform::GetWorldPosition() const
 {
 	dx::XMVECTOR pos, rot, scale;
