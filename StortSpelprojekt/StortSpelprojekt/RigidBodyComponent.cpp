@@ -158,11 +158,6 @@ void RigidBodyComponent::SetLinearVelocity(const dx::XMFLOAT3& velocity)
 	body->setLinearVelocity({ velocity.x,velocity.y,velocity.z });
 }
 
-//void RigidBodyComponent::SetLinearDamping(const float damping)
-//{
-//	body->setLinearDamping(damping);
-//}
-
 dx::XMFLOAT3 RigidBodyComponent::GetLinearVelocity() const
 {
 	return { body->getLinearVelocity().x,body->getLinearVelocity().y,body->getLinearVelocity().z };
@@ -172,11 +167,6 @@ void RigidBodyComponent::SetAngularVelocity(const dx::XMFLOAT3& velocity)
 {
 	body->setAngularVelocity({ velocity.x,velocity.y,velocity.z });
 }
-
-//void RigidBodyComponent::SetAngularDamping(const float damping)
-//{
-//	body->setAngularDamping(damping);
-//}
 
 dx::XMFLOAT3 RigidBodyComponent::GetAngularVelocity() const
 {

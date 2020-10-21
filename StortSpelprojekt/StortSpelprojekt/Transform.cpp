@@ -150,8 +150,6 @@ dx::XMMATRIX Transform::GetLocalWorldMatrix() const
 		dx::XMMatrixTranslationFromVector(dx::XMLoadFloat3(&this->position));
 }
 
-
-
 DirectX::XMVECTOR Transform::TransformDirection(DirectX::XMVECTOR direction) const
 {
 
