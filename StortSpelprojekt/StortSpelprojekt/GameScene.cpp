@@ -42,14 +42,37 @@ void GameScene::Initialize(Renderer* renderer)
 
 void GameScene::InitializeObjects()
 {
-	Object* playerObject = new Object("camera", ObjectFlag::ENABLED);
+	Physics& physics = Physics::Instance();
+	
+	dx::XMFLOAT3 pStart = { 10,20,10 };
+	dx::XMFLOAT3 zero = { 0.f, 0.f, 0.f };
+	dx::XMVECTOR pStartVec = dx::XMLoadFloat3(&pStart);
+	Object* playerObject = new Object("player", ObjectFlag::ENABLED);
+	Object* cameraObject = new Object("camera", ObjectFlag::ENABLED);
+	//Transform::SetParentChild(playerObject->GetTransform(), cameraObject->GetTransform());
 	this->player = playerObject;
-	camera = playerObject->AddComponent<CameraComponent>(60.0f, true);
-	camera->Resize(windowWidth, windowHeight);
-	playerObject->AddComponent<ControllerComponent>();
-	playerObject->AddComponent<PlayerComp>(guiManager, 100, 2, 10, 25, 3);
-	//playerStatsComp = cameraObject->GetComponent<EnemyStatsComp>();
+	camera = cameraObject->AddComponent<CameraComponent>(60.0f, true);
+	camera->Resize(this->windowWidth, this->windowHeight);
+	cameraObject->GetTransform().SetPosition(pStartVec);
+	playerObject->GetTransform().SetPosition(pStartVec);
+
+	//Mesh* meshP = resourceManager->GetResource<Mesh>("Test");
+	//Material* materialP = resourceManager->GetResource<Material>("TestMaterial");
+	//playerObject->AddComponent<MeshComponent>(*meshP, *materialP);
+	playerObject->AddComponent<CapsuleColliderComponent>(0.5f, 4.5f, zero);
+	physics.MutexLock();
+	RigidBodyComponent* rb = playerObject->AddComponent<RigidBodyComponent>(60.f, FilterGroups::PLAYER, FilterGroups::EVERYTHING, true);
+	physics.RegisterRigidBody(rb);
+	physics.MutexUnlock();
+
+	playerObject->AddComponent<ControllerComponent>(cameraObject);
+	//Transform::SetParentChild(playerObject->GetTransform(),cameraObject->GetTransform());
+
+	playerObject->AddComponent<PlayerComp>(guiManager, 50000, 2, 10, 25, 3);
+	
 	AddObject(playerObject);
+	//AddObject(playerObject, cameraObject );
+	AddObject(cameraObject);
 
 	SaveState state;
 	state.seed = 1337;
@@ -89,6 +112,9 @@ void GameScene::InitializeObjects()
 
 	AddObject(testObject);
 
+
+
+
 	skyboxClass = new Skybox(renderer->GetDevice(), renderer->GetContext(), resourceManager->GetShaderResource("skyboxShader"));
 	skyboxClass->GetThisObject()->AddFlag(ObjectFlag::NO_CULL);
 
@@ -118,7 +144,7 @@ void GameScene::InitializeObjects()
 	worldGenerator.InitializeTrees(stylizedTreeModel, stylizedTreeMaterial, renderer->GetDevice());
 	//
 
-	//Enemy object
+	//Enemy object //comments
 	enemy = new Object("enemy");
 	dx::XMFLOAT3 enemyTranslation = dx::XMFLOAT3(0, 2, 10);
 	enemy->GetTransform().SetPosition(dx::XMLoadFloat3(&enemyTranslation));
@@ -132,7 +158,7 @@ void GameScene::InitializeObjects()
 	stateMachine->RegisterState(EnemyState::ATTACK, enemy->AddComponent<EnemyAttackComp>(player->GetComponent<PlayerComp>()));
 	AddObject(enemy);
 
-	camera->GetOwner()->AddComponent<PlayerAttackComp>(enemy);
+	playerObject->AddComponent<PlayerAttackComp>(enemy);
 
 	Shader* skeletonShader = resourceManager->GetShaderResource("skeletonShader");
 

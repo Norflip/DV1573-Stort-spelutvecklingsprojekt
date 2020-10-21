@@ -55,6 +55,7 @@ void ControllerComponent::Initialize()
 		this->rbComp->GetRigidBody()->getCollider(0)->getMaterial().setBounciness(0.f);
 		this->rbComp->EnableGravity(!this->freeCam);
 		this->rbComp->SetLinearVelocity({ 0.f, 0.f, 0.f });
+		//this->capsuleComp->SetEnabled(true);
 	}
 	else 
 	{
@@ -226,6 +227,7 @@ void ControllerComponent::Update(const float& deltaTime)
 		direction = dx::XMVector3Normalize(direction);
 		if (freeCam)
 		{
+			phy.MutexLock();
 			direction = cameraObject->GetTransform().TransformDirection(direction);
 			direction = dx::XMVectorScale(direction, RUN_VELOCITY * deltaTime);
 			dx::XMStoreFloat3(&dir, direction);
@@ -234,9 +236,11 @@ void ControllerComponent::Update(const float& deltaTime)
 			rbComp->SetLinearVelocity({ dir.x * 20, dir.y*20, dir.z * 20 });
 			dx::XMVECTOR capsule = dx::XMLoadFloat4(&RESET_ROT);
 			rbComp->SetRotation(capsule);
+			phy.MutexUnlock();
 		}
 		else
 		{
+			phy.MutexLock();
 			direction = cameraObject->GetTransform().TransformDirectionCustomRotation(direction, groundRotation);
 			direction = dx::XMVectorScale(direction, this->velocity * deltaTime);
 			dx::XMStoreFloat3(&dir, direction);
@@ -245,14 +249,18 @@ void ControllerComponent::Update(const float& deltaTime)
 			rbComp->SetLinearVelocity({ dir.x * 20, vel.y, dir.z * 20 });
 			dx::XMVECTOR capsule = dx::XMLoadFloat4(&RESET_ROT);
 			rbComp->SetRotation(capsule);
+			phy.MutexUnlock();
 		}
 	}
 	else
 	{
+		phy.MutexLock();
 		//	Input::Instance().FreeMouse();
+
 		rbComp->SetLinearVelocity({ 0.f, 0.f, 0.f });
 		dx::XMVECTOR capsule = dx::XMLoadFloat4(&RESET_ROT);
 		rbComp->SetRotation(capsule);
+		phy.MutexUnlock();
 	}
 
 #if NDEBUG 

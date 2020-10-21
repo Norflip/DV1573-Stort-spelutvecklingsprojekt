@@ -31,11 +31,35 @@ void IntroScene::Initialize(Renderer* renderer)
 
 void IntroScene::InitializeObjects()
 {
-	Object* cameraObject = new Object("camera", ObjectFlag::ENABLED);
-	camera = cameraObject->AddComponent<CameraComponent>(60.0f, true);
+	Object* cameraObject2 = new Object("camera2", ObjectFlag::ENABLED);
+	camera = cameraObject2->AddComponent<CameraComponent>(60.0f, true);
 	camera->Resize(windowWidth, windowHeight);
-	cameraObject->AddComponent<ControllerComponent>();
-	AddObject(cameraObject);
+	//cameraObject2->AddComponent<ControllerComponent>();
+	this->player = cameraObject2;
+	AddObject(cameraObject2);
+
+	//Physics& physics = Physics::Instance();
+	//dx::XMFLOAT3 pStart = { 10,20,10 };
+	//dx::XMVECTOR pStartVec = dx::XMLoadFloat3(&pStart);
+	//Object* playerObject = new Object("player", ObjectFlag::ENABLED);
+	//Object* cameraObject = new Object("camera", ObjectFlag::ENABLED);
+	//this->player = playerObject;
+	//camera = cameraObject->AddComponent<CameraComponent>(60.0f, true);
+	//camera->Resize(this->windowWidth, this->windowHeight);
+	//cameraObject->GetTransform().SetPosition(pStartVec);
+	//playerObject->GetTransform().SetPosition(pStartVec);
+	//playerObject->AddComponent<CapsuleColliderComponent>(0.5f, 4.5f, pStart);
+	//physics.MutexLock();
+	//RigidBodyComponent* rb = playerObject->AddComponent<RigidBodyComponent>(60.f, FilterGroups::PLAYER, FilterGroups::EVERYTHING, true);
+	//physics.RegisterRigidBody(rb);
+	//physics.MutexUnlock();
+	//playerObject->AddComponent<ControllerComponent>(cameraObject);
+	//Transform::SetParentChild(playerObject->GetTransform(),cameraObject->GetTransform());
+	////playerObject->AddComponent<PlayerComp>(guiManager, 500, 2, 10, 25, 3);
+
+	////AddObject(cameraObject);
+	//AddObject(playerObject);
+	ShowCursor(true); 
 
 	skyboxClass = new Skybox(renderer->GetDevice(), renderer->GetContext(), resourceManager->GetShaderResource("skyboxShader"));
 	skyboxClass->GetThisObject()->AddFlag(ObjectFlag::NO_CULL);
