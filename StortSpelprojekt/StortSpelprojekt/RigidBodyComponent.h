@@ -59,7 +59,9 @@ public:
 
 	void Update(const float& deltaTime) override;
 	void SetPosition(dx::XMVECTOR position);
+	dx::XMVECTOR GetPosition()const ;
 	void SetRotation(dx::XMVECTOR rotation);
+	dx::XMVECTOR GetRotation()const ;
 	bool IsRotationLocked() const { return this->lockRotation; }
 	void LockRotation(bool lock) { this->lockRotation = lock; }
 

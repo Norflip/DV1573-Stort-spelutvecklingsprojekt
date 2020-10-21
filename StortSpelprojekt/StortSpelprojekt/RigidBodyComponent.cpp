@@ -24,6 +24,13 @@ void RigidBodyComponent::SetPosition(dx::XMVECTOR position)
 	body->setTransform(transform);
 }
 
+dx::XMVECTOR RigidBodyComponent::GetPosition() const
+{
+	rp::Vector3 pos = this->body->getTransform().getPosition();
+	dx::XMFLOAT4 pos4 = { pos.x,pos.y,pos.z,0 };
+	return dx::XMLoadFloat4(&pos4);
+}
+
 void RigidBodyComponent::SetRotation(dx::XMVECTOR rotation)
 {
 	dx::XMFLOAT4 rot;
@@ -32,6 +39,13 @@ void RigidBodyComponent::SetRotation(dx::XMVECTOR rotation)
 	rp::Transform transform = body->getTransform();
 	transform.setOrientation(rp::Quaternion(rot.x, rot.y, rot.z, rot.w));
 	body->setTransform(transform);
+}
+
+dx::XMVECTOR RigidBodyComponent::GetRotation() const
+{
+	rp::Quaternion rotQ = this->body->getTransform().getOrientation();
+	dx::XMFLOAT4 rot4 = { rotQ.x, rotQ.y, rotQ.z, rotQ.w};
+	return dx::XMLoadFloat4(&rot4);
 }
 
 
