@@ -12,6 +12,7 @@ ControllerComponent::ControllerComponent()
 	this->fovTimer = 0.f;
 	//this->theCamera = nullptr;
 	this->groundQuaterion = { 0.f,0.f,0.f,1.f };
+	this->rbObj = nullptr;
 }
 
 ControllerComponent::~ControllerComponent()
@@ -20,8 +21,11 @@ ControllerComponent::~ControllerComponent()
 
 void ControllerComponent::Initialize()
 {
-	if (GetOwner()->HasComponent<RigidBodyComponent>()|| GetOwner()->HasComponent<CapsuleColliderComponent>()
-		|| GetOwner()->HasComponent<CameraComponent>())
+	this->rbObj = GetOwner()->GetComponent<RigidBodyComponent>();
+	this->camObj = GetOwner()->GetComponent<CameraComponent>();
+	this->capsuleObj = GetOwner()->GetComponent<CapsuleColliderComponent>();
+
+	if (rbObj&& capsuleObj && this->camObj)
 	{
 		GetOwner()->GetComponent<RigidBodyComponent>()->LockRotation(true);
 		GetOwner()->GetComponent<RigidBodyComponent>()->SetLinearDamping(0.1f);
@@ -135,7 +139,7 @@ void ControllerComponent::Update(const float& deltaTime)
 				this->fovTimer = 0.f;
 			}
 		}
-		if (GetOwner()->HasComponent<CameraComponent>())
+		if (camObj)
 			GetOwner()->GetComponent<CameraComponent>()->SetFOV(fov);
 
 		if (KEY_PRESSED(W) || KEY_PRESSED(S) || KEY_PRESSED(A) || KEY_PRESSED(D))
@@ -223,7 +227,7 @@ void ControllerComponent::Update(const float& deltaTime)
 		//GetOwner()->GetTransform().Translate(dir.x, dir.y, dir.z);
 
 		phy.MutexLock();
-		if (GetOwner()->HasComponent<RigidBodyComponent>())
+		if (rbObj)
 		{
 			//std::cout << "x: " << dir.x << ", y: " << dir.y << ", z: " << dir.z << std::endl;
 			//GetOwner()->GetComponent<RigidBodyComponent>()->SetPosition(GetOwner()->GetTransform().GetPosition());

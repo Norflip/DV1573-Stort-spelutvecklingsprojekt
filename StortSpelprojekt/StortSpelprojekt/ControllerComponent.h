@@ -41,6 +41,9 @@ private:
 
 	float fov;
 	float fovTimer; //use timer class??
+	RigidBodyComponent* rbObj;
+	CameraComponent* camObj;
+	CapsuleColliderComponent* capsuleObj;
 
 public:
 	ControllerComponent();
