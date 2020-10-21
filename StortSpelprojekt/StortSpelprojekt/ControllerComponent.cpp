@@ -2,16 +2,12 @@
 
 ControllerComponent::ControllerComponent()
 {
-	//this->move =1.f;
-	//this->boost = 20.f;// *this->move;
-	//this->crouchSpeed = 0.3f;// *this->move;
 	this->velocity = 0.f;
 	this->velocityTimer = 0.f;
 
 	this->freeCam = true;
 	this->showCursor = true;
 	this->canRotate = false;
-	//this->sensetivity = 1.f;
 	this->fov = 60.f;
 	this->fovTimer = 0.f;
 	//this->theCamera = nullptr;
@@ -113,7 +109,6 @@ void ControllerComponent::Update(const float& deltaTime)
 		Input::Instance().ResetRelative();
 
 
-
 		if (KEY_PRESSED(LeftShift)) //sprint
 		{
 			if (this->velocity < RUN_VELOCITY && this->velocityTimer >= VELOCITY_INC_RATE)
@@ -175,7 +170,7 @@ void ControllerComponent::Update(const float& deltaTime)
 				dir.y -= 1.f;// move;
 
 		}
-		else //first person specific actions
+		else //First Person specific actions
 		{
 			//if (KEY_PRESSED(Space)) // FPcam //jump is  scuffed
 			//{
