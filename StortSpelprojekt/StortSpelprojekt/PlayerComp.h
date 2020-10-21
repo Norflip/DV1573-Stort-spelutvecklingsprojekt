@@ -22,6 +22,7 @@ public:
 	float GetCrouchSpeed()const { return crouchSpeed; }
 	float GetMovementspeed()const { return movementSpeed; }
 
+	float GetRadius() const { return radius; }
 
 	void LoseHealth(float damage) { health -= damage; }	
 	void AddHealth(float health) { this->health += health; }	
@@ -45,6 +46,7 @@ private:
 	float movementSpeed, crouchSpeed, SprintSpeed;
 	float foodLossPerSecond, fuelBurnPerMeter;
 	int* nextScene;
+	float radius;
 	GUIManager* guiMan;
 	GUISprite* fuelDippingBar, *foodDippingBar,* healthDippingBar;
 

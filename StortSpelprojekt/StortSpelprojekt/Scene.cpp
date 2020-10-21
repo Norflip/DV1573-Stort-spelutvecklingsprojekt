@@ -307,10 +307,10 @@ void Scene::Update(const float& deltaTime)
 	fps->SetString(std::to_string((int)GameClock::Instance().GetFramesPerSecond()));
 
 	GUIFont* playerHealth = static_cast<GUIFont*>(guiManager->GetGUIObject("playerHealth"));
-	playerHealth->SetString(std::to_string((int)playerStatsComp->GetHealth()));
+	playerHealth->SetString(std::to_string((int)player->GetComponent<PlayerComp>()->GetHealth()));
 
-	GUIFont* enemyHealth = static_cast<GUIFont*>(guiManager->GetGUIObject("enemyHealth"));
-	enemyHealth->SetString(std::to_string((int)enemyStatsComp->GetHealth()));
+	/*GUIFont* enemyHealth = static_cast<GUIFont*>(guiManager->GetGUIObject("enemyHealth"));
+	enemyHealth->SetString(std::to_string((int)enemyStatsComp->GetHealth()));*/
 	guiManager->UpdateAll();
 
 

@@ -12,7 +12,7 @@ PlayerAttackComp::~PlayerAttackComp()
 
 void PlayerAttackComp::Initialize()
 {
-	playerStatsComp = GetOwner()->GetComponent<EnemyStatsComp>();
+	playerStatsComp = GetOwner()->GetComponent<PlayerComp>();
 	enemyStatsComp = enemy->GetComponent<EnemyStatsComp>();
 }
 

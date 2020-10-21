@@ -70,9 +70,8 @@ private:
 	Input& input;
 	Object* enemy;
 	Object* player;
-	EnemyStatsComp* playerStatsComp;
-	EnemyStatsComp* enemyStatsComp;
 
+	EnemyStatsComp* enemyStatsComp;
 	dx::SpriteBatch* spriteBatch;
 	WorldGenerator worldGenerator;
 	SpriteRenderPass* spritePass;	

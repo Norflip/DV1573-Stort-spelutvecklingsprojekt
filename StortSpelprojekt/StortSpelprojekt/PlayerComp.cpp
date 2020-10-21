@@ -6,7 +6,7 @@ PlayerComp::PlayerComp()
 	movementSpeed = 10;
 	attack = 0;
 	attackSpeed = 0;
-
+	radius = 1;	// dont know ffs
 	/*this->fuelDippingBar = static_cast<GUISprite*>(guiMan->GetGUIObject("fuelDippingBar"));
 	this->foodDippingBar = static_cast<GUISprite*>(guiMan->GetGUIObject("foodDippingBar"));
 	this->healthDippingBar = static_cast<GUISprite*>(guiMan->GetGUIObject("healthDippingBar"));*/
