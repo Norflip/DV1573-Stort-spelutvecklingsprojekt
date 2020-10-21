@@ -156,20 +156,19 @@ void ControllerComponent::Update(const float& deltaTime)
 				this->fovTimer = 0.f;
 			}
 		}
-		if (camComp)
-			camComp->SetFOV(fov);
+		
+		camComp->SetFOV(fov);
 
 		if (KEY_PRESSED(W) || KEY_PRESSED(S) || KEY_PRESSED(A) || KEY_PRESSED(D))
 		{
 			if (KEY_PRESSED(W))
-				dir.z += 1.f;// move;
+				dir.z += 1.f;
 			if (KEY_PRESSED(S))
-				dir.z -= 1.f;// move;
+				dir.z -= 1.f;
 			if (KEY_PRESSED(A))
-				dir.x -= 1.f;// move;
+				dir.x -= 1.f;
 			if (KEY_PRESSED(D))
-				dir.x += 1.f;// move;
-
+				dir.x += 1.f;
 
 			if (this->velocity < WALK_VELOCITY && velocityTimer >= VELOCITY_INC_RATE)
 			{
@@ -178,19 +177,20 @@ void ControllerComponent::Update(const float& deltaTime)
 			}
 		}
 		else
+		{
 			if (this->velocity > 0.f && velocityTimer >= VELOCITY_INC_RATE)
 			{
 				this->velocity -= WALK_ACCELERATION;
 				this->velocityTimer = 0.f;
 			}
+		}
 
-	
 		if (freeCam) //flying camera
 		{
 			if (KEY_PRESSED(Space)) //Free cam
-				dir.y += 1.f;// move;
+				dir.y += 1.f;
 			if (KEY_PRESSED(C))
-				dir.y -= 1.f;// move;
+				dir.y -= 1.f;
 		}
 		else //First Person specific actions
 		{
@@ -258,6 +258,7 @@ void ControllerComponent::Update(const float& deltaTime)
 #if NDEBUG 
 
 	// fixes a bug in release where the compiler removes the variables
+	// Later: fix these variables?
 	speed = 0.0f;
 	direction = { 0,0,0 };
 #endif // NDEBUG 
