@@ -56,5 +56,6 @@ public:
 	std::vector<dx::SimpleMath::Matrix>& GetOffsets();
 	float GetFPS();
 	float GetAniLength();
+	
 };
 

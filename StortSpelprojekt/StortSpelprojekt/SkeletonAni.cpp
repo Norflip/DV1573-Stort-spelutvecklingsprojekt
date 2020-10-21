@@ -11,7 +11,7 @@ dx::SimpleMath::Matrix& SkeletonAni::Lerp(float elapsedTime, std::vector<Bone>& 
 
     for (unsigned int i = 0; i < keys.size() - 1; i++) //Find what frames the timeline is currently in between.
     {
-
+       
         if (currentFrame < keys[i + 1].frame)
         {
             firstIndex = i;
@@ -48,17 +48,7 @@ dx::SimpleMath::Matrix& SkeletonAni::Lerp(float elapsedTime, std::vector<Bone>& 
     dx::SimpleMath::Vector3 lerpedTrans = transV.Lerp(keys[firstIndex].translationVector, keys[secondIndex].translationVector, t);
     
     RT = rotQM.CreateFromQuaternion(slerpedQ) * transM.CreateTranslation(lerpedTrans);
-    //dx::XMStoreFloat4(&rotQ, DirectX::XMQuaternionSlerp(dx::XMLoadFloat4(&keys[firstIndex].rotationQuaternion), dx::XMLoadFloat4(&keys[secondIndex].rotationQuaternion), t));
-    //
-    //dx::XMStoreFloat4x4(&rotQM, DirectX::XMMatrixRotationQuaternion(dx::XMLoadFloat4(&rotQ)));
-    //
-    //dx::XMStoreFloat4(&transV, DirectX::XMVectorLerp(dx::XMLoadFloat4(&keys[firstIndex].translationVector), dx::XMLoadFloat4(&keys[secondIndex].translationVector), t));
-    //
-    //dx::XMStoreFloat4x4(&transM, DirectX::XMMatrixTranslationFromVector(dx::XMLoadFloat4(&transV)));
-
-    // 
-
-    //dx::XMStoreFloat4x4(&RT, dx::XMLoadFloat4x4(&rotQM) * dx::XMLoadFloat4x4(&transM)); //I have omitted scale
+  
 
 
 
@@ -71,7 +61,7 @@ dx::SimpleMath::Matrix& SkeletonAni::Lerp(float elapsedTime, std::vector<Bone>& 
 
 SkeletonAni::SkeletonAni()
 {
-    
+   
     animationTime = 0.0f;
     bones.resize(60); //Maximum number of bones, the animation doesn't need to have this many.
 }

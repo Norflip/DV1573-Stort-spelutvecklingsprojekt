@@ -30,15 +30,15 @@ void EnemySMComp::Animate()
 
 	if (currentState == EnemyState::ATTACK)
 	{
-		GetOwner()->GetComponent<SkeletonMeshComponent>()->Play(SkeletonStateMachine::RUN);
+		GetOwner()->GetComponent<SkeletonMeshComponent>()->SetTrack(SkeletonStateMachine::RUN,false);
 	}
 	else if (currentState == EnemyState::IDLE)
 	{
-		GetOwner()->GetComponent<SkeletonMeshComponent>()->Play(SkeletonStateMachine::IDLE);
+		GetOwner()->GetComponent<SkeletonMeshComponent>()->SetTrack(SkeletonStateMachine::IDLE,false);
 	}
 	else if (currentState == EnemyState::PATROL)
 	{
-		GetOwner()->GetComponent<SkeletonMeshComponent>()->Play(SkeletonStateMachine::WALK);
+		GetOwner()->GetComponent<SkeletonMeshComponent>()->SetTrack(SkeletonStateMachine::WALK,false);
 	}
 
 }

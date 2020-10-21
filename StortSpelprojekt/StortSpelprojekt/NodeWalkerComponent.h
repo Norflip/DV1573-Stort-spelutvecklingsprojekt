@@ -1,8 +1,9 @@
 #pragma once
-#include "Component.h"
-#include "Transform.h"
-#include <DirectXMath.h>
-#include "Object.h"
+#include "SkeletonMeshComponent.h"
+//#include "Component.h"
+//#include "Transform.h"
+//#include <DirectXMath.h>
+//#include "Object.h"
 #include "Input.h"
 
 namespace dx = DirectX;
@@ -35,10 +36,12 @@ private:
 	float nodeRadius;
 	bool canWalk;
 	float length; //length is only saved for display with
+	SkeletonMeshComponent* base;
+	SkeletonMeshComponent* legs;
 public:
 	NodeWalkerComponent();
 	~NodeWalkerComponent();
-
+	void initAnimation();
 	void Reset(); //is public cus is meant to be called outside of class if needed
 	void Start();
 	void Stop();

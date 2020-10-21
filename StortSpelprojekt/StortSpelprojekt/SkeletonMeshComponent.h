@@ -32,14 +32,17 @@ public:
 
 	void Update(const float& deltaTime) override;
 	void Draw(Renderer* renderer, CameraComponent* camera) override;
-	void RunAnimation(const float& deltaTime);
+	
 	void SetAnimationTrack(const SkeletonAni& skeletonAni, const SkeletonStateMachine& type);
 	
 	SkeletonAni& GetAnimationTrack(unsigned int trackNr);
 
-	void Play(const SkeletonStateMachine& type);
-	void PlayOnce(const SkeletonStateMachine& type);
-	void BlendAnimations(float elapsedTime, float t, int a, int b);
+	void SetTrack(const SkeletonStateMachine& type, bool playOnce);
+	
+	void BlendAnimations();
+	bool GetIsDone();
+	void SetisDone(bool);
+	bool doneUp, doneDown;
 private:
 	Mesh mesh;
 	Material material;
@@ -51,5 +54,10 @@ private:
 	BoundingBoxes boundingBoxes;
 	float componentDeltaTime = 0.0f;
 	GameClock timer;
+	bool playOnce = false;
+	bool done = false;
+	void PlayOnce();
+	void RunAnimation(const float& deltaTime);
+	void findChildren(SkeletonAni& track, unsigned int index);
 };
 

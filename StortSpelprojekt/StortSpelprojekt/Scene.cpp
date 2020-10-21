@@ -182,7 +182,7 @@ void Scene::InitializeObjects()
 	worldGenerator.InitializeTrees(stylizedTreeModel, stylizedTreeMaterial, renderer->GetDevice());
 	
 	//Enemy object
-	enemy = new Object("enemy");
+	/*enemy = new Object("enemy");
 	dx::XMFLOAT3 enemyTranslation = dx::XMFLOAT3(0, 2, 10);
 	enemy->GetTransform().SetPosition(dx::XMLoadFloat3(&enemyTranslation));
 	enemy->AddComponent<MeshComponent>(*mesh1, *material1);
@@ -194,7 +194,7 @@ void Scene::InitializeObjects()
 	stateMachine->RegisterState(EnemyState::ATTACK, enemy->AddComponent<EnemyAttackComp>(camera));
 	AddObject(enemy);
 
-	camera->GetOwner()->AddComponent<PlayerAttackComp>(enemy);
+	camera->GetOwner()->AddComponent<PlayerAttackComp>(enemy);*/
 
 	/* * * * * * * * ** * * * * */
 	bool defaultAnimation = false;
@@ -215,8 +215,9 @@ void Scene::InitializeObjects()
 	SkeletonAni skeletonbaseMonsterDeath = ZWEBLoader::LoadSkeletonOnly("Models/baseMonsterDeath.ZWEB", skeletonMesh[0].GetBoneIDS(), defaultAnimation);
 
 	Object* baseMonsterObject = new Object("baseMonster");
+	
 
-	baseMonsterObject->AddComponent<EnemySMComp>(EnemyState::ATTACK);
+	
 
 	SkeletonMeshComponent* baseMonsterComp = baseMonsterObject->AddComponent<SkeletonMeshComponent>(skeletonMesh[0], skeletonMat[0]);
 
@@ -230,11 +231,16 @@ void Scene::InitializeObjects()
 
 	baseMonsterComp->SetAnimationTrack(skeletonbaseMonsterDeath, SkeletonStateMachine::DEATH);
 
-	baseMonsterObject->GetTransform().SetScale({ 0.0525f, 0.0525f, 0.0525f });
-	baseMonsterObject->GetTransform().SetPosition({ 0.0f, 1.25f, 0.0f });
+	baseMonsterObject->GetTransform().SetScale({ 0.125f, 0.125f, 0.125f });
+	baseMonsterObject->GetTransform().SetPosition({ 0.0f, 2.5f, 10.0f });
 
-	//baseMonsterComp->Play(SkeletonStateMachine::IDLE);
+	enemyStatsComp = baseMonsterObject->AddComponent<EnemyStatsComp>(100, 2, 15, 25, 3);
 	
+	EnemySMComp* stateMachine = baseMonsterObject->AddComponent<EnemySMComp>(EnemyState::PATROL);
+
+	stateMachine->RegisterState(EnemyState::IDLE, baseMonsterObject->AddComponent<EnemyIdleComp>());
+	stateMachine->RegisterState(EnemyState::PATROL, baseMonsterObject->AddComponent<EnemyPatrolComp>());
+	stateMachine->RegisterState(EnemyState::ATTACK, baseMonsterObject->AddComponent<EnemyAttackComp>(camera));
 
 	AddObject(baseMonsterObject);
 	Shader* defaultShader = resourceManager->GetShaderResource("defaultShader");
@@ -280,13 +286,15 @@ void Scene::InitializeObjects()
 
 	Transform::SetParentChild(baseComponent->GetOwner()->GetTransform(), legsComponent->GetOwner()->GetTransform());
 
-	baseComponent->GetOwner()->GetTransform().SetScale({ 0.25f, 0.25f, 0.25f });
+	baseComponent->GetOwner()->GetTransform().SetScale({ 0.5f, 0.5f, 0.5f });
 
-	houseBaseObject->AddComponent<NodeWalkerComponent>();
+	NodeWalkerComponent* nodeWalker = houseBaseObject->AddComponent<NodeWalkerComponent>();
 
-	legsComponent->Play(SkeletonStateMachine::WALK);
+	nodeWalker->initAnimation();
 
-	baseComponent->Play(SkeletonStateMachine::WALK);
+	legsComponent->SetTrack(SkeletonStateMachine::IDLE, false);
+
+	baseComponent->SetTrack(SkeletonStateMachine::IDLE, false);
 
 	AddObject(houseBaseObject);
 	//Character reference
