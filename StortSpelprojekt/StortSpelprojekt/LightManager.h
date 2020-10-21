@@ -29,6 +29,7 @@ public:
 	PointLightComponent* GetPointLight(size_t index);
 	void RemovePointLight(size_t index);
 	void UpdateBuffers(ID3D11DeviceContext* context);
+	void Clear();
 
 private:
 

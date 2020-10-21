@@ -1,6 +1,6 @@
 #include "EnemyAttackComp.h"
 
-EnemyAttackComp::EnemyAttackComp(CameraComponent* player)
+EnemyAttackComp::EnemyAttackComp(PlayerComp* player)
 	: player(player), playerRadius(2.0f)
 {
 	timer.Start();
@@ -69,12 +69,16 @@ bool EnemyAttackComp::ChasePlayer(const float& deltaTime)
 
 void EnemyAttackComp::UpdateAttackPlayer(const float& deltaTime)
 {
+
+	// Behöver fixas med playercomp nedan
+
 	if (ChasePlayer(deltaTime) && attackPlayer)
 	{
 		if (timer.GetSeconds() >= GetOwner()->GetComponent<EnemyStatsComp>()->GetAttackSpeed())
 		{
 			timer.Restart();
-			player->GetOwner()->GetComponent<EnemyStatsComp>()->LoseHealth(GetOwner()->GetComponent<EnemyStatsComp>()->GetAttack());
+			player->LoseHealth(enemyStatsComp->GetAttack());
+			//player->GetOwner()->GetComponent<PlayerComp>()->LoseHealth(enemyStatsComp->GetAttack());
 
 		}
 	}

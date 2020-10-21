@@ -30,6 +30,7 @@ public:
 	void ReadShaders(ID3D11Device* device);
 
 	void CompileShaders(ID3D11Device* device);
+
 };
 
 // Måste template funktioner ligga i .h filen?

@@ -226,6 +226,11 @@ void WorldGenerator::DrawShapes ()
 	}
 }
 
+void WorldGenerator::Clear()
+{
+	chunks.clear();
+}
+
 Chunk* WorldGenerator::CreateChunk(ChunkType type, dx::XMINT2 index, const Noise::Settings& settings, ID3D11Device* device, Object* root)
 {
 	// + 1 f�r height map
