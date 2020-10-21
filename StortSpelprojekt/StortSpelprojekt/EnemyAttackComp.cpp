@@ -1,22 +1,27 @@
-#include "AIAttack.h"
+#include "EnemyAttackComp.h"
 
-AIAttack::AIAttack(CameraComponent* player)
+EnemyAttackComp::EnemyAttackComp(CameraComponent* player)
 	: player(player), playerRadius(2.0f)
 {
 	timer.Start();
 }
 
-AIAttack::~AIAttack()
+EnemyAttackComp::~EnemyAttackComp()
 {
 }
 
-void AIAttack::Update(const float& deltaTime)
+void EnemyAttackComp::Initialize()
+{
+	enemyStatsComp = GetOwner()->GetComponent<EnemyStatsComp>();
+}
+
+void EnemyAttackComp::Update(const float& deltaTime)
 {
 	timer.Update();
 	UpdateAttackPlayer(deltaTime);
 }
 
-bool AIAttack::ChasePlayer(const float& deltaTime)
+bool EnemyAttackComp::ChasePlayer(const float& deltaTime)
 {
 	bool chasePlayer = false;
 	attackPlayer = false;
@@ -29,8 +34,8 @@ bool AIAttack::ChasePlayer(const float& deltaTime)
 	dx::XMFLOAT3 distanceF = { enemyPos.x - playerPos.x, enemyPos.y - playerPos.y, enemyPos.z - playerPos.z };
 	dx::XMFLOAT3 moveDir = { 0.0f, 0.0f, 0.0f };
 
-	if (GetOwner()->GetComponent<StatsComponent>()->GetRadius() > distanceF.x && GetOwner()->GetComponent<StatsComponent>()->GetRadius() > distanceF.y &&
-		GetOwner()->GetComponent<StatsComponent>()->GetRadius() > distanceF.z)
+	if (enemyStatsComp->GetRadius() > distanceF.x && enemyStatsComp->GetRadius() > distanceF.y &&
+		enemyStatsComp->GetRadius() > distanceF.z)
 	{
 		chasePlayer = true;
 		if (distanceF.x > playerRadius)
@@ -56,20 +61,20 @@ bool AIAttack::ChasePlayer(const float& deltaTime)
 		&& distanceF.x >= -playerRadius && distanceF.z >= -playerRadius)
 		attackPlayer = true;
 
-	GetOwner()->GetTransform().Translate(moveDir.x * GetOwner()->GetComponent<StatsComponent>()->GetSpeed() * deltaTime, 0.0f,
-		moveDir.z * GetOwner()->GetComponent<StatsComponent>()->GetSpeed() * deltaTime);
+	GetOwner()->GetTransform().Translate(moveDir.x * GetOwner()->GetComponent<EnemyStatsComp>()->GetSpeed() * deltaTime, 0.0f,
+		moveDir.z * GetOwner()->GetComponent<EnemyStatsComp>()->GetSpeed() * deltaTime);
 
 	return chasePlayer;
 }
 
-void AIAttack::UpdateAttackPlayer(const float& deltaTime)
+void EnemyAttackComp::UpdateAttackPlayer(const float& deltaTime)
 {
 	if (ChasePlayer(deltaTime) && attackPlayer)
 	{
-		if (timer.GetSeconds() >= GetOwner()->GetComponent<StatsComponent>()->GetAttackSpeed())
+		if (timer.GetSeconds() >= GetOwner()->GetComponent<EnemyStatsComp>()->GetAttackSpeed())
 		{
 			timer.Restart();
-			player->GetOwner()->GetComponent<StatsComponent>()->LoseHealth(GetOwner()->GetComponent<StatsComponent>()->GetAttack());
+			player->GetOwner()->GetComponent<EnemyStatsComp>()->LoseHealth(GetOwner()->GetComponent<EnemyStatsComp>()->GetAttack());
 
 		}
 	}
