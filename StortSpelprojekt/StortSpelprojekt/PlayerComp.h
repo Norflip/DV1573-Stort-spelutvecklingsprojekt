@@ -2,12 +2,13 @@
 #include "Component.h"
 #include "GUIManager.h"
 #include "GameClock.h"
+#include "GUISprite.h"
 class PlayerComp :
     public Component
 {
 public:
 	PlayerComp();
-	PlayerComp(float health, float movementSpeed, float radius, float attack, float attackSpeed);
+	PlayerComp(GUIManager* guimanager, float health, float movementSpeed, float radius, float attack, float attackSpeed);
 	virtual ~PlayerComp();
 	void Update(const float& deltaTime) override;
 	float GetHealth() const { return health; }
@@ -37,6 +38,7 @@ public:
 	void SetCurrentWeapon(int currentWeapon) { this->currentWeapon = currentWeapon; }// some ui stuff here?
 	void SetguiMan(GUIManager* guiMan) { this->guiMan = guiMan; }
 	void SetScenePtr(int* guiMan) { this->nextScene = nextScene; }
+
 private:
 	float health, attack, attackSpeed, fuel, food;
 	int currentWeapon;
@@ -44,5 +46,8 @@ private:
 	float foodLossPerSecond, fuelBurnPerMeter;
 	int* nextScene;
 	GUIManager* guiMan;
+	GUISprite* fuelDippingBar, *foodDippingBar,* healthDippingBar;
+
+	float ReverseAndClamp(float inputValue);
 };
 

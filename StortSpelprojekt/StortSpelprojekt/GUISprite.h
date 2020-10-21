@@ -39,7 +39,10 @@ public:
 	void SetActiveColor(dx::XMVECTOR vector = dx::XMVectorSet(0.6f, 0.6f, 1.3f, 1.0f));
 	bool GetActive() { return this->active; };
 	void SetDDSSprite(ID3D11Device* device, std::string spriteFile); // no dds yet
-	
+
+	void SetScale(float x, float y);
+	void SetScaleDipping(float yValue);
+
 	bool IsClicked();
 	bool IsMouseOver();
 	void Update();

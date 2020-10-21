@@ -109,6 +109,24 @@ void GUISprite::SetDDSSprite(ID3D11Device* device,  std::string spriteFile)
 	//assert(SUCCEEDED(result));
 }
 
+void GUISprite::SetScale(float x, float y)
+{
+	this->xScale = x;
+	this->yScale = y;
+
+	this->scale = dx::XMVectorSet(this->xScale, this->yScale, 0, 0);
+}
+
+void GUISprite::SetScaleDipping(float yValue)
+{
+	if (yScale < 1.0f)
+		this->yScale = yValue;
+	else
+		yScale = 1.0f;
+
+	this->scale = dx::XMVectorSet(this->xScale, this->yScale, 0, 0);
+}
+
 bool GUISprite::IsClicked()
 {
 	if (clickFunc == ClickFunction::Clickable && IsMouseOver() && Input::Instance().GetLeftMouseKeyDown())
