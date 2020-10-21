@@ -2,7 +2,7 @@
 #include "Object.h"
 #include "EnemyStatsComp.h"
 #include "GameClock.h"
-
+#include "PlayerComp.h"
 class PlayerAttackComp : public Component
 {
 	public:
@@ -17,6 +17,6 @@ class PlayerAttackComp : public Component
 
 		Object* enemy;
 		GameClock timer;
-		EnemyStatsComp* playerStatsComp;
+		PlayerComp* playerStatsComp;
 		EnemyStatsComp* enemyStatsComp;
 };

@@ -69,13 +69,16 @@ bool EnemyAttackComp::ChasePlayer(const float& deltaTime)
 
 void EnemyAttackComp::UpdateAttackPlayer(const float& deltaTime)
 {
+
+	// Behöver fixas med playercomp nedan
+
 	if (ChasePlayer(deltaTime) && attackPlayer)
 	{
-		if (timer.GetSeconds() >= GetOwner()->GetComponent<EnemyStatsComp>()->GetAttackSpeed())
+		/*if (timer.GetSeconds() >= GetOwner()->GetComponent<EnemyStatsComp>()->GetAttackSpeed())
 		{
 			timer.Restart();
-			player->GetOwner()->GetComponent<EnemyStatsComp>()->LoseHealth(GetOwner()->GetComponent<EnemyStatsComp>()->GetAttack());
+			player->GetOwner()->GetComponent<PlayerComp>()->LoseHealth(GetOwner()->GetComponent<EnemyStatsComp>()->GetAttack());
 
-		}
+		}*/
 	}
 }

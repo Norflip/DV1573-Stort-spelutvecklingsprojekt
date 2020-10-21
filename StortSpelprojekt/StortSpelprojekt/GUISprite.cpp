@@ -1,7 +1,7 @@
 #include "GUISprite.h"
 
 
-GUISprite::GUISprite(Renderer& renderer , std::string filePath, float xPos, float yPos, DrawDirection dir, ClickFunction clickFunc)
+GUISprite::GUISprite(Renderer& renderer , std::string filePath, float xPos, float yPos,float layerDepth, DrawDirection dir, ClickFunction clickFunc)
 {
 	this->renderer = &renderer;
 	// position
@@ -19,6 +19,7 @@ GUISprite::GUISprite(Renderer& renderer , std::string filePath, float xPos, floa
 	this->xPos = renderer.GetOutputWindow()->GetWidth()-xPos;
 	this->spriteBatch = nullptr;
 	this->filePath = filePath;
+	this->layerDepth = layerDepth;
 
 	this->scale = dx::XMVectorSet(this->xScale, this->yScale, 0, 0);
 
@@ -64,14 +65,14 @@ GUISprite::~GUISprite()
 void GUISprite::Draw(DirectX::SpriteBatch* test)
 {
 	if(active)
-		test->Draw(SRV, this->position, nullptr, this->activeColor, rotation, origin, scale, DirectX::SpriteEffects::SpriteEffects_None, 0.0f);
+		test->Draw(SRV, this->position, nullptr, this->activeColor, rotation, origin, scale, DirectX::SpriteEffects::SpriteEffects_None, this->layerDepth);
 	else
-		test->Draw(SRV, this->position, nullptr, this->baseColor, rotation, origin, scale, DirectX::SpriteEffects::SpriteEffects_None, 0.0f);
+		test->Draw(SRV, this->position, nullptr, this->baseColor, rotation, origin, scale, DirectX::SpriteEffects::SpriteEffects_None, this->layerDepth);
 }
 
 void GUISprite::Draw()
 {
-	spriteBatch->Draw(SRV, this->position, nullptr, this->baseColor, rotation, origin, scale, DirectX::SpriteEffects::SpriteEffects_None, 0.0f);	
+	spriteBatch->Draw(SRV, this->position, nullptr, this->baseColor, rotation, origin, scale, DirectX::SpriteEffects::SpriteEffects_None, this->layerDepth);
 }
 
 void GUISprite::SetPosition(float xPos, float yPos)
@@ -105,6 +106,24 @@ void GUISprite::SetDDSSprite(ID3D11Device* device,  std::string spriteFile)
 	//std::wstring wsConvert(spriteFile.begin(), spriteFile.end());
 	//result = DirectX::CreateDDSTextureFromFile(device, wsConvert.c_str(), nullptr, &SRV);
 	//assert(SUCCEEDED(result));
+}
+
+void GUISprite::SetScale(float x, float y)
+{
+	this->xScale = x;
+	this->yScale = y;
+
+	this->scale = dx::XMVectorSet(this->xScale, this->yScale, 0, 0);
+}
+
+void GUISprite::SetScaleBars(float yValue)
+{
+	if (yScale < 1.0f)
+		this->yScale = yValue;
+	else
+		yScale = 1.0f;
+
+	this->scale = dx::XMVectorSet(this->xScale, this->yScale, 0, 0);
 }
 
 bool GUISprite::IsClicked()

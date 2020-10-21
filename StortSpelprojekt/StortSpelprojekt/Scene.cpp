@@ -39,26 +39,83 @@ void Scene::Initialize(Renderer* renderer)
 	//resourceManager = new ResourceManager;
 	//resourceManager->InitializeResources(renderer->GetDevice());
 
-	/*spriteBatch = new DirectX::SpriteBatch(renderer->GetContext());
-	GUISprite* normalSprite = new GUISprite(*renderer, "Textures/EquipmentBox.png", 0, 0, DrawDirection::BottomLeft, ClickFunction::Clickable);
-	GUISprite* buttonSprite = new GUISprite(*renderer, "Textures/EquipmentBox.png", 0, 0, DrawDirection::BottomRight, ClickFunction::Clickable);
-	GUISprite* normalSprite2 = new GUISprite(*renderer, "Textures/EquipmentBox.png", 0, 0, DrawDirection::TopLeft, ClickFunction::Clickable);
-	GUISprite* buttonSprite2 = new GUISprite(*renderer, "Textures/EquipmentBox.png", 0, 0, DrawDirection::TopRight, ClickFunction::Clickable);
-	GUIFont* fpsDisplay = new GUIFont(*renderer, "test", 300, 300);
-	GUIFont* playerHealthDisplay = new GUIFont(*renderer, "playerHealth", 300, 350);
-	GUIFont* enemyHealthDisplay = new GUIFont(*renderer, "playerHealth", 600, 350);
-	normalSprite->SetActive();
+		//Object* object = new Object("fuel");
 
+		//object->AddComponent<DebugBoxShapeComponent>();
+		//object->AddComponent<BoxColliderComponent>(dx::XMFLOAT3(0.5f, 0.5f, 0.5f), dx::XMFLOAT3(0, 0, 0));
+		//RigidBodyComponent* rd = object->AddComponent<RigidBodyComponent>(10.0f, FilterGroups::DEFAULT, FilterGroups::EVERYTHING, true);
+
+		//Physics::Instance().RegisterRigidBody(rd);
+		//return object;
+	//});
+
+	//GUISTUFF//
+
+	//INFO, WE ARE DRAWING BACK TO FRONT. IF YOU WANT SOMETHING TO BE IN FRONT. SET VALUE TO 0. IF YOU WANT IT IN BACK USE 0.1 -> 1
+
+	//BUTTONS AT LEFT SIDE
+	//spriteBatch = new DirectX::SpriteBatch(renderer->GetContext());
+	GUISprite* equimpmentSprite1 = new GUISprite(*renderer, "Textures/EquipmentBox.png", 10, 10,0, DrawDirection::BottomLeft, ClickFunction::NotClickable);	
+	GUISprite* equimpmentSprite2 = new GUISprite(*renderer, "Textures/EquipmentBox.png", 90, 10, 0, DrawDirection::BottomLeft, ClickFunction::NotClickable);
+	GUISprite* equimpmentSprite3 = new GUISprite(*renderer, "Textures/EquipmentBox.png", 170, 10, 0, DrawDirection::BottomLeft, ClickFunction::NotClickable);
+	GUISprite* equimpmentSprite4 = new GUISprite(*renderer, "Textures/EquipmentBox.png", 250, 10, 0, DrawDirection::BottomLeft, ClickFunction::NotClickable);
+
+	//BARS THAT SCALING 
+	GUISprite* foodScalingBar = new GUISprite(*renderer, "Textures/DippingBar.png", 10, 10, 0.5, DrawDirection::BottomRight, ClickFunction::NotClickable);
+	GUISprite* healthScalingBar = new GUISprite(*renderer, "Textures/DippingBar.png", 90, 10, 0.5, DrawDirection::BottomRight, ClickFunction::NotClickable);
+	GUISprite* fuelScalingBar = new GUISprite(*renderer, "Textures/DippingBar.png", 170, 10, 0.5, DrawDirection::BottomRight, ClickFunction::NotClickable);
+
+	//BARS AR RIGHT SIDE
+	GUISprite* fuelBar = new GUISprite(*renderer, "Textures/Health_Fuel_Food.png", 10, 10, 1, DrawDirection::BottomRight, ClickFunction::NotClickable);	
+	GUISprite* foodBar = new GUISprite(*renderer, "Textures/Health_Fuel_Food.png", 90, 10, 1, DrawDirection::BottomRight, ClickFunction::NotClickable);
+	GUISprite* healthBar = new GUISprite(*renderer, "Textures/Health_Fuel_Food.png", 170, 10, 1, DrawDirection::BottomRight, ClickFunction::NotClickable);
+	
+
+	//ICONS ON TOP OF ITEMS
+	GUISprite* equimpmentSpriteAxe = new GUISprite(*renderer, "Textures/AxeIcon2.png", 10, 10, 0, DrawDirection::BottomLeft, ClickFunction::NotClickable);	
+
+	//ICONS ON TOP OF BARS
+	GUISprite* fuelSprite = new GUISprite(*renderer, "Textures/FireIcon.png", 10, 10, 0, DrawDirection::BottomRight, ClickFunction::NotClickable);
+	GUISprite* foodSprite = new GUISprite(*renderer, "Textures/FoodIcon.png", 90, 10, 0, DrawDirection::BottomRight, ClickFunction::NotClickable);
+	GUISprite* healthSprite = new GUISprite(*renderer, "Textures/HealthIcon.png", 170, 10, 0, DrawDirection::BottomRight, ClickFunction::NotClickable);
+
+	//FONTS
+	GUIFont* fpsDisplay = new GUIFont(*renderer, "fps", 300, 300);
+	GUIFont* healthDisplay = new GUIFont(*renderer, "playerHealth", 300, 350);
+
+	// INSERTIONS
 	guiManager = new GUIManager(renderer, 100);
 	guiManager->AddGUIObject(fpsDisplay, "fps");
-	guiManager->AddGUIObject(playerHealthDisplay, "playerHealth");
-	guiManager->AddGUIObject(enemyHealthDisplay, "enemyHealth");
-	guiManager->AddGUIObject(normalSprite, "normalSprite");
-	guiManager->AddGUIObject(buttonSprite, "buttonSprite");
-	guiManager->AddGUIObject(normalSprite2, "normalSprite2");
-	guiManager->AddGUIObject(buttonSprite2, "buttonSprite2");
-	guiManager->GetGUIObject("normalSprite")->SetPosition(100, 100);
-	renderer->AddRenderPass(guiManager);*/
+	guiManager->AddGUIObject(healthDisplay, "playerHealth");
+	
+	//BASE OF EQUIPMENT
+	guiManager->AddGUIObject(equimpmentSprite1, "equimpmentSprite1");
+	guiManager->AddGUIObject(equimpmentSprite2, "equimpmentSprite2");
+	guiManager->AddGUIObject(equimpmentSprite3, "equimpmentSprite3");
+	guiManager->AddGUIObject(equimpmentSprite4, "equimpmentSprite4");
+	//BASE OF DIPPING BARS
+	foodScalingBar->SetScale(1.0f, 0.0f);
+	healthScalingBar->SetScale(1.0f, 0.0f);
+	fuelScalingBar->SetScale(1.0f, 0.0f);
+
+	guiManager->AddGUIObject(foodScalingBar, "fuelDippingBar");
+	guiManager->AddGUIObject(healthScalingBar, "foodDippingBar");
+	guiManager->AddGUIObject(fuelScalingBar, "healthDippingBar");
+	
+
+	//ICON OF EQUIPMENT
+	guiManager->AddGUIObject(equimpmentSpriteAxe, "equimpmentSpriteAxe");
+	//BASE OF BARS
+	guiManager->AddGUIObject(fuelBar, "fuelBar");
+	guiManager->AddGUIObject(foodBar, "foodBar");
+	guiManager->AddGUIObject(healthBar, "healthBar");
+
+	//ICON OF BARS
+	guiManager->AddGUIObject(fuelSprite, "fuelSprite");
+	guiManager->AddGUIObject(foodSprite, "foodSprite");
+	guiManager->AddGUIObject(healthSprite, "healthSprite");
+
+	renderer->AddRenderPass(guiManager);
 
 	/*SaveState state;
 	state.seed = 1337;
@@ -67,24 +124,25 @@ void Scene::Initialize(Renderer* renderer)
 	worldGenerator.Initialize(renderer->GetDevice(), resourceManager->GetShaderResource("terrainShader"), resourceManager->GetShaderResource("grassShader"));
 	worldGenerator.Generate(state, renderer->GetDevice(), root);
 	worldGenerator.InitalizeGrass(renderer->GetDevice(), renderer->GetContext());
-
-	Object* cameraObject = new Object("camera", ObjectFlag::ENABLED);
-	camera = cameraObject->AddComponent<CameraComponent>(60.0f, true);
+	//PLAYER
+	Object* playerObject = new Object("camera", ObjectFlag::ENABLED);
+	this->player = playerObject;
+	camera = playerObject->AddComponent<CameraComponent>(60.0f, true);
 	camera->Resize(window->GetWidth(), window->GetHeight());
-	cameraObject->AddComponent<ControllerComponent>();
-	cameraObject->AddComponent<EnemyStatsComp>(100, 2, 2, 25, 3);
-	playerStatsComp = cameraObject->GetComponent<EnemyStatsComp>();
-
+	playerObject->AddComponent<ControllerComponent>();
+	playerObject->AddComponent<PlayerComp>(guiManager, 100, 2, 10, 25, 3);
+	//playerObject->GetComponent<PlayerComp>()->SetguiMan(guiManager);
+	//END OF PLAYER
 
 	Input::Instance().SetWindow(window->GetHWND(), window->GetHeight(), window->GetWidth());
-	AddObject(cameraObject);
+	AddObject(playerObject);
 
 	InitializeObjects();*/
 
 	//Log::Add("PRINTING SCENE HIERARCHY ----");
 	//PrintSceneHierarchy(root, 0);
 	/*Log::Add("----");*/
-  
+	clock.Restart();
 }
 
 void Scene::InitializeObjects()
@@ -147,11 +205,11 @@ void Scene::InitializeObjects()
 	//testPointLight->AddComponent<PointLightComponent>(dx::XMFLOAT4(1.f, 0.f, 0.f, 1.f), 25);
 	//AddObject(testPointLight);
 
-	//Object* testPointLight2 = new Object("testPointLight2");							
-	//dx::XMFLOAT3 lightTranslation2 = dx::XMFLOAT3(0.0f, 2.0f, 3.0f);					
-	//testPointLight2->GetTransform().SetPosition(dx::XMLoadFloat3(&lightTranslation2));	
-	//testPointLight2->AddComponent<PointLightComponent>(dx::XMFLOAT4(0.f, 1.f, 0.f, 1.f), 25);
-	//AddObject(testPointLight2);
+
+	/* check this */
+	//Character reference
+	//std::vector<Mesh> charRefMesh = ZWEBLoader::LoadMeshes(ZWEBLoadType::NoAnimation, "Models/char_ref.ZWEB", renderer->GetDevice());
+	//std::vector<Material> charRefMat = ZWEBLoader::LoadMaterials("Models/char_ref.ZWEB", skeletonShader, renderer->GetDevice());
 
 	//Object* testPointLight3 = new Object("testPointLight3");							
 	//dx::XMFLOAT3 lightTranslation3 = dx::XMFLOAT3(-2.0f, 0.0f, 3.0f);					
@@ -182,9 +240,7 @@ void Scene::InitializeObjects()
 	//stateMachine->RegisterState(EnemyState::ATTACK, enemy->AddComponent<EnemyAttackComp>(camera));
 	//AddObject(enemy);
 
-	//camera->GetOwner()->AddComponent<PlayerAttackComp>(enemy);
-
-	///* * * * * * * * ** * * * * */
+}
 
 	//Shader* skeletonShader = resourceManager->GetShaderResource("skeletonShader");
  // 
@@ -195,9 +251,18 @@ void Scene::InitializeObjects()
 
 	//Object* baseMonsterObject = new Object("baseMonster");
 
-	//SkeletonMeshComponent* baseMonsterComp = baseMonsterObject->AddComponent<SkeletonMeshComponent>(skeletonMesh[0], skeletonMat[0]);
+	//GameClock::Instance().Update();
+	//std::cout <<GameClock::Instance().GetFrameTime() << std::endl;
 
-	//baseMonsterComp->SetAnimationTrack(skeletonbaseMonsterIdle, SkeletonStateMachine::IDLE);
+	//GUIFont* fps = static_cast<GUIFont*>(guiManager->GetGUIObject("fps"));
+	//fps->SetString(std::to_string((int)GameClock::Instance().GetFramesPerSecond()));
+
+	//GUIFont* playerHealth = static_cast<GUIFont*>(guiManager->GetGUIObject("playerHealth"));
+	//playerHealth->SetString(std::to_string((int)player->GetComponent<PlayerComp>()->GetHealth()));
+
+	/*GUIFont* enemyHealth = static_cast<GUIFont*>(guiManager->GetGUIObject("enemyHealth"));
+	enemyHealth->SetString(std::to_string((int)enemyStatsComp->GetHealth()));*/
+	//guiManager->UpdateAll();
 
 	//baseMonsterObject->GetTransform().SetScale({ 0.125f, 0.125f, 0.125f });
 	//baseMonsterObject->GetTransform().SetPosition({ 0.0f, 2.5f, 0.0f });

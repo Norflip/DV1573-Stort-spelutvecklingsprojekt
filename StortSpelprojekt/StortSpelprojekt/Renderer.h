@@ -123,7 +123,7 @@ private:
 	ID3D11DepthStencilState* dss;
 
 	const float BLENDSTATEMASK[4] = { 0.0f };
-
+	
 	bool drawShapes = true;
   
 	//rasterizer
