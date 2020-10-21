@@ -1,13 +1,14 @@
 #pragma once
 #include "Object.h"
-#include "StatsComponent.h"
+#include "EnemyStatsComp.h"
 #include "GameClock.h"
 
-class AIAttack : public Component
+class EnemyAttackComp : public Component
 {
 	public:
-		AIAttack(CameraComponent* player);
-		virtual ~AIAttack();
+		EnemyAttackComp(CameraComponent* player);
+		virtual ~EnemyAttackComp();
+		void Initialize();
 		void Update(const float& deltaTime) override;
 	private:
 		bool ChasePlayer(const float& deltaTime);
@@ -17,4 +18,5 @@ class AIAttack : public Component
 		bool attackPlayer = false;
 		GameClock timer;
 		float playerRadius;
+		EnemyStatsComp* enemyStatsComp;
 };

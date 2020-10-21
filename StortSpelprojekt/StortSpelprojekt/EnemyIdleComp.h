@@ -1,11 +1,11 @@
 #pragma once
 #include "Object.h"
 
-class AIIdle : public Component
+class EnemyIdleComp : public Component
 {
 	public:
-		AIIdle();
-		virtual ~AIIdle();
+		EnemyIdleComp();
+		virtual ~EnemyIdleComp();
 		void Update(const float& deltaTime) override;
 	private:
 };

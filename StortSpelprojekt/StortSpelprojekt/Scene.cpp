@@ -236,12 +236,15 @@ void Scene::InitializeObjects()
 	dx::XMFLOAT3 enemyTranslation = dx::XMFLOAT3(0, 2, 10);
 	enemy->GetTransform().SetPosition(dx::XMLoadFloat3(&enemyTranslation));
 	enemy->AddComponent<MeshComponent>(*mesh1, *material1);
-	enemy->AddComponent<StatsComponent>(100, 2, 15, 25, 3);
-	StateMachineComponent* stateMachine = enemy->AddComponent<StateMachineComponent>(AIState::idle);
-	stateMachine->RegisterState(AIState::idle, enemy->AddComponent<AIIdle>());
-	stateMachine->RegisterState(AIState::patrol, enemy->AddComponent<AIPatrol>());
-	stateMachine->RegisterState(AIState::attack, enemy->AddComponent<AIAttack>(camera));
+	enemy->AddComponent<EnemyStatsComp>(100, 2, 15, 25, 3);
+	enemyStatsComp = enemy->GetComponent<EnemyStatsComp>();
+	EnemySMComp* stateMachine = enemy->AddComponent<EnemySMComp>(EnemyState::IDLE);
+	stateMachine->RegisterState(EnemyState::IDLE, enemy->AddComponent<EnemyIdleComp>());
+	stateMachine->RegisterState(EnemyState::PATROL, enemy->AddComponent<EnemyPatrolComp>());
+	stateMachine->RegisterState(EnemyState::ATTACK, enemy->AddComponent<EnemyAttackComp>(camera));
 	AddObject(enemy);
+
+	camera->GetOwner()->AddComponent<PlayerAttackComp>(enemy);
 
 	/* * * * * * * * ** * * * * */
 
@@ -252,7 +255,6 @@ void Scene::InitializeObjects()
 
 	SkeletonAni skeletonbaseMonsterIdle = ZWEBLoader::LoadSkeletonOnly("Models/baseMonsterIdle.ZWEB", skeletonMesh[0].GetBoneIDS());
 
-
 	Object* baseMonsterObject = new Object("baseMonster");
 
 	SkeletonMeshComponent* baseMonsterComp = baseMonsterObject->AddComponent<SkeletonMeshComponent>(skeletonMesh[0], skeletonMat[0]);
@@ -262,6 +264,19 @@ void Scene::InitializeObjects()
 	baseMonsterObject->GetTransform().SetScale({ 0.125f, 0.125f, 0.125f });
 	baseMonsterObject->GetTransform().SetPosition({ 0.0f, 2.5f, 0.0f });
 	AddObject(baseMonsterObject);
+
+
+	/* check this */
+	//Character reference
+	std::vector<Mesh> charRefMesh = ZWEBLoader::LoadMeshes(ZWEBLoadType::NoAnimation, "Models/char_ref.ZWEB", renderer->GetDevice());
+	std::vector<Material> charRefMat = ZWEBLoader::LoadMaterials("Models/char_ref.ZWEB", skeletonShader, renderer->GetDevice());
+
+	Object* characterReferenceObject = new Object("characterReference");
+
+	characterReferenceObject->AddComponent<MeshComponent>(charRefMesh[0], charRefMat[0]);
+	characterReferenceObject->GetTransform().SetScale({ 1, 1, 1 });
+	characterReferenceObject->GetTransform().SetPosition({ 0.0f, 0.0f, 4.0f });
+	AddObject(characterReferenceObject);
 
 
 }
@@ -290,17 +305,16 @@ void Scene::Update(const float& deltaTime)
 
 	GUIFont* fps = static_cast<GUIFont*>(guiManager->GetGUIObject("fps"));
 	fps->SetString(std::to_string((int)GameClock::Instance().GetFramesPerSecond()));
+
 	GUIFont* playerHealth = static_cast<GUIFont*>(guiManager->GetGUIObject("playerHealth"));
-	playerHealth->SetString(std::to_string((int)camera->GetOwner()->GetComponent<PlayerComp>()->GetHealth()));
-	
+	playerHealth->SetString(std::to_string((int)playerStatsComp->GetHealth()));
 
-
-	
-
+	GUIFont* enemyHealth = static_cast<GUIFont*>(guiManager->GetGUIObject("enemyHealth"));
+	enemyHealth->SetString(std::to_string((int)enemyStatsComp->GetHealth()));
 	guiManager->UpdateAll();
 
-	float t = (float)clock.GetSeconds();
-	t = t;
+
+	
 	if (clock.GetSeconds() > 60)
 	{
 		clock.Restart();
