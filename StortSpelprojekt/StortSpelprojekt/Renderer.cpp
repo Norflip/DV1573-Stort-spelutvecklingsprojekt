@@ -192,8 +192,8 @@ void Renderer::RenderFrame()
 			ids = 0;
 	}
 
-	cb_scene.id = ids;
-	cb_scene.factor = color;
+	cb_scene.id = 0;
+	cb_scene.factor = 1;
 
 	//We need to clear Depth Stencil View as well.//Emil
 
