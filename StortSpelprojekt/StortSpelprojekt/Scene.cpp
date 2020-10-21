@@ -52,39 +52,50 @@ void Scene::Initialize(Renderer* renderer)
 
 	//GUISTUFF//
 
+	//INFO, WE ARE DRAWING BACK TO FRONT. IF YOU WANT SOMETHING TO BE IN FRONT. SET VALUE TO 0. IF YOU WANT IT IN BACK USE 0.1 -> 1
+
 	//BUTTONS AT LEFT SIDE
 	spriteBatch = new DirectX::SpriteBatch(renderer->GetContext());
-	GUISprite* equimpmentSprite1 = new GUISprite(*renderer, "Textures/EquipmentBox.png", 10, 10,0, DrawDirection::BottomLeft, ClickFunction::NotClickable);
-	GUISprite* equimpmentSpriteAxe = new GUISprite(*renderer, "Textures/AxeIcon2.png", 10, 10, 0.1f, DrawDirection::BottomLeft, ClickFunction::NotClickable);
+	GUISprite* equimpmentSprite1 = new GUISprite(*renderer, "Textures/EquipmentBox.png", 10, 10,0, DrawDirection::BottomLeft, ClickFunction::NotClickable);	
 	GUISprite* equimpmentSprite2 = new GUISprite(*renderer, "Textures/EquipmentBox.png", 90, 10, 0, DrawDirection::BottomLeft, ClickFunction::NotClickable);
 	GUISprite* equimpmentSprite3 = new GUISprite(*renderer, "Textures/EquipmentBox.png", 170, 10, 0, DrawDirection::BottomLeft, ClickFunction::NotClickable);
 	GUISprite* equimpmentSprite4 = new GUISprite(*renderer, "Textures/EquipmentBox.png", 250, 10, 0, DrawDirection::BottomLeft, ClickFunction::NotClickable);
 	//BARS AR RIGHT SIDE
-	GUISprite* fuelBar = new GUISprite(*renderer, "Textures/Health_Fuel_Food.png", 10, 10, 0, DrawDirection::BottomRight, ClickFunction::NotClickable);
-	GUISprite* fuelSprite = new GUISprite(*renderer, "Textures/FireIcon2.png", 10, 10, 1, DrawDirection::BottomRight, ClickFunction::NotClickable);
-	GUISprite* foodBar = new GUISprite(*renderer, "Textures/Health_Fuel_Food.png", 90, 10, 0, DrawDirection::BottomRight, ClickFunction::NotClickable);
-	GUISprite* healthBar = new GUISprite(*renderer, "Textures/Health_Fuel_Food.png", 170, 10, 0, DrawDirection::BottomRight, ClickFunction::NotClickable);
-	GUIFont* fpsDisplay = new GUIFont(*renderer, "test", 300, 300);
+	GUISprite* fuelBar = new GUISprite(*renderer, "Textures/Health_Fuel_Food.png", 10, 10, 1, DrawDirection::BottomRight, ClickFunction::NotClickable);	
+	GUISprite* foodBar = new GUISprite(*renderer, "Textures/Health_Fuel_Food.png", 90, 10, 1, DrawDirection::BottomRight, ClickFunction::NotClickable);
+	GUISprite* healthBar = new GUISprite(*renderer, "Textures/Health_Fuel_Food.png", 170, 10,1, DrawDirection::BottomRight, ClickFunction::NotClickable);
+	//ICONS ON TOP OF ITEMS
+	GUISprite* equimpmentSpriteAxe = new GUISprite(*renderer, "Textures/AxeIcon2.png", 10, 10, 0, DrawDirection::BottomLeft, ClickFunction::NotClickable);	
+	//ICONS ON TOP OF BARS
+	GUISprite* fuelSprite = new GUISprite(*renderer, "Textures/FireIcon.png", 10, 10, 0, DrawDirection::BottomRight, ClickFunction::NotClickable);
+	GUISprite* foodSprite = new GUISprite(*renderer, "Textures/FoodIcon.png", 90, 10, 0, DrawDirection::BottomRight, ClickFunction::NotClickable);
+	GUISprite* healthSprite = new GUISprite(*renderer, "Textures/HealthIcon.png", 170, 10, 0, DrawDirection::BottomRight, ClickFunction::NotClickable);
+	//FONTS
+	GUIFont* fpsDisplay = new GUIFont(*renderer, "fps", 300, 300);
 	GUIFont* healthDisplay = new GUIFont(*renderer, "playerHealth", 300, 350);
 
+	// INSERTIONS
 	guiManager = new GUIManager(renderer, 100);
 	guiManager->AddGUIObject(fpsDisplay, "fps");
 	guiManager->AddGUIObject(healthDisplay, "playerHealth");
 
-	guiManager->AddGUIObject(equimpmentSpriteAxe, "equimpmentSpriteAxe");
+
+
+	//BASE OF EQUIPMENT
 	guiManager->AddGUIObject(equimpmentSprite1, "equimpmentSprite1");
-
 	guiManager->AddGUIObject(equimpmentSprite2, "equimpmentSprite2");
-
 	guiManager->AddGUIObject(equimpmentSprite3, "equimpmentSprite3");
 	guiManager->AddGUIObject(equimpmentSprite4, "equimpmentSprite4");
-
-	
+	//ICON OF EQUIPMENT
+	guiManager->AddGUIObject(equimpmentSpriteAxe, "equimpmentSpriteAxe");
+	//BASE OF BARS
 	guiManager->AddGUIObject(fuelBar, "fuelBar");
-	guiManager->AddGUIObject(fuelSprite, "fuelSprite");
 	guiManager->AddGUIObject(foodBar, "foodBar");
 	guiManager->AddGUIObject(healthBar, "healthBar");
-
+	//ICON OF BARS
+	guiManager->AddGUIObject(fuelSprite, "fuelSprite");
+	guiManager->AddGUIObject(foodSprite, "foodSprite");
+	guiManager->AddGUIObject(healthSprite, "healthSprite");
 	renderer->AddRenderPass(guiManager);
 
 	SaveState state;
