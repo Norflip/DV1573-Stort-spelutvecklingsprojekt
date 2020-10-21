@@ -33,6 +33,7 @@
 
 #include "ResourceManager.h"
 #include "ObjectPooler.h"
+#include "WeaponComponent.h"
 
 class GUIFont;
 class SpriteRenderPass;
@@ -84,4 +85,7 @@ private:
 	Skybox* skyboxClass;		
 
 	ResourceManager* resourceManager;
+
+
+	Object* cameraObject;
 };

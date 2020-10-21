@@ -79,7 +79,7 @@ void Scene::Initialize(Renderer* renderer)
 	worldGenerator.Generate(state, renderer->GetDevice(), root);
 	worldGenerator.InitalizeGrass(renderer->GetDevice(), renderer->GetContext());
 
-	Object* cameraObject = new Object("camera", ObjectFlag::ENABLED);
+	cameraObject = new Object("camera", ObjectFlag::ENABLED);
 	camera = cameraObject->AddComponent<CameraComponent>(60.0f, true);
 	camera->Resize(window->GetWidth(), window->GetHeight());
 	cameraObject->AddComponent<ControllerComponent>();
@@ -116,10 +116,10 @@ void Scene::InitializeObjects()
 	testObject2->AddComponent<MeshComponent>(*mesh2, *material2);
 	testObject3->AddComponent<MeshComponent>(*mesh3, *material3);
 
-	dx::XMFLOAT3 miniTranslation = dx::XMFLOAT3(0, 0, 6);
-	dx::XMFLOAT3 miniTranslation2 = dx::XMFLOAT3(2, 2, 2);
-	dx::XMFLOAT3 miniTranslation3 = dx::XMFLOAT3(-4, -3, -4);
-	dx::XMFLOAT3 miniTranslation4 = dx::XMFLOAT3(0.f, -7.f, 0.f);
+	dx::XMFLOAT3 miniTranslation = dx::XMFLOAT3(0, -10, 6);
+	dx::XMFLOAT3 miniTranslation2 = dx::XMFLOAT3(2, -10, 2);
+	dx::XMFLOAT3 miniTranslation3 = dx::XMFLOAT3(-4, -10, -4);
+	dx::XMFLOAT3 miniTranslation4 = dx::XMFLOAT3(0.f, -10.f, 0.f);
 
 	testObject->GetTransform().SetPosition(dx::XMLoadFloat3(&miniTranslation));
 	testObject2->GetTransform().SetPosition(dx::XMLoadFloat3(&miniTranslation2));
@@ -153,24 +153,25 @@ void Scene::InitializeObjects()
 
 	//TEST POINT LIGHTS____________________________________________________________________________________________________________________
 	Object* testPointLight = new Object("testPointLight");								
-	dx::XMFLOAT3 lightTranslation = dx::XMFLOAT3(2.0f, 0.0f, 3.0f);						
+	dx::XMFLOAT3 lightTranslation = dx::XMFLOAT3(2.0f, -100.0f, 3.0f);						
 	testPointLight->GetTransform().SetPosition(dx::XMLoadFloat3(&lightTranslation));		
 	testPointLight->AddComponent<PointLightComponent>(dx::XMFLOAT4(1.f, 0.f, 0.f, 1.f), 25);
 	AddObject(testPointLight);
 
 	Object* testPointLight2 = new Object("testPointLight2");							
-	dx::XMFLOAT3 lightTranslation2 = dx::XMFLOAT3(0.0f, 2.0f, 3.0f);					
+	dx::XMFLOAT3 lightTranslation2 = dx::XMFLOAT3(0.0f, -100.0f, 3.0f);					
 	testPointLight2->GetTransform().SetPosition(dx::XMLoadFloat3(&lightTranslation2));	
-	testPointLight2->AddComponent<PointLightComponent>(dx::XMFLOAT4(0.f, 1.f, 0.f, 1.f), 25);
+	testPointLight2->AddComponent<PointLightComponent>(dx::XMFLOAT4(0.f, 0.f, 0.f, 1.f), 25);
 	AddObject(testPointLight2);
 
 	Object* testPointLight3 = new Object("testPointLight3");							
-	dx::XMFLOAT3 lightTranslation3 = dx::XMFLOAT3(-2.0f, 0.0f, 3.0f);					
+	dx::XMFLOAT3 lightTranslation3 = dx::XMFLOAT3(-2.0f, -100.0f, 3.0f);					
 	testPointLight3->GetTransform().SetPosition(dx::XMLoadFloat3(&lightTranslation3));	
 	testPointLight3->AddComponent<PointLightComponent>(dx::XMFLOAT4(0.f, 0.f, 1.f, 1.f), 25);
 	
 	AddObject(testPointLight3);
 
+	
 	//_____________________________________________________________________________________________________________________________________
 	
 	stylizedTreeMaterial[0].SetSampler(sampler, 0, ShaderBindFlag::PIXEL);
@@ -183,7 +184,7 @@ void Scene::InitializeObjects()
 	
 	//Enemy object
 	enemy = new Object("enemy");
-	dx::XMFLOAT3 enemyTranslation = dx::XMFLOAT3(0, 2, 10);
+	dx::XMFLOAT3 enemyTranslation = dx::XMFLOAT3(0, -10, 10);
 	enemy->GetTransform().SetPosition(dx::XMLoadFloat3(&enemyTranslation));
 	enemy->AddComponent<MeshComponent>(*mesh1, *material1);
 	enemy->AddComponent<EnemyStatsComp>(100, 2, 15, 25, 3);
@@ -196,7 +197,8 @@ void Scene::InitializeObjects()
 
 	camera->GetOwner()->AddComponent<PlayerAttackComp>(enemy);
 
-	/* * * * * * * * ** * * * * */
+	/* * * * * * * * * * * * * * */
+	//Enemy model
 
   Shader* skeletonShader = resourceManager->GetShaderResource("skeletonShader");
   
@@ -211,11 +213,12 @@ void Scene::InitializeObjects()
 
 	baseMonsterComp->SetAnimationTrack(skeletonbaseMonsterIdle, SkeletonStateMachine::IDLE);
 
-	baseMonsterObject->GetTransform().SetScale({ 0.125f, 0.125f, 0.125f });
-	baseMonsterObject->GetTransform().SetPosition({ 0.0f, 2.5f, 0.0f });
+	baseMonsterObject->GetTransform().SetScale({ 0.09f, 0.09f, 0.09f });
+	baseMonsterObject->GetTransform().SetPosition({ 0.0f, 1.8f, 0.0f });
 	AddObject(baseMonsterObject);
 
-	//Character reference
+	///////////////////////////////////////////////////////////////////////
+	//Character reference ////////////////////////////////////////////////
 	std::vector<Mesh> charRefMesh = ZWEBLoader::LoadMeshes(ZWEBLoadType::NoAnimation, "Models/char_ref.ZWEB", renderer->GetDevice());
 	std::vector<Material> charRefMat = ZWEBLoader::LoadMaterials("Models/char_ref.ZWEB", skeletonShader, renderer->GetDevice());
 
@@ -223,9 +226,20 @@ void Scene::InitializeObjects()
 
 	characterReferenceObject->AddComponent<MeshComponent>(charRefMesh[0], charRefMat[0]);
 	characterReferenceObject->GetTransform().SetScale({ 1, 1, 1 });
-	characterReferenceObject->GetTransform().SetPosition({ 0.0f, 0.0f, 4.0f });
+	characterReferenceObject->GetTransform().SetPosition({ 0.0f, -10.0f, 0.0f });
 	AddObject(characterReferenceObject);
 
+	//Axe//////////////////////////////////////////////////////////////////
+	std::vector<Mesh> axeMesh = ZWEBLoader::LoadMeshes(ZWEBLoadType::NoAnimation, "Models/Test_axe.ZWEB", renderer->GetDevice());
+	std::vector<Material> axeMat = ZWEBLoader::LoadMaterials("Models/Test_axe.ZWEB", skeletonShader, renderer->GetDevice());
+
+	Object* axeObject = new Object("Axe");
+
+	axeObject->AddComponent<MeshComponent>(axeMesh[0], axeMat[0]);
+	axeObject->AddComponent<WeaponComponent>(cameraObject);
+	axeObject->GetTransform().SetScale({ 1, 1, 1 });
+	//axeObject->GetTransform().SetPosition({ 0.0f, 0.0f, 0.0f });
+	AddObject(axeObject);
 
 	clock.Update();
 	clock.Start();
