@@ -79,25 +79,9 @@ void Scene::Initialize(Renderer* renderer)
 	worldGenerator.Generate(state, renderer->GetDevice(), root);
 	worldGenerator.InitalizeGrass(renderer->GetDevice(), renderer->GetContext());
 
-	dx::XMFLOAT3 pos = { 10,20,10 };
-	dx::XMVECTOR temp = dx::XMLoadFloat3(&pos);
-	Object* cameraObject = new Object("camera", ObjectFlag::ENABLED);
-	camera = cameraObject->AddComponent<CameraComponent>(60.0f, true);
-	camera->Resize(window->GetWidth(), window->GetHeight());
-	dx::XMFLOAT3 camPos;
-	dx::XMStoreFloat3(&camPos,cameraObject->GetTransform().GetPosition());
-	cameraObject->GetTransform().SetPosition(temp);
-
-	cameraObject->AddComponent<CapsuleColliderComponent>(0.5f, 4.5f,camPos);
-	RigidBodyComponent* rb = cameraObject->AddComponent<RigidBodyComponent>(60.f, FilterGroups::PLAYER, FilterGroups::EVERYTHING, true);
-	physics.RegisterRigidBody(rb);
-	cameraObject->AddComponent<ControllerComponent>();
-	cameraObject->AddComponent<EnemyStatsComp>(100, 2, 2, 25, 3);
-	playerStatsComp = cameraObject->GetComponent<EnemyStatsComp>();
-
-
 	Input::Instance().SetWindow(window->GetHWND(), window->GetHeight(), window->GetWidth());
-	AddObject(cameraObject);
+	//AddObject(cameraObject);
+	
 
 	InitializeObjects();
 
@@ -109,6 +93,8 @@ void Scene::Initialize(Renderer* renderer)
 
 void Scene::InitializeObjects()
 {
+	Window* window = renderer->GetOutputWindow();
+	Physics& physics = Physics::Instance();
 	Mesh* mesh1 = resourceManager->GetResource<Mesh>("Test");
 	Mesh* mesh2 = resourceManager->GetResource<Mesh>("Test2");
 	Mesh* mesh3 = resourceManager->GetResource<Mesh>("Test3");
@@ -138,6 +124,38 @@ void Scene::InitializeObjects()
 	AddObject(testObject3, testObject2);
 
 	AddObject(testObject);
+
+
+	dx::XMFLOAT3 pos = { 10,20,10 };
+	dx::XMVECTOR temp = dx::XMLoadFloat3(&pos);
+	Object* playerObject = new Object("player", ObjectFlag::ENABLED);
+	Object* cameraObject = new Object("camera", ObjectFlag::ENABLED);
+	//Transform::SetParentChild(playerObject->GetTransform(), cameraObject->GetTransform());
+
+	camera = cameraObject->AddComponent<CameraComponent>(60.0f, true);
+	camera->Resize(window->GetWidth(), window->GetHeight());
+	dx::XMFLOAT3 playerPos;
+	dx::XMStoreFloat3(&playerPos, playerObject->GetTransform().GetPosition());
+	cameraObject->GetTransform().SetPosition(temp);
+	playerObject->GetTransform().SetPosition(temp);
+
+	Mesh* meshP = resourceManager->GetResource<Mesh>("Test");
+	Material* materialP = resourceManager->GetResource<Material>("TestMaterial");
+	playerObject->AddComponent<MeshComponent>(*meshP, *materialP);
+	playerObject->AddComponent<CapsuleColliderComponent>(0.5f, 4.5f, playerPos);
+	
+	RigidBodyComponent* rb = playerObject->AddComponent<RigidBodyComponent>(60.f, FilterGroups::PLAYER, FilterGroups::EVERYTHING, true);
+	physics.RegisterRigidBody(rb);
+	playerObject->AddComponent<ControllerComponent>(cameraObject);
+	Transform::SetParentChild( cameraObject->GetTransform(), playerObject->GetTransform());
+	
+
+
+	//playerObject->AddComponent<EnemyStatsComp>(100, 2, 2, 25, 3);
+	//playerStatsComp = playerObject->GetComponent<EnemyStatsComp>();
+	AddObject(playerObject);
+
+
 
 	skyboxClass = new Skybox(renderer->GetDevice(), renderer->GetContext(), resourceManager->GetShaderResource("skyboxShader"));
 	skyboxClass->GetThisObject()->AddFlag(ObjectFlag::NO_CULL);
@@ -191,19 +209,19 @@ void Scene::InitializeObjects()
 	worldGenerator.InitializeTrees(stylizedTreeModel, stylizedTreeMaterial, renderer->GetDevice());
 	
 	//Enemy object
-	enemy = new Object("enemy");
-	dx::XMFLOAT3 enemyTranslation = dx::XMFLOAT3(0, 2, 10);
-	enemy->GetTransform().SetPosition(dx::XMLoadFloat3(&enemyTranslation));
-	enemy->AddComponent<MeshComponent>(*mesh1, *material1);
-	enemy->AddComponent<EnemyStatsComp>(100, 2, 15, 25, 3);
-	enemyStatsComp = enemy->GetComponent<EnemyStatsComp>();
-	EnemySMComp* stateMachine = enemy->AddComponent<EnemySMComp>(EnemyState::IDLE);
-	stateMachine->RegisterState(EnemyState::IDLE, enemy->AddComponent<EnemyIdleComp>());
-	stateMachine->RegisterState(EnemyState::PATROL, enemy->AddComponent<EnemyPatrolComp>());
-	stateMachine->RegisterState(EnemyState::ATTACK, enemy->AddComponent<EnemyAttackComp>(camera));
-	AddObject(enemy);
+	//enemy = new Object("enemy");
+	//dx::XMFLOAT3 enemyTranslation = dx::XMFLOAT3(0, 2, 10);
+	//enemy->GetTransform().SetPosition(dx::XMLoadFloat3(&enemyTranslation));
+	//enemy->AddComponent<MeshComponent>(*mesh1, *material1);
+	//enemy->AddComponent<EnemyStatsComp>(100, 2, 15, 25, 3);
+	//enemyStatsComp = enemy->GetComponent<EnemyStatsComp>();
+	//EnemySMComp* stateMachine = enemy->AddComponent<EnemySMComp>(EnemyState::IDLE);
+	//stateMachine->RegisterState(EnemyState::IDLE, enemy->AddComponent<EnemyIdleComp>());
+	//stateMachine->RegisterState(EnemyState::PATROL, enemy->AddComponent<EnemyPatrolComp>());
+	//stateMachine->RegisterState(EnemyState::ATTACK, enemy->AddComponent<EnemyAttackComp>(camera));
+	//AddObject(enemy);
 
-	camera->GetOwner()->AddComponent<PlayerAttackComp>(enemy);
+	//camera->GetOwner()->AddComponent<PlayerAttackComp>(enemy);
 
 	/* * * * * * * * ** * * * * */
 
@@ -266,10 +284,10 @@ void Scene::Update(const float& deltaTime)
 
 	GUIFont* fps = static_cast<GUIFont*>(guiManager->GetGUIObject("fps"));
 	fps->SetString(std::to_string((int)GameClock::Instance().GetFramesPerSecond()));
-	GUIFont* playerHealth = static_cast<GUIFont*>(guiManager->GetGUIObject("playerHealth"));
-	playerHealth->SetString(std::to_string((int)playerStatsComp->GetHealth()));
-	GUIFont* enemyHealth = static_cast<GUIFont*>(guiManager->GetGUIObject("enemyHealth"));
-	enemyHealth->SetString(std::to_string((int)enemyStatsComp->GetHealth()));
+	//GUIFont* playerHealth = static_cast<GUIFont*>(guiManager->GetGUIObject("playerHealth"));
+	//playerHealth->SetString(std::to_string((int)playerStatsComp->GetHealth()));
+	//GUIFont* enemyHealth = static_cast<GUIFont*>(guiManager->GetGUIObject("enemyHealth"));
+	//enemyHealth->SetString(std::to_string((int)enemyStatsComp->GetHealth()));
 	guiManager->UpdateAll();
 
 

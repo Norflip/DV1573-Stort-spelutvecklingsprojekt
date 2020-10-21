@@ -19,6 +19,7 @@ constexpr float RUN_ACCELERATION = 3.5f;
 constexpr float VELOCITY_INC_RATE = 0.1f;
 
 constexpr dx::XMFLOAT3 RESET_POS = {20.f,3.f,20.f};
+constexpr dx::XMFLOAT4 RESET_ROT = { 0.f,0.f,0.f,1.f };
 
 class ControllerComponent :public Component //PlayerControllerComp
 {
@@ -41,15 +42,16 @@ private:
 
 	float fov;
 	float fovTimer; //use timer class??
-	RigidBodyComponent* rbObj;
-	CameraComponent* camObj;
-	CapsuleColliderComponent* capsuleObj;
+	Object* cameraObject;
+	RigidBodyComponent* rbComp;
+	CameraComponent* camComp;
+	CapsuleColliderComponent* capsuleComp;
 
 public:
 	ControllerComponent();
+	ControllerComponent(Object* cameraObject);
 	virtual ~ControllerComponent();
 
 	void Initialize();
 	void Update(const float& deltaTime);
-
 };
