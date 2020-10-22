@@ -26,7 +26,7 @@ void GameOverScene::Initialize(Renderer* renderer)
 
 void GameOverScene::InitializeObjects()
 {
-	Object* cameraObject = new Object("camera", ObjectFlag::ENABLED);
+	
 	camera = cameraObject->AddComponent<CameraComponent>(60.0f, true);
 	camera->Resize(windowWidth, windowHeight);
 	cameraObject->AddComponent<ControllerComponent>();
@@ -59,6 +59,7 @@ void GameOverScene::OnActivate()
 	nextScene = LOSE;
 	InitializeGUI();
 	InitializeObjects();
+	ShowCursor(true);
 }
 
 void GameOverScene::OnDeactivate()

@@ -26,7 +26,7 @@ public:
 
 	void SetBoostSpeed(float);
 	float GetBoostSpeed()const;
-
+	void SetShowCursor(bool set);
 	void SetCrouchSpeed(float);
 	float GetCrouchSpeed()const;
 

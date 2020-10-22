@@ -35,6 +35,11 @@ float ControllerComponent::GetBoostSpeed() const
 	return this->boost;
 }
 
+void ControllerComponent::SetShowCursor(bool set)
+{
+	this->showCursor = set;
+}
+
 void ControllerComponent::SetCrouchSpeed(float speed) //sets crouch multiplier (crouch*move)
 {
 	this->crouchSpeed = speed;
