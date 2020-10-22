@@ -141,10 +141,8 @@ std::vector<dx::XMFLOAT2> ObjectSpawner::CreateSpawnPositions(PointQuadTree& tre
 		}
 		else
 		{
-			std::cout << "chunk is null? " << ((chunk) ? "false" : "true") << std::endl;
 			fails++;
 		}
-		//}
 	}
 
 	std::shuffle(std::begin(validPoints), std::end(validPoints), Random::m_rngEngine);

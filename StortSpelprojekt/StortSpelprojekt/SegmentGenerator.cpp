@@ -349,7 +349,7 @@ void SegmentGenerator::AddTreesToChunk(Chunk* chunk, std::vector<ChunkPointInfor
 
 			for (size_t i = 0; i < nrOfInstancedStyTrees; i++)
 			{
-				float y = chunk->SampleHeight(posXZ.x + validPoints[i].x, posXZ.y + validPoints[i].y) + FRACKIG_TREE_ADJUSTMENT;
+				float y = chunk->SampleHeight(posXZ.x + validPoints[i].x, posXZ.y + validPoints[i].y) * 0.9f + FRACKIG_TREE_ADJUSTMENT;
 				treePoints.Insert(dx::XMFLOAT2(posXZ.x + validPoints[i].x, posXZ.y + validPoints[i].y));
 
 				dx::XMFLOAT3 position(posXZ.x + validPoints[i].x, y, posXZ.y + validPoints[i].y);

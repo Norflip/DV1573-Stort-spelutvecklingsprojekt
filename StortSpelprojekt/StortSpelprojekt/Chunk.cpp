@@ -100,14 +100,14 @@ float Chunk::SampleHeight(float x, float z)
 
 	float height = 0.0f;
 
-	if (col >= 0 && row >= 0 && col < CHUNK_SIZE && row < CHUNK_SIZE)
+	if (col >= 0 && row >= 0 && col <= CHUNK_SIZE && row <= CHUNK_SIZE)
 	{
 		height = shape->getHeightAt(col, row);
-		std::cout << "col: " << row << ", row: " << col << ", height: " << height << std::endl;
+		//std::cout << "col: " << row << ", row: " << col << ", height: " << height << std::endl;
 	}
 	else
 	{
-		std::cout << "FAILED to get chunk height: col: " << row << ", row: " << col << std::endl;
+		std::cout << "FAILED to get chunk height: col: " << col << ", row: " << row << std::endl;
 	}
 
 	return height;

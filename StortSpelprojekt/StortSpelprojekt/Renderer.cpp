@@ -117,9 +117,8 @@ void Renderer::DrawQueueToTarget(RenderQueue& queue)
 						DrawRenderItemGrass(item); break;
 
 					case RenderItem::Type::Skeleton:
-						context->RSSetState(rasterizerStateCCWO);
 						DrawRenderItemSkeleton(item); break;
-						context->RSSetState(rasterizerStateCullBack);
+
 					case RenderItem::Type::Default:
 					default:
 
@@ -202,8 +201,8 @@ void Renderer::RenderFrame(CameraComponent* camera, float time, RenderTexture& t
 	DrawQueueToTarget(opaqueItemQueue);
 	DShape::Instance().m_Draw(context);
 
-	//SetCullBack(false);
-	//DrawQueueToTarget(transparentItemQueue);
+	SetCullBack(false);
+	DrawQueueToTarget(transparentItemQueue);
 
 	SetCullBack(true);
 	size_t passCount = 0;
