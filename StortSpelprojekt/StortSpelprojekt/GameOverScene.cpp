@@ -76,7 +76,7 @@ void GameOverScene::OnDeactivate()
 void GameOverScene::Update(const float& deltaTime)
 {
 	Scene::Update(deltaTime);
-
+	
 	static_cast<GUIFont*>(guiManager->GetGUIObject("fps"))->SetString(std::to_string((int)GameClock::Instance().GetFramesPerSecond()));
 
 	if(static_cast<GUISprite*>(guiManager->GetGUIObject("quit"))->IsClicked())
@@ -102,7 +102,6 @@ void GameOverScene::Render()
 	skyboxClass->GetThisObject()->Draw(renderer, camera);
 
 	root->Draw(renderer, camera);
-	worldGenerator.DrawShapes();
 
 	renderer->RenderFrame(camera, (float)clock.GetSeconds());
 }

@@ -292,23 +292,23 @@ void ControllerComp::Update(const float& deltaTime)
 	// fixes a bug in release where the compiler removes the variables
 	// Later: fix these variables?
 
-	fov = 60.f;
-	fovTimer = 0.f;
+	//fov = 60.f;
+	//fovTimer = 0.f;
 
-	velocity = 0.f;
-	velocityTimer = 0.f;
-	crouchTimer = 0.f;
+	//velocity = 0.f;
+	//velocityTimer = 0.f;
+	//crouchTimer = 0.f;
 
-	xClamp = 0.f;
-	freeCam = true;
-	showCursor = true;
-	canRotate = false;
+	//xClamp = 0.f;
+	//freeCam = true;
+	//showCursor = true;
+	//canRotate = false;
 
-	groundQuaterion = { 0.f,0.f,0.f,1.f };
-	cameraObject = nullptr;
-	rbComp = nullptr;
-	camComp = nullptr;
-	capsuleComp = nullptr;
+	//groundQuaterion = { 0.f,0.f,0.f,1.f };
+	//cameraObject = nullptr;
+	//rbComp = nullptr;
+	//camComp = nullptr;
+	//capsuleComp = nullptr;
 
 #endif // NDEBUG 
 }
