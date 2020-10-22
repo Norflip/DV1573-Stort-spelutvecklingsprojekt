@@ -24,7 +24,7 @@ struct Bone
 class SkeletonAni
 {
 private:
-	float lenght, fps, currentFrame, animationTime, t;
+	float length, fps, currentFrame, animationTime, t;
 	unsigned int firstIndex, secondIndex;
 	std::map<std::string, unsigned int> boneIDMap;
 	std::vector<std::vector<Bone>> keyBones;
@@ -46,7 +46,7 @@ public:
 	std::vector<Bone>& GetRootKeyJoints();
 	void SetUpIDMapAndFrames(std::map<std::string, unsigned int> boneIDMap, float fps, float aniLenght);
 	void SetUpKeys(std::string boneName, std::vector<SkeletonKeysHeader>& keys);
-	std::map<std::string, unsigned int>& getBoneIDMap();
+	std::map<std::string, unsigned int>& GetBoneIDMap();
 	std::vector<std::vector<Bone>>& GetKeyFrames();
 	std::vector<dx::SimpleMath::Matrix>& GetOffsets();
 	float GetFPS();

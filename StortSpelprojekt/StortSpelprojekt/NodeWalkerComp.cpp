@@ -28,7 +28,7 @@ NodeWalkerComp::~NodeWalkerComp()
 {
 }
 
-void NodeWalkerComp::initAnimation()
+void NodeWalkerComp::InitAnimation()
 {
 	if (GetOwner()->HasComponent<SkeletonMeshComponent>())
 	{

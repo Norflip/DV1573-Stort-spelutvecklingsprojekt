@@ -4,7 +4,7 @@ dx::SimpleMath::Matrix& SkeletonAni::Lerp(float elapsedTime, std::vector<Bone>& 
 {
     animationTime = elapsedTime * fps;
     //animationTime += elapsedTime;
-    currentFrame = fmodf(animationTime, lenght);
+    currentFrame = fmodf(animationTime, length);
 
     firstIndex = 0;
     secondIndex = 1;
@@ -147,7 +147,7 @@ std::vector<Bone>& SkeletonAni::GetRootKeyJoints()
 void SkeletonAni::SetUpIDMapAndFrames(std::map<std::string, unsigned int> boneIDMap, float fps, float aniLenght)
 {
     this->fps = fps;
-    this->lenght = aniLenght;
+    this->length = aniLenght;
     this->boneIDMap = boneIDMap;
 
 
@@ -194,7 +194,7 @@ void SkeletonAni::SetUpKeys(std::string boneName, std::vector<SkeletonKeysHeader
 
 
 
-std::map<std::string, unsigned int>& SkeletonAni::getBoneIDMap()
+std::map<std::string, unsigned int>& SkeletonAni::GetBoneIDMap()
 {
     return boneIDMap;
 }
@@ -216,7 +216,7 @@ float SkeletonAni::GetFPS()
 
 float SkeletonAni::GetAniLength()
 {
-    return this->lenght;
+    return this->length;
 }
 
 void SkeletonAni::SetOffsetsDirect(std::vector<dx::SimpleMath::Matrix>& directOffsets)

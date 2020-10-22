@@ -28,7 +28,7 @@ class EnemySMComp : public Component
 	public:
 		EnemySMComp(EnemyState state);
 		virtual ~EnemySMComp();
-		void initAnimation();
+		void InitAnimation();
 		void SetState(EnemyState state);
 		
 		void Update(const float& deltaTime);

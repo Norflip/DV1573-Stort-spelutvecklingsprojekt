@@ -10,7 +10,7 @@ EnemySMComp::~EnemySMComp()
 {
 }
 
-void EnemySMComp::initAnimation()
+void EnemySMComp::InitAnimation()
 {
 	skeletonComponent =  GetOwner()->GetComponent<SkeletonMeshComponent>();
 	attackComponent = GetOwner()->GetComponent<EnemyAttackComp>();
