@@ -102,7 +102,7 @@ void SkeletonMeshComponent::FindChildren(SkeletonAni& track, unsigned int& index
 		if ( parentName==childName )
 		{
 			map.insert({ parentName, i-1 });
-			findChildren(track, i, map, name, secondName);
+			FindChildren(track, i, map, name, secondName);
 		}
 		if (name == "spine01")
 		{
@@ -261,7 +261,7 @@ void SkeletonMeshComponent::BlendAnimations()
 		{
 			
 			map1.insert({ name, i-1 });
-			findChildren(skeletonAnimations[2], i, map1, errorName, errorName2);
+			FindChildren(skeletonAnimations[2], i, map1, errorName, errorName2);
 
 		}
 		if (childName == "leftPinky02" || childName == "leftMiddle02" || childName == "leftRing02" ||
@@ -292,7 +292,7 @@ void SkeletonMeshComponent::BlendAnimations()
 			}
 			
 			
-			findChildren(skeletonAnimations[3], i, map2, errorName, errorName2);
+			FindChildren(skeletonAnimations[3], i, map2, errorName, errorName2);
 		}
 		if (childName == "leftPinky02" || childName == "leftMiddle02" || childName == "leftRing02" ||
 			childName == "leftThumb02" || childName == "leftIndex02" || childName == "rightPinky02" || childName == "rightMiddle02" || childName == "rightRing02" ||
@@ -325,7 +325,7 @@ void SkeletonMeshComponent::BlendAnimations()
 		keyframes[map.second] = skeletonAnimations[3].GetKeyFrames()[map.second];
 	}
 
-	blended.SetUpIDMapAndFrames(skeletonAnimations[2].getBoneIDMap(), skeletonAnimations[2].GetFPS(), skeletonAnimations[2].GetAniLength());
+	blended.SetUpIDMapAndFrames(skeletonAnimations[2].GetBoneIDMap(), skeletonAnimations[2].GetFPS(), skeletonAnimations[2].GetAniLength());
 	blended.SetOffsetsDirect(offsets);
 	blended.SetKeyFramesDirect(keyframes);
 
