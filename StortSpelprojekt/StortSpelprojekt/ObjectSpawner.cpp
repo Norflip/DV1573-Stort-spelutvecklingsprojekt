@@ -103,13 +103,13 @@ void ObjectSpawner::DrawDebug()
 	for (size_t i = 0; i < itemSpawnPositions.size(); i++)
 	{
 		dx::XMFLOAT3 worldPoint(itemSpawnPositions[i].x, 5, itemSpawnPositions[i].y);
-		DShape::DrawSphere(worldPoint, 1.0f, dx::XMFLOAT3(1, 1, 0));
+		DShape::DrawSphere(worldPoint, 0.5f, dx::XMFLOAT3(1, 1, 0));
 	}
 
 	for (size_t i = 0; i < propSpawnPositions.size(); i++)
 	{
 		dx::XMFLOAT3 worldPoint(propSpawnPositions[i].x, 5, propSpawnPositions[i].y);
-		DShape::DrawSphere(worldPoint, 1.0f, dx::XMFLOAT3(0, 0, 1));
+		DShape::DrawSphere(worldPoint, 0.5f, dx::XMFLOAT3(0, 0, 1));
 	}
 
 }
@@ -130,18 +130,19 @@ std::vector<dx::XMFLOAT2> ObjectSpawner::CreateSpawnPositions(PointQuadTree& tre
 		point.x += (min.x - max.x) / 2.0f;
 		point.y += (min.y - max.y) / 2.0f;
 
-		//if (tree.GetInRadius(point, 1.0f).size() == 0)
-		//{
-		Chunk* chunk = GetChunk(point.x, point.y, chunkMap);
+		if (tree.GetInRadius(point, 1.0f).size() == 0)
+		{
+			Chunk* chunk = GetChunk(point.x, point.y, chunkMap);
 
-		if (chunk != nullptr && chunk->GetType() == ChunkType::TERRAIN)
-		{
-			tree.Insert(point);
-			validPoints.push_back(point);
-		}
-		else
-		{
-			fails++;
+			if (chunk != nullptr && chunk->GetType() == ChunkType::TERRAIN)
+			{
+				tree.Insert(point);
+				validPoints.push_back(point);
+			}
+			else
+			{
+				fails++;
+			}
 		}
 	}
 
