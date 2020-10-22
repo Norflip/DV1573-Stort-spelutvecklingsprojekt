@@ -19,6 +19,14 @@ void RigidBodyComponent::Update(const float& deltaTime)
 	Transform& transform = GetOwner()->GetTransform();
 	rp::Vector3 bodyPosition = currentTransform.getPosition();
 
+	if (bodyPosition.y < -1000)
+	{
+		bodyPosition.y = -1000;
+		std::cout << "BODY OUT OF BOUNDS (y < -1000)" << std::endl;
+		GetOwner()->RemoveFlag(ObjectFlag::ENABLED);
+		return;
+	}
+
 	transform.SetPosition(dx::XMVectorSet(
 		static_cast <float>(bodyPosition.x),
 		static_cast <float>(bodyPosition.y),

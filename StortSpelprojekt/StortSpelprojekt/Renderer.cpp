@@ -78,7 +78,7 @@ void Renderer::Initialize(Window* window)
 
 	//EXEMPEL
 	///AddRenderPass(new PSRenderPass(1, L"Shaders/TestPass.hlsl"));
-	//AddRenderPass(new FogRenderPass(0));
+	AddRenderPass(new FogRenderPass(0));
 }
 
 void Renderer::BeginManualRenderPass(RenderTexture& target)
@@ -191,11 +191,7 @@ void Renderer::RenderFrame(CameraComponent* camera, float time, RenderTexture& t
 	ClearRenderTarget(midbuffer);
 	SetRenderTarget(midbuffer);
 
-	// ADD LATER WITH FOG
-	//ID3D11ShaderResourceView* depthSRV = renderPassSwapBuffers[bufferIndex].depthSRV;
-
 	context->OMSetDepthStencilState(dss, 0);
-
 
 	SetCullBack(true);
 	DrawQueueToTarget(opaqueItemQueue);
