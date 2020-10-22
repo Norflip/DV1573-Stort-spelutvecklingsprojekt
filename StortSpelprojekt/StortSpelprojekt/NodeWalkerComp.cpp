@@ -21,7 +21,6 @@ NodeWalkerComp::NodeWalkerComp()
 	this->nodes.push_back(Node("3e", 8, { 35.f,0.f,10.f }, -1, 9, -1));
 	this->nodes.push_back(Node("Final Stage", 9, { 40.f,0.f,40.f }, -1, -1, -1));
 
-	
 }
 
 NodeWalkerComp::~NodeWalkerComp()
@@ -33,14 +32,17 @@ void NodeWalkerComp::InitAnimation()
 	if (GetOwner()->HasComponent<SkeletonMeshComponent>())
 	{
 		this->base = GetOwner()->GetComponent<SkeletonMeshComponent>();
-
 		this->legs = GetOwner()->GetTransform().GetChildren()[0]->GetOwner()->GetComponent<SkeletonMeshComponent>();
+
 	}
 	else
 	{
 		this->base = nullptr;
 		this->legs = nullptr;
 	}
+
+
+	const int a = 0;
 }
 
 void NodeWalkerComp::Reset()
@@ -88,6 +90,14 @@ void NodeWalkerComp::Stop()
 
 void NodeWalkerComp::Update(const float& deltaTime)
 {
+	bool hasBase = base != nullptr;
+
+	if (!hasBase)
+	{
+		std::cout << GetOwner()->GetName() << " > IsBaseObjectNull:  " << (hasBase ? "false" : "true") << std::endl;
+		return;
+	}
+
 	if (base->doneUp)
 	{
 		canWalk = true;

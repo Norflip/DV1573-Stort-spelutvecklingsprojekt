@@ -117,9 +117,8 @@ void Renderer::DrawQueueToTarget(RenderQueue& queue)
 						DrawRenderItemGrass(item); break;
 
 					case RenderItem::Type::Skeleton:
-						
 						DrawRenderItemSkeleton(item); break;
-						
+
 					case RenderItem::Type::Default:
 					default:
 
@@ -192,11 +191,7 @@ void Renderer::RenderFrame(CameraComponent* camera, float time, RenderTexture& t
 	ClearRenderTarget(midbuffer);
 	SetRenderTarget(midbuffer);
 
-	// ADD LATER WITH FOG
-	//ID3D11ShaderResourceView* depthSRV = renderPassSwapBuffers[bufferIndex].depthSRV;
-
 	context->OMSetDepthStencilState(dss, 0);
-
 
 	SetCullBack(true);
 	DrawQueueToTarget(opaqueItemQueue);

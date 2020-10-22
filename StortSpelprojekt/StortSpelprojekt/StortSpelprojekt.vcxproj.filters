@@ -234,6 +234,24 @@
     <ClCompile Include="WinScene.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="GridData.cpp">
+      <Filter>Source Files\SpawnSystems</Filter>
+    </ClCompile>
+    <ClCompile Include="ObjectSpawner.cpp">
+      <Filter>Source Files\SpawnSystems</Filter>
+    </ClCompile>
+    <ClCompile Include="Path2.cpp">
+      <Filter>Source Files\SpawnSystems</Filter>
+    </ClCompile>
+    <ClCompile Include="SegmentGenerator.cpp">
+      <Filter>Source Files\SpawnSystems</Filter>
+    </ClCompile>
+    <ClCompile Include="World.cpp">
+      <Filter>Source Files\SpawnSystems</Filter>
+    </ClCompile>
+    <ClCompile Include="PointQuadTree.cpp">
+      <Filter>Source Files\SpawnSystems</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="BoundingBoxes.h">
@@ -330,9 +348,6 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="Object.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="Path.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="PhysicCallbacks.h">
@@ -454,6 +469,30 @@
     </ClInclude>
     <ClInclude Include="WinScene.h">
       <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="GridData.h">
+      <Filter>Source Files\SpawnSystems</Filter>
+    </ClInclude>
+    <ClInclude Include="ObjectSpawner.h">
+      <Filter>Source Files\SpawnSystems</Filter>
+    </ClInclude>
+    <ClInclude Include="Path2.h">
+      <Filter>Source Files\SpawnSystems</Filter>
+    </ClInclude>
+    <ClInclude Include="Random.h">
+      <Filter>Source Files\SpawnSystems</Filter>
+    </ClInclude>
+    <ClInclude Include="SegmentDescription.h">
+      <Filter>Source Files\SpawnSystems</Filter>
+    </ClInclude>
+    <ClInclude Include="SegmentGenerator.h">
+      <Filter>Source Files\SpawnSystems</Filter>
+    </ClInclude>
+    <ClInclude Include="World.h">
+      <Filter>Source Files\SpawnSystems</Filter>
+    </ClInclude>
+    <ClInclude Include="PointQuadTree.h">
+      <Filter>Source Files\SpawnSystems</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
