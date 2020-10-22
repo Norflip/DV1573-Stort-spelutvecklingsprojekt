@@ -17,6 +17,7 @@ constexpr float WALK_ACCELERATION = 1.5f;
 constexpr float RUN_VELOCITY = 20.f;
 constexpr float RUN_ACCELERATION = 3.5f;
 constexpr float VELOCITY_INC_RATE = 0.1f;
+constexpr float VELOCITY_MULTIPLIER = 20.f;
 
 constexpr dx::XMFLOAT3 RESET_POS = {20.f,3.f,20.f};
 constexpr dx::XMFLOAT4 RESET_ROT = { 0.f,0.f,0.f,1.f };

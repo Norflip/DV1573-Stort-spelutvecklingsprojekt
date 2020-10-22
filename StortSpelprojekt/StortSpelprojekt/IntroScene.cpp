@@ -31,12 +31,12 @@ void IntroScene::Initialize(Renderer* renderer)
 
 void IntroScene::InitializeObjects()
 {
-	Object* cameraObject2 = new Object("camera2", ObjectFlag::ENABLED);
-	camera = cameraObject2->AddComponent<CameraComponent>(60.0f, true);
+	Object* cameraObject = new Object("camera", ObjectFlag::ENABLED);
+	camera = cameraObject->AddComponent<CameraComponent>(60.0f, true);
 	camera->Resize(windowWidth, windowHeight);
 	//cameraObject2->AddComponent<ControllerComponent>();
-	this->player = cameraObject2;
-	AddObject(cameraObject2);
+	this->player = cameraObject;
+	AddObject(cameraObject);
 
 	//Physics& physics = Physics::Instance();
 	//dx::XMFLOAT3 pStart = { 10,20,10 };

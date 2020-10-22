@@ -26,12 +26,12 @@ void GameOverScene::Initialize(Renderer* renderer)
 
 void GameOverScene::InitializeObjects()
 {
-	Object* cameraObject3 = new Object("camera3", ObjectFlag::ENABLED);
-	camera = cameraObject3->AddComponent<CameraComponent>(60.0f, true);
+	Object* cameraObject = new Object("camera", ObjectFlag::ENABLED);
+	camera = cameraObject->AddComponent<CameraComponent>(60.0f, true);
 	camera->Resize(windowWidth, windowHeight);
-	this->player = cameraObject3;
+	this->player = cameraObject;
 	//cameraObject3->AddComponent<ControllerComponent>();
-	AddObject(cameraObject3);
+	AddObject(cameraObject);
 
 	ShowCursor(true);
 	Input::Instance().SetMouseMode(dx::Mouse::MODE_ABSOLUTE);

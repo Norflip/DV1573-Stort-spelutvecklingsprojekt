@@ -104,27 +104,27 @@ void ControllerComponent::Update(const float& deltaTime)
 		//Input::Instance().ConfineMouse();
 		//SetCursorPos(400, 400); //set this to coordinates middle of screen? get height/width from input?
 
-		float x = Input::Instance().GetMousePosRelative().x * deltaTime;
-		float y = Input::Instance().GetMousePosRelative().y * deltaTime;
-		xClamp += x;
+		float xPos = Input::Instance().GetMousePosRelative().x * deltaTime;
+		float yPos = Input::Instance().GetMousePosRelative().y * deltaTime;
+		xClamp += xPos;
 		if (xClamp > CLAMP_X)
 		{
 			xClamp = CLAMP_X;
-			x = 0.f;
+			xPos = 0.f;
 		}
 		if (xClamp < -CLAMP_X)
 		{
 			xClamp = -CLAMP_X;
-			x = 0.f;
+			xPos = 0.f;
 		}
 
 		//rotate view
 		Transform& transform = cameraObject->GetTransform();
 		dx::XMVECTOR right = transform.TransformDirection({ 1,0,0 });
-		dx::XMVECTOR eulerRotation = dx::XMQuaternionMultiply(dx::XMQuaternionRotationAxis(right, x), dx::XMQuaternionRotationAxis({ 0,1,0 }, y));
+		dx::XMVECTOR eulerRotation = dx::XMQuaternionMultiply(dx::XMQuaternionRotationAxis(right, xPos), dx::XMQuaternionRotationAxis({ 0,1,0 }, yPos));
 
 		//rotate walking direction to allign to ground
-		groundRotation = dx::XMQuaternionMultiply(dx::XMQuaternionRotationAxis(right, 0), dx::XMQuaternionRotationAxis({ 0,1,0 }, y));
+		groundRotation = dx::XMQuaternionMultiply(dx::XMQuaternionRotationAxis(right, 0), dx::XMQuaternionRotationAxis({ 0,1,0 }, yPos));
 		groundRotation = dx::XMQuaternionMultiply(dx::XMLoadFloat4(&this->groundQuaterion), groundRotation);
 		dx::XMStoreFloat4(&groundQuaterion, groundRotation); 
 
@@ -237,7 +237,7 @@ void ControllerComponent::Update(const float& deltaTime)
 			dx::XMStoreFloat3(&dir, direction);
 			dx::XMFLOAT3 vel = rbComp->GetLinearVelocity();
 			cameraObject->GetTransform().SetPosition(rbComp->GetPosition()); 
-			rbComp->SetLinearVelocity({ dir.x * 20, dir.y*20, dir.z * 20 });
+			rbComp->SetLinearVelocity({ dir.x * VELOCITY_MULTIPLIER, dir.y* VELOCITY_MULTIPLIER, dir.z * VELOCITY_MULTIPLIER });
 			dx::XMVECTOR capsule = dx::XMLoadFloat4(&RESET_ROT);
 			rbComp->SetRotation(capsule);
 			phy.MutexUnlock();
@@ -250,7 +250,7 @@ void ControllerComponent::Update(const float& deltaTime)
 			dx::XMStoreFloat3(&dir, direction);
 			dx::XMFLOAT3 vel = rbComp->GetLinearVelocity();
 			cameraObject->GetTransform().SetPosition(rbComp->GetPosition()); //add camera-offset
-			rbComp->SetLinearVelocity({ dir.x * 20, vel.y, dir.z * 20 });
+			rbComp->SetLinearVelocity({ dir.x * VELOCITY_MULTIPLIER, vel.y, dir.z * VELOCITY_MULTIPLIER });
 			dx::XMVECTOR capsule = dx::XMLoadFloat4(&RESET_ROT);
 			rbComp->SetRotation(capsule);
 			phy.MutexUnlock();

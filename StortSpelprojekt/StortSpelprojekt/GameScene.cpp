@@ -44,35 +44,7 @@ void GameScene::InitializeObjects()
 {
 	Physics& physics = Physics::Instance();
 	
-	dx::XMFLOAT3 pStart = { 10,20,10 };
-	dx::XMFLOAT3 zero = { 0.f, 0.f, 0.f };
-	dx::XMVECTOR pStartVec = dx::XMLoadFloat3(&pStart);
-	Object* playerObject = new Object("player", ObjectFlag::ENABLED);
-	Object* cameraObject = new Object("camera", ObjectFlag::ENABLED);
-	//Transform::SetParentChild(playerObject->GetTransform(), cameraObject->GetTransform());
-	this->player = playerObject;
-	camera = cameraObject->AddComponent<CameraComponent>(60.0f, true);
-	camera->Resize(this->windowWidth, this->windowHeight);
-	cameraObject->GetTransform().SetPosition(pStartVec);
-	playerObject->GetTransform().SetPosition(pStartVec);
 
-	//Mesh* meshP = resourceManager->GetResource<Mesh>("Test");
-	//Material* materialP = resourceManager->GetResource<Material>("TestMaterial");
-	//playerObject->AddComponent<MeshComponent>(*meshP, *materialP);
-	playerObject->AddComponent<CapsuleColliderComponent>(0.5f, 4.5f, zero);
-	physics.MutexLock();
-	RigidBodyComponent* rb = playerObject->AddComponent<RigidBodyComponent>(60.f, FilterGroups::PLAYER, FilterGroups::EVERYTHING, true);
-	physics.RegisterRigidBody(rb);
-	physics.MutexUnlock();
-
-	playerObject->AddComponent<ControllerComponent>(cameraObject);
-	//Transform::SetParentChild(playerObject->GetTransform(),cameraObject->GetTransform());
-	playerObject->AddComponent<PlayerComp>(guiManager, 50000, 2, 10, 25, 3);
-	
-	AddObject(cameraObject, playerObject);
-	AddObject(playerObject);
-	
-	//AddObject(cameraObject);
 
 	SaveState state;
 	state.seed = 1337;
@@ -142,7 +114,35 @@ void GameScene::InitializeObjects()
 	stylizedTreeMaterial[1].SetShader(alphaInstanceShader);
 
 	worldGenerator.InitializeTrees(stylizedTreeModel, stylizedTreeMaterial, renderer->GetDevice());
-	//
+	
+	//Player & Camera
+	dx::XMFLOAT3 playerSpawn = { 10,20,10 };
+	dx::XMFLOAT3 zero = { 0.f, 0.f, 0.f };
+	dx::XMVECTOR playerSpawnVec = dx::XMLoadFloat3(&playerSpawn);
+	Object* playerObject = new Object("player", ObjectFlag::ENABLED);
+	Object* cameraObject = new Object("camera", ObjectFlag::ENABLED);
+	//Transform::SetParentChild(playerObject->GetTransform(), cameraObject->GetTransform());
+	this->player = playerObject;
+	camera = cameraObject->AddComponent<CameraComponent>(60.0f, true);
+	camera->Resize(this->windowWidth, this->windowHeight);
+	cameraObject->GetTransform().SetPosition(playerSpawnVec);
+	playerObject->GetTransform().SetPosition(playerSpawnVec);
+
+	//Mesh* meshP = resourceManager->GetResource<Mesh>("Test");
+	//Material* materialP = resourceManager->GetResource<Material>("TestMaterial");
+	//playerObject->AddComponent<MeshComponent>(*meshP, *materialP);
+	playerObject->AddComponent<CapsuleColliderComponent>(0.5f, 4.5f, zero);
+	physics.MutexLock();
+	RigidBodyComponent* rb = playerObject->AddComponent<RigidBodyComponent>(60.f, FilterGroups::PLAYER, FilterGroups::EVERYTHING, true);
+	physics.RegisterRigidBody(rb);
+	physics.MutexUnlock();
+
+	playerObject->AddComponent<ControllerComponent>(cameraObject);
+	//Transform::SetParentChild(playerObject->GetTransform(),cameraObject->GetTransform());
+	playerObject->AddComponent<PlayerComp>(guiManager, 50000, 2, 10, 25, 3);
+
+	AddObject(cameraObject, playerObject);
+	AddObject(playerObject);
 
 	//Enemy object //comments
 	enemy = new Object("enemy");
