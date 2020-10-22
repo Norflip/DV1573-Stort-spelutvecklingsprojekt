@@ -1,12 +1,12 @@
 #pragma once
 #include "Component.h"
-#include "Transform.h"
-#include <DirectXMath.h>
+//#include "Transform.h"
+//#include <DirectXMath.h>
 #include "Object.h"
-#include "Input.h"
+#include "Input.h" //remove when not needed
 
 namespace dx = DirectX;
-class NodeWalkerComponent :public Component
+class NodeWalkerComp :public Component
 {
 public:
 	struct Node
@@ -36,8 +36,8 @@ private:
 	bool canWalk;
 	float length; //length is only saved for display with
 public:
-	NodeWalkerComponent();
-	~NodeWalkerComponent();
+	NodeWalkerComp();
+	~NodeWalkerComp();
 
 	void Reset(); //is public cus is meant to be called outside of class if needed
 	void Start();

@@ -1,6 +1,6 @@
-#include "NodeWalkerComponent.h"
+#include "NodeWalkerComp.h"
 
-NodeWalkerComponent::NodeWalkerComponent()
+NodeWalkerComp::NodeWalkerComp()
 {
 	this->speed = 1.2f;
 	this->currentNode = 0;
@@ -22,11 +22,11 @@ NodeWalkerComponent::NodeWalkerComponent()
 	this->nodes.push_back(Node("Final Stage", 9, { 40.f,0.f,40.f }, -1, -1, -1));
 }
 
-NodeWalkerComponent::~NodeWalkerComponent()
+NodeWalkerComp::~NodeWalkerComp()
 {
 }
 
-void NodeWalkerComponent::Reset()
+void NodeWalkerComp::Reset()
 {
 	dx::XMVECTOR startPos = dx::XMLoadFloat3(&nodes[0].position);
 	this->GetOwner()->GetTransform().SetPosition(startPos);
@@ -35,17 +35,17 @@ void NodeWalkerComponent::Reset()
 	this->canWalk = false;
 }
 
-void NodeWalkerComponent::Start()
+void NodeWalkerComp::Start()
 {
 	this->canWalk = true;
 }
 
-void NodeWalkerComponent::Stop()
+void NodeWalkerComp::Stop()
 {
 	this->canWalk = false;
 }
 
-void NodeWalkerComponent::Update(const float& deltaTime)
+void NodeWalkerComp::Update(const float& deltaTime)
 {
 	if(KEY_DOWN(I)) //used to display info and test paths
 	{
@@ -120,17 +120,17 @@ void NodeWalkerComponent::Update(const float& deltaTime)
 	}
 }
 
-void NodeWalkerComponent::InsertNode(std::string name, int id, dx::XMFLOAT3 position, int nextMiddle, int nextLeft, int nextRight)
+void NodeWalkerComp::InsertNode(std::string name, int id, dx::XMFLOAT3 position, int nextMiddle, int nextLeft, int nextRight)
 {
 	this->nodes.push_back(Node(name, id, position, nextMiddle, nextLeft, nextRight));
 }
 
-void NodeWalkerComponent::InsertNode(const Node & theNode)
+void NodeWalkerComp::InsertNode(const Node & theNode)
 {
 	this->nodes.push_back(theNode);
 }
 
-void NodeWalkerComponent::insertNodes(std::vector<Node> someNodes)
+void NodeWalkerComp::insertNodes(std::vector<Node> someNodes)
 {
 	//for (int i = 0; i < someNodes.size(); i++)
 	//{

@@ -50,13 +50,14 @@ private:
 	float health, attack, attackSpeed, fuel, food;
 	int currentWeapon;
 	float movementSpeed, crouchSpeed, SprintSpeed;
-	float foodLossPerSecond, fuelBurnPerMeter;
+	float foodLossPerSecond, fuelBurnPerMeter, healthLossPerSecond;
 	float radius;
 	GUIManager* guiMan;
 	GUISprite* fuelDippingBar, *foodDippingBar,* healthDippingBar;
 	NEXT_SCENE swapScene;
 
 
+	bool foodEmpty;
 	bool gg;
 	float ReverseAndClamp(float inputValue);
 };

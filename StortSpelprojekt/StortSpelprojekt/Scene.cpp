@@ -32,6 +32,7 @@ Scene::~Scene()
 
 void Scene::Initialize(Renderer* renderer)
 {
+
 }
 
 void Scene::InitializeObjects()
@@ -48,7 +49,7 @@ void Scene::Update(const float& deltaTime)
 	root->Update(deltaTime);
 
 	GameClock::Instance().Update();
-	
+
 	//renderer->UpdateTime((float)clock.GetSeconds());
 
 	if (clock.GetSeconds() > 60)
