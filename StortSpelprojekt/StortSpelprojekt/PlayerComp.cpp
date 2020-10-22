@@ -36,9 +36,9 @@ PlayerComp::PlayerComp(Renderer* renderer, CameraComponent* camComp, Physics& ph
 	// defaulting some shit
 	this->swapScene = NEXT_SCENE::GAME;
 	this->foodLossPerSecond = 0.3f;
-	this->food = 100.f;
+	this->food = 80.0f;
 	this->fuelBurnPerMeter = 0.7f;
-	this->fuel = 100.f;
+	this->fuel = 80.0f;
 	this->healthLossPerSecond = 0.5f;
 	this->health = 80.0f;
 
@@ -73,19 +73,11 @@ void PlayerComp::Update(const float& deltaTime)
 	if (LMOUSE_PRESSED)
 	{
 		Physics& phy = Physics::Instance();
-
-		//DShape::DrawLine(ray.origin, ray.GetPoint(1000.0f), { 1,1,0 });
-
-		
+				
 		if (phy.RaytestSingle(ray, pappa, hit, FilterGroups::PICKUPS))
 		{
-			//DShape::DrawLine(ray.origin, hit.position, { 1,1,0 });
-			//DShape::DrawSphere(hit.position, 1.0f, { 0, 0, 1 });
-
 			if (hit.object != nullptr)
-			{
-				std::cout << "YALLA" << std::endl;
-				
+			{				
 				Type pickupType = hit.object->GetComponent<PickupComponent>()->GetType();
 				float temp = hit.object->GetComponent<PickupComponent>()->GetAmount();
 				

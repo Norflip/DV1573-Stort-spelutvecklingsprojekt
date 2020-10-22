@@ -189,29 +189,46 @@ void GameScene::InitializeObjects()
 	AddObject(characterReferenceObject);
 
 
-
-
+	/* For physics/ rigidbody pickup stuff */
 	Physics& phy = Physics::Instance();
 
 	Shader* defShader = resourceManager->GetShaderResource("defaultShader");
 
+	/* Health pickup stuff temporary */
 	std::vector<Mesh> healthkit = ZWEBLoader::LoadMeshes(ZWEBLoadType::NoAnimation, "Models/Healthkit.ZWEB", renderer->GetDevice());
 	std::vector<Material> healthkitMaterial = ZWEBLoader::LoadMaterials("Models/Healthkit.ZWEB", defShader, renderer->GetDevice());
 
 	Object* healthkitObject = new Object("healthObject");
 	healthkitObject->AddComponent<MeshComponent>(healthkit[0], healthkitMaterial[0]);
 	healthkitObject->GetTransform().SetPosition({ 4.0f, 1.0f, 5.0f });
+	healthkitObject->AddComponent<BoxColliderComponent>(dx::XMFLOAT3{ 0.5f, 0.5f, 0.5f }, dx::XMFLOAT3{ 0, 0, 0 });
+	healthkitObject->AddComponent<PickupComponent>(Type::Health, 20.0f);
+
+	RigidBodyComponent* healthBody;
+	healthBody = healthkitObject->AddComponent<RigidBodyComponent>(0, FilterGroups::PICKUPS, FilterGroups::PLAYER, false);
+
+	phy.RegisterRigidBody(healthBody);
 	AddObject(healthkitObject);
 
+
+	/* Fuel pickup stuff temporary */
 	std::vector<Mesh> fuelCan = ZWEBLoader::LoadMeshes(ZWEBLoadType::NoAnimation, "Models/FuelCan.ZWEB", renderer->GetDevice());
 	std::vector<Material> fuelCanMaterail = ZWEBLoader::LoadMaterials("Models/FuelCan.ZWEB", defShader, renderer->GetDevice());
 
 	Object* fuelCanObject = new Object("fuelObject");
 	fuelCanObject->AddComponent<MeshComponent>(fuelCan[0], fuelCanMaterail[0]);
 	fuelCanObject->GetTransform().SetPosition({ 8.0f, 1.0f, 5.0f });
+	fuelCanObject->AddComponent<BoxColliderComponent>(dx::XMFLOAT3{ 0.5f, 0.5f, 0.5f }, dx::XMFLOAT3{ 0, 0, 0 });
+	fuelCanObject->AddComponent<PickupComponent>(Type::Fuel, 20.0f);
+
+	RigidBodyComponent* fuelBody;
+	fuelBody = fuelCanObject->AddComponent<RigidBodyComponent>(0, FilterGroups::PICKUPS, FilterGroups::PLAYER, false);
+
+	phy.RegisterRigidBody(fuelBody);
 	AddObject(fuelCanObject);
 
 
+	/* Banana pickup stuff temporary */
 	std::vector<Mesh> banana = ZWEBLoader::LoadMeshes(ZWEBLoadType::NoAnimation, "Models/Banan.ZWEB", renderer->GetDevice());
 	std::vector<Material> bananaMaterial = ZWEBLoader::LoadMaterials("Models/Banan.ZWEB", defShader, renderer->GetDevice());
 
@@ -226,6 +243,7 @@ void GameScene::InitializeObjects()
 	
 	phy.RegisterRigidBody(bananaBody);
 	AddObject(bananaObject);
+
 
 	clock.Update();
 	clock.Start();
