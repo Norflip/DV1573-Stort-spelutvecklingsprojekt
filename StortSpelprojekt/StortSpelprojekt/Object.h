@@ -71,7 +71,7 @@ public:
 	Transform& GetTransform() { return this->transform; }
 
 	size_t GetID() const { return this->id; }
-
+	
 private:
 	ObjectFlag flags;
 	Transform transform;

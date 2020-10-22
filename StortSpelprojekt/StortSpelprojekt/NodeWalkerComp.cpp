@@ -20,10 +20,27 @@ NodeWalkerComp::NodeWalkerComp()
 	this->nodes.push_back(Node("3d", 7, { 30.f,0.f,15.f }, 9, -1, -1));
 	this->nodes.push_back(Node("3e", 8, { 35.f,0.f,10.f }, -1, 9, -1));
 	this->nodes.push_back(Node("Final Stage", 9, { 40.f,0.f,40.f }, -1, -1, -1));
+
+	
 }
 
 NodeWalkerComp::~NodeWalkerComp()
 {
+}
+
+void NodeWalkerComp::InitAnimation()
+{
+	if (GetOwner()->HasComponent<SkeletonMeshComponent>())
+	{
+		this->base = GetOwner()->GetComponent<SkeletonMeshComponent>();
+
+		this->legs = GetOwner()->GetTransform().GetChildren()[0]->GetOwner()->GetComponent<SkeletonMeshComponent>();
+	}
+	else
+	{
+		this->base = nullptr;
+		this->legs = nullptr;
+	}
 }
 
 void NodeWalkerComp::Reset()
@@ -37,16 +54,47 @@ void NodeWalkerComp::Reset()
 
 void NodeWalkerComp::Start()
 {
-	this->canWalk = true;
+	if (!canWalk)
+	{
+		base->SetisDone(false);
+		legs->SetisDone(false);
+		base->doneDown = false;
+		legs->doneDown = false;
+		base->doneUp = false;
+		legs->doneUp = false;
+		base->SetTrack(SkeletonStateMachine::UP, true);
+		legs->SetTrack(SkeletonStateMachine::UP, true);
+	}
+	
+	
 }
 
 void NodeWalkerComp::Stop()
 {
-	this->canWalk = false;
+	if (canWalk)
+	{
+		canWalk = false;
+		base->SetisDone(false);
+		legs->SetisDone(false);
+		base->SetTrack(SkeletonStateMachine::DOWN, true);
+		legs->SetTrack(SkeletonStateMachine::DOWN, true);
+		base->doneDown = false;
+		legs->doneDown = false;
+		base->doneUp = false;
+		legs->doneUp = false;
+	}
+
 }
 
 void NodeWalkerComp::Update(const float& deltaTime)
 {
+	if (base->doneUp)
+	{
+		canWalk = true;
+		base->SetTrack(SkeletonStateMachine::WALK, false);
+		legs->SetTrack(SkeletonStateMachine::WALK, false);
+	}
+	
 	if(KEY_DOWN(I)) //used to display info and test paths
 	{
 		std::string text = "Options: ";
@@ -71,8 +119,9 @@ void NodeWalkerComp::Update(const float& deltaTime)
 	if (KEY_DOWN(R))
 		this->Reset();
 
-	if(KEY_PRESSED(Down))
-		canWalk = false;
+	if (KEY_PRESSED(Down))
+		//canWalk = false;
+		Stop();
 	if (canWalk)
 	{
 		DirectX::XMFLOAT3 dir = { 0.f,0.f,0.f };
@@ -80,7 +129,8 @@ void NodeWalkerComp::Update(const float& deltaTime)
 		dx::XMStoreFloat(&this->length, dx::XMVector3Length(vdir));
 		if (this->length < nodeRadius)
 		{
-			canWalk = false;
+			//canWalk = false;
+			Stop();
 			this->currentNode = this->nextChosen;
 		}
 		else
@@ -98,7 +148,9 @@ void NodeWalkerComp::Update(const float& deltaTime)
 			if (nodes[currentNode].nextLeft != -1)
 			{
 				this->nextChosen = nodes[currentNode].nextLeft;
-				canWalk = true;
+				//canWalk = true;
+				Start();
+				
 			}
 		}
 		if (KEY_DOWN(Up))
@@ -106,7 +158,9 @@ void NodeWalkerComp::Update(const float& deltaTime)
 			if (nodes[currentNode].nextMiddle != -1)
 			{
 				this->nextChosen = nodes[currentNode].nextMiddle;
-				canWalk = true;
+				//canWalk = true;
+				Start();
+
 			}
 		}
 		if (KEY_DOWN(Right))
@@ -114,7 +168,9 @@ void NodeWalkerComp::Update(const float& deltaTime)
 			if (nodes[currentNode].nextRight != -1)
 			{
 				this->nextChosen = nodes[currentNode].nextRight;
-				canWalk = true;
+				//canWalk = true;
+				Start();
+
 			}
 		}
 	}

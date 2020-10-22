@@ -81,3 +81,5 @@ void Object::RemoveFlag(ObjectFlag flag)
 {
 	flags = static_cast<ObjectFlag>((int)flags & ~((int)flag));
 }
+
+
