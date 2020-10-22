@@ -29,6 +29,7 @@ void Chunk::Update(const float& deltaTime)
 		dx::XMFLOAT3(1,1,1)					// white
 	};
 
+
 	dx::XMFLOAT3 color = DSHAPE_CHUNK_COLORS[static_cast<int>(this->type)];
 
 	dx::XMFLOAT3 center;
