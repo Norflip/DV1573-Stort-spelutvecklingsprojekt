@@ -1,7 +1,7 @@
 #include "GUISprite.h"
 
 
-GUISprite::GUISprite(Renderer& renderer , std::string filePath, float xPos, float yPos, DrawDirection dir, ClickFunction clickFunc)
+GUISprite::GUISprite(Renderer& renderer , std::string filePath, float xPos, float yPos,float layerDepth, DrawDirection dir, ClickFunction clickFunc)
 {
 	this->renderer = &renderer;
 	// position
@@ -13,16 +13,15 @@ GUISprite::GUISprite(Renderer& renderer , std::string filePath, float xPos, floa
 
 	this->rotation = 0.0f;
 	this->baseColor = dx::XMVectorSet(1.f, 1.f, 1.f, 1.f);
-	this->activeColor = dx::XMVectorSet(0.6f, 0.6f, 1.3f, 1.0f); // default bluetinted
+	this->activeColor = dx::XMVectorSet(1.0f, 1.0f, 1.0f, 1.0f); // default bluetinted
 	this->origin = dx::XMVectorSet(1.f, 1.f, 1.f, 1.f);
 	this->SRV = nullptr;
 	this->xPos = renderer.GetOutputWindow()->GetWidth()-xPos;
 	this->spriteBatch = nullptr;
 	this->filePath = filePath;
-
+	this->layerDepth = layerDepth;
 
 	this->scale = dx::XMVectorSet(this->xScale, this->yScale, 0, 0);
-
 
 	Microsoft::WRL::ComPtr<ID3D11Resource> res;
 	Microsoft::WRL::ComPtr<ID3D11Texture2D> tex;
@@ -66,14 +65,14 @@ GUISprite::~GUISprite()
 void GUISprite::Draw(DirectX::SpriteBatch* test)
 {
 	if(active)
-		test->Draw(SRV, this->position, nullptr, this->activeColor, rotation, origin, scale, DirectX::SpriteEffects::SpriteEffects_None, 0.0f);
+		test->Draw(SRV, this->position, nullptr, this->activeColor, rotation, origin, scale, DirectX::SpriteEffects::SpriteEffects_None, this->layerDepth);
 	else
-		test->Draw(SRV, this->position, nullptr, this->baseColor, rotation, origin, scale, DirectX::SpriteEffects::SpriteEffects_None, 0.0f);
+		test->Draw(SRV, this->position, nullptr, this->baseColor, rotation, origin, scale, DirectX::SpriteEffects::SpriteEffects_None, this->layerDepth);
 }
 
 void GUISprite::Draw()
 {
-	spriteBatch->Draw(SRV, this->position, nullptr, this->baseColor, rotation, origin, scale, DirectX::SpriteEffects::SpriteEffects_None, 0.0f);	
+	spriteBatch->Draw(SRV, this->position, nullptr, this->baseColor, rotation, origin, scale, DirectX::SpriteEffects::SpriteEffects_None, this->layerDepth);
 }
 
 void GUISprite::SetPosition(float xPos, float yPos)
@@ -109,6 +108,24 @@ void GUISprite::SetDDSSprite(ID3D11Device* device,  std::string spriteFile)
 	//assert(SUCCEEDED(result));
 }
 
+void GUISprite::SetScale(float x, float y)
+{
+	this->xScale = x;
+	this->yScale = y;
+
+	this->scale = dx::XMVectorSet(this->xScale, this->yScale, 0, 0);
+}
+
+void GUISprite::SetScaleBars(float yValue)
+{
+	if (yScale < 1.0f)
+		this->yScale = yValue;
+	else
+		yScale = 1.0f;
+
+	this->scale = dx::XMVectorSet(this->xScale, this->yScale, 0, 0);
+}
+
 bool GUISprite::IsClicked()
 {
 	if (clickFunc == ClickFunction::Clickable && IsMouseOver() && Input::Instance().GetLeftMouseKeyDown())
@@ -121,16 +138,19 @@ bool GUISprite::IsMouseOver()
 {
 	if ((Input::Instance().GetMousePos().x > xPos && Input::Instance().GetMousePos().x < xPos + width) && (Input::Instance().GetMousePos().y > yPos && Input::Instance().GetMousePos().y < yPos + height))
 	{
+		SetActiveColor(dx::XMVectorSet(1.0f, 0.0f, 0.0f, 1.0f));
 		return true;
 	}
 	else
+		SetActiveColor(this->baseColor);
 		return false;
 }
 
 void GUISprite::Update()
 {
 	if (clickFunc == ClickFunction::Clickable && IsMouseOver() && Input::Instance().GetLeftMouseKeyDown())
-		SetPosition(500, 500);
+		std::cout << "Do function" << std::endl;
+		//SetPosition(500, 500);
 }
 
 void GUISprite::SetPos(float xPos, float yPos, DrawDirection dir)

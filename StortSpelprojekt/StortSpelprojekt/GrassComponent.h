@@ -6,8 +6,6 @@
 #include "Material.h"
 #include "Renderer.h"
 
-
-
 struct GrassStraw
 {
 	dx::XMFLOAT4 position;

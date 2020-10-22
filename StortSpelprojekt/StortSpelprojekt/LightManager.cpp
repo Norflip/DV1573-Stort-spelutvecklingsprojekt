@@ -65,3 +65,8 @@ void LightManager::UpdateBuffers(ID3D11DeviceContext* context)
 		lightBuffer.UpdateBuffer(context);
 	}
 }
+
+void LightManager::Clear()
+{
+	pointLightMap.clear();
+}

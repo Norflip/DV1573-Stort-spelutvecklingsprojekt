@@ -78,7 +78,7 @@ void Renderer::Initialize(Window* window)
 
 	//EXEMPEL
 	///AddRenderPass(new PSRenderPass(1, L"Shaders/TestPass.hlsl"));
-	//AddRenderPass(new FogRenderPass(0));
+	AddRenderPass(new FogRenderPass(0));
 }
 
 void Renderer::BeginManualRenderPass(RenderTexture& target)
@@ -336,6 +336,13 @@ void Renderer::SetRenderTarget(const RenderTexture& target, bool setDepth)
 		context->OMSetRenderTargets(1, &target.rtv, NULL);
 
 	context->RSSetViewports(1, &target.viewport);
+}
+
+void Renderer::RemoveRenderPass(RenderPass* pass)
+{
+	std::vector<RenderPass*>::iterator it = std::find(passes.begin(), passes.end(), pass);
+
+	passes.erase(it);
 }
 
 void Renderer::AddItem(const RenderItem& item, bool transparent)

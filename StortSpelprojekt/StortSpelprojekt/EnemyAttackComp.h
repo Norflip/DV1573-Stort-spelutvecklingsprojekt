@@ -3,10 +3,11 @@
 #include "EnemyStatsComp.h"
 #include "GameClock.h"
 
+class PlayerComp;
 class EnemyAttackComp : public Component
 {
 	public:
-		EnemyAttackComp(CameraComponent* player);
+		EnemyAttackComp(PlayerComp* player);
 		virtual ~EnemyAttackComp();
 		void Initialize();
 		void Update(const float& deltaTime) override;
@@ -15,7 +16,7 @@ class EnemyAttackComp : public Component
 		bool ChasePlayer(const float& deltaTime);
 		void UpdateAttackPlayer(const float& deltaTime);
 
-		CameraComponent* player;
+		PlayerComp* player;
 		bool attackPlayer = false;
 		GameClock timer;
 		float playerRadius;

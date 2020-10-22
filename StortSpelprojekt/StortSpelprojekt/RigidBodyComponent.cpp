@@ -24,6 +24,58 @@ void RigidBodyComponent::SetPosition(dx::XMVECTOR position)
 	body->setTransform(transform);
 }
 
+dx::XMVECTOR RigidBodyComponent::GetPosition() const
+{
+	rp::Vector3 pos = this->body->getTransform().getPosition();
+	dx::XMFLOAT4 pos4 = { pos.x,pos.y,pos.z,0 };
+	return dx::XMLoadFloat4(&pos4);
+}
+
+void RigidBodyComponent::SetRotation(dx::XMVECTOR rotation)
+{
+	dx::XMFLOAT4 rot;
+	dx::XMStoreFloat4(&rot, rotation);
+
+	rp::Transform transform = body->getTransform();
+	transform.setOrientation(rp::Quaternion(rot.x, rot.y, rot.z, rot.w));
+	body->setTransform(transform);
+}
+
+dx::XMVECTOR RigidBodyComponent::GetRotation() const
+{
+	rp::Quaternion rotQ = this->body->getTransform().getOrientation();
+	dx::XMFLOAT4 rot4 = { rotQ.x, rotQ.y, rotQ.z, rotQ.w};
+	return dx::XMLoadFloat4(&rot4);
+}
+
+bool RigidBodyComponent::IsGrounded() const
+{
+	dx::XMFLOAT3 origin;
+	dx::XMStoreFloat3(&origin, GetOwner()->GetTransform().GetPosition());
+	dx::XMFLOAT3 direction = { 0.f,-1.f,0.f };
+	float distance = 0.7f;
+	Ray ray(origin,direction);
+	RayHit hit;
+	Physics& phy = Physics::Instance();
+	DShape::DrawLine(ray.origin, ray.GetPoint(distance), { 1,1,0 });
+
+	//TERRAIN or default depending on if u can jump from on top of objects
+	phy.RaytestSingle(ray, distance, hit, FilterGroups::TERRAIN);
+	if (hit.didHit)
+		DShape::DrawLine(ray.origin, ray.GetPoint(distance), { 1,0,0 });
+	else
+		DShape::DrawLine(ray.origin, ray.GetPoint(distance), { 0,1,0 });
+	
+
+	if (hit.object != nullptr)
+	{
+		std::cout <<"picking: "<< hit.object->GetName() << std::endl;
+	}
+
+	return hit.didHit;
+}
+
+
 rp::Transform RigidBodyComponent::ConvertToBtTransform(const Transform& transform) const
 {
 	rp::Transform temp;
@@ -126,5 +178,25 @@ void RigidBodyComponent::AddForceAtPoint(const dx::XMFLOAT3& force, const dx::XM
 		body->applyForceAtLocalPosition(rpForce, rpOffset);
 	else
 		body->applyForceAtWorldPosition(rpForce, rpOffset);
+}
+
+void RigidBodyComponent::SetLinearVelocity(const dx::XMFLOAT3& velocity)
+{
+	body->setLinearVelocity({ velocity.x,velocity.y,velocity.z });
+}
+
+dx::XMFLOAT3 RigidBodyComponent::GetLinearVelocity() const
+{
+	return { body->getLinearVelocity().x,body->getLinearVelocity().y,body->getLinearVelocity().z };
+}
+
+void RigidBodyComponent::SetAngularVelocity(const dx::XMFLOAT3& velocity)
+{
+	body->setAngularVelocity({ velocity.x,velocity.y,velocity.z });
+}
+
+dx::XMFLOAT3 RigidBodyComponent::GetAngularVelocity() const
+{
+	return { body->getAngularVelocity().x,body->getAngularVelocity().y,body->getAngularVelocity().z };
 }
 

@@ -21,7 +21,6 @@ GrassComponent::GrassComponent(ID3D11Device* device, std::vector<Mesh::Vertex>& 
 	grassMat.SetSampler(sampler, 0, ShaderBindFlag::HULL);
 	grassMat.SetSampler(sampler, 0,  ShaderBindFlag::DOMAINS );
 	grassMat.SetSampler(sampler, 0,   ShaderBindFlag::PIXEL);
-
 }
 
 GrassComponent::~GrassComponent()
@@ -84,10 +83,8 @@ void GrassComponent::InitializeGrass(std::vector<Mesh::Vertex>& vertices, std::v
 		pData[i].normal.x = normal.x;
 		pData[i].normal.y = normal.y;
 		pData[i].normal.z = normal.z;
-
-
 	}
-	
+
 	DXHelper::CreateStructuredBuffer(device, &grassBfr, pData, sizeof(GrassStraw), pData.size(), &grassSrv);
 
 	DXHelper::BindStructuredBuffer(context, grassBfr, pData, GRASS_STRAWS_SRV_SLOT, ShaderBindFlag::VERTEX, &grassSrv);
@@ -137,12 +134,7 @@ void GrassComponent::InitializeGrass(std::vector<Mesh::Vertex>& vertices, std::v
 
 	DXHelper::BindStructuredBuffer(context, grassBCBfr, bcData, GRASS_COORD_SRV_SLOT, ShaderBindFlag::DOMAINS, &grassBCSRV);
 
-	
-
-
-
 	float pixelScale = tanf(0.5f * (dx::XM_PI / 2.0f)) / (float)(900); //the height of the window.
-
 
 	cb_grass grassCBufferData;
 

@@ -11,7 +11,13 @@ Engine::Engine(HINSTANCE hInstance) : window(hInstance), activeScene(nullptr)
 	HRESULT hr = CoInitializeEx(nullptr, COINIT_MULTITHREADED);
 	assert(SUCCEEDED(hr));		
 
-	RegisterScene(0, new Scene());
+	resourceManager = new ResourceManager;
+	resourceManager->InitializeResources(renderer->GetDevice());
+
+	RegisterScene(0, new IntroScene(resourceManager));
+	RegisterScene(1, new GameOverScene(resourceManager));
+	RegisterScene(2, new GameScene(resourceManager));
+	RegisterScene(3, new WinScene(resourceManager));
 	SwitchScene(0);
 }
 
@@ -55,14 +61,20 @@ void Engine::Run()
 			
 			if (activeScene != nullptr)
 			{
+				if (activeScene->Quit())
+				{
+					Exit();
+				}
 				float deltaTime = currentTime - timeLastFrame;
 
 				activeScene->Update(deltaTime);
 				activeScene->Render();
+
+				SwitchScene((int)activeScene->nextScene);
+
 			}
 
 			timeLastFrame = currentTime;
-
 		}
 	}
 
@@ -95,11 +107,21 @@ void Engine::SwitchScene(size_t id)
 	auto sceneIt = this->scenes.find(id);
 	assert(sceneIt != scenes.end(), "No scene with ID " + std::to_string(id));
 
-	if (activeScene != nullptr)
-		activeScene->OnDeactivate();
-
-	activeScene = (*sceneIt).second;
-	activeScene->OnActivate();
+	if (activeScene == nullptr)
+	{
+		activeScene = (*sceneIt).second;
+		activeScene->OnActivate();
+	}
+	else
+	{
+		if (activeScene != (*sceneIt).second)
+		{
+			previousScene = activeScene;
+			activeScene = (*sceneIt).second;
+			activeScene->OnActivate();
+			previousScene->OnDeactivate();
+		}
+	}
 }
 
 void Engine::FixedUpdateLoop(Engine* engine)

@@ -87,9 +87,6 @@
     <ClCompile Include="Collider.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="ControllerComponent.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="DShape.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
@@ -136,9 +133,6 @@
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="MoveComponent.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="NodeWalkerComponent.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="PointLightComponent.cpp">
@@ -219,6 +213,27 @@
     <ClCompile Include="Object.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="GameOverScene.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="GameScene.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="IntroScene.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="PlayerComp.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="ControllerComp.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="NodeWalkerComp.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="WinScene.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="BoundingBoxes.h">
@@ -249,9 +264,6 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="Component.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="ControllerComponent.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="DebugBoxShapeComponent.h">
@@ -312,9 +324,6 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="MoveComponent.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="NodeWalkerComponent.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="Noise.h">
@@ -395,9 +404,6 @@
     <ClInclude Include="WorldGenerator.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="ZWEBLoader.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
     <ClInclude Include="FogRenderPass.h">
       <Filter>Header Files</Filter>
     </ClInclude>
@@ -423,6 +429,30 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="PlayerAttackComp.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="PlayerComp.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="GameOverScene.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="GameScene.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="IntroScene.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="ZWEBLoader.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="ControllerComp.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="NodeWalkerComp.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="WinScene.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>
