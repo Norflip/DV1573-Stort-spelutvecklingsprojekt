@@ -36,8 +36,6 @@ void GameOverScene::InitializeObjects()
 	ShowCursor(true);
 	Input::Instance().SetMouseMode(dx::Mouse::MODE_ABSOLUTE);
 
-
-
 	skyboxClass = new Skybox(renderer->GetDevice(), renderer->GetContext(), resourceManager->GetShaderResource("skyboxShader"));
 	skyboxClass->GetThisObject()->AddFlag(ObjectFlag::NO_CULL);
 }

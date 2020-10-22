@@ -55,7 +55,7 @@ void Chunk::SetupCollisionObject(float* heightMap)
 	rp::Collider* collider = body->addCollider(shape, colliderTransform);
 	collider->setCollisionCategoryBits(static_cast<unsigned short>(FilterGroups::TERRAIN));
 	collider->setCollideWithMaskBits(static_cast<unsigned short>(FilterGroups::EVERYTHING));
-	body->getCollider(0)->getMaterial().setBounciness(0.f);
+	collider->getMaterial().setBounciness(0.f);
 }
 
 float Chunk::SampleHeight(float x, float z)
