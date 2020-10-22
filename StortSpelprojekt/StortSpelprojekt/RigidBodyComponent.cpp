@@ -11,7 +11,48 @@ RigidBodyComponent::~RigidBodyComponent()
 
 void RigidBodyComponent::Update(const float& deltaTime)
 {
-	UpdateWorldTransform();
+	currentTransform = body->getTransform();
+
+	const float delta = std::min(deltaTime, 1.0f);
+	//rp::Transform interpolatedTransform = rp::Transform::interpolateTransforms(previousTransform, currentTransform, delta);
+
+	Transform& transform = GetOwner()->GetTransform();
+	rp::Vector3 bodyPosition = currentTransform.getPosition();
+
+	if (bodyPosition.y < -1000)
+	{
+		bodyPosition.y = -1000;
+		std::cout << "BODY OUT OF BOUNDS (y < -1000)" << std::endl;
+		GetOwner()->RemoveFlag(ObjectFlag::ENABLED);
+		return;
+	}
+
+	transform.SetPosition(dx::XMVectorSet(
+		static_cast <float>(bodyPosition.x),
+		static_cast <float>(bodyPosition.y),
+		static_cast <float>(bodyPosition.z),
+		0.0f
+	));
+
+	if (!lockRotation)
+	{
+		rp::Quaternion bodyOrientation = currentTransform.getOrientation();
+		float x = static_cast <float>(bodyOrientation.x);
+		float y = static_cast <float>(bodyOrientation.y);
+		float z = static_cast <float>(bodyOrientation.z);
+		float w = static_cast <float>(bodyOrientation.w);
+		transform.SetRotation(dx::XMVectorSet(x, y, z, w));
+	}
+	else
+	{
+		dx::XMFLOAT4 rot;
+		dx::XMStoreFloat4(&rot, transform.GetRotation());
+
+		currentTransform.setOrientation(rp::Quaternion(rot.x, rot.y, rot.z, rot.w));
+		body->setTransform(currentTransform);
+	}
+
+	previousTransform = currentTransform;
 }
 
 void RigidBodyComponent::SetPosition(dx::XMVECTOR position)
@@ -76,6 +117,11 @@ bool RigidBodyComponent::IsGrounded() const
 }
 
 
+void RigidBodyComponent::PhysicRelease()
+{
+	Physics::Instance().GetWorld()->destroyRigidBody(body);
+}
+
 rp::Transform RigidBodyComponent::ConvertToBtTransform(const Transform& transform) const
 {
 	rp::Transform temp;
@@ -113,13 +159,14 @@ void RigidBodyComponent::AddCollidersToBody(Object* obj, rp::RigidBody* body)
 void RigidBodyComponent::m_InitializeBody(rp::PhysicsWorld* world)
 {
 	Transform& transform = GetOwner()->GetTransform();
-	bodyTransform = ConvertToBtTransform(transform);
+	currentTransform = ConvertToBtTransform(transform);
+	previousTransform = currentTransform;
 
 	rp::BodyType type = dynamic ? rp::BodyType::DYNAMIC : rp::BodyType::KINEMATIC;
 	if (mass == 0.0f)
 		type = rp::BodyType::STATIC;
 
-	body = world->createRigidBody(bodyTransform);
+	body = world->createRigidBody(currentTransform);
 	body->setType(type);
 	body->setMass(mass);
 	body->setUserData(static_cast<void*>(GetOwner()));
@@ -127,30 +174,6 @@ void RigidBodyComponent::m_InitializeBody(rp::PhysicsWorld* world)
 	AddCollidersToBody(GetOwner(), body);
 }
 
-void RigidBodyComponent::UpdateWorldTransform()
-{
-	rp::Transform bodyTransform = body->getTransform();
-
-	Transform& transform = GetOwner()->GetTransform();
-	rp::Vector3 bodyPosition = bodyTransform.getPosition();
-
-	transform.SetPosition(dx::XMVectorSet(
-		static_cast <float>(bodyPosition.x),
-		static_cast <float>(bodyPosition.y),
-		static_cast <float>(bodyPosition.z),
-		0.0f
-	));
-
-	if (!lockRotation)
-	{
-		rp::Quaternion bodyOrientation = bodyTransform.getOrientation();
-		float x = static_cast <float>(bodyOrientation.x);
-		float y = static_cast <float>(bodyOrientation.y);
-		float z = static_cast <float>(bodyOrientation.z);
-		float w = static_cast <float>(bodyOrientation.w);
-		transform.SetRotation(dx::XMVectorSet(x, y, z, w));
-	}
-}
 
 void RigidBodyComponent::m_OnCollision(const CollisionInfo& collision)
 {

@@ -5,14 +5,15 @@
 #include "PlayerComp.h"
 
 
-Scene::Scene(ResourceManager* manager) : input(Input::Instance())
+
+Scene::Scene(ResourceManager* resources) : input(Input::Instance()), pooler(resources)
 {
 	skyboxClass = nullptr;
 	renderer = nullptr;
 	camera = nullptr;
 
 	//root = new Object("sceneRoot", ObjectFlag::DEFAULT);
-	resourceManager = manager;
+	resourceManager = resources;
 
 	quit = false;
 }
@@ -76,7 +77,7 @@ void Scene::Render()
 	skyboxClass->GetThisObject()->Draw(renderer, camera);
 
 	root->Draw(renderer, camera);
-	worldGenerator.DrawShapes();
+	//worldGenerator.DrawShapes();
 
 	renderer->RenderFrame(camera, (float)clock.GetSeconds());
 }

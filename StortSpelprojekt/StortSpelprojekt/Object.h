@@ -30,7 +30,7 @@ enum class ObjectFlag : unsigned int
 DEFINE_ENUM_FLAG_OPERATORS(ObjectFlag)
 
 // max components on entity
-constexpr std::size_t maxComponents = 32;
+constexpr std::size_t maxComponents = 40;
 using ComponentBitSet = std::bitset<maxComponents>;
 using ComponentArray = std::array<std::vector<Component*>, maxComponents>;
 
@@ -86,7 +86,9 @@ private:
 template<typename T>
 inline bool Object::HasComponent() const
 {
-	return componentBitSet[GetComponentTypeID<T>()];
+	size_t AAA = GetComponentTypeID<T>();
+
+	return componentBitSet[AAA];
 }
 
 template<typename T, typename ...TArgs>

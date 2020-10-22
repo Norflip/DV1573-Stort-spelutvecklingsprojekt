@@ -19,8 +19,8 @@ enum class FilterGroups : unsigned short
 	PICKUPS = 1 << 2,
 	PLAYER = 1 << 3,
 	ENEMIES = 1 << 4,
-	TEST_0 = 1 << 5,
-	EVERYTHING = DEFAULT | TERRAIN | PICKUPS | PLAYER | ENEMIES | TEST_0
+	PROPS = 1 << 5,
+	EVERYTHING = DEFAULT | TERRAIN | PICKUPS | PLAYER | ENEMIES | PROPS
 };
 
 
@@ -48,10 +48,6 @@ public:
 	void UnregisterRigidBody(RigidBodyComponent* rigidBodyComp);
 
 	void FixedUpdate(const float& fixedDeltaTime);
-
-
-
-
 
 	bool RaytestSingle(const Ray& ray, float maxDistance, RayHit& hit, FilterGroups group = FilterGroups::EVERYTHING) const;
 
