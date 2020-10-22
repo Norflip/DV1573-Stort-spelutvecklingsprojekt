@@ -52,6 +52,7 @@ public:
 
 	dx::XMVECTOR GetRotation() const { return dx::XMLoadFloat4(&this->rotation); }
 	void SetRotation(dx::XMVECTOR rotation);
+	void SmoothRotation(dx::XMFLOAT3 endPos, float deltaTime, bool changeDir);
 	
 
 #pragma endregion

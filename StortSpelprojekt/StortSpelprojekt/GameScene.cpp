@@ -114,6 +114,17 @@ void GameScene::InitializeObjects()
 
 	worldGenerator.InitializeTrees(stylizedTreeModel, stylizedTreeMaterial, renderer->GetDevice());
 
+	Shader* skeletonShader = resourceManager->GetShaderResource("skeletonShader");
+
+	std::vector<Mesh> skeletonMesh = ZWEBLoader::LoadMeshes(ZWEBLoadType::SkeletonAnimation, "Models/baseMonster.ZWEB", renderer->GetDevice());
+	std::vector<Material> skeletonMat = ZWEBLoader::LoadMaterials("Models/baseMonster.ZWEB", skeletonShader, renderer->GetDevice());
+
+	SkeletonAni skeletonbaseMonsterIdle = ZWEBLoader::LoadSkeletonOnly("Models/baseMonsterIdle.ZWEB", skeletonMesh[0].GetBoneIDS());
+
+	//Object* baseMonsterObject = new Object("baseMonster");
+
+	//AddObject(baseMonsterObject);
+
 	//Player & Camera
 	Physics& physics = Physics::Instance();
 	dx::XMFLOAT3 playerSpawn = { 5,5,10 };
@@ -146,9 +157,12 @@ void GameScene::InitializeObjects()
 
 	//Enemy object //comments
 	enemy = new Object("enemy");
-	dx::XMFLOAT3 enemyTranslation = dx::XMFLOAT3(0, 2, 10);
+	dx::XMFLOAT3 enemyTranslation = dx::XMFLOAT3(0, 3, 10);
 	enemy->GetTransform().SetPosition(dx::XMLoadFloat3(&enemyTranslation));
-	enemy->AddComponent<MeshComponent>(*mesh1, *material1);
+	//enemy->AddComponent<MeshComponent>(*mesh1, *material1);
+	SkeletonMeshComponent* baseMonsterComp = enemy->AddComponent<SkeletonMeshComponent>(skeletonMesh[0], skeletonMat[0]);
+	baseMonsterComp->SetAnimationTrack(skeletonbaseMonsterIdle, SkeletonStateMachine::IDLE);
+	enemy->GetTransform().SetScale({ 0.125f, 0.125f, 0.125f });
 	enemy->AddComponent<EnemyStatsComp>(500, 0.5f, 5, 25, 3);
 	enemyStatsComp = enemy->GetComponent<EnemyStatsComp>();
 	enemy->AddComponent<EnemyAttackComp>(player->GetComponent<PlayerComp>());
@@ -159,24 +173,6 @@ void GameScene::InitializeObjects()
 	AddObject(enemy);
 
 	playerObject->AddComponent<PlayerAttackComp>(enemy);
-
-	Shader* skeletonShader = resourceManager->GetShaderResource("skeletonShader");
-
-	std::vector<Mesh> skeletonMesh = ZWEBLoader::LoadMeshes(ZWEBLoadType::SkeletonAnimation, "Models/baseMonster.ZWEB", renderer->GetDevice());
-	std::vector<Material> skeletonMat = ZWEBLoader::LoadMaterials("Models/baseMonster.ZWEB", skeletonShader, renderer->GetDevice());
-
-	SkeletonAni skeletonbaseMonsterIdle = ZWEBLoader::LoadSkeletonOnly("Models/baseMonsterIdle.ZWEB", skeletonMesh[0].GetBoneIDS());
-
-	Object* baseMonsterObject = new Object("baseMonster");
-
-	SkeletonMeshComponent* baseMonsterComp = baseMonsterObject->AddComponent<SkeletonMeshComponent>(skeletonMesh[0], skeletonMat[0]);
-
-	baseMonsterComp->SetAnimationTrack(skeletonbaseMonsterIdle, SkeletonStateMachine::IDLE);
-
-	baseMonsterObject->GetTransform().SetScale({ 0.125f, 0.125f, 0.125f });
-	baseMonsterObject->GetTransform().SetPosition({ 0.0f, 2.5f, 0.0f });
-	AddObject(baseMonsterObject);
-
 
 	//Character reference
 	std::vector<Mesh> charRefMesh = ZWEBLoader::LoadMeshes(ZWEBLoadType::NoAnimation, "Models/char_ref.ZWEB", renderer->GetDevice());

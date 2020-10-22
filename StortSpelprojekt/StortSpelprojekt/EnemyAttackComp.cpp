@@ -61,8 +61,10 @@ bool EnemyAttackComp::ChasePlayer(const float& deltaTime)
 		&& distanceF.x >= -playerRadius && distanceF.z >= -playerRadius)
 		attackPlayer = true;
 
-	GetOwner()->GetTransform().Translate(moveDir.x * GetOwner()->GetComponent<EnemyStatsComp>()->GetSpeed() * deltaTime, 0.0f,
-		moveDir.z * GetOwner()->GetComponent<EnemyStatsComp>()->GetSpeed() * deltaTime);
+	GetOwner()->GetTransform().Translate(moveDir.x * enemyStatsComp->GetSpeed() * deltaTime, 0.0f,
+		moveDir.z * enemyStatsComp->GetSpeed() * deltaTime);
+
+	GetOwner()->GetTransform().SmoothRotation(playerPos, deltaTime, true);
 
 	return chasePlayer;
 }
