@@ -5,7 +5,7 @@ bool ControllerComp::IsGrounded() const
 	dx::XMFLOAT3 origin;
 	dx::XMStoreFloat3(&origin, GetOwner()->GetTransform().GetPosition());
 	//origin.z += 2.f;
-	Ray ray(origin, DOWN);
+	Ray ray(origin, DOWN_VEC);
 	RayHit hit;
 
 	//TERRAIN or default depending on if u can jump from on top of objects

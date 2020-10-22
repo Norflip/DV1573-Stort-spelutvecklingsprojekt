@@ -26,7 +26,7 @@ constexpr float JUMP_VELOCITY = 5.f;
 
 constexpr dx::XMFLOAT3 RESET_POS = {20.f,3.f,20.f};
 constexpr dx::XMFLOAT4 RESET_ROT = { 0.f,0.f,0.f,1.f };
-constexpr dx::XMFLOAT3 DOWN = { 0.f,-1.f,0.f };
+constexpr dx::XMFLOAT3 DOWN_VEC = { 0.f,-1.f,0.f };
 
 
 class ControllerComp :public Component //PlayerControllerComp
