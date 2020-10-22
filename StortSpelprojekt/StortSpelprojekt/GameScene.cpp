@@ -290,6 +290,10 @@ void GameScene::InitializeGUI()
 	GUIFont* healthDisplay = new GUIFont(*renderer, "playerHealth", 50, 100);
 	GUIFont* enemyDisplay = new GUIFont(*renderer, "enemyHealth", 50, 150);
 
+	//CROSSHAIR
+	GUISprite* dot = new GUISprite(*renderer, "Textures/dot.png", (windowWidth / 2) - 6, (windowHeight / 2) - 6, 0, DrawDirection::BottomLeft, ClickFunction::NotClickable);
+	//GUISprite* crosshair = new GUISprite(*renderer, "Textures/chrosshair.png", (windowWidth / 2) - 25, (windowHeight / 2) - 25, 0, DrawDirection::BottomLeft, ClickFunction::NotClickable);
+
 	// INSERTIONS
 	guiManager = new GUIManager(renderer, 100);
 	guiManager->AddGUIObject(fpsDisplay, "fps");
@@ -322,6 +326,10 @@ void GameScene::InitializeGUI()
 	guiManager->AddGUIObject(fuelSprite, "fuelSprite");
 	guiManager->AddGUIObject(foodSprite, "foodSprite");
 	guiManager->AddGUIObject(healthSprite, "healthSprite");
+
+	//CROSSHAIR
+	guiManager->AddGUIObject(dot, "dot");
+	//guiManager->AddGUIObject(crosshair, "crosshair");
 
 	renderer->AddRenderPass(guiManager);
 }
