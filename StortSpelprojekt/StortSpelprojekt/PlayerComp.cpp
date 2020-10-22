@@ -60,8 +60,9 @@ void PlayerComp::Update(const float& deltaTime)
 
 		// make better later
 		if (food < 0 || fuel < 0 || health < 0)
-			gg = true;
+		{//gg = true;
 			//std::cout <<"GG";
+		}
 	}
 	
 	// Fuel drop

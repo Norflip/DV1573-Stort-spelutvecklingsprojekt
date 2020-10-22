@@ -286,10 +286,7 @@
     <ClInclude Include="Transform.h" />
     <ClInclude Include="Window.h" />
     <ClInclude Include="WorldGenerator.h" />
-    <ClInclude Include="ZWEBLoader.h">
-      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">false</ExcludedFromBuild>
-      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">true</ExcludedFromBuild>
-    </ClInclude>
+    <ClInclude Include="ZWEBLoader.h" />
   </ItemGroup>
   <ItemGroup>
     <FxCompile Include="Shaders\Alpha_ps.hlsl">

@@ -407,9 +407,6 @@
     <ClInclude Include="WorldGenerator.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="ZWEBLoader.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
     <ClInclude Include="FogRenderPass.h">
       <Filter>Header Files</Filter>
     </ClInclude>
@@ -447,6 +444,9 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="IntroScene.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="ZWEBLoader.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>
