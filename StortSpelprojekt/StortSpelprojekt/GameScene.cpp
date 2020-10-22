@@ -116,7 +116,7 @@ void GameScene::InitializeObjects()
 	worldGenerator.InitializeTrees(stylizedTreeModel, stylizedTreeMaterial, renderer->GetDevice());
 	
 	//Player & Camera
-	dx::XMFLOAT3 playerSpawn = { 10,20,10 };
+	dx::XMFLOAT3 playerSpawn = { 10,10,10 };
 	dx::XMFLOAT3 zero = { 0.f, 0.f, 0.f };
 	dx::XMVECTOR playerSpawnVec = dx::XMLoadFloat3(&playerSpawn);
 	Object* playerObject = new Object("player", ObjectFlag::ENABLED);
