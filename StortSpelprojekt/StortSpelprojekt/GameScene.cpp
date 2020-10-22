@@ -24,7 +24,7 @@ void GameScene::Initialize(Renderer* renderer)
 	Physics& physics = Physics::Instance();
 	physics.Initialize({ 0, -10.0f, 0 });
 
-	pooler.Register("test_body_cube", 10, []() {
+	pooler.Register("test_body_cube", 10, [](ResourceManager* resources) {
 
 		Object* object = new Object("fuel");
 
@@ -48,9 +48,13 @@ void GameScene::InitializeObjects()
 	state.seed = 1337;
 	state.segment = 0;
 
-	worldGenerator.Initialize(renderer->GetDevice(), resourceManager->GetShaderResource("terrainShader"), resourceManager->GetShaderResource("grassShader"));
-	worldGenerator.Generate(state, renderer->GetDevice(), root);
-	worldGenerator.InitalizeGrass(renderer->GetDevice(), renderer->GetContext());
+	SegmentDescription desc(0, 10, 2);
+	desc.directionalSteps = 5;
+	desc.maxSteps = 10;
+
+	//worldGenerator.Initialize(renderer->GetDevice(), resourceManager->GetShaderResource("terrainShader"), resourceManager->GetShaderResource("grassShader"));
+	//worldGenerator.Generate(state, renderer->GetDevice(), root);
+	//worldGenerator.InitalizeGrass(renderer->GetDevice(), renderer->GetContext());
 
 	Mesh* mesh1 = resourceManager->GetResource<Mesh>("Test");
 	Mesh* mesh2 = resourceManager->GetResource<Mesh>("Test2");
@@ -91,24 +95,7 @@ void GameScene::InitializeObjects()
 	testMesh4->AddComponent<MeshComponent>(*mesh1, *material2);
 	AddObject(testMesh4);
 
-	/*************************INSTANCING*******************/
-	auto sampler = DXHelper::CreateSampler(D3D11_FILTER_MIN_MAG_MIP_LINEAR, D3D11_TEXTURE_ADDRESS_WRAP, renderer->GetDevice());
 
-	Shader* instanceShader = resourceManager->GetShaderResource("instanceShader");
-	Shader* alphaInstanceShader = resourceManager->GetShaderResource("alphaInstanceShader");
-
-	//0 base 1 branch 2 leaves
-	std::vector<Mesh> stylizedTreeModel = ZWEBLoader::LoadMeshes(ZWEBLoadType::NoAnimation, "Models/tree.ZWEB", renderer->GetDevice());
-	//0 tree 1 leaves
-	std::vector<Material> stylizedTreeMaterial = ZWEBLoader::LoadMaterials("Models/tree.ZWEB", instanceShader, renderer->GetDevice());
-
-	stylizedTreeMaterial[0].SetSampler(sampler, 0, ShaderBindFlag::PIXEL);
-	stylizedTreeMaterial[1].SetSampler(sampler, 0, ShaderBindFlag::PIXEL);
-
-	stylizedTreeMaterial[0].SetShader(instanceShader);
-	stylizedTreeMaterial[1].SetShader(alphaInstanceShader);
-
-	worldGenerator.InitializeTrees(stylizedTreeModel, stylizedTreeMaterial, renderer->GetDevice());
 	
 	//Player & Camera
 	dx::XMFLOAT3 playerSpawn = { 10,20,10 };
@@ -183,13 +170,17 @@ void GameScene::InitializeObjects()
 	AddObject(characterReferenceObject);
 
 	clock.Update();
-	clock.Start();
-	clock.Update();
 
 	/* * * * * * * * ** * * * * */
 	//Log::Add("PRINTING SCENE HIERARCHY ----");
 	//PrintSceneHierarchy(root, 0);
 	/*Log::Add("----");*/
+
+
+	world.Initialize(root, resourceManager, &pooler, renderer);
+	world.ConstructSegment(state, desc);
+	world.SetPlayer(player);
+
 }
 
 void GameScene::InitializeGUI()
@@ -300,7 +291,7 @@ void GameScene::OnActivate()
 void GameScene::OnDeactivate()
 {
 	renderer->RemoveRenderPass(guiManager);
-	worldGenerator.Clear();
+	//worldGenerator.Clear();
 	LightManager::Instance().Clear();
 
 	delete root;
@@ -310,6 +301,7 @@ void GameScene::OnDeactivate()
 void GameScene::Update(const float& deltaTime)
 {
 	Scene::Update(deltaTime);
+	world.UpdateRelevantChunks();
 
 	static_cast<GUIFont*>(guiManager->GetGUIObject("fps"))->SetString(std::to_string((int)GameClock::Instance().GetFramesPerSecond()));
 	static_cast<GUIFont*>(guiManager->GetGUIObject("playerHealth"))->SetString("Player health: " + std::to_string((int)player->GetComponent<PlayerComp>()->GetHealth()));
@@ -403,7 +395,8 @@ void GameScene::Render()
 	skyboxClass->GetThisObject()->Draw(renderer, camera);
 
 	root->Draw(renderer, camera);
-	worldGenerator.DrawShapes();
+	//worldGenerator.DrawShapes();
+	world.DrawDebug();
 
 	renderer->RenderFrame(camera, (float)clock.GetSeconds());
 }
