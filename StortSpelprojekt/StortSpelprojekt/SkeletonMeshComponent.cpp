@@ -85,7 +85,7 @@ void SkeletonMeshComponent::RunAnimation(const float& deltaTime)
 	
 }
 
-void SkeletonMeshComponent::findChildren(SkeletonAni& track, unsigned int& index, std::map<std::string, unsigned int>& map, std::string& name,
+void SkeletonMeshComponent::FindChildren(SkeletonAni& track, unsigned int& index, std::map<std::string, unsigned int>& map, std::string& name,
 	std::string& secondName)
 {
 	for (unsigned int i = 0; i < track.GetKeyFrames().size(); i++)

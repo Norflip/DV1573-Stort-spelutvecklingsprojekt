@@ -41,7 +41,7 @@ private:
 public:
 	NodeWalkerComp();
 	~NodeWalkerComp();
-	void initAnimation();
+	void InitAnimation();
 	void Reset(); //is public cus is meant to be called outside of class if needed
 	void Start();
 	void Stop();

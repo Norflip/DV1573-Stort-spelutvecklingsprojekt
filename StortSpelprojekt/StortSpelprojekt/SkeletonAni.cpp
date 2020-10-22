@@ -194,7 +194,7 @@ void SkeletonAni::SetUpKeys(std::string boneName, std::vector<SkeletonKeysHeader
 
 
 
-std::map<std::string, unsigned int>& SkeletonAni::getBoneIDMap()
+std::map<std::string, unsigned int>& SkeletonAni::GetBoneIDMap()
 {
     return boneIDMap;
 }
@@ -216,7 +216,7 @@ float SkeletonAni::GetFPS()
 
 float SkeletonAni::GetAniLength()
 {
-    return this->lenght;
+    return this->length;
 }
 
 void SkeletonAni::SetOffsetsDirect(std::vector<dx::SimpleMath::Matrix>& directOffsets)

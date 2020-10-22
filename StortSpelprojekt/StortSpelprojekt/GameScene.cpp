@@ -130,6 +130,9 @@ void GameScene::InitializeObjects()
 
 
 	/* * * * * * * * ** * * * * */
+
+	//SKELETON ANIMATION MODELS
+
 	bool defaultAnimation = false;
 	bool parentAnimation = true;
 	Shader* skeletonShader = resourceManager->GetShaderResource("skeletonShader");
@@ -149,7 +152,7 @@ void GameScene::InitializeObjects()
 
 	Object* baseMonsterObject = new Object("baseMonster");
 
-
+	//LOADING BASE MONSTER; ADDING SKELETONS TO IT
 
 
 	SkeletonMeshComponent* baseMonsterComp = baseMonsterObject->AddComponent<SkeletonMeshComponent>(skeletonMesh[0], skeletonMat[0]);
@@ -176,8 +179,10 @@ void GameScene::InitializeObjects()
 	stateMachine->RegisterState(EnemyState::IDLE, baseMonsterObject->AddComponent<EnemyIdleComp>());
 	stateMachine->RegisterState(EnemyState::PATROL, baseMonsterObject->AddComponent<EnemyPatrolComp>());
 	stateMachine->RegisterState(EnemyState::ATTACK, baseMonsterObject->AddComponent<EnemyAttackComp>(playerComp));
-	stateMachine->initAnimation();
+	stateMachine->InitAnimation();
 	AddObject(baseMonsterObject);
+
+	//LOADING HOUSE AND LEGS AND ADDING SKELETONS TO THEM THE HOUSE ONLY HAS ONE JOINT CONNECTED TO IT
 	Shader* defaultShader = resourceManager->GetShaderResource("defaultShader");
 	std::vector<Mesh> meshHouse = ZWEBLoader::LoadMeshes(ZWEBLoadType::SkeletonAnimation, "Models/House_Base.ZWEB", renderer->GetDevice());
 	std::vector<Material> matHouse = ZWEBLoader::LoadMaterials("Models/House_Base.ZWEB", skeletonShader, renderer->GetDevice());
@@ -225,7 +230,7 @@ void GameScene::InitializeObjects()
 
 	NodeWalkerComp* nodeWalker = houseBaseObject->AddComponent<NodeWalkerComp>();
 
-	nodeWalker->initAnimation();
+	nodeWalker->InitAnimation();
 
 	legsComponent->SetTrack(SkeletonStateMachine::IDLE, false);
 
@@ -245,8 +250,7 @@ void GameScene::InitializeObjects()
 
 
 	clock.Update();
-	clock.Start();
-	clock.Update();
+	
 }
 
 void GameScene::InitializeGUI()
