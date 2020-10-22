@@ -10,6 +10,11 @@ EnemySMComp::~EnemySMComp()
 {
 }
 
+void EnemySMComp::InitAnimation()
+{
+	skeletonComponent =  GetOwner()->GetComponent<SkeletonMeshComponent>();
+}
+
 void EnemySMComp::SetState(EnemyState state)
 {
 	if (currentState != EnemyState::NONE)
@@ -25,12 +30,37 @@ void EnemySMComp::SetState(EnemyState state)
 	}
 }
 
+void EnemySMComp::Animate()
+{
+
+	if (currentState == EnemyState::ATTACK)
+	{
+		skeletonComponent->SetTrack(SkeletonStateMachine::BLENDED,false);
+	}
+	else if (currentState == EnemyState::IDLE)
+	{
+		skeletonComponent->SetTrack(SkeletonStateMachine::IDLE,false);
+	}
+	else if (currentState == EnemyState::PATROL)
+	{
+		skeletonComponent->SetTrack(SkeletonStateMachine::WALK,false);
+	}
+
+}
+
+
+
 void EnemySMComp::Update(const float& deltaTime)
 {
 	if (KEY_DOWN(K))
 	{
 		SetState(switchState[currentState]);
 	}
+	if (GetOwner()->HasComponent<SkeletonMeshComponent>())
+	{
+		Animate();
+	}
+	
 }
 
 void EnemySMComp::RegisterState(EnemyState state, Component* comp)

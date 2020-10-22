@@ -6,9 +6,6 @@
 
 
 
-
-
-
 Scene::Scene(ResourceManager* resources) : input(Input::Instance()), pooler(resources)
 {
 	skyboxClass = nullptr;
@@ -22,7 +19,7 @@ Scene::Scene(ResourceManager* resources) : input(Input::Instance()), pooler(reso
 }
 
 Scene::~Scene()
-{	
+{
 	delete skyboxClass;
 	skyboxClass = nullptr;
 
@@ -43,9 +40,9 @@ void Scene::InitializeObjects()
 void Scene::Update(const float& deltaTime)
 {
 	clock.Update();
-  
+
 	input.UpdateInputs();
-	
+
 	root->Update(deltaTime);
 
 	GameClock::Instance().Update();
@@ -68,13 +65,13 @@ void Scene::Update(const float& deltaTime)
 void Scene::FixedUpdate(const float& fixedDeltaTime)
 {
 	Physics::Instance().FixedUpdate(fixedDeltaTime);
-	
+
 	//Log::Add(std::to_string(fixedDeltaTime));
 	root->FixedUpdate(fixedDeltaTime);
 }
 
 void Scene::Render()
-{	
+{
 	// skybox draw object
 	//renderer->SetRSToCullNone(true);
 	skyboxClass->GetThisObject()->Draw(renderer, camera);
@@ -109,9 +106,9 @@ void Scene::PrintSceneHierarchy(Object* object, size_t level) const
 		for (size_t i = 0; i < level; i++)
 			indent += "  ";
 
-		indent += "L  ";		
+		indent += "L  ";
 	}
-		
+
 	Log::Add(indent + object->GetName());
 
 	if (object->GetTransform().CountChildren() > 0)
