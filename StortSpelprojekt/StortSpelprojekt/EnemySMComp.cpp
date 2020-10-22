@@ -27,14 +27,18 @@ void EnemySMComp::SetState(EnemyState state)
 
 void EnemySMComp::Update(const float& deltaTime)
 {
-	if (KEY_DOWN(K))
-	{
-		SetState(switchState[currentState]);
-	}
-	//if (GetOwner()->GetComponent<EnemyAttackComp>()->GetChasePlayer())
+	//if (KEY_DOWN(K))
 	//{
 	//	SetState(switchState[currentState]);
 	//}
+	if (GetOwner()->GetComponent<EnemyAttackComp>()->GetChasePlayer())
+	{
+		SetState(EnemyState::ATTACK);
+	}
+	else
+	{
+		SetState(EnemyState::IDLE);
+	}
 }
 
 void EnemySMComp::RegisterState(EnemyState state, Component* comp)

@@ -115,7 +115,8 @@ void GameScene::InitializeObjects()
 	worldGenerator.InitializeTrees(stylizedTreeModel, stylizedTreeMaterial, renderer->GetDevice());
 
 	//Player & Camera
-	dx::XMFLOAT3 playerSpawn = { 10,20,10 };
+	Physics& physics = Physics::Instance();
+	dx::XMFLOAT3 playerSpawn = { 5,5,10 };
 	dx::XMFLOAT3 zero = { 0.f, 0.f, 0.f };
 	dx::XMVECTOR playerSpawnVec = dx::XMLoadFloat3(&playerSpawn);
 	Object* playerObject = new Object("player", ObjectFlag::ENABLED);
@@ -137,7 +138,8 @@ void GameScene::InitializeObjects()
 	physics.MutexUnlock();
 	playerObject->AddComponent<ControllerComp>(cameraObject);
 	//Transform::SetParentChild(playerObject->GetTransform(),cameraObject->GetTransform());
-	playerObject->AddComponent<PlayerComp>(guiManager, 50000, 2, 10, 25, 3);
+	playerObject->AddComponent<PlayerComp>(guiManager, 200, 2, 3, 25, 3);
+	playerStatsComp = playerObject->GetComponent<PlayerComp>();
 
 	AddObject(cameraObject, playerObject);
 	AddObject(playerObject);
@@ -147,7 +149,7 @@ void GameScene::InitializeObjects()
 	dx::XMFLOAT3 enemyTranslation = dx::XMFLOAT3(0, 2, 10);
 	enemy->GetTransform().SetPosition(dx::XMLoadFloat3(&enemyTranslation));
 	enemy->AddComponent<MeshComponent>(*mesh1, *material1);
-	enemy->AddComponent<EnemyStatsComp>(100, 2, 15, 25, 3);
+	enemy->AddComponent<EnemyStatsComp>(500, 0.5f, 5, 25, 3);
 	enemyStatsComp = enemy->GetComponent<EnemyStatsComp>();
 	enemy->AddComponent<EnemyAttackComp>(player->GetComponent<PlayerComp>());
 	EnemySMComp* stateMachine = enemy->AddComponent<EnemySMComp>(EnemyState::IDLE);
@@ -187,8 +189,6 @@ void GameScene::InitializeObjects()
 	characterReferenceObject->GetTransform().SetPosition({ 0.0f, 0.0f, 4.0f });
 	AddObject(characterReferenceObject);
 
-	clock.Update();
-	clock.Start();
 	clock.Update();
 
 	/* * * * * * * * ** * * * * */

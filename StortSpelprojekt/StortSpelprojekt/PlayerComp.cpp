@@ -41,7 +41,6 @@ PlayerComp::PlayerComp(GUIManager* guimanager, float health, float movementSpeed
 	this->fuelBurnPerMeter = 0.7f;
 	this->fuel = 100.f;
 	this->healthLossPerSecond = 0.5f;
-	this->health = 100.f;
 
 	this->fuelDippingBar = static_cast<GUISprite*>(guiMan->GetGUIObject("fuelDippingBar"));
 	this->foodDippingBar = static_cast<GUISprite*>(guiMan->GetGUIObject("foodDippingBar"));

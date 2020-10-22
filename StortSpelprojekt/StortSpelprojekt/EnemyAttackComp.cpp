@@ -34,8 +34,8 @@ bool EnemyAttackComp::ChasePlayer(const float& deltaTime)
 	dx::XMFLOAT3 distanceF = { enemyPos.x - playerPos.x, enemyPos.y - playerPos.y, enemyPos.z - playerPos.z };
 	dx::XMFLOAT3 moveDir = { 0.0f, 0.0f, 0.0f };
 
-	if (enemyStatsComp->GetRadius() > distanceF.x && enemyStatsComp->GetRadius() > distanceF.y &&
-		enemyStatsComp->GetRadius() > distanceF.z)
+	if(distanceF.x <= enemyStatsComp->GetRadius() && distanceF.z <= enemyStatsComp->GetRadius()
+		&& distanceF.x >= -enemyStatsComp->GetRadius() && distanceF.z >= -enemyStatsComp->GetRadius())
 	{
 		chasePlayer = true;
 		if (distanceF.x > playerRadius)
