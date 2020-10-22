@@ -116,7 +116,7 @@ void GameScene::InitializeObjects()
 	skyboxClass->GetThisObject()->AddFlag(ObjectFlag::NO_CULL);
 
 	Object* testMesh4 = new Object("test4");
-	testMesh4->AddComponent<NodeWalkerComponent>();
+	testMesh4->AddComponent<NodeWalkerComp>();
 	testMesh4->GetTransform().SetPosition(dx::XMLoadFloat3(&miniTranslation4));
 	testMesh4->AddComponent<MeshComponent>(*mesh1, *material2);
 	AddObject(testMesh4);
