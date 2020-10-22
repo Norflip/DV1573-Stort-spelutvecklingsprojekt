@@ -17,7 +17,7 @@ bool ControllerComp::IsGrounded() const
 	if (hit.object != nullptr)
 	{
 		result = true;
-		std::cout << "picking: " << hit.object->GetName() << std::endl;
+		//std::cout << "picking: " << hit.object->GetName() << std::endl;
 		DShape::DrawLine(ray.origin, ray.GetPoint(distance), { 0,0,1 });
 	}
 	else
@@ -220,7 +220,7 @@ void ControllerComp::Update(const float& deltaTime)
 			float jumpVelocity = 0;
 			bool isCrouching = false;
 			camComp->SetFOV(fov);
-			if (IsGrounded() && KEY_DOWN(Space) ) // FPcam //jump is  scuffed
+			if (IsGrounded() && KEY_DOWN(Space)) // FPcam //jump is  scuffed
 			{
 				jumpVelocity = JUMP_VELOCITY;
 				//dir.y = JUMP_VELOCITY;
