@@ -43,7 +43,7 @@ void GameScene::Initialize(Renderer* renderer)
 void GameScene::InitializeObjects()
 {
 	Physics& physics = Physics::Instance();
-	
+
 
 
 	SaveState state;
@@ -114,9 +114,9 @@ void GameScene::InitializeObjects()
 	stylizedTreeMaterial[1].SetShader(alphaInstanceShader);
 
 	worldGenerator.InitializeTrees(stylizedTreeModel, stylizedTreeMaterial, renderer->GetDevice());
-	
+
 	//Player & Camera
-	dx::XMFLOAT3 playerSpawn = { 10,20,10 };
+	dx::XMFLOAT3 playerSpawn = { 2,1,2 };
 	dx::XMFLOAT3 zero = { 0.f, 0.f, 0.f };
 	dx::XMVECTOR playerSpawnVec = dx::XMLoadFloat3(&playerSpawn);
 	Object* playerObject = new Object("player", ObjectFlag::ENABLED);
@@ -138,7 +138,7 @@ void GameScene::InitializeObjects()
 	physics.MutexUnlock();
 	playerObject->AddComponent<ControllerComp>(cameraObject);
 	//Transform::SetParentChild(playerObject->GetTransform(),cameraObject->GetTransform());
-	playerObject->AddComponent<PlayerComp>(guiManager, 50000, 2, 10, 25, 3);
+	playerObject->AddComponent<PlayerComp>(renderer, camera, Physics::Instance(), guiManager, 50000, 2, 10, 25, 3);
 
 	AddObject(cameraObject, playerObject);
 	AddObject(playerObject);
@@ -155,7 +155,7 @@ void GameScene::InitializeObjects()
 	stateMachine->RegisterState(EnemyState::IDLE, enemy->AddComponent<EnemyIdleComp>());
 	stateMachine->RegisterState(EnemyState::PATROL, enemy->AddComponent<EnemyPatrolComp>());
 	stateMachine->RegisterState(EnemyState::ATTACK, enemy->AddComponent<EnemyAttackComp>(player->GetComponent<PlayerComp>()));
-	AddObject(enemy);
+	//AddObject(enemy);
 
 	playerObject->AddComponent<PlayerAttackComp>(enemy);
 
@@ -188,7 +188,10 @@ void GameScene::InitializeObjects()
 	characterReferenceObject->GetTransform().SetPosition({ 0.0f, 0.0f, 4.0f });
 	AddObject(characterReferenceObject);
 
-	
+
+
+
+	Physics& phy = Physics::Instance();
 
 	Shader* defShader = resourceManager->GetShaderResource("defaultShader");
 
@@ -214,10 +217,15 @@ void GameScene::InitializeObjects()
 
 	Object* bananaObject = new Object("bananaObject");
 	bananaObject->AddComponent<MeshComponent>(banana[0], bananaMaterial[0]);
-	bananaObject->GetTransform().SetPosition({ 12.0f, 1.0f, 5.0f });
+	bananaObject->GetTransform().SetPosition({ 3.0f, 1.0f, 5.0f });
+	bananaObject->AddComponent<BoxColliderComponent>(dx::XMFLOAT3{ 0.5f, 0.5f, 0.5f }, dx::XMFLOAT3{ 0, 0, 0 });
+	bananaObject->AddComponent<PickupComponent>(Type::Food, 20.0f);
+
+	RigidBodyComponent* bananaBody;
+	bananaBody = bananaObject->AddComponent<RigidBodyComponent>(0, FilterGroups::PICKUPS, FilterGroups::PLAYER, false);
+	
+	phy.RegisterRigidBody(bananaBody);
 	AddObject(bananaObject);
-
-
 
 	clock.Update();
 	clock.Start();
@@ -386,7 +394,10 @@ void GameScene::Update(const float& deltaTime)
 		const int a = 100;
 	}
 
-	POINT p = input.GetMousePos();
+	POINT p;
+	p.x = renderer->GetOutputWindow()->GetWidth() / 2;
+	p.y = renderer->GetOutputWindow()->GetHeight() / 2;
+
 	Ray ray = camera->MouseToRay(p.x, p.y);
 	//std::cout << p.x << ", " << p.y << std::endl;
 
@@ -405,14 +416,17 @@ void GameScene::Update(const float& deltaTime)
 			if (hit.object != nullptr)
 			{
 				std::cout << hit.object->GetName() << std::endl;
+
 			}
-		}
+		}	
+
 	}
 	else
 	{
 		DShape::DrawSphere(ray.GetPoint(10.0f), 0.2f, { 1, 0, 1 });
 	}
 	nextScene = NEXT_SCENE(player->GetComponent<PlayerComp>()->getNextScene());
+
 	//if (player->GetComponent<PlayerComp>()->getNextScene())
 	//{
 	//	nextScene = LOSE;
@@ -427,6 +441,11 @@ void GameScene::Update(const float& deltaTime)
 	//}
 
 	skyboxClass->GetThisObject()->GetTransform().SetPosition(camera->GetOwner()->GetTransform().GetPosition());
+
+
+	/*POINT pa = input.GetMousePos();
+	Ray ray = camera->MouseToRay(p.x, p.y);*/
+
 }
 
 void GameScene::FixedUpdate(const float& fixedDeltaTime)

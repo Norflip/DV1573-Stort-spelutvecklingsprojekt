@@ -13,8 +13,8 @@ public:
 	//enum NEXT_SCENE { INTRO, LOSE, GAME, WIN };
 
 
-	PlayerComp();
-	PlayerComp(GUIManager* guimanager, float health, float movementSpeed, float radius, float attack, float attackSpeed);
+	//PlayerComp();
+	PlayerComp(Renderer* renderer, CameraComponent* camComp, Physics& phys, GUIManager* guimanager, float health, float movementSpeed, float radius, float attack, float attackSpeed);
 	virtual ~PlayerComp();
 	void Update(const float& deltaTime) override;
 	float GetHealth() const { return health; }
@@ -55,8 +55,14 @@ private:
 	GUIManager* guiMan;
 	GUISprite* fuelDippingBar, *foodDippingBar,* healthDippingBar;
 	NEXT_SCENE swapScene;
+	Renderer* renderer;
+	POINT p;
+	
+	float pappa;
 
-
+	RayHit hit;
+	Physics& phy;
+	CameraComponent* cam;
 	bool foodEmpty;
 	bool gg;
 	float ReverseAndClamp(float inputValue);
