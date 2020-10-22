@@ -31,6 +31,17 @@ struct ChunkIndex
 
 class Chunk : public Component
 {
+	const dx::XMFLOAT3 DSHAPE_CHUNK_COLORS[6] 
+	{
+		dx::XMFLOAT3(1,0,0),				// red
+		dx::XMFLOAT3(0.8f,0.1f,0),			// kinda red
+		dx::XMFLOAT3(0,1,0),				// green
+		dx::XMFLOAT3(0,0,1),				// blue
+		dx::XMFLOAT3(0.5f, 0.5f, 0.5f),		// grey
+		dx::XMFLOAT3(1,1,1)					// white
+	};
+
+
 public:
 	Chunk(dx::XMINT2 index, ChunkType type);
 	virtual ~Chunk();

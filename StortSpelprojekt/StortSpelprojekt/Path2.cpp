@@ -65,75 +65,35 @@ void Path2::SetPointsFromIndexes(const std::vector<dx::XMINT2>& indexes)
 
 float Path2::DistanceToLineSqr(float x, float y, float x1, float y1, float x2, float y2) const
 {
-	auto A = x - x1;
-	auto B = y - y1;
-	auto C = x2 - x1;
-	auto D = y2 - y1;
+	// JESUS FUCK VA
 
-	auto dot = A * C + B * D;
-	auto len_sq = C * C + D * D;
-	auto param = -1;
+	float edge1ToPointX = x - x1;
+	float edge1ToPointY = y - y1;
 
-	if (len_sq != 0) //in case of 0 length line
-		param = dot / len_sq;
+	float edge1ToEdge2X = x2 - x1;
+	float edge1ToEdge2Y = y2 - y1;
+
+	float dot = edge1ToPointX * edge1ToEdge2X + edge1ToPointY * edge1ToEdge2Y;
+	float lengthSqr = edge1ToEdge2X * edge1ToEdge2X + edge1ToEdge2Y * edge1ToEdge2Y;
+	float t = (lengthSqr != 0)? dot / lengthSqr  : -1;
 
 	float xx, yy;
-
-	if (param < 0) {
+	if (t < 0) 
+	{
 		xx = x1;
 		yy = y1;
 	}
-	else if (param > 1) {
+	else if (t > 1) 
+	{
 		xx = x2;
 		yy = y2;
 	}
 	else {
-		xx = x1 + param * C;
-		yy = y1 + param * D;
+		xx = x1 + t * edge1ToEdge2X;
+		yy = y1 + t * edge1ToEdge2Y;
 	}
 
-	auto dx = x - xx;
-	auto dy = y - yy;
+	float dx = x - xx;
+	float dy = y - yy;
 	return sqrtf(dx * dx + dy * dy);
-
-	//float dx = line1x - line0x;
-	//float dy = line1y - line0y;
-
-	//if ((dx == 0) && (dy == 0))
-	//{
-	//	//std::cout << line0x << " | " << line1x << "\t" << line0y << " | " << line1y << std::endl;
-
-	//	// It's a point not a line segment.
-	//	dx = px - line0x;
-	//	dy = py - line0y;
-	//	return sqrtf(dx * dx + dy * dy);
-	//}
-	//else
-	//{
-	//	// Calculate the t that minimizes the distance.
-	//	float t = ((px - line0x) * dx + (py - line0y) * dy) / (dx * dx + dy * dy);
-
-	//	// See if this represents one of the segment's
-	//	// end points or a point in the middle.
-	//	if (t < 0)
-	//	{
-	//		dx = px - line0x;
-	//		dy = py - line0y;
-	//	}
-	//	else if (t > 1)
-	//	{
-	//		dx = px - line1x;
-	//		dy = py - line1y;
-	//	}
-	//	else
-	//	{
-	//		float cx = line0x + t * dx;
-	//		float cy = line0y + t * dx;
-
-	//		dx = px - cx;
-	//		dy = py - cy;
-	//	}
-
-	//	return sqrtf(dx * dx + dy * dy);
-	//}
 }

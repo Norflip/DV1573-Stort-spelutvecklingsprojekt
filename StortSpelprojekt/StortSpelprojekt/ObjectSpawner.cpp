@@ -27,8 +27,6 @@ void ObjectSpawner::Spawn(PointQuadTree& tree, std::unordered_map<int, Chunk*>& 
 
 		if (chunk != nullptr)
 		{
-			std::cout << "SPAWNING @ " << pos.x << ", " << pos.y << std::endl;
-
 			float y = chunk->SampleHeight(pos.x, pos.y);
 
 			Object* object = pooler->GetItem("dynamic_stone");
@@ -52,13 +50,10 @@ void ObjectSpawner::Spawn(PointQuadTree& tree, std::unordered_map<int, Chunk*>& 
 			Object* object = pooler->GetItem("static_sphere");
 			dx::XMVECTOR position = dx::XMVectorSet(pos.x, y, pos.y, 0.0f);
 
-			std::cout << "STATIC" << std::endl;
-
 			object->GetComponent<RigidBodyComponent>()->SetPosition(position);
 			Transform::SetParentChild(root->GetTransform(), object->GetTransform());
 			items.push_back(object);
 		}
-
 	}
 }
 

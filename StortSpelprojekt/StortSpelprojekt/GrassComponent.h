@@ -17,6 +17,9 @@ struct GrassStraw
 
 class GrassComponent : public Component
 {
+	const int MAX_STRANDS = 64;
+
+
 public:
 	GrassComponent(size_t chunkTriangleCount, ID3D11Device* device, Shader* shader);
 	virtual ~GrassComponent();

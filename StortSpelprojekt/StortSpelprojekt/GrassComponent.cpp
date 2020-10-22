@@ -120,9 +120,8 @@ void GrassComponent::InitializeGrass(Mesh& chunkMesh, ID3D11Device* device, ID3D
 	DXHelper::BindStructuredBuffer(context, grassIndexBfr, indexData, GRASS_INDICES_SRV_SLOT, ShaderBindFlag::HULL, &grassIndexSrv);
 	DXHelper::BindStructuredBuffer(context, grassIndexBfr, indexData, GRASS_INDICES_SRV_SLOT, ShaderBindFlag::DOMAINS, &grassIndexSrv);
 
-	int maxStrands = 64;
-	std::vector<dx::XMFLOAT4> bcData(maxStrands);
-	for (int i = 0; i < maxStrands; i++) //maximum strands per triangle.
+	std::vector<dx::XMFLOAT4> bcData(MAX_STRANDS);
+	for (int i = 0; i < MAX_STRANDS; i++) //maximum strands per triangle.
 	{
 		float barycentric1 = rand() / (float)(RAND_MAX);
 		float barycentric2 = rand() / (float)(RAND_MAX);
@@ -144,7 +143,7 @@ void GrassComponent::InitializeGrass(Mesh& chunkMesh, ID3D11Device* device, ID3D
 		bcData[i] = barycentricCoord;
 	}
 
-	DXHelper::CreateStructuredBuffer(device, &grassBCBfr, bcData, sizeof(dx::XMFLOAT4), maxStrands, &grassBCSRV);
+	DXHelper::CreateStructuredBuffer(device, &grassBCBfr, bcData, sizeof(dx::XMFLOAT4), MAX_STRANDS, &grassBCSRV);
 	DXHelper::BindStructuredBuffer(context, grassBCBfr, bcData, GRASS_COORD_SRV_SLOT, ShaderBindFlag::DOMAINS, &grassBCSRV);
 
 	float pixelScale = tanf(0.5f * (dx::XM_PI / 2.0f)) / (float)(900); //the height of the window.
