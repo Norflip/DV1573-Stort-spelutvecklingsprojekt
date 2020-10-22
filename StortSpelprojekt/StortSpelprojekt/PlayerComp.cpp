@@ -72,6 +72,8 @@ void PlayerComp::Update(const float& deltaTime)
 		if (fuel < 0 || health < 0 && !immortal)
 			swapScene = NEXT_SCENE::LOSE;
 
+		// Add functionality for win condition here
+
 		if (food < 0)
 			foodEmpty = true;
 
