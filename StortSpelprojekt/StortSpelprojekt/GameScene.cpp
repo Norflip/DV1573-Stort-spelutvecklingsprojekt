@@ -188,6 +188,37 @@ void GameScene::InitializeObjects()
 	characterReferenceObject->GetTransform().SetPosition({ 0.0f, 0.0f, 4.0f });
 	AddObject(characterReferenceObject);
 
+	
+
+	Shader* defShader = resourceManager->GetShaderResource("defaultShader");
+
+	std::vector<Mesh> healthkit = ZWEBLoader::LoadMeshes(ZWEBLoadType::NoAnimation, "Models/Healthkit.ZWEB", renderer->GetDevice());
+	std::vector<Material> healthkitMaterial = ZWEBLoader::LoadMaterials("Models/Healthkit.ZWEB", defShader, renderer->GetDevice());
+
+	Object* healthkitObject = new Object("healthObject");
+	healthkitObject->AddComponent<MeshComponent>(healthkit[0], healthkitMaterial[0]);
+	healthkitObject->GetTransform().SetPosition({ 4.0f, 1.0f, 5.0f });
+	AddObject(healthkitObject);
+
+	std::vector<Mesh> fuelCan = ZWEBLoader::LoadMeshes(ZWEBLoadType::NoAnimation, "Models/FuelCan.ZWEB", renderer->GetDevice());
+	std::vector<Material> fuelCanMaterail = ZWEBLoader::LoadMaterials("Models/FuelCan.ZWEB", defShader, renderer->GetDevice());
+
+	Object* fuelCanObject = new Object("fuelObject");
+	fuelCanObject->AddComponent<MeshComponent>(fuelCan[0], fuelCanMaterail[0]);
+	fuelCanObject->GetTransform().SetPosition({ 8.0f, 1.0f, 5.0f });
+	AddObject(fuelCanObject);
+
+
+	std::vector<Mesh> banana = ZWEBLoader::LoadMeshes(ZWEBLoadType::NoAnimation, "Models/Banan.ZWEB", renderer->GetDevice());
+	std::vector<Material> bananaMaterial = ZWEBLoader::LoadMaterials("Models/Banan.ZWEB", defShader, renderer->GetDevice());
+
+	Object* bananaObject = new Object("bananaObject");
+	bananaObject->AddComponent<MeshComponent>(banana[0], bananaMaterial[0]);
+	bananaObject->GetTransform().SetPosition({ 12.0f, 1.0f, 5.0f });
+	AddObject(bananaObject);
+
+
+
 	clock.Update();
 	clock.Start();
 	clock.Update();
