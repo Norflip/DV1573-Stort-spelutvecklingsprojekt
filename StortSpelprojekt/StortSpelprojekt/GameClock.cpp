@@ -2,7 +2,7 @@
 #include <iostream>
 GameClock::GameClock()
 {
-	start = std::chrono::high_resolution_clock::now();
+	start = std::chrono::steady_clock::now();
 	now = start;
 	endSecond = now + std::chrono::seconds(1);
 	frameCounter = 0;
@@ -16,22 +16,22 @@ GameClock::~GameClock()
 
 double GameClock::GetMiliseconds()const
 {
-	return std::chrono::duration<double, std::milli>(now-start).count();
+	return ms;
 }
 
 double GameClock::GetMicroseconds()const
 {
-	return std::chrono::duration<double, std::micro>(now - start).count();
+	return microS;
 }
 
 double GameClock::GetSeconds()const
 {
-	return std::chrono::duration<double, std::milli>(now - start).count() /1000;
+	return seconds;
 }
 
 double GameClock::GetFrameTime()const
 {
-	return  std::chrono::duration_cast<std::chrono::microseconds>(now- prev).count()/(double)1000;
+	return frameTime;
 }
 
 double GameClock::GetFramesPerSecond()const
@@ -47,7 +47,12 @@ double GameClock::GetFramesPerSecondSmooth() const// not implemented and not nee
 
 void GameClock::Update()
 {
-	if(std::chrono::duration<double, std::milli>(now - endSecond).count() < 0)
+	ms = std::chrono::duration<double, std::milli>(now - start).count();
+	microS = std::chrono::duration<double, std::micro>(now - start).count();
+	seconds = std::chrono::duration<double, std::milli>(now - start).count() / 1000;
+	frameTime = std::chrono::duration_cast<std::chrono::microseconds>(now - prev).count() / (double)1000;
+
+	if (std::chrono::duration<double, std::milli>(now - endSecond).count() < 0)
 		frameCounter++;
 	else
 	{
@@ -57,17 +62,17 @@ void GameClock::Update()
 	}
 
 	prev = now;
-	now = std::chrono::high_resolution_clock::now();
+	now = std::chrono::steady_clock::now();
 }
 void GameClock::Restart()
 {
-	start = std::chrono::high_resolution_clock::now();
+	start = std::chrono::steady_clock::now();
 }
 
 bool GameClock::Stop()
 {
-		active = false;
-		return active;	
+	active = false;
+	return active;
 }
 
 bool GameClock::Start()
@@ -76,7 +81,7 @@ bool GameClock::Start()
 		return false;
 	else
 	{
-		start = std::chrono::high_resolution_clock::now();
+		start = std::chrono::steady_clock::now();
 		active = true;
 		return true;
 	}
