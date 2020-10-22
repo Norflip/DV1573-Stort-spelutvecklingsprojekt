@@ -43,8 +43,6 @@ void GameScene::Initialize(Renderer* renderer)
 void GameScene::InitializeObjects()
 {
 	Physics& physics = Physics::Instance();
-	
-
 
 	SaveState state;
 	state.seed = 1337;
@@ -83,9 +81,6 @@ void GameScene::InitializeObjects()
 	AddObject(testObject3, testObject2);
 
 	AddObject(testObject);
-
-
-
 
 	skyboxClass = new Skybox(renderer->GetDevice(), renderer->GetContext(), resourceManager->GetShaderResource("skyboxShader"));
 	skyboxClass->GetThisObject()->AddFlag(ObjectFlag::NO_CULL);
@@ -176,7 +171,6 @@ void GameScene::InitializeObjects()
 	baseMonsterObject->GetTransform().SetPosition({ 0.0f, 2.5f, 0.0f });
 	AddObject(baseMonsterObject);
 
-
 	//Character reference
 	std::vector<Mesh> charRefMesh = ZWEBLoader::LoadMeshes(ZWEBLoadType::NoAnimation, "Models/char_ref.ZWEB", renderer->GetDevice());
 	std::vector<Material> charRefMat = ZWEBLoader::LoadMaterials("Models/char_ref.ZWEB", skeletonShader, renderer->GetDevice());
@@ -235,6 +229,10 @@ void GameScene::InitializeGUI()
 	GUIFont* healthDisplay = new GUIFont(*renderer, "playerHealth", 50, 100);
 	GUIFont* enemyDisplay = new GUIFont(*renderer, "enemyHealth", 50, 150);
 
+	//CROSSHAIR
+	GUISprite* dot = new GUISprite(*renderer, "Textures/dot.png", (windowWidth / 2) - 6, (windowHeight / 2) - 6, 0, DrawDirection::BottomLeft, ClickFunction::NotClickable);
+	//GUISprite* crosshair = new GUISprite(*renderer, "Textures/chrosshair.png", (windowWidth / 2) - 25, (windowHeight / 2) - 25, 0, DrawDirection::BottomLeft, ClickFunction::NotClickable);
+
 	// INSERTIONS
 	guiManager = new GUIManager(renderer, 100);
 	guiManager->AddGUIObject(fpsDisplay, "fps");
@@ -267,6 +265,10 @@ void GameScene::InitializeGUI()
 	guiManager->AddGUIObject(fuelSprite, "fuelSprite");
 	guiManager->AddGUIObject(foodSprite, "foodSprite");
 	guiManager->AddGUIObject(healthSprite, "healthSprite");
+
+	//CROSSHAIR
+	guiManager->AddGUIObject(dot, "dot");
+	//guiManager->AddGUIObject(crosshair, "crosshair");
 
 	renderer->AddRenderPass(guiManager);
 }
@@ -381,19 +383,20 @@ void GameScene::Update(const float& deltaTime)
 	{
 		DShape::DrawSphere(ray.GetPoint(10.0f), 0.2f, { 1, 0, 1 });
 	}
+	nextScene = NEXT_SCENE(player->GetComponent<PlayerComp>()->GetNextScene());
 
-	if (player->GetComponent<PlayerComp>()->GG())
-	{
-		nextScene = LOSE;
-	}
-	else if (KEY_PRESSED(N))
-	{
-		nextScene = LOSE;
-	}
-	else if (KEY_PRESSED(M))
-	{
-		nextScene = INTRO;
-	}
+	//if (player->GetComponent<PlayerComp>()->getNextScene())
+	//{
+	//	nextScene = LOSE;
+	//}
+	//else if (KEY_PRESSED(N))
+	//{
+	//	nextScene = LOSE;
+	//}
+	//else if (KEY_PRESSED(M))
+	//{
+	//	nextScene = INTRO;
+	//}
 
 	skyboxClass->GetThisObject()->GetTransform().SetPosition(camera->GetOwner()->GetTransform().GetPosition());
 }

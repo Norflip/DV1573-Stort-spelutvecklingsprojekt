@@ -2,6 +2,12 @@
 #include "RenderPass.h"
 #include "GUISprite.h"
 #include "GUIFont.h"
+#include "PlayerComp.h"
+
+
+
+
+
 
 Scene::Scene(ResourceManager* manager) : input(Input::Instance())
 {

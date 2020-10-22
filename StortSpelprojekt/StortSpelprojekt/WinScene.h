@@ -4,13 +4,13 @@
 class GUIFont;
 class SpriteRenderPass;
 
-class GameOverScene : public Scene
+class WinScene : public Scene
 {
 private:
 
 public:
-	GameOverScene(ResourceManager* manager);
-	~GameOverScene();
+	WinScene(ResourceManager* manager);
+	~WinScene();
 
 	void Initialize(Renderer* renderer) override;
 	void InitializeObjects() override;
@@ -22,5 +22,5 @@ public:
 	void Update(const float& deltaTime) override;
 	void FixedUpdate(const float& fixedDeltaTime) override;
 	void Render() override;
-	Object* cameraObject = new Object("camera", ObjectFlag::ENABLED);
+
 };

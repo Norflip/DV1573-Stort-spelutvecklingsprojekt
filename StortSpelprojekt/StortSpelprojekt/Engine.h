@@ -11,7 +11,7 @@
 #include "GameScene.h"
 #include "IntroScene.h"
 #include "GameOverScene.h"
-
+#include "WinScene.h"
 namespace dx = DirectX;
 
 constexpr int FIXED_FPS = 60;

@@ -1,17 +1,17 @@
-#include "GameOverScene.h"
+#include "WinScene.h"
 #include "RenderPass.h"
 #include "GUISprite.h"
 #include "GUIFont.h"
 
-GameOverScene::GameOverScene(ResourceManager* manager) : Scene(manager)
+WinScene::WinScene(ResourceManager* manager) : Scene(manager)
 {
 }
 
-GameOverScene::~GameOverScene()
+WinScene::~WinScene()
 {
 }
 
-void GameOverScene::Initialize(Renderer* renderer)
+void WinScene::Initialize(Renderer* renderer)
 {
 	this->renderer = renderer;
 
@@ -24,9 +24,9 @@ void GameOverScene::Initialize(Renderer* renderer)
 	Input::Instance().SetWindow(window->GetHWND(), window->GetHeight(), window->GetWidth());
 }
 
-void GameOverScene::InitializeObjects()
+void WinScene::InitializeObjects()
 {
-	
+	Object* cameraObject = new Object("camera", ObjectFlag::ENABLED);
 	camera = cameraObject->AddComponent<CameraComponent>(60.0f, true);
 	camera->Resize(windowWidth, windowHeight);
 	this->player = cameraObject;
@@ -36,13 +36,16 @@ void GameOverScene::InitializeObjects()
 	ShowCursor(true);
 	Input::Instance().SetMouseMode(dx::Mouse::MODE_ABSOLUTE);
 
+
+
 	skyboxClass = new Skybox(renderer->GetDevice(), renderer->GetContext(), resourceManager->GetShaderResource("skyboxShader"));
 	skyboxClass->GetThisObject()->AddFlag(ObjectFlag::NO_CULL);
 }
 
-void GameOverScene::InitializeGUI()
+void WinScene::InitializeGUI()
 {
 	//spriteBatch = new DirectX::SpriteBatch(renderer->GetContext());
+	GUISprite* win = new GUISprite(*renderer, "Textures/Lore.png", windowWidth / 2, 100, 0, DrawDirection::Default, ClickFunction::NotClickable);
 	GUISprite* restart = new GUISprite(*renderer, "Textures/Restart.png", 100, 200, 0, DrawDirection::Default, ClickFunction::Clickable);
 	GUISprite* quit = new GUISprite(*renderer, "Textures/Exit.png", 100, 400, 0, DrawDirection::Default, ClickFunction::Clickable);
 	GUIFont* fpsDisplay = new GUIFont(*renderer, "fps", windowWidth / 2, 50);
@@ -52,34 +55,34 @@ void GameOverScene::InitializeGUI()
 	guiManager = new GUIManager(renderer, 100);
 
 	guiManager->AddGUIObject(fpsDisplay, "fps");
+	guiManager->AddGUIObject(win, "win");
 	guiManager->AddGUIObject(restart, "restart");
 	guiManager->AddGUIObject(quit, "quit");
 	renderer->AddRenderPass(guiManager);
 }
 
-void GameOverScene::OnActivate()
+void WinScene::OnActivate()
 {
 	root = new Object("sceneRoot", ObjectFlag::DEFAULT);
-	nextScene = LOSE;
+	nextScene = WIN;
 	InitializeGUI();
 	InitializeObjects();
-	ShowCursor(true);
 }
 
-void GameOverScene::OnDeactivate()
+void WinScene::OnDeactivate()
 {
 	renderer->RemoveRenderPass(guiManager);
 	delete root;
 	root = nullptr;
 }
 
-void GameOverScene::Update(const float& deltaTime)
+void WinScene::Update(const float& deltaTime)
 {
 	Scene::Update(deltaTime);
 
 	static_cast<GUIFont*>(guiManager->GetGUIObject("fps"))->SetString(std::to_string((int)GameClock::Instance().GetFramesPerSecond()));
 
-	if(static_cast<GUISprite*>(guiManager->GetGUIObject("quit"))->IsClicked())
+	if (static_cast<GUISprite*>(guiManager->GetGUIObject("quit"))->IsClicked())
 	{
 		quit = true;
 	}
@@ -92,12 +95,12 @@ void GameOverScene::Update(const float& deltaTime)
 	guiManager->UpdateAll();
 }
 
-void GameOverScene::FixedUpdate(const float& fixedDeltaTime)
+void WinScene::FixedUpdate(const float& fixedDeltaTime)
 {
 	Scene::FixedUpdate(fixedDeltaTime);
 }
 
-void GameOverScene::Render()
+void WinScene::Render()
 {
 	skyboxClass->GetThisObject()->Draw(renderer, camera);
 
