@@ -381,19 +381,19 @@ void GameScene::Update(const float& deltaTime)
 	{
 		DShape::DrawSphere(ray.GetPoint(10.0f), 0.2f, { 1, 0, 1 });
 	}
-
-	if (player->GetComponent<PlayerComp>()->GG())
-	{
-		nextScene = LOSE;
-	}
-	else if (KEY_PRESSED(N))
-	{
-		nextScene = LOSE;
-	}
-	else if (KEY_PRESSED(M))
-	{
-		nextScene = INTRO;
-	}
+	nextScene = NEXT_SCENE(player->GetComponent<PlayerComp>()->getNextScene());
+	//if (player->GetComponent<PlayerComp>()->getNextScene())
+	//{
+	//	nextScene = LOSE;
+	//}
+	//else if (KEY_PRESSED(N))
+	//{
+	//	nextScene = LOSE;
+	//}
+	//else if (KEY_PRESSED(M))
+	//{
+	//	nextScene = INTRO;
+	//}
 
 	skyboxClass->GetThisObject()->GetTransform().SetPosition(camera->GetOwner()->GetTransform().GetPosition());
 }

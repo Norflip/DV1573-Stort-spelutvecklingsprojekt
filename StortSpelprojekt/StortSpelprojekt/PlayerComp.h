@@ -3,10 +3,16 @@
 #include "GUIManager.h"
 #include "GameClock.h"
 #include "GUISprite.h"
+#include "Scene.h"
+
+
 class PlayerComp :
     public Component
 {
 public:
+	//enum NEXT_SCENE { INTRO, LOSE, GAME, WIN };
+
+
 	PlayerComp();
 	PlayerComp(GUIManager* guimanager, float health, float movementSpeed, float radius, float attack, float attackSpeed);
 	virtual ~PlayerComp();
@@ -38,18 +44,18 @@ public:
 	void SetFood(float food) { this->fuel = food; }
 	void SetCurrentWeapon(int currentWeapon) { this->currentWeapon = currentWeapon; }// some ui stuff here?
 	void SetguiMan(GUIManager* guiMan) { this->guiMan = guiMan; }
-	void SetScenePtr(int* guiMan) { this->nextScene = nextScene; }
-
-	bool GG() { return gg; }
+	
+	NEXT_SCENE getNextScene() { return this->swapScene; }
 private:
 	float health, attack, attackSpeed, fuel, food;
 	int currentWeapon;
 	float movementSpeed, crouchSpeed, SprintSpeed;
 	float foodLossPerSecond, fuelBurnPerMeter, healthLossPerSecond;
-	int* nextScene;
 	float radius;
 	GUIManager* guiMan;
 	GUISprite* fuelDippingBar, *foodDippingBar,* healthDippingBar;
+	NEXT_SCENE swapScene;
+
 
 	bool foodEmpty;
 	bool gg;

@@ -22,5 +22,5 @@ public:
 	void Update(const float& deltaTime) override;
 	void FixedUpdate(const float& fixedDeltaTime) override;
 	void Render() override;
-
+	Object* cameraObject = new Object("camera", ObjectFlag::ENABLED);
 };
