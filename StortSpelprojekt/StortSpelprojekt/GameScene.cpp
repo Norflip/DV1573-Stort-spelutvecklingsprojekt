@@ -91,7 +91,7 @@ void GameScene::InitializeObjects()
 	this->player = playerObject;
 	camera = playerObject->AddComponent<CameraComponent>(60.0f, true);
 	camera->Resize(windowWidth, windowHeight);
-	playerObject->AddComponent<ControllerComponent>();
+	playerObject->AddComponent<ControllerComp>();
 	playerObject->AddComponent<PlayerComp>(guiManager, 200, 2, 3, 25, 3);
 	playerStatsComp = playerObject->GetComponent<PlayerComp>();
 	AddObject(playerObject);
