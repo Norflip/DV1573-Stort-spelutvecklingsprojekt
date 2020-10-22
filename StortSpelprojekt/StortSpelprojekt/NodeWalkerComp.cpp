@@ -28,7 +28,7 @@ NodeWalkerComp::~NodeWalkerComp()
 {
 }
 
-void NodeWalkerComponent::initAnimation()
+void NodeWalkerComp::initAnimation()
 {
 	if (GetOwner()->HasComponent<SkeletonMeshComponent>())
 	{
@@ -43,7 +43,7 @@ void NodeWalkerComponent::initAnimation()
 	}
 }
 
-void NodeWalkerComponent::Reset()
+void NodeWalkerComp::Reset()
 {
 	dx::XMVECTOR startPos = dx::XMLoadFloat3(&nodes[0].position);
 	this->GetOwner()->GetTransform().SetPosition(startPos);

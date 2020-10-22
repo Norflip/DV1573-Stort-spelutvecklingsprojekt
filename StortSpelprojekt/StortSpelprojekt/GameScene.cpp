@@ -44,7 +44,7 @@ void GameScene::InitializeObjects()
 {
 	Physics& physics = Physics::Instance();
 	
-
+	
 
 	SaveState state;
 	state.seed = 1337;
@@ -118,7 +118,7 @@ void GameScene::InitializeObjects()
 	physics.MutexUnlock();
 	playerObject->AddComponent<ControllerComp>(cameraObject);
 	//Transform::SetParentChild(playerObject->GetTransform(),cameraObject->GetTransform());
-	playerObject->AddComponent<PlayerComp>(guiManager, 50000, 2, 10, 25, 3);
+	PlayerComp* playerComp = playerObject->AddComponent<PlayerComp>(guiManager, 100, 2, 10, 25, 3);
 
 	AddObject(cameraObject, playerObject);
 	AddObject(playerObject);
@@ -220,7 +220,7 @@ void GameScene::InitializeObjects()
 
 	baseComponent->GetOwner()->GetTransform().SetScale({ 0.5f, 0.5f, 0.5f });
 
-	NodeWalkerComponent* nodeWalker = houseBaseObject->AddComponent<NodeWalkerComponent>();
+	NodeWalkerComp* nodeWalker = houseBaseObject->AddComponent<NodeWalkerComp>();
 
 	nodeWalker->initAnimation();
 
