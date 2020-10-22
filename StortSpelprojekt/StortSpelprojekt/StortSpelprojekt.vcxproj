@@ -212,6 +212,7 @@
     <ClCompile Include="ThirdParty\SimplexNoise.cpp" />
     <ClCompile Include="Transform.cpp" />
     <ClCompile Include="Window.cpp" />
+    <ClCompile Include="WinScene.cpp" />
     <ClCompile Include="WorldGenerator.cpp" />
   </ItemGroup>
   <ItemGroup>
@@ -285,6 +286,7 @@
     <ClInclude Include="ThirdParty\SimplexNoise.h" />
     <ClInclude Include="Transform.h" />
     <ClInclude Include="Window.h" />
+    <ClInclude Include="WinScene.h" />
     <ClInclude Include="WorldGenerator.h" />
     <ClInclude Include="ZWEBLoader.h" />
   </ItemGroup>

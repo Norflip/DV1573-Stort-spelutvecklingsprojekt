@@ -84,7 +84,7 @@ void GrassComponent::InitializeGrass(std::vector<Mesh::Vertex>& vertices, std::v
 		pData[i].normal.y = normal.y;
 		pData[i].normal.z = normal.z;
 	}
-	
+
 	DXHelper::CreateStructuredBuffer(device, &grassBfr, pData, sizeof(GrassStraw), pData.size(), &grassSrv);
 
 	DXHelper::BindStructuredBuffer(context, grassBfr, pData, GRASS_STRAWS_SRV_SLOT, ShaderBindFlag::VERTEX, &grassSrv);

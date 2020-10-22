@@ -54,6 +54,8 @@ void GameScene::InitializeObjects()
 	worldGenerator.Initialize(renderer->GetDevice(), resourceManager->GetShaderResource("terrainShader"), resourceManager->GetShaderResource("grassShader"));
 	worldGenerator.Generate(state, renderer->GetDevice(), root);
 	worldGenerator.InitalizeGrass(renderer->GetDevice(), renderer->GetContext());
+
+	
 	/*************************INSTANCING*******************/
 	auto sampler = DXHelper::CreateSampler(D3D11_FILTER_MIN_MAG_MIP_LINEAR, D3D11_TEXTURE_ADDRESS_WRAP, renderer->GetDevice());
 
@@ -430,7 +432,8 @@ void GameScene::Update(const float& deltaTime)
 	{
 		DShape::DrawSphere(ray.GetPoint(10.0f), 0.2f, { 1, 0, 1 });
 	}
-	nextScene = NEXT_SCENE(player->GetComponent<PlayerComp>()->getNextScene());
+	nextScene = NEXT_SCENE(player->GetComponent<PlayerComp>()->GetNextScene());
+
 	//if (player->GetComponent<PlayerComp>()->getNextScene())
 	//{
 	//	nextScene = LOSE;
