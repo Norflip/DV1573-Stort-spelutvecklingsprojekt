@@ -276,12 +276,4 @@ void ControllerComp::Update(const float& deltaTime)
 		rbComp->SetRotation(capsule);
 		phy.MutexUnlock();
 	}
-
-#if NDEBUG 
-
-	// fixes a bug in release where the compiler removes the variables
-	// Later: fix these variables?
-	speed = 0.0f;
-	direction = { 0,0,0 };
-#endif // NDEBUG 
 }

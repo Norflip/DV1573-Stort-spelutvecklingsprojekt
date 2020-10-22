@@ -40,7 +40,7 @@ private:
 	SkeletonMeshComponent* legs;
 public:
 	NodeWalkerComp();
-	~NodeWalkerComp();
+	virtual ~NodeWalkerComp();
 	void InitAnimation();
 	void Reset(); //is public cus is meant to be called outside of class if needed
 	void Start();

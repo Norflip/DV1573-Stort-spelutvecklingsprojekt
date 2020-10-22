@@ -1,7 +1,7 @@
 #pragma once
 #include "Object.h"
 #include "PoolReturnCallback.h"
-
+#include "ResourceManager.h"
 #include <assert.h>
 #include <functional>
 #include <queue>
@@ -14,16 +14,16 @@ class ObjectPooler
 	struct Pool
 	{ 
 		std::string key;
-		std::function<Object* ()> factory;
+		std::function<Object* (ResourceManager*)> factory;
 		std::unordered_set<Object*> outside;
 		std::queue<Object*> inside;
 	};
 
 public:
-	ObjectPooler();
+	ObjectPooler(ResourceManager* resourceManager);
 	virtual ~ObjectPooler();
 
-	void Register(std::string key, size_t count, std::function<Object* ()> factory);
+	void Register(std::string key, size_t count, std::function<Object* (ResourceManager*)> factory);
 	void Unregister(std::string key);
 
 	Object* GetItem(std::string key);
@@ -36,6 +36,7 @@ private:
 	void Warm(Pool* pool, size_t amount, bool additive);
 
 	std::unordered_map<std::string, Pool*> pools;
+	ResourceManager* resourceManager;
 };
 
 /*
