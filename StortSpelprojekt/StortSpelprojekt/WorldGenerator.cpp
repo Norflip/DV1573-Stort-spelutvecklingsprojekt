@@ -257,12 +257,12 @@ Chunk* WorldGenerator::CreateChunk(ChunkType type, dx::XMINT2 index, const Noise
 			int bufferIndex = x + size * y;
 
 			float height = Noise::Sample(chunkPosXZ.x + x, chunkPosXZ.y + y, settings);
-			heightMap[x + size * y] = height * distance;
-			heightMap2.push_back(height * distance);
+			heightMap[x + size * y] = height;
+			heightMap2.push_back(height);
 
 			//std::cout << height << std::endl;
 
-			buffer[bufferIndex * 4 + 0] = static_cast<unsigned char>(255 * height * distance);
+			buffer[bufferIndex * 4 + 0] = static_cast<unsigned char>(255 * height);
 			buffer[bufferIndex * 4 + 1] = static_cast<unsigned char>(255 * distance);
 			buffer[bufferIndex * 4 + 2] = static_cast<unsigned char>(255 * height);
 			buffer[bufferIndex * 4 + 3] = static_cast<unsigned char>(255);
