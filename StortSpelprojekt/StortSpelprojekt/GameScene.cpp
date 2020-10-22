@@ -43,6 +43,9 @@ void GameScene::Initialize(Renderer* renderer)
 void GameScene::InitializeObjects()
 {
 	Physics& physics = Physics::Instance();
+	
+	skyboxClass = new Skybox(renderer->GetDevice(), renderer->GetContext(), resourceManager->GetShaderResource("skyboxShader"));
+	skyboxClass->GetThisObject()->AddFlag(ObjectFlag::NO_CULL);
 
 	SaveState state;
 	state.seed = 1337;
@@ -95,7 +98,6 @@ void GameScene::InitializeObjects()
 	testMesh4->AddComponent<MeshComponent>(*mesh1, *material2);
 	AddObject(testMesh4);
 
-
 	
 	//Player & Camera
 	dx::XMFLOAT3 playerSpawn = { 10,20,10 };
@@ -120,47 +122,125 @@ void GameScene::InitializeObjects()
 	physics.MutexUnlock();
 	playerObject->AddComponent<ControllerComp>(cameraObject);
 	//Transform::SetParentChild(playerObject->GetTransform(),cameraObject->GetTransform());
-	playerObject->AddComponent<PlayerComp>(guiManager, 50000, 2, 10, 25, 3);
+	PlayerComp* playerComp = playerObject->AddComponent<PlayerComp>(guiManager, 100, 2, 10, 25, 3);
 
 	AddObject(cameraObject, playerObject);
 	AddObject(playerObject);
 
-	//Enemy object //comments
-	enemy = new Object("enemy");
-	dx::XMFLOAT3 enemyTranslation = dx::XMFLOAT3(0, 2, 10);
-	enemy->GetTransform().SetPosition(dx::XMLoadFloat3(&enemyTranslation));
-	enemy->AddComponent<MeshComponent>(*mesh1, *material1);
-	enemy->AddComponent<EnemyStatsComp>(100, 2, 15, 25, 3);
-	enemyStatsComp = enemy->GetComponent<EnemyStatsComp>();
-	enemy->AddComponent<EnemyAttackComp>(player->GetComponent<PlayerComp>());
-	EnemySMComp* stateMachine = enemy->AddComponent<EnemySMComp>(EnemyState::IDLE);
-	stateMachine->RegisterState(EnemyState::IDLE, enemy->AddComponent<EnemyIdleComp>());
-	stateMachine->RegisterState(EnemyState::PATROL, enemy->AddComponent<EnemyPatrolComp>());
-	stateMachine->RegisterState(EnemyState::ATTACK, enemy->AddComponent<EnemyAttackComp>(player->GetComponent<PlayerComp>()));
-	AddObject(enemy);
+	
 
-	playerObject->AddComponent<PlayerAttackComp>(enemy);
 
+	/* * * * * * * * ** * * * * */
+
+	//SKELETON ANIMATION MODELS
+
+	bool defaultAnimation = false;
+	bool parentAnimation = true;
 	Shader* skeletonShader = resourceManager->GetShaderResource("skeletonShader");
 
 	std::vector<Mesh> skeletonMesh = ZWEBLoader::LoadMeshes(ZWEBLoadType::SkeletonAnimation, "Models/baseMonster.ZWEB", renderer->GetDevice());
 	std::vector<Material> skeletonMat = ZWEBLoader::LoadMaterials("Models/baseMonster.ZWEB", skeletonShader, renderer->GetDevice());
 
-	SkeletonAni skeletonbaseMonsterIdle = ZWEBLoader::LoadSkeletonOnly("Models/baseMonsterIdle.ZWEB", skeletonMesh[0].GetBoneIDS());
+	SkeletonAni skeletonbaseMonsterIdle = ZWEBLoader::LoadSkeletonOnly("Models/baseMonsterIdle.ZWEB", skeletonMesh[0].GetBoneIDS(), defaultAnimation);
+
+	SkeletonAni skeletonbaseMonsterWalk = ZWEBLoader::LoadSkeletonOnly("Models/baseMonsterWalk.ZWEB", skeletonMesh[0].GetBoneIDS(), defaultAnimation);
+
+	SkeletonAni skeletonbaseMonsterRun = ZWEBLoader::LoadSkeletonOnly("Models/baseMonsterRun.ZWEB", skeletonMesh[0].GetBoneIDS(), defaultAnimation);
+
+	SkeletonAni skeletonbaseMonsterAttack = ZWEBLoader::LoadSkeletonOnly("Models/baseMonsterAttack.ZWEB", skeletonMesh[0].GetBoneIDS(), defaultAnimation);
+
+	SkeletonAni skeletonbaseMonsterDeath = ZWEBLoader::LoadSkeletonOnly("Models/baseMonsterDeath.ZWEB", skeletonMesh[0].GetBoneIDS(), defaultAnimation);
 
 	Object* baseMonsterObject = new Object("baseMonster");
+
+	//LOADING BASE MONSTER; ADDING SKELETONS TO IT
+
 
 	SkeletonMeshComponent* baseMonsterComp = baseMonsterObject->AddComponent<SkeletonMeshComponent>(skeletonMesh[0], skeletonMat[0]);
 
 	baseMonsterComp->SetAnimationTrack(skeletonbaseMonsterIdle, SkeletonStateMachine::IDLE);
 
+	baseMonsterComp->SetAnimationTrack(skeletonbaseMonsterWalk, SkeletonStateMachine::WALK);
+
+	baseMonsterComp->SetAnimationTrack(skeletonbaseMonsterRun, SkeletonStateMachine::RUN);
+
+	baseMonsterComp->SetAnimationTrack(skeletonbaseMonsterAttack, SkeletonStateMachine::ATTACK);
+
+	baseMonsterComp->SetAnimationTrack(skeletonbaseMonsterDeath, SkeletonStateMachine::DEATH);
+
+	baseMonsterComp->BlendAnimations();
+
 	baseMonsterObject->GetTransform().SetScale({ 0.125f, 0.125f, 0.125f });
-	baseMonsterObject->GetTransform().SetPosition({ 0.0f, 2.5f, 0.0f });
+	baseMonsterObject->GetTransform().SetPosition({ 0.0f, 2.5f, 10.0f });
+
+	enemyStatsComp = baseMonsterObject->AddComponent<EnemyStatsComp>(100, 2, 15, 25, 3);
+
+	EnemySMComp* stateMachine = baseMonsterObject->AddComponent<EnemySMComp>(EnemyState::PATROL);
+
+	stateMachine->RegisterState(EnemyState::IDLE, baseMonsterObject->AddComponent<EnemyIdleComp>());
+	stateMachine->RegisterState(EnemyState::PATROL, baseMonsterObject->AddComponent<EnemyPatrolComp>());
+	stateMachine->RegisterState(EnemyState::ATTACK, baseMonsterObject->AddComponent<EnemyAttackComp>(playerComp));
+	stateMachine->InitAnimation();
 	AddObject(baseMonsterObject);
 
+	//LOADING HOUSE AND LEGS AND ADDING SKELETONS TO THEM THE HOUSE ONLY HAS ONE JOINT CONNECTED TO IT
+	Shader* defaultShader = resourceManager->GetShaderResource("defaultShader");
+	std::vector<Mesh> meshHouse = ZWEBLoader::LoadMeshes(ZWEBLoadType::SkeletonAnimation, "Models/House_Base.ZWEB", renderer->GetDevice());
+	std::vector<Material> matHouse = ZWEBLoader::LoadMaterials("Models/House_Base.ZWEB", skeletonShader, renderer->GetDevice());
+
+	std::vector<Mesh> skeletonMeshHouseLegs = ZWEBLoader::LoadMeshes(ZWEBLoadType::SkeletonAnimation, "Models/House_Legs.ZWEB", renderer->GetDevice());
+	std::vector<Material> skeletonMatHouseLegs = ZWEBLoader::LoadMaterials("Models/House_Legs.ZWEB", skeletonShader, renderer->GetDevice());
+
+	SkeletonAni skeletonHouseBaseIdle = ZWEBLoader::LoadSkeletonOnly("Models/House_Base - IDLE.ZWEB", meshHouse[0].GetBoneIDS(), parentAnimation);
+	SkeletonAni skeletonHouseBaseWalk = ZWEBLoader::LoadSkeletonOnly("Models/House_Base - WALK_CYCLE.ZWEB", meshHouse[0].GetBoneIDS(), parentAnimation);
+	SkeletonAni skeletonHouseBaseUp = ZWEBLoader::LoadSkeletonOnly("Models/House_Base - STAND_UP.ZWEB", meshHouse[0].GetBoneIDS(), parentAnimation);
+	SkeletonAni skeletonHouseBaseDown = ZWEBLoader::LoadSkeletonOnly("Models/House_Base - SIT DOWN - IDLE.ZWEB", meshHouse[0].GetBoneIDS(), parentAnimation);
+
+	SkeletonAni skeletonHouseLegsIdle = ZWEBLoader::LoadSkeletonOnly("Models/House_Legs - IDLE.ZWEB", skeletonMeshHouseLegs[0].GetBoneIDS(), defaultAnimation);
+	SkeletonAni skeletonHouseLegsWalk = ZWEBLoader::LoadSkeletonOnly("Models/House_Legs - WALK_CYCLE.ZWEB", skeletonMeshHouseLegs[0].GetBoneIDS(), defaultAnimation);
+	SkeletonAni skeletonHouseLegsUp = ZWEBLoader::LoadSkeletonOnly("Models/House_Legs - STAND_UP.ZWEB", skeletonMeshHouseLegs[0].GetBoneIDS(), defaultAnimation);
+	SkeletonAni skeletonHouseLegsDown = ZWEBLoader::LoadSkeletonOnly("Models/House_Legs - SIT DOWN - IDLE.ZWEB", skeletonMeshHouseLegs[0].GetBoneIDS(), defaultAnimation);
+
+	Object* houseBaseObject = new Object("houseBase");
+
+	Object* housesLegsObject = new Object("houseLegs");
+
+	SkeletonMeshComponent* baseComponent = houseBaseObject->AddComponent<SkeletonMeshComponent>(meshHouse[0], matHouse[0]);
+
+	SkeletonMeshComponent* legsComponent = housesLegsObject->AddComponent<SkeletonMeshComponent>(skeletonMeshHouseLegs[0], skeletonMatHouseLegs[0]);
+
+	legsComponent->SetAnimationTrack(skeletonHouseLegsIdle, SkeletonStateMachine::IDLE);
+
+	legsComponent->SetAnimationTrack(skeletonHouseLegsWalk, SkeletonStateMachine::WALK);
+
+	legsComponent->SetAnimationTrack(skeletonHouseLegsUp, SkeletonStateMachine::UP);
+
+	legsComponent->SetAnimationTrack(skeletonHouseLegsDown, SkeletonStateMachine::DOWN);
+
+	baseComponent->SetAnimationTrack(skeletonHouseBaseIdle, SkeletonStateMachine::IDLE);
+
+	baseComponent->SetAnimationTrack(skeletonHouseBaseWalk, SkeletonStateMachine::WALK);
+
+	baseComponent->SetAnimationTrack(skeletonHouseBaseUp, SkeletonStateMachine::UP);
+
+	baseComponent->SetAnimationTrack(skeletonHouseBaseDown, SkeletonStateMachine::DOWN);
+
+	Transform::SetParentChild(baseComponent->GetOwner()->GetTransform(), legsComponent->GetOwner()->GetTransform());
+
+	baseComponent->GetOwner()->GetTransform().SetScale({ 0.5f, 0.5f, 0.5f });
+
+	NodeWalkerComp* nodeWalker = houseBaseObject->AddComponent<NodeWalkerComp>();
+
+	nodeWalker->InitAnimation();
+
+	legsComponent->SetTrack(SkeletonStateMachine::IDLE, false);
+
+	baseComponent->SetTrack(SkeletonStateMachine::IDLE, false);
+
+	AddObject(houseBaseObject);
 	//Character reference
 	std::vector<Mesh> charRefMesh = ZWEBLoader::LoadMeshes(ZWEBLoadType::NoAnimation, "Models/char_ref.ZWEB", renderer->GetDevice());
-	std::vector<Material> charRefMat = ZWEBLoader::LoadMaterials("Models/char_ref.ZWEB", skeletonShader, renderer->GetDevice());
+	std::vector<Material> charRefMat = ZWEBLoader::LoadMaterials("Models/char_ref.ZWEB", defaultShader, renderer->GetDevice());
 
 	Object* characterReferenceObject = new Object("characterReference");
 
@@ -170,7 +250,6 @@ void GameScene::InitializeObjects()
 	AddObject(characterReferenceObject);
 
 	clock.Update();
-
 	/* * * * * * * * ** * * * * */
 	//Log::Add("PRINTING SCENE HIERARCHY ----");
 	//PrintSceneHierarchy(root, 0);
@@ -180,7 +259,6 @@ void GameScene::InitializeObjects()
 	world.Initialize(root, resourceManager, &pooler, renderer);
 	world.ConstructSegment(state, desc);
 	world.SetPlayer(player);
-
 }
 
 void GameScene::InitializeGUI()
@@ -220,6 +298,10 @@ void GameScene::InitializeGUI()
 	GUIFont* healthDisplay = new GUIFont(*renderer, "playerHealth", 50, 100);
 	GUIFont* enemyDisplay = new GUIFont(*renderer, "enemyHealth", 50, 150);
 
+	//CROSSHAIR
+	GUISprite* dot = new GUISprite(*renderer, "Textures/dot.png", (windowWidth / 2) - 6, (windowHeight / 2) - 6, 0, DrawDirection::BottomLeft, ClickFunction::NotClickable);
+	//GUISprite* crosshair = new GUISprite(*renderer, "Textures/chrosshair.png", (windowWidth / 2) - 25, (windowHeight / 2) - 25, 0, DrawDirection::BottomLeft, ClickFunction::NotClickable);
+
 	// INSERTIONS
 	guiManager = new GUIManager(renderer, 100);
 	guiManager->AddGUIObject(fpsDisplay, "fps");
@@ -252,6 +334,10 @@ void GameScene::InitializeGUI()
 	guiManager->AddGUIObject(fuelSprite, "fuelSprite");
 	guiManager->AddGUIObject(foodSprite, "foodSprite");
 	guiManager->AddGUIObject(healthSprite, "healthSprite");
+
+	//CROSSHAIR
+	guiManager->AddGUIObject(dot, "dot");
+	//guiManager->AddGUIObject(crosshair, "crosshair");
 
 	renderer->AddRenderPass(guiManager);
 }
