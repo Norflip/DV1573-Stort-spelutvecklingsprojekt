@@ -92,11 +92,12 @@ void GameScene::InitializeObjects()
 	skyboxClass = new Skybox(renderer->GetDevice(), renderer->GetContext(), resourceManager->GetShaderResource("skyboxShader"));
 	skyboxClass->GetThisObject()->AddFlag(ObjectFlag::NO_CULL);
 
-	Object* testMesh4 = new Object("test4");
-	testMesh4->AddComponent<NodeWalkerComp>();
-	testMesh4->GetTransform().SetPosition(dx::XMLoadFloat3(&miniTranslation4));
-	testMesh4->AddComponent<MeshComponent>(*mesh1, *material2);
-	AddObject(testMesh4);
+
+	//Object* testMesh4 = new Object("test4");
+	//testMesh4->AddComponent<NodeWalkerComp>();
+	//testMesh4->GetTransform().SetPosition(dx::XMLoadFloat3(&miniTranslation4));
+	//testMesh4->AddComponent<MeshComponent>(*mesh1, *material2);
+	//AddObject(testMesh4);
 
 	
 	//Player & Camera
@@ -206,7 +207,6 @@ void GameScene::InitializeObjects()
 	Object* housesLegsObject = new Object("houseLegs");
 
 	SkeletonMeshComponent* baseComponent = houseBaseObject->AddComponent<SkeletonMeshComponent>(meshHouse[0], matHouse[0]);
-
 	SkeletonMeshComponent* legsComponent = housesLegsObject->AddComponent<SkeletonMeshComponent>(skeletonMeshHouseLegs[0], skeletonMatHouseLegs[0]);
 
 	legsComponent->SetAnimationTrack(skeletonHouseLegsIdle, SkeletonStateMachine::IDLE);
@@ -230,14 +230,16 @@ void GameScene::InitializeObjects()
 	baseComponent->GetOwner()->GetTransform().SetScale({ 0.5f, 0.5f, 0.5f });
 
 	NodeWalkerComp* nodeWalker = houseBaseObject->AddComponent<NodeWalkerComp>();
-
 	nodeWalker->InitAnimation();
+
 
 	legsComponent->SetTrack(SkeletonStateMachine::IDLE, false);
 
 	baseComponent->SetTrack(SkeletonStateMachine::IDLE, false);
 
 	AddObject(houseBaseObject);
+
+
 	//Character reference
 	std::vector<Mesh> charRefMesh = ZWEBLoader::LoadMeshes(ZWEBLoadType::NoAnimation, "Models/char_ref.ZWEB", renderer->GetDevice());
 	std::vector<Material> charRefMat = ZWEBLoader::LoadMaterials("Models/char_ref.ZWEB", defaultShader, renderer->GetDevice());
