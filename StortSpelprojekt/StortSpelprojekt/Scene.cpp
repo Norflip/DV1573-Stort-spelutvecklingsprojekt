@@ -230,15 +230,15 @@ void Scene::InitializeObjects()
 	AddObject(characterReferenceObject);
 
 	//Axe//////////////////////////////////////////////////////////////////
-	std::vector<Mesh> axeMesh = ZWEBLoader::LoadMeshes(ZWEBLoadType::NoAnimation, "Models/Test_axe.ZWEB", renderer->GetDevice());
-	std::vector<Material> axeMat = ZWEBLoader::LoadMaterials("Models/Test_axe.ZWEB", skeletonShader, renderer->GetDevice());
+	std::vector<Mesh> axeMesh = ZWEBLoader::LoadMeshes(ZWEBLoadType::NoAnimation, "Models/AXE.ZWEB", renderer->GetDevice());
+	std::vector<Material> axeMat = ZWEBLoader::LoadMaterials("Models/AXE.ZWEB", skeletonShader, renderer->GetDevice());
 
 	Object* axeObject = new Object("Axe");
 
 	axeObject->AddComponent<MeshComponent>(axeMesh[0], axeMat[0]);
 	axeObject->AddComponent<WeaponComponent>(cameraObject);
 	axeObject->GetTransform().SetScale({ 1, 1, 1 });
-	//axeObject->GetTransform().SetPosition({ 0.0f, 0.0f, 0.0f });
+	
 	AddObject(axeObject);
 
 	clock.Update();
