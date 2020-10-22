@@ -81,6 +81,7 @@ protected:
 	Object* player;
 
 	EnemyStatsComp* enemyStatsComp;
+	PlayerComp* playerStatsComp;
 	dx::SpriteBatch* spriteBatch;
 	WorldGenerator worldGenerator;
 	SpriteRenderPass* spritePass;	

@@ -31,6 +31,10 @@ void EnemySMComp::Update(const float& deltaTime)
 	{
 		SetState(switchState[currentState]);
 	}
+	//if (GetOwner()->GetComponent<EnemyAttackComp>()->GetChasePlayer())
+	//{
+	//	SetState(switchState[currentState]);
+	//}
 }
 
 void EnemySMComp::RegisterState(EnemyState state, Component* comp)

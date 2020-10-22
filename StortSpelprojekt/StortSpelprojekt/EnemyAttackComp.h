@@ -10,6 +10,7 @@ class EnemyAttackComp : public Component
 		virtual ~EnemyAttackComp();
 		void Initialize();
 		void Update(const float& deltaTime) override;
+		bool GetChasePlayer() const {return chasePlayer;}
 	private:
 		bool ChasePlayer(const float& deltaTime);
 		void UpdateAttackPlayer(const float& deltaTime);
@@ -19,4 +20,5 @@ class EnemyAttackComp : public Component
 		GameClock timer;
 		float playerRadius;
 		EnemyStatsComp* enemyStatsComp;
+		bool chasePlayer = false;
 };

@@ -28,6 +28,7 @@ PlayerComp::PlayerComp(GUIManager* guimanager, float health, float movementSpeed
 	this->SprintSpeed = SprintSpeed;
 	this->foodLossPerSecond = foodLossPerSecond;
 	this->fuelBurnPerMeter = fuelBurnPerMeter;
+	this->radius = radius;
 
 	// defaulting some shit
 	this->foodLossPerSecond = 0.3f;
@@ -52,10 +53,10 @@ void PlayerComp::Update(const float& deltaTime)
 	{
 		//loose fuel
 		//std::cout << GameClock::Instance().GetFrameTime() / 1000;
-		fuel -= GameClock::Instance().GetFrameTime() / 1000 * fuelBurnPerMeter * 10;
+		fuel -= GameClock::Instance().GetFrameTime() / 1000 * fuelBurnPerMeter;
 		//std::cout << fuel <<std::endl;
 		// loose food
-		food -= GameClock::Instance().GetFrameTime() / 1000 * foodLossPerSecond * 10;
+		food -= GameClock::Instance().GetFrameTime() / 1000 * foodLossPerSecond;
 		//std::cout << food<<std::endl;
 
 		// make better later

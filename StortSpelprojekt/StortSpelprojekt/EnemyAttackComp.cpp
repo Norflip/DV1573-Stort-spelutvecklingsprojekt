@@ -23,7 +23,7 @@ void EnemyAttackComp::Update(const float& deltaTime)
 
 bool EnemyAttackComp::ChasePlayer(const float& deltaTime)
 {
-	bool chasePlayer = false;
+	chasePlayer = false;
 	attackPlayer = false;
 
 	DirectX::XMFLOAT3 enemyPos;
@@ -69,17 +69,12 @@ bool EnemyAttackComp::ChasePlayer(const float& deltaTime)
 
 void EnemyAttackComp::UpdateAttackPlayer(const float& deltaTime)
 {
-
-	// Behöver fixas med playercomp nedan
-
 	if (ChasePlayer(deltaTime) && attackPlayer)
 	{
-		if (timer.GetSeconds() >= GetOwner()->GetComponent<EnemyStatsComp>()->GetAttackSpeed())
+		if (timer.GetSeconds() >= enemyStatsComp->GetAttackSpeed())
 		{
 			timer.Restart();
 			player->LoseHealth(enemyStatsComp->GetAttack());
-			//player->GetOwner()->GetComponent<PlayerComp>()->LoseHealth(enemyStatsComp->GetAttack());
-
 		}
 	}
 }

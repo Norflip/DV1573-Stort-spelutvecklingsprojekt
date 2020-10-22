@@ -7,6 +7,7 @@ class SpriteRenderPass;
 class GameScene : public Scene
 {
 private:
+	void RemoveEnemy();
 
 public:
 	GameScene(ResourceManager* manager);

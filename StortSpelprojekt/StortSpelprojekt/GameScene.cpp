@@ -2,6 +2,12 @@
 #include "GUISprite.h"
 #include "GUIFont.h"
 
+void GameScene::RemoveEnemy()
+{
+	enemy->RemoveFlag(ObjectFlag::ENABLED);
+	enemy->AddFlag(ObjectFlag::REMOVED);
+}
+
 GameScene::GameScene(ResourceManager* manager) : Scene(manager)
 {
 	nextScene = GAME;
@@ -42,15 +48,6 @@ void GameScene::Initialize(Renderer* renderer)
 
 void GameScene::InitializeObjects()
 {
-	Object* playerObject = new Object("camera", ObjectFlag::ENABLED);
-	this->player = playerObject;
-	camera = playerObject->AddComponent<CameraComponent>(60.0f, true);
-	camera->Resize(windowWidth, windowHeight);
-	playerObject->AddComponent<ControllerComponent>();
-	playerObject->AddComponent<PlayerComp>(guiManager, 100, 2, 10, 25, 3);
-	//playerStatsComp = cameraObject->GetComponent<EnemyStatsComp>();
-	AddObject(playerObject);
-
 	SaveState state;
 	state.seed = 1337;
 	state.segment = 0;
@@ -89,6 +86,32 @@ void GameScene::InitializeObjects()
 
 	AddObject(testObject);
 
+	//Player object
+	Object* playerObject = new Object("camera", ObjectFlag::ENABLED);
+	this->player = playerObject;
+	camera = playerObject->AddComponent<CameraComponent>(60.0f, true);
+	camera->Resize(windowWidth, windowHeight);
+	playerObject->AddComponent<ControllerComponent>();
+	playerObject->AddComponent<PlayerComp>(guiManager, 200, 2, 3, 25, 3);
+	playerStatsComp = playerObject->GetComponent<PlayerComp>();
+	AddObject(playerObject);
+
+	//Enemy object
+	enemy = new Object("enemy");
+	dx::XMFLOAT3 enemyTranslation = dx::XMFLOAT3(0, 2, 10);
+	enemy->GetTransform().SetPosition(dx::XMLoadFloat3(&enemyTranslation));
+	enemy->AddComponent<MeshComponent>(*mesh1, *material1);
+	enemy->AddComponent<EnemyStatsComp>(100, 1, 5, 25, 3);
+	enemyStatsComp = enemy->GetComponent<EnemyStatsComp>();
+	enemy->AddComponent<EnemyAttackComp>(playerStatsComp);
+	EnemySMComp* stateMachine = enemy->AddComponent<EnemySMComp>(EnemyState::IDLE);
+	stateMachine->RegisterState(EnemyState::IDLE, enemy->AddComponent<EnemyIdleComp>());
+	stateMachine->RegisterState(EnemyState::PATROL, enemy->AddComponent<EnemyPatrolComp>());
+	stateMachine->RegisterState(EnemyState::ATTACK, enemy->AddComponent<EnemyAttackComp>(playerStatsComp));
+	AddObject(enemy);
+	playerObject->AddComponent<PlayerAttackComp>(enemy);
+	
+
 	skyboxClass = new Skybox(renderer->GetDevice(), renderer->GetContext(), resourceManager->GetShaderResource("skyboxShader"));
 	skyboxClass->GetThisObject()->AddFlag(ObjectFlag::NO_CULL);
 
@@ -116,23 +139,6 @@ void GameScene::InitializeObjects()
 	stylizedTreeMaterial[1].SetShader(alphaInstanceShader);
 
 	worldGenerator.InitializeTrees(stylizedTreeModel, stylizedTreeMaterial, renderer->GetDevice());
-	//
-
-	//Enemy object
-	enemy = new Object("enemy");
-	dx::XMFLOAT3 enemyTranslation = dx::XMFLOAT3(0, 2, 10);
-	enemy->GetTransform().SetPosition(dx::XMLoadFloat3(&enemyTranslation));
-	enemy->AddComponent<MeshComponent>(*mesh1, *material1);
-	enemy->AddComponent<EnemyStatsComp>(100, 2, 15, 25, 3);
-	enemyStatsComp = enemy->GetComponent<EnemyStatsComp>();
-	enemy->AddComponent<EnemyAttackComp>(player->GetComponent<PlayerComp>());
-	EnemySMComp* stateMachine = enemy->AddComponent<EnemySMComp>(EnemyState::IDLE);
-	stateMachine->RegisterState(EnemyState::IDLE, enemy->AddComponent<EnemyIdleComp>());
-	stateMachine->RegisterState(EnemyState::PATROL, enemy->AddComponent<EnemyPatrolComp>());
-	stateMachine->RegisterState(EnemyState::ATTACK, enemy->AddComponent<EnemyAttackComp>(player->GetComponent<PlayerComp>()));
-	AddObject(enemy);
-
-	camera->GetOwner()->AddComponent<PlayerAttackComp>(enemy);
 
 	Shader* skeletonShader = resourceManager->GetShaderResource("skeletonShader");
 
@@ -293,7 +299,7 @@ void GameScene::Update(const float& deltaTime)
 	Scene::Update(deltaTime);
 
 	static_cast<GUIFont*>(guiManager->GetGUIObject("fps"))->SetString(std::to_string((int)GameClock::Instance().GetFramesPerSecond()));
-	static_cast<GUIFont*>(guiManager->GetGUIObject("playerHealth"))->SetString("Player health: " + std::to_string((int)player->GetComponent<PlayerComp>()->GetHealth()));
+	static_cast<GUIFont*>(guiManager->GetGUIObject("playerHealth"))->SetString("Player health: " + std::to_string((int)playerStatsComp->GetHealth()));
 	static_cast<GUIFont*>(guiManager->GetGUIObject("enemyHealth"))->SetString("Enemy health: " + std::to_string((int)enemyStatsComp->GetHealth()));
 	guiManager->UpdateAll();
 
@@ -371,6 +377,9 @@ void GameScene::Update(const float& deltaTime)
 	}
 
 	skyboxClass->GetThisObject()->GetTransform().SetPosition(camera->GetOwner()->GetTransform().GetPosition());
+
+	if (enemy->GetComponent<EnemyStatsComp>()->GetHealth() <= 0)
+		RemoveEnemy();
 }
 
 void GameScene::FixedUpdate(const float& fixedDeltaTime)
