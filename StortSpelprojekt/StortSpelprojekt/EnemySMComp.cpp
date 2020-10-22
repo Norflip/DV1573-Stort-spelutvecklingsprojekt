@@ -25,17 +25,22 @@ void EnemySMComp::SetState(EnemyState state)
 	}
 }
 
+void EnemySMComp::Initialize()
+{
+	enemyAttackComp = GetOwner()->GetComponent<EnemyAttackComp>();
+}
+
 void EnemySMComp::Update(const float& deltaTime)
 {
 	//if (KEY_DOWN(K))
 	//{
 	//	SetState(switchState[currentState]);
 	//}
-	if (GetOwner()->GetComponent<EnemyAttackComp>()->GetChasePlayer())
+	if (enemyAttackComp->GetChasePlayer())
 	{
 		SetState(EnemyState::ATTACK);
 	}
-	else
+	else if(currentState != EnemyState::IDLE)
 	{
 		SetState(EnemyState::IDLE);
 	}

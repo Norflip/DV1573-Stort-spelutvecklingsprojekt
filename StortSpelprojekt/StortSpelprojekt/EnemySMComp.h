@@ -27,12 +27,12 @@ class EnemySMComp : public Component
 	public:
 		EnemySMComp(EnemyState state);
 		virtual ~EnemySMComp();
-
 		void SetState(EnemyState state);
-
+		void Initialize();
 		void Update(const float& deltaTime);
 		void RegisterState(EnemyState state, Component* comp);
 	private:
 		EnemyState currentState;
 		std::unordered_map<EnemyState, Component*> stateMap;
+		EnemyAttackComp* enemyAttackComp;
 };
