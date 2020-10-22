@@ -117,9 +117,9 @@ void Renderer::DrawQueueToTarget(RenderQueue& queue)
 						DrawRenderItemGrass(item); break;
 
 					case RenderItem::Type::Skeleton:
-						context->RSSetState(rasterizerStateCCWO);
+						
 						DrawRenderItemSkeleton(item); break;
-						context->RSSetState(rasterizerStateCullBack);
+						
 					case RenderItem::Type::Default:
 					default:
 

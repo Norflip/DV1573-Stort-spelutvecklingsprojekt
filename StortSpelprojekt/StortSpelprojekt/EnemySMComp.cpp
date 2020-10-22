@@ -14,6 +14,7 @@ void EnemySMComp::initAnimation()
 {
 	skeletonComponent =  GetOwner()->GetComponent<SkeletonMeshComponent>();
 	attackComponent = GetOwner()->GetComponent<EnemyAttackComp>();
+	statsComponent = GetOwner()->GetComponent<EnemyStatsComp>();
 }
 
 void EnemySMComp::SetState(EnemyState state)
@@ -54,6 +55,10 @@ void EnemySMComp::Animate()
 	{
 		skeletonComponent->SetTrack(SkeletonStateMachine::WALK,false);
 	}
+	if (statsComponent->GetHealth()<=0)
+	{
+		skeletonComponent->SetTrack(SkeletonStateMachine::DEATH, true);
+	}
 
 }
 
@@ -64,6 +69,7 @@ void EnemySMComp::Update(const float& deltaTime)
 	if (KEY_DOWN(K))
 	{
 		SetState(switchState[currentState]);
+		
 	}
 	if (GetOwner()->HasComponent<SkeletonMeshComponent>())
 	{

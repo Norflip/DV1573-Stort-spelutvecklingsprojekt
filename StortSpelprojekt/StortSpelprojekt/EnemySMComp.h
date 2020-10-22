@@ -39,4 +39,5 @@ class EnemySMComp : public Component
 		void Animate();
 		SkeletonMeshComponent* skeletonComponent;
 		EnemyAttackComp* attackComponent;
+		EnemyStatsComp* statsComponent;
 };

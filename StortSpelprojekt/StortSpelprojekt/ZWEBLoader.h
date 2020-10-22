@@ -15,8 +15,11 @@ namespace ZWEBLoader //TO BE ADDED: FUNCTION TO LOAD LIGHTS
 		bool parentAnimation)
 	{
 		ZWEB::ZWEBImporter importer;
-		importer.importAnimation(animationPath);
-
+		bool success = importer.importAnimation(animationPath);
+		if (!success)
+		{
+			OutputDebugStringA("incorrectfilepath");
+		}
 		SkeletonAni skeletonAnimation;
 		//map must be set first so it can be used to set up the other stuff.
 		skeletonAnimation.SetUpIDMapAndFrames(boneIDMap, importer.getSkeletonAnimationHeader().fps, importer.getSkeletonAnimationHeader().nrOfAnimationFrames);
