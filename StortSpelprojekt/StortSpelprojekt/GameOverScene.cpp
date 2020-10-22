@@ -33,32 +33,8 @@ void GameOverScene::InitializeObjects()
 	//cameraObject3->AddComponent<ControllerComponent>();
 	AddObject(cameraObject3);
 
-	//Physics& physics = Physics::Instance();
-
-	//dx::XMFLOAT3 pStart = { 10,20,10 };
-	//dx::XMVECTOR pStartVec = dx::XMLoadFloat3(&pStart);
-	//Object* playerObject = new Object("player", ObjectFlag::ENABLED);
-	//Object* cameraObject = new Object("camera", ObjectFlag::ENABLED);
-	////Transform::SetParentChild(playerObject->GetTransform(), cameraObject->GetTransform());
-	//this->player = playerObject;
-	//camera = cameraObject->AddComponent<CameraComponent>(60.0f, true);
-	//camera->Resize(this->windowWidth, this->windowHeight);
-	//cameraObject->GetTransform().SetPosition(pStartVec);
-	//playerObject->GetTransform().SetPosition(pStartVec);
-
-	//playerObject->AddComponent<CapsuleColliderComponent>(0.5f, 4.5f, pStart);
-	//physics.MutexLock();
-	//RigidBodyComponent* rb = playerObject->AddComponent<RigidBodyComponent>(60.f, FilterGroups::PLAYER, FilterGroups::EVERYTHING, true);
-	//physics.RegisterRigidBody(rb);
-	//physics.MutexUnlock();
-	//playerObject->AddComponent<ControllerComponent>(cameraObject);
-	//Transform::SetParentChild(playerObject->GetTransform(), cameraObject->GetTransform());
-	////playerObject->AddComponent<PlayerComp>(guiManager, 500, 2, 10, 25, 3);
-
-	////AddObject(cameraObject);
-	//AddObject(playerObject);
 	ShowCursor(true);
-	
+	Input::Instance().SetMouseMode(dx::Mouse::MODE_ABSOLUTE);
 
 
 

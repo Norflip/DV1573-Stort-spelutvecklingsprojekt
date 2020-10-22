@@ -195,13 +195,17 @@ void ControllerComponent::Update(const float& deltaTime)
 		}
 		else //First Person specific actions
 		{
-			//if (KEY_PRESSED(Space)) // FPcam //jump is  scuffed
-			//{
-			//	phy.MutexLock();
-			//	if (GetOwner()->HasComponent<RigidBodyComponent>())
-			//		GetOwner()->GetComponent<RigidBodyComponent>()->AddForce({ 0.f, 200.f, 0.f });
-			//	phy.MutexUnlock();
-			//}
+
+			if (rbComp->IsGrounded())
+			{
+				//std::cout << "hit ground" << std::endl;
+			}
+			if (KEY_PRESSED(Space)) // FPcam //jump is  scuffed
+			{
+				phy.MutexLock();
+					rbComp->AddForce({ 0.f, 600.f, 0.f });
+				phy.MutexUnlock();
+			}
 
 			//if (KEY_DOWN(LeftControl)) //crouch is scuffed and outdated
 			//{
@@ -250,6 +254,16 @@ void ControllerComponent::Update(const float& deltaTime)
 			dx::XMVECTOR capsule = dx::XMLoadFloat4(&RESET_ROT);
 			rbComp->SetRotation(capsule);
 			phy.MutexUnlock();
+
+			//if (KEY_PRESSED(Space)) // FPcam //jump is  scuffed
+			//{
+			//	phy.MutexLock();
+			//	if (GetOwner()->HasComponent<RigidBodyComponent>())
+			//		GetOwner()->GetComponent<RigidBodyComponent>()->AddForce({ 0.f, 600.f, 0.f });
+			//	phy.MutexUnlock();
+			//}
+
+
 		}
 	}
 	else

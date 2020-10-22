@@ -67,12 +67,12 @@ void GameScene::InitializeObjects()
 
 	playerObject->AddComponent<ControllerComponent>(cameraObject);
 	//Transform::SetParentChild(playerObject->GetTransform(),cameraObject->GetTransform());
-
 	playerObject->AddComponent<PlayerComp>(guiManager, 50000, 2, 10, 25, 3);
 	
+	AddObject(cameraObject, playerObject);
 	AddObject(playerObject);
-	//AddObject(playerObject, cameraObject );
-	AddObject(cameraObject);
+	
+	//AddObject(cameraObject);
 
 	SaveState state;
 	state.seed = 1337;

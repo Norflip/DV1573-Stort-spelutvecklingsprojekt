@@ -62,6 +62,7 @@ public:
 	dx::XMVECTOR GetPosition()const ;
 	void SetRotation(dx::XMVECTOR rotation);
 	dx::XMVECTOR GetRotation()const ;
+	bool IsGrounded()const;
 	bool IsRotationLocked() const { return this->lockRotation; }
 	void LockRotation(bool lock) { this->lockRotation = lock; }
 
