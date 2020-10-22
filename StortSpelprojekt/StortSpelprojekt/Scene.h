@@ -40,6 +40,7 @@ class GUIFont;
 class SpriteRenderPass;
 class PlayerComp;
 
+#define immortal 1
 
 class Scene
 {
