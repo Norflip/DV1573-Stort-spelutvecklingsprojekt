@@ -1,4 +1,6 @@
 #pragma once
+
+enum NEXT_SCENE { INTRO = 0, LOSE = 1, GAME = 2, WIN = 3 };
 #include <vector>
 #include "Object.h"
 #include "HeightMap.h"
@@ -23,7 +25,7 @@
 #include "DShape.h"
 #include "GUIManager.h"
 #include <string>
-#include "PlayerComp.h"
+
 #include "Physics.h"
 #include "RigidBodyComponent.h"
 #include "BoxColliderComponent.h"
@@ -36,8 +38,9 @@
 
 class GUIFont;
 class SpriteRenderPass;
+class PlayerComp;
 
-enum NEXT_SCENE { INTRO, LOSE, GAME, WIN };
+#define immortal 1
 
 class Scene
 {
