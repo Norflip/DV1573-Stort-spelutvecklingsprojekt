@@ -183,8 +183,8 @@ void GameScene::InitializeObjects()
 	AddObject(characterReferenceObject);
 
 	clock.Update();
-	clock.Start();
-	clock.Update();
+	//clock.Start();
+	//clock.Update();
 
 	/* * * * * * * * ** * * * * */
 	//Log::Add("PRINTING SCENE HIERARCHY ----");
