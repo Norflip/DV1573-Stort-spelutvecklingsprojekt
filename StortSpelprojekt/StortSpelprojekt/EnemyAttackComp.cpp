@@ -21,6 +21,11 @@ void EnemyAttackComp::Update(const float& deltaTime)
 	UpdateAttackPlayer(deltaTime);
 }
 
+bool EnemyAttackComp::GetIsAttacking()
+{
+	return attackPlayer;
+}
+
 bool EnemyAttackComp::ChasePlayer(const float& deltaTime)
 {
 	bool chasePlayer = false;

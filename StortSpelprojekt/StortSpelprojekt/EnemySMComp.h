@@ -38,4 +38,5 @@ class EnemySMComp : public Component
 		std::unordered_map<EnemyState, Component*> stateMap;
 		void Animate();
 		SkeletonMeshComponent* skeletonComponent;
+		EnemyAttackComp* attackComponent;
 };
