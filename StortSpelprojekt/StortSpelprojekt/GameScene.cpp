@@ -43,8 +43,6 @@ void GameScene::Initialize(Renderer* renderer)
 void GameScene::InitializeObjects()
 {
 	Physics& physics = Physics::Instance();
-	
-
 
 	SaveState state;
 	state.seed = 1337;
@@ -83,9 +81,6 @@ void GameScene::InitializeObjects()
 	AddObject(testObject3, testObject2);
 
 	AddObject(testObject);
-
-
-
 
 	skyboxClass = new Skybox(renderer->GetDevice(), renderer->GetContext(), resourceManager->GetShaderResource("skyboxShader"));
 	skyboxClass->GetThisObject()->AddFlag(ObjectFlag::NO_CULL);
@@ -175,7 +170,6 @@ void GameScene::InitializeObjects()
 	baseMonsterObject->GetTransform().SetScale({ 0.125f, 0.125f, 0.125f });
 	baseMonsterObject->GetTransform().SetPosition({ 0.0f, 2.5f, 0.0f });
 	AddObject(baseMonsterObject);
-
 
 	//Character reference
 	std::vector<Mesh> charRefMesh = ZWEBLoader::LoadMeshes(ZWEBLoadType::NoAnimation, "Models/char_ref.ZWEB", renderer->GetDevice());
@@ -381,7 +375,8 @@ void GameScene::Update(const float& deltaTime)
 	{
 		DShape::DrawSphere(ray.GetPoint(10.0f), 0.2f, { 1, 0, 1 });
 	}
-	nextScene = NEXT_SCENE(player->GetComponent<PlayerComp>()->getNextScene());
+	nextScene = NEXT_SCENE(player->GetComponent<PlayerComp>()->GetNextScene());
+
 	//if (player->GetComponent<PlayerComp>()->getNextScene())
 	//{
 	//	nextScene = LOSE;
