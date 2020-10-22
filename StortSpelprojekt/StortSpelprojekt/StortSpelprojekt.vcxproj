@@ -169,7 +169,7 @@
     <ClCompile Include="CapsuleColliderComponent.cpp" />
     <ClCompile Include="Chunk.cpp" />
     <ClCompile Include="Collider.cpp" />
-    <ClCompile Include="ControllerComponent.cpp" />
+    <ClCompile Include="ControllerComp.cpp" />
     <ClCompile Include="DXHelper.cpp" />
     <ClCompile Include="DShape.cpp" />
     <ClCompile Include="Engine.cpp" />
@@ -187,7 +187,7 @@
     <ClCompile Include="Material.cpp" />
     <ClCompile Include="MeshComponent.cpp" />
     <ClCompile Include="MoveComponent.cpp" />
-    <ClCompile Include="NodeWalkerComponent.cpp" />
+    <ClCompile Include="NodeWalkerComp.cpp" />
     <ClCompile Include="Object.cpp" />
     <ClCompile Include="ObjectPooler.cpp" />
     <ClCompile Include="Physics.cpp" />
@@ -228,7 +228,7 @@
     <ClInclude Include="Collider.h" />
     <ClInclude Include="CollisionInfo.h" />
     <ClInclude Include="ConstantBuffer.h" />
-    <ClInclude Include="ControllerComponent.h" />
+    <ClInclude Include="ControllerComp.h" />
     <ClInclude Include="DebugBoxShapeComponent.h" />
     <ClInclude Include="DShape.h" />
     <ClInclude Include="GameOverScene.h" />
@@ -262,7 +262,7 @@
     <ClInclude Include="MeshComponent.h" />
     <ClInclude Include="Message.h" />
     <ClInclude Include="MessageBus.h" />
-    <ClInclude Include="NodeWalkerComponent.h" />
+    <ClInclude Include="NodeWalkerComp.h" />
     <ClInclude Include="Noise.h" />
     <ClInclude Include="Object.h" />
     <ClInclude Include="Physics.h" />

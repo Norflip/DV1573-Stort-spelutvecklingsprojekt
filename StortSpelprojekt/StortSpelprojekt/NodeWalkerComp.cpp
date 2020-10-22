@@ -1,6 +1,6 @@
-#include "NodeWalkerComponent.h"
+#include "NodeWalkerComp.h"
 
-NodeWalkerComponent::NodeWalkerComponent()
+NodeWalkerComp::NodeWalkerComp()
 {
 	this->speed = 1.2f;
 	this->currentNode = 0;
@@ -24,7 +24,7 @@ NodeWalkerComponent::NodeWalkerComponent()
 	
 }
 
-NodeWalkerComponent::~NodeWalkerComponent()
+NodeWalkerComp::~NodeWalkerComp()
 {
 }
 
@@ -52,7 +52,7 @@ void NodeWalkerComponent::Reset()
 	this->canWalk = false;
 }
 
-void NodeWalkerComponent::Start()
+void NodeWalkerComp::Start()
 {
 	if (!canWalk)
 	{
@@ -69,7 +69,7 @@ void NodeWalkerComponent::Start()
 	
 }
 
-void NodeWalkerComponent::Stop()
+void NodeWalkerComp::Stop()
 {
 	if (canWalk)
 	{
@@ -86,7 +86,7 @@ void NodeWalkerComponent::Stop()
 
 }
 
-void NodeWalkerComponent::Update(const float& deltaTime)
+void NodeWalkerComp::Update(const float& deltaTime)
 {
 	if (base->doneUp)
 	{
@@ -176,17 +176,17 @@ void NodeWalkerComponent::Update(const float& deltaTime)
 	}
 }
 
-void NodeWalkerComponent::InsertNode(std::string name, int id, dx::XMFLOAT3 position, int nextMiddle, int nextLeft, int nextRight)
+void NodeWalkerComp::InsertNode(std::string name, int id, dx::XMFLOAT3 position, int nextMiddle, int nextLeft, int nextRight)
 {
 	this->nodes.push_back(Node(name, id, position, nextMiddle, nextLeft, nextRight));
 }
 
-void NodeWalkerComponent::InsertNode(const Node & theNode)
+void NodeWalkerComp::InsertNode(const Node & theNode)
 {
 	this->nodes.push_back(theNode);
 }
 
-void NodeWalkerComponent::insertNodes(std::vector<Node> someNodes)
+void NodeWalkerComp::insertNodes(std::vector<Node> someNodes)
 {
 	//for (int i = 0; i < someNodes.size(); i++)
 	//{

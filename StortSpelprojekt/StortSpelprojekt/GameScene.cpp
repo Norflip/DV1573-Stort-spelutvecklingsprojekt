@@ -42,18 +42,9 @@ void GameScene::Initialize(Renderer* renderer)
 
 void GameScene::InitializeObjects()
 {
-	skyboxClass = new Skybox(renderer->GetDevice(), renderer->GetContext(), resourceManager->GetShaderResource("skyboxShader"));
-	skyboxClass->GetThisObject()->AddFlag(ObjectFlag::NO_CULL);
+	Physics& physics = Physics::Instance();
+	
 
-
-	Object* playerObject = new Object("camera", ObjectFlag::ENABLED);
-	this->player = playerObject;
-	camera = playerObject->AddComponent<CameraComponent>(60.0f, true);
-	camera->Resize(windowWidth, windowHeight);
-	playerObject->AddComponent<ControllerComponent>();
-	PlayerComp* playerComp = playerObject->AddComponent<PlayerComp>(guiManager, 100, 2, 10, 25, 3);
-	//playerStatsComp = cameraObject->GetComponent<EnemyStatsComp>();
-	AddObject(playerObject);
 
 	SaveState state;
 	state.seed = 1337;
@@ -103,7 +94,36 @@ void GameScene::InitializeObjects()
 	stylizedTreeMaterial[1].SetShader(alphaInstanceShader);
 
 	worldGenerator.InitializeTrees(stylizedTreeModel, stylizedTreeMaterial, renderer->GetDevice());
+	
+	//Player & Camera
+	dx::XMFLOAT3 playerSpawn = { 10,20,10 };
+	dx::XMFLOAT3 zero = { 0.f, 0.f, 0.f };
+	dx::XMVECTOR playerSpawnVec = dx::XMLoadFloat3(&playerSpawn);
+	Object* playerObject = new Object("player", ObjectFlag::ENABLED);
+	Object* cameraObject = new Object("camera", ObjectFlag::ENABLED);
+	//Transform::SetParentChild(playerObject->GetTransform(), cameraObject->GetTransform());
+	this->player = playerObject;
+	camera = cameraObject->AddComponent<CameraComponent>(60.0f, true);
+	camera->Resize(this->windowWidth, this->windowHeight);
+	cameraObject->GetTransform().SetPosition(playerSpawnVec);
+	playerObject->GetTransform().SetPosition(playerSpawnVec);
 
+	//Mesh* meshP = resourceManager->GetResource<Mesh>("Test");
+	//Material* materialP = resourceManager->GetResource<Material>("TestMaterial");
+	//playerObject->AddComponent<MeshComponent>(*meshP, *materialP);
+	playerObject->AddComponent<CapsuleColliderComponent>(0.5f, 4.5f, zero);
+	physics.MutexLock();
+	RigidBodyComponent* rb = playerObject->AddComponent<RigidBodyComponent>(60.f, FilterGroups::PLAYER, FilterGroups::EVERYTHING, true);
+	physics.RegisterRigidBody(rb);
+	physics.MutexUnlock();
+	playerObject->AddComponent<ControllerComp>(cameraObject);
+	//Transform::SetParentChild(playerObject->GetTransform(),cameraObject->GetTransform());
+	playerObject->AddComponent<PlayerComp>(guiManager, 50000, 2, 10, 25, 3);
+
+	AddObject(cameraObject, playerObject);
+	AddObject(playerObject);
+
+	
 
 
 	/* * * * * * * * ** * * * * */
@@ -409,19 +429,19 @@ void GameScene::Update(const float& deltaTime)
 	{
 		DShape::DrawSphere(ray.GetPoint(10.0f), 0.2f, { 1, 0, 1 });
 	}
-
-	if (player->GetComponent<PlayerComp>()->GG())
-	{
-		nextScene = LOSE;
-	}
-	else if (KEY_PRESSED(N))
-	{
-		nextScene = LOSE;
-	}
-	else if (KEY_PRESSED(M))
-	{
-		nextScene = INTRO;
-	}
+	nextScene = NEXT_SCENE(player->GetComponent<PlayerComp>()->getNextScene());
+	//if (player->GetComponent<PlayerComp>()->getNextScene())
+	//{
+	//	nextScene = LOSE;
+	//}
+	//else if (KEY_PRESSED(N))
+	//{
+	//	nextScene = LOSE;
+	//}
+	//else if (KEY_PRESSED(M))
+	//{
+	//	nextScene = INTRO;
+	//}
 
 	skyboxClass->GetThisObject()->GetTransform().SetPosition(camera->GetOwner()->GetTransform().GetPosition());
 }

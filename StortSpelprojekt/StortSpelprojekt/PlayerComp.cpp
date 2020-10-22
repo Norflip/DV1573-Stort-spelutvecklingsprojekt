@@ -6,11 +6,12 @@ PlayerComp::PlayerComp()
 	movementSpeed = 10;
 	attack = 0;
 	attackSpeed = 0;
-	radius = 1;	// dont know ffs
+	radius = 15;	// dont know ffs
 	/*this->fuelDippingBar = static_cast<GUISprite*>(guiMan->GetGUIObject("fuelDippingBar"));
 	this->foodDippingBar = static_cast<GUISprite*>(guiMan->GetGUIObject("foodDippingBar"));
 	this->healthDippingBar = static_cast<GUISprite*>(guiMan->GetGUIObject("healthDippingBar"));*/
 
+	foodEmpty = false;
 	gg = false;
 }
 
@@ -29,15 +30,24 @@ PlayerComp::PlayerComp(GUIManager* guimanager, float health, float movementSpeed
 	this->foodLossPerSecond = foodLossPerSecond;
 	this->fuelBurnPerMeter = fuelBurnPerMeter;
 
+
+	this->radius = radius;	// dont know ffs
+
 	// defaulting some shit
+	this->swapScene = NEXT_SCENE::GAME;
 	this->foodLossPerSecond = 0.3f;
 	this->food = 100.f;
 	this->fuelBurnPerMeter = 0.7f;
 	this->fuel = 100.f;
+	this->healthLossPerSecond = 0.5f;
+	this->health = 100.f;
 
 	this->fuelDippingBar = static_cast<GUISprite*>(guiMan->GetGUIObject("fuelDippingBar"));
 	this->foodDippingBar = static_cast<GUISprite*>(guiMan->GetGUIObject("foodDippingBar"));
 	this->healthDippingBar = static_cast<GUISprite*>(guiMan->GetGUIObject("healthDippingBar"));
+
+	foodEmpty = false;
+	gg = false;
 }
 
 PlayerComp::~PlayerComp()
@@ -52,16 +62,22 @@ void PlayerComp::Update(const float& deltaTime)
 	{
 		//loose fuel
 		//std::cout << GameClock::Instance().GetFrameTime() / 1000;
-		fuel -= GameClock::Instance().GetFrameTime() / 1000 * fuelBurnPerMeter * 10;
+		fuel -= GameClock::Instance().GetFrameTime() / 1000 * fuelBurnPerMeter;
 		//std::cout << fuel <<std::endl;
 		// loose food
-		food -= GameClock::Instance().GetFrameTime() / 1000 * foodLossPerSecond * 10;
+		food -= GameClock::Instance().GetFrameTime() / 1000 * foodLossPerSecond;
 		//std::cout << food<<std::endl;
-
+		
 		// make better later
-		if (food < 0 || fuel < 0 || health < 0)
-		{//gg = true;
-			//std::cout <<"GG";
+		if (fuel < 0 || health < 0 && !immortal)
+			swapScene = NEXT_SCENE::LOSE;
+
+		if (food < 0)
+			foodEmpty = true;
+
+		if (foodEmpty)
+		{
+			health -= GameClock::Instance().GetFrameTime() / 1000 * healthLossPerSecond;
 		}
 	}
 	
@@ -70,6 +86,10 @@ void PlayerComp::Update(const float& deltaTime)
 
 	// Food drop
 	foodDippingBar->SetScaleBars(ReverseAndClamp(food));
+
+	// Health drop
+	healthDippingBar->SetScaleBars(ReverseAndClamp(health));
+
 	// Health dipping when hit by enemy
 	//healthDippingBar->SetScaleDipping(0);
 }

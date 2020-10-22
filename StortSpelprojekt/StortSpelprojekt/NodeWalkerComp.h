@@ -7,7 +7,7 @@
 #include "Input.h"
 
 namespace dx = DirectX;
-class NodeWalkerComponent :public Component
+class NodeWalkerComp :public Component
 {
 public:
 	struct Node

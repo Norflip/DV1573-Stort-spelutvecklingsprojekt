@@ -1,5 +1,5 @@
 #include "EnemyAttackComp.h"
-
+#include "PlayerComp.h"
 EnemyAttackComp::EnemyAttackComp(PlayerComp* player)
 	: player(player), playerRadius(2.0f)
 {

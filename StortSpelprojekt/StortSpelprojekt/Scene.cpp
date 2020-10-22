@@ -2,6 +2,12 @@
 #include "RenderPass.h"
 #include "GUISprite.h"
 #include "GUIFont.h"
+#include "PlayerComp.h"
+
+
+
+
+
 
 Scene::Scene(ResourceManager* manager) : input(Input::Instance())
 {
@@ -26,6 +32,7 @@ Scene::~Scene()
 
 void Scene::Initialize(Renderer* renderer)
 {
+
 }
 
 void Scene::InitializeObjects()
@@ -49,7 +56,7 @@ void Scene::Update(const float& deltaTime)
 	root->Update(deltaTime);
 
 	GameClock::Instance().Update();
-	
+
 	//renderer->UpdateTime((float)clock.GetSeconds());
 
 	if (clock.GetSeconds() > 60)
