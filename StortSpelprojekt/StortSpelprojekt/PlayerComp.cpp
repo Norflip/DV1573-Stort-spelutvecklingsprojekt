@@ -65,10 +65,8 @@ PlayerComp::~PlayerComp()
 }
 
 void PlayerComp::Update(const float& deltaTime)
-{
-	
+{	
 	Ray ray = cam->MouseToRay(p.x, p.y);
-	//std::cout << p.x << ", " << p.y << std::endl;
 
 	if (LMOUSE_PRESSED)
 	{
