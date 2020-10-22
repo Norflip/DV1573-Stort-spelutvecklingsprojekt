@@ -91,7 +91,7 @@ void GameScene::InitializeObjects()
 	skyboxClass->GetThisObject()->AddFlag(ObjectFlag::NO_CULL);
 
 	Object* testMesh4 = new Object("test4");
-	testMesh4->AddComponent<NodeWalkerComponent>();
+	testMesh4->AddComponent<NodeWalkerComp>();
 	testMesh4->GetTransform().SetPosition(dx::XMLoadFloat3(&miniTranslation4));
 	testMesh4->AddComponent<MeshComponent>(*mesh1, *material2);
 	AddObject(testMesh4);
@@ -136,8 +136,7 @@ void GameScene::InitializeObjects()
 	RigidBodyComponent* rb = playerObject->AddComponent<RigidBodyComponent>(60.f, FilterGroups::PLAYER, FilterGroups::EVERYTHING, true);
 	physics.RegisterRigidBody(rb);
 	physics.MutexUnlock();
-
-	playerObject->AddComponent<ControllerComponent>(cameraObject);
+	playerObject->AddComponent<ControllerComp>(cameraObject);
 	//Transform::SetParentChild(playerObject->GetTransform(),cameraObject->GetTransform());
 	playerObject->AddComponent<PlayerComp>(guiManager, 50000, 2, 10, 25, 3);
 

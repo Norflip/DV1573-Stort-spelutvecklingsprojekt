@@ -1,6 +1,6 @@
-#include "ControllerComponent.h"
+#include "ControllerComp.h"
 
-ControllerComponent::ControllerComponent()
+ControllerComp::ControllerComp()
 {
 	this->velocity = 0.f;
 	this->velocityTimer = 0.f;
@@ -19,7 +19,7 @@ ControllerComponent::ControllerComponent()
 	this->capsuleComp = nullptr;
 }
 
-ControllerComponent::ControllerComponent(Object* cameraObject)
+ControllerComp::ControllerComp(Object* cameraObject)
 {
 	this->velocity = 0.f;
 	this->velocityTimer = 0.f;
@@ -38,11 +38,11 @@ ControllerComponent::ControllerComponent(Object* cameraObject)
 	this->capsuleComp = nullptr;
 }
 
-ControllerComponent::~ControllerComponent()
+ControllerComp::~ControllerComp()
 {
 }
 
-void ControllerComponent::Initialize()
+void ControllerComp::Initialize()
 {
 	this->rbComp = GetOwner()->GetComponent<RigidBodyComponent>();
 	this->camComp = cameraObject->GetComponent<CameraComponent>();
@@ -63,7 +63,7 @@ void ControllerComponent::Initialize()
 	}
 }
 
-void ControllerComponent::Update(const float& deltaTime)
+void ControllerComp::Update(const float& deltaTime)
 {
 	Physics& phy = Physics::Instance();
 	DirectX::XMFLOAT3 dir = { 0.f,0.f,0.f };
@@ -196,10 +196,10 @@ void ControllerComponent::Update(const float& deltaTime)
 		else //First Person specific actions
 		{
 
-			if (rbComp->IsGrounded())
-			{
-				//std::cout << "hit ground" << std::endl;
-			}
+			//if (rbComp->IsGrounded())
+			//{
+			//	//std::cout << "hit ground" << std::endl;
+			//}
 			if (KEY_PRESSED(Space)) // FPcam //jump is  scuffed
 			{
 				phy.MutexLock();

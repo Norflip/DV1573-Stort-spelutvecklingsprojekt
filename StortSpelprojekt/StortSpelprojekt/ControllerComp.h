@@ -22,7 +22,7 @@ constexpr float VELOCITY_MULTIPLIER = 20.f;
 constexpr dx::XMFLOAT3 RESET_POS = {20.f,3.f,20.f};
 constexpr dx::XMFLOAT4 RESET_ROT = { 0.f,0.f,0.f,1.f };
 
-class ControllerComponent :public Component //PlayerControllerComp
+class ControllerComp :public Component //PlayerControllerComp
 {
 private:
 
@@ -49,9 +49,9 @@ private:
 	CapsuleColliderComponent* capsuleComp;
 
 public:
-	ControllerComponent();
-	ControllerComponent(Object* cameraObject);
-	virtual ~ControllerComponent();
+	ControllerComp();
+	ControllerComp(Object* cameraObject);
+	virtual ~ControllerComp();
 
 	void Initialize();
 	void Update(const float& deltaTime);
