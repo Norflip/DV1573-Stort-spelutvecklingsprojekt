@@ -231,6 +231,7 @@
     <ClCompile Include="NodeWalkerComp.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="WeaponComponent.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="BoundingBoxes.h">
@@ -447,6 +448,7 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="NodeWalkerComp.h">
+    <ClInclude Include="WeaponComponent.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>
