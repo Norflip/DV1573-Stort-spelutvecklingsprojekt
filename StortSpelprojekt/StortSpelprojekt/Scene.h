@@ -20,7 +20,6 @@ enum NEXT_SCENE { INTRO = 0, LOSE = 1, GAME = 2, WIN = 3 };
 #include "PlayerAttackComp.h"
 
 #include "Skybox.h"
-#include "WorldGenerator.h"
 #include "SaveState.h"
 #include "DShape.h"
 #include "GUIManager.h"
@@ -85,14 +84,12 @@ protected:
 
 	EnemyStatsComp* enemyStatsComp;
 	dx::SpriteBatch* spriteBatch;
-	WorldGenerator worldGenerator;
 	SpriteRenderPass* spritePass;	
 
 	ObjectPooler pooler;
 	GUIManager* guiManager;		
 	
 	Skybox* skyboxClass;		
-
 	ResourceManager* resourceManager;
 
 	float windowHeight, windowWidth;
