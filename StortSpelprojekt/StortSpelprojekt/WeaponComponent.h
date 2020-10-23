@@ -19,7 +19,9 @@ private:
 
 	dx::XMVECTOR weaponPos;
 	dx::XMVECTOR weaponRot;
+	dx::XMVECTOR weaponScale;
+
+	dx::XMMATRIX weaponMatrix;
 
 	void SetPosition();
-	void UpdatePosition();
 };
