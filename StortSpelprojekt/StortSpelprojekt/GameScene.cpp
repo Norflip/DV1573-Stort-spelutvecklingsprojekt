@@ -95,7 +95,16 @@ void GameScene::InitializeObjects()
 	AddObject(cameraObject, playerObject);
 	AddObject(playerObject);
 
-	/* * * * * * * * ** * * * * */
+	Object* testPointLight = new Object("body_pointLight");
+
+	dx::XMFLOAT3 lightTranslation = dx::XMFLOAT3(0.0f, 0.0f, -1.0f);
+	testPointLight->GetTransform().SetPosition(dx::XMLoadFloat3(&lightTranslation));
+	testPointLight->AddComponent<PointLightComponent>(dx::XMFLOAT4(0.8f, 0.8f, 0.8f, 1.0f), 25);
+	
+	AddObject(testPointLight, playerObject);
+
+
+		/* * * * * * * * ** * * * * */
 
 	//SKELETON ANIMATION MODELS
 
@@ -198,9 +207,7 @@ void GameScene::InitializeObjects()
 
 
 	legsComponent->SetTrack(SkeletonStateMachine::IDLE, false);
-
 	baseComponent->SetTrack(SkeletonStateMachine::IDLE, false);
-
 	AddObject(houseBaseObject);
 
 
@@ -282,6 +289,9 @@ void GameScene::InitializeObjects()
 	world.Initialize(root, resourceManager, &pooler, renderer);
 	world.ConstructSegment(state, desc);
 	world.SetPlayer(player);
+	world.SetHouse(houseBaseObject);
+
+	world.MoveHouseAndPlayerToStart();
 }
 
 void GameScene::InitializeGUI()
@@ -368,23 +378,23 @@ void GameScene::InitializeGUI()
 void GameScene::InitializeLights()
 {
 	//TEST POINT LIGHTS____________________________________________________________________________________________________________________
-	Object* testPointLight = new Object("testPointLight");
+	/*Object* testPointLight = new Object("testPointLight");
 	dx::XMFLOAT3 lightTranslation = dx::XMFLOAT3(2.0f, 0.0f, 3.0f);
 	testPointLight->GetTransform().SetPosition(dx::XMLoadFloat3(&lightTranslation));
 	testPointLight->AddComponent<PointLightComponent>(dx::XMFLOAT4(1.f, 0.f, 0.f, 1.f), 25);
-	AddObject(testPointLight);
+	AddObject(testPointLight);*/
 
-	Object* testPointLight2 = new Object("testPointLight2");
-	dx::XMFLOAT3 lightTranslation2 = dx::XMFLOAT3(0.0f, 2.0f, 3.0f);
-	testPointLight2->GetTransform().SetPosition(dx::XMLoadFloat3(&lightTranslation2));
-	testPointLight2->AddComponent<PointLightComponent>(dx::XMFLOAT4(0.f, 1.f, 0.f, 1.f), 25);
-	//AddObject(testPointLight2);
+	//Object* testPointLight2 = new Object("testPointLight2");
+	//dx::XMFLOAT3 lightTranslation2 = dx::XMFLOAT3(0.0f, 2.0f, 3.0f);
+	//testPointLight2->GetTransform().SetPosition(dx::XMLoadFloat3(&lightTranslation2));
+	//testPointLight2->AddComponent<PointLightComponent>(dx::XMFLOAT4(0.f, 1.f, 0.f, 1.f), 25);
+	////AddObject(testPointLight2);
 
-	Object* testPointLight3 = new Object("testPointLight3");
-	dx::XMFLOAT3 lightTranslation3 = dx::XMFLOAT3(-2.0f, 0.0f, 3.0f);
-	testPointLight3->GetTransform().SetPosition(dx::XMLoadFloat3(&lightTranslation3));
-	testPointLight3->AddComponent<PointLightComponent>(dx::XMFLOAT4(0.f, 0.f, 1.f, 1.f), 25);
-	//AddObject(testPointLight3);
+	//Object* testPointLight3 = new Object("testPointLight3");
+	//dx::XMFLOAT3 lightTranslation3 = dx::XMFLOAT3(-2.0f, 0.0f, 3.0f);
+	//testPointLight3->GetTransform().SetPosition(dx::XMLoadFloat3(&lightTranslation3));
+	//testPointLight3->AddComponent<PointLightComponent>(dx::XMFLOAT4(0.f, 0.f, 1.f, 1.f), 25);
+	////AddObject(testPointLight3);
 	//_____________________________________________________________________________________________________________________________________
 }
 

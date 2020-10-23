@@ -19,6 +19,8 @@ public:
 	dx::XMFLOAT2 GetPoint(size_t index) { return this->points[index]; }
 	size_t CountPoints() const { return this->points.size(); }
 
+	std::vector<dx::XMINT2> GetIndexes() const { return this->indexes; }
+
 private:
 	void SetPointsFromIndexes(const std::vector<dx::XMINT2>& indexes);
 	float DistanceToLineSqr(float px, float py, float line0x, float line0y, float line1x, float line1y) const;

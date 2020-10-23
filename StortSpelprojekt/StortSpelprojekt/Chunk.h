@@ -21,6 +21,7 @@ enum class ChunkType
 };
 
 #define USE_RIGIDBODY 1
+#define DRAW_DEBUG 0
 
 struct ChunkIndex
 {
@@ -46,7 +47,7 @@ public:
 	Chunk(dx::XMINT2 index, ChunkType type);
 	virtual ~Chunk();
 
-#if _DEBUG
+#if _DEBUG and DRAW_DEBUG
 	void Update(const float& deltaTime) override;
 #endif // DEBUG
 
