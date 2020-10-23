@@ -7,9 +7,6 @@ WeaponComponent::WeaponComponent(Object* object)
 
 void WeaponComponent::Initialize()
 {
-
-	frontVec = { 0,0,1 };
-
 	//weaponMatrix = GetOwner()->GetTransform().GetLocalWorldMatrix() * dx::XMMatrixInverse(nullptr, camObj->GetComponent<CameraComponent>()->GetViewMatrix());
 	SetPosition();
 	//camObj->GetTransform().SetParentChild(camObj->GetTransform(), GetOwner()->GetTransform());
@@ -30,8 +27,6 @@ void WeaponComponent::SetPosition()
 	weaponPos.m128_f32[2] += 0.7f;
 
 	weaponRot = camObj->GetTransform().GetRotation();
-
-	frontVec = weaponPos
 
 	weaponRot.m128_f32[0] += 0.3f;
 	weaponRot.m128_f32[1] -= 0.3f;

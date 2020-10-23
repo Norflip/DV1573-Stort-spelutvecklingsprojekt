@@ -55,11 +55,6 @@ void GameScene::InitializeObjects()
 	desc.directionalSteps = 5;
 	desc.maxSteps = 10;
 
-	
-	worldGenerator.Initialize(renderer->GetDevice(), resourceManager->GetShaderResource("terrainShader"), resourceManager->GetShaderResource("grassShader"));
-	worldGenerator.Generate(state, renderer->GetDevice(), root);
-	worldGenerator.InitalizeGrass(renderer->GetDevice(), renderer->GetContext());
-
 	Mesh* mesh1 = resourceManager->GetResource<Mesh>("Test");
 	Mesh* mesh2 = resourceManager->GetResource<Mesh>("Test2");
 	Mesh* mesh3 = resourceManager->GetResource<Mesh>("Test3");
@@ -129,9 +124,6 @@ void GameScene::InitializeObjects()
 	AddObject(cameraObject, playerObject); ///
 	AddObject(playerObject); /////////////////
 
-	
-
-
 	/* * * * * * * * ** * * * * */
 
 	//SKELETON ANIMATION MODELS
@@ -172,7 +164,6 @@ void GameScene::InitializeObjects()
 
 	//LOADING BASE MONSTER; ADDING SKELETONS TO IT
 
-
 	SkeletonMeshComponent* baseMonsterComp = baseMonsterObject->AddComponent<SkeletonMeshComponent>(skeletonMesh[0], skeletonMat[0]);
 
 	baseMonsterComp->SetAnimationTrack(skeletonbaseMonsterIdle, SkeletonStateMachine::IDLE);
@@ -191,14 +182,6 @@ void GameScene::InitializeObjects()
 	baseMonsterObject->GetTransform().SetPosition({ 0.0f, 2.5f, 10.0f });
 
 	enemyStatsComp = baseMonsterObject->AddComponent<EnemyStatsComp>(100, 2, 15, 25, 3);
-
-	EnemySMComp* stateMachine = baseMonsterObject->AddComponent<EnemySMComp>(EnemyState::PATROL);
-
-	stateMachine->RegisterState(EnemyState::IDLE, baseMonsterObject->AddComponent<EnemyIdleComp>());
-	stateMachine->RegisterState(EnemyState::PATROL, baseMonsterObject->AddComponent<EnemyPatrolComp>());
-	stateMachine->RegisterState(EnemyState::ATTACK, baseMonsterObject->AddComponent<EnemyAttackComp>(playerComp));
-	stateMachine->InitAnimation();
-	AddObject(baseMonsterObject);
 
 	//LOADING HOUSE AND LEGS AND ADDING SKELETONS TO THEM THE HOUSE ONLY HAS ONE JOINT CONNECTED TO IT
 	Shader* defaultShader = resourceManager->GetShaderResource("defaultShader");
