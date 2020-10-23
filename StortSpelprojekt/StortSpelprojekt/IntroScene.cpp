@@ -47,6 +47,7 @@ void IntroScene::InitializeObjects()
 void IntroScene::InitializeGUI()
 {
 	//spriteBatch = new DirectX::SpriteBatch(renderer->GetContext());
+	GUISprite* titleSprite = new GUISprite(*renderer, "Textures/OnceUponATime.png", windowWidth / 2 - 100, 100, 0, DrawDirection::Default, ClickFunction::NotClickable);
 	GUISprite* startSprite = new GUISprite(*renderer, "Textures/Start.png", 100, 100, 0, DrawDirection::Default, ClickFunction::Clickable);
 	GUISprite* optionSprite = new GUISprite(*renderer, "Textures/Options.png", 100, 300, 0, DrawDirection::Default, ClickFunction::Clickable);
 	GUISprite* loreSprite = new GUISprite(*renderer, "Textures/Lore.png", 100, 500, 0, DrawDirection::Default, ClickFunction::Clickable);
@@ -58,6 +59,7 @@ void IntroScene::InitializeGUI()
 	loreSprite->SetActive();
 
 	guiManager = new GUIManager(renderer, 100);
+	guiManager->AddGUIObject(titleSprite, "title");
 	guiManager->AddGUIObject(fpsDisplay, "fps");
 	guiManager->AddGUIObject(startSprite, "startSprite");
 	guiManager->AddGUIObject(optionSprite, "optionSprite");
