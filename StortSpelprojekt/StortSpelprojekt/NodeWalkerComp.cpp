@@ -40,9 +40,6 @@ void NodeWalkerComp::InitAnimation()
 		this->base = nullptr;
 		this->legs = nullptr;
 	}
-
-
-	const int a = 0;
 }
 
 void NodeWalkerComp::Reset()
@@ -132,24 +129,27 @@ void NodeWalkerComp::Update(const float& deltaTime)
 	if (KEY_PRESSED(Down))
 		//canWalk = false;
 		Stop();
+
+
+
 	if (canWalk)
 	{
-		DirectX::XMFLOAT3 dir = { 0.f,0.f,0.f };
-		dx::XMVECTOR vdir = dx::XMVectorSubtract(dx::XMLoadFloat3(&nodes[nextChosen].position), GetOwner()->GetTransform().GetPosition());
-		dx::XMStoreFloat(&this->length, dx::XMVector3Length(vdir));
-		if (this->length < nodeRadius)
-		{
-			//canWalk = false;
-			Stop();
-			this->currentNode = this->nextChosen;
-		}
-		else
-		{
-			vdir = dx::XMVector3Normalize(vdir);
-			vdir = dx::XMVectorScale(vdir, speed * deltaTime);
-			dx::XMStoreFloat3(&dir, vdir);
-			GetOwner()->GetTransform().Translate(dir.x, dir.y, dir.z);
-		}
+		//DirectX::XMFLOAT3 dir = { 0.f,0.f,0.f };
+		//dx::XMVECTOR vdir = dx::XMVectorSubtract(dx::XMLoadFloat3(&nodes[nextChosen].position), GetOwner()->GetTransform().GetPosition());
+		//dx::XMStoreFloat(&this->length, dx::XMVector3Length(vdir));
+		//if (this->length < nodeRadius)
+		//{
+		//	//canWalk = false;
+		//	Stop();
+		//	this->currentNode = this->nextChosen;
+		//}
+		//else
+		//{
+		//	vdir = dx::XMVector3Normalize(vdir);
+		//	vdir = dx::XMVectorScale(vdir, speed * deltaTime);
+		//	dx::XMStoreFloat3(&dir, vdir);
+		//	GetOwner()->GetTransform().Translate(dir.x, dir.y, dir.z);
+		//}
 	}
 	else
 	{

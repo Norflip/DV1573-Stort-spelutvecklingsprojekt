@@ -39,6 +39,7 @@ public:
 
 	Chunk* GetChunk(float x, float z) const;
 	void DrawDebug();
+	Path2 GetPath() const { return this->grid.GetPath(); }
 
 private:
 	std::vector<ChunkPointInformation> CreateChunkMap(const dx::XMINT2& index, const SegmentDescription& description, float*& heightMap, unsigned char*& buffer);
