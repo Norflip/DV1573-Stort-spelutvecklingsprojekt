@@ -144,7 +144,7 @@ void GameScene::InitializeObjects()
 
 	stateMachine->RegisterState(EnemyState::IDLE, baseMonsterObject->AddComponent<EnemyIdleComp>());
 	stateMachine->RegisterState(EnemyState::PATROL, baseMonsterObject->AddComponent<EnemyPatrolComp>());
-	stateMachine->RegisterState(EnemyState::ATTACK, baseMonsterObject->AddComponent<EnemyAttackComp>(playerComp));
+	stateMachine->RegisterState(EnemyState::ATTACK, baseMonsterObject->AddComponent<EnemyAttackComp>(playerObject->GetComponent<PlayerComp>()));
 	stateMachine->InitAnimation();
 	AddObject(baseMonsterObject);
 
@@ -212,7 +212,7 @@ void GameScene::InitializeObjects()
 
 	characterReferenceObject->AddComponent<MeshComponent>(charRefMesh[0], charRefMat[0]);
 	characterReferenceObject->GetTransform().SetScale({ 1, 1, 1 });
-	characterReferenceObject->GetTransform().SetPosition({ 0.0f, 0.0f, 4.0f });
+	characterReferenceObject->GetTransform().SetPosition({ 14,2,2 });
 	AddObject(characterReferenceObject);
 
 
@@ -227,7 +227,7 @@ void GameScene::InitializeObjects()
 
 	Object* healthkitObject = new Object("healthObject");
 	healthkitObject->AddComponent<MeshComponent>(healthkit[0], healthkitMaterial[0]);
-	healthkitObject->GetTransform().SetPosition({ 4.0f, 1.0f, 5.0f });
+	healthkitObject->GetTransform().SetPosition({ 18,2,2 });
 	healthkitObject->AddComponent<BoxColliderComponent>(dx::XMFLOAT3{ 0.5f, 0.5f, 0.5f }, dx::XMFLOAT3{ 0, 0, 0 });
 	healthkitObject->AddComponent<PickupComponent>(Type::Health, 20.0f);
 
@@ -244,7 +244,7 @@ void GameScene::InitializeObjects()
 
 	Object* fuelCanObject = new Object("fuelObject");
 	fuelCanObject->AddComponent<MeshComponent>(fuelCan[0], fuelCanMaterail[0]);
-	fuelCanObject->GetTransform().SetPosition({ 8.0f, 1.0f, 5.0f });
+	fuelCanObject->GetTransform().SetPosition({ 22,2,2 });
 	fuelCanObject->AddComponent<BoxColliderComponent>(dx::XMFLOAT3{ 0.5f, 0.5f, 0.5f }, dx::XMFLOAT3{ 0, 0, 0 });
 	fuelCanObject->AddComponent<PickupComponent>(Type::Fuel, 20.0f);
 
