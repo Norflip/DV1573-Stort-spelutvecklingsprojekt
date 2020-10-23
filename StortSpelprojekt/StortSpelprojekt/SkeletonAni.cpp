@@ -3,7 +3,7 @@
 dx::SimpleMath::Matrix& SkeletonAni::Lerp(float elapsedTime, std::vector<Bone>& keys)
 {
     animationTime = elapsedTime * fps;
-    //animationTime += elapsedTime;
+    
     currentFrame = fmodf(animationTime, length);
 
     firstIndex = 0;
@@ -22,7 +22,7 @@ dx::SimpleMath::Matrix& SkeletonAni::Lerp(float elapsedTime, std::vector<Bone>& 
 
     }
 
-
+   
     //lerp between the frames to find how close to each frame the animation is.
 
     t = (currentFrame - (float)firstIndex) / ((float)secondIndex - (float)firstIndex);
@@ -50,12 +50,12 @@ dx::SimpleMath::Matrix& SkeletonAni::Lerp(float elapsedTime, std::vector<Bone>& 
     RT = rotQM.CreateFromQuaternion(slerpedQ) * transM.CreateTranslation(lerpedTrans);
   
 
-
-
+   
+   
 
     return RT;
 
-
+    
 
 }
 
@@ -70,7 +70,7 @@ std::vector<dx::XMFLOAT4X4>& SkeletonAni::Makeglobal(float elapsedTime, const Di
 {
     DirectX::SimpleMath::Matrix toRoot = Lerp(elapsedTime, keys) * globalParent; //These matrices are local, need to make them global recursively.
 
-    //simple math
+ 
 
 
     unsigned int ftIndex = keys[0].index; //all of these indices have the same index number.
@@ -228,5 +228,9 @@ void SkeletonAni::SetKeyFramesDirect(std::vector<std::vector<Bone>>& directKeys)
 {
     this->keyBones = directKeys;
 }
+
+
+
+
 
 
