@@ -43,9 +43,8 @@ void GameScene::Initialize(Renderer* renderer)
 void GameScene::InitializeObjects()
 {
 	Physics& physics = Physics::Instance();
-	
-	skyboxClass = new Skybox(renderer->GetDevice(), renderer->GetContext(), resourceManager->GetShaderResource("skyboxShader"));
-	skyboxClass->GetThisObject()->AddFlag(ObjectFlag::NO_CULL);
+
+
 
 	SaveState state;
 	state.seed = 1337;
@@ -91,15 +90,21 @@ void GameScene::InitializeObjects()
 	physics.MutexUnlock();
 	playerObject->AddComponent<ControllerComp>(cameraObject);
 	//Transform::SetParentChild(playerObject->GetTransform(),cameraObject->GetTransform());
-	PlayerComp* playerComp = playerObject->AddComponent<PlayerComp>(guiManager, 100, 2, 10, 25, 3);
+	playerObject->AddComponent<PlayerComp>(renderer, camera, Physics::Instance(), guiManager, 50000, 2, 10, 25, 3);
 
 	AddObject(cameraObject, playerObject);
 	AddObject(playerObject);
 
+	Object* testPointLight = new Object("body_pointLight");
+
+	dx::XMFLOAT3 lightTranslation = dx::XMFLOAT3(0.0f, 0.0f, -1.0f);
+	testPointLight->GetTransform().SetPosition(dx::XMLoadFloat3(&lightTranslation));
+	testPointLight->AddComponent<PointLightComponent>(dx::XMFLOAT4(0.8f, 0.8f, 0.8f, 1.0f), 25);
 	
+	AddObject(testPointLight, playerObject);
 
 
-	/* * * * * * * * ** * * * * */
+		/* * * * * * * * ** * * * * */
 
 	//SKELETON ANIMATION MODELS
 
@@ -148,7 +153,7 @@ void GameScene::InitializeObjects()
 
 	stateMachine->RegisterState(EnemyState::IDLE, baseMonsterObject->AddComponent<EnemyIdleComp>());
 	stateMachine->RegisterState(EnemyState::PATROL, baseMonsterObject->AddComponent<EnemyPatrolComp>());
-	stateMachine->RegisterState(EnemyState::ATTACK, baseMonsterObject->AddComponent<EnemyAttackComp>(playerComp));
+	stateMachine->RegisterState(EnemyState::ATTACK, baseMonsterObject->AddComponent<EnemyAttackComp>(playerObject->GetComponent<PlayerComp>()));
 	stateMachine->InitAnimation();
 	AddObject(baseMonsterObject);
 
@@ -202,9 +207,7 @@ void GameScene::InitializeObjects()
 
 
 	legsComponent->SetTrack(SkeletonStateMachine::IDLE, false);
-
 	baseComponent->SetTrack(SkeletonStateMachine::IDLE, false);
-
 	AddObject(houseBaseObject);
 
 
@@ -216,8 +219,65 @@ void GameScene::InitializeObjects()
 
 	characterReferenceObject->AddComponent<MeshComponent>(charRefMesh[0], charRefMat[0]);
 	characterReferenceObject->GetTransform().SetScale({ 1, 1, 1 });
-	characterReferenceObject->GetTransform().SetPosition({ 0.0f, 0.0f, 4.0f });
+	characterReferenceObject->GetTransform().SetPosition({ 14,2,2 });
 	AddObject(characterReferenceObject);
+
+
+	/* For physics/ rigidbody pickup stuff */
+	Physics& phy = Physics::Instance();
+
+	Shader* defShader = resourceManager->GetShaderResource("defaultShader");
+
+	/* Health pickup stuff temporary */
+	std::vector<Mesh> healthkit = ZWEBLoader::LoadMeshes(ZWEBLoadType::NoAnimation, "Models/Healthkit.ZWEB", renderer->GetDevice());
+	std::vector<Material> healthkitMaterial = ZWEBLoader::LoadMaterials("Models/Healthkit.ZWEB", defShader, renderer->GetDevice());
+
+	Object* healthkitObject = new Object("healthObject");
+	healthkitObject->AddComponent<MeshComponent>(healthkit[0], healthkitMaterial[0]);
+	healthkitObject->GetTransform().SetPosition({ 18,2,2 });
+	healthkitObject->AddComponent<BoxColliderComponent>(dx::XMFLOAT3{ 0.5f, 0.5f, 0.5f }, dx::XMFLOAT3{ 0, 0, 0 });
+	healthkitObject->AddComponent<PickupComponent>(Type::Health, 20.0f);
+
+	RigidBodyComponent* healthBody;
+	healthBody = healthkitObject->AddComponent<RigidBodyComponent>(0, FilterGroups::PICKUPS, FilterGroups::PLAYER, false);
+
+	phy.RegisterRigidBody(healthBody);
+	AddObject(healthkitObject);
+
+
+	/* Fuel pickup stuff temporary */
+	std::vector<Mesh> fuelCan = ZWEBLoader::LoadMeshes(ZWEBLoadType::NoAnimation, "Models/FuelCan.ZWEB", renderer->GetDevice());
+	std::vector<Material> fuelCanMaterail = ZWEBLoader::LoadMaterials("Models/FuelCan.ZWEB", defShader, renderer->GetDevice());
+
+	Object* fuelCanObject = new Object("fuelObject");
+	fuelCanObject->AddComponent<MeshComponent>(fuelCan[0], fuelCanMaterail[0]);
+	fuelCanObject->GetTransform().SetPosition({ 22,2,2 });
+	fuelCanObject->AddComponent<BoxColliderComponent>(dx::XMFLOAT3{ 0.5f, 0.5f, 0.5f }, dx::XMFLOAT3{ 0, 0, 0 });
+	fuelCanObject->AddComponent<PickupComponent>(Type::Fuel, 20.0f);
+
+	RigidBodyComponent* fuelBody;
+	fuelBody = fuelCanObject->AddComponent<RigidBodyComponent>(0, FilterGroups::PICKUPS, FilterGroups::PLAYER, false);
+
+	phy.RegisterRigidBody(fuelBody);
+	AddObject(fuelCanObject);
+
+
+	/* Banana pickup stuff temporary */
+	std::vector<Mesh> beans = ZWEBLoader::LoadMeshes(ZWEBLoadType::NoAnimation, "Models/Bakedbeans.ZWEB", renderer->GetDevice());
+	std::vector<Material> beansMaterial = ZWEBLoader::LoadMaterials("Models/Bakedbeans.ZWEB", defShader, renderer->GetDevice());
+
+	Object* beansObject = new Object("bakedBeans");
+	beansObject->AddComponent<MeshComponent>(beans[0], beansMaterial[0]);
+	beansObject->GetTransform().SetPosition({ 3.0f, 1.0f, 5.0f });
+	beansObject->AddComponent<BoxColliderComponent>(dx::XMFLOAT3{ 0.5f, 0.5f, 0.5f }, dx::XMFLOAT3{ 0, 0, 0 });
+	beansObject->AddComponent<PickupComponent>(Type::Food, 20.0f);
+
+	RigidBodyComponent* beansBody;
+	beansBody = beansObject->AddComponent<RigidBodyComponent>(0, FilterGroups::PICKUPS, FilterGroups::PLAYER, false);
+	
+	phy.RegisterRigidBody(beansBody);
+	AddObject(beansObject);
+
 
 	clock.Update();
 	/* * * * * * * * ** * * * * */
@@ -229,6 +289,9 @@ void GameScene::InitializeObjects()
 	world.Initialize(root, resourceManager, &pooler, renderer);
 	world.ConstructSegment(state, desc);
 	world.SetPlayer(player);
+	world.SetHouse(houseBaseObject);
+
+	world.MoveHouseAndPlayerToStart();
 }
 
 void GameScene::InitializeGUI()
@@ -265,8 +328,8 @@ void GameScene::InitializeGUI()
 
 	//FONTS
 	GUIFont* fpsDisplay = new GUIFont(*renderer, "fps", windowWidth / 2, 50);
-	GUIFont* healthDisplay = new GUIFont(*renderer, "playerHealth", 50, 100);
-	GUIFont* enemyDisplay = new GUIFont(*renderer, "enemyHealth", 50, 150);
+	/*GUIFont* healthDisplay = new GUIFont(*renderer, "playerHealth", 50, 100);
+	GUIFont* enemyDisplay = new GUIFont(*renderer, "enemyHealth", 50, 150);*/
 
 	//CROSSHAIR
 	GUISprite* dot = new GUISprite(*renderer, "Textures/dot.png", (windowWidth / 2) - 6, (windowHeight / 2) - 6, 0, DrawDirection::BottomLeft, ClickFunction::NotClickable);
@@ -275,8 +338,8 @@ void GameScene::InitializeGUI()
 	// INSERTIONS
 	guiManager = new GUIManager(renderer, 100);
 	guiManager->AddGUIObject(fpsDisplay, "fps");
-	guiManager->AddGUIObject(healthDisplay, "playerHealth");
-	guiManager->AddGUIObject(enemyDisplay, "enemyHealth");
+	/*guiManager->AddGUIObject(healthDisplay, "playerHealth");
+	guiManager->AddGUIObject(enemyDisplay, "enemyHealth");*/
 
 	//BASE OF EQUIPMENT
 	guiManager->AddGUIObject(equimpmentSprite1, "equimpmentSprite1");
@@ -315,23 +378,23 @@ void GameScene::InitializeGUI()
 void GameScene::InitializeLights()
 {
 	//TEST POINT LIGHTS____________________________________________________________________________________________________________________
-	Object* testPointLight = new Object("testPointLight");
+	/*Object* testPointLight = new Object("testPointLight");
 	dx::XMFLOAT3 lightTranslation = dx::XMFLOAT3(2.0f, 0.0f, 3.0f);
 	testPointLight->GetTransform().SetPosition(dx::XMLoadFloat3(&lightTranslation));
 	testPointLight->AddComponent<PointLightComponent>(dx::XMFLOAT4(1.f, 0.f, 0.f, 1.f), 25);
-	AddObject(testPointLight);
+	AddObject(testPointLight);*/
 
-	Object* testPointLight2 = new Object("testPointLight2");
-	dx::XMFLOAT3 lightTranslation2 = dx::XMFLOAT3(0.0f, 2.0f, 3.0f);
-	testPointLight2->GetTransform().SetPosition(dx::XMLoadFloat3(&lightTranslation2));
-	testPointLight2->AddComponent<PointLightComponent>(dx::XMFLOAT4(0.f, 1.f, 0.f, 1.f), 25);
-	//AddObject(testPointLight2);
+	//Object* testPointLight2 = new Object("testPointLight2");
+	//dx::XMFLOAT3 lightTranslation2 = dx::XMFLOAT3(0.0f, 2.0f, 3.0f);
+	//testPointLight2->GetTransform().SetPosition(dx::XMLoadFloat3(&lightTranslation2));
+	//testPointLight2->AddComponent<PointLightComponent>(dx::XMFLOAT4(0.f, 1.f, 0.f, 1.f), 25);
+	////AddObject(testPointLight2);
 
-	Object* testPointLight3 = new Object("testPointLight3");
-	dx::XMFLOAT3 lightTranslation3 = dx::XMFLOAT3(-2.0f, 0.0f, 3.0f);
-	testPointLight3->GetTransform().SetPosition(dx::XMLoadFloat3(&lightTranslation3));
-	testPointLight3->AddComponent<PointLightComponent>(dx::XMFLOAT4(0.f, 0.f, 1.f, 1.f), 25);
-	//AddObject(testPointLight3);
+	//Object* testPointLight3 = new Object("testPointLight3");
+	//dx::XMFLOAT3 lightTranslation3 = dx::XMFLOAT3(-2.0f, 0.0f, 3.0f);
+	//testPointLight3->GetTransform().SetPosition(dx::XMLoadFloat3(&lightTranslation3));
+	//testPointLight3->AddComponent<PointLightComponent>(dx::XMFLOAT4(0.f, 0.f, 1.f, 1.f), 25);
+	////AddObject(testPointLight3);
 	//_____________________________________________________________________________________________________________________________________
 }
 
@@ -360,8 +423,8 @@ void GameScene::Update(const float& deltaTime)
 	world.UpdateRelevantChunks();
 
 	static_cast<GUIFont*>(guiManager->GetGUIObject("fps"))->SetString(std::to_string((int)GameClock::Instance().GetFramesPerSecond()));
-	static_cast<GUIFont*>(guiManager->GetGUIObject("playerHealth"))->SetString("Player health: " + std::to_string((int)player->GetComponent<PlayerComp>()->GetHealth()));
-	static_cast<GUIFont*>(guiManager->GetGUIObject("enemyHealth"))->SetString("Enemy health: " + std::to_string((int)enemyStatsComp->GetHealth()));
+	/*static_cast<GUIFont*>(guiManager->GetGUIObject("playerHealth"))->SetString("Player health: " + std::to_string((int)player->GetComponent<PlayerComp>()->GetHealth()));
+	static_cast<GUIFont*>(guiManager->GetGUIObject("enemyHealth"))->SetString("Enemy health: " + std::to_string((int)enemyStatsComp->GetHealth()));*/
 	guiManager->UpdateAll();
 
 	if (KEY_DOWN(H))
@@ -397,7 +460,10 @@ void GameScene::Update(const float& deltaTime)
 		const int a = 100;
 	}
 
-	POINT p = input.GetMousePos();
+	POINT p;
+	p.x = renderer->GetOutputWindow()->GetWidth() / 2;
+	p.y = renderer->GetOutputWindow()->GetHeight() / 2;
+
 	Ray ray = camera->MouseToRay(p.x, p.y);
 	//std::cout << p.x << ", " << p.y << std::endl;
 
@@ -416,8 +482,10 @@ void GameScene::Update(const float& deltaTime)
 			if (hit.object != nullptr)
 			{
 				std::cout << hit.object->GetName() << std::endl;
+
 			}
-		}
+		}	
+
 	}
 	else
 	{
@@ -439,6 +507,11 @@ void GameScene::Update(const float& deltaTime)
 	//}
 
 	skyboxClass->GetThisObject()->GetTransform().SetPosition(camera->GetOwner()->GetTransform().GetPosition());
+
+
+	/*POINT pa = input.GetMousePos();
+	Ray ray = camera->MouseToRay(p.x, p.y);*/
+
 }
 
 void GameScene::FixedUpdate(const float& fixedDeltaTime)

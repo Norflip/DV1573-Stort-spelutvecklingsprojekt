@@ -23,6 +23,8 @@ public:
 	void SetHouse(Object* object) { this->house = object; }
 	void DrawDebug();
 
+	void MoveHouseAndPlayerToStart();
+
 private:
 	dx::XMINT2 GetChunkIndex(Object* object) const;
 

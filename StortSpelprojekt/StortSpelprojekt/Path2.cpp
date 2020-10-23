@@ -44,6 +44,7 @@ float Path2::ClosestDistance(const dx::XMFLOAT2& position) const
 
 void Path2::SetPointsFromIndexes(const std::vector<dx::XMINT2>& indexes)
 {
+	this->indexes = indexes;
 	const size_t cuts = CHUNK_SIZE;
 	points.clear();
 

@@ -17,7 +17,7 @@ public:
 
 	virtual float notifyRaycastHit(const rp::RaycastInfo& info)
 	{
-		std::cout << "Hit point : " << info.worldPoint.x << info.worldPoint.y << info.worldPoint.z << std::endl;
+	//	std::cout << "Hit point : " << info.worldPoint.x << info.worldPoint.y << info.worldPoint.z << std::endl;
 
 		hit.didHit = true;
 		hit.position = dx::XMFLOAT3(info.worldPoint.x, info.worldPoint.y, info.worldPoint.z);
