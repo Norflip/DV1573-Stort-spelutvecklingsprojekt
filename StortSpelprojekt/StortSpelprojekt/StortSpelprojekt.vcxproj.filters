@@ -252,6 +252,7 @@
     <ClCompile Include="PointQuadTree.cpp">
       <Filter>Source Files\SpawnSystems</Filter>
     </ClCompile>
+    <ClCompile Include="WeaponComponent.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="BoundingBoxes.h">
@@ -465,6 +466,7 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="NodeWalkerComp.h">
+    <ClInclude Include="WeaponComponent.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="WinScene.h">

@@ -8,7 +8,8 @@ class SpriteRenderPass;
 class GameScene : public Scene
 {
 private:
-
+	Object* playerObject;
+	Object* cameraObject;
 public:
 	GameScene(ResourceManager* manager);
 	~GameScene();

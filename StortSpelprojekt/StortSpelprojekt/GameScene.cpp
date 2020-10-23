@@ -56,6 +56,39 @@ void GameScene::InitializeObjects()
 	desc.maxSteps = 10;
 
 	
+	worldGenerator.Initialize(renderer->GetDevice(), resourceManager->GetShaderResource("terrainShader"), resourceManager->GetShaderResource("grassShader"));
+	worldGenerator.Generate(state, renderer->GetDevice(), root);
+	worldGenerator.InitalizeGrass(renderer->GetDevice(), renderer->GetContext());
+
+	Mesh* mesh1 = resourceManager->GetResource<Mesh>("Test");
+	Mesh* mesh2 = resourceManager->GetResource<Mesh>("Test2");
+	Mesh* mesh3 = resourceManager->GetResource<Mesh>("Test3");
+
+	Material* material1 = resourceManager->GetResource<Material>("TestMaterial");
+	Material* material2 = resourceManager->GetResource<Material>("Test2Material");
+	Material* material3 = resourceManager->GetResource<Material>("Test3Material");
+
+	Object* testObject = new Object("test");
+	Object* testObject2 = new Object("test2");
+	Object* testObject3 = new Object("test3");
+
+	testObject->AddComponent<MeshComponent>(*mesh1, *material1);
+	testObject2->AddComponent<MeshComponent>(*mesh2, *material2);
+	testObject3->AddComponent<MeshComponent>(*mesh3, *material3);
+
+	dx::XMFLOAT3 miniTranslation = dx::XMFLOAT3(0, -10, 6);
+	dx::XMFLOAT3 miniTranslation2 = dx::XMFLOAT3(2, -10, 2);
+	dx::XMFLOAT3 miniTranslation3 = dx::XMFLOAT3(-4, -10, -4);
+	dx::XMFLOAT3 miniTranslation4 = dx::XMFLOAT3(0.f, -10.f, 0.f);
+
+	testObject->GetTransform().SetPosition(dx::XMLoadFloat3(&miniTranslation));
+	testObject2->GetTransform().SetPosition(dx::XMLoadFloat3(&miniTranslation2));
+	testObject3->GetTransform().SetPosition(dx::XMLoadFloat3(&miniTranslation3));
+
+	AddObject(testObject2, testObject);
+	AddObject(testObject3, testObject2);
+
+	AddObject(testObject);
 
 	skyboxClass = new Skybox(renderer->GetDevice(), renderer->GetContext(), resourceManager->GetShaderResource("skyboxShader"));
 	skyboxClass->GetThisObject()->AddFlag(ObjectFlag::NO_CULL);
@@ -72,8 +105,8 @@ void GameScene::InitializeObjects()
 	dx::XMFLOAT3 playerSpawn = { 10,10,10 };
 	dx::XMFLOAT3 zero = { 0.f, 0.f, 0.f };
 	dx::XMVECTOR playerSpawnVec = dx::XMLoadFloat3(&playerSpawn);
-	Object* playerObject = new Object("player", ObjectFlag::ENABLED);
-	Object* cameraObject = new Object("camera", ObjectFlag::ENABLED);
+	playerObject = new Object("player", ObjectFlag::ENABLED);
+	cameraObject = new Object("camera", ObjectFlag::ENABLED);
 	//Transform::SetParentChild(playerObject->GetTransform(), cameraObject->GetTransform());
 	this->player = playerObject;
 	camera = cameraObject->AddComponent<CameraComponent>(60.0f, true);
@@ -89,12 +122,12 @@ void GameScene::InitializeObjects()
 	RigidBodyComponent* rb = playerObject->AddComponent<RigidBodyComponent>(60.f, FilterGroups::PLAYER, FilterGroups::EVERYTHING, true);
 	physics.RegisterRigidBody(rb);
 	physics.MutexUnlock();
-	playerObject->AddComponent<ControllerComp>(cameraObject);
+	playerObject->AddComponent<ControllerComp>(cameraObject); /////////////////
 	//Transform::SetParentChild(playerObject->GetTransform(),cameraObject->GetTransform());
 	PlayerComp* playerComp = playerObject->AddComponent<PlayerComp>(guiManager, 100, 2, 10, 25, 3);
 
-	AddObject(cameraObject, playerObject);
-	AddObject(playerObject);
+	AddObject(cameraObject, playerObject); ///
+	AddObject(playerObject); /////////////////
 
 	
 
@@ -102,6 +135,21 @@ void GameScene::InitializeObjects()
 	/* * * * * * * * ** * * * * */
 
 	//SKELETON ANIMATION MODELS
+	//Enemy object //comments
+	enemy = new Object("enemy");
+	dx::XMFLOAT3 enemyTranslation = dx::XMFLOAT3(0, -10, 10);
+	enemy->GetTransform().SetPosition(dx::XMLoadFloat3(&enemyTranslation));
+	enemy->AddComponent<MeshComponent>(*mesh1, *material1);
+	enemy->AddComponent<EnemyStatsComp>(100, 2, 15, 25, 3);
+	enemyStatsComp = enemy->GetComponent<EnemyStatsComp>();
+	enemy->AddComponent<EnemyAttackComp>(player->GetComponent<PlayerComp>());
+	EnemySMComp* stateMachine = enemy->AddComponent<EnemySMComp>(EnemyState::IDLE);
+	stateMachine->RegisterState(EnemyState::IDLE, enemy->AddComponent<EnemyIdleComp>());
+	stateMachine->RegisterState(EnemyState::PATROL, enemy->AddComponent<EnemyPatrolComp>());
+	stateMachine->RegisterState(EnemyState::ATTACK, enemy->AddComponent<EnemyAttackComp>(player->GetComponent<PlayerComp>()));
+	AddObject(enemy);
+
+	playerObject->AddComponent<PlayerAttackComp>(enemy);
 
 	bool defaultAnimation = false;
 	bool parentAnimation = true;
@@ -216,9 +264,21 @@ void GameScene::InitializeObjects()
 
 	characterReferenceObject->AddComponent<MeshComponent>(charRefMesh[0], charRefMat[0]);
 	characterReferenceObject->GetTransform().SetScale({ 1, 1, 1 });
-	characterReferenceObject->GetTransform().SetPosition({ 0.0f, 0.0f, 4.0f });
+	characterReferenceObject->GetTransform().SetPosition({ 0.0f, -10.0f, 4.0f });
 	AddObject(characterReferenceObject);
 
+	//Axe//////////////////////////////////////////////////////////////////
+	std::vector<Mesh> axeMesh = ZWEBLoader::LoadMeshes(ZWEBLoadType::NoAnimation, "Models/AXE.ZWEB", renderer->GetDevice());
+	std::vector<Material> axeMat = ZWEBLoader::LoadMaterials("Models/AXE.ZWEB", skeletonShader, renderer->GetDevice());
+
+	Object* axeObject = new Object("Axe");
+
+	axeObject->AddComponent<MeshComponent>(axeMesh[0], axeMat[0]);
+	axeObject->GetTransform().SetPosition({ 0,0,0 });
+	axeObject->GetTransform().SetScale({ 1, 1, 1 });
+	axeObject->AddComponent<WeaponComponent>(cameraObject);
+	AddObject(axeObject);
+	
 	clock.Update();
 	/* * * * * * * * ** * * * * */
 	//Log::Add("PRINTING SCENE HIERARCHY ----");
@@ -316,19 +376,19 @@ void GameScene::InitializeLights()
 {
 	//TEST POINT LIGHTS____________________________________________________________________________________________________________________
 	Object* testPointLight = new Object("testPointLight");
-	dx::XMFLOAT3 lightTranslation = dx::XMFLOAT3(2.0f, 0.0f, 3.0f);
+	dx::XMFLOAT3 lightTranslation = dx::XMFLOAT3(2.0f, -100.0f, 3.0f);
 	testPointLight->GetTransform().SetPosition(dx::XMLoadFloat3(&lightTranslation));
 	testPointLight->AddComponent<PointLightComponent>(dx::XMFLOAT4(1.f, 0.f, 0.f, 1.f), 25);
 	AddObject(testPointLight);
 
 	Object* testPointLight2 = new Object("testPointLight2");
-	dx::XMFLOAT3 lightTranslation2 = dx::XMFLOAT3(0.0f, 2.0f, 3.0f);
+	dx::XMFLOAT3 lightTranslation2 = dx::XMFLOAT3(0.0f, -100.0f, 3.0f);
 	testPointLight2->GetTransform().SetPosition(dx::XMLoadFloat3(&lightTranslation2));
 	testPointLight2->AddComponent<PointLightComponent>(dx::XMFLOAT4(0.f, 1.f, 0.f, 1.f), 25);
 	//AddObject(testPointLight2);
 
 	Object* testPointLight3 = new Object("testPointLight3");
-	dx::XMFLOAT3 lightTranslation3 = dx::XMFLOAT3(-2.0f, 0.0f, 3.0f);
+	dx::XMFLOAT3 lightTranslation3 = dx::XMFLOAT3(-2.0f, -100.0f, 3.0f);
 	testPointLight3->GetTransform().SetPosition(dx::XMLoadFloat3(&lightTranslation3));
 	testPointLight3->AddComponent<PointLightComponent>(dx::XMFLOAT4(0.f, 0.f, 1.f, 1.f), 25);
 	//AddObject(testPointLight3);
