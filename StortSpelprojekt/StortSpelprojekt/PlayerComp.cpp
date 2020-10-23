@@ -56,7 +56,7 @@ PlayerComp::PlayerComp(Renderer* renderer, CameraComponent* camComp, Physics& ph
 	//Object* temp = this->GetOwner();
 	cam = camComp;
 	// per frame shit
-	this->pappa = 2.0f;
+	this->rayDistance = 2.0f;
 	
 }
 
@@ -73,7 +73,7 @@ void PlayerComp::Update(const float& deltaTime)
 	{
 		Physics& phy = Physics::Instance();
 				
-		if (phy.RaytestSingle(ray, pappa, hit, FilterGroups::PICKUPS))
+		if (phy.RaytestSingle(ray, rayDistance, hit, FilterGroups::PICKUPS))
 		{
 			if (hit.object != nullptr)
 			{				

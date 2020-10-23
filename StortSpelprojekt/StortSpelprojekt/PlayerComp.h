@@ -58,7 +58,7 @@ private:
 	Renderer* renderer;
 	POINT p;
 	
-	float pappa;
+	float rayDistance;
 
 	RayHit hit;
 	Physics& phy;
