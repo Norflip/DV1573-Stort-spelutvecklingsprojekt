@@ -31,6 +31,8 @@ enum NEXT_SCENE { INTRO = 0, LOSE = 1, GAME = 2, WIN = 3 };
 #include "SphereColliderComponent.h"
 #include "CapsuleColliderComponent.h"
 #include "DebugBoxShapeComponent.h"
+#include "PickupComponent.h"
+
 
 #include "ResourceManager.h"
 #include "ObjectPooler.h"

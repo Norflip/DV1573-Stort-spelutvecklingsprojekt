@@ -29,6 +29,10 @@ private:
 	// for fps
 	std::chrono::time_point<std::chrono::steady_clock> prev;
 	std::chrono::time_point<std::chrono::steady_clock> endSecond;
+	double ms;
+	double seconds;
+	double microS;
+	double frameTime;
 	int frameCounter;
 	int FPS;
 	bool active;
