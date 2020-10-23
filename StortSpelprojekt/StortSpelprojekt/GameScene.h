@@ -8,7 +8,7 @@ class SpriteRenderPass;
 class GameScene : public Scene
 {
 private:
-
+	Object* bananaObject;
 public:
 	GameScene(ResourceManager* manager);
 	~GameScene();
