@@ -70,7 +70,7 @@ void EnemySMComp::Update(const float& deltaTime)
 	if (KEY_DOWN(K))
 	{
 		SetState(switchState[currentState]);
-		statsComponent->SetHealth(0);
+		
 
 	}
 	if (GetOwner()->HasComponent<SkeletonMeshComponent>())
