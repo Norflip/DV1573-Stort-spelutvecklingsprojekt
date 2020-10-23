@@ -11,6 +11,7 @@ class EnemyAttackComp : public Component
 		virtual ~EnemyAttackComp();
 		void Initialize();
 		void Update(const float& deltaTime) override;
+		bool GetIsAttacking();
 	private:
 		bool ChasePlayer(const float& deltaTime);
 		void UpdateAttackPlayer(const float& deltaTime);
