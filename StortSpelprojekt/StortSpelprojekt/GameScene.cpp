@@ -484,7 +484,7 @@ void GameScene::Render()
 
 	root->Draw(renderer, camera);
 	//worldGenerator.DrawShapes();
-	world.DrawDebug();
+	//world.DrawDebug();
 
 	renderer->RenderFrame(camera, (float)clock.GetSeconds());
 }
