@@ -232,7 +232,7 @@ void GameScene::InitializeObjects()
 	std::vector<Mesh> beans = ZWEBLoader::LoadMeshes(ZWEBLoadType::NoAnimation, "Models/Bakedbeans.ZWEB", renderer->GetDevice());
 	std::vector<Material> beansMaterial = ZWEBLoader::LoadMaterials("Models/Bakedbeans.ZWEB", defShader, renderer->GetDevice());
 
-	Object* beansObject = new Object("bananaObject");
+	Object* beansObject = new Object("bakedBeans");
 	beansObject->AddComponent<MeshComponent>(beans[0], beansMaterial[0]);
 	beansObject->GetTransform().SetPosition({ 3.0f, 1.0f, 5.0f });
 	beansObject->AddComponent<BoxColliderComponent>(dx::XMFLOAT3{ 0.5f, 0.5f, 0.5f }, dx::XMFLOAT3{ 0, 0, 0 });
