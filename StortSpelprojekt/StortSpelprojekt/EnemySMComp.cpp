@@ -68,8 +68,6 @@ void EnemySMComp::Animate()
 
 }
 
-
-
 void EnemySMComp::Update(const float& deltaTime)
 {
 	//if (KEY_DOWN(K))

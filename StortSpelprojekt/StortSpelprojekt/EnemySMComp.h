@@ -31,7 +31,6 @@ class EnemySMComp : public Component
 		void SetState(EnemyState state);
 		void Initialize();
 		void InitAnimation();
-		void SetState(EnemyState state);
 		
 		void Update(const float& deltaTime);
 		void RegisterState(EnemyState state, Component* comp);
