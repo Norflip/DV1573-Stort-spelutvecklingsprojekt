@@ -229,20 +229,20 @@ void GameScene::InitializeObjects()
 
 
 	/* Banana pickup stuff temporary */
-	std::vector<Mesh> banana = ZWEBLoader::LoadMeshes(ZWEBLoadType::NoAnimation, "Models/Banan.ZWEB", renderer->GetDevice());
-	std::vector<Material> bananaMaterial = ZWEBLoader::LoadMaterials("Models/Banan.ZWEB", defShader, renderer->GetDevice());
+	std::vector<Mesh> beans = ZWEBLoader::LoadMeshes(ZWEBLoadType::NoAnimation, "Models/Bakedbeans.ZWEB", renderer->GetDevice());
+	std::vector<Material> beansMaterial = ZWEBLoader::LoadMaterials("Models/Bakedbeans.ZWEB", defShader, renderer->GetDevice());
 
-	Object* bananaObject = new Object("bananaObject");
-	bananaObject->AddComponent<MeshComponent>(banana[0], bananaMaterial[0]);
-	bananaObject->GetTransform().SetPosition({ 3.0f, 1.0f, 5.0f });
-	bananaObject->AddComponent<BoxColliderComponent>(dx::XMFLOAT3{ 0.5f, 0.5f, 0.5f }, dx::XMFLOAT3{ 0, 0, 0 });
-	bananaObject->AddComponent<PickupComponent>(Type::Food, 20.0f);
+	Object* beansObject = new Object("bananaObject");
+	beansObject->AddComponent<MeshComponent>(beans[0], beansMaterial[0]);
+	beansObject->GetTransform().SetPosition({ 3.0f, 1.0f, 5.0f });
+	beansObject->AddComponent<BoxColliderComponent>(dx::XMFLOAT3{ 0.5f, 0.5f, 0.5f }, dx::XMFLOAT3{ 0, 0, 0 });
+	beansObject->AddComponent<PickupComponent>(Type::Food, 20.0f);
 
-	RigidBodyComponent* bananaBody;
-	bananaBody = bananaObject->AddComponent<RigidBodyComponent>(0, FilterGroups::PICKUPS, FilterGroups::PLAYER, false);
+	RigidBodyComponent* beansBody;
+	beansBody = beansObject->AddComponent<RigidBodyComponent>(0, FilterGroups::PICKUPS, FilterGroups::PLAYER, false);
 	
-	phy.RegisterRigidBody(bananaBody);
-	AddObject(bananaObject);
+	phy.RegisterRigidBody(beansBody);
+	AddObject(beansObject);
 
 
 	clock.Update();
