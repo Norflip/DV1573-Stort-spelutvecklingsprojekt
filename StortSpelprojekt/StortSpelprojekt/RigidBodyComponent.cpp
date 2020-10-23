@@ -89,34 +89,6 @@ dx::XMVECTOR RigidBodyComponent::GetRotation() const
 	return dx::XMLoadFloat4(&rot4);
 }
 
-bool RigidBodyComponent::IsGrounded() const
-{
-	dx::XMFLOAT3 origin;
-	dx::XMStoreFloat3(&origin, GetOwner()->GetTransform().GetPosition());
-	dx::XMFLOAT3 direction = { 0.f,-1.f,0.f };
-	float distance = 0.7f;
-	Ray ray(origin,direction);
-	RayHit hit;
-	Physics& phy = Physics::Instance();
-	DShape::DrawLine(ray.origin, ray.GetPoint(distance), { 1,1,0 });
-
-	//TERRAIN or default depending on if u can jump from on top of objects
-	phy.RaytestSingle(ray, distance, hit, FilterGroups::TERRAIN);
-	if (hit.didHit)
-		DShape::DrawLine(ray.origin, ray.GetPoint(distance), { 1,0,0 });
-	else
-		DShape::DrawLine(ray.origin, ray.GetPoint(distance), { 0,1,0 });
-	
-
-	if (hit.object != nullptr)
-	{
-		std::cout <<"picking: "<< hit.object->GetName() << std::endl;
-	}
-
-	return hit.didHit;
-}
-
-
 void RigidBodyComponent::PhysicRelease()
 {
 	Physics::Instance().GetWorld()->destroyRigidBody(body);
