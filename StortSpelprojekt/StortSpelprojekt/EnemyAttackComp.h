@@ -12,6 +12,7 @@ class EnemyAttackComp : public Component
 		void Initialize();
 		void Update(const float& deltaTime) override;
 		bool GetChasePlayer() const {return chasePlayer;}
+		bool GetIsAttacking();
 	private:
 		bool ChasePlayer(const float& deltaTime);
 		void UpdateAttackPlayer(const float& deltaTime);

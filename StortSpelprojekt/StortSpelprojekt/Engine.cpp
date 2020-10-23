@@ -17,6 +17,7 @@ Engine::Engine(HINSTANCE hInstance) : window(hInstance), activeScene(nullptr)
 	RegisterScene(0, new IntroScene(resourceManager));
 	RegisterScene(1, new GameOverScene(resourceManager));
 	RegisterScene(2, new GameScene(resourceManager));
+	RegisterScene(3, new WinScene(resourceManager));
 	SwitchScene(0);
 }
 

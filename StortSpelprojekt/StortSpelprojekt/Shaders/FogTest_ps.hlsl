@@ -128,6 +128,7 @@ float3 SphereNormal(float3 p, float3 center, float radius)
 
 float4 main(PixelInputType input) : SV_TARGET
 {
+   
     float4 diffuseColor = float4(1.0f, 1.0f, 1.0f, 1.0f);
     float depth = depthTexture.Sample(defaultSampleType, input.uv).x;
 

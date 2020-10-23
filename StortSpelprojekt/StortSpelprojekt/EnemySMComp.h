@@ -1,4 +1,5 @@
 #pragma once
+#include "SkeletonMeshComponent.h"
 #include <map>
 #include "EnemyPatrolComp.h"
 #include "EnemyIdleComp.h"
@@ -29,10 +30,17 @@ class EnemySMComp : public Component
 		virtual ~EnemySMComp();
 		void SetState(EnemyState state);
 		void Initialize();
+		void InitAnimation();
+		void SetState(EnemyState state);
+		
 		void Update(const float& deltaTime);
 		void RegisterState(EnemyState state, Component* comp);
 	private:
 		EnemyState currentState;
 		std::unordered_map<EnemyState, Component*> stateMap;
 		EnemyAttackComp* enemyAttackComp;
+		void Animate();
+		SkeletonMeshComponent* skeletonComponent;
+		EnemyAttackComp* attackComponent;
+		EnemyStatsComp* statsComponent;
 };

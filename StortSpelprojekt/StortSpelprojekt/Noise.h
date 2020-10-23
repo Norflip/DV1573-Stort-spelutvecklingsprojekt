@@ -6,6 +6,7 @@
 #include "ThirdParty\SimplexNoise.h"
 #include "Chunk.h"
 #include "Log.h"
+#include "Random.h"
 
 namespace Noise
 {
@@ -21,6 +22,7 @@ namespace Noise
 		float xOffset;
 		float yOffset;
 
+		Settings() {}
 		Settings(int seed)
 		{
 			this->seed = seed;
@@ -29,12 +31,8 @@ namespace Noise
 			this->persistance = 0.0f;
 			this->lacunarity = 0.0f;
 
-			std::uniform_real_distribution<float> distribution(-100000, 100000);
-			std::default_random_engine rng;
-			rng.seed(seed);
-			
-			this->xOffset = distribution(rng);
-			this->yOffset = distribution(rng);
+			this->xOffset = Random::Range(-100000, 100000);
+			this->yOffset = Random::Range(-100000, 100000);
 		}
 	};
 

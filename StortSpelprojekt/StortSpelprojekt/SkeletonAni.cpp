@@ -3,15 +3,15 @@
 dx::SimpleMath::Matrix& SkeletonAni::Lerp(float elapsedTime, std::vector<Bone>& keys)
 {
     animationTime = elapsedTime * fps;
-    //animationTime += elapsedTime;
-    currentFrame = fmodf(animationTime, lenght);
+    
+    currentFrame = fmodf(animationTime, length);
 
     firstIndex = 0;
     secondIndex = 1;
 
     for (unsigned int i = 0; i < keys.size() - 1; i++) //Find what frames the timeline is currently in between.
     {
-
+       
         if (currentFrame < keys[i + 1].frame)
         {
             firstIndex = i;
@@ -22,7 +22,7 @@ dx::SimpleMath::Matrix& SkeletonAni::Lerp(float elapsedTime, std::vector<Bone>& 
 
     }
 
-
+   
     //lerp between the frames to find how close to each frame the animation is.
 
     t = (currentFrame - (float)firstIndex) / ((float)secondIndex - (float)firstIndex);
@@ -48,30 +48,20 @@ dx::SimpleMath::Matrix& SkeletonAni::Lerp(float elapsedTime, std::vector<Bone>& 
     dx::SimpleMath::Vector3 lerpedTrans = transV.Lerp(keys[firstIndex].translationVector, keys[secondIndex].translationVector, t);
     
     RT = rotQM.CreateFromQuaternion(slerpedQ) * transM.CreateTranslation(lerpedTrans);
-    //dx::XMStoreFloat4(&rotQ, DirectX::XMQuaternionSlerp(dx::XMLoadFloat4(&keys[firstIndex].rotationQuaternion), dx::XMLoadFloat4(&keys[secondIndex].rotationQuaternion), t));
-    //
-    //dx::XMStoreFloat4x4(&rotQM, DirectX::XMMatrixRotationQuaternion(dx::XMLoadFloat4(&rotQ)));
-    //
-    //dx::XMStoreFloat4(&transV, DirectX::XMVectorLerp(dx::XMLoadFloat4(&keys[firstIndex].translationVector), dx::XMLoadFloat4(&keys[secondIndex].translationVector), t));
-    //
-    //dx::XMStoreFloat4x4(&transM, DirectX::XMMatrixTranslationFromVector(dx::XMLoadFloat4(&transV)));
+  
 
-    // 
-
-    //dx::XMStoreFloat4x4(&RT, dx::XMLoadFloat4x4(&rotQM) * dx::XMLoadFloat4x4(&transM)); //I have omitted scale
-
-
-
+   
+   
 
     return RT;
 
-
+    
 
 }
 
 SkeletonAni::SkeletonAni()
 {
-    
+   
     animationTime = 0.0f;
     bones.resize(60); //Maximum number of bones, the animation doesn't need to have this many.
 }
@@ -80,7 +70,7 @@ std::vector<dx::XMFLOAT4X4>& SkeletonAni::Makeglobal(float elapsedTime, const Di
 {
     DirectX::SimpleMath::Matrix toRoot = Lerp(elapsedTime, keys) * globalParent; //These matrices are local, need to make them global recursively.
 
-    //simple math
+ 
 
 
     unsigned int ftIndex = keys[0].index; //all of these indices have the same index number.
@@ -157,7 +147,7 @@ std::vector<Bone>& SkeletonAni::GetRootKeyJoints()
 void SkeletonAni::SetUpIDMapAndFrames(std::map<std::string, unsigned int> boneIDMap, float fps, float aniLenght)
 {
     this->fps = fps;
-    this->lenght = aniLenght;
+    this->length = aniLenght;
     this->boneIDMap = boneIDMap;
 
 
@@ -204,9 +194,43 @@ void SkeletonAni::SetUpKeys(std::string boneName, std::vector<SkeletonKeysHeader
 
 
 
-std::map<std::string, unsigned int>& SkeletonAni::getBoneIDMap()
+std::map<std::string, unsigned int>& SkeletonAni::GetBoneIDMap()
 {
     return boneIDMap;
 }
+
+std::vector<std::vector<Bone>>& SkeletonAni::GetKeyFrames()
+{
+    return this->keyBones;
+}
+
+std::vector<dx::SimpleMath::Matrix>& SkeletonAni::GetOffsets()
+{
+    return this->offsetM;
+}
+
+float SkeletonAni::GetFPS()
+{
+    return this->fps;
+}
+
+float SkeletonAni::GetAniLength()
+{
+    return this->length;
+}
+
+void SkeletonAni::SetOffsetsDirect(std::vector<dx::SimpleMath::Matrix>& directOffsets)
+{
+    this->offsetM = directOffsets;
+}
+
+void SkeletonAni::SetKeyFramesDirect(std::vector<std::vector<Bone>>& directKeys)
+{
+    this->keyBones = directKeys;
+}
+
+
+
+
 
 
