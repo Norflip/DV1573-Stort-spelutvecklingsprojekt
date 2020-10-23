@@ -47,7 +47,8 @@ PlayerComp::PlayerComp(Renderer* renderer, CameraComponent* camComp, Physics& ph
 	this->healthDippingBar = static_cast<GUISprite*>(guiMan->GetGUIObject("healthDippingBar"));
 
 	foodEmpty = false;
-	gg = false;	
+	gg = false;
+	
 	//this->GetOwner()->GetComponent<CameraComponent>()
 	p.x = renderer->GetOutputWindow()->GetWidth() / 2;
 	p.y = renderer->GetOutputWindow()->GetHeight() / 2;

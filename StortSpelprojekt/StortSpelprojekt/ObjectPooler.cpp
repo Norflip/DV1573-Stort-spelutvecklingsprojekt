@@ -1,12 +1,12 @@
 #include "ObjectPooler.h"
 
-ObjectPooler::ObjectPooler() {}
+ObjectPooler::ObjectPooler(ResourceManager* resources) : resourceManager(resources) {}
 ObjectPooler::~ObjectPooler()
 {
 	Clear();
 }
 
-void ObjectPooler::Register(std::string key, size_t count, std::function<Object* ()> factory)
+void ObjectPooler::Register(std::string key, size_t count, std::function<Object* (ResourceManager*)> factory)
 {
 	assert(count < POOL_MAX_LIMIT);
 
@@ -106,7 +106,7 @@ void ObjectPooler::Warm(Pool* pool, size_t amount, bool additive)
 
 		for (size_t i = 0; i < toAdd; i++)
 		{
-			Object* obj = (pool->factory)();
+			Object* obj = (pool->factory)(resourceManager);
 
 			obj->RemoveFlag(ObjectFlag::ENABLED);
 			pool->inside.push(obj);

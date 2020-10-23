@@ -1,5 +1,6 @@
 #pragma once
 #include "Scene.h"
+#include "World.h"
 
 class GUIFont;
 class SpriteRenderPass;
@@ -23,5 +24,6 @@ public:
 	void Update(const float& deltaTime) override;
 	void FixedUpdate(const float& fixedDeltaTime) override;
 	void Render() override;
-
+private:
+	World world;
 };

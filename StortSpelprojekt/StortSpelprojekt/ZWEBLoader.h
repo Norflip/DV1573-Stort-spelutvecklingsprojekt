@@ -11,17 +11,52 @@ enum ZWEBLoadType
 namespace ZWEBLoader //TO BE ADDED: FUNCTION TO LOAD LIGHTS
 {
 
-	inline SkeletonAni LoadSkeletonOnly( std::string animationPath, std::map<std::string, unsigned int>& boneIDMap)
+	inline SkeletonAni LoadSkeletonOnly( std::string animationPath, std::map<std::string, unsigned int>& boneIDMap,
+		bool parentAnimation)
 	{
 		ZWEB::ZWEBImporter importer;
-		importer.importAnimation(animationPath);
-
+		bool success = importer.importAnimation(animationPath);
+		if (!success)
+		{
+			OutputDebugStringA("incorrectfilepath");
+		}
 		SkeletonAni skeletonAnimation;
 		//map must be set first so it can be used to set up the other stuff.
 		skeletonAnimation.SetUpIDMapAndFrames(boneIDMap, importer.getSkeletonAnimationHeader().fps, importer.getSkeletonAnimationHeader().nrOfAnimationFrames);
 
+
 		//The offset matrices are loaded in directly as matrices, the local bone space matrices are not because they need to be interpolated during runtime.
 		std::vector<SkeletonOffsetsHeader> offsets;
+
+		if (parentAnimation)
+		{
+
+			for (std::pair<std::string, unsigned int> map : boneIDMap)
+			{
+				if (map.first == "")
+				{
+					continue;
+				}
+
+				offsets.push_back(importer.getSkeletonOffset(map.second));
+			}
+			skeletonAnimation.SetUpOffsetsFromMatrices(offsets);
+			for (std::pair<std::string, unsigned int> map : boneIDMap)
+			{
+				if (map.first == "")
+				{
+					continue;
+				}
+				std::vector<SkeletonKeysHeader> keys;
+				keys = importer.getSkeletonKeys(map.second);
+				skeletonAnimation.SetUpKeys((std::string)keys[0].linkName, keys);
+			}
+
+			return skeletonAnimation;
+		}
+
+
+
 		for (unsigned int bone = 0; bone < importer.getSkeletonAnimationHeader().nrOfBones; bone++)
 		{
 			offsets.push_back(importer.getSkeletonOffset(bone));

@@ -38,7 +38,6 @@ public:
 	void SetMass(float mass) { this->mass = mass; }
 	float GetMass() const { return static_cast<float>(this->mass); }
 
-	virtual void UpdateWorldTransform();
 	virtual void m_OnCollision(const CollisionInfo& collision);
 	virtual void AddCollisionCallback(std::function<void(CollisionInfo)> callback);
 
@@ -62,9 +61,10 @@ public:
 	dx::XMVECTOR GetPosition()const ;
 	void SetRotation(dx::XMVECTOR rotation);
 	dx::XMVECTOR GetRotation()const ;
-	bool IsGrounded()const;
 	bool IsRotationLocked() const { return this->lockRotation; }
 	void LockRotation(bool lock) { this->lockRotation = lock; }
+
+	void PhysicRelease();
 
 private:
 	rp::Transform ConvertToBtTransform(const Transform& transform) const;
@@ -73,7 +73,9 @@ private:
 	FilterGroups group;
 	FilterGroups collisionMask;
 
-	rp::Transform bodyTransform;
+	rp::Transform currentTransform;
+	rp::Transform previousTransform;
+
 	rp::RigidBody* body;
 	bool dynamic;
 	float mass;
