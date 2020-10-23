@@ -100,8 +100,8 @@ void GameScene::InitializeObjects()
 	dx::XMFLOAT3 playerSpawn = { 10,10,10 };
 	dx::XMFLOAT3 zero = { 0.f, 0.f, 0.f };
 	dx::XMVECTOR playerSpawnVec = dx::XMLoadFloat3(&playerSpawn);
-	playerObject = new Object("player", ObjectFlag::ENABLED);
-	cameraObject = new Object("camera", ObjectFlag::ENABLED);
+	Object* playerObject = new Object("player", ObjectFlag::ENABLED);
+	Object* cameraObject = new Object("camera", ObjectFlag::ENABLED);
 	//Transform::SetParentChild(playerObject->GetTransform(), cameraObject->GetTransform());
 	this->player = playerObject;
 	camera = cameraObject->AddComponent<CameraComponent>(60.0f, true);
