@@ -127,21 +127,6 @@ void GameScene::InitializeObjects()
 	/* * * * * * * * ** * * * * */
 
 	//SKELETON ANIMATION MODELS
-	//Enemy object //comments
-	enemy = new Object("enemy");
-	dx::XMFLOAT3 enemyTranslation = dx::XMFLOAT3(0, -10, 10);
-	enemy->GetTransform().SetPosition(dx::XMLoadFloat3(&enemyTranslation));
-	enemy->AddComponent<MeshComponent>(*mesh1, *material1);
-	enemy->AddComponent<EnemyStatsComp>(100, 2, 15, 25, 3);
-	enemyStatsComp = enemy->GetComponent<EnemyStatsComp>();
-	enemy->AddComponent<EnemyAttackComp>(player->GetComponent<PlayerComp>());
-	EnemySMComp* stateMachine = enemy->AddComponent<EnemySMComp>(EnemyState::IDLE);
-	stateMachine->RegisterState(EnemyState::IDLE, enemy->AddComponent<EnemyIdleComp>());
-	stateMachine->RegisterState(EnemyState::PATROL, enemy->AddComponent<EnemyPatrolComp>());
-	stateMachine->RegisterState(EnemyState::ATTACK, enemy->AddComponent<EnemyAttackComp>(player->GetComponent<PlayerComp>()));
-	AddObject(enemy);
-
-	playerObject->AddComponent<PlayerAttackComp>(enemy);
 
 	bool defaultAnimation = false;
 	bool parentAnimation = true;
@@ -164,6 +149,7 @@ void GameScene::InitializeObjects()
 
 	//LOADING BASE MONSTER; ADDING SKELETONS TO IT
 
+
 	SkeletonMeshComponent* baseMonsterComp = baseMonsterObject->AddComponent<SkeletonMeshComponent>(skeletonMesh[0], skeletonMat[0]);
 
 	baseMonsterComp->SetAnimationTrack(skeletonbaseMonsterIdle, SkeletonStateMachine::IDLE);
@@ -182,6 +168,14 @@ void GameScene::InitializeObjects()
 	baseMonsterObject->GetTransform().SetPosition({ 0.0f, 2.5f, 10.0f });
 
 	enemyStatsComp = baseMonsterObject->AddComponent<EnemyStatsComp>(100, 2, 15, 25, 3);
+
+	EnemySMComp* stateMachine = baseMonsterObject->AddComponent<EnemySMComp>(EnemyState::PATROL);
+
+	stateMachine->RegisterState(EnemyState::IDLE, baseMonsterObject->AddComponent<EnemyIdleComp>());
+	stateMachine->RegisterState(EnemyState::PATROL, baseMonsterObject->AddComponent<EnemyPatrolComp>());
+	stateMachine->RegisterState(EnemyState::ATTACK, baseMonsterObject->AddComponent<EnemyAttackComp>(playerComp));
+	stateMachine->InitAnimation();
+	AddObject(baseMonsterObject);
 
 	//LOADING HOUSE AND LEGS AND ADDING SKELETONS TO THEM THE HOUSE ONLY HAS ONE JOINT CONNECTED TO IT
 	Shader* defaultShader = resourceManager->GetShaderResource("defaultShader");
@@ -247,7 +241,7 @@ void GameScene::InitializeObjects()
 
 	characterReferenceObject->AddComponent<MeshComponent>(charRefMesh[0], charRefMat[0]);
 	characterReferenceObject->GetTransform().SetScale({ 1, 1, 1 });
-	characterReferenceObject->GetTransform().SetPosition({ 0.0f, -10.0f, 4.0f });
+	characterReferenceObject->GetTransform().SetPosition({ 0.0f, 0.0f, 4.0f });
 	AddObject(characterReferenceObject);
 
 	//Axe//////////////////////////////////////////////////////////////////
