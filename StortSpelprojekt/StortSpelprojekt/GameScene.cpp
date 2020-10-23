@@ -96,6 +96,14 @@ void GameScene::InitializeObjects()
 	AddObject(cameraObject, playerObject);
 	AddObject(playerObject);
 
+	Object* testPointLight = new Object("body_pointLight");
+
+	dx::XMFLOAT3 lightTranslation = dx::XMFLOAT3(0.0f, 0.0f, -1.0f);
+	testPointLight->GetTransform().SetPosition(dx::XMLoadFloat3(&lightTranslation));
+	testPointLight->AddComponent<PointLightComponent>(dx::XMFLOAT4(0.8f, 0.8f, 0.8f, 1.0f), 25);
+	
+	AddObject(testPointLight, playerObject);
+
 
 		/* * * * * * * * ** * * * * */
 
