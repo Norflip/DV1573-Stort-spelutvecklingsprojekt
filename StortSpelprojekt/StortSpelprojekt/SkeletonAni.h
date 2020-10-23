@@ -29,7 +29,7 @@ private:
 	std::map<std::string, unsigned int> boneIDMap;
 	std::vector<std::vector<Bone>> keyBones;
 	std::vector<dx::SimpleMath::Matrix> offsetM;
-	
+	UINT counter = 0;
 	dx::SimpleMath::Matrix transM;
 	dx::SimpleMath::Matrix rotQM;
 	dx::SimpleMath::Vector3 transV;
@@ -37,6 +37,7 @@ private:
 	dx::SimpleMath::Matrix RT;
 	std::vector<dx::XMFLOAT4X4> bones;
 	dx::SimpleMath::Matrix& Lerp(float elapsedTime, std::vector<Bone>& keys);
+	
 public:
 	SkeletonAni();
 	std::vector<dx::XMFLOAT4X4>& Makeglobal(float elapsedTime, const DirectX::XMMATRIX& globalParent, std::vector<Bone>& keys);
@@ -53,5 +54,7 @@ public:
 	float GetAniLength();
 	void SetOffsetsDirect(std::vector<dx::SimpleMath::Matrix>& directOffsets);
 	void SetKeyFramesDirect(std::vector<std::vector<Bone>>& directKeys);
+	
+
 };
 
