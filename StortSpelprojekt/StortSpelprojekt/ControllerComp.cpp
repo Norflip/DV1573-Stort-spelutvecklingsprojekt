@@ -34,6 +34,7 @@ ControllerComp::ControllerComp(Object* cameraObject)
 	this->velocity = 0.f;
 	this->velocityTimer = 0.f;
 	this->crouchTimer = 0.f;
+	this->cameraOffset = { 0.f,0.f,0.f };
 
 	this->xClamp = 0.f;
 	this->freeCam = true;
