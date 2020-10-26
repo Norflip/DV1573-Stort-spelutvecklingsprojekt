@@ -38,7 +38,7 @@ ControllerComp::ControllerComp(Object* cameraObject)
 
 	this->xClamp = 0.f;
 	this->freeCam = false;
-	this->showCursor = true;
+	this->showCursor = false;
 	this->canRotate = true;
 
 	this->groundQuaterion = { 0.f,0.f,0.f,1.f };
@@ -57,7 +57,7 @@ void ControllerComp::Initialize()
 	this->rbComp = GetOwner()->GetComponent<RigidBodyComponent>();
 	this->camComp = cameraObject->GetComponent<CameraComponent>();
 	this->capsuleComp = GetOwner()->GetComponent<CapsuleColliderComponent>();
-	ShowCursor(this->showCursor);
+	ShowCursor(!this->canRotate);
 
 	if (this->canRotate)
 		Input::Instance().SetMouseMode(dx::Mouse::MODE_RELATIVE);
@@ -279,7 +279,15 @@ void ControllerComp::Update(const float& deltaTime)
 			cameraObject->GetTransform().SetPosition(cameraPos); //add camera-offset
 			rbComp->SetLinearVelocity({ dir.x * VELOCITY_MULTIPLIER, vel.y + jumpVelocity, dir.z * VELOCITY_MULTIPLIER });
 			dx::XMVECTOR capsule = dx::XMLoadFloat4(&RESET_ROT);
+			//capsuleComp->SetRotation(capsule);
+			
+
 			rbComp->SetRotation(capsule);
+
+			std::cout << "Cap, x: " << capsuleComp->GetTransform().getOrientation().x << ", y: " << capsuleComp->GetTransform().getOrientation().y << ", z: " << capsuleComp->GetTransform().getOrientation().z << ", w:" << capsuleComp->GetTransform().getOrientation().w << std::endl;
+			dx::XMFLOAT4 rot;
+			dx::XMStoreFloat4(&rot, rbComp->GetRotation());
+			std::cout << "rb, x: " << rot.x << ", y:" << rot.y << ", z:" << rot.z << ", w:" << rot.w << std::endl;
 			phy.MutexUnlock();
 		}
 	}

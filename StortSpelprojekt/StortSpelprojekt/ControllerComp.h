@@ -5,8 +5,8 @@
 #include "math.h"
 namespace dx = DirectX;
 constexpr float CLAMP_X = 1.5f;
-constexpr float WALK_FOV = 60.f;
-constexpr float RUN_FOV = 90.f;
+constexpr float WALK_FOV = 90.f;
+constexpr float RUN_FOV = 103.f;
 constexpr float FOV_INC = 0.5f; //how much fov increments each time
 constexpr float FOV_INC_RATE = 0.01f; //rate of fov incrementation in seconds (so
 
@@ -28,8 +28,7 @@ constexpr dx::XMFLOAT3 RESET_POS = {20.f,3.f,20.f};
 constexpr dx::XMFLOAT4 RESET_ROT = { 0.f,0.f,0.f,1.f };
 constexpr dx::XMFLOAT3 DOWN_VEC = { 0.f,-1.f,0.f };
 
-
-class ControllerComp :public Component //PlayerControllerComp
+class ControllerComp :public Component 
 {
 private:
 
