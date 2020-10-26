@@ -12,7 +12,6 @@
 #include <vector>
 #include <functional>
 #include "CollisionInfo.h"
-#include "DShape.h"
 
 namespace dx = DirectX;
 

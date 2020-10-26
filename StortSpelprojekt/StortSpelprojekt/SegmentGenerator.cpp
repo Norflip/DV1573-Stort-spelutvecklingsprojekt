@@ -183,22 +183,23 @@ std::vector<SegmentGenerator::ChunkPointInformation> SegmentGenerator::CreateChu
 			float distance = path.ClosestDistance(tilePos);
 			distance = std::min(distance, MAX_DISTANCE) / MAX_DISTANCE;
 
-			float height = Noise::Sample(chunkPosXZ.x + x, chunkPosXZ.y + y, description.noiseSettings);
-			float worldHeight = height * distance * TERRAIN_SCALE;
-			worldHeight = std::max(worldHeight, MIN_TERRAIN_HEIGHT);
+			float sampledHeight = Noise::Sample(chunkPosXZ.x + x, chunkPosXZ.y + y, description.noiseSettings);
+			float worldHeight = sampledHeight * distance * TERRAIN_SCALE;
 
+			//worldHeight = std::max(worldHeight, MIN_TERRAIN_HEIGHT);
+			
 			heightMap[x + size * y] = worldHeight;
-			height = worldHeight / TERRAIN_SCALE;
 
 			ChunkPointInformation chunkPoint;
 			chunkPoint.distance = distance;
-			chunkPoint.height = height;
+			chunkPoint.height = worldHeight;
 			informations.push_back(chunkPoint);
 
 			int bufferIndex = x + size * y;
-			buffer[bufferIndex * 4 + 0] = static_cast<unsigned char>(255 * height * distance);
+
+			buffer[bufferIndex * 4 + 0] = static_cast<unsigned char>(255 * sampledHeight * distance);
 			buffer[bufferIndex * 4 + 1] = static_cast<unsigned char>(255 * distance);
-			buffer[bufferIndex * 4 + 2] = static_cast<unsigned char>(255 * height);
+			buffer[bufferIndex * 4 + 2] = static_cast<unsigned char>(255 * sampledHeight);
 			buffer[bufferIndex * 4 + 3] = static_cast<unsigned char>(255);
 		}
 	}

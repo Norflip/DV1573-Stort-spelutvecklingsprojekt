@@ -49,20 +49,21 @@ VS_OUTPUT main(VS_INPUT input)
 	output.uv = input.uv;	
 
 	// send in a constant buffer? 
-	const float terrainHeight = 10.0f;
+	const float TERRAIN_SCALE = 10.0f;
 
 	/*
 		r channel: height [0-1]
 		g channel: distance to road [0-1] 
 	*/
 
-	float4 tes = chunkData.SampleLevel(m_samplerState, input.uv, 0);
-	input.position.y += tes.x * tes.y * terrainHeight;
+	float4 position = input.position;
+	float sampledHeight = chunkData.SampleLevel(m_samplerState, input.uv, 0).x;
+	position.y += sampledHeight * TERRAIN_SCALE;
 
-	output.worldPosition = mul(world, input.position).xyz;
-	output.position = mul(mvp, input.position);
+	output.worldPosition = mul(world, position).xyz;
+	output.position = mul(mvp, position);
 	
-	float4 normal = GetNormal(input.uv, 1.0f / 65.0f, terrainHeight);
+	float4 normal = GetNormal(input.uv, 1.0f / 65.0f, TERRAIN_SCALE);
 	//float4 normal = float4(Unpack3DVector(tes.z), 0.0f);
 
 	//float4 normal = chunkNormalTexture.SampleLevel(NormalSampler, input.uv, 0);

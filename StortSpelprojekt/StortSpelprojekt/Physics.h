@@ -24,7 +24,7 @@ enum class FilterGroups : unsigned short
 };
 DEFINE_ENUM_FLAG_OPERATORS(FilterGroups)
 
-#define LOG_REACT 1
+#define LOG_REACT 0
 
 class RigidBodyComponent;
 

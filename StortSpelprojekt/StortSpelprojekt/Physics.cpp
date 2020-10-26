@@ -43,12 +43,12 @@ void Physics::Initialize(dx::XMFLOAT3 gravity)
 
 void Physics::MutexLock()
 {
-	physicsThreadMutex.lock();
+	//physicsThreadMutex.lock();
 }
 
 void Physics::MutexUnlock()
 {
-	physicsThreadMutex.unlock();
+	//physicsThreadMutex.unlock();
 }
 
 void Physics::RegisterRigidBody(RigidBodyComponent* rigidBodyComp)

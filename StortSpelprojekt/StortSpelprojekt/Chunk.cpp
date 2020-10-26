@@ -37,37 +37,45 @@ void Chunk::SetupCollisionObject(float* heightMap)
 	dx::XMStoreFloat3(&worldPosition, GetOwner()->GetTransform().GetPosition());
 
 
-	rp::Transform transform;
-
-	const float offset = CHUNK_SIZE / 2.0f;
-	rp::Vector3 btPosition(worldPosition.x + offset, worldPosition.y, worldPosition.z + offset);
-	transform.setPosition(btPosition);
 
 	const int gridSize = static_cast<int>(CHUNK_SIZE) + 1;
-	float min, max;
-	GetHeightFieldMinMax(heightMap, gridSize, min, max);
+	//GetHeightFieldMinMax(heightMap, gridSize, min, max);
 	
-	//min = -TERRAIN_SCALE;
-	//max = TERRAIN_SCALE;
+	min = 0;// 0.1f;
+	max = TERRAIN_SCALE;
 
 	rp::PhysicsCommon& common = Physics::Instance().GetCommon();
 	shape = common.createHeightFieldShape(gridSize, gridSize, min, max, static_cast<void*>(heightMap), rp::HeightFieldShape::HeightDataType::HEIGHT_FLOAT_TYPE);
-
+	//shape->setScale(rp::Vector3(1, TERRAIN_SCALE, 1));
+	
 	rp::Transform colliderTransform;
-	float originHeight = -(max - min) * 0.5f - min;
+
+	//float originHeight = -(max - min) * 0.5f - min;
+
+	float dif = (max - abs(min)) / 2.0f; // = 200
+
+	float originHeight = (max + min) * 0.25f;
+	originHeight = dif;
+
 	std::cout << "ORIGIN HEIGHT: " << originHeight << std::endl;
-	colliderTransform.setPosition(rp::Vector3(0, originHeight, 0));
 
 	rp::PhysicsWorld* world = Physics::Instance().GetWorld();
 
 
+	rp::Transform transform;
+
+	const float offset = CHUNK_SIZE / 2.0f;
+	rp::Vector3 btPosition(worldPosition.x + offset, worldPosition.y + 2.4f, worldPosition.z + offset);
+	transform.setPosition(btPosition);
 
 #if  USE_RIGIDBODY
 
 	body = world->createRigidBody(transform);
 	body->setType(rp::BodyType::STATIC);
 	body->enableGravity(false);
-	collider = body->addCollider(shape, colliderTransform);
+	
+	collider = body->addCollider(shape, rp::Transform::identity());
+	//body->updateMassPropertiesFromColliders();
 
 #else
 	body = world->createCollisionBody(transform);
@@ -95,8 +103,9 @@ float Chunk::SampleHeight(float x, float z)
 
 	if (col >= 0 && row >= 0 && col <= CHUNK_SIZE && row <= CHUNK_SIZE)
 	{
-		height = shape->getHeightAt(col, row);
-		//std::cout << "col: " << row << ", row: " << col << ", height: " << height << std::endl;
+		height = shape->getHeightAt(col, row) - (max - min) / 4.0f;
+		std::cout << "col: " << row << ", row: " << col << ", height: " << height << std::endl;
+		//height *= TERRAIN_SCALE;
 	}
 	else
 	{
