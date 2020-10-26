@@ -171,7 +171,7 @@ std::vector<SegmentGenerator::ChunkPointInformation> SegmentGenerator::CreateChu
 	heightMap = new float[size * size];
 
 	const float MAX_DISTANCE = 7.0f;
-	Path2 path = grid.GetPath();
+	Path path = grid.GetPath();
 	std::vector<ChunkPointInformation> informations;
 
 	for (size_t y = 0; y < size; y++)
@@ -183,9 +183,12 @@ std::vector<SegmentGenerator::ChunkPointInformation> SegmentGenerator::CreateChu
 			float distance = path.ClosestDistance(tilePos);
 			distance = std::min(distance, MAX_DISTANCE) / MAX_DISTANCE;
 
-			
 			float height = Noise::Sample(chunkPosXZ.x + x, chunkPosXZ.y + y, description.noiseSettings);
-			heightMap[x + size * y] = height * distance * TERRAIN_SCALE;
+			float worldHeight = height * distance * TERRAIN_SCALE;
+			worldHeight = std::max(worldHeight, MIN_TERRAIN_HEIGHT);
+
+			heightMap[x + size * y] = worldHeight;
+			height = worldHeight / TERRAIN_SCALE;
 
 			ChunkPointInformation chunkPoint;
 			chunkPoint.distance = distance;

@@ -5,12 +5,12 @@ namespace dx = DirectX;
 
 #include "Chunk.h"
 
-class Path2
+class Path
 {
 public:
-	Path2();
-	Path2(const std::vector<dx::XMINT2>& indexes);
-	virtual ~Path2();
+	Path();
+	Path(const std::vector<dx::XMINT2>& indexes);
+	virtual ~Path();
 
 	void Clear();
 	float ClosestDistance(const dx::XMFLOAT2& position) const;

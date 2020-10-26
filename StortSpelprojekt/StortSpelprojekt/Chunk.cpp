@@ -45,15 +45,18 @@ void Chunk::SetupCollisionObject(float* heightMap)
 
 	const int gridSize = static_cast<int>(CHUNK_SIZE) + 1;
 	float min, max;
-	//GetHeightFieldMinMax(heightMap, gridSize, min, max);
-	min = -TERRAIN_SCALE;
-	max = TERRAIN_SCALE;
+	GetHeightFieldMinMax(heightMap, gridSize, min, max);
+	
+	//min = -TERRAIN_SCALE;
+	//max = TERRAIN_SCALE;
 
 	rp::PhysicsCommon& common = Physics::Instance().GetCommon();
 	shape = common.createHeightFieldShape(gridSize, gridSize, min, max, static_cast<void*>(heightMap), rp::HeightFieldShape::HeightDataType::HEIGHT_FLOAT_TYPE);
 
 	rp::Transform colliderTransform;
-	colliderTransform.setPosition(rp::Vector3(0, -TERRAIN_SCALE / 4.0f, 0));
+	float originHeight = -(max - min) * 0.5f - min;
+	std::cout << "ORIGIN HEIGHT: " << originHeight << std::endl;
+	colliderTransform.setPosition(rp::Vector3(0, originHeight, 0));
 
 	rp::PhysicsWorld* world = Physics::Instance().GetWorld();
 

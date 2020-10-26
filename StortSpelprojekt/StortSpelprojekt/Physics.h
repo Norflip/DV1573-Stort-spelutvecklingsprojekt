@@ -22,9 +22,9 @@ enum class FilterGroups : unsigned short
 	PROPS = 1 << 5,
 	EVERYTHING = DEFAULT | TERRAIN | PICKUPS | PLAYER | ENEMIES | PROPS
 };
-
-
 DEFINE_ENUM_FLAG_OPERATORS(FilterGroups)
+
+#define LOG_REACT 1
 
 class RigidBodyComponent;
 
