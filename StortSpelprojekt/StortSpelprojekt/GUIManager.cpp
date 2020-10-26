@@ -1,5 +1,9 @@
 #include "GUIManager.h"
 
+
+
+
+
 GUIManager::GUIManager(Renderer* renderer, int priority): RenderPass(priority, RenderPass::PassType::UI_OVERLAY), renderer(renderer)
 {
 	spriteBatch = new DirectX::SpriteBatch(this->renderer->GetContext());
@@ -84,6 +88,19 @@ void GUIManager::Pass(Renderer* renderer, RenderTexture& inTexture, RenderTextur
 	for (auto i : GUIObjects)
 		i.second->Draw(spriteBatch);
 	spriteBatch->End();
+}
+
+void GUIManager::ChangeGuiState(GuiState state)
+{
+
+}
+
+void GUIManager::ClearGui()
+{
+	for  (auto i : GUIObjects)
+	{
+		i.second->SetVisible(false);
+	}
 }
 
 void GUIManager::UpdateAll()

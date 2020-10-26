@@ -64,10 +64,13 @@ GUISprite::~GUISprite()
 
 void GUISprite::Draw(DirectX::SpriteBatch* test)
 {
-	if(active)
-		test->Draw(SRV, this->position, nullptr, this->activeColor, rotation, origin, scale, DirectX::SpriteEffects::SpriteEffects_None, this->layerDepth);
-	else
-		test->Draw(SRV, this->position, nullptr, this->baseColor, rotation, origin, scale, DirectX::SpriteEffects::SpriteEffects_None, this->layerDepth);
+	if (this->GetVisible())
+	{
+		if (this->GetActive())
+			test->Draw(SRV, this->position, nullptr, this->activeColor, rotation, origin, scale, DirectX::SpriteEffects::SpriteEffects_None, this->layerDepth);
+		else
+			test->Draw(SRV, this->position, nullptr, this->baseColor, rotation, origin, scale, DirectX::SpriteEffects::SpriteEffects_None, this->layerDepth);
+	}
 }
 
 void GUISprite::Draw()

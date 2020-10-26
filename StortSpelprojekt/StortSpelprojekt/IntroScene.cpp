@@ -100,6 +100,7 @@ void IntroScene::Update(const float& deltaTime)
 		quit = true;
 	}
 	guiManager->UpdateAll();
+	guiManager->ClearGui();
 
 }
 

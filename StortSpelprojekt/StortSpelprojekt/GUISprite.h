@@ -35,11 +35,10 @@ public:
 	void Draw();
 	void SetPosition(float xPos, float yPos);
 	void SetWICSprite(ID3D11Device* device, std::string spriteFile);
-	void SetActive(bool set = true) { this->active = set; };
+	
 	void SetActiveColor(dx::XMVECTOR vector = dx::XMVectorSet(0.6f, 0.6f, 1.3f, 1.0f));
-	bool GetActive() { return this->active; };
-	void SetDDSSprite(ID3D11Device* device, std::string spriteFile); // no dds yet
 
+	void SetDDSSprite(ID3D11Device* device, std::string spriteFile); // no dds yet
 	void SetScale(float x, float y);
 	void SetScaleBars(float yValue);
 
@@ -48,7 +47,6 @@ public:
 	void Update();
 
 private:
-	bool active = false;
 	std::string filePath;
 	float xPos, yPos;
 	float relativeXPos, relativeYPos;
