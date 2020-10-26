@@ -18,10 +18,10 @@ bool ControllerComp::IsGrounded() const
 	{
 		result = true;
 		//std::cout << "picking: " << hit.object->GetName() << std::endl;
-		DShape::DrawLine(ray.origin, ray.GetPoint(distance), { 0,0,1 });
+		//DShape::DrawLine(ray.origin, ray.GetPoint(distance), { 0,0,1 });
 	}
-	else
-		DShape::DrawLine(ray.origin, ray.GetPoint(distance), { 1,0,0 });
+	//else
+		//DShape::DrawLine(ray.origin, ray.GetPoint(distance), { 1,0,0 });
 	
 	return result;
 }
@@ -37,9 +37,9 @@ ControllerComp::ControllerComp(Object* cameraObject)
 	this->cameraOffset = { 0.f,0.f,0.f };
 
 	this->xClamp = 0.f;
-	this->freeCam = true;
+	this->freeCam = false;
 	this->showCursor = true;
-	this->canRotate = false;
+	this->canRotate = true;
 
 	this->groundQuaterion = { 0.f,0.f,0.f,1.f };
 	this->cameraObject = cameraObject;
@@ -57,6 +57,12 @@ void ControllerComp::Initialize()
 	this->rbComp = GetOwner()->GetComponent<RigidBodyComponent>();
 	this->camComp = cameraObject->GetComponent<CameraComponent>();
 	this->capsuleComp = GetOwner()->GetComponent<CapsuleColliderComponent>();
+	ShowCursor(this->showCursor);
+
+	if (this->canRotate)
+		Input::Instance().SetMouseMode(dx::Mouse::MODE_RELATIVE);
+	else
+		Input::Instance().SetMouseMode(dx::Mouse::MODE_ABSOLUTE);
 
 	if (this->cameraObject && this->rbComp && this->capsuleComp && this->camComp)
 	{

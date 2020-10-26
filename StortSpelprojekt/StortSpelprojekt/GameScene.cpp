@@ -83,7 +83,7 @@ void GameScene::InitializeObjects()
 	//Mesh* meshP = resourceManager->GetResource<Mesh>("Test");
 	//Material* materialP = resourceManager->GetResource<Material>("TestMaterial");
 	//playerObject->AddComponent<MeshComponent>(*meshP, *materialP);
-	playerObject->AddComponent<CapsuleColliderComponent>(0.5f, 4.5f, zero);
+	playerObject->AddComponent<CapsuleColliderComponent>(0.5f, 1.8f, zero);
 	physics.MutexLock();
 	RigidBodyComponent* rb = playerObject->AddComponent<RigidBodyComponent>(60.f, FilterGroups::PLAYER, FilterGroups::EVERYTHING, true);
 	physics.RegisterRigidBody(rb);
