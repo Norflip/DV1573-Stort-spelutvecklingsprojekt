@@ -6,8 +6,12 @@
 
 #include "Window.h"
 #include "Log.h"
-#include "Scene.h"
+//#include "Scene.h"
 
+#include "GameScene.h"
+#include "IntroScene.h"
+#include "GameOverScene.h"
+#include "WinScene.h"
 namespace dx = DirectX;
 
 constexpr int FIXED_FPS = 60;
@@ -36,7 +40,10 @@ private:
 	bool running;
 	std::unordered_map<size_t, Scene*> scenes;
 	Scene* activeScene;
+	Scene* previousScene;
 
 	Window window;
 	Renderer* renderer;
+
+	ResourceManager* resourceManager;
 };

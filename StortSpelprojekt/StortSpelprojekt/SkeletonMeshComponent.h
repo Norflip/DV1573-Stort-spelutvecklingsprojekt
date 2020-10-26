@@ -6,13 +6,19 @@
 #include "CameraComponent.h"
 #include "BoundingBoxes.h"
 #include "Object.h"
+#include "GameClock.h"
 
-enum StateMachine
+enum SkeletonStateMachine
 {
 	IDLE,
+	WALK,
 	RUN,
 	ATTACK,
-	NONE
+	NONE,
+	DEATH,
+	UP,
+	DOWN,
+	BLENDED
 };
 
 
@@ -27,22 +33,32 @@ public:
 
 	void Update(const float& deltaTime) override;
 	void Draw(Renderer* renderer, CameraComponent* camera) override;
-	void RunAnimation(const float& deltaTime);
-	void SetAnimationTrack(const SkeletonAni& skeletonAni, const StateMachine& type);
-
+	
+	void SetAnimationTrack(const SkeletonAni& skeletonAni, const SkeletonStateMachine& type);
+	
 	SkeletonAni& GetAnimationTrack(unsigned int trackNr);
 
-	void play(const StateMachine& type);
+	void SetTrack(const SkeletonStateMachine& type, bool playOnce);
 	
+	void BlendAnimations();
+	bool GetIsDone();
+	void SetisDone(bool);
+	bool doneUp, doneDown;
 private:
 	Mesh mesh;
 	Material material;
 	std::vector<SkeletonAni> skeletonAnimations;
 	float elapsedTime = 0.0f;
-	std::unordered_map<StateMachine, unsigned int> trackMap;
+	std::unordered_map<SkeletonStateMachine, unsigned int> trackMap;
 	std::vector<dx::XMFLOAT4X4> finalTransforms;
-	StateMachine currentAni = StateMachine::NONE;
+	SkeletonStateMachine currentAni = SkeletonStateMachine::NONE;
 	BoundingBoxes boundingBoxes;
 	float componentDeltaTime = 0.0f;
+	GameClock timer;
+	bool playOnce = false;
+	bool done = false;
+	void PlayOnce();
+	void RunAnimation(const float& deltaTime);
+	void FindChildren(SkeletonAni& track, unsigned int& index, std::map<std::string, unsigned int>& map, std::string& name, std::string& secondName);
 };
 

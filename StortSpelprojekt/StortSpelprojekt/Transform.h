@@ -17,7 +17,8 @@ public:
 	dx::XMMATRIX GetWorldMatrix() const;
 	dx::XMMATRIX GetLocalWorldMatrix() const;
 	DirectX::XMVECTOR TransformDirection(DirectX::XMVECTOR direction) const;
-	
+	DirectX::XMVECTOR TransformDirectionCustomRotation(DirectX::XMVECTOR direction, DirectX::XMVECTOR cRotation) const;
+
 	void Translate(float x, float y, float z);
 	void Rotate(float pitch, float yaw, float roll);
 
@@ -33,6 +34,7 @@ public:
 
 	static void SetParentChild(Transform& parent, Transform& child);
 	static void RemoveParentChild(Transform& parent, Transform& child);
+	static void ClearFromHierarchy(Transform& transform);
 
 	Transform* GetParent() const { return this->parent; }
 	Object* GetOwner() const { return this->owner; }

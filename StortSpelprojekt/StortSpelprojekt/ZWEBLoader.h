@@ -11,17 +11,52 @@ enum ZWEBLoadType
 namespace ZWEBLoader //TO BE ADDED: FUNCTION TO LOAD LIGHTS
 {
 
-	inline SkeletonAni LoadSkeletonOnly( std::string animationPath, std::map<std::string, unsigned int>& boneIDMap)
+	inline SkeletonAni LoadSkeletonOnly( std::string animationPath, std::map<std::string, unsigned int>& boneIDMap,
+		bool parentAnimation)
 	{
 		ZWEB::ZWEBImporter importer;
-		importer.importAnimation(animationPath);
-
+		bool success = importer.importAnimation(animationPath);
+		if (!success)
+		{
+			OutputDebugStringA("incorrectfilepath");
+		}
 		SkeletonAni skeletonAnimation;
 		//map must be set first so it can be used to set up the other stuff.
 		skeletonAnimation.SetUpIDMapAndFrames(boneIDMap, importer.getSkeletonAnimationHeader().fps, importer.getSkeletonAnimationHeader().nrOfAnimationFrames);
 
+
 		//The offset matrices are loaded in directly as matrices, the local bone space matrices are not because they need to be interpolated during runtime.
 		std::vector<SkeletonOffsetsHeader> offsets;
+
+		if (parentAnimation)
+		{
+
+			for (std::pair<std::string, unsigned int> map : boneIDMap)
+			{
+				if (map.first == "")
+				{
+					continue;
+				}
+
+				offsets.push_back(importer.getSkeletonOffset(map.second));
+			}
+			skeletonAnimation.SetUpOffsetsFromMatrices(offsets);
+			for (std::pair<std::string, unsigned int> map : boneIDMap)
+			{
+				if (map.first == "")
+				{
+					continue;
+				}
+				std::vector<SkeletonKeysHeader> keys;
+				keys = importer.getSkeletonKeys(map.second);
+				skeletonAnimation.SetUpKeys((std::string)keys[0].linkName, keys);
+			}
+
+			return skeletonAnimation;
+		}
+
+
+
 		for (unsigned int bone = 0; bone < importer.getSkeletonAnimationHeader().nrOfBones; bone++)
 		{
 			offsets.push_back(importer.getSkeletonOffset(bone));
@@ -60,10 +95,10 @@ namespace ZWEBLoader //TO BE ADDED: FUNCTION TO LOAD LIGHTS
 
 			for (unsigned int vertex = 0; vertex < verticesZweb.size(); vertex++)
 			{
-				vertices[vertex].position = DirectX::XMFLOAT3(verticesZweb[vertex].pos[0], verticesZweb[vertex].pos[1], verticesZweb[vertex].pos[2]);
+				vertices[vertex].position = DirectX::XMFLOAT3(verticesZweb[vertex].pos[0], verticesZweb[vertex].pos[1], verticesZweb[vertex].pos[2]); //these are flipped inside zweb.
 				
 				vertices[vertex].uv = DirectX::XMFLOAT2(verticesZweb[vertex].uv[0], 1.0f - verticesZweb[vertex].uv[1]);
-				vertices[vertex].normal = DirectX::XMFLOAT3(verticesZweb[vertex].normal[0], verticesZweb[vertex].normal[1], verticesZweb[vertex].normal[2]);// *-1.0f);
+				vertices[vertex].normal = DirectX::XMFLOAT3(verticesZweb[vertex].normal[0], verticesZweb[vertex].normal[1], -verticesZweb[vertex].normal[2]);// *-1.0f);
 				vertices[vertex].tangent = DirectX::XMFLOAT3(verticesZweb[vertex].tangent[0], verticesZweb[vertex].tangent[1], verticesZweb[vertex].tangent[2]);
 				vertices[vertex].binormal = DirectX::XMFLOAT3(verticesZweb[vertex].biNormal[0], verticesZweb[vertex].biNormal[1], verticesZweb[vertex].biNormal[2]);
 			}

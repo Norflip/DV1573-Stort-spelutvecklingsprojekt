@@ -1,4 +1,6 @@
 #pragma once
+
+enum NEXT_SCENE { INTRO = 0, LOSE = 1, GAME = 2, WIN = 3 };
 #include <vector>
 #include "Object.h"
 #include "HeightMap.h"
@@ -7,15 +9,17 @@
 #include "GameClock.h"
 #include "CameraComponent.h"
 #include "MoveComponent.h"
-#include "ControllerComponent.h"
+#include "ControllerComp.h"
 #include "MeshComponent.h"
 #include "ZWEBLoader.h"
 #include "SkeletonMeshComponent.h"
 #include "PointLightComponent.h"
-#include "NodeWalkerComponent.h"
+#include "NodeWalkerComp.h"
+#include "EnemyStatsComp.h"
+#include "EnemySMComp.h"
+#include "PlayerAttackComp.h"
 
 #include "Skybox.h"
-#include "WorldGenerator.h"
 #include "SaveState.h"
 #include "DShape.h"
 #include "GUIManager.h"
@@ -27,26 +31,36 @@
 #include "SphereColliderComponent.h"
 #include "CapsuleColliderComponent.h"
 #include "DebugBoxShapeComponent.h"
+#include "PickupComponent.h"
+
 
 #include "ResourceManager.h"
+#include "ObjectPooler.h"
+
 class GUIFont;
 class SpriteRenderPass;
+class PlayerComp;
+
+#define immortal 0
 
 class Scene
 {
+	
 public:
-	Scene();
+	Scene(ResourceManager* manager);
 	virtual ~Scene();
 
-	void Initialize(Renderer* renderer);
-	void InitializeObjects();
-
-	void OnActivate() {}
-	void OnDeactivate() {}
+	virtual void Initialize(Renderer* renderer) = 0;
+	virtual void InitializeObjects() = 0;
+	virtual void InitializeGUI() = 0;
 	
-	void Update(const float& deltaTime);
-	void FixedUpdate(const float& fixedDeltaTime);
-	void Render();
+	// What is this for?
+	virtual void OnActivate() = 0;
+	virtual void OnDeactivate() = 0;
+	
+	virtual void Update(const float& deltaTime);
+	virtual void FixedUpdate(const float& fixedDeltaTime);
+	virtual void Render();
 	
 	void AddObject(Object* object);
 	void AddObject(Object* object, Object* parent);
@@ -56,23 +70,30 @@ public:
 
 	void PrintSceneHierarchy(Object* object, size_t level) const;
 
+	bool Quit();
+	NEXT_SCENE nextScene;
 	
-private:	
+private:
+
+protected:
 	Object* root;
 	CameraComponent* camera;
 	Renderer* renderer;
 	GameClock clock;
 	Input& input;
+	Object* enemy;
+	Object* player;
 
+	EnemyStatsComp* enemyStatsComp;
 	dx::SpriteBatch* spriteBatch;
-	WorldGenerator worldGenerator;
 	SpriteRenderPass* spritePass;	
 
+	ObjectPooler pooler;
 	GUIManager* guiManager;		
 	
-	/* Test skybox in class */
-	//Object* skybox;
 	Skybox* skyboxClass;		
-
 	ResourceManager* resourceManager;
+
+	float windowHeight, windowWidth;
+	bool quit;
 };

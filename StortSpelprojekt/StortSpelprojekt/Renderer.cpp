@@ -1,8 +1,9 @@
 #include "Renderer.h"
 #include "RenderPass.h"
+#include "FogRenderPass.h"
 #include "DShape.h"
 
-Renderer::Renderer() : device(nullptr), context(nullptr), swapchain(nullptr), obj_cbuffer(nullptr), skeleton_srvbuffer(nullptr),skeleton_srv(nullptr)
+Renderer::Renderer() : device(nullptr), context(nullptr), swapchain(nullptr), skeleton_srvbuffer(nullptr), skeleton_srv(nullptr)
 {
 	srand(unsigned int(time(0)));
 }
@@ -13,89 +14,54 @@ Renderer::~Renderer()
 	blendStateOn->Release();
 
 	backbuffer.Release();
-	midbuffers[0].Release();
-	midbuffers[1].Release();
+	renderPassSwapBuffers[0].Release();
+	renderPassSwapBuffers[1].Release();
 
 	for (auto i = passes.begin(); i < passes.end(); i++)
 		delete (*i);
 
-	obj_cbuffer->Release();
-
-	//skeleton_cbuffer->Release();
-
 	skeleton_srvbuffer->Release();
-
-	material_cbuffer->Release();
-
 	rasterizerStateCullBack->Release();
 	rasterizerStateCullNone->Release();
 
 	skeleton_srv->Release();
 	dss->Release();
+	rasterizerStateCCWO->Release();
 }
 
 void Renderer::Initialize(Window* window)
 {
-
-	if (sizeof(cb_grass) % 16 != 0)
-	{
-		OutputDebugStringA("WRONG WITH GRASS");
-	}
-	if (sizeof(cb_Lights) % 16 != 0)
-	{
-		OutputDebugStringA("WRONG WITH LIGHT");
-	}
-	if (sizeof(cb_Material) % 16 != 0)
-	{
-		OutputDebugStringA("WRONG WITH MATERIAL");
-	}
-	if (sizeof(cb_Object) % 16 != 0)
-	{
-		OutputDebugStringA("WRONG WITH Object");
-	}
-	if (sizeof(cb_Scene) % 16 != 0)
-	{
-		OutputDebugStringA("WRONG WITH SCENE");
-	}
-	if (sizeof(s_PointLight) % 16 != 0)
-	{
-		OutputDebugStringA("WRONG WITH GRASS");
-	}
-	if (sizeof(cb_grass) % 16 != 0)
-	{
-		OutputDebugStringA("WRONG WITH PLIGHT");
-	}
-	
-
-
 	this->outputWindow = window;
 
 	DXHelper::CreateSwapchain(*window, &device, &context, &swapchain);
 	this->backbuffer = DXHelper::CreateBackbuffer(window->GetWidth(), window->GetHeight(), device, swapchain);
-
-	this->midbuffers[0] = DXHelper::CreateRenderTexture(window->GetWidth(), window->GetHeight(), device, context, &dss);
-	this->midbuffers[1] = DXHelper::CreateRenderTexture(window->GetWidth(), window->GetHeight(), device, context, &dss);
+	this->midbuffer = DXHelper::CreateRenderTexture(window->GetWidth(), window->GetHeight(), device, context, &dss);
+	this->renderPassSwapBuffers[0] = DXHelper::CreateRenderTexture(window->GetWidth(), window->GetHeight(), device, context, &dss);
+	this->renderPassSwapBuffers[1] = DXHelper::CreateRenderTexture(window->GetWidth(), window->GetHeight(), device, context, &dss);
 	srv_skeleton_data.resize(60);
 
 	dx::XMFLOAT4X4 bone;
 	dx::XMStoreFloat4x4(&bone, dx::XMMatrixIdentity());
-	
-	DXHelper::CreateRSState(device, &rasterizerStateCullBack, &rasterizerStateCullNone);
+
+	DXHelper::CreateRSState(device, &rasterizerStateCullBack, &rasterizerStateCullNone, &rasterizerStateCCWO);
 
 
 	for (int boneNr = 0; boneNr < 60; boneNr++) //set id matrix as default for the bones. So if no animation is happening the character is not funky.
 	{
 		srv_skeleton_data[boneNr] = bone;//set id matrix as default for the bones. So if no animation is happening the character is not funky. I need to bind them as well.
 	}
-	
-	DXHelper::CreateConstBuffer(device, &obj_cbuffer, &cb_object_data, sizeof(cb_object_data));
+
 	LightManager::Instance().Initialize(device);
-	DXHelper::CreateConstBuffer(device, &material_cbuffer, &cb_material_data, sizeof(cb_material_data));
-	
+
+
+	sceneBuffer.Initialize(CB_SCENE_SLOT, ShaderBindFlag::PIXEL | ShaderBindFlag::DOMAINS | ShaderBindFlag::VERTEX, device);
+	objectBuffer.Initialize(CB_OBJECT_SLOT, ShaderBindFlag::VERTEX, device);
+	materialBuffer.Initialize(CB_MATERIAL_SLOT, ShaderBindFlag::PIXEL, device);
+
 	DXHelper::CreateStructuredBuffer(device, &skeleton_srvbuffer, srv_skeleton_data, sizeof(dx::XMFLOAT4X4), srv_skeleton_data.size(), &skeleton_srv);
 	DXHelper::BindStructuredBuffer(context, skeleton_srvbuffer, srv_skeleton_data, BONES_SRV_SLOT, ShaderBindFlag::VERTEX, &skeleton_srv);
 	DXHelper::CreateBlendState(device, &blendStateOn, &blendStateOff);
-	DXHelper::CreateConstBuffer(device, &scene_buffer, &cb_scene, sizeof(cb_scene));
+
 
 	/* Screenquad shader */
 	Shader* screenQuadShader = new Shader;
@@ -112,7 +78,7 @@ void Renderer::Initialize(Window* window)
 
 	//EXEMPEL
 	///AddRenderPass(new PSRenderPass(1, L"Shaders/TestPass.hlsl"));
-	//AddRenderPass(new PSRenderPass(0, L"Shaders/TestPass2.hlsl"));
+	AddRenderPass(new FogRenderPass(0));
 }
 
 void Renderer::BeginManualRenderPass(RenderTexture& target)
@@ -135,30 +101,27 @@ void Renderer::DrawQueueToTarget(RenderQueue& queue)
 		{
 			const Material* mat = queue.front().material;
 			mat->BindToContext(context);
+			materialBuffer.SetData(mat->GetMaterialData());
+			materialBuffer.UpdateBuffer(context);
 
 			while (!queue.empty())
 			{
-				
 				auto item = queue.front();
-
-				
 
 				switch (item.type)
 				{
 					case RenderItem::Type::Instanced:
-						
 						DrawRenderItemInstanced(item); break;
+
 					case RenderItem::Type::Grass:
-						context->RSSetState(rasterizerStateCullNone);
 						DrawRenderItemGrass(item); break;
-						context->RSSetState(rasterizerStateCullBack);
+
 					case RenderItem::Type::Skeleton:
-						
 						DrawRenderItemSkeleton(item); break;
 
 					case RenderItem::Type::Default:
 					default:
-						
+
 						DrawRenderItem(item);
 						break;
 				}
@@ -173,12 +136,22 @@ void Renderer::DrawQueueToTarget(RenderQueue& queue)
 	queue.clear();
 }
 
-void Renderer::RenderFrame()
+
+void Renderer::RenderFrame(CameraComponent* camera, float time)
+{
+	// UPDATE SCENE
+	RenderFrame(camera, time, backbuffer, true, true);
+	HRESULT hr = swapchain->Present(0, 0); //1 here?
+	assert(SUCCEEDED(hr));
+}
+
+void Renderer::RenderFrame(CameraComponent* camera, float time, RenderTexture& target, bool drawGUI, bool applyRenderPasses)
 {
 
-	LightManager::Instance().UpdateBuffers(context);
+	// UPPDATERA SCENE
+	// ----------
 
-	// Temporärt för att ändra skybox texture
+	// Temporï¿½rt fï¿½r att ï¿½ndra skybox texture
 	static int ids = 0;
 	static float color = 0.0f;
 
@@ -192,60 +165,85 @@ void Renderer::RenderFrame()
 			ids = 0;
 	}
 
-	cb_scene.id = ids;
-	cb_scene.factor = color;
+	cb_Scene& data = sceneBuffer.GetData();
+
+	data.id = ids;
+	data.factor = color;
+	data.time = time;
+	dx::XMStoreFloat3(&data.cameraPosition, camera->GetOwner()->GetTransform().GetPosition());
+	dx::XMStoreFloat4x4(&data.invProjection, dx::XMMatrixTranspose(dx::XMMatrixInverse(NULL, camera->GetProjectionMatrix())));
+	dx::XMStoreFloat4x4(&data.invView, dx::XMMatrixTranspose(dx::XMMatrixInverse(NULL, camera->GetViewMatrix())));
+
+	sceneBuffer.SetData(data);
+	sceneBuffer.UpdateBuffer(context);
+
+	// ----------
+
+
+	LightManager::Instance().UpdateBuffers(context);
+
 
 	//We need to clear Depth Stencil View as well.//Emil
 
-	size_t bufferIndex = 0;
 	ID3D11ShaderResourceView* nullSRV[1] = { nullptr };
 	context->PSSetShaderResources(0, 1, nullSRV);
 
-	ClearRenderTarget(midbuffers[bufferIndex]);
-	SetRenderTarget(midbuffers[bufferIndex]);
-  
-	context->OMSetDepthStencilState(dss,0);
+	ClearRenderTarget(midbuffer);
+	SetRenderTarget(midbuffer);
 
-	context->RSSetState(rasterizerStateCullBack);
-	context->OMSetBlendState(blendStateOff, BLENDSTATEMASK, 0xffffffff);
-	
+	context->OMSetDepthStencilState(dss, 0);
+
+	SetCullBack(true);
 	DrawQueueToTarget(opaqueItemQueue);
 	DShape::Instance().m_Draw(context);
-	context->RSSetState(rasterizerStateCullNone);
-	context->OMSetBlendState(blendStateOn, BLENDSTATEMASK, 0xffffffff);
-	
+
+	SetCullBack(false);
 	DrawQueueToTarget(transparentItemQueue);
-	
-	context->OMSetBlendState(blendStateOff, BLENDSTATEMASK, 0xffffffff);
-	context->RSSetState(rasterizerStateCullBack);
-	
-	for (auto i = passes.begin(); i < passes.end(); i++)
+
+	SetCullBack(true);
+	size_t passCount = 0;
+	size_t bufferIndex = 0;
+
+	if (applyRenderPasses)
 	{
-		if ((*i)->IsEnabled())
+		for (auto i = passes.begin(); i < passes.end(); i++)
 		{
-			size_t nextBufferIndex = 1 - bufferIndex;
-			ClearRenderTarget(midbuffers[nextBufferIndex]);
-			SetRenderTarget(midbuffers[nextBufferIndex]);
+			RenderPass* pass = *i;
+			if (pass->IsEnabled() && pass->GetType() == RenderPass::PassType::POST_PROCESSING)
+			{
+				size_t nextBufferIndex = 1 - bufferIndex;
+				RenderTexture& passTarget = renderPassSwapBuffers[nextBufferIndex];
+				RenderTexture& previous = (passCount == 0) ? midbuffer : renderPassSwapBuffers[bufferIndex];
 
-			GetContext()->PSSetShaderResources(0, 1, &midbuffers[bufferIndex].srv);
+				pass->Pass(this, previous, passTarget);
+				if (pass->GetType() == RenderPass::PassType::POST_PROCESSING)
+					bufferIndex = nextBufferIndex;
 
-			if ((*i)->Pass(this, midbuffers[bufferIndex], midbuffers[nextBufferIndex]))
-				bufferIndex = nextBufferIndex;
-
-			// overkill? Gives the correct result if outside the loop but errors in output
-			//context->PSSetShaderResources(0, 1, nullSRV);
+				// overkill? Gives the correct result if outside the loop but errors in output
+				//context->PSSetShaderResources(0, 1, nullSRV);
+				passCount++;
+			}
 		}
 	}
 
-	ClearRenderTarget(backbuffer);
-	SetRenderTarget(backbuffer);
-	context->PSSetShaderResources(0, 1, &midbuffers[bufferIndex].srv);
+	RenderTexture& lastBuffer = (passCount == 0) ? midbuffer : renderPassSwapBuffers[bufferIndex];
+	ClearRenderTarget(target);
+	SetRenderTarget(target, false);
+
+	context->PSSetShaderResources(0, 1, &lastBuffer.srv);
 	DrawScreenQuad(screenQuadMaterial);
-  
-	guiManager->DrawAll();
-  
-	HRESULT hr = swapchain->Present(0, 0); //1 here?
-	assert(SUCCEEDED(hr));
+
+	if (drawGUI)
+	{
+		for (auto i = passes.begin(); i < passes.end(); i++)
+		{
+			RenderPass* pass = *i;
+			if (pass->IsEnabled() && pass->GetType() == RenderPass::PassType::UI_OVERLAY)
+			{
+				pass->Pass(this, renderPassSwapBuffers[0], renderPassSwapBuffers[0]);
+			}
+		}
+	}
 }
 
 void Renderer::AddRenderPass(RenderPass* pass)
@@ -255,11 +253,6 @@ void Renderer::AddRenderPass(RenderPass* pass)
 
 	if (passes.size() > 1)
 		std::sort(passes.begin(), passes.end(), [](const RenderPass* a, const RenderPass* b) -> bool { return a->GetPriority() < b->GetPriority(); });
-}
-
-void Renderer::SetGUIManager(GUIManager* manager)
-{
-	this->guiManager = manager;
 }
 
 void Renderer::Draw(const Mesh& mesh, const Material& material, const dx::XMMATRIX& model, const CameraComponent& camera)
@@ -286,7 +279,7 @@ void Renderer::DrawInstanced(const Mesh& mesh, const size_t& count, const Materi
 
 void Renderer::DrawSkeleton(const Mesh& mesh, const Material& material, const dx::XMMATRIX& model, const CameraComponent& camera, std::vector<dx::XMFLOAT4X4>& bones)
 {
-	
+
 	RenderItem item;
 	item.mesh = &mesh;
 	item.material = &material;
@@ -295,7 +288,7 @@ void Renderer::DrawSkeleton(const Mesh& mesh, const Material& material, const dx
 	item.world = model;
 	item.camera = &camera;
 	AddItem(item, false);
-	
+
 }
 
 void Renderer::DrawGrass(const CameraComponent& camera, const Mesh& mesh, const Material& material, const dx::XMMATRIX& model)
@@ -309,34 +302,42 @@ void Renderer::DrawGrass(const CameraComponent& camera, const Mesh& mesh, const 
 	AddItem(item, false);
 }
 
-void Renderer::SetRSToCullNone(bool cullNone)
+void Renderer::SetCullBack(bool cullNone)
 {
-	if (cullNone)
+	if (!cullNone)
 	{
 		context->RSSetState(rasterizerStateCullNone);
+		context->OMSetBlendState(blendStateOn, BLENDSTATEMASK, 0xffffffff);
 	}
 	else
 	{
 		context->RSSetState(rasterizerStateCullBack);
+		context->OMSetBlendState(blendStateOff, BLENDSTATEMASK, 0xffffffff);
 	}
 }
 
-void Renderer::ClearRenderTarget(const RenderTexture& target)
+void Renderer::ClearRenderTarget(const RenderTexture& target, bool clearDepth)
 {
 	context->ClearRenderTargetView(target.rtv, DEFAULT_BG_COLOR);
-	context->ClearDepthStencilView(target.dsv, D3D11_CLEAR_DEPTH | D3D11_CLEAR_STENCIL, 1.0f, 0);
-	
+	if (clearDepth)
+		context->ClearDepthStencilView(target.dsv, D3D11_CLEAR_DEPTH | D3D11_CLEAR_STENCIL, 1.0f, 0);
 }
 
-void Renderer::SetRenderTarget(const RenderTexture& target)
+void Renderer::SetRenderTarget(const RenderTexture& target, bool setDepth)
 {
-	context->OMSetRenderTargets(1, &target.rtv, target.dsv);
+	if (setDepth)
+		context->OMSetRenderTargets(1, &target.rtv, target.dsv);
+	else
+		context->OMSetRenderTargets(1, &target.rtv, NULL);
+
 	context->RSSetViewports(1, &target.viewport);
 }
 
-void Renderer::UpdateTime(float time)
+void Renderer::RemoveRenderPass(RenderPass* pass)
 {
-	cb_scene.time = time;
+	std::vector<RenderPass*>::iterator it = std::find(passes.begin(), passes.end(), pass);
+
+	passes.erase(it);
 }
 
 void Renderer::AddItem(const RenderItem& item, bool transparent)
@@ -352,17 +353,8 @@ void Renderer::AddItem(const RenderItem& item, bool transparent)
 
 void Renderer::DrawRenderItem(const RenderItem& item)
 {
-	
-	dx::XMMATRIX mvp = dx::XMMatrixMultiply(item.world, dx::XMMatrixMultiply(item.camera->GetViewMatrix(), item.camera->GetProjectionMatrix()));
-	dx::XMStoreFloat4x4(&cb_object_data.mvp, dx::XMMatrixTranspose(mvp));
-	dx::XMStoreFloat4x4(&cb_object_data.world, dx::XMMatrixTranspose(item.world));
-	DXHelper::BindConstBuffer(context, obj_cbuffer, &cb_object_data, CB_OBJECT_SLOT, ShaderBindFlag::VERTEX);
-
-	cb_material_data = item.material->GetMaterialData();
-	DXHelper::BindConstBuffer(context, material_cbuffer, &cb_material_data, CB_MATERIAL_SLOT, ShaderBindFlag::PIXEL);
-
-	dx::XMStoreFloat3(&cb_scene.cameraPosition, item.camera->GetOwner()->GetTransform().GetPosition());
-	DXHelper::BindConstBuffer(context, scene_buffer, &cb_scene, CB_SCENE_SLOT, ShaderBindFlag::PIXEL);
+	SetObjectBufferValues(item.camera, item.world);
+	objectBuffer.UpdateBuffer(context);
 
 	UINT stride = sizeof(Mesh::Vertex);
 	UINT offset = 0;
@@ -376,21 +368,12 @@ void Renderer::DrawRenderItem(const RenderItem& item)
 
 void Renderer::DrawRenderItemInstanced(const RenderItem& item)
 {
-
-	dx::XMMATRIX vp =dx::XMMatrixMultiply(item.camera->GetViewMatrix(), item.camera->GetProjectionMatrix());
-	dx::XMStoreFloat4x4(&cb_object_data.vp, dx::XMMatrixTranspose(vp));
-	
-	DXHelper::BindConstBuffer(context, obj_cbuffer, &cb_object_data, CB_OBJECT_SLOT, ShaderBindFlag::VERTEX);
-
-	cb_material_data = item.material->GetMaterialData();
-	DXHelper::BindConstBuffer(context, material_cbuffer, &cb_material_data, CB_MATERIAL_SLOT, ShaderBindFlag::PIXEL);
-
-	dx::XMStoreFloat3(&cb_scene.cameraPosition, item.camera->GetOwner()->GetTransform().GetPosition());
-	DXHelper::BindConstBuffer(context, scene_buffer, &cb_scene, CB_SCENE_SLOT, ShaderBindFlag::PIXEL);
+	SetObjectBufferValues(item.camera, item.world);
+	objectBuffer.UpdateBuffer(context);
 
 	UINT stride[2] = { sizeof(Mesh::Vertex), sizeof(Mesh::InstanceData) };
 	UINT offset[2] = { 0 };
-	
+
 	context->IASetVertexBuffers(0, 2, item.mesh->vertexAndInstance, stride, offset);
 	context->IASetIndexBuffer(item.mesh->indexBuffer, DXGI_FORMAT_R32_UINT, 0);
 	context->IASetPrimitiveTopology(item.mesh->topology);
@@ -399,22 +382,14 @@ void Renderer::DrawRenderItemInstanced(const RenderItem& item)
 
 void Renderer::DrawRenderItemSkeleton(const RenderItem& item)
 {
-	
-	dx::XMMATRIX mvp = dx::XMMatrixMultiply(item.world, dx::XMMatrixMultiply(item.camera->GetViewMatrix(), item.camera->GetProjectionMatrix()));
-	dx::XMStoreFloat4x4(&cb_object_data.mvp, mvp);
-	dx::XMStoreFloat4x4(&cb_object_data.world,item.world);
-	DXHelper::BindConstBuffer(context, obj_cbuffer, &cb_object_data, CB_OBJECT_SLOT, ShaderBindFlag::VERTEX);
+	SetObjectBufferValues(item.camera, item.world);
+	objectBuffer.UpdateBuffer(context);
 
 	srv_skeleton_data = *item.bones;
 	DXHelper::BindStructuredBuffer(context, skeleton_srvbuffer, srv_skeleton_data, BONES_SRV_SLOT, ShaderBindFlag::VERTEX, &skeleton_srv);
 
-	cb_material_data = item.material->GetMaterialData();
-	DXHelper::BindConstBuffer(context, material_cbuffer, &cb_material_data, CB_MATERIAL_SLOT, ShaderBindFlag::PIXEL);
 	UINT stride = sizeof(Mesh::Vertex);
 	UINT offset = 0;
-
-	dx::XMStoreFloat3(&cb_scene.cameraPosition, item.camera->GetOwner()->GetTransform().GetPosition());
-	DXHelper::BindConstBuffer(context, scene_buffer, &cb_scene, CB_SCENE_SLOT, ShaderBindFlag::PIXEL);
 
 	context->IASetVertexBuffers(0, 1, &item.mesh->vertexBuffer, &stride, &offset);
 	context->IASetIndexBuffer(item.mesh->indexBuffer, DXGI_FORMAT_R32_UINT, 0);
@@ -425,26 +400,15 @@ void Renderer::DrawRenderItemSkeleton(const RenderItem& item)
 
 void Renderer::DrawRenderItemGrass(const RenderItem& item)
 {
-	
-	dx::XMMATRIX mvp = dx::XMMatrixMultiply(item.world, dx::XMMatrixMultiply(item.camera->GetViewMatrix(), item.camera->GetProjectionMatrix()));
-	dx::XMStoreFloat4x4(&cb_object_data.mvp,mvp);
+	SetObjectBufferValues(item.camera, item.world);
+	objectBuffer.UpdateBuffer(context);
 
-	dx::XMMATRIX wv = dx::XMMatrixMultiply(item.world, item.camera->GetViewMatrix());
-	dx::XMStoreFloat4x4(&cb_object_data.wv, wv);
+	ShaderBindFlag def = objectBuffer.GetFlag();
+	objectBuffer.SetBindFlag(def | ShaderBindFlag::VERTEX | ShaderBindFlag::HULL | ShaderBindFlag::GEOMETRY);
+	objectBuffer.UpdateBuffer(context);
+	objectBuffer.SetBindFlag(def);
 
-	dx::XMStoreFloat4x4(&cb_object_data.world, item.world);
-
-	DXHelper::BindConstBuffer(context, obj_cbuffer, &cb_object_data, CB_OBJECT_SLOT, ShaderBindFlag::VERTEX);
-
-	DXHelper::BindConstBuffer(context, obj_cbuffer, &cb_object_data, CB_OBJECT_SLOT, ShaderBindFlag::HULL);
-
-	DXHelper::BindConstBuffer(context, obj_cbuffer, &cb_object_data, CB_OBJECT_SLOT, ShaderBindFlag::GEOMETRY);
-
-	dx::XMStoreFloat3(&cb_scene.cameraPosition, item.camera->GetOwner()->GetTransform().GetPosition());
-	DXHelper::BindConstBuffer(context, scene_buffer, &cb_scene, CB_SCENE_SLOT, ShaderBindFlag::PIXEL);
-	DXHelper::BindConstBuffer(context, scene_buffer, &cb_scene, CB_SCENE_SLOT, ShaderBindFlag::DOMAINS);
-	DXHelper::BindConstBuffer(context, scene_buffer, &cb_scene, CB_SCENE_SLOT, ShaderBindFlag::VERTEX);
-
+	context->RSSetState(rasterizerStateCullNone);
 	context->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_1_CONTROL_POINT_PATCHLIST);
 
 	UINT stride = sizeof(Mesh::Vertex);
@@ -452,14 +416,31 @@ void Renderer::DrawRenderItemGrass(const RenderItem& item)
 
 	context->IASetVertexBuffers(0, 1, &item.mesh->vertexBuffer, &stride, &offset);
 	context->IASetIndexBuffer(item.mesh->indexBuffer, DXGI_FORMAT_R32_UINT, 0);
-	
-	context->DrawIndexed(item.mesh->indices.size(), 0, 0);
 
+	context->DrawIndexed(item.mesh->indices.size(), 0, 0);
+	context->RSSetState(rasterizerStateCullBack);
+}
+
+void Renderer::SetObjectBufferValues(const CameraComponent* camera, dx::XMMATRIX world)
+{
+	cb_Object& data = objectBuffer.GetData();
+	dx::XMMATRIX view = camera->GetViewMatrix();
+
+	dx::XMMATRIX wv = dx::XMMatrixMultiply(world, view);
+	dx::XMStoreFloat4x4(&data.wv, dx::XMMatrixTranspose(wv));
+
+	dx::XMMATRIX vp = dx::XMMatrixMultiply(view, camera->GetProjectionMatrix());
+	dx::XMStoreFloat4x4(&data.vp, dx::XMMatrixTranspose(vp));
+
+	dx::XMMATRIX mvp = dx::XMMatrixMultiply(world, vp);
+	dx::XMStoreFloat4x4(&data.mvp, dx::XMMatrixTranspose(mvp));
+	dx::XMStoreFloat4x4(&data.world, dx::XMMatrixTranspose(world));
+	objectBuffer.SetData(data);
 }
 
 void Renderer::DrawScreenQuad(const Material& material)
 {
-	
+
 	material.BindToContext(context);
 	UINT stride = sizeof(Mesh::Vertex);
 	UINT offset = 0;

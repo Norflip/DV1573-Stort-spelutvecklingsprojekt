@@ -17,6 +17,7 @@ public:
 	CameraComponent(float fieldOfView, bool main = false);
 	virtual ~CameraComponent();
 
+	void SetFOV(float fieldOFiew);
 	void Resize(size_t width, size_t height);
 	dx::XMMATRIX GetViewMatrix() const;
 	dx::XMMATRIX GetProjectionMatrix() const;
