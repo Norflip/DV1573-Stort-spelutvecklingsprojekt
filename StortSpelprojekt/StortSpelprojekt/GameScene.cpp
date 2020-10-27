@@ -26,10 +26,16 @@ void GameScene::Initialize(Renderer* renderer)
 
 	pooler.Register("test_body_cube", 10, [](ResourceManager* resources) {
 
-		Object* object = new Object("fuel");
+		Object* object = new Object("physics_cube");
 
-		object->AddComponent<DebugBoxShapeComponent>();
+		Mesh* mesh1 = resources->GetResource<Mesh>("Test");
+		Material* material1 = resources->GetResource<Material>("TestMaterial");
+
+		object->AddComponent<MeshComponent>(*mesh1, *material1);
 		object->AddComponent<BoxColliderComponent>(dx::XMFLOAT3(0.5f, 0.5f, 0.5f), dx::XMFLOAT3(0, 0, 0));
+
+		//object->AddComponent<DebugBoxShapeComponent>();
+		//object->AddComponent<BoxColliderComponent>(dx::XMFLOAT3(0.5f, 0.5f, 0.5f), dx::XMFLOAT3(0, 0, 0));
 		RigidBodyComponent* rd = object->AddComponent<RigidBodyComponent>(10.0f, FilterGroups::DEFAULT, FilterGroups::EVERYTHING, true);
 
 		Physics::Instance().RegisterRigidBody(rd);
@@ -424,16 +430,35 @@ void GameScene::Update(const float& deltaTime)
 		{
 			for (int x = -ra; x <= ra; x++)
 			{
+
+
+
 				dx::XMVECTOR position = dx::XMVectorAdd(cameraPosition, { (float)x * 1.5f, -1.0f, (float)y * 1.5f });
 
-				Object* object = new Object("item");
+				//	Object* object = pooler.GetItem("test_body_cube");
+
+				Object* object = new Object("physics_cube");
 				object->GetTransform().SetPosition(position);
 
-				object->AddComponent<DebugBoxShapeComponent>();
+				Mesh* mesh1 = resourceManager->GetResource<Mesh>("Test");
+				Material* material1 = resourceManager->GetResource<Material>("TestMaterial");
+
+				object->AddComponent<MeshComponent>(*mesh1, *material1);
 				object->AddComponent<BoxColliderComponent>(dx::XMFLOAT3(0.5f, 0.5f, 0.5f), dx::XMFLOAT3(0, 0, 0));
+
+				//object->AddComponent<DebugBoxShapeComponent>();
+				//object->AddComponent<BoxColliderComponent>(dx::XMFLOAT3(0.5f, 0.5f, 0.5f), dx::XMFLOAT3(0, 0, 0));
 				RigidBodyComponent* rd = object->AddComponent<RigidBodyComponent>(10.0f, FilterGroups::DEFAULT, FilterGroups::EVERYTHING, true);
 
-				phy.RegisterRigidBody(rd);
+				Physics::Instance().RegisterRigidBody(rd);
+
+
+
+				//object->AddComponent<DebugBoxShapeComponent>();
+				//object->AddComponent<BoxColliderComponent>(dx::XMFLOAT3(0.5f, 0.5f, 0.5f), dx::XMFLOAT3(0, 0, 0));
+				//RigidBodyComponent* rd = object->AddComponent<RigidBodyComponent>(10.0f, FilterGroups::DEFAULT, FilterGroups::EVERYTHING, true);
+
+				//phy.RegisterRigidBody(rd);
 
 				AddObject(object);
 			}
@@ -458,7 +483,7 @@ void GameScene::Update(const float& deltaTime)
 
 		DShape::DrawLine(ray.origin, ray.GetPoint(1000.0f), { 1,1,0 });
 
-		if (phy.RaytestSingle(ray, 1000.0f, hit, FilterGroups::DEFAULT))
+		if (phy.RaytestSingle(ray, 1000.0f, hit, FilterGroups::EVERYTHING))
 		{
 			DShape::DrawLine(ray.origin, hit.position, { 1,1,0 });
 			DShape::DrawSphere(hit.position, 1.0f, { 0, 0, 1 });

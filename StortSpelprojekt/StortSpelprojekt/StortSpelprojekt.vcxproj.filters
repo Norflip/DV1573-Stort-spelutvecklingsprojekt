@@ -180,9 +180,6 @@
     <ClCompile Include="Window.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="WorldGenerator.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="Scene.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
@@ -206,7 +203,7 @@
     </ClCompile>
     <ClCompile Include="PlayerAttackComp.cpp">
       <Filter>Source Files</Filter>
-    </ClCompile>    
+    </ClCompile>
     <ClCompile Include="Object.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
@@ -229,18 +226,12 @@
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="PickupComponent.cpp">
-    <Filter>Source Files</Filter>
+      <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="WinScene.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="GridData.cpp">
-      <Filter>Source Files\SpawnSystems</Filter>
-    </ClCompile>
     <ClCompile Include="ObjectSpawner.cpp">
-      <Filter>Source Files\SpawnSystems</Filter>
-    </ClCompile>
-    <ClCompile Include="Path2.cpp">
       <Filter>Source Files\SpawnSystems</Filter>
     </ClCompile>
     <ClCompile Include="SegmentGenerator.cpp">
@@ -250,6 +241,12 @@
       <Filter>Source Files\SpawnSystems</Filter>
     </ClCompile>
     <ClCompile Include="PointQuadTree.cpp">
+      <Filter>Source Files\SpawnSystems</Filter>
+    </ClCompile>
+    <ClCompile Include="ChunkGrid.cpp">
+      <Filter>Source Files\SpawnSystems</Filter>
+    </ClCompile>
+    <ClCompile Include="Path.cpp">
       <Filter>Source Files\SpawnSystems</Filter>
     </ClCompile>
   </ItemGroup>
@@ -473,13 +470,7 @@
     <ClInclude Include="WinScene.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="GridData.h">
-      <Filter>Source Files\SpawnSystems</Filter>
-    </ClInclude>
     <ClInclude Include="ObjectSpawner.h">
-      <Filter>Source Files\SpawnSystems</Filter>
-    </ClInclude>
-    <ClInclude Include="Path2.h">
       <Filter>Source Files\SpawnSystems</Filter>
     </ClInclude>
     <ClInclude Include="Random.h">
@@ -495,6 +486,12 @@
       <Filter>Source Files\SpawnSystems</Filter>
     </ClInclude>
     <ClInclude Include="PointQuadTree.h">
+      <Filter>Source Files\SpawnSystems</Filter>
+    </ClInclude>
+    <ClInclude Include="ChunkGrid.h">
+      <Filter>Source Files\SpawnSystems</Filter>
+    </ClInclude>
+    <ClInclude Include="Path.h">
       <Filter>Source Files\SpawnSystems</Filter>
     </ClInclude>
   </ItemGroup>

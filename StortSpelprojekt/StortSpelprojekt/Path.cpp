@@ -1,22 +1,22 @@
-#include "Path2.h"
+#include "Path.h"
 
-Path2::Path2() {}
-Path2::Path2(const std::vector<dx::XMINT2>& indexes)
+Path::Path() {}
+Path::Path(const std::vector<dx::XMINT2>& indexes)
 {
 	SetPointsFromIndexes(indexes);
 }
 
-Path2::~Path2()
+Path::~Path()
 {
 }
 
-void Path2::Clear()
+void Path::Clear()
 {
 	indexes.clear();
 	points.clear();
 }
 
-float Path2::ClosestDistance(const dx::XMFLOAT2& position) const
+float Path::ClosestDistance(const dx::XMFLOAT2& position) const
 {
 	if (points.size() == 0)
 		return 0.0f;
@@ -42,7 +42,7 @@ float Path2::ClosestDistance(const dx::XMFLOAT2& position) const
 	return sqrtf(shortest);
 }
 
-void Path2::SetPointsFromIndexes(const std::vector<dx::XMINT2>& indexes)
+void Path::SetPointsFromIndexes(const std::vector<dx::XMINT2>& indexes)
 {
 	this->indexes = indexes;
 	const size_t cuts = CHUNK_SIZE;
@@ -64,7 +64,7 @@ void Path2::SetPointsFromIndexes(const std::vector<dx::XMINT2>& indexes)
 	points.push_back(Chunk::IndexToWorldXZ(indexes[indexes.size() - 1]));
 }
 
-float Path2::DistanceToLineSqr(float x, float y, float x1, float y1, float x2, float y2) const
+float Path::DistanceToLineSqr(float x, float y, float x1, float y1, float x2, float y2) const
 {
 	// JESUS FUCK VA
 
