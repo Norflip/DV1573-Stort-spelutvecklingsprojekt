@@ -18,6 +18,7 @@ public:
 private:
 	Object* camObj;
 	Input* wepInput;
+	CameraComponent* camComp;
 
 	dx::XMVECTOR weaponPos;
 	dx::XMVECTOR weaponRot;

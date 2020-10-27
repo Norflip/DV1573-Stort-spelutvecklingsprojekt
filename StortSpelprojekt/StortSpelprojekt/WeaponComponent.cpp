@@ -7,6 +7,7 @@ WeaponComponent::WeaponComponent(Object* object, Input& input)
 
 void WeaponComponent::Initialize()
 {
+	camComp = camObj->GetComponent<CameraComponent>();
 }
 
 void WeaponComponent::Update(const float& deltaTime)
@@ -18,7 +19,7 @@ void WeaponComponent::SetPosition(float time)
 {
 
 	up = { 0.0f, 1.0f, 1.0f };
-	inverseViewMatrix = dx::XMMatrixInverse(nullptr, camObj->GetComponent<CameraComponent>()->GetViewMatrix());
+	inverseViewMatrix = dx::XMMatrixInverse(nullptr, camComp->GetViewMatrix());
 	wepOffTrans = dx::XMMatrixTranslation(0.3f, -0.2f, 0.8f);
 	wepOffRot = dx::XMMatrixRotationAxis(up, dx::XMConvertToRadians(-40.0f));
 
