@@ -37,11 +37,9 @@ void GameScene::Initialize(Renderer* renderer)
 		//object->AddComponent<DebugBoxShapeComponent>();
 		//object->AddComponent<BoxColliderComponent>(dx::XMFLOAT3(0.5f, 0.5f, 0.5f), dx::XMFLOAT3(0, 0, 0));
 		RigidBodyComponent* rd = object->AddComponent<RigidBodyComponent>(10.0f, FilterGroups::DEFAULT, FilterGroups::EVERYTHING, true);
-
 		Physics::Instance().RegisterRigidBody(rd);
 		return object;
 	});
-
 	//Input::Instance().SetWindow(window->GetHWND(), window->GetHeight(), window->GetWidth());
 	input.SetWindow(window->GetHWND(), window->GetHeight(), window->GetWidth());
 }
@@ -103,10 +101,7 @@ void GameScene::InitializeObjects()
 	
 	AddObject(testPointLight, playerObject);
 
-		/* * * * * * * * ** * * * * */
-
 	//SKELETON ANIMATION MODELS
-
 	bool defaultAnimation = false;
 	bool parentAnimation = true;
 	Shader* skeletonShader = resourceManager->GetShaderResource("skeletonShader");
@@ -221,9 +216,6 @@ void GameScene::InitializeObjects()
 	Shader* defShader = resourceManager->GetShaderResource("defaultShader");
 
 	/* Health pickup stuff temporary */
-	/*std::vector<Mesh> healthkit = ZWEBLoader::LoadMeshes(ZWEBLoadType::NoAnimation, "Models/Healthkit.ZWEB", renderer->GetDevice());
-	std::vector<Material> healthkitMaterial = ZWEBLoader::LoadMaterials("Models/Healthkit.ZWEB", defShader, renderer->GetDevice());*/
-
 	Object* healthkitObject = new Object("healthObject");
 	healthkitObject->AddComponent<MeshComponent>(*resourceManager->GetResource<Mesh>("HealthKit"), *resourceManager->GetResource<Material>("HealthKitMaterial"));
 	healthkitObject->GetTransform().SetPosition({ 18,2,2 });
@@ -236,10 +228,7 @@ void GameScene::InitializeObjects()
 	phy.RegisterRigidBody(healthBody);
 	AddObject(healthkitObject);
 
-	/* Fuel pickup stuff temporary */
-	/*std::vector<Mesh> fuelCan = ZWEBLoader::LoadMeshes(ZWEBLoadType::NoAnimation, "Models/FuelCan.ZWEB", renderer->GetDevice());
-	std::vector<Material> fuelCanMaterail = ZWEBLoader::LoadMaterials("Models/FuelCan.ZWEB", defShader, renderer->GetDevice());*/
-
+	// Fuel
 	Object* fuelCanObject = new Object("fuelObject");
 	fuelCanObject->AddComponent<MeshComponent>(*resourceManager->GetResource<Mesh>("FuelCan"), *resourceManager->GetResource<Material>("FuelCanMaterial"));
 	fuelCanObject->GetTransform().SetPosition({ 22,2,2 });
@@ -252,10 +241,7 @@ void GameScene::InitializeObjects()
 	phy.RegisterRigidBody(fuelBody);
 	AddObject(fuelCanObject);
 
-	/* Banana pickup stuff temporary */
-	/*std::vector<Mesh> beans = ZWEBLoader::LoadMeshes(ZWEBLoadType::NoAnimation, "Models/Bakedbeans.ZWEB", renderer->GetDevice());
-	std::vector<Material> beansMaterial = ZWEBLoader::LoadMaterials("Models/Bakedbeans.ZWEB", defShader, renderer->GetDevice());*/
-
+	/* Food pickup stuff temporary */
 	Object* beansObject = new Object("bakedBeans");
 	beansObject->AddComponent<MeshComponent>(*resourceManager->GetResource<Mesh>("BakedBeans"), *resourceManager->GetResource<Material>("BakedBeansMaterial"));
 	beansObject->GetTransform().SetPosition({ 3.0f, 1.0f, 5.0f });
@@ -430,13 +416,9 @@ void GameScene::Update(const float& deltaTime)
 		{
 			for (int x = -ra; x <= ra; x++)
 			{
-
-
-
 				dx::XMVECTOR position = dx::XMVectorAdd(cameraPosition, { (float)x * 1.5f, -1.0f, (float)y * 1.5f });
 
 				//	Object* object = pooler.GetItem("test_body_cube");
-
 				Object* object = new Object("physics_cube");
 				object->GetTransform().SetPosition(position);
 
@@ -451,8 +433,6 @@ void GameScene::Update(const float& deltaTime)
 				RigidBodyComponent* rd = object->AddComponent<RigidBodyComponent>(10.0f, FilterGroups::DEFAULT, FilterGroups::EVERYTHING, true);
 
 				Physics::Instance().RegisterRigidBody(rd);
-
-
 
 				//object->AddComponent<DebugBoxShapeComponent>();
 				//object->AddComponent<BoxColliderComponent>(dx::XMFLOAT3(0.5f, 0.5f, 0.5f), dx::XMFLOAT3(0, 0, 0));
@@ -491,10 +471,8 @@ void GameScene::Update(const float& deltaTime)
 			if (hit.object != nullptr)
 			{
 				std::cout << hit.object->GetName() << std::endl;
-
 			}
 		}	
-
 	}
 	else
 	{
@@ -502,25 +480,7 @@ void GameScene::Update(const float& deltaTime)
 	}
 	nextScene = NEXT_SCENE(player->GetComponent<PlayerComp>()->GetNextScene());
 
-	//if (player->GetComponent<PlayerComp>()->getNextScene())
-	//{
-	//	nextScene = LOSE;
-	//}
-	//else if (KEY_PRESSED(N))
-	//{
-	//	nextScene = LOSE;
-	//}
-	//else if (KEY_PRESSED(M))
-	//{
-	//	nextScene = INTRO;
-	//}
-
 	skyboxClass->GetThisObject()->GetTransform().SetPosition(camera->GetOwner()->GetTransform().GetPosition());
-
-
-	/*POINT pa = input.GetMousePos();
-	Ray ray = camera->MouseToRay(p.x, p.y);*/
-
 }
 
 void GameScene::FixedUpdate(const float& fixedDeltaTime)
