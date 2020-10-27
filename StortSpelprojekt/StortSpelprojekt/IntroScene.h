@@ -7,7 +7,6 @@ class SpriteRenderPass;
 class IntroScene : public Scene
 {
 private:
-	AudioMaster audioMaster;
 	SoundEvent menuTest;
 	SoundEvent test2, test3;
 

@@ -51,4 +51,12 @@ public:
 
 	void SetVolume(const AudioTypes& audioType, const float volume);
 	float GetVolume(const AudioTypes& audioType) const;
+
+	static AudioMaster& Instance()
+	{
+		static AudioMaster instance;
+		return instance;
+	}
+	AudioMaster(AudioMaster& const) = delete;
+	void operator = (AudioMaster& const) = delete;
 };

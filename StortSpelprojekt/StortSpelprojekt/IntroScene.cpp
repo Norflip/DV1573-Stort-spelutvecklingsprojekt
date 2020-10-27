@@ -10,7 +10,7 @@ IntroScene::IntroScene(ResourceManager* manager) : Scene(manager)
 
 IntroScene::~IntroScene()
 {
-	audioMaster.StopSoundEvent(menuTest);
+	AudioMaster::Instance().StopSoundEvent(menuTest);
 }
 
 void IntroScene::Initialize(Renderer* renderer)
@@ -35,10 +35,10 @@ void IntroScene::Initialize(Renderer* renderer)
 void IntroScene::InitializeObjects()
 {
 	//audioComponent.LoadFile(L"Sounds/PopCulture.mp3", menuTest, AudioTypes::Music);
-	audioMaster.LoadFile(L"Sounds/jakestuff.mp3", menuTest, AudioTypes::Music);
-	audioMaster.LoadFile(L"Sounds/yay.wav", test2, AudioTypes::Sound);
-	audioMaster.SetVolume(AudioTypes::Music, 0.7f);
-	audioMaster.PlaySoundEvent(menuTest);
+	AudioMaster::Instance().LoadFile(L"Sounds/jakestuff.mp3", menuTest, AudioTypes::Music);
+	AudioMaster::Instance().LoadFile(L"Sounds/yay.wav", test2, AudioTypes::Sound);
+	AudioMaster::Instance().SetVolume(AudioTypes::Music, 0.7f);
+	AudioMaster::Instance().PlaySoundEvent(menuTest);
 
 	Object* cameraObject = new Object("camera", ObjectFlag::ENABLED);
 	camera = cameraObject->AddComponent<CameraComponent>(60.0f, true);
@@ -102,12 +102,12 @@ void IntroScene::Update(const float& deltaTime)
 
 	if (static_cast<GUISprite*>(guiManager->GetGUIObject("startSprite"))->IsClicked())
 	{
-		audioMaster.StopSoundEvent(menuTest);
+		AudioMaster::Instance().StopSoundEvent(menuTest);
 		nextScene = GAME;
 	}
 	else if (static_cast<GUISprite*>(guiManager->GetGUIObject("quitSprite"))->IsClicked())
 	{
-		audioMaster.StopSoundEvent(menuTest);
+		AudioMaster::Instance().StopSoundEvent(menuTest);
 		quit = true;
 	}
 	guiManager->UpdateAll();

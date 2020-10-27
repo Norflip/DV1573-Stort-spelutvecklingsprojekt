@@ -19,7 +19,7 @@ public:
 	~AudioEngine();	
 	IXAudio2* GetAudioMaster() { return this->audioMaster; }
 	void LoadFile(const std::wstring& filename, std::vector<BYTE>& audioData, WAVEFORMATEX** waveFormatEx, unsigned int& waveLength);
-	void Initialize();
+	void Initialize();	
 
 private:
 	IXAudio2* audioMaster;
