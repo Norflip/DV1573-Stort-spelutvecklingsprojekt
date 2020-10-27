@@ -28,4 +28,5 @@ public:
 	void Render() override;
 private:
 	World world;
+	
 };

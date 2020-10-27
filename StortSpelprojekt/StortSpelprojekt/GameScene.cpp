@@ -15,10 +15,15 @@ GameScene::GameScene(ResourceManager* manager) : Scene(manager)
 
 GameScene::~GameScene()
 {
+
+	
 }
 
 void GameScene::Initialize(Renderer* renderer)
 {
+
+	
+
 	this->renderer = renderer;
 
 	// Should change values on resize event
@@ -55,6 +60,9 @@ void GameScene::InitializeObjects()
 	skyboxClass = new Skybox(renderer->GetDevice(), renderer->GetContext(), resourceManager->GetShaderResource("skyboxShader"));
 	skyboxClass->GetThisObject()->AddFlag(ObjectFlag::NO_CULL);
 	Physics& physics = Physics::Instance();
+
+	
+
 	SaveState state;
 	state.seed = 1337;
 	state.segment = 0;
