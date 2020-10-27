@@ -5,7 +5,6 @@
 *.slo
 *.lo
 *.o
-*.obj
 
 # Precompiled Headers
 *.gch
@@ -23,7 +22,7 @@
 *.lai	
 *.la	
 *.a	
-*.lib	
+#*.lib	
 
 # Executables	
 *.exe	
@@ -107,7 +106,7 @@ StyleCopReport.xml
 #*.obj
 *.iobj
 *.pch
-*.pdb
+#*.pdb
 *.ipdb
 *.pgc
 *.pgd
