@@ -1,7 +1,7 @@
 #include "GUISprite.h"
 
 
-GUISprite::GUISprite(Renderer& renderer , std::string filePath, float xPos, float yPos,float layerDepth, DrawDirection dir, ClickFunction clickFunc)
+GUISprite::GUISprite(Renderer& renderer , std::string filePath, float xPos, float yPos,float layerDepth, DrawDirection dir, ClickFunction clickFunc, GuiGroup group)
 {
 	this->renderer = &renderer;
 	// position
@@ -10,17 +10,17 @@ GUISprite::GUISprite(Renderer& renderer , std::string filePath, float xPos, floa
 	this->xScale = 1.0;
 	this->yScale = 1.0;
 	this->direction = dir;
-
+	this->group = group;
 	this->rotation = 0.0f;
 	this->baseColor = dx::XMVectorSet(1.f, 1.f, 1.f, 1.f);
-	this->activeColor = dx::XMVectorSet(1.0f, 1.0f, 1.0f, 1.0f); // default bluetinted
+	this->activeColor = dx::XMVectorSet(1.0f, 0.0f, 0.0f, 1.0f); // default bluetinted
 	this->origin = dx::XMVectorSet(1.f, 1.f, 1.f, 1.f);
 	this->SRV = nullptr;
 	this->xPos = renderer.GetOutputWindow()->GetWidth()-xPos;
 	this->spriteBatch = nullptr;
 	this->filePath = filePath;
 	this->layerDepth = layerDepth;
-
+	this->SetVisible(true);
 	this->scale = dx::XMVectorSet(this->xScale, this->yScale, 0, 0);
 
 	Microsoft::WRL::ComPtr<ID3D11Resource> res;
@@ -64,10 +64,13 @@ GUISprite::~GUISprite()
 
 void GUISprite::Draw(DirectX::SpriteBatch* test)
 {
-	if(active)
-		test->Draw(SRV, this->position, nullptr, this->activeColor, rotation, origin, scale, DirectX::SpriteEffects::SpriteEffects_None, this->layerDepth);
-	else
-		test->Draw(SRV, this->position, nullptr, this->baseColor, rotation, origin, scale, DirectX::SpriteEffects::SpriteEffects_None, this->layerDepth);
+	if (this->GetVisible())
+	{
+		if (this->GetActivated())
+			test->Draw(SRV, this->position, nullptr, this->activeColor, rotation, origin, scale, DirectX::SpriteEffects::SpriteEffects_None, this->layerDepth);
+		else
+			test->Draw(SRV, this->position, nullptr, this->baseColor, rotation, origin, scale, DirectX::SpriteEffects::SpriteEffects_None, this->layerDepth);
+	}
 }
 
 void GUISprite::Draw()
@@ -128,29 +131,36 @@ void GUISprite::SetScaleBars(float yValue)
 
 bool GUISprite::IsClicked()
 {
-	if (clickFunc == ClickFunction::Clickable && IsMouseOver() && Input::Instance().GetLeftMouseKeyDown())
-		return true;
-	else
-		return false;
+	if(this->GetVisible())
+	{
+		if (clickFunc == ClickFunction::Clickable && IsMouseOver() && Input::Instance().GetLeftMouseKeyDown())
+			return true;		
+	}
+	return false;
 }
 
 bool GUISprite::IsMouseOver()
 {
-	if ((Input::Instance().GetMousePos().x > xPos && Input::Instance().GetMousePos().x < xPos + width) && (Input::Instance().GetMousePos().y > yPos && Input::Instance().GetMousePos().y < yPos + height))
+	if (this->GetVisible())
 	{
-		SetActiveColor(dx::XMVectorSet(1.0f, 0.0f, 0.0f, 1.0f));
-		return true;
+		if ((Input::Instance().GetMousePos().x > xPos && Input::Instance().GetMousePos().x < xPos + width) && (Input::Instance().GetMousePos().y > yPos && Input::Instance().GetMousePos().y < yPos + height))
+		{
+			SetActivated(true);
+			return true;
+		}
+		else
+		{
+			SetActivated(false);
+			return false;
+		}
 	}
-	else
-		SetActiveColor(this->baseColor);
-		return false;
+
 }
 
 void GUISprite::Update()
 {
 	if (clickFunc == ClickFunction::Clickable && IsMouseOver() && Input::Instance().GetLeftMouseKeyDown())
 		std::cout << "Do function" << std::endl;
-		//SetPosition(500, 500);
 }
 
 void GUISprite::SetPos(float xPos, float yPos, DrawDirection dir)

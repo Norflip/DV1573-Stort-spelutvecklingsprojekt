@@ -29,26 +29,27 @@ class GUISprite :public GUIObject
 {
 
 public:
-	GUISprite(Renderer& renderer, std::string, float xPos, float yPos , float layerDepth = 0, DrawDirection dir = DrawDirection::Default, ClickFunction clickFunc = ClickFunction::NotClickable);
+	GUISprite(Renderer& renderer, std::string, float xPos, float yPos , float layerDepth = 0, DrawDirection dir = DrawDirection::Default, ClickFunction clickFunc = ClickFunction::NotClickable, GuiGroup group = GuiGroup::Default);
 	~GUISprite();
 	void Draw(DirectX::SpriteBatch*) override;
 	void Draw();
 	void SetPosition(float xPos, float yPos);
 	void SetWICSprite(ID3D11Device* device, std::string spriteFile);
-	void SetActive(bool set = true) { this->active = set; };
+	
 	void SetActiveColor(dx::XMVECTOR vector = dx::XMVectorSet(0.6f, 0.6f, 1.3f, 1.0f));
-	bool GetActive() { return this->active; };
-	void SetDDSSprite(ID3D11Device* device, std::string spriteFile); // no dds yet
 
+	void SetDDSSprite(ID3D11Device* device, std::string spriteFile); // no dds yet
 	void SetScale(float x, float y);
 	void SetScaleBars(float yValue);
 
 	bool IsClicked();
 	bool IsMouseOver();
 	void Update();
+		bool HasFlag(ObjectFlag flag) const;
+	void AddFlag(ObjectFlag flag);
+	void RemoveFlag(ObjectFlag flag);
 
 private:
-	bool active = false;
 	std::string filePath;
 	float xPos, yPos;
 	float relativeXPos, relativeYPos;
