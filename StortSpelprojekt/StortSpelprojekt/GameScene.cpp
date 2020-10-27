@@ -43,11 +43,9 @@ void GameScene::Initialize(Renderer* renderer)
 		//object->AddComponent<DebugBoxShapeComponent>();
 		//object->AddComponent<BoxColliderComponent>(dx::XMFLOAT3(0.5f, 0.5f, 0.5f), dx::XMFLOAT3(0, 0, 0));
 		RigidBodyComponent* rd = object->AddComponent<RigidBodyComponent>(10.0f, FilterGroups::DEFAULT, FilterGroups::EVERYTHING, true);
-
 		Physics::Instance().RegisterRigidBody(rd);
 		return object;
 	});
-
 	//Input::Instance().SetWindow(window->GetHWND(), window->GetHeight(), window->GetWidth());
 	input.SetWindow(window->GetHWND(), window->GetHeight(), window->GetWidth());
 }
@@ -57,7 +55,6 @@ void GameScene::InitializeObjects()
 	skyboxClass = new Skybox(renderer->GetDevice(), renderer->GetContext(), resourceManager->GetShaderResource("skyboxShader"));
 	skyboxClass->GetThisObject()->AddFlag(ObjectFlag::NO_CULL);
 	Physics& physics = Physics::Instance();
-	
 	SaveState state;
 	state.seed = 1337;
 	state.segment = 0;
@@ -68,15 +65,6 @@ void GameScene::InitializeObjects()
 
 	skyboxClass = new Skybox(renderer->GetDevice(), renderer->GetContext(), resourceManager->GetShaderResource("skyboxShader"));
 	skyboxClass->GetThisObject()->AddFlag(ObjectFlag::NO_CULL);
-
-	//Object* testMesh4 = new Object("test4");
-	//testMesh4->AddComponent<NodeWalkerComp>();
-	//testMesh4->GetTransform().SetPosition(dx::XMLoadFloat3(&miniTranslation4));
-	//testMesh4->AddComponent<MeshComponent>(*mesh1, *material2);
-	//AddObject(testMesh4);
-
-
-		/* * * * * * * * ** * * * * */
 
 	//SKELETON ANIMATION MODELS
 
@@ -106,9 +94,6 @@ void GameScene::InitializeObjects()
 	cameraObject->GetTransform().SetPosition(playerSpawnVec);
 	playerObject->GetTransform().SetPosition(playerSpawnVec);
 
-	//Mesh* meshP = resourceManager->GetResource<Mesh>("Test");
-	//Material* materialP = resourceManager->GetResource<Material>("TestMaterial");
-	//playerObject->AddComponent<MeshComponent>(*meshP, *materialP);
 	playerObject->AddComponent<CapsuleColliderComponent>(0.5f, 4.5f, zero);
 	physics.MutexLock();
 	RigidBodyComponent* rb = playerObject->AddComponent<RigidBodyComponent>(60.f, FilterGroups::PLAYER, FilterGroups::EVERYTHING, true);
@@ -128,6 +113,7 @@ void GameScene::InitializeObjects()
 	testPointLight->AddComponent<PointLightComponent>(dx::XMFLOAT4(0.8f, 0.8f, 0.8f, 1.0f), 25);
 
 	AddObject(testPointLight, playerObject);
+
 	//LOADING BASE MONSTER; ADDING SKELETONS TO IT
 	enemy = new Object("enemy", ObjectFlag::ENABLED);
 	SkeletonMeshComponent* baseMonsterComp = enemy->AddComponent<SkeletonMeshComponent>(skeletonMesh[0], skeletonMat[0]);
@@ -183,19 +169,13 @@ void GameScene::InitializeObjects()
 	SkeletonMeshComponent* legsComponent = housesLegsObject->AddComponent<SkeletonMeshComponent>(skeletonMeshHouseLegs[0], skeletonMatHouseLegs[0]);
 
 	legsComponent->SetAnimationTrack(skeletonHouseLegsIdle, SkeletonStateMachine::IDLE);
-
 	legsComponent->SetAnimationTrack(skeletonHouseLegsWalk, SkeletonStateMachine::WALK);
-
 	legsComponent->SetAnimationTrack(skeletonHouseLegsUp, SkeletonStateMachine::UP);
-
 	legsComponent->SetAnimationTrack(skeletonHouseLegsDown, SkeletonStateMachine::DOWN);
 
 	baseComponent->SetAnimationTrack(skeletonHouseBaseIdle, SkeletonStateMachine::IDLE);
-
 	baseComponent->SetAnimationTrack(skeletonHouseBaseWalk, SkeletonStateMachine::WALK);
-
 	baseComponent->SetAnimationTrack(skeletonHouseBaseUp, SkeletonStateMachine::UP);
-
 	baseComponent->SetAnimationTrack(skeletonHouseBaseDown, SkeletonStateMachine::DOWN);
 
 	Transform::SetParentChild(baseComponent->GetOwner()->GetTransform(), legsComponent->GetOwner()->GetTransform());
@@ -205,17 +185,14 @@ void GameScene::InitializeObjects()
 	NodeWalkerComp* nodeWalker = houseBaseObject->AddComponent<NodeWalkerComp>();
 	nodeWalker->InitAnimation();
 
-
 	legsComponent->SetTrack(SkeletonStateMachine::IDLE, false);
 	baseComponent->SetTrack(SkeletonStateMachine::IDLE, false);
 	AddObject(houseBaseObject);
-
 
 	/* For physics/ rigidbody pickup stuff */
 	Physics& phy = Physics::Instance();
 
 	Shader* defShader = resourceManager->GetShaderResource("defaultShader");
-
 
 	clock.Update();
 
@@ -223,7 +200,6 @@ void GameScene::InitializeObjects()
 	//Log::Add("PRINTING SCENE HIERARCHY ----");
 	//PrintSceneHierarchy(root, 0);
 	/*Log::Add("----");*/
-
 
 	world.Initialize(root, resourceManager, &pooler, renderer);
 	world.ConstructSegment(state, desc);
@@ -379,13 +355,9 @@ void GameScene::Update(const float& deltaTime)
 		{
 			for (int x = -ra; x <= ra; x++)
 			{
-
-
-
 				dx::XMVECTOR position = dx::XMVectorAdd(cameraPosition, { (float)x * 1.5f, -1.0f, (float)y * 1.5f });
 
 				//	Object* object = pooler.GetItem("test_body_cube");
-
 				Object* object = new Object("physics_cube");
 				object->GetTransform().SetPosition(position);
 
@@ -400,8 +372,6 @@ void GameScene::Update(const float& deltaTime)
 				RigidBodyComponent* rd = object->AddComponent<RigidBodyComponent>(10.0f, FilterGroups::DEFAULT, FilterGroups::EVERYTHING, true);
 
 				Physics::Instance().RegisterRigidBody(rd);
-
-
 
 				//object->AddComponent<DebugBoxShapeComponent>();
 				//object->AddComponent<BoxColliderComponent>(dx::XMFLOAT3(0.5f, 0.5f, 0.5f), dx::XMFLOAT3(0, 0, 0));
@@ -440,29 +410,14 @@ void GameScene::Update(const float& deltaTime)
 			if (hit.object != nullptr)
 			{
 				std::cout << hit.object->GetName() << std::endl;
-
 			}
 		}	
-
 	}
 	else
 	{
 		DShape::DrawSphere(ray.GetPoint(10.0f), 0.2f, { 1, 0, 1 });
 	}
 	nextScene = NEXT_SCENE(player->GetComponent<PlayerComp>()->GetNextScene());
-
-	//if (player->GetComponent<PlayerComp>()->getNextScene())
-	//{
-	//	nextScene = LOSE;
-	//}
-	//else if (KEY_PRESSED(N))
-	//{
-	//	nextScene = LOSE;
-	//}
-	//else if (KEY_PRESSED(M))
-	//{
-	//	nextScene = INTRO;
-	//}
 
 	skyboxClass->GetThisObject()->GetTransform().SetPosition(camera->GetOwner()->GetTransform().GetPosition());
 
