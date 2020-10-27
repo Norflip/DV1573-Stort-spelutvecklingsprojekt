@@ -41,7 +41,7 @@ void LightManager::UpdateBuffers(ID3D11DeviceContext* context)
 	bool dirty = false;
 	cb_Lights& data = lightBuffer.GetData();
 
-	data.sunDirection = dx::XMFLOAT3(0.0f, 100.0f, -45.0f);
+	data.sunDirection = dx::XMFLOAT3(0.0f, -1.0f, 1.0f);
 	data.sunIntensity = 0.4f;
 	data.nrOfPointLights = pointLightMap.size();
 
@@ -54,16 +54,15 @@ void LightManager::UpdateBuffers(ID3D11DeviceContext* context)
 		}
 
 		data.pointLights[i->first].lightColor = i->second->GetColor();
-		dx::XMStoreFloat3(&data.pointLights[i->first].lightPosition, (i->second->GetOwner()->GetTransform().GetPosition()));
+		dx::XMStoreFloat3(&data.pointLights[i->first].lightPosition, (i->second->GetOwner()->GetTransform().GetWorldPosition()));
 		data.pointLights[i->first].attenuation = i->second->GetAttenuation();
 		data.pointLights[i->first].range = i->second->GetRange();
 	}
 	
-	if (dirty)
-	{
+	
 		lightBuffer.SetData(data);
 		lightBuffer.UpdateBuffer(context);
-	}
+	
 }
 
 void LightManager::Clear()

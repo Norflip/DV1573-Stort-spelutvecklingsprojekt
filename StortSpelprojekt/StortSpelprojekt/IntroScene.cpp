@@ -38,27 +38,6 @@ void IntroScene::InitializeObjects()
 	this->player = cameraObject;
 	AddObject(cameraObject);
 
-	//Physics& physics = Physics::Instance();
-	//dx::XMFLOAT3 pStart = { 10,20,10 };
-	//dx::XMVECTOR pStartVec = dx::XMLoadFloat3(&pStart);
-	//Object* playerObject = new Object("player", ObjectFlag::ENABLED);
-	//Object* cameraObject = new Object("camera", ObjectFlag::ENABLED);
-	//this->player = playerObject;
-	//camera = cameraObject->AddComponent<CameraComponent>(60.0f, true);
-	//camera->Resize(this->windowWidth, this->windowHeight);
-	//cameraObject->GetTransform().SetPosition(pStartVec);
-	//playerObject->GetTransform().SetPosition(pStartVec);
-	//playerObject->AddComponent<CapsuleColliderComponent>(0.5f, 4.5f, pStart);
-	//physics.MutexLock();
-	//RigidBodyComponent* rb = playerObject->AddComponent<RigidBodyComponent>(60.f, FilterGroups::PLAYER, FilterGroups::EVERYTHING, true);
-	//physics.RegisterRigidBody(rb);
-	//physics.MutexUnlock();
-	//playerObject->AddComponent<ControllerComponent>(cameraObject);
-	//Transform::SetParentChild(playerObject->GetTransform(),cameraObject->GetTransform());
-	////playerObject->AddComponent<PlayerComp>(guiManager, 500, 2, 10, 25, 3);
-
-	////AddObject(cameraObject);
-	//AddObject(playerObject);
 	ShowCursor(true); 
 
 	skyboxClass = new Skybox(renderer->GetDevice(), renderer->GetContext(), resourceManager->GetShaderResource("skyboxShader"));
@@ -68,6 +47,7 @@ void IntroScene::InitializeObjects()
 void IntroScene::InitializeGUI()
 {
 	//spriteBatch = new DirectX::SpriteBatch(renderer->GetContext());
+	GUISprite* titleSprite = new GUISprite(*renderer, "Textures/OnceUponATime.png", windowWidth / 2 - 100, 100, 0, DrawDirection::Default, ClickFunction::NotClickable);
 	GUISprite* startSprite = new GUISprite(*renderer, "Textures/Start.png", 100, 100, 0, DrawDirection::Default, ClickFunction::Clickable);
 	GUISprite* optionSprite = new GUISprite(*renderer, "Textures/Options.png", 100, 300, 0, DrawDirection::Default, ClickFunction::Clickable);
 	GUISprite* loreSprite = new GUISprite(*renderer, "Textures/Lore.png", 100, 500, 0, DrawDirection::Default, ClickFunction::Clickable);
@@ -79,6 +59,7 @@ void IntroScene::InitializeGUI()
 	loreSprite->SetActive();
 
 	guiManager = new GUIManager(renderer, 100);
+	guiManager->AddGUIObject(titleSprite, "title");
 	guiManager->AddGUIObject(fpsDisplay, "fps");
 	guiManager->AddGUIObject(startSprite, "startSprite");
 	guiManager->AddGUIObject(optionSprite, "optionSprite");

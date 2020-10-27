@@ -16,11 +16,9 @@ Chunk::~Chunk()
 	}
 }
 
-#if _DEBUG
+#if _DEBUG and DRAW_DEBUG
 void Chunk::Update(const float& deltaTime)
 {
-
-
 	dx::XMFLOAT3 color = DSHAPE_CHUNK_COLORS[static_cast<int>(this->type)];
 
 	dx::XMFLOAT3 center;
@@ -78,6 +76,7 @@ void Chunk::SetupCollisionObject(float* heightMap)
 	body->setIsActive(true);
 	collider->setCollisionCategoryBits(static_cast<unsigned short>(FilterGroups::TERRAIN));
 	collider->setCollideWithMaskBits(static_cast<unsigned short>(FilterGroups::EVERYTHING));
+	collider->getMaterial().setBounciness(0.f);
 }
 
 float Chunk::SampleHeight(float x, float z)

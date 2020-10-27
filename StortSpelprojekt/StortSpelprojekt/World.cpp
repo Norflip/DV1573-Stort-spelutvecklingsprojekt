@@ -76,6 +76,23 @@ void World::DrawDebug()
 	generator.DrawDebug();
 }
 
+void World::MoveHouseAndPlayerToStart()
+{
+	if (house != nullptr && player != nullptr && generator.IsConstructed())
+	{
+		std::vector<dx::XMINT2> indexes = generator.GetPath().GetIndexes();
+		dx::XMINT2 spawnIndex = indexes[1];
+		
+		dx::XMVECTOR position = dx::XMVectorAdd(Chunk::IndexToWorld(spawnIndex, 0.0f), dx::XMVectorSet(CHUNK_SIZE / 2.0f, 0, CHUNK_SIZE / 2.0f, 0));
+		house->GetTransform().SetPosition(position);
+
+		position = dx::XMVectorAdd(position, dx::XMVectorSet(5, 0, 0, 0));
+	
+		player->GetTransform().SetPosition(position);
+		player->GetComponent<RigidBodyComponent>()->SetPosition(position);
+	}
+}
+
 dx::XMINT2 World::GetChunkIndex(Object* object) const
 {
 	dx::XMINT2 index(0, 0);

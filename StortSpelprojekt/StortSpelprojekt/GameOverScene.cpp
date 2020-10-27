@@ -36,8 +36,6 @@ void GameOverScene::InitializeObjects()
 	ShowCursor(true);
 	Input::Instance().SetMouseMode(dx::Mouse::MODE_ABSOLUTE);
 
-
-
 	skyboxClass = new Skybox(renderer->GetDevice(), renderer->GetContext(), resourceManager->GetShaderResource("skyboxShader"));
 	skyboxClass->GetThisObject()->AddFlag(ObjectFlag::NO_CULL);
 }
@@ -45,6 +43,7 @@ void GameOverScene::InitializeObjects()
 void GameOverScene::InitializeGUI()
 {
 	//spriteBatch = new DirectX::SpriteBatch(renderer->GetContext());
+	GUISprite* lose = new GUISprite(*renderer, "Textures/Died.png", windowWidth / 2 - 120, 100, 0, DrawDirection::Default, ClickFunction::NotClickable);
 	GUISprite* restart = new GUISprite(*renderer, "Textures/Restart.png", 100, 200, 0, DrawDirection::Default, ClickFunction::Clickable);
 	GUISprite* quit = new GUISprite(*renderer, "Textures/Exit.png", 100, 400, 0, DrawDirection::Default, ClickFunction::Clickable);
 	GUIFont* fpsDisplay = new GUIFont(*renderer, "fps", windowWidth / 2, 50);
@@ -52,7 +51,7 @@ void GameOverScene::InitializeGUI()
 	quit->SetActive();
 
 	guiManager = new GUIManager(renderer, 100);
-
+	guiManager->AddGUIObject(lose, "lose");
 	guiManager->AddGUIObject(fpsDisplay, "fps");
 	guiManager->AddGUIObject(restart, "restart");
 	guiManager->AddGUIObject(quit, "quit");

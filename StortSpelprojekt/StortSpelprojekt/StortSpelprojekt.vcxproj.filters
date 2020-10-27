@@ -206,10 +206,7 @@
     </ClCompile>
     <ClCompile Include="PlayerAttackComp.cpp">
       <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="Path.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
+    </ClCompile>    
     <ClCompile Include="Object.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
@@ -230,6 +227,9 @@
     </ClCompile>
     <ClCompile Include="NodeWalkerComp.cpp">
       <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="PickupComponent.cpp">
+    <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="WinScene.cpp">
       <Filter>Source Files</Filter>
@@ -465,6 +465,9 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="NodeWalkerComp.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="PickupComponent.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="WinScene.h">

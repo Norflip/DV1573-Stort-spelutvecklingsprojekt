@@ -20,7 +20,8 @@ public:
 	void Clear();
 
 	std::unordered_map<int, ChunkInfo>& GetChunks() { return this->chunks; }
-	Path2& GetPath() { return this->path; }
+
+	Path2 GetPath() const { return this->path; }
 	dx::XMINT2 GetMinIndex() const { return this->minIndex; }
 	dx::XMINT2 GetMaxIndex() const { return this->maxIndex; }
 

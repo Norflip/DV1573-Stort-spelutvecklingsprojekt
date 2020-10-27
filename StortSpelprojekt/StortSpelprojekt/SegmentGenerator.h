@@ -23,7 +23,7 @@ class SegmentGenerator
 	};
 
 	const int CHUNK_PADDING = 2;
-	const float FRACKIG_TREE_ADJUSTMENT = -3.0f;
+	const float FRACKIG_TREE_ADJUSTMENT = -3.5f;
 	const float TREE_SPAWN_FACTOR = 0.4f;
 
 public:
@@ -39,6 +39,7 @@ public:
 
 	Chunk* GetChunk(float x, float z) const;
 	void DrawDebug();
+	Path2 GetPath() const { return this->grid.GetPath(); }
 
 private:
 	std::vector<ChunkPointInformation> CreateChunkMap(const dx::XMINT2& index, const SegmentDescription& description, float*& heightMap, unsigned char*& buffer);
