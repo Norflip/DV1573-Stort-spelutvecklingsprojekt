@@ -17,9 +17,9 @@ void ObjectSpawner::Initialize(Object* root, ObjectPooler* pooler)
 
 void ObjectSpawner::Spawn(PointQuadTree& tree, std::unordered_map<int, Chunk*>& chunkMap, std::vector<Chunk*>& chunks)
 {
+	propSpawnPositions = CreateSpawnPositions(tree, 10.0f, chunkMap);
 	itemSpawnPositions = CreateSpawnPositions(tree, 20.0f, chunkMap);
-	propSpawnPositions = CreateSpawnPositions(tree, 20.0f, chunkMap);
-
+	
 	
 	/*for (size_t i = 0; i < staticItems.size(); i++)
 	{
@@ -40,41 +40,54 @@ void ObjectSpawner::Spawn(PointQuadTree& tree, std::unordered_map<int, Chunk*>& 
 	}*/
 
 
-	for (int i = itemSpawnPositions.size() - 1; i >= 0; i--)
-	{
-		dx::XMFLOAT2 pos = itemSpawnPositions[i];
-		Chunk* chunk = GetChunk(pos.x, pos.y, chunkMap);
-
-		if (chunk != nullptr)
-		{
-			float y = chunk->SampleHeight(pos.x, pos.y);
-
-			Object* object = pooler->GetItem("dynamic_stone");
-			dx::XMVECTOR position = dx::XMVectorSet(pos.x, y + SPAWN_HEIGHT, pos.y, 0.0f);
-
-			object->GetComponent<RigidBodyComponent>()->SetPosition(position);
-			Transform::SetParentChild(root->GetTransform(), object->GetTransform());
-			items.push_back(object);
-		}
-	}
-
+	int propIndex = 0;
 	for (int i = propSpawnPositions.size() - 1; i >= 0; i--)
 	{
+		propIndex %= staticItems.size();
+		Item& item = staticItems[propIndex];
+
 		dx::XMFLOAT2 pos = propSpawnPositions[i];
 		Chunk* chunk = GetChunk(pos.x, pos.y, chunkMap);
 
 		if (chunk != nullptr)
 		{
-			float y = chunk->SampleHeight(pos.x, pos.y);
-
-			Object* object = pooler->GetItem("static_sphere");
+			float y = chunk->SampleHeight(pos.x, pos.y) + item.yOffset;
+			
+			Object* object = pooler->GetItem(item.key);
 			dx::XMVECTOR position = dx::XMVectorSet(pos.x, y, pos.y, 0.0f);
 
 			object->GetComponent<RigidBodyComponent>()->SetPosition(position);
 			Transform::SetParentChild(root->GetTransform(), object->GetTransform());
 			items.push_back(object);
 		}
+
+		propIndex++;
 	}
+
+	std::cout << "PROPS: " << propSpawnPositions.size() << std::endl;
+	std::cout << "ITEMS: " << itemSpawnPositions.size() << std::endl;
+
+	//int itemIndex = 0;
+	//for (int i = itemSpawnPositions.size() - 1; i >= 0; i--)
+	//{
+	//	itemIndex %= dynamicItems.size();
+	//	Item& item = dynamicItems[itemIndex];
+
+	//	dx::XMFLOAT2 pos = itemSpawnPositions[i];
+	//	Chunk* chunk = GetChunk(pos.x, pos.y, chunkMap);
+
+	//	if (chunk != nullptr)
+	//	{
+	//		float y = chunk->SampleHeight(pos.x, pos.y);
+
+	//		Object* object = pooler->GetItem(item.key);
+	//		dx::XMVECTOR position = dx::XMVectorSet(pos.x, y + SPAWN_HEIGHT, pos.y, 0.0f);
+
+	//		object->GetComponent<RigidBodyComponent>()->SetPosition(position);
+	//		Transform::SetParentChild(root->GetTransform(), object->GetTransform());
+	//		items.push_back(object);
+	//	}
+	//}
 }
 
 void ObjectSpawner::Despawn()
@@ -152,7 +165,7 @@ std::vector<dx::XMFLOAT2> ObjectSpawner::CreateSpawnPositions(PointQuadTree& tre
 
 			if (chunk != nullptr && chunk->GetType() == ChunkType::TERRAIN)
 			{
-				tree.Insert(point);
+				//tree.Insert(point);
 				validPoints.push_back(point);
 			}
 			else
