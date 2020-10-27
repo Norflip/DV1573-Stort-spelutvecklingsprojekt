@@ -99,9 +99,9 @@ void GameScene::InitializeObjects()
 	RigidBodyComponent* rb = playerObject->AddComponent<RigidBodyComponent>(60.f, FilterGroups::PLAYER, FilterGroups::EVERYTHING, true);
 	physics.RegisterRigidBody(rb);
 	physics.MutexUnlock();
-	playerObject->AddComponent<ControllerComp>(cameraObject);
+	playerObject->AddComponent<ControllerComp>(cameraObject); /////////////////
 	//Transform::SetParentChild(playerObject->GetTransform(),cameraObject->GetTransform());
-	playerObject->AddComponent<PlayerComp>(renderer, camera, Physics::Instance(), guiManager, 50000, 2, 3, 25, 3);
+	playerObject->AddComponent<PlayerComp>(renderer, camera, Physics::Instance(), guiManager, 100, 2, 3, 25, 3);
 	playerStatsComp = playerObject->GetComponent<PlayerComp>();
 	AddObject(cameraObject, playerObject);
 	AddObject(playerObject);
@@ -194,6 +194,18 @@ void GameScene::InitializeObjects()
 
 	Shader* defShader = resourceManager->GetShaderResource("defaultShader");
 
+//Axe//////////////////////////////////////////////////////////////////
+	std::vector<Mesh> axeMesh = ZWEBLoader::LoadMeshes(ZWEBLoadType::NoAnimation, "Models/AXE.ZWEB", renderer->GetDevice());
+	std::vector<Material> axeMat = ZWEBLoader::LoadMaterials("Models/AXE.ZWEB", skeletonShader, renderer->GetDevice());
+
+	Object* axeObject = new Object("Axe");
+
+	axeObject->AddComponent<MeshComponent>(axeMesh[0], axeMat[0]);
+	axeObject->GetTransform().SetPosition({ 0,0,0 });
+	axeObject->GetTransform().SetScale({ 1, 1, 1 });
+	axeObject->AddComponent<WeaponComponent>(cameraObject, input);
+	AddObject(axeObject);
+
 	clock.Update();
 
 	/* * * * * * * * ** * * * * */
@@ -243,8 +255,9 @@ void GameScene::InitializeGUI()
 
 	//FONTS
 	GUIFont* fpsDisplay = new GUIFont(*renderer, "fps", windowWidth / 2, 50);
-	//GUIFont* healthDisplay = new GUIFont(*renderer, "playerHealth", 50, 100);
-	//GUIFont* enemyDisplay = new GUIFont(*renderer, "enemyHealth", 50, 150);
+
+	/*GUIFont* healthDisplay = new GUIFont(*renderer, "playerHealth", 50, 100);
+	GUIFont* enemyDisplay = new GUIFont(*renderer, "enemyHealth", 50, 150);*/
 
 	//CROSSHAIR
 	GUISprite* dot = new GUISprite(*renderer, "Textures/Dot.png", (windowWidth / 2) - 6, (windowHeight / 2) - 6, 0, DrawDirection::BottomLeft, ClickFunction::NotClickable);
@@ -334,6 +347,8 @@ void GameScene::OnDeactivate()
 
 void GameScene::Update(const float& deltaTime)
 {
+
+	
 	Scene::Update(deltaTime);
 	world.UpdateRelevantChunks();
 

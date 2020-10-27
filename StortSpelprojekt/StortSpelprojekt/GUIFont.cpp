@@ -13,15 +13,17 @@ GUIFont::GUIFont()
 	this->fontSize = DirectX::XMFLOAT2(1.0f, 1.0f);
 }
 
-GUIFont::GUIFont(Renderer& renderer, const std::string& display, float x, float y)
+GUIFont::GUIFont(Renderer& renderer, const std::string& display, float x, float y,GuiGroup group)
 {
 	this->x = x;
 	this->y = y;
 	this->SetString(display);
 	this->renderer = &renderer;
-	this->spriteFont = new DirectX::SpriteFont(this->renderer->GetDevice(), L"SpriteFonts/comic_sans_ms_16.spritefont");
+	this->spriteFont = new DirectX::SpriteFont(this->renderer->GetDevice(), L"SpriteFonts/TheWanters24.spritefont");
+	//this->spriteFont = new DirectX::SpriteFont(this->renderer->GetDevice(), L"SpriteFonts/comic_sans_ms_16.spritefont");
 	this->fontColor = DirectX::Colors::White;
-	this->fontSize = DirectX::XMFLOAT2(1.0f, 1.0f);
+	this->fontSize = DirectX::XMFLOAT2(1.f, 1.f);
+	this->group = group;
 }
 
 GUIFont::~GUIFont()
@@ -30,15 +32,18 @@ GUIFont::~GUIFont()
 
 void GUIFont::Draw(DirectX::SpriteBatch* spriteBatch)
 {
-	spriteFont->DrawString(
-		spriteBatch,
-		txtDisplay.c_str(),
-		DirectX::XMFLOAT2(x, y),
-		this->fontColor,
-		0.0f,
-		DirectX::XMFLOAT2(0.0f, 0.0f),
-		this->fontSize
-	);
+
+	if (this->GetVisible())
+	{
+		spriteFont->DrawString(
+			spriteBatch,
+			txtDisplay.c_str(),
+			DirectX::XMFLOAT2(x, y),
+			this->fontColor,
+			0.0f, //ROT
+			DirectX::XMFLOAT2(0.0f, 0.0f), fontSize //Size
+		);
+	}
 }
 
 void GUIFont::SetPosition(float x, float y)
