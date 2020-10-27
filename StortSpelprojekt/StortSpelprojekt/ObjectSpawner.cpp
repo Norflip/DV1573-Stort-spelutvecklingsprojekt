@@ -20,6 +20,7 @@ void ObjectSpawner::Spawn(PointQuadTree& tree, std::unordered_map<int, Chunk*>& 
 	itemSpawnPositions = CreateSpawnPositions(tree, 20.0f, chunkMap);
 	propSpawnPositions = CreateSpawnPositions(tree, 20.0f, chunkMap);
 
+	
 	/*for (size_t i = 0; i < staticItems.size(); i++)
 	{
 		dx::XMFLOAT2 pos = itemSpawnPositions[0];

@@ -54,7 +54,7 @@ void SegmentGenerator::Construct(const SegmentDescription& description)
 			CreateChunk(pair.first, root, description, pair.second);
 		}
 
-		spawner.Spawn(treePoints, chunkMap, chunks);
+		spawner->Spawn(treePoints, chunkMap, chunks);
 		constructed = true;
 	}
 }
@@ -70,7 +70,7 @@ void SegmentGenerator::Deconstruct()
 			delete chunks[i];
 		}
 
-		spawner.Despawn();
+		spawner->Despawn();
 		constructed = false;
 		chunks.clear();
 		grid.Clear();
@@ -111,7 +111,7 @@ Chunk* SegmentGenerator::GetChunk(float x, float z) const
 void SegmentGenerator::DrawDebug()
 {
 	treePoints.Draw(dx::XMFLOAT3(0, 0, 0));
-	spawner.DrawDebug();
+	spawner->DrawDebug();
 
 	// PATH
 	const float offset = CHUNK_SIZE / 2.0f;

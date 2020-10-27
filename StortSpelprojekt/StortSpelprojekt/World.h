@@ -25,9 +25,6 @@ public:
 
 	void MoveHouseAndPlayerToStart();
 
-	
-	float TMP_OFFSET = 0.0f;
-
 private:
 	dx::XMINT2 GetChunkIndex(Object* object) const;
 	void RegisterToPool(ObjectPooler* pooler, ObjectSpawner* spawner, const std::map<std::string, int>& queueCountTable) const;
