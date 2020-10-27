@@ -20,10 +20,9 @@ private:
 	dx::XMVECTOR weaponPos;
 	dx::XMVECTOR weaponRot;
 	dx::XMVECTOR weaponScale;
-
-	dx::XMVECTOR forward = { 0,0,1 };
-
-	dx::XMMATRIX weaponMatrix;
+	dx::XMVECTOR up;
+	dx::XMMATRIX wepWorld, wepOffTrans, wepOffRot;
+	dx::XMMATRIX inverseViewMatrix;
 
 	void SetPosition();
 };
