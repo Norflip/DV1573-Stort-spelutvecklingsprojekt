@@ -170,7 +170,7 @@ std::vector<SegmentGenerator::ChunkPointInformation> SegmentGenerator::CreateChu
 	buffer = new unsigned char[size * size * 4];
 	heightMap = new float[size * size];
 
-	const float MAX_DISTANCE = 7.0f;
+	const float MAX_DISTANCE = 10.0f;
 	Path path = grid.GetPath();
 	std::vector<ChunkPointInformation> informations;
 
@@ -185,9 +185,10 @@ std::vector<SegmentGenerator::ChunkPointInformation> SegmentGenerator::CreateChu
 
 			float sampledHeight = Noise::Sample(chunkPosXZ.x + x, chunkPosXZ.y + y, description.noiseSettings);
 			float worldHeight = sampledHeight * distance * TERRAIN_SCALE;
-
-			//worldHeight = std::max(worldHeight, MIN_TERRAIN_HEIGHT);
 			
+			worldHeight = std::max(worldHeight, MIN_TERRAIN_HEIGHT);
+			float height = worldHeight / TERRAIN_SCALE;
+
 			heightMap[x + size * y] = worldHeight;
 
 			ChunkPointInformation chunkPoint;
@@ -197,9 +198,9 @@ std::vector<SegmentGenerator::ChunkPointInformation> SegmentGenerator::CreateChu
 
 			int bufferIndex = x + size * y;
 
-			buffer[bufferIndex * 4 + 0] = static_cast<unsigned char>(255 * sampledHeight * distance);
-			buffer[bufferIndex * 4 + 1] = static_cast<unsigned char>(255 * distance);
-			buffer[bufferIndex * 4 + 2] = static_cast<unsigned char>(255 * sampledHeight);
+			buffer[bufferIndex * 4 + 0] = static_cast<unsigned char>(255 * height);
+			buffer[bufferIndex * 4 + 1] = static_cast<unsigned char>(255 * sampledHeight);
+			buffer[bufferIndex * 4 + 2] = static_cast<unsigned char>(255 * distance);
 			buffer[bufferIndex * 4 + 3] = static_cast<unsigned char>(255);
 		}
 	}
@@ -216,7 +217,7 @@ Chunk* SegmentGenerator::CreateChunk(const dx::XMINT2& index, Object* root, cons
 	std::string name = "chunk " + std::to_string(index.x) + ", " + std::to_string(index.y);
 	dx::XMVECTOR chunkPosition = Chunk::IndexToWorld(index, 0.0f);
 
-	Object* chunkObject = new Object(name, ObjectFlag::RENDER);
+	Object* chunkObject = new Object(name, ObjectFlag::DEFAULT);
 	Chunk* chunk = chunkObject->AddComponent<Chunk>(index, type);
 
 	chunkObject->GetTransform().SetPosition(chunkPosition);
@@ -224,16 +225,30 @@ Chunk* SegmentGenerator::CreateChunk(const dx::XMINT2& index, Object* root, cons
 
 	chunk->SetupCollisionObject(heightMap);
 
-	auto chunkDataSRV = DXHelper::CreateTexture(buffer, CHUNK_SIZE + 1, CHUNK_SIZE + 1, 4, DXGI_FORMAT_R8G8B8A8_UNORM_SRGB, device);
+	auto chunkDataSRV = DXHelper::CreateTexture(buffer, CHUNK_SIZE + 1, CHUNK_SIZE + 1, 4, DXGI_FORMAT_R8G8B8A8_UNORM, device);
 
 	Material material(chunkShader);
 	Texture texture(chunkDataSRV);
 
+	Texture grassTexture;
+	grassTexture.LoadTexture(device, L"Textures/Grass_001_COLOR.jpg");
+
+	Texture roadTexture;
+	roadTexture.LoadTexture(device, L"Textures/Stone_Floor_003_COLOR.jpg");
+
 	material.SetTexture(texture, 0, ShaderBindFlag::PIXEL | ShaderBindFlag::VERTEX);
+	material.SetTexture(grassTexture, 1, ShaderBindFlag::PIXEL);
+	material.SetTexture(roadTexture, 2, ShaderBindFlag::PIXEL);
+
 	delete[] buffer;
 
-	auto sampler = DXHelper::CreateSampler(D3D11_FILTER_MIN_MAG_MIP_POINT, D3D11_TEXTURE_ADDRESS_CLAMP, device);
-	material.SetSampler(sampler, 0, ShaderBindFlag::PIXEL | ShaderBindFlag::VERTEX);
+	auto dataSampler = DXHelper::CreateSampler(D3D11_FILTER_MIN_MAG_MIP_POINT, D3D11_TEXTURE_ADDRESS_CLAMP, device);
+	material.SetSampler(dataSampler, 0, ShaderBindFlag::PIXEL | ShaderBindFlag::VERTEX);
+
+	auto textureSampler = DXHelper::CreateSampler(D3D11_FILTER_MIN_MAG_MIP_LINEAR, D3D11_TEXTURE_ADDRESS_WRAP, device);
+	material.SetSampler(textureSampler, 1, ShaderBindFlag::PIXEL);
+
+
 	chunkObject->AddComponent<MeshComponent>(chunkMesh, material);
 
 	AddTreesToChunk(chunk, chunkInformation);

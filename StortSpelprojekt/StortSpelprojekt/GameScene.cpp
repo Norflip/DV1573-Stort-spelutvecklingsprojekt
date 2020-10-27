@@ -499,7 +499,7 @@ void GameScene::Update(const float& deltaTime)
 
 		DShape::DrawLine(ray.origin, ray.GetPoint(1000.0f), { 1,1,0 });
 
-		if (phy.RaytestSingle(ray, 1000.0f, hit, FilterGroups::DEFAULT))
+		if (phy.RaytestSingle(ray, 1000.0f, hit, FilterGroups::EVERYTHING))
 		{
 			DShape::DrawLine(ray.origin, hit.position, { 1,1,0 });
 			DShape::DrawSphere(hit.position, 1.0f, { 0, 0, 1 });

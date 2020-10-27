@@ -212,7 +212,7 @@ float4 main(PixelInputType input) : SV_TARGET
 
     //return float4(I, I, I, 1.0f);
     diffuseColor = screenTexture.Sample(defaultSampleType, input.uv);
-
+    return diffuseColor;
 
 
    // float4 fogColor = float4(0.1f, 0.1f, 0.4f, 1.0f);

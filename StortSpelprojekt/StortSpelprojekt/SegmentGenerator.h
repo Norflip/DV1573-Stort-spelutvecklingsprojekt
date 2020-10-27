@@ -26,6 +26,7 @@ class SegmentGenerator
 	const float FRACKIG_TREE_ADJUSTMENT = 0.0f;// -3.5f;
 	const float TREE_SPAWN_FACTOR = 0.4f;
 	const float MIN_TERRAIN_HEIGHT = 0.1f;
+	const float TERRAIN_BASE_HEIGHT = 1.0f;
 
 public:
 	SegmentGenerator();
