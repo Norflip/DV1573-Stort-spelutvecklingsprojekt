@@ -101,7 +101,7 @@ void GameScene::InitializeObjects()
 	physics.MutexUnlock();
 	playerObject->AddComponent<ControllerComp>(cameraObject);
 	//Transform::SetParentChild(playerObject->GetTransform(),cameraObject->GetTransform());
-	playerObject->AddComponent<PlayerComp>(renderer, camera, Physics::Instance(), guiManager, 50000, 2, 3, 25, 3);
+	playerObject->AddComponent<PlayerComp>(renderer, camera, Physics::Instance(), guiManager, 100, 2, 3, 25, 3);
 	playerStatsComp = playerObject->GetComponent<PlayerComp>();
 	AddObject(cameraObject, playerObject);
 	AddObject(playerObject);
