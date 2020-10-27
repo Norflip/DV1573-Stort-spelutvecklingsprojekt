@@ -11,8 +11,7 @@ World::~World()
 
 void World::Initialize(Object* root, ResourceManager* resources, ObjectPooler* pooler, Renderer* renderer)
 {
-
-
+	RegisterToPool(pooler);
 	ObjectSpawner* spawner = new ObjectSpawner();
 	spawner->Initialize(root, pooler);
 	spawner->AddItem("dynamic_stone", 1.0f, 1.0f, 10, 25, 0.0f, ItemSpawnType::DYNAMIC);
