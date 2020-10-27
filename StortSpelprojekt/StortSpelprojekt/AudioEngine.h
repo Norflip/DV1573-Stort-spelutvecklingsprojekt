@@ -17,7 +17,10 @@ class AudioEngine
 public:
 	AudioEngine();
 	~AudioEngine();
-
+	void Initialize();
+	void LoadFile(const std::wstring& filename, std::vector<BYTE>& audioData, WAVEFORMATEX** waveFormatEx, unsigned int& waveLength);
+	IXAudio2* GetAudio() { return this->audio; }
+	//friend class AudioComponent;
 private:
 	IXAudio2* audio;
 	IXAudio2MasteringVoice* masterVoice;
@@ -29,6 +32,5 @@ private:
 
 	IMFAttributes* sourceReaderConfig;
 
-	void Initialize();
-	void LoadFile(const std::wstring& filename, std::vector<BYTE>& audioData, WAVEFORMATEX** waveFormatEx, unsigned int& waveLength);
+	
 };
