@@ -15,10 +15,7 @@ namespace ZWEBLoader //TO BE ADDED: FUNCTION TO LOAD LIGHTS
 	{
 		ZWEB::ZWEBImporter importer;
 		bool success = importer.importAnimation(animationPath);
-		if (!success)
-		{
-			OutputDebugStringA("incorrectfilepath");
-		}
+		
 		SkeletonAni skeletonAnimation;
 		//map must be set first so it can be used to set up the other stuff.
 		skeletonAnimation.SetUpIDMapAndFrames(boneIDMap, importer.getSkeletonAnimationHeader().fps, importer.getSkeletonAnimationHeader().nrOfAnimationFrames);
@@ -229,7 +226,7 @@ namespace ZWEBLoader //TO BE ADDED: FUNCTION TO LOAD LIGHTS
 				bool success = texture.LoadTexture(device, pathWSTR.c_str());
 				assert(success);
 
-				mat.SetTexture(texture, 1, ShaderBindFlag::PIXEL); //This is default but can be manually changed afterwards.
+				mat.SetTexture(texture, 3, ShaderBindFlag::PIXEL); //This is default but can be manually changed afterwards.
 			}
 
 			mat.SetMaterialData(materialData);
