@@ -43,7 +43,8 @@ public:
 	void BlendAnimations();
 	bool GetIsDone();
 	void SetisDone(bool);
-	bool doneUp, doneDown;
+	bool& SetAndGetDoneDown();
+	bool& SetAndGetDoneUp();
 private:
 	Mesh mesh;
 	Material material;
@@ -60,5 +61,6 @@ private:
 	void PlayOnce();
 	void RunAnimation(const float& deltaTime);
 	void FindChildren(SkeletonAni& track, unsigned int& index, std::map<std::string, unsigned int>& map, std::string& name, std::string& secondName);
+	bool doneUp, doneDown;
 };
 

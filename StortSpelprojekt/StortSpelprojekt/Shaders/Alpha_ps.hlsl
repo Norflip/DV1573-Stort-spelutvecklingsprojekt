@@ -2,14 +2,19 @@
 #include "PSBlendModes.hlsl"
 #include "IO.hlsl"
 Texture2D diffuseMap : register (t0);
-Texture2D alphaMap : register (t1); //Maybe you can do this directly inside an alpha channel.
+Texture2D normalMap : register (t1);
 TextureCube skymap : register(t2);
+Texture2D alphaMap : register (t3);
 SamplerState defaultSampleType : register (s0);
 
 float4 main(VS_OUTPUT input) : SV_TARGET
 {
 	float4 textureColor = diffuseMap.Sample(defaultSampleType, input.uv);
-
+	if (hasNormalMap)
+	{
+		float4 normalmap = normalMap.Sample(defaultSampleType, input.uv);
+		input.normal = CalculateNormalMapping(input.normal, input.tangent, normalmap);
+	}
 	float3 normalized = normalize(input.normal);
 
 	float3 viewDirection = cameraPosition - input.worldPosition;

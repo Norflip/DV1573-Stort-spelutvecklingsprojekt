@@ -8,6 +8,8 @@ class SpriteRenderPass;
 class GameScene : public Scene
 {
 private:
+	void RemoveEnemy();
+
 	Object* bananaObject;
 public:
 	GameScene(ResourceManager* manager);

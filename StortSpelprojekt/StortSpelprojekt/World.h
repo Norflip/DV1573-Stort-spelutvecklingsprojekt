@@ -25,6 +25,8 @@ public:
 
 	void MoveHouseAndPlayerToStart();
 
+	float TMP_OFFSET = 0.0f;
+
 private:
 	dx::XMINT2 GetChunkIndex(Object* object) const;
 

@@ -312,7 +312,8 @@ void Renderer::SetCullBack(bool cullNone)
 	else
 	{
 		context->RSSetState(rasterizerStateCullBack);
-		context->OMSetBlendState(blendStateOff, BLENDSTATEMASK, 0xffffffff);
+		//context->OMSetBlendState(blendStateOff, BLENDSTATEMASK, 0xffffffff);
+		context->OMSetBlendState(blendStateOn, BLENDSTATEMASK, 0xffffffff);
 	}
 }
 
@@ -353,7 +354,7 @@ void Renderer::AddItem(const RenderItem& item, bool transparent)
 
 void Renderer::DrawRenderItem(const RenderItem& item)
 {
-	SetObjectBufferValues(item.camera, item.world);
+	SetObjectBufferValues(item.camera, item.world, true);
 	objectBuffer.UpdateBuffer(context);
 
 	UINT stride = sizeof(Mesh::Vertex);
@@ -368,7 +369,7 @@ void Renderer::DrawRenderItem(const RenderItem& item)
 
 void Renderer::DrawRenderItemInstanced(const RenderItem& item)
 {
-	SetObjectBufferValues(item.camera, item.world);
+	SetObjectBufferValues(item.camera, item.world, true);
 	objectBuffer.UpdateBuffer(context);
 
 	UINT stride[2] = { sizeof(Mesh::Vertex), sizeof(Mesh::InstanceData) };
@@ -382,7 +383,7 @@ void Renderer::DrawRenderItemInstanced(const RenderItem& item)
 
 void Renderer::DrawRenderItemSkeleton(const RenderItem& item)
 {
-	SetObjectBufferValues(item.camera, item.world);
+	SetObjectBufferValues(item.camera, item.world, true);
 	objectBuffer.UpdateBuffer(context);
 
 	srv_skeleton_data = *item.bones;
@@ -400,7 +401,7 @@ void Renderer::DrawRenderItemSkeleton(const RenderItem& item)
 
 void Renderer::DrawRenderItemGrass(const RenderItem& item)
 {
-	SetObjectBufferValues(item.camera, item.world);
+	SetObjectBufferValues(item.camera,item.world, false);
 	objectBuffer.UpdateBuffer(context);
 
 	ShaderBindFlag def = objectBuffer.GetFlag();
@@ -421,21 +422,40 @@ void Renderer::DrawRenderItemGrass(const RenderItem& item)
 	context->RSSetState(rasterizerStateCullBack);
 }
 
-void Renderer::SetObjectBufferValues(const CameraComponent* camera, dx::XMMATRIX world)
+void Renderer::SetObjectBufferValues(const CameraComponent* camera, dx::XMMATRIX world, bool transpose)
 {
-	cb_Object& data = objectBuffer.GetData();
-	dx::XMMATRIX view = camera->GetViewMatrix();
+	if (transpose)
+	{
+		cb_Object& data = objectBuffer.GetData();
+		dx::XMMATRIX view = camera->GetViewMatrix();
 
-	dx::XMMATRIX wv = dx::XMMatrixMultiply(world, view);
-	dx::XMStoreFloat4x4(&data.wv, dx::XMMatrixTranspose(wv));
+		dx::XMMATRIX wv = dx::XMMatrixMultiply(world, view);
+		dx::XMStoreFloat4x4(&data.wv, dx::XMMatrixTranspose(wv));
 
-	dx::XMMATRIX vp = dx::XMMatrixMultiply(view, camera->GetProjectionMatrix());
-	dx::XMStoreFloat4x4(&data.vp, dx::XMMatrixTranspose(vp));
+		dx::XMMATRIX vp = dx::XMMatrixMultiply(view, camera->GetProjectionMatrix());
+		dx::XMStoreFloat4x4(&data.vp, dx::XMMatrixTranspose(vp));
 
-	dx::XMMATRIX mvp = dx::XMMatrixMultiply(world, vp);
-	dx::XMStoreFloat4x4(&data.mvp, dx::XMMatrixTranspose(mvp));
-	dx::XMStoreFloat4x4(&data.world, dx::XMMatrixTranspose(world));
-	objectBuffer.SetData(data);
+		dx::XMMATRIX mvp = dx::XMMatrixMultiply(world, vp);
+		dx::XMStoreFloat4x4(&data.mvp, dx::XMMatrixTranspose(mvp));
+		dx::XMStoreFloat4x4(&data.world, dx::XMMatrixTranspose(world));
+		objectBuffer.SetData(data);
+	}
+	else
+	{
+		cb_Object& data = objectBuffer.GetData();
+		dx::XMMATRIX view = camera->GetViewMatrix();
+
+		dx::XMMATRIX wv = dx::XMMatrixMultiply(world, view);
+		dx::XMStoreFloat4x4(&data.wv, wv);
+
+		dx::XMMATRIX vp = dx::XMMatrixMultiply(view, camera->GetProjectionMatrix());
+		dx::XMStoreFloat4x4(&data.vp, vp);
+
+		dx::XMMATRIX mvp = dx::XMMatrixMultiply(world, vp);
+		dx::XMStoreFloat4x4(&data.mvp, mvp);
+		dx::XMStoreFloat4x4(&data.world, world);
+		objectBuffer.SetData(data);
+	}
 }
 
 void Renderer::DrawScreenQuad(const Material& material)

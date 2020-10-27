@@ -24,6 +24,21 @@ void Physics::Initialize(dx::XMFLOAT3 gravity)
 	this->gravity = rp::Vector3(gravity.x, gravity.y, gravity.z);
 	world->setGravity(this->gravity);
 
+#if LOG_REACT
+	// Create the default logger 
+	rp::DefaultLogger* logger = common.createDefaultLogger();
+
+	// Log level (warnings and errors) 
+	size_t logLevel = static_cast<size_t>(static_cast<size_t>(rp::Logger::Level::Warning) | static_cast<size_t>(rp::Logger::Level::Error));
+	
+	// Output the logs into an HTML file 
+	logger->addFileDestination("Logs/reactphysics_log_latest.txt", logLevel, rp::DefaultLogger::Format::Text);
+
+	// Set the logger 
+	common.setLogger(logger);
+#endif // LOG_REACT
+
+
 }
 
 void Physics::MutexLock()

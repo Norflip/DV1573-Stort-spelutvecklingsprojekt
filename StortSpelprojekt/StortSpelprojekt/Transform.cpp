@@ -134,6 +134,23 @@ void Transform::SetRotation(dx::XMVECTOR rotation)
 	changedThisFrame = true;
 }
 
+void Transform::SmoothRotation(dx::XMFLOAT3 endPos, float deltaTime, bool changeDir)
+{
+	float nextDir = 0;
+	float currentDir = rotation.y;
+	DirectX::XMVECTOR directionVector = { position.x - endPos.x,0, position.z - endPos.z };
+
+	if (changeDir)
+		nextDir = atan2(DirectX::XMVectorGetByIndex(directionVector, 0), DirectX::XMVectorGetByIndex(directionVector, 2));
+
+	Rotate(0, Math::ShortestRotation(currentDir, nextDir) * (deltaTime * 3.14f), 0);
+
+	if (DirectX::XMVectorGetByIndex(GetRotation(), 1) < -Math::PI * 2)
+		SetRotation({ 0, DirectX::XMVectorGetByIndex(GetRotation(), 1) + Math::PI * 2, 0 });
+	if (DirectX::XMVectorGetByIndex(GetRotation(), 1) > Math::PI * 2)
+		SetRotation({ 0, DirectX::XMVectorGetByIndex(GetRotation(), 1) - Math::PI * 2, 0 });
+}
+
 dx::XMMATRIX Transform::GetWorldMatrix() const
 {
 	dx::XMMATRIX worldMatrix = GetLocalWorldMatrix();
