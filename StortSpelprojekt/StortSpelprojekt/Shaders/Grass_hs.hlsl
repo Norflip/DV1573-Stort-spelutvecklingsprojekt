@@ -50,7 +50,7 @@ HS_CONSTANT_DATA_OUTPUT_GRASS hsPerIsoLinePatch(InputPatch<VS_OUTPUT_GRASS,1> in
 
 	if (len > 0.3) //change this to make the grass tesselate on selected areas
 	{
-		output.edgeTesselation[0] = 0;
+		//output.edgeTesselation[0] = 0;
 	}
 
 	return output;
