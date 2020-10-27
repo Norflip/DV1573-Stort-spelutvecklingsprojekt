@@ -211,72 +211,10 @@ void GameScene::InitializeObjects()
 	AddObject(houseBaseObject);
 
 
-	//Character reference
-	std::vector<Mesh> charRefMesh = ZWEBLoader::LoadMeshes(ZWEBLoadType::NoAnimation, "Models/char_ref.ZWEB", renderer->GetDevice());
-	std::vector<Material> charRefMat = ZWEBLoader::LoadMaterials("Models/char_ref.ZWEB", defaultShader, renderer->GetDevice());
-
-	Object* characterReferenceObject = new Object("characterReference");
-
-	characterReferenceObject->AddComponent<MeshComponent>(charRefMesh[0], charRefMat[0]);
-	characterReferenceObject->GetTransform().SetScale({ 1, 1, 1 });
-	characterReferenceObject->GetTransform().SetPosition({ 14,2,2 });
-	AddObject(characterReferenceObject);
-
-
 	/* For physics/ rigidbody pickup stuff */
 	Physics& phy = Physics::Instance();
 
 	Shader* defShader = resourceManager->GetShaderResource("defaultShader");
-
-	/* Health pickup stuff temporary */
-	std::vector<Mesh> healthkit = ZWEBLoader::LoadMeshes(ZWEBLoadType::NoAnimation, "Models/Healthkit.ZWEB", renderer->GetDevice());
-	std::vector<Material> healthkitMaterial = ZWEBLoader::LoadMaterials("Models/Healthkit.ZWEB", defShader, renderer->GetDevice());
-
-	Object* healthkitObject = new Object("healthObject");
-	healthkitObject->AddComponent<MeshComponent>(healthkit[0], healthkitMaterial[0]);
-	healthkitObject->GetTransform().SetPosition({ 18,2,2 });
-	healthkitObject->AddComponent<BoxColliderComponent>(dx::XMFLOAT3{ 0.5f, 0.5f, 0.5f }, dx::XMFLOAT3{ 0, 0, 0 });
-	healthkitObject->AddComponent<PickupComponent>(Type::Health, 20.0f);
-
-	RigidBodyComponent* healthBody;
-	healthBody = healthkitObject->AddComponent<RigidBodyComponent>(0, FilterGroups::PICKUPS, FilterGroups::PLAYER, false);
-
-	phy.RegisterRigidBody(healthBody);
-	AddObject(healthkitObject);
-
-
-	/* Fuel pickup stuff temporary */
-	std::vector<Mesh> fuelCan = ZWEBLoader::LoadMeshes(ZWEBLoadType::NoAnimation, "Models/FuelCan.ZWEB", renderer->GetDevice());
-	std::vector<Material> fuelCanMaterail = ZWEBLoader::LoadMaterials("Models/FuelCan.ZWEB", defShader, renderer->GetDevice());
-
-	Object* fuelCanObject = new Object("fuelObject");
-	fuelCanObject->AddComponent<MeshComponent>(fuelCan[0], fuelCanMaterail[0]);
-	fuelCanObject->GetTransform().SetPosition({ 22,2,2 });
-	fuelCanObject->AddComponent<BoxColliderComponent>(dx::XMFLOAT3{ 0.5f, 0.5f, 0.5f }, dx::XMFLOAT3{ 0, 0, 0 });
-	fuelCanObject->AddComponent<PickupComponent>(Type::Fuel, 20.0f);
-
-	RigidBodyComponent* fuelBody;
-	fuelBody = fuelCanObject->AddComponent<RigidBodyComponent>(0, FilterGroups::PICKUPS, FilterGroups::PLAYER, false);
-
-	phy.RegisterRigidBody(fuelBody);
-	AddObject(fuelCanObject);
-
-
-	/* Banana pickup stuff temporary */
-	std::vector<Mesh> beans = ZWEBLoader::LoadMeshes(ZWEBLoadType::NoAnimation, "Models/Bakedbeans.ZWEB", renderer->GetDevice());
-	std::vector<Material> beansMaterial = ZWEBLoader::LoadMaterials("Models/Bakedbeans.ZWEB", defShader, renderer->GetDevice());
-
-	Object* beansObject = new Object("bakedBeans");
-	beansObject->AddComponent<MeshComponent>(beans[0], beansMaterial[0]);
-	beansObject->GetTransform().SetPosition({ 3.0f, 1.0f, 5.0f });
-	beansObject->AddComponent<BoxColliderComponent>(dx::XMFLOAT3{ 0.5f, 0.5f, 0.5f }, dx::XMFLOAT3{ 0, 0, 0 });
-	beansObject->AddComponent<PickupComponent>(Type::Food, 20.0f);
-
-	RigidBodyComponent* beansBody;
-	beansBody = beansObject->AddComponent<RigidBodyComponent>(0, FilterGroups::PICKUPS, FilterGroups::PLAYER, false);
-	
-	phy.RegisterRigidBody(beansBody);
-	AddObject(beansObject);
 
 
 	clock.Update();
@@ -332,8 +270,8 @@ void GameScene::InitializeGUI()
 	GUIFont* enemyDisplay = new GUIFont(*renderer, "enemyHealth", 50, 150);*/
 
 	//CROSSHAIR
-	GUISprite* dot = new GUISprite(*renderer, "Textures/dot.png", (windowWidth / 2) - 6, (windowHeight / 2) - 6, 0, DrawDirection::BottomLeft, ClickFunction::NotClickable);
-	//GUISprite* crosshair = new GUISprite(*renderer, "Textures/chrosshair.png", (windowWidth / 2) - 25, (windowHeight / 2) - 25, 0, DrawDirection::BottomLeft, ClickFunction::NotClickable);
+	GUISprite* dot = new GUISprite(*renderer, "Textures/Dot.png", (windowWidth / 2) - 6, (windowHeight / 2) - 6, 0, DrawDirection::BottomLeft, ClickFunction::NotClickable);
+	//GUISprite* crosshair = new GUISprite(*renderer, "Textures/Crosshair.png", (windowWidth / 2) - 25, (windowHeight / 2) - 25, 0, DrawDirection::BottomLeft, ClickFunction::NotClickable);
 
 	// INSERTIONS
 	guiManager = new GUIManager(renderer, 100);
