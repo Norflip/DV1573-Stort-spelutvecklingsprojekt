@@ -28,7 +28,7 @@ bool EnemyAttackComp::GetIsAttacking()
 
 bool EnemyAttackComp::ChasePlayer(const float& deltaTime)
 {
-	bool chasePlayer = false;
+	chasePlayer = false;
 	attackPlayer = false;
 
 	DirectX::XMFLOAT3 enemyPos;
@@ -39,8 +39,8 @@ bool EnemyAttackComp::ChasePlayer(const float& deltaTime)
 	dx::XMFLOAT3 distanceF = { enemyPos.x - playerPos.x, enemyPos.y - playerPos.y, enemyPos.z - playerPos.z };
 	dx::XMFLOAT3 moveDir = { 0.0f, 0.0f, 0.0f };
 
-	if (enemyStatsComp->GetRadius() > distanceF.x && enemyStatsComp->GetRadius() > distanceF.y &&
-		enemyStatsComp->GetRadius() > distanceF.z)
+	if(distanceF.x <= enemyStatsComp->GetRadius() && distanceF.z <= enemyStatsComp->GetRadius()
+		&& distanceF.x >= -enemyStatsComp->GetRadius() && distanceF.z >= -enemyStatsComp->GetRadius())
 	{
 		chasePlayer = true;
 		if (distanceF.x > playerRadius)
@@ -62,29 +62,29 @@ bool EnemyAttackComp::ChasePlayer(const float& deltaTime)
 		}
 	}
 
-	if (distanceF.x <= playerRadius && distanceF.z <= playerRadius
-		&& distanceF.x >= -playerRadius && distanceF.z >= -playerRadius)
+	float length = (distanceF.x * distanceF.x + distanceF.y * distanceF.y + distanceF.z * distanceF.z);
+	if (length < playerRadius * playerRadius)
+	{
 		attackPlayer = true;
+	}
 
-	GetOwner()->GetTransform().Translate(moveDir.x * GetOwner()->GetComponent<EnemyStatsComp>()->GetSpeed() * deltaTime, 0.0f,
-		moveDir.z * GetOwner()->GetComponent<EnemyStatsComp>()->GetSpeed() * deltaTime);
+	GetOwner()->GetTransform().Translate(moveDir.x * enemyStatsComp->GetSpeed() * deltaTime, 0.0f,
+		moveDir.z * enemyStatsComp->GetSpeed() * deltaTime);
+
+	//rotation doesn't work
+	//GetOwner()->GetTransform().SmoothRotation(playerPos, deltaTime, true);
 
 	return chasePlayer;
 }
 
 void EnemyAttackComp::UpdateAttackPlayer(const float& deltaTime)
 {
-
-	// Behöver fixas med playercomp nedan
-
 	if (ChasePlayer(deltaTime) && attackPlayer)
 	{
-		if (timer.GetSeconds() >= GetOwner()->GetComponent<EnemyStatsComp>()->GetAttackSpeed())
+		if (timer.GetSeconds() >= enemyStatsComp->GetAttackSpeed())
 		{
 			timer.Restart();
 			player->LoseHealth(enemyStatsComp->GetAttack());
-			//player->GetOwner()->GetComponent<PlayerComp>()->LoseHealth(enemyStatsComp->GetAttack());
-
 		}
 	}
 }

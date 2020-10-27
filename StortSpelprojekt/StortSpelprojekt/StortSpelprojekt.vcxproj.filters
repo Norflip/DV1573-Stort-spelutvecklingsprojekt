@@ -231,13 +231,7 @@
     <ClCompile Include="WinScene.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="GridData.cpp">
-      <Filter>Source Files\SpawnSystems</Filter>
-    </ClCompile>
     <ClCompile Include="ObjectSpawner.cpp">
-      <Filter>Source Files\SpawnSystems</Filter>
-    </ClCompile>
-    <ClCompile Include="Path2.cpp">
       <Filter>Source Files\SpawnSystems</Filter>
     </ClCompile>
     <ClCompile Include="SegmentGenerator.cpp">
@@ -255,6 +249,13 @@
     <ClCompile Include="AudioMaster.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="ChunkGrid.cpp">
+      <Filter>Source Files\SpawnSystems</Filter>
+    </ClCompile>
+    <ClCompile Include="Path.cpp">
+      <Filter>Source Files\SpawnSystems</Filter>
+    </ClCompile>
+    <ClCompile Include="WeaponComponent.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="BoundingBoxes.h">
@@ -468,6 +469,7 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="NodeWalkerComp.h">
+    <ClInclude Include="WeaponComponent.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="PickupComponent.h">
@@ -476,13 +478,7 @@
     <ClInclude Include="WinScene.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="GridData.h">
-      <Filter>Source Files\SpawnSystems</Filter>
-    </ClInclude>
     <ClInclude Include="ObjectSpawner.h">
-      <Filter>Source Files\SpawnSystems</Filter>
-    </ClInclude>
-    <ClInclude Include="Path2.h">
       <Filter>Source Files\SpawnSystems</Filter>
     </ClInclude>
     <ClInclude Include="Random.h">
@@ -505,6 +501,12 @@
     </ClInclude>
     <ClInclude Include="AudioMaster.h">
       <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="ChunkGrid.h">
+      <Filter>Source Files\SpawnSystems</Filter>
+    </ClInclude>
+    <ClInclude Include="Path.h">
+      <Filter>Source Files\SpawnSystems</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

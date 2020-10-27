@@ -179,7 +179,7 @@
     <ClCompile Include="GameOverScene.cpp" />
     <ClCompile Include="GameScene.cpp" />
     <ClCompile Include="GrassComponent.cpp" />
-    <ClCompile Include="GridData.cpp" />
+    <ClCompile Include="ChunkGrid.cpp" />
     <ClCompile Include="GUIManager.cpp" />
     <ClCompile Include="GUISprite.cpp" />
     <ClCompile Include="Input.cpp" />
@@ -194,7 +194,7 @@
     <ClCompile Include="Object.cpp" />
     <ClCompile Include="ObjectPooler.cpp" />
     <ClCompile Include="ObjectSpawner.cpp" />
-    <ClCompile Include="Path2.cpp" />
+    <ClCompile Include="Path.cpp" />
     <ClCompile Include="Physics.cpp" />
     <ClCompile Include="PickupComponent.cpp" />
     <ClCompile Include="PlayerComp.cpp" />
@@ -218,6 +218,7 @@
     <ClCompile Include="SkeletonMeshComponent.cpp" />
     <ClCompile Include="ThirdParty\SimplexNoise.cpp" />
     <ClCompile Include="Transform.cpp" />
+    <ClCompile Include="WeaponComponent.cpp" />
     <ClCompile Include="Window.cpp" />
     <ClCompile Include="WinScene.cpp" />
     <ClCompile Include="World.cpp" />
@@ -243,12 +244,12 @@
     <ClInclude Include="DShape.h" />
     <ClInclude Include="GameOverScene.h" />
     <ClInclude Include="GameScene.h" />
-    <ClInclude Include="GridData.h" />
+    <ClInclude Include="ChunkGrid.h" />
     <ClInclude Include="IntroScene.h" />
     <ClInclude Include="FogRenderPass.h" />
     <ClInclude Include="ObjectPooler.h" />
     <ClInclude Include="ObjectSpawner.h" />
-    <ClInclude Include="Path2.h" />
+    <ClInclude Include="Path.h" />
     <ClInclude Include="PhysicCallbacks.h" />
     <ClInclude Include="PickupComponent.h" />
     <ClInclude Include="PlayerComp.h" />
@@ -301,6 +302,7 @@
     <ClInclude Include="SkeletonMeshComponent.h" />
     <ClInclude Include="ThirdParty\SimplexNoise.h" />
     <ClInclude Include="Transform.h" />
+    <ClInclude Include="WeaponComponent.h" />
     <ClInclude Include="Window.h" />
     <ClInclude Include="WinScene.h" />
     <ClInclude Include="World.h" />

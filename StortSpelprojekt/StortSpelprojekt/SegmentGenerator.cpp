@@ -15,6 +15,9 @@ void SegmentGenerator::Initialize(Object* root, ResourceManager* resourceManager
 	this->context = context;
 	this->initialized = true;
 
+	Material* mat = resourceManager->GetResource<Material>("Test");
+	materialData = mat->GetMaterialData();
+
 	this->grassShader = resourceManager->GetShaderResource("grassShader");
 	this->chunkShader = resourceManager->GetShaderResource("terrainShader");
 
@@ -170,8 +173,8 @@ std::vector<SegmentGenerator::ChunkPointInformation> SegmentGenerator::CreateChu
 	buffer = new unsigned char[size * size * 4];
 	heightMap = new float[size * size];
 
-	const float MAX_DISTANCE = 7.0f;
-	Path2 path = grid.GetPath();
+	const float MAX_DISTANCE = 10.0f;
+	Path path = grid.GetPath();
 	std::vector<ChunkPointInformation> informations;
 
 	for (size_t y = 0; y < size; y++)
@@ -183,19 +186,26 @@ std::vector<SegmentGenerator::ChunkPointInformation> SegmentGenerator::CreateChu
 			float distance = path.ClosestDistance(tilePos);
 			distance = std::min(distance, MAX_DISTANCE) / MAX_DISTANCE;
 
+			float sampledHeight = Noise::Sample(chunkPosXZ.x + x, chunkPosXZ.y + y, description.noiseSettings);
+			float worldHeight = sampledHeight * distance * TERRAIN_SCALE;
 			
-			float height = Noise::Sample(chunkPosXZ.x + x, chunkPosXZ.y + y, description.noiseSettings);
-			heightMap[x + size * y] = height * distance * TERRAIN_SCALE;
+			worldHeight = std::max(worldHeight, MIN_TERRAIN_HEIGHT * 4.0f);
+			
+			
+			float height = worldHeight / TERRAIN_SCALE;
+
+			heightMap[x + size * y] = worldHeight;
 
 			ChunkPointInformation chunkPoint;
 			chunkPoint.distance = distance;
-			chunkPoint.height = height;
+			chunkPoint.height = worldHeight;
 			informations.push_back(chunkPoint);
 
 			int bufferIndex = x + size * y;
-			buffer[bufferIndex * 4 + 0] = static_cast<unsigned char>(255 * height * distance);
-			buffer[bufferIndex * 4 + 1] = static_cast<unsigned char>(255 * distance);
-			buffer[bufferIndex * 4 + 2] = static_cast<unsigned char>(255 * height);
+
+			buffer[bufferIndex * 4 + 0] = static_cast<unsigned char>(255 * height);
+			buffer[bufferIndex * 4 + 1] = static_cast<unsigned char>(255 * sampledHeight);
+			buffer[bufferIndex * 4 + 2] = static_cast<unsigned char>(255 * distance);
 			buffer[bufferIndex * 4 + 3] = static_cast<unsigned char>(255);
 		}
 	}
@@ -220,16 +230,37 @@ Chunk* SegmentGenerator::CreateChunk(const dx::XMINT2& index, Object* root, cons
 
 	chunk->SetupCollisionObject(heightMap);
 
-	auto chunkDataSRV = DXHelper::CreateTexture(buffer, CHUNK_SIZE + 1, CHUNK_SIZE + 1, 4, DXGI_FORMAT_R8G8B8A8_UNORM_SRGB, device);
+	auto chunkDataSRV = DXHelper::CreateTexture(buffer, CHUNK_SIZE + 1, CHUNK_SIZE + 1, 4, DXGI_FORMAT_R8G8B8A8_UNORM, device);
 
 	Material material(chunkShader);
+	//cb_Material mat = material.GetMaterialData();
+	//mat.ambient = dx::XMFLOAT4(0.1f, 0.1f, 0.1f, 1);
+	//mat.diffuse = dx::XMFLOAT4(0.1f, 0.1f, 0.1f, 1);
+	//mat.specular = dx::XMFLOAT4(0.1f, 0.1f, 0.1f, 0.1f);
+
+	material.SetMaterialData(materialData);
+
 	Texture texture(chunkDataSRV);
 
+	Texture grassTexture;
+	grassTexture.LoadTexture(device, L"Textures/Grass_001_COLOR.jpg");
+
+	Texture roadTexture;
+	roadTexture.LoadTexture(device, L"Textures/Stone_Floor_003_COLOR.jpg");
+
 	material.SetTexture(texture, 0, ShaderBindFlag::PIXEL | ShaderBindFlag::VERTEX);
+	material.SetTexture(grassTexture, 1, ShaderBindFlag::PIXEL);
+	material.SetTexture(roadTexture, 2, ShaderBindFlag::PIXEL);
+
 	delete[] buffer;
 
-	auto sampler = DXHelper::CreateSampler(D3D11_FILTER_MIN_MAG_MIP_POINT, D3D11_TEXTURE_ADDRESS_CLAMP, device);
-	material.SetSampler(sampler, 0, ShaderBindFlag::PIXEL | ShaderBindFlag::VERTEX);
+	auto dataSampler = DXHelper::CreateSampler(D3D11_FILTER_MIN_MAG_MIP_POINT, D3D11_TEXTURE_ADDRESS_CLAMP, device);
+	material.SetSampler(dataSampler, 0, ShaderBindFlag::PIXEL | ShaderBindFlag::VERTEX);
+
+	auto textureSampler = DXHelper::CreateSampler(D3D11_FILTER_MIN_MAG_MIP_LINEAR, D3D11_TEXTURE_ADDRESS_WRAP, device);
+	material.SetSampler(textureSampler, 1, ShaderBindFlag::PIXEL);
+
+
 	chunkObject->AddComponent<MeshComponent>(chunkMesh, material);
 
 	AddTreesToChunk(chunk, chunkInformation);

@@ -71,7 +71,7 @@ private:
 	void GetHeightFieldMinMax(float* heightMap, size_t size, float& min, float& max);
 
 private:
-
+	float min, max;
 	rp::Collider* collider;
 
 #if USE_RIGIDBODY

@@ -33,10 +33,14 @@ bool PlayerAttackComp::CheckAttack()
 	dx::XMStoreFloat3(&enemyPos, enemy->GetTransform().GetPosition());
 
 	dx::XMFLOAT3 distanceF = { enemyPos.x - playerPos.x, enemyPos.y - playerPos.y, enemyPos.z - playerPos.z };
-	if (distanceF.x <= playerStatsComp->GetRadius() 
-		&& distanceF.z <= playerStatsComp->GetRadius()
-		&& distanceF.x >= -playerStatsComp->GetRadius() 
-		&& distanceF.z >= -playerStatsComp->GetRadius())
+	//if (distanceF.x <= playerStatsComp->GetRadius() 
+	//	&& distanceF.z <= playerStatsComp->GetRadius()
+	//	&& distanceF.x >= -playerStatsComp->GetRadius() 
+	//	&& distanceF.z >= -playerStatsComp->GetRadius())
+	//	attackEnemy = true;
+
+	float length = (distanceF.x * distanceF.x + distanceF.y * distanceF.y + distanceF.z * distanceF.z);
+	if (length < playerStatsComp->GetRadius() * playerStatsComp->GetRadius())
 		attackEnemy = true;
 
 	return attackEnemy;
