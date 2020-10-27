@@ -1,6 +1,6 @@
 #pragma once
 #include "Chunk.h"
-#include "GridData.h"
+#include "ChunkGrid.h"
 #include "SaveState.h"
 #include "SegmentDescription.h"
 #include "Material.h"
@@ -23,8 +23,10 @@ class SegmentGenerator
 	};
 
 	const int CHUNK_PADDING = 2;
-	const float FRACKIG_TREE_ADJUSTMENT = -3.5f;
+	const float FRACKIG_TREE_ADJUSTMENT = 0.0f;// -3.5f;
 	const float TREE_SPAWN_FACTOR = 0.4f;
+	const float MIN_TERRAIN_HEIGHT = 0.1f;
+	const float TERRAIN_BASE_HEIGHT = 1.0f;
 
 public:
 	SegmentGenerator();
@@ -39,7 +41,9 @@ public:
 
 	Chunk* GetChunk(float x, float z) const;
 	void DrawDebug();
-	Path2 GetPath() const { return this->grid.GetPath(); }
+	Path GetPath() const { return this->grid.GetPath(); }
+
+	std::vector<Chunk*> GetChunks() const { return this->chunks; }
 
 private:
 	std::vector<ChunkPointInformation> CreateChunkMap(const dx::XMINT2& index, const SegmentDescription& description, float*& heightMap, unsigned char*& buffer);
@@ -55,11 +59,12 @@ private:
 
 private:
 	bool constructed, initialized;
-	GridData grid;
+	ChunkGrid grid;
 	ObjectSpawner spawner;
 	std::vector<Chunk*> chunks;
 	std::unordered_map<int, Chunk*> chunkMap;
 
+	cb_Material materialData;
 	Shader* grassShader;
 	Shader* chunkShader;
 
