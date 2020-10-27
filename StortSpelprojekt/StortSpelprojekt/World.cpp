@@ -11,12 +11,10 @@ World::~World()
 
 void World::Initialize(Object* root, ResourceManager* resources, ObjectPooler* pooler, Renderer* renderer)
 {
-	RegisterToPool(pooler);
 	ObjectSpawner* spawner = new ObjectSpawner();
 	spawner->Initialize(root, pooler);
-	spawner->AddItem("dynamic_stone", 1.0f, 1.0f, 10, 25, 0.0f, ItemSpawnType::DYNAMIC);
-	spawner->AddItem("static_sphere", 1.0f, 1.0f, 10, 25, 0.0f, ItemSpawnType::STATIC);
-
+	RegisterToPool(pooler, spawner);
+	
 	generator.Initialize(root, resources, spawner, renderer->GetDevice(), renderer->GetContext());
 	playerIndex = dx::XMINT2(-5000, -5000);
 }
@@ -116,7 +114,7 @@ dx::XMINT2 World::GetChunkIndex(Object* object) const
 	return index;
 }
 
-void World::RegisterToPool(ObjectPooler* pooler)
+void World::RegisterToPool(ObjectPooler* pooler, ObjectSpawner* spawner) const
 {
 	pooler->Register("dynamic_stone", 0, [](ResourceManager* resources)
 	{
@@ -147,4 +145,7 @@ void World::RegisterToPool(ObjectPooler* pooler)
 		Physics::Instance().RegisterRigidBody(rd);
 		return object;
 	});
+
+	spawner->AddItem("dynamic_stone", 1.0f, 1.0f, 10, 25, 0.0f, ItemSpawnType::DYNAMIC);
+	spawner->AddItem("static_sphere", 1.0f, 1.0f, 10, 25, 0.0f, ItemSpawnType::STATIC);
 }

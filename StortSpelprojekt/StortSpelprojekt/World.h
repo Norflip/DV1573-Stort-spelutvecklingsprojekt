@@ -30,7 +30,7 @@ public:
 
 private:
 	dx::XMINT2 GetChunkIndex(Object* object) const;
-	void RegisterToPool(ObjectPooler* pooler);
+	void RegisterToPool(ObjectPooler* pooler, ObjectSpawner* spawner) const;
 
 private:
 	SegmentGenerator generator;
