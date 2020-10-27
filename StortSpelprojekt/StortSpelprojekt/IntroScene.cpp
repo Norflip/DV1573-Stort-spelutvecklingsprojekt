@@ -5,14 +5,17 @@
 
 IntroScene::IntroScene(ResourceManager* manager) : Scene(manager)
 {
+	
 }
 
 IntroScene::~IntroScene()
 {
+	audioMaster.StopSoundEvent(menuTest);
 }
 
 void IntroScene::Initialize(Renderer* renderer)
 {
+	
 	this->renderer = renderer;
 
 	/*Physics& physics = Physics::Instance();
@@ -31,6 +34,12 @@ void IntroScene::Initialize(Renderer* renderer)
 
 void IntroScene::InitializeObjects()
 {
+	//audioComponent.LoadFile(L"Sounds/PopCulture.mp3", menuTest, AudioTypes::Music);
+	audioMaster.LoadFile(L"Sounds/jakestuff.mp3", menuTest, AudioTypes::Music);
+	audioMaster.LoadFile(L"Sounds/yay.wav", test2, AudioTypes::Sound);
+	audioMaster.SetVolume(AudioTypes::Music, 0.7f);
+	audioMaster.PlaySoundEvent(menuTest);
+
 	Object* cameraObject = new Object("camera", ObjectFlag::ENABLED);
 	camera = cameraObject->AddComponent<CameraComponent>(60.0f, true);
 	camera->Resize(windowWidth, windowHeight);
@@ -93,14 +102,16 @@ void IntroScene::Update(const float& deltaTime)
 
 	if (static_cast<GUISprite*>(guiManager->GetGUIObject("startSprite"))->IsClicked())
 	{
+		audioMaster.StopSoundEvent(menuTest);
 		nextScene = GAME;
 	}
 	else if (static_cast<GUISprite*>(guiManager->GetGUIObject("quitSprite"))->IsClicked())
 	{
+		audioMaster.StopSoundEvent(menuTest);
 		quit = true;
 	}
 	guiManager->UpdateAll();
-
+	
 }
 
 void IntroScene::FixedUpdate(const float& fixedDeltaTime)

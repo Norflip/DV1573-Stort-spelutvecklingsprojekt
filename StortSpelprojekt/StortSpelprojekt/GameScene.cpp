@@ -9,10 +9,15 @@ GameScene::GameScene(ResourceManager* manager) : Scene(manager)
 
 GameScene::~GameScene()
 {
+
+	
 }
 
 void GameScene::Initialize(Renderer* renderer)
 {
+
+	
+
 	this->renderer = renderer;
 
 	// Should change values on resize event
@@ -44,7 +49,7 @@ void GameScene::InitializeObjects()
 {
 	Physics& physics = Physics::Instance();
 
-
+	
 
 	SaveState state;
 	state.seed = 1337;

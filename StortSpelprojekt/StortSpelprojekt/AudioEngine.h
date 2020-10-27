@@ -16,21 +16,21 @@ class AudioEngine
 {
 public:
 	AudioEngine();
-	~AudioEngine();
-	void Initialize();
+	~AudioEngine();	
+	IXAudio2* GetAudioMaster() { return this->audioMaster; }
 	void LoadFile(const std::wstring& filename, std::vector<BYTE>& audioData, WAVEFORMATEX** waveFormatEx, unsigned int& waveLength);
-	IXAudio2* GetAudio() { return this->audio; }
-	//friend class AudioComponent;
+	void Initialize();
+
 private:
-	IXAudio2* audio;
+	IXAudio2* audioMaster;
 	IXAudio2MasteringVoice* masterVoice;
 
 	IMFSourceReader* sourceReader;			// Set stream
 	IMFMediaType* nativeMediaType;			// Query mediainfo
 	IMFMediaType* partialType;				// For creating mediafile/type/stuff
 	IMFMediaType* uncompressedAudioFile;	// Working audiofile
-
 	IMFAttributes* sourceReaderConfig;
-
-	
+	IMFSample* sample;
+	IMFMediaBuffer* buffer;
+	BYTE* localAudioData;
 };

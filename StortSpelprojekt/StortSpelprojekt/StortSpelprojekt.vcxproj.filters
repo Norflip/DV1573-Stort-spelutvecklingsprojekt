@@ -249,8 +249,12 @@
     <ClCompile Include="PointQuadTree.cpp">
       <Filter>Source Files\SpawnSystems</Filter>
     </ClCompile>
-    <ClCompile Include="AudioEngine.cpp" />
-    <ClCompile Include="AudioComponent.cpp" />
+    <ClCompile Include="AudioEngine.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="AudioMaster.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="BoundingBoxes.h">
@@ -499,7 +503,7 @@
     <ClInclude Include="AudioEngine.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="AudioComponent.h">
+    <ClInclude Include="AudioMaster.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>

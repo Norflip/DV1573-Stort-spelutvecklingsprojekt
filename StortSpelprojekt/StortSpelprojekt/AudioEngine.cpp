@@ -1,6 +1,6 @@
 #include "AudioEngine.h"
 
-AudioEngine::AudioEngine() : audio(nullptr), masterVoice(nullptr), sourceReader(nullptr), sourceReaderConfig(nullptr), nativeMediaType(nullptr), partialType(nullptr), uncompressedAudioFile(nullptr)
+AudioEngine::AudioEngine() : audioMaster(nullptr), masterVoice(nullptr), sourceReader(nullptr), nativeMediaType(nullptr), partialType(nullptr), uncompressedAudioFile(nullptr), sourceReaderConfig(nullptr), sample(nullptr), buffer(nullptr), localAudioData(NULL)
 {
 	
 }
@@ -9,18 +9,24 @@ AudioEngine::~AudioEngine()
 {
 	MFShutdown();
 	masterVoice->DestroyVoice();
-	audio->StopEngine();
+	audioMaster->StopEngine();
 
+	/*if (localAudioData)
+		delete localAudioData;
+	if (sample)
+		delete sample;
+	if (partialType)
+		delete partialType;
 	if (uncompressedAudioFile)
 		delete uncompressedAudioFile;
 	if (nativeMediaType)
 		delete nativeMediaType;
 	if (sourceReader)
-		delete sourceReader;
-	if (audio)
-		delete audio;
+		delete sourceReader;*/
+	/*if (audioMaster)
+		delete audioMaster;
 	if(masterVoice)
-		delete masterVoice;
+		delete masterVoice;*/
 	/*if(!audio && !masterVoice)
 		OutputDebugStringW(L"Ok delete motherfakka");*/
 }
@@ -39,127 +45,131 @@ void AudioEngine::Initialize()
 	if (FAILED(startUp))
 		OutputDebugStringW(L"Unable to set WMF config");
 
-	startUp = XAudio2Create(&audio);
+	startUp = XAudio2Create(&audioMaster);
 	if (FAILED(startUp))
 		OutputDebugStringW(L"Unable to create XAudio2 engine");
 
-	startUp = audio->CreateMasteringVoice(&masterVoice);
+	startUp = audioMaster->CreateMasteringVoice(&masterVoice);
 	if (FAILED(startUp))
 		OutputDebugStringW(L"Unable to create mastering voice for xAudio");
 }
 
 void AudioEngine::LoadFile(const std::wstring& filename, std::vector<BYTE>& audioData, WAVEFORMATEX** waveFormatEx, unsigned int& waveLength)
-{
+{	
 	DWORD streamIndex = (DWORD)MF_SOURCE_READER_FIRST_AUDIO_STREAM;
 
-	HRESULT loadFile = MFCreateSourceReaderFromURL(filename.c_str(), sourceReaderConfig, &sourceReader);
-	if (FAILED(loadFile))
-		OutputDebugStringW(L"Unable to create source reader from URL");
+	/* Create the source reader */
+	HRESULT hr = MFCreateSourceReaderFromURL(filename.c_str(), sourceReaderConfig, &sourceReader);
+	if (FAILED(hr))
+		OutputDebugStringW(L"Unable to create source reader from URL!");
 
-	loadFile = sourceReader->SetStreamSelection((DWORD)MF_SOURCE_READER_ALL_STREAMS, false);
-	if (FAILED(loadFile))
-		OutputDebugStringW(L"Unable to disable possible streams");
+	/* Select the first audio stream, and deselect all other streams */
+	hr = sourceReader->SetStreamSelection((DWORD)MF_SOURCE_READER_ALL_STREAMS, false);
+	if (FAILED(hr))
+		OutputDebugStringW(L"Unable to disable streams!");
 
-	loadFile = sourceReader->SetStreamSelection(streamIndex, true);
-	if (FAILED(loadFile))
-		OutputDebugStringW(L"Unable to enable first audio stream");
+	hr = sourceReader->SetStreamSelection(streamIndex, true);
+	if (FAILED(hr))
+		OutputDebugStringW(L"Unable to enable first audio stream!");
 
-	/* Query information about media file and make sure it's an audio file */
-	HRESULT queryMediaInfo = sourceReader->GetNativeMediaType(streamIndex, 0, &nativeMediaType);
-	if (FAILED(queryMediaInfo))
-		OutputDebugStringW(L"Unalbe to query media information");
-	
+
+	/* 
+		1. Query information about the current media file 
+		2. Make sure it is an audio file with 
+		3. Check if the audio file is compressed or uncompressed
+		4. Do stuff based on pnt 3. ( Nothing or decompressing to playable format ) 
+	*/
+
+	hr = sourceReader->GetNativeMediaType(streamIndex, 0, &nativeMediaType);
+	if (FAILED(hr))
+		OutputDebugStringW(L"Unable to query media information!");
+
 	GUID majorType{};
-	queryMediaInfo = nativeMediaType->GetGUID(MF_MT_MAJOR_TYPE, &majorType);
-	if (FAILED(queryMediaInfo))
-		OutputDebugStringW(L"The requested file is not an audio file");
+	hr = nativeMediaType->GetGUID(MF_MT_MAJOR_TYPE, &majorType);
+	if (majorType != MFMediaType_Audio)
+		OutputDebugStringW(L"Critical error: the requested file is not an audio file!");
 
-	/* Check if th audio file is compressed or uncompressed, do different stuff.... */
 	GUID subType{};
-	queryMediaInfo = nativeMediaType->GetGUID(MF_MT_MAJOR_TYPE, &subType);
-	if (FAILED(queryMediaInfo))
-		OutputDebugStringW(L"Failed to check if its compressed och uncompressed");
-
+	hr = nativeMediaType->GetGUID(MF_MT_SUBTYPE, &subType);
 	if (subType == MFAudioFormat_Float || subType == MFAudioFormat_PCM)
 	{
-		// Uncompressed, ok stuff
+		// Audio file is uncompressed -> nothing to do here
 	}
 	else
-	{
-		/* If we are working with a compressed format, such as mp3, for example, we have to decode it first */
-		HRESULT decompressingFile = MFCreateMediaType(&partialType);
-		if (FAILED(decompressingFile))
-			OutputDebugStringW(L"Unalbe to create media type");
+	{		
+		hr = MFCreateMediaType(&partialType);
+		if (FAILED(hr))
+			OutputDebugStringW(L"Critical error: Unable create media type!");
 
-		decompressingFile = partialType->SetGUID(MF_MT_MAJOR_TYPE, MFMediaType_Audio);
-		if (FAILED(decompressingFile))
-			OutputDebugStringW(L"Unable to set media type when decompressing");
+		/* Set the media type to "audio" */
+		hr = partialType->SetGUID(MF_MT_MAJOR_TYPE, MFMediaType_Audio);
+		if (FAILED(hr))
+			OutputDebugStringW(L"Critical error: Unable to set media type to audio!");
 
-		decompressingFile = partialType->SetGUID(MF_MT_SUBTYPE, MFAudioFormat_PCM);
-		if (FAILED(decompressingFile))
-			OutputDebugStringW(L"Unable to set media type to uncompressed");
+		/* Set to uncompressed media type */
+		hr = partialType->SetGUID(MF_MT_SUBTYPE, MFAudioFormat_PCM);
+		if (FAILED(hr))
+			OutputDebugStringW(L"Critical error: Unable to set guid of media type to uncompressed!");
 
-		decompressingFile = sourceReader->SetCurrentMediaType(streamIndex, NULL, partialType);
-		if (FAILED(decompressingFile))
-			OutputDebugStringW(L"Unable to set current media type to source reader");	
+		hr = sourceReader->SetCurrentMediaType(streamIndex, NULL, partialType);
+		if (FAILED(hr))
+			OutputDebugStringW(L"Critical error: Unable to set current media type!");
 	}
 
-	/* Uncompress the data and load it into an XAudio2 Buffer */
-	HRESULT createStreamFile = sourceReader->GetCurrentMediaType(streamIndex, &uncompressedAudioFile);
-	if (FAILED(createStreamFile))
-		OutputDebugStringW(L"Unable to retrieve the current media type!");
 
-	createStreamFile = MFCreateWaveFormatExFromMFMediaType(uncompressedAudioFile, waveFormatEx, &waveLength);
-	if (FAILED(createStreamFile))
+	/* 
+		1. Create audiofile out of uncompressed format 
+		2. Load to xAudio Buffer 
+	*/ 
+
+	hr = sourceReader->GetCurrentMediaType(streamIndex, &uncompressedAudioFile);
+	if (FAILED(hr))
+		OutputDebugStringW(L"Critical error: Unable to retrieve the current media type!");
+
+	hr = MFCreateWaveFormatExFromMFMediaType(uncompressedAudioFile, waveFormatEx, &waveLength);
+	if (FAILED(hr))
 		OutputDebugStringW(L"Critical error: Unable to create the wave format!");
 
-	/* Ensure the stream is selected */
-	createStreamFile = sourceReader->SetStreamSelection(streamIndex, true);
-	if (FAILED(createStreamFile))
+	hr = sourceReader->SetStreamSelection(streamIndex, true);
+	if (FAILED(hr))
 		OutputDebugStringW(L"Critical error: Unable to select audio stream!");
 
-	/* Copy data into byte vector */
-	IMFSample* sample = nullptr;
-	IMFMediaBuffer* buffer = nullptr;
-	BYTE* localAudioData = NULL;
-	DWORD localAudioDataLength = 0;
 
+	DWORD localAudioDataLength = 0;
 	while (true)
 	{
 		DWORD flags = 0;
-		createStreamFile = sourceReader->ReadSample(streamIndex, 0, nullptr, &flags, nullptr, &sample);
-		if (FAILED(createStreamFile))
+		hr = sourceReader->ReadSample(streamIndex, 0, nullptr, &flags, nullptr, &sample);
+		if (FAILED(hr))
 			OutputDebugStringW(L"Critical error: Unable to read audio sample!");
 
-		// Check whether the data is still valid
+		/* Check if the data is still valid */
 		if (flags & MF_SOURCE_READERF_CURRENTMEDIATYPECHANGED)
 			break;
 
-		// Check for end of stream
+		/* Check for end of stream */
 		if (flags & MF_SOURCE_READERF_ENDOFSTREAM)
 			break;
 
 		if (sample == nullptr)
 			continue;
 
-		// Convert data to contiguous buffer
-		createStreamFile = sample->ConvertToContiguousBuffer(&buffer);
-		if (FAILED(createStreamFile))
+		hr = sample->ConvertToContiguousBuffer(&buffer);
+		if (FAILED(hr))
 			OutputDebugStringW(L"Critical error: Unable to convert audio sample to contiguous buffer!");
 
-		// Lock buffer and copy data to local memory
-		createStreamFile = buffer->Lock(&localAudioData, nullptr, &localAudioDataLength);
-		if (FAILED(createStreamFile))
+		/* Lock buffer and copy data to local memory, then unlock it */
+		hr = buffer->Lock(&localAudioData, nullptr, &localAudioDataLength);
+		if (FAILED(hr))
 			OutputDebugStringW(L"Critical error: Unable to lock the audio buffer!");
 
 		for (size_t i = 0; i < localAudioDataLength; i++)
 			audioData.push_back(localAudioData[i]);
 
-		// Unlock the buffer
-		createStreamFile = buffer->Unlock();
+		hr = buffer->Unlock();
 		localAudioData = nullptr;
 
-		if (FAILED(createStreamFile))
+		if (FAILED(hr))
 			OutputDebugStringW(L"Critical error while unlocking the audio buffer!");
 	}
 }

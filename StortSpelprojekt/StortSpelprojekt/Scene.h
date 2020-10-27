@@ -95,6 +95,6 @@ protected:
 	ResourceManager* resourceManager;
 
 	float windowHeight, windowWidth;
-	bool quit;
+	bool quit;	
 
 };
