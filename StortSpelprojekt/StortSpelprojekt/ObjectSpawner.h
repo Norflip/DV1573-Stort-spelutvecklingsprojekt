@@ -27,15 +27,11 @@ public:
 
 	void Initialize(Object* root, ObjectPooler* pooler);
 
-
-
 	void Spawn(PointQuadTree& tree, std::unordered_map<int, Chunk*>& chunkMap, std::vector<Chunk*>& chunks);
 	void Despawn();
 
-	void AddProp(std::string key, float radius, float padding, float yOffset, int queueCount);
-	void AddItem(std::string key, float radius, float padding, float yOffset, int queueCount);
+	void RegisterItem(std::string key, float radius, float padding, float yOffset, int queueCount, ItemSpawnType type);
 
-	void AddItem(std::string key, float radius, float padding, size_t min, size_t max, float yOffset, ItemSpawnType type = ItemSpawnType::STATIC);
 	void DrawDebug();
 
 private:

@@ -30,7 +30,8 @@ public:
 
 private:
 	dx::XMINT2 GetChunkIndex(Object* object) const;
-	void RegisterToPool(ObjectPooler* pooler, ObjectSpawner* spawner) const;
+	void RegisterToPool(ObjectPooler* pooler, ObjectSpawner* spawner, const std::map<std::string, int>& queueCountTable) const;
+	int TryGetQueueCount(std::string key,  const std::map<std::string, int>& queueCountTable, int defaultCount = 1) const;
 
 private:
 	SegmentGenerator generator;

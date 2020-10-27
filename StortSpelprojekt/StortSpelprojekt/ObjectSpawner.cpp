@@ -19,7 +19,25 @@ void ObjectSpawner::Spawn(PointQuadTree& tree, std::unordered_map<int, Chunk*>& 
 {
 	itemSpawnPositions = CreateSpawnPositions(tree, 20.0f, chunkMap);
 	propSpawnPositions = CreateSpawnPositions(tree, 20.0f, chunkMap);
-	return;
+
+	/*for (size_t i = 0; i < staticItems.size(); i++)
+	{
+		dx::XMFLOAT2 pos = itemSpawnPositions[0];
+		Chunk* chunk = GetChunk(pos.x, pos.y, chunkMap);
+
+		if (chunk != nullptr)
+		{
+			float y = chunk->SampleHeight(pos.x, pos.y);
+
+			Object* object = pooler->GetItem("dynamic_stone");
+			dx::XMVECTOR position = dx::XMVectorSet(pos.x, y + SPAWN_HEIGHT, pos.y, 0.0f);
+
+			object->GetComponent<RigidBodyComponent>()->SetPosition(position);
+			Transform::SetParentChild(root->GetTransform(), object->GetTransform());
+			items.push_back(object);
+		}
+	}*/
+
 
 	for (int i = itemSpawnPositions.size() - 1; i >= 0; i--)
 	{
@@ -71,7 +89,7 @@ void ObjectSpawner::Despawn()
 	items.clear();
 }
 
-void ObjectSpawner::AddProp(std::string key, float radius, float padding, float yOffset, int queueCount)
+void ObjectSpawner::RegisterItem(std::string key, float radius, float padding, float yOffset, int queueCount, ItemSpawnType type)
 {
 	Item item;
 	item.key = key;
@@ -79,39 +97,21 @@ void ObjectSpawner::AddProp(std::string key, float radius, float padding, float 
 	item.radius = radius;
 	item.padding = padding;
 
-}
-
-void ObjectSpawner::AddItem(std::string key, float radius, float padding, float yOffset, int queueCount)
-{
-	Item item;
-	item.key = key;
-	item.yOffset;
-	item.radius = radius;
-	item.padding = padding;
-
-
-}
-
-void ObjectSpawner::AddItem(std::string key, float radius, float padding, size_t min, size_t max, float yOffset, ItemSpawnType type)
-{
-	Item item;
-	item.key = key;
-	item.yOffset;
-	item.radius = radius;
-	item.padding = padding;
-
-	switch (type)
+	for (size_t i = 0; i < queueCount; i++)
 	{
-		case ItemSpawnType::DYNAMIC:
-			dynamicItems.push_back(item);
-			break;
-		case ItemSpawnType::STATIC:
-			staticItems.push_back(item);
-			break;
-		default:
-			break;
+		switch (type)
+		{
+			case ItemSpawnType::DYNAMIC:
+				dynamicItems.push_back(item); break;
+
+			default:
+			case ItemSpawnType::STATIC: 
+				staticItems.push_back(item); break;
+		}
 	}
+
 }
+
 
 void ObjectSpawner::DrawDebug()
 {

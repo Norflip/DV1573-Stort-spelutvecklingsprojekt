@@ -13,7 +13,7 @@ void World::Initialize(Object* root, ResourceManager* resources, ObjectPooler* p
 {
 	ObjectSpawner* spawner = new ObjectSpawner();
 	spawner->Initialize(root, pooler);
-	RegisterToPool(pooler, spawner);
+	RegisterToPool(pooler, spawner, std::map<std::string, int>());
 	
 	generator.Initialize(root, resources, spawner, renderer->GetDevice(), renderer->GetContext());
 	playerIndex = dx::XMINT2(-5000, -5000);
@@ -114,7 +114,13 @@ dx::XMINT2 World::GetChunkIndex(Object* object) const
 	return index;
 }
 
-void World::RegisterToPool(ObjectPooler* pooler, ObjectSpawner* spawner) const
+int World::TryGetQueueCount(std::string key, const std::map<std::string, int>& queueCountTable, int defaultCount) const
+{
+	auto found = queueCountTable.find(key);
+	return(found != queueCountTable.end()) ? found->second : defaultCount;
+}
+
+void World::RegisterToPool(ObjectPooler* pooler, ObjectSpawner* spawner, const std::map<std::string, int>& queueCountTable) const
 {
 	pooler->Register("dynamic_stone", 0, [](ResourceManager* resources)
 	{
@@ -146,6 +152,6 @@ void World::RegisterToPool(ObjectPooler* pooler, ObjectSpawner* spawner) const
 		return object;
 	});
 
-	spawner->AddItem("dynamic_stone", 1.0f, 1.0f, 10, 25, 0.0f, ItemSpawnType::DYNAMIC);
-	spawner->AddItem("static_sphere", 1.0f, 1.0f, 10, 25, 0.0f, ItemSpawnType::STATIC);
+	spawner->RegisterItem("dynamic_stone", 1.0f, 1.0f, 0.0f, TryGetQueueCount("dynamic_stone", queueCountTable), ItemSpawnType::DYNAMIC);
+	spawner->RegisterItem("static_sphere", 1.0f, 1.0f, 0.0f, TryGetQueueCount("static_sphere", queueCountTable), ItemSpawnType::STATIC);
 }
