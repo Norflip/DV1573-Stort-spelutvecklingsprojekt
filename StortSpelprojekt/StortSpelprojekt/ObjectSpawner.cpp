@@ -19,6 +19,7 @@ void ObjectSpawner::Spawn(PointQuadTree& tree, std::unordered_map<int, Chunk*>& 
 {
 	itemSpawnPositions = CreateSpawnPositions(tree, 20.0f, chunkMap);
 	propSpawnPositions = CreateSpawnPositions(tree, 20.0f, chunkMap);
+	return;
 
 	for (int i = itemSpawnPositions.size() - 1; i >= 0; i--)
 	{
