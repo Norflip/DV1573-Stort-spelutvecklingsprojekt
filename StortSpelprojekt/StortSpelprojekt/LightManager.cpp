@@ -41,7 +41,7 @@ void LightManager::UpdateBuffers(ID3D11DeviceContext* context)
 	bool dirty = false;
 	cb_Lights& data = lightBuffer.GetData();
 
-	data.sunDirection = dx::XMFLOAT3(0.0f, -1.0f, 1.0f);
+	dx::XMStoreFloat3(&data.sunDirection, dx::XMVector3Normalize(dx::XMVectorSet(0, -1, 1, 0)));
 	data.sunIntensity = 0.4f;
 	data.nrOfPointLights = pointLightMap.size();
 
