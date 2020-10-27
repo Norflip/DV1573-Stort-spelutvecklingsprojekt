@@ -217,7 +217,7 @@ Chunk* SegmentGenerator::CreateChunk(const dx::XMINT2& index, Object* root, cons
 	std::string name = "chunk " + std::to_string(index.x) + ", " + std::to_string(index.y);
 	dx::XMVECTOR chunkPosition = Chunk::IndexToWorld(index, 0.0f);
 
-	Object* chunkObject = new Object(name, ObjectFlag::DEFAULT);
+	Object* chunkObject = new Object(name, ObjectFlag::RENDER);
 	Chunk* chunk = chunkObject->AddComponent<Chunk>(index, type);
 
 	chunkObject->GetTransform().SetPosition(chunkPosition);
