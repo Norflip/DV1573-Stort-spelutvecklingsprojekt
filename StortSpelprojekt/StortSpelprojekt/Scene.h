@@ -36,6 +36,7 @@ enum NEXT_SCENE { INTRO = 0, LOSE = 1, GAME = 2, WIN = 3 };
 
 #include "ResourceManager.h"
 #include "ObjectPooler.h"
+#include "WeaponComponent.h"
 
 class GUIFont;
 class SpriteRenderPass;

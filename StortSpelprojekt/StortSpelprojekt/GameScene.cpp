@@ -60,7 +60,35 @@ void GameScene::InitializeObjects()
 	desc.directionalSteps = 5;
 	desc.maxSteps = 10;
 
-	
+	Mesh* mesh1 = resourceManager->GetResource<Mesh>("Test");
+	Mesh* mesh2 = resourceManager->GetResource<Mesh>("Test2");
+	Mesh* mesh3 = resourceManager->GetResource<Mesh>("Test3");
+
+	Material* material1 = resourceManager->GetResource<Material>("TestMaterial");
+	Material* material2 = resourceManager->GetResource<Material>("Test2Material");
+	Material* material3 = resourceManager->GetResource<Material>("Test3Material");
+
+	Object* testObject = new Object("test");
+	Object* testObject2 = new Object("test2");
+	Object* testObject3 = new Object("test3");
+
+	testObject->AddComponent<MeshComponent>(*mesh1, *material1);
+	testObject2->AddComponent<MeshComponent>(*mesh2, *material2);
+	testObject3->AddComponent<MeshComponent>(*mesh3, *material3);
+
+	dx::XMFLOAT3 miniTranslation = dx::XMFLOAT3(0, -10, 6);
+	dx::XMFLOAT3 miniTranslation2 = dx::XMFLOAT3(2, -10, 2);
+	dx::XMFLOAT3 miniTranslation3 = dx::XMFLOAT3(-4, -10, -4);
+	dx::XMFLOAT3 miniTranslation4 = dx::XMFLOAT3(0.f, -10.f, 0.f);
+
+	testObject->GetTransform().SetPosition(dx::XMLoadFloat3(&miniTranslation));
+	testObject2->GetTransform().SetPosition(dx::XMLoadFloat3(&miniTranslation2));
+	testObject3->GetTransform().SetPosition(dx::XMLoadFloat3(&miniTranslation3));
+
+	AddObject(testObject2, testObject);
+	AddObject(testObject3, testObject2);
+
+	AddObject(testObject);
 
 	skyboxClass = new Skybox(renderer->GetDevice(), renderer->GetContext(), resourceManager->GetShaderResource("skyboxShader"));
 	skyboxClass->GetThisObject()->AddFlag(ObjectFlag::NO_CULL);
@@ -94,7 +122,7 @@ void GameScene::InitializeObjects()
 	RigidBodyComponent* rb = playerObject->AddComponent<RigidBodyComponent>(60.f, FilterGroups::PLAYER, FilterGroups::EVERYTHING, true);
 	physics.RegisterRigidBody(rb);
 	physics.MutexUnlock();
-	playerObject->AddComponent<ControllerComp>(cameraObject);
+	playerObject->AddComponent<ControllerComp>(cameraObject); /////////////////
 	//Transform::SetParentChild(playerObject->GetTransform(),cameraObject->GetTransform());
 	playerObject->AddComponent<PlayerComp>(renderer, camera, Physics::Instance(), guiManager, 50000, 2, 10, 25, 3);
 
@@ -285,6 +313,18 @@ void GameScene::InitializeObjects()
 	AddObject(beansObject);
 
 
+	//Axe//////////////////////////////////////////////////////////////////
+	std::vector<Mesh> axeMesh = ZWEBLoader::LoadMeshes(ZWEBLoadType::NoAnimation, "Models/AXE.ZWEB", renderer->GetDevice());
+	std::vector<Material> axeMat = ZWEBLoader::LoadMaterials("Models/AXE.ZWEB", skeletonShader, renderer->GetDevice());
+
+	Object* axeObject = new Object("Axe");
+
+	axeObject->AddComponent<MeshComponent>(axeMesh[0], axeMat[0]);
+	axeObject->GetTransform().SetPosition({ 0,0,0 });
+	axeObject->GetTransform().SetScale({ 1, 1, 1 });
+	axeObject->AddComponent<WeaponComponent>(cameraObject);
+	AddObject(axeObject);
+	
 	clock.Update();
 	/* * * * * * * * ** * * * * */
 	//Log::Add("PRINTING SCENE HIERARCHY ----");
