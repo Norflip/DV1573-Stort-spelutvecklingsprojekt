@@ -16,7 +16,7 @@ struct SoundEvent
 	unsigned int index;					/* the index of the actual sound to play */
 
 	SoundEvent() {};
-	~SoundEvent() {};
+	virtual ~SoundEvent() {};
 };
 
 class AudioMaster
@@ -41,7 +41,7 @@ private:
 
 public:
 	AudioMaster();
-	~AudioMaster();
+	virtual ~AudioMaster();
 
 	/* Load sound (not streaming atm) */
 	void LoadFile(const std::wstring fileName, SoundEvent& soundEvent, const AudioTypes& soundType);
