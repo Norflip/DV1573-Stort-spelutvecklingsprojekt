@@ -36,8 +36,8 @@ DS_OUTPUT_GRASS main(HS_CONSTANT_DATA_OUTPUT_GRASS input,
 	float2 uvPlane = BCC.x * uv1 + BCC.y * uv2 + BCC.z * uv3;
 
 
-	float4 h = chunkData.SampleLevel(LinearSampler, uvPlane, 0);
-	float y = h.x *h.y* 10.0f;
+	float h = chunkData.SampleLevel(LinearSampler, uvPlane, 0).r;
+	float y = h* 10.0f;
 
 	
 	
