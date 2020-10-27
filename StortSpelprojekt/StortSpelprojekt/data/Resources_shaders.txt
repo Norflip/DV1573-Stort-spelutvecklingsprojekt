@@ -40,3 +40,7 @@ Name: houseShader
 Input: skeleton
 VS: Shaders/Skeleton_vs.hlsl
 PS: Shaders/Alpha_ps.hlsl
+
+Name: fogShader
+VS: Shaders/ScreenQuad_vs.hlsl
+PS: Shaders/FogTest_ps.hlsl
