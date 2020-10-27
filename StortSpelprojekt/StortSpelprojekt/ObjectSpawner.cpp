@@ -123,7 +123,6 @@ void ObjectSpawner::RegisterItem(std::string key, float radius, float padding, f
 				staticItems.push_back(item); break;
 		}
 	}
-
 }
 
 

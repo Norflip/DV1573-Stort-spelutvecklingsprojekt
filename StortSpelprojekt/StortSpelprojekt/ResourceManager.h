@@ -30,6 +30,7 @@ public:
 	void ReadShaders(ID3D11Device* device);
 
 	void CompileShaders(ID3D11Device* device);
+	Object* AssembleObject(std::string meshName, std::string materialName);
 
 };
 
