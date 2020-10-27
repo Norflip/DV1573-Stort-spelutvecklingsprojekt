@@ -1,4 +1,4 @@
-Objects: 3
+Objects: 8
 
 Test: Models/brickSphere.ZWEB
 Shader: defaultShader
@@ -9,5 +9,17 @@ Shader: defaultShader
 Test3: Models/cylinder.ZWEB
 Shader: defaultShader
 
+BakedBeans: Models/Bakedbeans.ZWEB
+Shader: defaultShader
 
+Banan: Models/Banan.ZWEB
+Shader: defaultShader
 
+CharRef: Models/char_ref.ZWEB
+Shader: defaultShader
+
+FuelCan: Models/FuelCan.ZWEB
+Shader: defaultShader
+
+HealthKit: Models/Healthkit.ZWEB
+Shader: defaultShader

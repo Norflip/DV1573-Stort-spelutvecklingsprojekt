@@ -40,7 +40,7 @@ void ObjectSpawner::Spawn(PointQuadTree& tree, std::unordered_map<int, Chunk*>& 
 	}*/
 
 
-	for (int i = itemSpawnPositions.size() - 1; i >= 0; i--)
+	/*for (int i = itemSpawnPositions.size() - 1; i >= 0; i--)
 	{
 		dx::XMFLOAT2 pos = itemSpawnPositions[i];
 		Chunk* chunk = GetChunk(pos.x, pos.y, chunkMap);
@@ -56,7 +56,7 @@ void ObjectSpawner::Spawn(PointQuadTree& tree, std::unordered_map<int, Chunk*>& 
 			Transform::SetParentChild(root->GetTransform(), object->GetTransform());
 			items.push_back(object);
 		}
-	}
+	}*/
 
 	for (int i = propSpawnPositions.size() - 1; i >= 0; i--)
 	{
@@ -110,7 +110,6 @@ void ObjectSpawner::RegisterItem(std::string key, float radius, float padding, f
 				staticItems.push_back(item); break;
 		}
 	}
-
 }
 
 

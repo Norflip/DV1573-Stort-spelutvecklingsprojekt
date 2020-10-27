@@ -305,4 +305,13 @@ void ResourceManager::CompileShaders(ID3D11Device* device)
 	}
 }
 
+Object* ResourceManager::AssembleObject(std::string meshName, std::string materialName)
+{
+	Object* object = new Object(meshName);
+
+	object->AddComponent<MeshComponent>(*GetResource<Mesh>(meshName), *GetResource<Material>(materialName));
+
+	return object;
+}
+
 

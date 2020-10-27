@@ -122,13 +122,10 @@ int World::TryGetQueueCount(std::string key, const std::map<std::string, int>& q
 
 void World::RegisterToPool(ObjectPooler* pooler, ObjectSpawner* spawner, const std::map<std::string, int>& queueCountTable) const
 {
-	pooler->Register("dynamic_stone", 0, [](ResourceManager* resources)
+	pooler->Register("Health_kit", 0, [](ResourceManager* resources)
 	{
-		Object* object = new Object("dynamic_stone");
-		Mesh* mesh1 = resources->GetResource<Mesh>("Test");
-		Material* material1 = resources->GetResource<Material>("TestMaterial");
+		Object* object = resources->AssembleObject("HealthKit", "HealthKitMaterial");
 
-		object->AddComponent<MeshComponent>(*mesh1, *material1);
 		object->AddComponent<BoxColliderComponent>(dx::XMFLOAT3(0.5f, 0.5f, 0.5f), dx::XMFLOAT3(0, 0, 0));
 
 		RigidBodyComponent* rd = object->AddComponent<RigidBodyComponent>(5.0f, FilterGroups::PICKUPS, FilterGroups::EVERYTHING, true);
@@ -137,13 +134,34 @@ void World::RegisterToPool(ObjectPooler* pooler, ObjectSpawner* spawner, const s
 		return object;
 	});
 
+	pooler->Register("Fuel_can", 0, [](ResourceManager* resources)
+	{
+		Object* object = resources->AssembleObject("FuelCan", "FuelCanMaterial");
+
+		object->AddComponent<BoxColliderComponent>(dx::XMFLOAT3(0.5f, 0.5f, 0.5f), dx::XMFLOAT3(0, 0, 0));
+
+		RigidBodyComponent* rd = object->AddComponent<RigidBodyComponent>(0.0f, FilterGroups::PICKUPS, FilterGroups::EVERYTHING, false);
+
+		Physics::Instance().RegisterRigidBody(rd);
+		return object;
+	});
+
+	pooler->Register("Baked_beans", 0, [](ResourceManager* resources)
+	{
+		Object* object = resources->AssembleObject("BakedBeans", "BakedBeansMaterial");
+
+		object->AddComponent<BoxColliderComponent>(dx::XMFLOAT3(0.5f, 0.5f, 0.5f), dx::XMFLOAT3(0, 0, 0));
+
+		RigidBodyComponent* rd = object->AddComponent<RigidBodyComponent>(0.0f, FilterGroups::PICKUPS, FilterGroups::EVERYTHING, false);
+
+		Physics::Instance().RegisterRigidBody(rd);
+		return object;
+	});
+
 	pooler->Register("static_sphere", 0, [](ResourceManager* resources)
 	{
-		Object* object = new Object("static_sphere");
-		Mesh* mesh1 = resources->GetResource<Mesh>("Test2");
-		Material* material1 = resources->GetResource<Material>("Test2Material");
+		Object* object = resources->AssembleObject("Test", "TestMaterial");
 
-		object->AddComponent<MeshComponent>(*mesh1, *material1);
 		object->AddComponent<BoxColliderComponent>(dx::XMFLOAT3(0.5f, 0.5f, 0.5f), dx::XMFLOAT3(0, 0, 0));
 
 		RigidBodyComponent* rd = object->AddComponent<RigidBodyComponent>(0.0f, FilterGroups::PROPS, FilterGroups::EVERYTHING, false);
@@ -152,6 +170,8 @@ void World::RegisterToPool(ObjectPooler* pooler, ObjectSpawner* spawner, const s
 		return object;
 	});
 
-	spawner->RegisterItem("dynamic_stone", 1.0f, 1.0f, 0.0f, TryGetQueueCount("dynamic_stone", queueCountTable), ItemSpawnType::DYNAMIC);
+	spawner->RegisterItem("Health_kit", 1.0f, 1.0f, 0.0f, TryGetQueueCount("Health_kit", queueCountTable), ItemSpawnType::DYNAMIC);
+	spawner->RegisterItem("Fuel_can", 1.0f, 1.0f, 0.0f, TryGetQueueCount("Fuel_can", queueCountTable), ItemSpawnType::DYNAMIC);
+	spawner->RegisterItem("Baked_beans", 1.0f, 1.0f, 0.0f, TryGetQueueCount("Baked_beans", queueCountTable), ItemSpawnType::DYNAMIC);
 	spawner->RegisterItem("static_sphere", 1.0f, 1.0f, 0.0f, TryGetQueueCount("static_sphere", queueCountTable), ItemSpawnType::STATIC);
 }
