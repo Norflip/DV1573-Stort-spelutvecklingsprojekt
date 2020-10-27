@@ -82,10 +82,11 @@ void AudioEngine::LoadFile(const std::wstring& filename, std::vector<BYTE>& audi
 
 	if (subType == MFAudioFormat_Float || subType == MFAudioFormat_PCM)
 	{
-
+		// Uncompressed, ok stuff
 	}
 	else
 	{
+		/* If we are working with a compressed format, such as mp3, for example, we have to decode it first */
 		HRESULT decompressingFile = MFCreateMediaType(&partialType);
 		if (FAILED(decompressingFile))
 			OutputDebugStringW(L"Unalbe to create media type");
@@ -103,11 +104,62 @@ void AudioEngine::LoadFile(const std::wstring& filename, std::vector<BYTE>& audi
 			OutputDebugStringW(L"Unable to set current media type to source reader");	
 	}
 
+	/* Uncompress the data and load it into an XAudio2 Buffer */
 	HRESULT createStreamFile = sourceReader->GetCurrentMediaType(streamIndex, &uncompressedAudioFile);
 	if (FAILED(createStreamFile))
-		OutputDebugStringW(L"");
+		OutputDebugStringW(L"Unable to retrieve the current media type!");
 
+	createStreamFile = MFCreateWaveFormatExFromMFMediaType(uncompressedAudioFile, waveFormatEx, &waveLength);
+	if (FAILED(createStreamFile))
+		OutputDebugStringW(L"Critical error: Unable to create the wave format!");
 
+	/* Ensure the stream is selected */
+	createStreamFile = sourceReader->SetStreamSelection(streamIndex, true);
+	if (FAILED(createStreamFile))
+		OutputDebugStringW(L"Critical error: Unable to select audio stream!");
 
-	
+	/* Copy data into byte vector */
+	IMFSample* sample = nullptr;
+	IMFMediaBuffer* buffer = nullptr;
+	BYTE* localAudioData = NULL;
+	DWORD localAudioDataLength = 0;
+
+	while (true)
+	{
+		DWORD flags = 0;
+		createStreamFile = sourceReader->ReadSample(streamIndex, 0, nullptr, &flags, nullptr, &sample);
+		if (FAILED(createStreamFile))
+			OutputDebugStringW(L"Critical error: Unable to read audio sample!");
+
+		// Check whether the data is still valid
+		if (flags & MF_SOURCE_READERF_CURRENTMEDIATYPECHANGED)
+			break;
+
+		// Check for end of stream
+		if (flags & MF_SOURCE_READERF_ENDOFSTREAM)
+			break;
+
+		if (sample == nullptr)
+			continue;
+
+		// Convert data to contiguous buffer
+		createStreamFile = sample->ConvertToContiguousBuffer(&buffer);
+		if (FAILED(createStreamFile))
+			OutputDebugStringW(L"Critical error: Unable to convert audio sample to contiguous buffer!");
+
+		// Lock buffer and copy data to local memory
+		createStreamFile = buffer->Lock(&localAudioData, nullptr, &localAudioDataLength);
+		if (FAILED(createStreamFile))
+			OutputDebugStringW(L"Critical error: Unable to lock the audio buffer!");
+
+		for (size_t i = 0; i < localAudioDataLength; i++)
+			audioData.push_back(localAudioData[i]);
+
+		// Unlock the buffer
+		createStreamFile = buffer->Unlock();
+		localAudioData = nullptr;
+
+		if (FAILED(createStreamFile))
+			OutputDebugStringW(L"Critical error while unlocking the audio buffer!");
+	}
 }

@@ -28,6 +28,7 @@ private:
 	IMFMediaType* uncompressedAudioFile;	// Working audiofile
 
 	IMFAttributes* sourceReaderConfig;
+
 	void Initialize();
 	void LoadFile(const std::wstring& filename, std::vector<BYTE>& audioData, WAVEFORMATEX** waveFormatEx, unsigned int& waveLength);
 };
