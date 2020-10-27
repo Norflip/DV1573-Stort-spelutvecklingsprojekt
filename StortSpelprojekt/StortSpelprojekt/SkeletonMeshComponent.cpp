@@ -395,3 +395,13 @@ void SkeletonMeshComponent::SetisDone(bool done)
 {
 	this->done = done;
 }
+
+bool& SkeletonMeshComponent::SetAndGetDoneDown()
+{
+	return doneDown;
+}
+
+bool& SkeletonMeshComponent::SetAndGetDoneUp()
+{
+	return doneUp;
+}

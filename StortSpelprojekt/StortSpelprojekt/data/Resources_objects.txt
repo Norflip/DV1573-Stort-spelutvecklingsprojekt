@@ -23,3 +23,13 @@ Shader: defaultShader
 
 HealthKit: Models/Healthkit.ZWEB
 Shader: defaultShader
+
+
+CharRef: Models/char_ref.ZWEB
+Shader: defaultShader
+
+FuelCan: Models/FuelCan.ZWEB
+Shader: defaultShader
+
+HealthKit: Models/Healthkit.ZWEB
+Shader: defaultShader

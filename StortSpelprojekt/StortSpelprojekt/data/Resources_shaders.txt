@@ -1,4 +1,4 @@
-Shaders: 8
+Shaders: 9
 
 Name: default
 
@@ -35,3 +35,12 @@ HS: Shaders/Grass_hs.hlsl
 DS: Shaders/Grass_ds.hlsl
 GS: Shaders/Grass_gs.hlsl
 PS: Shaders/Grass_ps.hlsl
+
+Name: houseShader
+Input: skeleton
+VS: Shaders/Skeleton_vs.hlsl
+PS: Shaders/Alpha_ps.hlsl
+
+Name: fogShader
+VS: Shaders/ScreenQuad_vs.hlsl
+PS: Shaders/FogTest_ps.hlsl
