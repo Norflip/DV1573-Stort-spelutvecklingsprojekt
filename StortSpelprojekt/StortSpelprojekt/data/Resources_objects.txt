@@ -1,4 +1,4 @@
-reObjects: 8
+Objects: 8
 
 Test: Models/brickSphere.ZWEB
 Shader: defaultShader
