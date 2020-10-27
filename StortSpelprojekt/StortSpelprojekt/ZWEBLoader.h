@@ -10,7 +10,6 @@ enum ZWEBLoadType
 };
 namespace ZWEBLoader //TO BE ADDED: FUNCTION TO LOAD LIGHTS
 {
-
 	inline SkeletonAni LoadSkeletonOnly( std::string animationPath, std::map<std::string, unsigned int>& boneIDMap,
 		bool parentAnimation)
 	{
@@ -23,7 +22,6 @@ namespace ZWEBLoader //TO BE ADDED: FUNCTION TO LOAD LIGHTS
 		SkeletonAni skeletonAnimation;
 		//map must be set first so it can be used to set up the other stuff.
 		skeletonAnimation.SetUpIDMapAndFrames(boneIDMap, importer.getSkeletonAnimationHeader().fps, importer.getSkeletonAnimationHeader().nrOfAnimationFrames);
-
 
 		//The offset matrices are loaded in directly as matrices, the local bone space matrices are not because they need to be interpolated during runtime.
 		std::vector<SkeletonOffsetsHeader> offsets;
@@ -54,8 +52,6 @@ namespace ZWEBLoader //TO BE ADDED: FUNCTION TO LOAD LIGHTS
 
 			return skeletonAnimation;
 		}
-
-
 
 		for (unsigned int bone = 0; bone < importer.getSkeletonAnimationHeader().nrOfBones; bone++)
 		{
@@ -132,7 +128,6 @@ namespace ZWEBLoader //TO BE ADDED: FUNCTION TO LOAD LIGHTS
 					}
 					controlVertices[controlVertex].position = DirectX::XMFLOAT3(controlVerticesZweb[controlVertex].pos[0], controlVerticesZweb[controlVertex].pos[1]
 						, controlVerticesZweb[controlVertex].pos[2]);
-
 				}
 
 				std::vector<Mesh::Vertex>::iterator it;
@@ -162,10 +157,8 @@ namespace ZWEBLoader //TO BE ADDED: FUNCTION TO LOAD LIGHTS
 			dx::XMFLOAT3 translation = { (importer.getMeshInfo(mesh).translation[0]), (importer.getMeshInfo(mesh).translation[1]), (importer.getMeshInfo(mesh).translation[2]) };
 
 			meshObject.SetSRT(scale, rotation, translation);
-
 			meshes.push_back(meshObject);
 		}
-
 		return meshes;
 	}
 

@@ -44,8 +44,6 @@ void GameScene::InitializeObjects()
 {
 	Physics& physics = Physics::Instance();
 
-
-
 	SaveState state;
 	state.seed = 1337;
 	state.segment = 0;
@@ -54,11 +52,8 @@ void GameScene::InitializeObjects()
 	desc.directionalSteps = 5;
 	desc.maxSteps = 10;
 
-	
-
 	skyboxClass = new Skybox(renderer->GetDevice(), renderer->GetContext(), resourceManager->GetShaderResource("skyboxShader"));
 	skyboxClass->GetThisObject()->AddFlag(ObjectFlag::NO_CULL);
-
 
 	//Object* testMesh4 = new Object("test4");
 	//testMesh4->AddComponent<NodeWalkerComp>();
@@ -66,7 +61,6 @@ void GameScene::InitializeObjects()
 	//testMesh4->AddComponent<MeshComponent>(*mesh1, *material2);
 	//AddObject(testMesh4);
 
-	
 	//Player & Camera
 	dx::XMFLOAT3 playerSpawn = { 10,10,10 };
 	dx::XMFLOAT3 zero = { 0.f, 0.f, 0.f };
@@ -103,7 +97,6 @@ void GameScene::InitializeObjects()
 	
 	AddObject(testPointLight, playerObject);
 
-
 		/* * * * * * * * ** * * * * */
 
 	//SKELETON ANIMATION MODELS
@@ -128,7 +121,6 @@ void GameScene::InitializeObjects()
 	Object* baseMonsterObject = new Object("baseMonster");
 
 	//LOADING BASE MONSTER; ADDING SKELETONS TO IT
-
 
 	SkeletonMeshComponent* baseMonsterComp = baseMonsterObject->AddComponent<SkeletonMeshComponent>(skeletonMesh[0], skeletonMat[0]);
 
@@ -210,18 +202,12 @@ void GameScene::InitializeObjects()
 	baseComponent->SetTrack(SkeletonStateMachine::IDLE, false);
 	AddObject(houseBaseObject);
 
-
-	//Character reference
-	std::vector<Mesh> charRefMesh = ZWEBLoader::LoadMeshes(ZWEBLoadType::NoAnimation, "Models/char_ref.ZWEB", renderer->GetDevice());
-	std::vector<Material> charRefMat = ZWEBLoader::LoadMaterials("Models/char_ref.ZWEB", defaultShader, renderer->GetDevice());
-
 	Object* characterReferenceObject = new Object("characterReference");
 
-	characterReferenceObject->AddComponent<MeshComponent>(charRefMesh[0], charRefMat[0]);
+	characterReferenceObject->AddComponent<MeshComponent>(*resourceManager->GetResource<Mesh>("CharRef"), *resourceManager->GetResource<Material>("CharRefMaterial"));
 	characterReferenceObject->GetTransform().SetScale({ 1, 1, 1 });
 	characterReferenceObject->GetTransform().SetPosition({ 14,2,2 });
 	AddObject(characterReferenceObject);
-
 
 	/* For physics/ rigidbody pickup stuff */
 	Physics& phy = Physics::Instance();
@@ -229,11 +215,11 @@ void GameScene::InitializeObjects()
 	Shader* defShader = resourceManager->GetShaderResource("defaultShader");
 
 	/* Health pickup stuff temporary */
-	std::vector<Mesh> healthkit = ZWEBLoader::LoadMeshes(ZWEBLoadType::NoAnimation, "Models/Healthkit.ZWEB", renderer->GetDevice());
-	std::vector<Material> healthkitMaterial = ZWEBLoader::LoadMaterials("Models/Healthkit.ZWEB", defShader, renderer->GetDevice());
+	/*std::vector<Mesh> healthkit = ZWEBLoader::LoadMeshes(ZWEBLoadType::NoAnimation, "Models/Healthkit.ZWEB", renderer->GetDevice());
+	std::vector<Material> healthkitMaterial = ZWEBLoader::LoadMaterials("Models/Healthkit.ZWEB", defShader, renderer->GetDevice());*/
 
 	Object* healthkitObject = new Object("healthObject");
-	healthkitObject->AddComponent<MeshComponent>(healthkit[0], healthkitMaterial[0]);
+	healthkitObject->AddComponent<MeshComponent>(*resourceManager->GetResource<Mesh>("HealthKit"), *resourceManager->GetResource<Material>("HealthKitMaterial"));
 	healthkitObject->GetTransform().SetPosition({ 18,2,2 });
 	healthkitObject->AddComponent<BoxColliderComponent>(dx::XMFLOAT3{ 0.5f, 0.5f, 0.5f }, dx::XMFLOAT3{ 0, 0, 0 });
 	healthkitObject->AddComponent<PickupComponent>(Type::Health, 20.0f);
@@ -244,13 +230,12 @@ void GameScene::InitializeObjects()
 	phy.RegisterRigidBody(healthBody);
 	AddObject(healthkitObject);
 
-
 	/* Fuel pickup stuff temporary */
-	std::vector<Mesh> fuelCan = ZWEBLoader::LoadMeshes(ZWEBLoadType::NoAnimation, "Models/FuelCan.ZWEB", renderer->GetDevice());
-	std::vector<Material> fuelCanMaterail = ZWEBLoader::LoadMaterials("Models/FuelCan.ZWEB", defShader, renderer->GetDevice());
+	/*std::vector<Mesh> fuelCan = ZWEBLoader::LoadMeshes(ZWEBLoadType::NoAnimation, "Models/FuelCan.ZWEB", renderer->GetDevice());
+	std::vector<Material> fuelCanMaterail = ZWEBLoader::LoadMaterials("Models/FuelCan.ZWEB", defShader, renderer->GetDevice());*/
 
 	Object* fuelCanObject = new Object("fuelObject");
-	fuelCanObject->AddComponent<MeshComponent>(fuelCan[0], fuelCanMaterail[0]);
+	fuelCanObject->AddComponent<MeshComponent>(*resourceManager->GetResource<Mesh>("FuelCan"), *resourceManager->GetResource<Material>("FuelCanMaterial"));
 	fuelCanObject->GetTransform().SetPosition({ 22,2,2 });
 	fuelCanObject->AddComponent<BoxColliderComponent>(dx::XMFLOAT3{ 0.5f, 0.5f, 0.5f }, dx::XMFLOAT3{ 0, 0, 0 });
 	fuelCanObject->AddComponent<PickupComponent>(Type::Fuel, 20.0f);
@@ -261,13 +246,12 @@ void GameScene::InitializeObjects()
 	phy.RegisterRigidBody(fuelBody);
 	AddObject(fuelCanObject);
 
-
 	/* Banana pickup stuff temporary */
-	std::vector<Mesh> beans = ZWEBLoader::LoadMeshes(ZWEBLoadType::NoAnimation, "Models/Bakedbeans.ZWEB", renderer->GetDevice());
-	std::vector<Material> beansMaterial = ZWEBLoader::LoadMaterials("Models/Bakedbeans.ZWEB", defShader, renderer->GetDevice());
+	/*std::vector<Mesh> beans = ZWEBLoader::LoadMeshes(ZWEBLoadType::NoAnimation, "Models/Bakedbeans.ZWEB", renderer->GetDevice());
+	std::vector<Material> beansMaterial = ZWEBLoader::LoadMaterials("Models/Bakedbeans.ZWEB", defShader, renderer->GetDevice());*/
 
 	Object* beansObject = new Object("bakedBeans");
-	beansObject->AddComponent<MeshComponent>(beans[0], beansMaterial[0]);
+	beansObject->AddComponent<MeshComponent>(*resourceManager->GetResource<Mesh>("BakedBeans"), *resourceManager->GetResource<Material>("BakedBeansMaterial"));
 	beansObject->GetTransform().SetPosition({ 3.0f, 1.0f, 5.0f });
 	beansObject->AddComponent<BoxColliderComponent>(dx::XMFLOAT3{ 0.5f, 0.5f, 0.5f }, dx::XMFLOAT3{ 0, 0, 0 });
 	beansObject->AddComponent<PickupComponent>(Type::Food, 20.0f);

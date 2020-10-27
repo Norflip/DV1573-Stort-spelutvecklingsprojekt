@@ -14,5 +14,6 @@ SamplerState m_samplerState : register(s0);
 float4 main(VS_OUTPUT input) : SV_TARGET
 {
 	float channel = testTexture.Sample(m_samplerState, input.uv).g;
-	return float4(channel, channel, channel, 1.0f);
+	//return float4(channel, channel, channel, 1.0f);
+	return float4(input.normal, 1.0f);
 }
