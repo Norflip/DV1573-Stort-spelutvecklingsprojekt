@@ -21,6 +21,8 @@ private:
 	dx::XMVECTOR weaponRot;
 	dx::XMVECTOR weaponScale;
 
+	dx::XMVECTOR forward = { 0,0,1 };
+
 	dx::XMMATRIX weaponMatrix;
 
 	void SetPosition();
