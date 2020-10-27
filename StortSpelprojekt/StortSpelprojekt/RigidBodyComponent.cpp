@@ -23,6 +23,7 @@ void RigidBodyComponent::Update(const float& deltaTime)
 	{
 		bodyPosition.y = -1000;
 		std::cout << "BODY OUT OF BOUNDS (y < -1000)" << std::endl;
+		body->enableGravity(false);
 		GetOwner()->RemoveFlag(ObjectFlag::ENABLED);
 		return;
 	}

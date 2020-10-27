@@ -1,5 +1,5 @@
 #include "World.h"
-
+#include "Input.h"
 
 World::World() : player(nullptr), house(nullptr)
 {
@@ -35,14 +35,44 @@ void World::DeconstructSegment()
 	Physics& physics = Physics::Instance();
 	physics.MutexLock();
 
-	generator.Deconstruct();
 	relevant.clear();
+	generator.Deconstruct();
 
 	physics.MutexUnlock();
 }
 
 void World::UpdateRelevantChunks()
 {
+	const float offset = 0.1f;
+
+	if (KEY_DOWN(Z))
+	{
+		TMP_OFFSET += offset;
+		std::cout << "GROUND OFFSET: " << TMP_OFFSET << std::endl;
+
+		std::vector<Chunk*> chunks = generator.GetChunks();
+
+		for (auto i : chunks)
+		{
+			Transform& trans = i->GetOwner()->GetTransform();
+			trans.Translate(0, offset, 0);
+		}
+	}
+
+	if (KEY_DOWN(X))
+	{
+		TMP_OFFSET -= offset;
+		std::cout << "GROUND OFFSET: " << TMP_OFFSET << std::endl;
+
+		std::vector<Chunk*> chunks = generator.GetChunks();
+
+		for (auto i : chunks)
+		{
+			Transform& trans = i->GetOwner()->GetTransform();
+			trans.Translate(0, -offset, 0);
+		}
+	}
+	
 	// check player index
 	// if not the same as the current one, loop relevant and enable other chunks
 	if (player != nullptr && generator.IsConstructed())
@@ -86,7 +116,7 @@ void World::MoveHouseAndPlayerToStart()
 		dx::XMVECTOR position = dx::XMVectorAdd(Chunk::IndexToWorld(spawnIndex, 0.0f), dx::XMVectorSet(CHUNK_SIZE / 2.0f, 0, CHUNK_SIZE / 2.0f, 0));
 		house->GetTransform().SetPosition(position);
 
-		position = dx::XMVectorAdd(position, dx::XMVectorSet(5, 0, 0, 0));
+		position = dx::XMVectorAdd(position, dx::XMVectorSet(5, 5, 0, 0));
 	
 		player->GetTransform().SetPosition(position);
 		player->GetComponent<RigidBodyComponent>()->SetPosition(position);
