@@ -15,10 +15,15 @@ GameScene::GameScene(ResourceManager* manager) : Scene(manager)
 
 GameScene::~GameScene()
 {
+
+	
 }
 
 void GameScene::Initialize(Renderer* renderer)
 {
+
+	
+
 	this->renderer = renderer;
 
 	// Should change values on resize event
@@ -55,6 +60,9 @@ void GameScene::InitializeObjects()
 	skyboxClass = new Skybox(renderer->GetDevice(), renderer->GetContext(), resourceManager->GetShaderResource("skyboxShader"));
 	skyboxClass->GetThisObject()->AddFlag(ObjectFlag::NO_CULL);
 	Physics& physics = Physics::Instance();
+
+	
+
 	SaveState state;
 	state.seed = 1337;
 	state.segment = 0;
@@ -99,7 +107,7 @@ void GameScene::InitializeObjects()
 	RigidBodyComponent* rb = playerObject->AddComponent<RigidBodyComponent>(60.f, FilterGroups::PLAYER, FilterGroups::EVERYTHING, true);
 	physics.RegisterRigidBody(rb);
 	physics.MutexUnlock();
-	playerObject->AddComponent<ControllerComp>(cameraObject);
+	playerObject->AddComponent<ControllerComp>(cameraObject); /////////////////
 	//Transform::SetParentChild(playerObject->GetTransform(),cameraObject->GetTransform());
 	playerObject->AddComponent<PlayerComp>(renderer, camera, Physics::Instance(), guiManager, 100, 2, 3, 25, 3);
 	playerStatsComp = playerObject->GetComponent<PlayerComp>();
@@ -193,6 +201,18 @@ void GameScene::InitializeObjects()
 	Physics& phy = Physics::Instance();
 
 	Shader* defShader = resourceManager->GetShaderResource("defaultShader");
+
+//Axe//////////////////////////////////////////////////////////////////
+	std::vector<Mesh> axeMesh = ZWEBLoader::LoadMeshes(ZWEBLoadType::NoAnimation, "Models/AXE.ZWEB", renderer->GetDevice());
+	std::vector<Material> axeMat = ZWEBLoader::LoadMaterials("Models/AXE.ZWEB", skeletonShader, renderer->GetDevice());
+
+	Object* axeObject = new Object("Axe");
+
+	axeObject->AddComponent<MeshComponent>(axeMesh[0], axeMat[0]);
+	axeObject->GetTransform().SetPosition({ 0,0,0 });
+	axeObject->GetTransform().SetScale({ 1, 1, 1 });
+	axeObject->AddComponent<WeaponComponent>(cameraObject, input);
+	AddObject(axeObject);
 
 	clock.Update();
 
