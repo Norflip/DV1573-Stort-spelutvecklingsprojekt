@@ -8,11 +8,12 @@ SegmentGenerator::~SegmentGenerator()
 {
 }
 
-void SegmentGenerator::Initialize(Object* root, ResourceManager* resourceManager, ObjectPooler* pooler, ID3D11Device* device, ID3D11DeviceContext* context)
+void SegmentGenerator::Initialize(Object* root, ResourceManager* resourceManager, ObjectSpawner* spawner, ID3D11Device* device, ID3D11DeviceContext* context)
 {
 	this->root = root;
 	this->device = device;
 	this->context = context;
+	this->spawner = spawner;
 	this->initialized = true;
 
 	Material* mat = resourceManager->GetResource<Material>("Test");
@@ -25,40 +26,7 @@ void SegmentGenerator::Initialize(Object* root, ResourceManager* resourceManager
 	Physics& physics = Physics::Instance();
 	physics.MutexLock();
 
-	pooler->Register("dynamic_stone", 0, [](ResourceManager* resources)
-	{
-		Object* object = new Object("dynamic_stone");
-		Mesh* mesh1 = resources->GetResource<Mesh>("Test");
-		Material* material1 = resources->GetResource<Material>("TestMaterial");
-		
-		object->AddComponent<MeshComponent>(*mesh1, *material1);
-		object->AddComponent<BoxColliderComponent>(dx::XMFLOAT3(0.5f, 0.5f, 0.5f), dx::XMFLOAT3(0, 0, 0));
-		
-		RigidBodyComponent* rd = object->AddComponent<RigidBodyComponent>(5.0f, FilterGroups::PICKUPS, FilterGroups::EVERYTHING, true);
-		Physics::Instance().RegisterRigidBody(rd);
-
-		return object;
-	});
-
-	pooler->Register("static_sphere", 0, [](ResourceManager* resources)
-		{
-			Object* object = new Object("static_sphere");
-			Mesh* mesh1 = resources->GetResource<Mesh>("Test2");
-			Material* material1 = resources->GetResource<Material>("Test2Material");
-
-			object->AddComponent<MeshComponent>(*mesh1, *material1);
-			object->AddComponent<BoxColliderComponent>(dx::XMFLOAT3(0.5f, 0.5f, 0.5f), dx::XMFLOAT3(0, 0, 0));
-
-			RigidBodyComponent* rd = object->AddComponent<RigidBodyComponent>(0.0f, FilterGroups::PROPS, FilterGroups::EVERYTHING, false);
-			
-			Physics::Instance().RegisterRigidBody(rd);
-			return object;
-		});
-
-
-	spawner.Initialize(root, pooler);
-	spawner.AddItem("dynamic_stone", 1.0f, 1.0f, 10, 25, 0.0f, ItemSpawnType::DYNAMIC);
-	spawner.AddItem("static_sphere", 1.0f, 1.0f, 10, 25, 0.0f, ItemSpawnType::STATIC);
+	
 	physics.MutexUnlock();
 }
 

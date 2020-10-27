@@ -71,12 +71,31 @@ void ObjectSpawner::Despawn()
 	items.clear();
 }
 
+void ObjectSpawner::AddProp(std::string key, float radius, float padding, float yOffset, int queueCount)
+{
+	Item item;
+	item.key = key;
+	item.yOffset;
+	item.radius = radius;
+	item.padding = padding;
+
+}
+
+void ObjectSpawner::AddItem(std::string key, float radius, float padding, float yOffset, int queueCount)
+{
+	Item item;
+	item.key = key;
+	item.yOffset;
+	item.radius = radius;
+	item.padding = padding;
+
+
+}
+
 void ObjectSpawner::AddItem(std::string key, float radius, float padding, size_t min, size_t max, float yOffset, ItemSpawnType type)
 {
 	Item item;
 	item.key = key;
-	item.min = min;
-	item.max = max;
 	item.yOffset;
 	item.radius = radius;
 	item.padding = padding;

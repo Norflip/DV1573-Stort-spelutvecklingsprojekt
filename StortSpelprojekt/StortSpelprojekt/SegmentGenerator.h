@@ -31,7 +31,7 @@ class SegmentGenerator
 public:
 	SegmentGenerator();
 	virtual ~SegmentGenerator();
-	void Initialize(Object* root, ResourceManager* resourceManager, ObjectPooler* pooler, ID3D11Device* device, ID3D11DeviceContext* context);
+	void Initialize(Object* root, ResourceManager* resourceManager, ObjectSpawner* spawner, ID3D11Device* device, ID3D11DeviceContext* context);
 
 	void Construct(const SegmentDescription& description);
 	void Deconstruct();
@@ -60,7 +60,7 @@ private:
 private:
 	bool constructed, initialized;
 	ChunkGrid grid;
-	ObjectSpawner spawner;
+	ObjectSpawner* spawner;
 	std::vector<Chunk*> chunks;
 	std::unordered_map<int, Chunk*> chunkMap;
 

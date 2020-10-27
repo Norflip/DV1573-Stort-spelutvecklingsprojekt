@@ -15,7 +15,6 @@ class ObjectSpawner
 	struct Item
 	{
 		std::string key;
-		size_t min, max;
 		float yOffset;
 		float radius, padding;
 	};
@@ -28,8 +27,13 @@ public:
 
 	void Initialize(Object* root, ObjectPooler* pooler);
 
+
+
 	void Spawn(PointQuadTree& tree, std::unordered_map<int, Chunk*>& chunkMap, std::vector<Chunk*>& chunks);
 	void Despawn();
+
+	void AddProp(std::string key, float radius, float padding, float yOffset, int queueCount);
+	void AddItem(std::string key, float radius, float padding, float yOffset, int queueCount);
 
 	void AddItem(std::string key, float radius, float padding, size_t min, size_t max, float yOffset, ItemSpawnType type = ItemSpawnType::STATIC);
 	void DrawDebug();

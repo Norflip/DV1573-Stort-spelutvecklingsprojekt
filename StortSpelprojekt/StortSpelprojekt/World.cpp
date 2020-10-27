@@ -11,7 +11,14 @@ World::~World()
 
 void World::Initialize(Object* root, ResourceManager* resources, ObjectPooler* pooler, Renderer* renderer)
 {
-	generator.Initialize(root, resources, pooler, renderer->GetDevice(), renderer->GetContext());
+
+
+	ObjectSpawner* spawner = new ObjectSpawner();
+	spawner->Initialize(root, pooler);
+	spawner->AddItem("dynamic_stone", 1.0f, 1.0f, 10, 25, 0.0f, ItemSpawnType::DYNAMIC);
+	spawner->AddItem("static_sphere", 1.0f, 1.0f, 10, 25, 0.0f, ItemSpawnType::STATIC);
+
+	generator.Initialize(root, resources, spawner, renderer->GetDevice(), renderer->GetContext());
 	playerIndex = dx::XMINT2(-5000, -5000);
 }
 
@@ -45,34 +52,6 @@ void World::UpdateRelevantChunks()
 {
 	const float offset = 0.1f;
 
-	if (KEY_DOWN(Z))
-	{
-		TMP_OFFSET += offset;
-		std::cout << "GROUND OFFSET: " << TMP_OFFSET << std::endl;
-
-		std::vector<Chunk*> chunks = generator.GetChunks();
-
-		for (auto i : chunks)
-		{
-			Transform& trans = i->GetOwner()->GetTransform();
-			trans.Translate(0, offset, 0);
-		}
-	}
-
-	if (KEY_DOWN(X))
-	{
-		TMP_OFFSET -= offset;
-		std::cout << "GROUND OFFSET: " << TMP_OFFSET << std::endl;
-
-		std::vector<Chunk*> chunks = generator.GetChunks();
-
-		for (auto i : chunks)
-		{
-			Transform& trans = i->GetOwner()->GetTransform();
-			trans.Translate(0, -offset, 0);
-		}
-	}
-	
 	// check player index
 	// if not the same as the current one, loop relevant and enable other chunks
 	if (player != nullptr && generator.IsConstructed())
@@ -136,4 +115,37 @@ dx::XMINT2 World::GetChunkIndex(Object* object) const
 		index.y = static_cast<int>(floorf(position.z / CHUNK_SIZE));
 	}
 	return index;
+}
+
+void World::RegisterToPool(ObjectPooler* pooler)
+{
+	pooler->Register("dynamic_stone", 0, [](ResourceManager* resources)
+	{
+		Object* object = new Object("dynamic_stone");
+		Mesh* mesh1 = resources->GetResource<Mesh>("Test");
+		Material* material1 = resources->GetResource<Material>("TestMaterial");
+
+		object->AddComponent<MeshComponent>(*mesh1, *material1);
+		object->AddComponent<BoxColliderComponent>(dx::XMFLOAT3(0.5f, 0.5f, 0.5f), dx::XMFLOAT3(0, 0, 0));
+
+		RigidBodyComponent* rd = object->AddComponent<RigidBodyComponent>(5.0f, FilterGroups::PICKUPS, FilterGroups::EVERYTHING, true);
+		Physics::Instance().RegisterRigidBody(rd);
+
+		return object;
+	});
+
+	pooler->Register("static_sphere", 0, [](ResourceManager* resources)
+	{
+		Object* object = new Object("static_sphere");
+		Mesh* mesh1 = resources->GetResource<Mesh>("Test2");
+		Material* material1 = resources->GetResource<Material>("Test2Material");
+
+		object->AddComponent<MeshComponent>(*mesh1, *material1);
+		object->AddComponent<BoxColliderComponent>(dx::XMFLOAT3(0.5f, 0.5f, 0.5f), dx::XMFLOAT3(0, 0, 0));
+
+		RigidBodyComponent* rd = object->AddComponent<RigidBodyComponent>(0.0f, FilterGroups::PROPS, FilterGroups::EVERYTHING, false);
+
+		Physics::Instance().RegisterRigidBody(rd);
+		return object;
+	});
 }
