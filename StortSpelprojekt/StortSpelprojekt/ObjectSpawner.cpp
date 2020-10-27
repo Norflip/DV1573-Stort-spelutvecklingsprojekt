@@ -19,8 +19,8 @@ void ObjectSpawner::Spawn(PointQuadTree& tree, std::unordered_map<int, Chunk*>& 
 {
 	propSpawnPositions = CreateSpawnPositions(tree, 10.0f, chunkMap);
 	itemSpawnPositions = CreateSpawnPositions(tree, 20.0f, chunkMap);
-	
-	
+
+
 	/*for (size_t i = 0; i < staticItems.size(); i++)
 	{
 		dx::XMFLOAT2 pos = itemSpawnPositions[0];
@@ -52,13 +52,19 @@ void ObjectSpawner::Spawn(PointQuadTree& tree, std::unordered_map<int, Chunk*>& 
 		if (chunk != nullptr)
 		{
 			float y = chunk->SampleHeight(pos.x, pos.y) + item.yOffset;
-			
+
+			dx::XMFLOAT3 chunkPos;
+			dx::XMStoreFloat3(&chunkPos, chunk->GetOwner()->GetTransform().GetWorldPosition());
+
 			Object* object = pooler->GetItem(item.key);
 			dx::XMVECTOR position = dx::XMVectorSet(pos.x, y, pos.y, 0.0f);
 
 			object->GetComponent<RigidBodyComponent>()->SetPosition(position);
+			// kör med chunk istället för root då dom ändå inte kan flyttas.
 			Transform::SetParentChild(root->GetTransform(), object->GetTransform());
+			
 			items.push_back(object);
+
 		}
 
 		propIndex++;
@@ -107,7 +113,7 @@ void ObjectSpawner::RegisterItem(std::string key, float radius, float padding, f
 {
 	Item item;
 	item.key = key;
-	item.yOffset;
+	item.yOffset = yOffset;
 	item.radius = radius;
 	item.padding = padding;
 
@@ -119,7 +125,7 @@ void ObjectSpawner::RegisterItem(std::string key, float radius, float padding, f
 				dynamicItems.push_back(item); break;
 
 			default:
-			case ItemSpawnType::STATIC: 
+			case ItemSpawnType::STATIC:
 				staticItems.push_back(item); break;
 		}
 	}

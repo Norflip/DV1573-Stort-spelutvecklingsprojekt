@@ -354,7 +354,7 @@ void SegmentGenerator::AddTreesToChunk(Chunk* chunk, std::vector<ChunkPointInfor
 				dx::XMFLOAT3 position(posXZ.x + validPoints[i].x, y, posXZ.y + validPoints[i].y);
 				treesInstanced[i].instancePosition = position;
 
-				dx::XMMATRIX translation = dx::XMMatrixScaling(0.5f, 0.5f, 0.5f) * dx::XMMatrixTranslation(position.x, position.y, position.z);
+				dx::XMMATRIX translation = dx::XMMatrixScaling(2.0f, 2.0f, 2.0f) * dx::XMMatrixTranslation(position.x, position.y, position.z);
 				dx::XMStoreFloat4x4(&treesInstanced[i].instanceWorld, translation);
 			}
 
