@@ -27,6 +27,8 @@ GUIManager::GUIManager(Renderer* renderer, int priority) : RenderPass(priority, 
 	HRESULT hr;
 	D3D11_BLEND_DESC blendDescGui;
 	ZeroMemory(&blendDescGui, sizeof(D3D11_BLEND_DESC));
+	//blendDescGui.AlphaToCoverageEnable = true;
+	//blendDescGui.IndependentBlendEnable = true;
 	blendDescGui.RenderTarget[0].BlendEnable = TRUE;
 	blendDescGui.RenderTarget[0].SrcBlend = D3D11_BLEND_SRC_ALPHA;
 	blendDescGui.RenderTarget[0].DestBlend = D3D11_BLEND_INV_SRC_ALPHA;
@@ -52,6 +54,22 @@ GUIManager::GUIManager(Renderer* renderer, int priority) : RenderPass(priority, 
 		HRESULT resultCreateRasterizer = renderer->GetDevice()->CreateRasterizerState(&rastDesc, &testState);
 	assert(SUCCEEDED(resultCreateRasterizer));
 
+
+
+	D3D11_SAMPLER_DESC testDesc;
+	ZeroMemory(&testDesc, sizeof(D3D11_SAMPLER_DESC));
+	testDesc.Filter = D3D11_FILTER_MIN_MAG_MIP_LINEAR;
+	//testDesc.MaxAnisotropy = D3D11_FILTER_MIN_MAG_MIP_LINEAR;
+	testDesc.ComparisonFunc = D3D11_COMPARISON_LESS_EQUAL;
+	testDesc.MinLOD = 0.0f;
+	testDesc.MaxLOD = D3D11_FLOAT32_MAX;
+	testDesc.MipLODBias = 4.0f;
+	testDesc.AddressU = D3D11_TEXTURE_ADDRESS_CLAMP;
+	testDesc.AddressV = D3D11_TEXTURE_ADDRESS_CLAMP;
+	testDesc.AddressW = D3D11_TEXTURE_ADDRESS_CLAMP;
+	
+	HRESULT hr2 = renderer->GetDevice()->CreateSamplerState(&testDesc, &samplerState);
+	assert(SUCCEEDED(hr2));
 }
 
 void GUIManager::AddGUIObject(GUIObject* addObj, std::string name)
@@ -85,13 +103,19 @@ void GUIManager::RemoveGUIObject(std::string name)
 
 void GUIManager::Pass(Renderer* renderer, RenderTexture& inTexture, RenderTexture& outTexture)
 {
-	spriteBatch->Begin(dx::SpriteSortMode::SpriteSortMode_BackToFront, blendOn, nullptr, depthStencilState, testState, [=]
-		{
-			//We can set a new pixelshader here for AA
-			//renderer->GetContext()->PSSetShader(0, 0, 0);
-		});
+	spriteBatch->Begin(dx::SpriteSortMode::SpriteSortMode_BackToFront, blendOn, samplerState, depthStencilState, testState);
 	for (auto i : GUIObjects)
+	{
+		if(!i.second->HasGroup(GuiGroup::Font))
 		i.second->Draw(spriteBatch);
+	}
+	spriteBatch->End();
+	spriteBatch->Begin(dx::SpriteSortMode::SpriteSortMode_BackToFront, nullptr, samplerState, depthStencilState, testState);
+	for (auto i : GUIObjects)
+	{
+		if (i.second->HasGroup(GuiGroup::Font))
+			i.second->Draw(spriteBatch);
+	}
 	spriteBatch->End();
 }
 

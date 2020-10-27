@@ -55,6 +55,8 @@ void IntroScene::InitializeGUI()
 	GUISprite* quitSprite = new GUISprite(*renderer, "Textures/Exit.png", 100, 700, 0, DrawDirection::Default, ClickFunction::Clickable);
 	GUISprite* backSprite = new GUISprite(*renderer, "Textures/BackButton.png", 100, 100, 0, DrawDirection::Default, ClickFunction::Clickable,GuiGroup::HowToPlay);
 	GUIFont* fpsDisplay = new GUIFont(*renderer, "fps", windowWidth / 2, 50);
+	fpsDisplay->SetGroup(GuiGroup::Font);
+	fpsDisplay->SetGroup(GuiGroup::Default);
 	// TEXT FOR HOWTOPLAY	
 
 	std::string howToPlayString = "";
@@ -68,8 +70,10 @@ void IntroScene::InitializeGUI()
 	GUIFont* howToPlayText = new GUIFont(*renderer,howToPlayString, 100, 250);
 	howToPlayText->SetFontSize({ 0.7f,0.7f });
 	howToPlayText->SetVisible(false);
-	howToPlayText->SetGroup(GuiGroup::HowToPlay);
 	howToPlayText->RemoveGroup(GuiGroup::Default);
+	howToPlayText->SetGroup(GuiGroup::HowToPlay);
+	howToPlayText->SetGroup(GuiGroup::Font);
+	
 	//
 	// TEXT FOR HOWTOPLAY	
 	std::string loreString = "";
@@ -78,8 +82,11 @@ void IntroScene::InitializeGUI()
 	GUIFont* loreText = new GUIFont(*renderer, loreString, 100, 250);
 	loreText->SetFontSize({ 0.5f,0.5f });
 	loreText->SetVisible(false);
-	loreText->SetGroup(GuiGroup::Lore);
 	loreText->RemoveGroup(GuiGroup::Default);
+	loreText->SetGroup(GuiGroup::Lore);
+	loreText->SetGroup(GuiGroup::Font);
+
+
 	//
 
 	backSprite->SetVisible(false);

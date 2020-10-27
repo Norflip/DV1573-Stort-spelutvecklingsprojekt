@@ -19,7 +19,8 @@ enum class GuiGroup : unsigned int
 	Lore = 1 << 1,
 	Options = 1 << 2,
 	HowToPlay = 1 << 3,
-	Intro = 1 << 4
+	Intro = 1 << 4,
+	Font = 1 << 5
 	
 };
 
@@ -68,6 +69,7 @@ public:
 
 private:
 	ID3D11RasterizerState* testState;
+	ID3D11SamplerState* samplerState;
 	bool active = false;
 	dx::SpriteBatch* spriteBatch;
 	Renderer* renderer;
