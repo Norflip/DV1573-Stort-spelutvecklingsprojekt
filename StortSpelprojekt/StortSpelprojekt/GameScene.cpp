@@ -85,7 +85,7 @@ void GameScene::InitializeObjects()
 	//playerObject->AddComponent<MeshComponent>(*meshP, *materialP);
 	playerObject->AddComponent<CapsuleColliderComponent>(0.5f, 1.8f, zero);
 	physics.MutexLock();
-	RigidBodyComponent* rb = playerObject->AddComponent<RigidBodyComponent>(60.f, FilterGroups::PLAYER, FilterGroups::EVERYTHING, true);
+	RigidBodyComponent* rb = playerObject->AddComponent<RigidBodyComponent>(65.f, FilterGroups::PLAYER, FilterGroups::EVERYTHING, true);
 	physics.RegisterRigidBody(rb);
 	physics.MutexUnlock();
 	playerObject->AddComponent<ControllerComp>(cameraObject);

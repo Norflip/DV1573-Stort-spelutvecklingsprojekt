@@ -14,7 +14,7 @@ constexpr float CROUCH_VELOCITY = 0.5f;
 constexpr float CROUCH_ACCELERATION = 1.f;
 constexpr float WALK_VELOCITY = 8.f;
 constexpr float WALK_ACCELERATION = 1.5f;
-constexpr float RUN_VELOCITY = 20.f;
+constexpr float RUN_VELOCITY = 17.f;
 constexpr float RUN_ACCELERATION = 3.5f;
 constexpr float VELOCITY_INC_RATE = 0.1f; //how often
 constexpr float VELOCITY_MULTIPLIER = 20.f;
@@ -32,7 +32,8 @@ class ControllerComp :public Component
 {
 private:
 
-	//fixa jump isGrounded/collisioninfo 
+	//fixa fov based on speed
+	//fox wouldn't change when standing still
 	//addForce fix??
 	float fov;
 	float fovTimer; //use timer class??

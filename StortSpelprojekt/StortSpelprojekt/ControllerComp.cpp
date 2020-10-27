@@ -9,7 +9,7 @@ bool ControllerComp::IsGrounded() const
 	RayHit hit;
 
 	//TERRAIN or default depending on if u can jump from on top of objects
-	float distance = 2.8f;
+	float distance = 2.7f;
 	Physics& phy = Physics::Instance();
 	phy.RaytestSingle(ray, distance, hit, FilterGroups::TERRAIN);
 	
@@ -18,10 +18,10 @@ bool ControllerComp::IsGrounded() const
 	{
 		result = true;
 		//std::cout << "picking: " << hit.object->GetName() << std::endl;
-		//DShape::DrawLine(ray.origin, ray.GetPoint(distance), { 0,0,1 });
+		DShape::DrawLine(ray.origin, ray.GetPoint(distance), { 0,0,1 });
 	}
-	//else
-		//DShape::DrawLine(ray.origin, ray.GetPoint(distance), { 1,0,0 });
+	else
+		DShape::DrawLine(ray.origin, ray.GetPoint(distance), { 1,0,0 });
 	
 	return result;
 }
@@ -76,6 +76,10 @@ void ControllerComp::Initialize()
 	{
 		std::cout << "component missing" << std::endl;
 	}
+
+	this->xClamp = 0.f;
+	dx::XMVECTOR reset = dx::XMLoadFloat4(&RESET_ROT);
+	this->cameraObject->GetTransform().SetRotation(reset);
 }
 
 void ControllerComp::Update(const float& deltaTime)
@@ -89,6 +93,11 @@ void ControllerComp::Update(const float& deltaTime)
 
 	if (KEY_DOWN(D0))
 	{
+		this->xClamp = 0.f;
+		dx::XMVECTOR reset = dx::XMLoadFloat4(&RESET_ROT);
+		this->cameraObject->GetTransform().SetRotation(reset);
+		this->groundQuaterion = RESET_ROT;
+		this->cameraOffset = { 0.f,0.f,0.f };
 		dx::XMVECTOR resetPos = dx::XMLoadFloat3(&RESET_POS);
 		GetOwner()->GetTransform().SetPosition(resetPos);
 		rbComp->SetPosition(resetPos);
@@ -135,6 +144,7 @@ void ControllerComp::Update(const float& deltaTime)
 			xClamp = -CLAMP_X;
 			xPos = 0.f;
 		}
+		std::cout << "clamp, x: " << xClamp << std::endl;
 		//rotate view
 		Transform& transform = cameraObject->GetTransform();
 		dx::XMVECTOR right = transform.TransformDirection({ 1,0,0 });
@@ -148,35 +158,39 @@ void ControllerComp::Update(const float& deltaTime)
 		transform.SetRotation(dx::XMQuaternionMultiply(transform.GetRotation(), eulerRotation)); //rotate view
 		Input::Instance().ResetRelative();
 
-		if (KEY_PRESSED(LeftShift)) //sprint
-		{
-			if (this->velocity < RUN_VELOCITY && this->velocityTimer >= VELOCITY_INC_RATE)
-			{
-				this->velocity += RUN_ACCELERATION;
-				this->velocityTimer = 0.f;
-			}
-			if (this->fov < RUN_FOV && this->fovTimer >= FOV_INC_RATE)
-			{
-				this->fov += FOV_INC;
-				this->fovTimer = 0.f;
-			}
-		}
-		else
-		{
-			if (this->velocity > WALK_VELOCITY && this->velocityTimer >= VELOCITY_INC_RATE)
-			{
-				this->velocity -= RUN_ACCELERATION;
-				this->velocityTimer = 0.f;
-			}
-			if (this->fov > WALK_FOV && this->fovTimer >= FOV_INC_RATE)
-			{
-				this->fov -= FOV_INC;
-				this->fovTimer = 0.f;
-			}
-		}
+
 		
 		if (KEY_PRESSED(W) || KEY_PRESSED(S) || KEY_PRESSED(A) || KEY_PRESSED(D))
 		{
+			//velocity-max
+			if (KEY_PRESSED(LeftShift)) //sprint
+			{
+				if (this->velocity < RUN_VELOCITY && this->velocityTimer >= VELOCITY_INC_RATE)
+				{
+					this->velocity += RUN_ACCELERATION;
+					this->velocityTimer = 0.f;
+				}
+				if (this->fov < RUN_FOV && this->fovTimer >= FOV_INC_RATE)
+				{
+					this->fov += FOV_INC;
+					this->fovTimer = 0.f;
+				}
+			}
+			else
+			{
+				if (this->velocity > WALK_VELOCITY && this->velocityTimer >= VELOCITY_INC_RATE)
+				{
+					this->velocity -= RUN_ACCELERATION;
+					this->velocityTimer = 0.f;
+				}
+				if (this->fov > WALK_FOV && this->fovTimer >= FOV_INC_RATE)
+				{
+					this->fov -= FOV_INC;
+					this->fovTimer = 0.f;
+				}
+			}
+
+
 			if (KEY_PRESSED(W))
 				dir.z += 1.f;
 			if (KEY_PRESSED(S))
@@ -284,10 +298,10 @@ void ControllerComp::Update(const float& deltaTime)
 
 			rbComp->SetRotation(capsule);
 
-			std::cout << "Cap, x: " << capsuleComp->GetTransform().getOrientation().x << ", y: " << capsuleComp->GetTransform().getOrientation().y << ", z: " << capsuleComp->GetTransform().getOrientation().z << ", w:" << capsuleComp->GetTransform().getOrientation().w << std::endl;
-			dx::XMFLOAT4 rot;
-			dx::XMStoreFloat4(&rot, rbComp->GetRotation());
-			std::cout << "rb, x: " << rot.x << ", y:" << rot.y << ", z:" << rot.z << ", w:" << rot.w << std::endl;
+			//std::cout << "Cap, x: " << capsuleComp->GetTransform().getOrientation().x << ", y: " << capsuleComp->GetTransform().getOrientation().y << ", z: " << capsuleComp->GetTransform().getOrientation().z << ", w:" << capsuleComp->GetTransform().getOrientation().w << std::endl;
+			//dx::XMFLOAT4 rot;
+			//dx::XMStoreFloat4(&rot, rbComp->GetRotation());
+			//std::cout << "rb, x: " << rot.x << ", y:" << rot.y << ", z:" << rot.z << ", w:" << rot.w << std::endl;
 			phy.MutexUnlock();
 		}
 	}
