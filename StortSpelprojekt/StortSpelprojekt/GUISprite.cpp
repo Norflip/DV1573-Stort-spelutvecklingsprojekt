@@ -1,7 +1,7 @@
 #include "GUISprite.h"
 
 
-GUISprite::GUISprite(Renderer& renderer , std::string filePath, float xPos, float yPos,float layerDepth, DrawDirection dir, ClickFunction clickFunc)
+GUISprite::GUISprite(Renderer& renderer , std::string filePath, float xPos, float yPos,float layerDepth, DrawDirection dir, ClickFunction clickFunc, GuiGroup group)
 {
 	this->renderer = &renderer;
 	// position
@@ -10,7 +10,7 @@ GUISprite::GUISprite(Renderer& renderer , std::string filePath, float xPos, floa
 	this->xScale = 1.0;
 	this->yScale = 1.0;
 	this->direction = dir;
-
+	this->group = group;
 	this->rotation = 0.0f;
 	this->baseColor = dx::XMVectorSet(1.f, 1.f, 1.f, 1.f);
 	this->activeColor = dx::XMVectorSet(1.0f, 1.0f, 1.0f, 1.0f); // default bluetinted
@@ -20,7 +20,7 @@ GUISprite::GUISprite(Renderer& renderer , std::string filePath, float xPos, floa
 	this->spriteBatch = nullptr;
 	this->filePath = filePath;
 	this->layerDepth = layerDepth;
-
+	this->SetVisible(true);
 	this->scale = dx::XMVectorSet(this->xScale, this->yScale, 0, 0);
 
 	Microsoft::WRL::ComPtr<ID3D11Resource> res;
@@ -66,7 +66,7 @@ void GUISprite::Draw(DirectX::SpriteBatch* test)
 {
 	if (this->GetVisible())
 	{
-		if (this->GetActive())
+		if (this->GetActivated())
 			test->Draw(SRV, this->position, nullptr, this->activeColor, rotation, origin, scale, DirectX::SpriteEffects::SpriteEffects_None, this->layerDepth);
 		else
 			test->Draw(SRV, this->position, nullptr, this->baseColor, rotation, origin, scale, DirectX::SpriteEffects::SpriteEffects_None, this->layerDepth);
@@ -131,22 +131,28 @@ void GUISprite::SetScaleBars(float yValue)
 
 bool GUISprite::IsClicked()
 {
-	if (clickFunc == ClickFunction::Clickable && IsMouseOver() && Input::Instance().GetLeftMouseKeyDown())
-		return true;
-	else
-		return false;
+	if(this->GetVisible())
+	{
+		if (clickFunc == ClickFunction::Clickable && IsMouseOver() && Input::Instance().GetLeftMouseKeyDown())
+			return true;		
+	}
+	return false;
 }
 
 bool GUISprite::IsMouseOver()
 {
-	if ((Input::Instance().GetMousePos().x > xPos && Input::Instance().GetMousePos().x < xPos + width) && (Input::Instance().GetMousePos().y > yPos && Input::Instance().GetMousePos().y < yPos + height))
+	if (this->GetVisible())
 	{
-		SetActiveColor(dx::XMVectorSet(1.0f, 0.0f, 0.0f, 1.0f));
-		return true;
-	}
-	else
-		SetActiveColor(this->baseColor);
+		if ((Input::Instance().GetMousePos().x > xPos && Input::Instance().GetMousePos().x < xPos + width) && (Input::Instance().GetMousePos().y > yPos && Input::Instance().GetMousePos().y < yPos + height))
+		{
+			SetActiveColor(dx::XMVectorSet(1.0f, 0.0f, 0.0f, 1.0f));
+			return true;
+		}
+		else
+			SetActiveColor(this->baseColor);
 		return false;
+	}
+
 }
 
 void GUISprite::Update()

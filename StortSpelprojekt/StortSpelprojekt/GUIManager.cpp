@@ -59,9 +59,6 @@ void GUIManager::AddGUIObject(GUIObject* addObj, std::string name, float x, floa
 {
 }
 
-
-
-
 void GUIManager::AddGUIObject(std::string textureName, std::string name, float x, float y)
 {
 }
@@ -90,9 +87,19 @@ void GUIManager::Pass(Renderer* renderer, RenderTexture& inTexture, RenderTextur
 	spriteBatch->End();
 }
 
-void GUIManager::ChangeGuiState(GuiState state)
+void GUIManager::ChangeGuiGroup(GuiGroup state)
 {
-
+	for (auto i : GUIObjects)
+	{
+		if (i.second->HasGroup(state))
+		{
+			i.second->SetVisible(true);
+		}
+		else
+		{
+			i.second->SetVisible(false);
+		}
+	}
 }
 
 void GUIManager::ClearGui()
@@ -107,6 +114,25 @@ void GUIManager::UpdateAll()
 {
 	for (auto i : GUIObjects)
 	{
+		if(i.second ->GetVisible())
 		i.second->Update();
 	}
 }
+
+
+bool GUIObject::HasGroup(GuiGroup flag) const
+{
+	return ((int)flag & (int)group) != 0;
+}
+
+void GUIObject::AddGroup(GuiGroup flag)
+{
+	group = static_cast<GuiGroup>((int)group | (int)flag);
+}
+
+void GUIObject::RemoveGroup(GuiGroup flag)
+{
+	group = static_cast<GuiGroup>((int)group & ~((int)flag));
+}
+
+

@@ -12,9 +12,15 @@
 namespace dx = DirectX;
 
 
-enum class GuiState
+enum class GuiGroup : unsigned int
 {
-	Lore, Options, HowToPlay, Intro
+	None = 0,
+	Default = 1,
+	Lore = 2, 
+	Options = 3, 
+	HowToPlay = 4, 
+	Intro = 5
+	
 };
 
 // Virtual base class to inherit from
@@ -26,12 +32,15 @@ public:
 	virtual void Draw(DirectX::SpriteBatch*) = 0;
 	virtual void SetPosition(float x, float y) = 0;
 	virtual void Update() = 0;
-	void SetActive(bool set = true) { this->active = set; };
-	bool GetActive() { return this->active; };
+	void SetActivated(bool set = true) { this->active = set; };
+	bool GetActivated() { return this->active; };
 	void SetVisible(bool set = true) { this->active = set; };
 	bool GetVisible() { return this->active; };
-	void SetGroup(GuiState group) { this->group = group; };
-
+	void SetGroup(GuiGroup group) { this->group = group; };
+	bool HasGroup(GuiGroup flag) const;
+	void AddGroup(GuiGroup flag);
+	void RemoveGroup(GuiGroup flag);
+	GuiGroup GetGroup(){ return this->group; };
 private:
 	std::string name;
 	DirectX::SpriteBatch* spriteBatch; //hmm
@@ -39,7 +48,8 @@ private:
 	float yPos;
 	bool active;
 	bool visible = true;
-	GuiState group;
+protected:
+	GuiGroup group;
 };
 
 class GUIManager : public RenderPass
@@ -52,7 +62,7 @@ public:
 	GUIObject* GetGUIObject(std::string name);
 	void RemoveGUIObject(std::string name);
 	void Pass(Renderer* renderer, RenderTexture& inTexture, RenderTexture& outTexture) override;
-	void ChangeGuiState(GuiState state);
+	void ChangeGuiGroup(GuiGroup state);
 	void ClearGui();
 	void UpdateAll();
 

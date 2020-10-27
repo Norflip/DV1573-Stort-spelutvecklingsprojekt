@@ -29,7 +29,7 @@ class GUISprite :public GUIObject
 {
 
 public:
-	GUISprite(Renderer& renderer, std::string, float xPos, float yPos , float layerDepth = 0, DrawDirection dir = DrawDirection::Default, ClickFunction clickFunc = ClickFunction::NotClickable);
+	GUISprite(Renderer& renderer, std::string, float xPos, float yPos , float layerDepth = 0, DrawDirection dir = DrawDirection::Default, ClickFunction clickFunc = ClickFunction::NotClickable, GuiGroup group = GuiGroup::Default);
 	~GUISprite();
 	void Draw(DirectX::SpriteBatch*) override;
 	void Draw();
@@ -45,6 +45,9 @@ public:
 	bool IsClicked();
 	bool IsMouseOver();
 	void Update();
+		bool HasFlag(ObjectFlag flag) const;
+	void AddFlag(ObjectFlag flag);
+	void RemoveFlag(ObjectFlag flag);
 
 private:
 	std::string filePath;
