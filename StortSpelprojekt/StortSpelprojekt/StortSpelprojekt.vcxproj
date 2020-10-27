@@ -216,6 +216,7 @@
     <ClCompile Include="SkeletonMeshComponent.cpp" />
     <ClCompile Include="ThirdParty\SimplexNoise.cpp" />
     <ClCompile Include="Transform.cpp" />
+    <ClCompile Include="WeaponComponent.cpp" />
     <ClCompile Include="Window.cpp" />
     <ClCompile Include="WinScene.cpp" />
     <ClCompile Include="World.cpp" />
@@ -297,6 +298,7 @@
     <ClInclude Include="SkeletonMeshComponent.h" />
     <ClInclude Include="ThirdParty\SimplexNoise.h" />
     <ClInclude Include="Transform.h" />
+    <ClInclude Include="WeaponComponent.h" />
     <ClInclude Include="Window.h" />
     <ClInclude Include="WinScene.h" />
     <ClInclude Include="World.h" />
