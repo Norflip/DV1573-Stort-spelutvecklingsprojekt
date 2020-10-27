@@ -96,4 +96,5 @@ protected:
 
 	float windowHeight, windowWidth;
 	bool quit;
+
 };

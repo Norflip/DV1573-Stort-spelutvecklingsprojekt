@@ -180,9 +180,6 @@
     <ClCompile Include="Window.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="WorldGenerator.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="Scene.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
@@ -206,7 +203,7 @@
     </ClCompile>
     <ClCompile Include="PlayerAttackComp.cpp">
       <Filter>Source Files</Filter>
-    </ClCompile>    
+    </ClCompile>
     <ClCompile Include="Object.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
@@ -229,7 +226,7 @@
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="PickupComponent.cpp">
-    <Filter>Source Files</Filter>
+      <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="WinScene.cpp">
       <Filter>Source Files</Filter>
@@ -252,6 +249,7 @@
     <ClCompile Include="PointQuadTree.cpp">
       <Filter>Source Files\SpawnSystems</Filter>
     </ClCompile>
+    <ClCompile Include="AudioEngine.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="BoundingBoxes.h">
@@ -496,6 +494,9 @@
     </ClInclude>
     <ClInclude Include="PointQuadTree.h">
       <Filter>Source Files\SpawnSystems</Filter>
+    </ClInclude>
+    <ClInclude Include="AudioEngine.h">
+      <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
