@@ -1,5 +1,6 @@
 #include "World.h"
 #include "Input.h"
+#include "PickupComponent.h"
 
 World::World() : player(nullptr), house(nullptr)
 {
@@ -122,11 +123,14 @@ int World::TryGetQueueCount(std::string key, const std::map<std::string, int>& q
 
 void World::RegisterToPool(ObjectPooler* pooler, ObjectSpawner* spawner, const std::map<std::string, int>& queueCountTable) const
 {
+
 	pooler->Register("Health_kit", 0, [](ResourceManager* resources)
 	{
 		Object* object = resources->AssembleObject("HealthKit", "HealthKitMaterial");
 
+
 		object->AddComponent<BoxColliderComponent>(dx::XMFLOAT3(0.5f, 0.5f, 0.5f), dx::XMFLOAT3(0, 0, 0));
+		object->AddComponent<PickupComponent>(Type::Health, 20.0f);
 
 		RigidBodyComponent* rd = object->AddComponent<RigidBodyComponent>(5.0f, FilterGroups::PICKUPS, FilterGroups::EVERYTHING, true);
 		Physics::Instance().RegisterRigidBody(rd);
@@ -139,6 +143,7 @@ void World::RegisterToPool(ObjectPooler* pooler, ObjectSpawner* spawner, const s
 		Object* object = resources->AssembleObject("FuelCan", "FuelCanMaterial");
 
 		object->AddComponent<BoxColliderComponent>(dx::XMFLOAT3(0.5f, 0.5f, 0.5f), dx::XMFLOAT3(0, 0, 0));
+		object->AddComponent<PickupComponent>(Type::Fuel, 20.0f);
 
 		RigidBodyComponent* rd = object->AddComponent<RigidBodyComponent>(0.0f, FilterGroups::PICKUPS, FilterGroups::EVERYTHING, false);
 
@@ -151,6 +156,7 @@ void World::RegisterToPool(ObjectPooler* pooler, ObjectSpawner* spawner, const s
 		Object* object = resources->AssembleObject("BakedBeans", "BakedBeansMaterial");
 
 		object->AddComponent<BoxColliderComponent>(dx::XMFLOAT3(0.5f, 0.5f, 0.5f), dx::XMFLOAT3(0, 0, 0));
+		object->AddComponent<PickupComponent>(Type::Food, 20.0f);
 
 		RigidBodyComponent* rd = object->AddComponent<RigidBodyComponent>(0.0f, FilterGroups::PICKUPS, FilterGroups::EVERYTHING, false);
 

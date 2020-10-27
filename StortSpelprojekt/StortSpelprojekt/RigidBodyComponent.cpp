@@ -119,7 +119,7 @@ void RigidBodyComponent::AddCollidersToBody(Object* obj, rp::RigidBody* body)
 		collider->setCollideWithMaskBits(static_cast<unsigned short>(collisionMask));
 	}
 
-	std::cout << obj->GetName() << " has colliders: " << colliders.size() << std::endl;
+	assert(colliders.size() > 0);
 
 	//CHILDREN
 	const std::vector<Transform*>& children = GetOwner()->GetTransform().GetChildren();
