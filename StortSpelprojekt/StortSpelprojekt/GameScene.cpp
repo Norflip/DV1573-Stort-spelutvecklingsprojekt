@@ -98,7 +98,24 @@ void GameScene::InitializeObjects()
 	//testMesh4->AddComponent<MeshComponent>(*mesh1, *material2);
 	//AddObject(testMesh4);
 
-	
+
+		/* * * * * * * * ** * * * * */
+
+	//SKELETON ANIMATION MODELS
+
+	bool defaultAnimation = false;
+	bool parentAnimation = true;
+	Shader* skeletonShader = resourceManager->GetShaderResource("skeletonShader");
+
+	std::vector<Mesh> skeletonMesh = ZWEBLoader::LoadMeshes(ZWEBLoadType::SkeletonAnimation, "Models/baseMonster.ZWEB", renderer->GetDevice());
+	std::vector<Material> skeletonMat = ZWEBLoader::LoadMaterials("Models/baseMonster.ZWEB", skeletonShader, renderer->GetDevice());
+
+	SkeletonAni skeletonbaseMonsterIdle = ZWEBLoader::LoadSkeletonOnly("Models/baseMonsterIdle.ZWEB", skeletonMesh[0].GetBoneIDS(), defaultAnimation);
+	SkeletonAni skeletonbaseMonsterWalk = ZWEBLoader::LoadSkeletonOnly("Models/baseMonsterWalk.ZWEB", skeletonMesh[0].GetBoneIDS(), defaultAnimation);
+	SkeletonAni skeletonbaseMonsterRun = ZWEBLoader::LoadSkeletonOnly("Models/baseMonsterRun.ZWEB", skeletonMesh[0].GetBoneIDS(), defaultAnimation);
+	SkeletonAni skeletonbaseMonsterAttack = ZWEBLoader::LoadSkeletonOnly("Models/baseMonsterAttack.ZWEB", skeletonMesh[0].GetBoneIDS(), defaultAnimation);
+	SkeletonAni skeletonbaseMonsterDeath = ZWEBLoader::LoadSkeletonOnly("Models/baseMonsterDeath.ZWEB", skeletonMesh[0].GetBoneIDS(), defaultAnimation);
+
 	//Player & Camera
 	dx::XMFLOAT3 playerSpawn = { 10,10,10 };
 	dx::XMFLOAT3 zero = { 0.f, 0.f, 0.f };
@@ -122,8 +139,8 @@ void GameScene::InitializeObjects()
 	physics.MutexUnlock();
 	playerObject->AddComponent<ControllerComp>(cameraObject);
 	//Transform::SetParentChild(playerObject->GetTransform(),cameraObject->GetTransform());
-	playerObject->AddComponent<PlayerComp>(renderer, camera, Physics::Instance(), guiManager, 50000, 2, 10, 25, 3);
-
+	playerObject->AddComponent<PlayerComp>(renderer, camera, Physics::Instance(), guiManager, 50000, 2, 3, 25, 3);
+	playerStatsComp = playerObject->GetComponent<PlayerComp>();
 	AddObject(cameraObject, playerObject);
 	AddObject(playerObject);
 
@@ -132,29 +149,10 @@ void GameScene::InitializeObjects()
 	dx::XMFLOAT3 lightTranslation = dx::XMFLOAT3(0.0f, 0.0f, -1.0f);
 	testPointLight->GetTransform().SetPosition(dx::XMLoadFloat3(&lightTranslation));
 	testPointLight->AddComponent<PointLightComponent>(dx::XMFLOAT4(0.8f, 0.8f, 0.8f, 1.0f), 25);
-	
+
 	AddObject(testPointLight, playerObject);
-
-
-		/* * * * * * * * ** * * * * */
-
-	//SKELETON ANIMATION MODELS
-
-	bool defaultAnimation = false;
-	bool parentAnimation = true;
-	Shader* skeletonShader = resourceManager->GetShaderResource("skeletonShader");
-
-	std::vector<Mesh> skeletonMesh = ZWEBLoader::LoadMeshes(ZWEBLoadType::SkeletonAnimation, "Models/baseMonster.ZWEB", renderer->GetDevice());
-	std::vector<Material> skeletonMat = ZWEBLoader::LoadMaterials("Models/baseMonster.ZWEB", skeletonShader, renderer->GetDevice());
-
-	SkeletonAni skeletonbaseMonsterIdle = ZWEBLoader::LoadSkeletonOnly("Models/baseMonsterIdle.ZWEB", skeletonMesh[0].GetBoneIDS(), defaultAnimation);
-	SkeletonAni skeletonbaseMonsterWalk = ZWEBLoader::LoadSkeletonOnly("Models/baseMonsterWalk.ZWEB", skeletonMesh[0].GetBoneIDS(), defaultAnimation);
-	SkeletonAni skeletonbaseMonsterRun = ZWEBLoader::LoadSkeletonOnly("Models/baseMonsterRun.ZWEB", skeletonMesh[0].GetBoneIDS(), defaultAnimation);
-	SkeletonAni skeletonbaseMonsterAttack = ZWEBLoader::LoadSkeletonOnly("Models/baseMonsterAttack.ZWEB", skeletonMesh[0].GetBoneIDS(), defaultAnimation);
-	SkeletonAni skeletonbaseMonsterDeath = ZWEBLoader::LoadSkeletonOnly("Models/baseMonsterDeath.ZWEB", skeletonMesh[0].GetBoneIDS(), defaultAnimation);
-
 	//LOADING BASE MONSTER; ADDING SKELETONS TO IT
-	enemy = new Object("enemy");
+	enemy = new Object("enemy", ObjectFlag::ENABLED);
 	SkeletonMeshComponent* baseMonsterComp = enemy->AddComponent<SkeletonMeshComponent>(skeletonMesh[0], skeletonMat[0]);
 	baseMonsterComp->SetAnimationTrack(skeletonbaseMonsterIdle, SkeletonStateMachine::IDLE);
 	baseMonsterComp->SetAnimationTrack(skeletonbaseMonsterWalk, SkeletonStateMachine::WALK);
@@ -164,10 +162,10 @@ void GameScene::InitializeObjects()
 	baseMonsterComp->BlendAnimations();
 
 	//Enemy object //comments
-	dx::XMFLOAT3 enemyTranslation = dx::XMFLOAT3(0, 3, 10);
+	dx::XMFLOAT3 enemyTranslation = dx::XMFLOAT3(14, 3, 2);
 	enemy->GetTransform().SetPosition(dx::XMLoadFloat3(&enemyTranslation));
 	enemy->GetTransform().SetScale({ 0.125f, 0.125f, 0.125f });
-	enemy->AddComponent<EnemyStatsComp>(500, 0.5f, 5, 25, 3);
+	enemy->AddComponent<EnemyStatsComp>(100, 0.5f, 5, 25, 3);
 	enemyStatsComp = enemy->GetComponent<EnemyStatsComp>();
 	enemy->AddComponent<EnemyAttackComp>(player->GetComponent<PlayerComp>());
 	EnemySMComp* stateMachine = enemy->AddComponent<EnemySMComp>(EnemyState::IDLE);
@@ -351,8 +349,8 @@ void GameScene::InitializeGUI()
 
 	//FONTS
 	GUIFont* fpsDisplay = new GUIFont(*renderer, "fps", windowWidth / 2, 50);
-	/*GUIFont* healthDisplay = new GUIFont(*renderer, "playerHealth", 50, 100);
-	GUIFont* enemyDisplay = new GUIFont(*renderer, "enemyHealth", 50, 150);*/
+	GUIFont* healthDisplay = new GUIFont(*renderer, "playerHealth", 50, 100);
+	GUIFont* enemyDisplay = new GUIFont(*renderer, "enemyHealth", 50, 150);
 
 	//CROSSHAIR
 	GUISprite* dot = new GUISprite(*renderer, "Textures/dot.png", (windowWidth / 2) - 6, (windowHeight / 2) - 6, 0, DrawDirection::BottomLeft, ClickFunction::NotClickable);
@@ -361,8 +359,8 @@ void GameScene::InitializeGUI()
 	// INSERTIONS
 	guiManager = new GUIManager(renderer, 100);
 	guiManager->AddGUIObject(fpsDisplay, "fps");
-	/*guiManager->AddGUIObject(healthDisplay, "playerHealth");
-	guiManager->AddGUIObject(enemyDisplay, "enemyHealth");*/
+	guiManager->AddGUIObject(healthDisplay, "playerHealth");
+	guiManager->AddGUIObject(enemyDisplay, "enemyHealth");
 
 	//BASE OF EQUIPMENT
 	guiManager->AddGUIObject(equimpmentSprite1, "equimpmentSprite1");
