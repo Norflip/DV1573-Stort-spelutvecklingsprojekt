@@ -14,6 +14,9 @@ Chunk::~Chunk()
 		delete heightMap;
 		heightMap = nullptr;
 	}
+
+	rp::PhysicsCommon& common = Physics::Instance().GetCommon();
+	common.destroyHeightFieldShape(shape);
 }
 
 #if _DEBUG and DRAW_DEBUG
@@ -26,7 +29,26 @@ void Chunk::Update(const float& deltaTime)
 	center.x += (float)CHUNK_SIZE / 2.0f;
 	center.z += (float)CHUNK_SIZE / 2.0f;
 
-	DShape::DrawWireBox(center, dx::XMFLOAT3(CHUNK_SIZE * 0.9f, 1.0f /*CHUNK_SIZE * 0.9f*/, CHUNK_SIZE * 0.9f), color);
+	//DShape::DrawWireBox(center, dx::XMFLOAT3(CHUNK_SIZE * 0.9f, 1.0f /*CHUNK_SIZE * 0.9f*/, CHUNK_SIZE * 0.9f), color);
+
+
+	rp::AABB aabb = collider->getWorldAABB();
+	dx::XMFLOAT3 pos (aabb.getCenter().x, aabb.getCenter().y, aabb.getCenter().z);
+	dx::XMFLOAT3 ext (aabb.getExtent().x * 0.95f, aabb.getExtent().y * 0.95f, aabb.getExtent().z * 0.95f);
+
+	DShape::DrawWireBox(pos, ext, dx::XMFLOAT3(1.0f, 1.0f, 0.0f));
+
+	for (size_t y = 0; y < CHUNK_SIZE + 1; y++)
+	{
+		for (size_t x = 0; x < CHUNK_SIZE + 1; x++)
+		{
+			float dy = shape->getHeightAt(x, y);
+			pos = dx::XMFLOAT3(x + center.x - (CHUNK_SIZE / 2.0f), dy, y + center.z - (CHUNK_SIZE / 2.0f));
+
+			DShape::DrawWireSphere(pos, 0.1f, dx::XMFLOAT3(1.0f, 1.0f, 0.0f));
+		}
+	}
+
 }
 #endif
 
@@ -36,39 +58,35 @@ void Chunk::SetupCollisionObject(float* heightMap)
 	dx::XMFLOAT3 worldPosition;
 	dx::XMStoreFloat3(&worldPosition, GetOwner()->GetTransform().GetPosition());
 
-
-	rp::Transform transform;
-
-	const float offset = CHUNK_SIZE / 2.0f;
-	rp::Vector3 btPosition(worldPosition.x + offset, worldPosition.y, worldPosition.z + offset);
-	transform.setPosition(btPosition);
-
 	const int gridSize = static_cast<int>(CHUNK_SIZE) + 1;
-	float min, max;
-	//GetHeightFieldMinMax(heightMap, gridSize, min, max);
-	min = -TERRAIN_SCALE;
+
+	min = 0.1f;// 0.1f;
 	max = TERRAIN_SCALE;
 
 	rp::PhysicsCommon& common = Physics::Instance().GetCommon();
 	shape = common.createHeightFieldShape(gridSize, gridSize, min, max, static_cast<void*>(heightMap), rp::HeightFieldShape::HeightDataType::HEIGHT_FLOAT_TYPE);
 
-	rp::Transform colliderTransform;
-	colliderTransform.setPosition(rp::Vector3(0, -TERRAIN_SCALE / 4.0f, 0));
+	float origin =  (max - min) * 0.5f;
+	const float offset = CHUNK_SIZE / 2.0f;
+
+	rp::Transform transform;
+	rp::Vector3 btPosition(worldPosition.x + offset, origin, worldPosition.z + offset);
+	transform.setPosition(btPosition);
 
 	rp::PhysicsWorld* world = Physics::Instance().GetWorld();
-
-
-
 #if  USE_RIGIDBODY
 
 	body = world->createRigidBody(transform);
 	body->setType(rp::BodyType::STATIC);
 	body->enableGravity(false);
-	collider = body->addCollider(shape, colliderTransform);
+
+	collider = body->addCollider(shape, rp::Transform::identity());
+	//body->updateLocalCenterOfMassFromColliders();
+	//body->updateLocalInertiaTensorFromColliders();
 
 #else
 	body = world->createCollisionBody(transform);
-	collider = body->addCollider(shape, colliderTransform);
+	collider = body->addCollider(shape, rp::Transform::identity());
 
 #endif //  USE_RIGIDBODY
 
@@ -93,7 +111,6 @@ float Chunk::SampleHeight(float x, float z)
 	if (col >= 0 && row >= 0 && col <= CHUNK_SIZE && row <= CHUNK_SIZE)
 	{
 		height = shape->getHeightAt(col, row);
-		//std::cout << "col: " << row << ", row: " << col << ", height: " << height << std::endl;
 	}
 	else
 	{

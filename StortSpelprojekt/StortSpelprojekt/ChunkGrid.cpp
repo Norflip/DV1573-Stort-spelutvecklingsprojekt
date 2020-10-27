@@ -1,6 +1,6 @@
-#include "GridData.h"
+#include "ChunkGrid.h"
 
-void GridData::Generate(int maxSteps, int padding, int directionalSteps)
+void ChunkGrid::Generate(int maxSteps, int padding, int directionalSteps)
 {
 	Clear();
 	std::vector<dx::XMINT2> points;
@@ -39,15 +39,15 @@ void GridData::Generate(int maxSteps, int padding, int directionalSteps)
 	AddPadding(padding, points, chunks);
 
 	FindMinMax(chunks);
-	path = Path2(pathIndexes);
+	path = Path(pathIndexes);
 }
 
-void GridData::Clear()
+void ChunkGrid::Clear()
 {
 	chunks.clear();
 }
 
-void GridData::AddChunksFromPath(std::vector<dx::XMINT2>& points, std::vector<dx::XMINT2>& path, std::unordered_map<int, ChunkInfo>& chunks)
+void ChunkGrid::AddChunksFromPath(std::vector<dx::XMINT2>& points, std::vector<dx::XMINT2>& path, std::unordered_map<int, ChunkInfo>& chunks)
 {
 	int size = points.size();
 	for (size_t i = 0; i < size; i++)
@@ -64,7 +64,7 @@ void GridData::AddChunksFromPath(std::vector<dx::XMINT2>& points, std::vector<dx
 	}
 }
 
-void GridData::AddPrePostChunks(const dx::XMINT2& start, const dx::XMINT2& direction, const int& steps, std::vector<dx::XMINT2>& points, dx::XMINT2& last, std::unordered_map<int, ChunkInfo>& chunks)
+void ChunkGrid::AddPrePostChunks(const dx::XMINT2& start, const dx::XMINT2& direction, const int& steps, std::vector<dx::XMINT2>& points, dx::XMINT2& last, std::unordered_map<int, ChunkInfo>& chunks)
 {
 	dx::XMINT2 current = start;
 
@@ -85,7 +85,7 @@ void GridData::AddPrePostChunks(const dx::XMINT2& start, const dx::XMINT2& direc
 	last = dx::XMINT2(current);
 }
 
-void GridData::AddPadding(int radius, std::vector<dx::XMINT2>& points, std::unordered_map<int, ChunkInfo>& chunks)
+void ChunkGrid::AddPadding(int radius, std::vector<dx::XMINT2>& points, std::unordered_map<int, ChunkInfo>& chunks)
 {
 	int currentX, currentY;
 	size_t size = points.size();
@@ -113,7 +113,7 @@ void GridData::AddPadding(int radius, std::vector<dx::XMINT2>& points, std::unor
 	}
 }
 
-void GridData::UpdateDirection(dx::XMINT2& direction)
+void ChunkGrid::UpdateDirection(dx::XMINT2& direction)
 {
 	float value = Random::Value();
 	if (direction.y == 0)
@@ -131,7 +131,7 @@ void GridData::UpdateDirection(dx::XMINT2& direction)
 	}
 }
 
-void GridData::FindMinMax(std::unordered_map<int, ChunkInfo>& chunks)
+void ChunkGrid::FindMinMax(std::unordered_map<int, ChunkInfo>& chunks)
 {
 	bool first = true;
 	dx::XMINT2 index;
