@@ -23,7 +23,7 @@ enum class GuiGroup : unsigned int
 	Font = 1 << 5
 	
 };
-
+DEFINE_ENUM_FLAG_OPERATORS(GuiGroup)
 // Virtual base class to inherit from
 class GUIObject
 {
@@ -37,7 +37,6 @@ public:
 	bool GetActivated() { return this->active; };
 	void SetVisible(bool set = true) { this->visible = set; };
 	bool GetVisible() { return this->visible; };
-	void SetGroup(GuiGroup group) { this->group = group; };
 	bool HasGroup(GuiGroup flag) const;
 	void AddGroup(GuiGroup flag);
 	void RemoveGroup(GuiGroup flag);
@@ -50,7 +49,7 @@ private:
 	bool active;
 	bool visible = true;
 protected:
-	GuiGroup group;
+	GuiGroup group = GuiGroup::None;
 };
 
 class GUIManager : public RenderPass

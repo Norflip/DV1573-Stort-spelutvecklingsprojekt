@@ -103,13 +103,19 @@ void GUIManager::RemoveGUIObject(std::string name)
 
 void GUIManager::Pass(Renderer* renderer, RenderTexture& inTexture, RenderTexture& outTexture)
 {
+
+	//SPRITES
+
 	spriteBatch->Begin(dx::SpriteSortMode::SpriteSortMode_BackToFront, blendOn, samplerState, depthStencilState, testState);
 	for (auto i : GUIObjects)
 	{
 		if(!i.second->HasGroup(GuiGroup::Font))
-		i.second->Draw(spriteBatch);
+			i.second->Draw(spriteBatch);
 	}
 	spriteBatch->End();
+
+	//FONTS
+
 	spriteBatch->Begin(dx::SpriteSortMode::SpriteSortMode_BackToFront, nullptr, samplerState, depthStencilState, testState);
 	for (auto i : GUIObjects)
 	{
