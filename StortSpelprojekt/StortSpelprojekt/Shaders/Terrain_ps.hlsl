@@ -1,4 +1,5 @@
 #include "PhongShading.hlsl"
+#include "IO.hlsl"
 
 float invLerp(float from, float to, float value) 
 {
@@ -10,16 +11,6 @@ float remap(float origFrom, float origTo, float targetFrom, float targetTo, floa
 	float rel = invLerp(origFrom, origTo, value);
 	return lerp(targetFrom, targetTo, rel);
 }
-
-
-struct VS_OUTPUT
-{
-	float4 position		 : SV_POSITION;
-	float3 normal		 : NORMAL;
-	float2 uv			 : TEXCOORD0;
-	float3 worldPosition : POSITION;
-	float3 tangent		 : TANGENT;
-};
 
 Texture2D testTexture : register (t0);
 Texture2D grassTexture : register (t1);
@@ -38,15 +29,12 @@ float4 main(VS_OUTPUT input) : SV_TARGET
 	float4 road = roadTexture.Sample(m_textureSamplerState, input.uv * UV_SCALE);
 
 	float t = smoothstep(0.1f, 0.25f, data.z);
-	float4 d = lerp(road, grass, t) * 0.4f;
-	d.a = 1.0f;
+	float4 textureColor = lerp(road, grass, t);
+	textureColor.a = 1.0f;
 
-
-	return float4(data.xxx, 1.0f);
+	//return d;
 
 	float3 viewDirection = cameraPosition - input.worldPosition;
-
-
 	float4 finalColor = float4(0,0,0,1);
 
 	float3 normal = normalize(input.normal);
@@ -57,5 +45,5 @@ float4 main(VS_OUTPUT input) : SV_TARGET
 		finalColor += CalculatePointLight(pointLights[i], normal, input.worldPosition, viewDirection);
 	}
 
-	return saturate(finalColor); //  float4(finalColor.r, finalColor.g, finalColor.b * 5, finalColor.a);
+	return textureColor;//  saturate(textureColor * finalColor);
 }

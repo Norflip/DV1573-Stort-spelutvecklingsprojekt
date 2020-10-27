@@ -58,25 +58,18 @@ void Chunk::SetupCollisionObject(float* heightMap)
 	dx::XMFLOAT3 worldPosition;
 	dx::XMStoreFloat3(&worldPosition, GetOwner()->GetTransform().GetPosition());
 
-
-
 	const int gridSize = static_cast<int>(CHUNK_SIZE) + 1;
-	//GetHeightFieldMinMax(heightMap, gridSize, min, max);
-	
+
 	min = 0.1f;// 0.1f;
 	max = TERRAIN_SCALE;
 
 	rp::PhysicsCommon& common = Physics::Instance().GetCommon();
 	shape = common.createHeightFieldShape(gridSize, gridSize, min, max, static_cast<void*>(heightMap), rp::HeightFieldShape::HeightDataType::HEIGHT_FLOAT_TYPE);
 
-	float origin = -(max - min) * 0.5f - min;
-	//std::cout << "HEIGHT: " << origin << std::endl;
-
-	origin =  (max - min) * 0.5f;
-	//origin = 0.0f;
+	float origin =  (max - min) * 0.5f;
+	const float offset = CHUNK_SIZE / 2.0f;
 
 	rp::Transform transform;
-	const float offset = CHUNK_SIZE / 2.0f;
 	rp::Vector3 btPosition(worldPosition.x + offset, origin, worldPosition.z + offset);
 	transform.setPosition(btPosition);
 
@@ -117,11 +110,7 @@ float Chunk::SampleHeight(float x, float z)
 
 	if (col >= 0 && row >= 0 && col <= CHUNK_SIZE && row <= CHUNK_SIZE)
 	{
-		float origin = -(max - min) * 0.5f - min;
-
-		height = shape->getHeightAt(col, row);// +origin;
-		//std::cout << "col: " << col << ", row: " << row << ", height: " << height <<  " A: " << ((-(max - min) * 0.5f - min)) << std::endl;
-		//height = (height);
+		height = shape->getHeightAt(col, row);
 	}
 	else
 	{

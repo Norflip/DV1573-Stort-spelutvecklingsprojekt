@@ -1,4 +1,5 @@
 #include "CommonBuffers.hlsl"
+#include "IO.hlsl"
 
 Texture2D chunkData : register (t0);
 Texture2D chunkNormalTexture : register (t1);
@@ -12,24 +13,6 @@ SamplerState NormalSampler
 	AddressV = Wrap;
 };
 
-struct VS_INPUT
-{
-	float4 position : POSITION;
-	float2 uv		: TEXCOORD0;
-	float3 normal	: NORMAL;
-	float3 tangent	: TANGENT;
-	uint id	: SV_InstanceID;
-};
- 
-struct VS_OUTPUT
-{
-	float4 position		 : SV_POSITION;
-	float3 normal		 : NORMAL;
-	float2 uv			 : TEXCOORD0;
-	float3 worldPosition : POSITION;
-	float3 tangent		 : TANGENT;
-};
-
 float4 GetNormal(float2 uv, float texel, float height)
 {
 	//texel is one uint size, ie 1.0/texture size
@@ -40,7 +23,7 @@ float4 GetNormal(float2 uv, float texel, float height)
 
 	float3 va = normalize(float3(1.0f, 0.0f, t1 - t0));
 	float3 vb = normalize(float3(0.0f, 1.0f, t3 - t2));
-	return float4(cross(va, vb).rbg, 0.0f);
+	return float4(cross(va, vb).rgb, 0.0f);
 }
 
 VS_OUTPUT main(VS_INPUT input)
@@ -68,7 +51,7 @@ VS_OUTPUT main(VS_INPUT input)
 
 	//float4 normal = chunkNormalTexture.SampleLevel(NormalSampler, input.uv, 0);
 
-	output.normal = normalize(mul(normal, world).xyz);
-	output.tangent = normalize(mul(input.tangent, world).xyz);
+	output.normal = normalize(mul(world, normal).xyz);
+	output.tangent = normalize(mul(world, input.tangent).xyz);
 	return output;
 }

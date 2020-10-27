@@ -15,6 +15,9 @@ void SegmentGenerator::Initialize(Object* root, ResourceManager* resourceManager
 	this->context = context;
 	this->initialized = true;
 
+	Material* mat = resourceManager->GetResource<Material>("Test");
+	materialData = mat->GetMaterialData();
+
 	this->grassShader = resourceManager->GetShaderResource("grassShader");
 	this->chunkShader = resourceManager->GetShaderResource("terrainShader");
 
@@ -186,7 +189,9 @@ std::vector<SegmentGenerator::ChunkPointInformation> SegmentGenerator::CreateChu
 			float sampledHeight = Noise::Sample(chunkPosXZ.x + x, chunkPosXZ.y + y, description.noiseSettings);
 			float worldHeight = sampledHeight * distance * TERRAIN_SCALE;
 			
-			worldHeight = std::max(worldHeight, MIN_TERRAIN_HEIGHT);
+			worldHeight = std::max(worldHeight, MIN_TERRAIN_HEIGHT * 4.0f);
+			
+			
 			float height = worldHeight / TERRAIN_SCALE;
 
 			heightMap[x + size * y] = worldHeight;
@@ -228,6 +233,13 @@ Chunk* SegmentGenerator::CreateChunk(const dx::XMINT2& index, Object* root, cons
 	auto chunkDataSRV = DXHelper::CreateTexture(buffer, CHUNK_SIZE + 1, CHUNK_SIZE + 1, 4, DXGI_FORMAT_R8G8B8A8_UNORM, device);
 
 	Material material(chunkShader);
+	//cb_Material mat = material.GetMaterialData();
+	//mat.ambient = dx::XMFLOAT4(0.1f, 0.1f, 0.1f, 1);
+	//mat.diffuse = dx::XMFLOAT4(0.1f, 0.1f, 0.1f, 1);
+	//mat.specular = dx::XMFLOAT4(0.1f, 0.1f, 0.1f, 0.1f);
+
+	material.SetMaterialData(materialData);
+
 	Texture texture(chunkDataSRV);
 
 	Texture grassTexture;

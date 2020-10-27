@@ -64,6 +64,7 @@ private:
 	std::vector<Chunk*> chunks;
 	std::unordered_map<int, Chunk*> chunkMap;
 
+	cb_Material materialData;
 	Shader* grassShader;
 	Shader* chunkShader;
 

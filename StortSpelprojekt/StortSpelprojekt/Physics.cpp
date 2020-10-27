@@ -18,7 +18,7 @@ void Physics::Initialize(dx::XMFLOAT3 gravity)
 	world->setNbIterationsVelocitySolver(15);
 
 	// Change the number of iterations of the position solver 
-	world->setNbIterationsPositionSolver(16);
+	world->setNbIterationsPositionSolver(8);
 	world->setEventListener(&listener);
 
 	this->gravity = rp::Vector3(gravity.x, gravity.y, gravity.z);
@@ -43,12 +43,12 @@ void Physics::Initialize(dx::XMFLOAT3 gravity)
 
 void Physics::MutexLock()
 {
-	//physicsThreadMutex.lock();
+	physicsThreadMutex.lock();
 }
 
 void Physics::MutexUnlock()
 {
-	//physicsThreadMutex.unlock();
+	physicsThreadMutex.unlock();
 }
 
 void Physics::RegisterRigidBody(RigidBodyComponent* rigidBodyComp)

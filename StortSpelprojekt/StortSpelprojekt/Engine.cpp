@@ -35,7 +35,9 @@ Engine::~Engine()
 void Engine::Run()
 {
 	this->running = true;
-	//std::thread fixedLoopThread (Engine::FixedUpdateLoop, this);
+#if MULTITHREAD_PHYSICS
+	std::thread fixedLoopThread (Engine::FixedUpdateLoop, this);
+#endif
 
 	auto startTimePoint = std::chrono::high_resolution_clock::now();
 	float timeLastFrame = 0.0f;
@@ -61,6 +63,7 @@ void Engine::Run()
 			float currentTime = static_cast<float>(elapsed.count() / 1000.0f);
 			float deltaTime = currentTime - timeLastFrame;
 
+#if !MULTITHREAD_PHYSICS
 			fixedTimeAccumulation += deltaTime;
 			
 			while (fixedTimeAccumulation >= TARGET_FIXED_DELTA)
@@ -71,6 +74,7 @@ void Engine::Run()
 				if (activeScene != nullptr)
 					activeScene->FixedUpdate(TARGET_FIXED_DELTA);
 			}
+#endif
 
 			if (activeScene != nullptr)
 			{
@@ -91,7 +95,9 @@ void Engine::Run()
 		}
 	}
 
-	//fixedLoopThread.join();
+#if MULTITHREAD_PHYSICS
+	fixedLoopThread.join();
+#endif
 }
 
 void Engine::Exit()
