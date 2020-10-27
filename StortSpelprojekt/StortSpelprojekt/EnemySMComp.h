@@ -28,14 +28,16 @@ class EnemySMComp : public Component
 	public:
 		EnemySMComp(EnemyState state);
 		virtual ~EnemySMComp();
-		void InitAnimation();
 		void SetState(EnemyState state);
+		void Initialize();
+		void InitAnimation();
 		
 		void Update(const float& deltaTime);
 		void RegisterState(EnemyState state, Component* comp);
 	private:
 		EnemyState currentState;
 		std::unordered_map<EnemyState, Component*> stateMap;
+		EnemyAttackComp* enemyAttackComp;
 		void Animate();
 		SkeletonMeshComponent* skeletonComponent;
 		EnemyAttackComp* attackComponent;

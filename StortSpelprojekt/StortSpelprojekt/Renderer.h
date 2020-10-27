@@ -87,7 +87,7 @@ private:
 	void DrawRenderItemSkeleton(const RenderItem& item);
 	void DrawRenderItemGrass(const RenderItem& item);
 	
-	void SetObjectBufferValues(const CameraComponent* camera, dx::XMMATRIX world);
+	void SetObjectBufferValues(const CameraComponent* camera, dx::XMMATRIX world, bool transpose);
 	
 private:
 	IDXGISwapChain* swapchain;

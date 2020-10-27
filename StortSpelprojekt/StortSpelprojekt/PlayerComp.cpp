@@ -29,9 +29,9 @@ PlayerComp::PlayerComp(Renderer* renderer, CameraComponent* camComp, Physics& ph
 	this->SprintSpeed = SprintSpeed;
 	this->foodLossPerSecond = foodLossPerSecond;
 	this->fuelBurnPerMeter = fuelBurnPerMeter;
+	this->radius = radius;
 	this->renderer = renderer;
 
-	this->radius = radius;	// dont know ffs
 
 	// defaulting some shit
 	this->swapScene = NEXT_SCENE::GAME;
@@ -40,7 +40,6 @@ PlayerComp::PlayerComp(Renderer* renderer, CameraComponent* camComp, Physics& ph
 	this->fuelBurnPerMeter = 0.7f;
 	this->fuel = 80.0f;
 	this->healthLossPerSecond = 0.5f;
-	this->health = 80.0f;
 
 	this->fuelDippingBar = static_cast<GUISprite*>(guiMan->GetGUIObject("fuelDippingBar"));
 	this->foodDippingBar = static_cast<GUISprite*>(guiMan->GetGUIObject("foodDippingBar"));
