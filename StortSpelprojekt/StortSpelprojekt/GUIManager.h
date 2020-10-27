@@ -15,11 +15,11 @@ namespace dx = DirectX;
 enum class GuiGroup : unsigned int
 {
 	None = 0,
-	Default = 1,
-	Lore = 2, 
-	Options = 3, 
-	HowToPlay = 4, 
-	Intro = 5
+	Default = 1 << 0,
+	Lore = 1 << 1,
+	Options = 1 << 2,
+	HowToPlay = 1 << 3,
+	Intro = 1 << 4
 	
 };
 
@@ -34,8 +34,8 @@ public:
 	virtual void Update() = 0;
 	void SetActivated(bool set = true) { this->active = set; };
 	bool GetActivated() { return this->active; };
-	void SetVisible(bool set = true) { this->active = set; };
-	bool GetVisible() { return this->active; };
+	void SetVisible(bool set = true) { this->visible = set; };
+	bool GetVisible() { return this->visible; };
 	void SetGroup(GuiGroup group) { this->group = group; };
 	bool HasGroup(GuiGroup flag) const;
 	void AddGroup(GuiGroup flag);
@@ -67,7 +67,7 @@ public:
 	void UpdateAll();
 
 private:
-	
+	ID3D11RasterizerState* testState;
 	bool active = false;
 	dx::SpriteBatch* spriteBatch;
 	Renderer* renderer;

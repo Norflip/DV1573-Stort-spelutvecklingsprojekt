@@ -4,7 +4,7 @@
 
 
 
-GUIManager::GUIManager(Renderer* renderer, int priority): RenderPass(priority, RenderPass::PassType::UI_OVERLAY), renderer(renderer)
+GUIManager::GUIManager(Renderer* renderer, int priority) : RenderPass(priority, RenderPass::PassType::UI_OVERLAY), renderer(renderer)
 {
 	spriteBatch = new DirectX::SpriteBatch(this->renderer->GetContext());
 
@@ -23,7 +23,6 @@ GUIManager::GUIManager(Renderer* renderer, int priority): RenderPass(priority, R
 	dsDesc.FrontFace.StencilPassOp = D3D11_STENCIL_OP_REPLACE;
 	dsDesc.FrontFace.StencilFunc = D3D11_COMPARISON_ALWAYS;
 	dsDesc.BackFace = dsDesc.FrontFace;
-
 	renderer->GetDevice()->CreateDepthStencilState(&dsDesc, &depthStencilState);
 	HRESULT hr;
 	D3D11_BLEND_DESC blendDescGui;
@@ -36,7 +35,6 @@ GUIManager::GUIManager(Renderer* renderer, int priority): RenderPass(priority, R
 	blendDescGui.RenderTarget[0].DestBlendAlpha = D3D11_BLEND_ZERO;
 	blendDescGui.RenderTarget[0].BlendOpAlpha = D3D11_BLEND_OP_ADD;
 	blendDescGui.RenderTarget[0].RenderTargetWriteMask = 0x0f;
-
 	D3D11_BLEND_DESC blendDescOff;
 	ZeroMemory(&blendDescOff, sizeof(D3D11_BLEND_DESC));
 
@@ -46,7 +44,13 @@ GUIManager::GUIManager(Renderer* renderer, int priority): RenderPass(priority, R
 	assert(SUCCEEDED(hr));
 
 	//END Desc for blending png files with depth//
+	CD3D11_RASTERIZER_DESC rastDesc(D3D11_FILL_SOLID, D3D11_CULL_NONE, FALSE,
+		D3D11_DEFAULT_DEPTH_BIAS, D3D11_DEFAULT_DEPTH_BIAS_CLAMP,
+		D3D11_DEFAULT_SLOPE_SCALED_DEPTH_BIAS, TRUE, FALSE,
+		TRUE /*this is MSAA enable*/, TRUE);
 
+		HRESULT resultCreateRasterizer = renderer->GetDevice()->CreateRasterizerState(&rastDesc, &testState);
+	assert(SUCCEEDED(resultCreateRasterizer));
 
 }
 
@@ -81,7 +85,11 @@ void GUIManager::RemoveGUIObject(std::string name)
 
 void GUIManager::Pass(Renderer* renderer, RenderTexture& inTexture, RenderTexture& outTexture)
 {
-	spriteBatch->Begin(dx::SpriteSortMode::SpriteSortMode_BackToFront, blendOn,nullptr, depthStencilState);
+	spriteBatch->Begin(dx::SpriteSortMode::SpriteSortMode_BackToFront, blendOn, nullptr, depthStencilState, testState, [=]
+		{
+			//We can set a new pixelshader here for AA
+			//renderer->GetContext()->PSSetShader(0, 0, 0);
+		});
 	for (auto i : GUIObjects)
 		i.second->Draw(spriteBatch);
 	spriteBatch->End();

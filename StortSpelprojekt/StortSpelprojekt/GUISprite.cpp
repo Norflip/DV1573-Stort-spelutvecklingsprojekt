@@ -13,7 +13,7 @@ GUISprite::GUISprite(Renderer& renderer , std::string filePath, float xPos, floa
 	this->group = group;
 	this->rotation = 0.0f;
 	this->baseColor = dx::XMVectorSet(1.f, 1.f, 1.f, 1.f);
-	this->activeColor = dx::XMVectorSet(1.0f, 1.0f, 1.0f, 1.0f); // default bluetinted
+	this->activeColor = dx::XMVectorSet(1.0f, 0.0f, 0.0f, 1.0f); // default bluetinted
 	this->origin = dx::XMVectorSet(1.f, 1.f, 1.f, 1.f);
 	this->SRV = nullptr;
 	this->xPos = renderer.GetOutputWindow()->GetWidth()-xPos;
@@ -145,12 +145,14 @@ bool GUISprite::IsMouseOver()
 	{
 		if ((Input::Instance().GetMousePos().x > xPos && Input::Instance().GetMousePos().x < xPos + width) && (Input::Instance().GetMousePos().y > yPos && Input::Instance().GetMousePos().y < yPos + height))
 		{
-			SetActiveColor(dx::XMVectorSet(1.0f, 0.0f, 0.0f, 1.0f));
+			SetActivated(true);
 			return true;
 		}
 		else
-			SetActiveColor(this->baseColor);
-		return false;
+		{
+			SetActivated(false);
+			return false;
+		}
 	}
 
 }
@@ -159,7 +161,6 @@ void GUISprite::Update()
 {
 	if (clickFunc == ClickFunction::Clickable && IsMouseOver() && Input::Instance().GetLeftMouseKeyDown())
 		std::cout << "Do function" << std::endl;
-		//SetPosition(500, 500);
 }
 
 void GUISprite::SetPos(float xPos, float yPos, DrawDirection dir)

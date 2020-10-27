@@ -328,6 +328,7 @@ void GameScene::InitializeGUI()
 
 	//FONTS
 	GUIFont* fpsDisplay = new GUIFont(*renderer, "fps", windowWidth / 2, 50);
+
 	/*GUIFont* healthDisplay = new GUIFont(*renderer, "playerHealth", 50, 100);
 	GUIFont* enemyDisplay = new GUIFont(*renderer, "enemyHealth", 50, 150);*/
 
@@ -419,6 +420,8 @@ void GameScene::OnDeactivate()
 
 void GameScene::Update(const float& deltaTime)
 {
+
+	
 	Scene::Update(deltaTime);
 	world.UpdateRelevantChunks();
 

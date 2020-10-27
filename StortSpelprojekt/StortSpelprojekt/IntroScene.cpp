@@ -54,11 +54,38 @@ void IntroScene::InitializeGUI()
 	GUISprite* loreSprite = new GUISprite(*renderer, "Textures/Lore.png", 100, 550, 0, DrawDirection::Default, ClickFunction::Clickable);
 	GUISprite* quitSprite = new GUISprite(*renderer, "Textures/Exit.png", 100, 700, 0, DrawDirection::Default, ClickFunction::Clickable);
 	GUISprite* backSprite = new GUISprite(*renderer, "Textures/BackButton.png", 100, 100, 0, DrawDirection::Default, ClickFunction::Clickable,GuiGroup::HowToPlay);
-	GUIFont* fpsDisplay = new GUIFont(*renderer, "test", windowWidth / 2, 50);
+	GUIFont* fpsDisplay = new GUIFont(*renderer, "fps", windowWidth / 2, 50);
+	// TEXT FOR HOWTOPLAY	
+
+	std::string howToPlayString = "";
+	howToPlayString += "Wasd: move around\n";
+	howToPlayString += "Mouse to aim\n";
+	howToPlayString += "V = First Person / Flying Camera\n";
+	howToPlayString += "O = Show / Hide Cursor\n";
+	howToPlayString += "Zero = Reset player pos\n\n";
+	howToPlayString += " Your goal is to survive and bring the house to the end of the road\n";
+	howToPlayString += " You can gather food, fuel and healthpacks that are scattered \n    throughout the woods\n";
+	GUIFont* howToPlayText = new GUIFont(*renderer,howToPlayString, 100, 250);
+	howToPlayText->SetFontSize({ 0.7f,0.7f });
+	howToPlayText->SetVisible(false);
+	howToPlayText->SetGroup(GuiGroup::HowToPlay);
+	howToPlayText->RemoveGroup(GuiGroup::Default);
+	//
+	// TEXT FOR HOWTOPLAY	
+	std::string loreString = "";
+	loreString += "The name Katrineholm comes from the farm Cathrineholm by Lake Nasnaren. \nThe farm was formerly called Fulbonas\nbut the then owner Jacob von der Linde changed the name in the 1660s to honor his daughter Catharina. \nMany finds show that the area was already inhabited over 6,000 years ago.";
 	
+	GUIFont* loreText = new GUIFont(*renderer, loreString, 100, 250);
+	loreText->SetFontSize({ 0.5f,0.5f });
+	loreText->SetVisible(false);
+	loreText->SetGroup(GuiGroup::Lore);
+	loreText->RemoveGroup(GuiGroup::Default);
+	//
+
 	backSprite->SetVisible(false);
 	backSprite->AddGroup(GuiGroup::Lore);
 	backSprite->AddGroup(GuiGroup::HowToPlay);
+	backSprite->AddGroup(GuiGroup::Options);
 	guiManager = new GUIManager(renderer, 100);
 	guiManager->AddGUIObject(titleSprite, "title");
 	guiManager->AddGUIObject(startSprite, "startSprite");
@@ -68,6 +95,8 @@ void IntroScene::InitializeGUI()
 	guiManager->AddGUIObject(quitSprite, "quitSprite");
 	guiManager->AddGUIObject(loreSprite, "loreSprite");
 	guiManager->AddGUIObject(fpsDisplay, "fps");
+	guiManager->AddGUIObject(howToPlayText, "howToPlayText");
+	guiManager->AddGUIObject(loreText, "loreText");
 	renderer->AddRenderPass(guiManager);
 }
 
@@ -90,8 +119,8 @@ void IntroScene::OnDeactivate()
 void IntroScene::Update(const float& deltaTime)
 {
 	Scene::Update(deltaTime);
-	//GameClock::Instance().Update();
 
+	//Cleanup Later
 	static_cast<GUIFont*>(guiManager->GetGUIObject("fps"))->SetString(std::to_string((int)GameClock::Instance().GetFramesPerSecond()));
 
 	if (static_cast<GUISprite*>(guiManager->GetGUIObject("startSprite"))->IsClicked())
@@ -102,6 +131,9 @@ void IntroScene::Update(const float& deltaTime)
 
 	if (static_cast<GUISprite*>(guiManager->GetGUIObject("loreSprite"))->IsClicked())
 		guiManager->ChangeGuiGroup(GuiGroup::Lore);
+
+	if (static_cast<GUISprite*>(guiManager->GetGUIObject("optionSprite"))->IsClicked())
+		guiManager->ChangeGuiGroup(GuiGroup::Options);
 
 	 if (static_cast<GUISprite*>(guiManager->GetGUIObject("howToPlaySprite"))->IsClicked())
 		guiManager->ChangeGuiGroup(GuiGroup::HowToPlay);
