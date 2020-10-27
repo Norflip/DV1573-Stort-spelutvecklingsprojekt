@@ -62,35 +62,6 @@ void GameScene::InitializeObjects()
 	state.seed = 1337;
 	state.segment = 0;
 
-	Mesh* mesh1 = resourceManager->GetResource<Mesh>("Test");
-	Mesh* mesh2 = resourceManager->GetResource<Mesh>("Test2");
-	Mesh* mesh3 = resourceManager->GetResource<Mesh>("Test3");
-
-	Material* material1 = resourceManager->GetResource<Material>("TestMaterial");
-	Material* material2 = resourceManager->GetResource<Material>("Test2Material");
-	Material* material3 = resourceManager->GetResource<Material>("Test3Material");
-
-	Object* testObject = new Object("test");
-	Object* testObject2 = new Object("test2");
-	Object* testObject3 = new Object("test3");
-
-	testObject->AddComponent<MeshComponent>(*mesh1, *material1);
-	testObject2->AddComponent<MeshComponent>(*mesh2, *material2);
-	testObject3->AddComponent<MeshComponent>(*mesh3, *material3);
-
-	dx::XMFLOAT3 miniTranslation = dx::XMFLOAT3(0, 0, 6);
-	dx::XMFLOAT3 miniTranslation2 = dx::XMFLOAT3(2, 2, 2);
-	dx::XMFLOAT3 miniTranslation3 = dx::XMFLOAT3(-4, -3, -4);
-	dx::XMFLOAT3 miniTranslation4 = dx::XMFLOAT3(0.f, -7.f, 0.f);
-
-	testObject->GetTransform().SetPosition(dx::XMLoadFloat3(&miniTranslation));
-	testObject2->GetTransform().SetPosition(dx::XMLoadFloat3(&miniTranslation2));
-	testObject3->GetTransform().SetPosition(dx::XMLoadFloat3(&miniTranslation3));
-
-	AddObject(testObject2, testObject);
-	AddObject(testObject3, testObject2);
-
-	AddObject(testObject);
 	SegmentDescription desc(0, 10, 2);
 	desc.directionalSteps = 5;
 	desc.maxSteps = 10;
