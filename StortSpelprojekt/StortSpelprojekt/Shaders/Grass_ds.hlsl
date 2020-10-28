@@ -32,17 +32,10 @@ DS_OUTPUT_GRASS main(HS_CONSTANT_DATA_OUTPUT_GRASS input,
 	float2 uv2 = grassStraws[v2].uv.xy;
 	float2 uv3 = grassStraws[v3].uv.xy;
 
-
 	float2 uvPlane = BCC.x * uv1 + BCC.y * uv2 + BCC.z * uv3;
-
 
 	float h = chunkData.SampleLevel(LinearSampler, uvPlane, 0).r;
 	float y = h* 10.0f;
-
-	
-	
-	
-	
 
 	float3 position1 = grassStraws[v1].position.xyz;
 	float3 position2 = grassStraws[v2].position.xyz;
@@ -52,36 +45,28 @@ DS_OUTPUT_GRASS main(HS_CONSTANT_DATA_OUTPUT_GRASS input,
 	position2.y += y;
 	position3.y += y;
 
-
-
 	float3 pos = BCC.x * position1 + BCC.y * position2 + BCC.z * position3;
 
 	float3 normal1 = grassStraws[v1].normal.xyz;
 	float3 normal2 = grassStraws[v2].normal.xyz;
 	float3 normal3 = grassStraws[v3].normal.xyz;
 
-	
 	float3 normal = BCC.x * normal1 + BCC.y * normal2 + BCC.z * normal3;
 
-	
-
-	
 	float4 colour = grassColorMap.SampleLevel(LinearSampler, uvPlane, 0);
-
 
 	output.bladeHeight = grassHeightMap.SampleLevel(LinearSampler, uvPlane, 0).r * /*grassRadius*/1;
 	output.height = uv.x * output.bladeHeight;
 
 	output.expandVector = normalize(pos - position1);
 
-	
 	pos.xyz += normal * output.height;
 
 	float noiseSample = noiseMap.SampleLevel(LinearSampler, 4 * uvPlane, 0).r;
 
-	float disp = /*grassDisplacement*/ 1* pow(uv.x, 1.0); //grassDisplacement == Length
+	float disp = /*grassDisplacement*/ (1* pow(uv.x, 1.0)) / 1.5; //grassDisplacement == Length
 
-	float dispT = /*grassDisplacement*/1* pow(uv.x, 1.0) * (noiseSample + 2.5 * abs(sin((time * 0.25) + noiseSample)));
+	float dispT = /*grassDisplacement*/(1 * pow(uv.x, 1.0) * (noiseSample + 2.5 * abs(sin((time * 0.25) + noiseSample)))) / 1.5;
 
 	dispT *= 0.1;
 
