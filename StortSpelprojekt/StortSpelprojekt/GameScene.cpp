@@ -182,7 +182,6 @@ void GameScene::InitializeObjects()
 	SkeletonAni skeletonHouseLegsDown = ZWEBLoader::LoadSkeletonOnly("Models/House_Legs - SIT DOWN - IDLE.ZWEB", skeletonMeshHouseLegs[0].GetBoneIDS(), defaultAnimation);
 
 	Object* houseBaseObject = new Object("houseBase");
-
 	Object* housesLegsObject = new Object("houseLegs");
 
 	SkeletonMeshComponent* baseComponent = houseBaseObject->AddComponent<SkeletonMeshComponent>(meshHouse[0], matHouse[0]);
@@ -206,8 +205,6 @@ void GameScene::InitializeObjects()
 
 	NodeWalkerComp* nodeWalker = houseBaseObject->AddComponent<NodeWalkerComp>();
 	nodeWalker->InitAnimation();
-	
-	
 
 	legsComponent->SetTrack(SkeletonStateMachine::IDLE, false);
 	baseComponent->SetTrack(SkeletonStateMachine::IDLE, false);
@@ -223,7 +220,7 @@ void GameScene::InitializeObjects()
 	axeObject->AddComponent<MeshComponent>(axeMesh[0], axeMat[0]);
 	axeObject->GetTransform().SetPosition({ 0,0,0 });
 	axeObject->GetTransform().SetScale({ 1, 1, 1 });
-	axeObject->AddComponent<WeaponComponent>(cameraObject, input);
+	axeObject->AddComponent<WeaponComponent>(cameraObject);
 
 	RigidBodyComponent* axeBody;
 	axeBody = axeObject->AddComponent<RigidBodyComponent>(0, FilterGroups::PICKUPS, FilterGroups::PLAYER, false);
@@ -262,8 +259,8 @@ void GameScene::InitializeObjects()
 	Shader* defShader = resourceManager->GetShaderResource("defaultShader");
 
 	/* Health pickup stuff temporary */
-	std::vector<Mesh> healthkit = ZWEBLoader::LoadMeshes(ZWEBLoadType::NoAnimation, "Models/Healthkit.ZWEB", renderer->GetDevice());
-	std::vector<Material> healthkitMaterial = ZWEBLoader::LoadMaterials("Models/Healthkit.ZWEB", defShader, renderer->GetDevice());
+	std::vector<Mesh> healthkit = ZWEBLoader::LoadMeshes(ZWEBLoadType::NoAnimation, "Models/Health_Kit.ZWEB", renderer->GetDevice());
+	std::vector<Material> healthkitMaterial = ZWEBLoader::LoadMaterials("Models/Health_Kit.ZWEB", defShader, renderer->GetDevice());
 
 	Object* healthkitObject = new Object("healthObject");
 	healthkitObject->AddComponent<MeshComponent>(healthkit[0], healthkitMaterial[0]);
@@ -278,8 +275,8 @@ void GameScene::InitializeObjects()
 
 
 	///* Fuel pickup stuff temporary */
-	std::vector<Mesh> fuelCan = ZWEBLoader::LoadMeshes(ZWEBLoadType::NoAnimation, "Models/FuelCan.ZWEB", renderer->GetDevice());
-	std::vector<Material> fuelCanMaterail = ZWEBLoader::LoadMaterials("Models/FuelCan.ZWEB", defShader, renderer->GetDevice());
+	std::vector<Mesh> fuelCan = ZWEBLoader::LoadMeshes(ZWEBLoadType::NoAnimation, "Models/Fuel_Can_Red.ZWEB", renderer->GetDevice());
+	std::vector<Material> fuelCanMaterail = ZWEBLoader::LoadMaterials("Models/Fuel_Can_Red.ZWEB", defShader, renderer->GetDevice());
 
 	Object* fuelCanObject = new Object("fuelObject");
 	fuelCanObject->AddComponent<MeshComponent>(fuelCan[0], fuelCanMaterail[0]);
@@ -294,8 +291,8 @@ void GameScene::InitializeObjects()
 
 
 	///* Banana pickup stuff temporary */
-	std::vector<Mesh> beans = ZWEBLoader::LoadMeshes(ZWEBLoadType::NoAnimation, "Models/Bakedbeans.ZWEB", renderer->GetDevice());
-	std::vector<Material> beansMaterial = ZWEBLoader::LoadMaterials("Models/Bakedbeans.ZWEB", defShader, renderer->GetDevice());
+	std::vector<Mesh> beans = ZWEBLoader::LoadMeshes(ZWEBLoadType::NoAnimation, "Models/Soup_Can.ZWEB", renderer->GetDevice());
+	std::vector<Material> beansMaterial = ZWEBLoader::LoadMaterials("Models/Soup_Can.ZWEB", defShader, renderer->GetDevice());
 
 	Object* beansObject = new Object("bakedBeans");
 	beansObject->AddComponent<MeshComponent>(beans[0], beansMaterial[0]);
