@@ -137,7 +137,7 @@ void GameScene::InitializeObjects()
 	baseMonsterComp->BlendAnimations();
 
 	//Enemy object //comments
-	dx::XMFLOAT3 enemyTranslation = dx::XMFLOAT3(14, 3, 2);
+	dx::XMFLOAT3 enemyTranslation = dx::XMFLOAT3(23, 6, 46);
 	enemy->GetTransform().SetPosition(dx::XMLoadFloat3(&enemyTranslation));
 	enemy->GetTransform().SetScale({ 0.125f, 0.125f, 0.125f });
 	enemy->AddComponent<EnemyStatsComp>(100, 0.5f, 5, 25, 3);
@@ -152,10 +152,11 @@ void GameScene::InitializeObjects()
 	stateMachine->InitAnimation();
 	AddObject(enemy);
 
-	//physics.MutexLock();
-	//RigidBodyComponent* rbEnemy = enemy->AddComponent<RigidBodyComponent>(0, FilterGroups::ENEMIES, FilterGroups::EVERYTHING, false);
-	//physics.RegisterRigidBody(rbEnemy);
-	//physics.MutexUnlock();
+	physics.MutexLock();
+	RigidBodyComponent* rbEnemy = enemy->AddComponent<RigidBodyComponent>(0, FilterGroups::ENEMIES, FilterGroups::PROPS, false);
+	//rbEnemy.
+	physics.RegisterRigidBody(rbEnemy);
+	physics.MutexUnlock();
 
 
 	playerObject->AddComponent<PlayerAttackComp>(enemy);
@@ -222,10 +223,11 @@ void GameScene::InitializeObjects()
 	axeObject->GetTransform().SetScale({ 1, 1, 1 });
 	axeObject->AddComponent<WeaponComponent>(cameraObject);
 
+	/*
 	RigidBodyComponent* axeBody;
-	axeBody = axeObject->AddComponent<RigidBodyComponent>(0, FilterGroups::PICKUPS, FilterGroups::PLAYER, false);
+	axeBody = axeObject->AddComponent<RigidBodyComponent>(0, FilterGroups::DEFAULT, FilterGroups::EVERYTHING, false);
 	physics.RegisterRigidBody(axeBody);
-
+	*/
 	AddObject(axeObject);
 
 	clock.Update();

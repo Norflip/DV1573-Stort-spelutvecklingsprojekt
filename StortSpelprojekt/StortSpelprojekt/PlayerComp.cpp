@@ -109,6 +109,12 @@ void PlayerComp::Update(const float& deltaTime)
 				
 			}
 		}
+		else if (phy.RaytestSingle(ray, rayDistance, hit, FilterGroups::ENEMIES))
+		{
+			
+			std::cout << "Hit hit hit" << std::endl;
+		}
+
 	}
 	else
 	{

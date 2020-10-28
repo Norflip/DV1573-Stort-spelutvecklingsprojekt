@@ -71,6 +71,11 @@ bool EnemyAttackComp::ChasePlayer(const float& deltaTime)
 	GetOwner()->GetTransform().Translate(moveDir.x * enemyStatsComp->GetSpeed() * deltaTime, 0.0f,
 		moveDir.z * enemyStatsComp->GetSpeed() * deltaTime);
 
+	//dx::XMVECTOR a = dx::XMVectorSet(moveDir.x * enemyStatsComp->GetSpeed() * deltaTime, 0.0f, moveDir.z * enemyStatsComp->GetSpeed() * deltaTime, 1.0f);
+	//GetOwner()->GetTransform().GetPosition();
+	dx::XMVECTOR a = GetOwner()->GetTransform().GetPosition();
+
+	GetOwner()->GetComponent<RigidBodyComponent>()->SetPosition(a);
 	//rotation doesn't work
 	//GetOwner()->GetTransform().SmoothRotation(playerPos, deltaTime, true);
 
