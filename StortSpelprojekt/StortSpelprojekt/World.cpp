@@ -96,7 +96,7 @@ void World::MoveHouseAndPlayerToStart()
 		dx::XMVECTOR position = dx::XMVectorAdd(Chunk::IndexToWorld(spawnIndex, 0.0f), dx::XMVectorSet(CHUNK_SIZE / 2.0f, 0, CHUNK_SIZE / 2.0f, 0));
 		house->GetTransform().SetPosition(position);
 
-		position = dx::XMVectorAdd(position, dx::XMVectorSet(5, 5, 0, 0));
+		position = dx::XMVectorAdd(position, dx::XMVectorSet(5, 12, 0, 0));
 	
 		player->GetTransform().SetPosition(position);
 		player->GetComponent<RigidBodyComponent>()->SetPosition(position);

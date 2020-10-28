@@ -63,6 +63,7 @@ private:
 	RayHit hit;
 	Physics& phy;
 	CameraComponent* cam;
+
 	bool foodEmpty;
 	bool gg;
 	float ReverseAndClamp(float inputValue);
