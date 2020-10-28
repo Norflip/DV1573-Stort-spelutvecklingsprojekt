@@ -7,7 +7,7 @@ void main(line DS_OUTPUT_GRASS input[2], inout TriangleStream<GS_OUTPUT_GRASS> T
 {
 	GS_OUTPUT_GRASS output = (GS_OUTPUT_GRASS)0;
 
-	float bladeHeight = input[0].bladeHeight;
+	float bladeHeight = 0.2;// input[0].bladeHeight;
 
 	float3 pos0World = input[0].position.xyz;
 	float3 pos1World = input[1].position.xyz;
@@ -20,30 +20,20 @@ void main(line DS_OUTPUT_GRASS input[2], inout TriangleStream<GS_OUTPUT_GRASS> T
 	float3 grassDirection = normalize(pos1World.xyz - pos0World.xyz);
 	grassDirection = grassDirection;
 
-	
-	float grassBladeScale = 1.0f;//grassWidth
+	float grassBladeScale = 0.3f;//grassWidth
 	float powfactor = 1.0; //pow factor
 	float maxHeightPow = pow(bladeHeight, powfactor);
 	float origWidth1 = grassBladeScale * (maxHeightPow - pow(input[0].height, powfactor));
 	float origWidth2 = grassBladeScale * (maxHeightPow - pow(input[1].height, powfactor));
 
-	
 	float w = mul(float4(pos1World, 1.0f), mvp).w;
 	float pixelRadius = w * pixelSize;
 
-	
 	float width1 = max(pixelRadius, origWidth1);
 	float width2 = max(pixelRadius, origWidth2);
 	
-
-
-
-
-
-
 	float3 pos = pos0World.xyz - right * width1 / 2;
 	output.posToEye = mul(float4(pos, 1), world).xyz;
-
 
 	//Billboarding
 	//float3 look = normalize(cameraPosition - pos);

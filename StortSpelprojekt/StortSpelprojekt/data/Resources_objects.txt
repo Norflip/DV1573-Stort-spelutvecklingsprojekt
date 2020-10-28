@@ -9,27 +9,17 @@ Shader: defaultShader
 Test3: Models/cylinder.ZWEB
 Shader: defaultShader
 
-BakedBeans: Models/Bakedbeans.ZWEB
+Banan: Models/Banana.ZWEB
 Shader: defaultShader
 
-Banan: Models/Banan.ZWEB
+HealthKit: Models/Health_Kit.ZWEB
 Shader: defaultShader
 
 CharRef: Models/char_ref.ZWEB
 Shader: defaultShader
 
-FuelCan: Models/FuelCan.ZWEB
+FuelCanGreen: Models/Fuel_Can_Green.ZWEB
 Shader: defaultShader
 
-HealthKit: Models/Healthkit.ZWEB
-Shader: defaultShader
-
-
-CharRef: Models/char_ref.ZWEB
-Shader: defaultShader
-
-FuelCan: Models/FuelCan.ZWEB
-Shader: defaultShader
-
-HealthKit: Models/Healthkit.ZWEB
+Soup: Models/Soup_Can.ZWEB
 Shader: defaultShader

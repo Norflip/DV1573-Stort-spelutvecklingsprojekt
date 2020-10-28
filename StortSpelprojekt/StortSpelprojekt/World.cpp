@@ -143,7 +143,7 @@ void World::RegisterToPool(ObjectPooler* pooler, ObjectSpawner* spawner, const s
 
 	pooler->Register("Fuel_can", 0, [](ResourceManager* resources)
 	{
-		Object* object = resources->AssembleObject("FuelCan", "FuelCanMaterial");
+		Object* object = resources->AssembleObject("FuelCanGreen", "FuelCanGreenMaterial");
 
 		object->AddComponent<BoxColliderComponent>(dx::XMFLOAT3(0.5f, 0.5f, 0.5f), dx::XMFLOAT3(0, 0, 0));
 		object->AddComponent<PickupComponent>(Type::Fuel, 20.0f);
@@ -156,7 +156,7 @@ void World::RegisterToPool(ObjectPooler* pooler, ObjectSpawner* spawner, const s
 
 	pooler->Register("Baked_beans", 0, [](ResourceManager* resources)
 	{
-		Object* object = resources->AssembleObject("BakedBeans", "BakedBeansMaterial");
+		Object* object = resources->AssembleObject("Soup", "SoupMaterial");
 
 		object->AddComponent<BoxColliderComponent>(dx::XMFLOAT3(0.5f, 0.5f, 0.5f), dx::XMFLOAT3(0, 0, 0));
 		object->AddComponent<PickupComponent>(Type::Food, 20.0f);
