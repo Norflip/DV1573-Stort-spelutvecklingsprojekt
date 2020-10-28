@@ -10,14 +10,13 @@ namespace dx = DirectX;
 class WeaponComponent : public Component
 {
 public:
-	WeaponComponent(Object* object, Input& input);
+	WeaponComponent(Object* object);
 
 	virtual void Initialize() override;
 	virtual void Update(const float& deltaTime) override;
 
 private:
 	Object* camObj;
-	Input* wepInput;
 	CameraComponent* camComp;
 
 	dx::XMVECTOR weaponPos;
