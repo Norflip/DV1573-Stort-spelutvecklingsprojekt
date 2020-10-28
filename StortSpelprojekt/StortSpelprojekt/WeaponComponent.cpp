@@ -29,7 +29,7 @@ void WeaponComponent::SetPosition(float time)
 	attackTimer += time;
 	attackCooldown += time;
 	
-	if (wepInput->GetRightMouseKeyDown() && attackCooldown > 0.5)
+	if (wepInput->GetLeftMouseKeyDown() && attackCooldown > 0.5)
 	{
 		time = 0;
 		attackTimer = 0;
