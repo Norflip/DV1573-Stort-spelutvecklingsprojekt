@@ -153,7 +153,7 @@ void GameScene::InitializeObjects()
 	AddObject(enemy);
 
 	physics.MutexLock();
-	RigidBodyComponent* rbEnemy = enemy->AddComponent<RigidBodyComponent>(0, FilterGroups::ENEMIES, FilterGroups::PROPS, false);
+	RigidBodyComponent* rbEnemy = enemy->AddComponent<RigidBodyComponent>(0, FilterGroups::ENEMIES, FilterGroups::PROPS, BodyType::STATIC);
 	//rbEnemy.
 	physics.RegisterRigidBody(rbEnemy);
 	physics.MutexUnlock();
@@ -271,7 +271,7 @@ void GameScene::InitializeObjects()
 	healthkitObject->AddComponent<PickupComponent>(Type::Health, 20.0f);
 
 	RigidBodyComponent* healthBody;
-	healthBody = healthkitObject->AddComponent<RigidBodyComponent>(0, FilterGroups::PICKUPS, FilterGroups::PLAYER, false);
+	healthBody = healthkitObject->AddComponent<RigidBodyComponent>(0, FilterGroups::PICKUPS, FilterGroups::PLAYER, BodyType::KINEMATIC);
 	physics.RegisterRigidBody(healthBody);
 	AddObject(healthkitObject);
 
@@ -287,7 +287,7 @@ void GameScene::InitializeObjects()
 	fuelCanObject->AddComponent<PickupComponent>(Type::Fuel, 20.0f);
 
 	RigidBodyComponent* fuelBody;
-	fuelBody = fuelCanObject->AddComponent<RigidBodyComponent>(0, FilterGroups::PICKUPS, FilterGroups::PLAYER, false);
+	fuelBody = fuelCanObject->AddComponent<RigidBodyComponent>(0, FilterGroups::PICKUPS, FilterGroups::PLAYER, BodyType::KINEMATIC);
 	physics.RegisterRigidBody(fuelBody);
 	AddObject(fuelCanObject);
 
@@ -303,7 +303,7 @@ void GameScene::InitializeObjects()
 	beansObject->AddComponent<PickupComponent>(Type::Food, 20.0f);
 
 	RigidBodyComponent* beansBody;
-	beansBody = beansObject->AddComponent<RigidBodyComponent>(0, FilterGroups::PICKUPS, FilterGroups::PLAYER, false);
+	beansBody = beansObject->AddComponent<RigidBodyComponent>(0, FilterGroups::PICKUPS, FilterGroups::PLAYER, BodyType::KINEMATIC);
 	physics.RegisterRigidBody(beansBody);
 	AddObject(beansObject);
 }
