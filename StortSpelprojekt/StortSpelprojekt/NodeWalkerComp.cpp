@@ -170,7 +170,7 @@ void NodeWalkerComp::Update(const float& deltaTime)
 	else
 	{
 		const int skip = 10;
-		if (KEY_DOWN(Up) && this->nextChosen < this->thePath.CountPoints())
+		if (KEY_DOWN(Up) && this->nextChosen < (int)this->thePath.CountPoints())
 		{
 			//if (nodes[currentNode].nextMiddle != -1)
 			//{
