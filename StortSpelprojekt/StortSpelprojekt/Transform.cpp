@@ -120,6 +120,19 @@ void Transform::SetPosition(dx::XMVECTOR position)
 	changedThisFrame = true;
 }
 
+void Transform::SetWorldPosition(dx::XMVECTOR position)
+{
+	dx::XMVECTOR pos = position;
+
+	if (parent != nullptr)
+	{
+		dx::XMMATRIX invWorld = dx::XMMatrixInverse(nullptr, parent->GetWorldMatrix());
+		pos = dx::XMVector3Transform(pos, invWorld);
+	}
+	
+	SetPosition(pos);
+}
+
 void Transform::SetScale(dx::XMVECTOR scale)
 {
 	ASSERT_STATIC_OBJECT;

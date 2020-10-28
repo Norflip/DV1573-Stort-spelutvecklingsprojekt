@@ -133,14 +133,24 @@ void Shader::CompilePS(ID3D11Device* device)
 
 		ID3DBlob* errorBlob = nullptr;
 		ID3DBlob* PSBlob = nullptr;
-		
+
 		// Convert the string to a wstring locally, without changing the content
 		std::wstring wPath = std::wstring(pixelPath.begin(), pixelPath.end());
+
+		const D3D_SHADER_MACRO defines[] =
+		{
+#if _DEBUG
+			"_DEBUG", "1",
+#else
+			"_DEBUG", "0",
+#endif
+			NULL, NULL
+		};
 
 		HRESULT PSCompileResult = D3DCompileFromFile
 		(
 			wPath.c_str(),
-			nullptr,
+			defines,
 			D3D_COMPILE_STANDARD_FILE_INCLUDE,
 			pixelEntry,
 			"ps_5_0",
@@ -173,15 +183,25 @@ void Shader::CompileVS(ID3D11Device* device)
 
 		ID3DBlob* errorBlob = nullptr;
 		ID3DBlob* VSBlob = nullptr;
-		
+
 		// Convert the string to a wstring locally, without changing the content
 		std::wstring wPath = std::wstring(vertexPath.begin(), vertexPath.end());
+
+		const D3D_SHADER_MACRO defines[] =
+		{
+#if _DEBUG
+			"_DEBUG", "1",
+#else
+			"_DEBUG", "0",
+#endif
+			NULL, NULL
+		};
 
 		// VERTEX SHADER
 		HRESULT	VSCompileResult = D3DCompileFromFile
 		(
 			wPath.c_str(),
-			nullptr,
+			defines,
 			D3D_COMPILE_STANDARD_FILE_INCLUDE,
 			vertexEntry,
 			"vs_5_0",
@@ -219,10 +239,20 @@ void Shader::CompileGS(ID3D11Device* device)
 		// Convert the string to a wstring locally, without changing the content
 		std::wstring wPath = std::wstring(geometryPath.begin(), geometryPath.end());
 
+		const D3D_SHADER_MACRO defines[] =
+		{
+#if _DEBUG
+			"_DEBUG", "1",
+#else
+			"_DEBUG", "0",
+#endif
+			NULL, NULL
+		};
+
 		HRESULT GSCompileResult = D3DCompileFromFile
 		(
 			wPath.c_str(),
-			nullptr,
+			defines,
 			D3D_COMPILE_STANDARD_FILE_INCLUDE,
 			geometryEntry,
 			"gs_5_0",
@@ -257,10 +287,20 @@ void Shader::CompileHS(ID3D11Device* device)
 		// Convert the string to a wstring locally, without changing the content
 		std::wstring wPath = std::wstring(hullPath.begin(), hullPath.end());
 
+		const D3D_SHADER_MACRO defines[] =
+		{
+#if _DEBUG
+			"_DEBUG", "1",
+#else
+			"_DEBUG", "0",
+#endif
+			NULL, NULL
+		};
+
 		HRESULT HSCompileResult = D3DCompileFromFile
 		(
 			wPath.c_str(),
-			nullptr,
+			defines,
 			D3D_COMPILE_STANDARD_FILE_INCLUDE,
 			hullEntry,
 			"hs_5_0",
@@ -296,10 +336,19 @@ void Shader::CompileDS(ID3D11Device* device)
 		// Convert the string to a wstring locally, without changing the content
 		std::wstring wPath = std::wstring(domainPath.begin(), domainPath.end());
 
+		const D3D_SHADER_MACRO defines[] =
+		{
+#if _DEBUG
+			"_DEBUG", "1",
+#else
+			"_DEBUG", "0",
+#endif
+			NULL, NULL
+		};
 		HRESULT DSCompileResult = D3DCompileFromFile
 		(
 			wPath.c_str(),
-			nullptr,
+			defines,
 			D3D_COMPILE_STANDARD_FILE_INCLUDE,
 			domainEntry,
 			"ds_5_0",
@@ -318,11 +367,11 @@ void Shader::CompileDS(ID3D11Device* device)
 
 void Shader::Unbind(ID3D11DeviceContext* context) const
 {
-	
+
 
 	int flag = static_cast<int>(shaderFlags);
 
-	
+
 
 	if ((flag & (int)ShaderBindFlag::HULL) != 0)
 		context->HSSetShader(nullptr, 0, 0);
