@@ -212,7 +212,8 @@ Chunk* SegmentGenerator::CreateChunk(const dx::XMINT2& index, Object* root, cons
 
 	Texture grassTexture;
 	//grassTexture.LoadTexture(device, L"Textures/Grass_001_COLOR.jpg");
-	grassTexture.LoadTexture(device, L"Textures/ground.png");
+	//grassTexture.LoadTexture(device, L"Textures/ground.png");
+	grassTexture.LoadTexture(device, L"Textures/groundGrass.png");
 
 	Texture roadTexture;
 	roadTexture.LoadTexture(device, L"Textures/Stone_Floor_003_COLOR.jpg");
