@@ -42,7 +42,7 @@ void ObjectSpawner::Spawn(const SaveState& state, PointQuadTree& tree, std::unor
 		}
 	}*/
 
-//#if !_DEBUG
+#if !_DEBUG
 	int propIndex = 0;
 	for (int i = propSpawnPositions.size() - 1; i >= 0; i--)
 	{
@@ -75,7 +75,7 @@ void ObjectSpawner::Spawn(const SaveState& state, PointQuadTree& tree, std::unor
 			propIndex++;
 		}
 	}
-//#endif
+#endif
 
 #if SPAWN_ITEMS
 	int itemIndex = 0;
