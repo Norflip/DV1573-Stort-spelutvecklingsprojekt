@@ -1,5 +1,4 @@
 #pragma once
-#include <functional>
 #include "ObjectPooler.h"
 #include "ResourceManager.h"
 #include "SegmentDescription.h"
@@ -26,10 +25,10 @@ public:
 	Path GetPath() const { return this->generator.GetPath(); }
 	void MoveHouseAndPlayerToStart();
 
-	float TMP_OFFSET = 0.0f;
-
 private:
 	dx::XMINT2 GetChunkIndex(Object* object) const;
+	void RegisterToPool(ObjectPooler* pooler, ObjectSpawner* spawner, const std::map<std::string, int>& queueCountTable) const;
+	int TryGetQueueCount(std::string key,  const std::map<std::string, int>& queueCountTable, int defaultCount = 1) const;
 
 private:
 	SegmentGenerator generator;

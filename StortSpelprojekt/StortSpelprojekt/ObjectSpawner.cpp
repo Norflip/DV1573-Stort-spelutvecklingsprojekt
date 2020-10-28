@@ -15,15 +15,18 @@ void ObjectSpawner::Initialize(Object* root, ObjectPooler* pooler)
 	this->root = root;
 }
 
-void ObjectSpawner::Spawn(PointQuadTree& tree, std::unordered_map<int, Chunk*>& chunkMap, std::vector<Chunk*>& chunks)
+void ObjectSpawner::Spawn(const SaveState& state, PointQuadTree& tree, std::unordered_map<int, Chunk*>& chunkMap, std::vector<Chunk*>& chunks)
 {
-	itemSpawnPositions = CreateSpawnPositions(tree, 20.0f, chunkMap);
-	propSpawnPositions = CreateSpawnPositions(tree, 20.0f, chunkMap);
-	return;
+	Random::SetSeed(state.GetSeed(0));
+	propSpawnPositions = CreateSpawnPositions(tree, 10.0f, chunkMap);
 
-	for (int i = itemSpawnPositions.size() - 1; i >= 0; i--)
+	Random::SetSeed(state.GetSeed(1));
+	itemSpawnPositions = CreateSpawnPositions(tree, 20.0f, chunkMap);
+
+
+	/*for (size_t i = 0; i < staticItems.size(); i++)
 	{
-		dx::XMFLOAT2 pos = itemSpawnPositions[i];
+		dx::XMFLOAT2 pos = itemSpawnPositions[0];
 		Chunk* chunk = GetChunk(pos.x, pos.y, chunkMap);
 
 		if (chunk != nullptr)
@@ -37,25 +40,66 @@ void ObjectSpawner::Spawn(PointQuadTree& tree, std::unordered_map<int, Chunk*>& 
 			Transform::SetParentChild(root->GetTransform(), object->GetTransform());
 			items.push_back(object);
 		}
-	}
+	}*/
 
+
+	int propIndex = 0;
 	for (int i = propSpawnPositions.size() - 1; i >= 0; i--)
 	{
+		propIndex %= staticItems.size();
+		Item& item = staticItems[propIndex];
+
 		dx::XMFLOAT2 pos = propSpawnPositions[i];
+		Chunk* chunk = GetChunk(pos.x, pos.y, chunkMap);
+
+		if (chunk != nullptr)
+		{
+			float y = chunk->SampleHeight(pos.x, pos.y) + item.yOffset;
+
+			dx::XMFLOAT3 chunkPos;
+			dx::XMStoreFloat3(&chunkPos, chunk->GetOwner()->GetTransform().GetWorldPosition());
+
+			Object* object = pooler->GetItem(item.key);
+			dx::XMVECTOR position = dx::XMVectorSet(pos.x, y, pos.y, 0.0f);
+
+			object->GetComponent<RigidBodyComponent>()->SetPosition(position);
+			// kör med chunk istället för root då dom ändå inte kan flyttas.
+			Transform::SetParentChild(root->GetTransform(), object->GetTransform());
+
+			// kräver inverse av parent world matrix
+			//Transform::SetParentChild(chunk->GetOwner()->GetTransform(), object->GetTransform());
+
+			items.push_back(object);
+			propIndex++;
+		}
+	}
+
+	int itemIndex = 0;
+	for (int i = itemSpawnPositions.size() - 1; i >= 0; i--)
+	{
+		itemIndex %= dynamicItems.size();
+		Item& item = dynamicItems[itemIndex];
+
+		dx::XMFLOAT2 pos = itemSpawnPositions[i];
 		Chunk* chunk = GetChunk(pos.x, pos.y, chunkMap);
 
 		if (chunk != nullptr)
 		{
 			float y = chunk->SampleHeight(pos.x, pos.y);
 
-			Object* object = pooler->GetItem("static_sphere");
-			dx::XMVECTOR position = dx::XMVectorSet(pos.x, y, pos.y, 0.0f);
+			Object* object = pooler->GetItem(item.key);
+			dx::XMVECTOR position = dx::XMVectorSet(pos.x, y + SPAWN_HEIGHT, pos.y, 0.0f);
 
 			object->GetComponent<RigidBodyComponent>()->SetPosition(position);
 			Transform::SetParentChild(root->GetTransform(), object->GetTransform());
 			items.push_back(object);
+
+			itemIndex++;
 		}
 	}
+
+	std::cout << "PROPS: " << propSpawnPositions.size() << std::endl;
+	std::cout << "ITEMS: " << itemSpawnPositions.size() << std::endl;
 }
 
 void ObjectSpawner::Despawn()
@@ -71,28 +115,28 @@ void ObjectSpawner::Despawn()
 	items.clear();
 }
 
-void ObjectSpawner::AddItem(std::string key, float radius, float padding, size_t min, size_t max, float yOffset, ItemSpawnType type)
+void ObjectSpawner::RegisterItem(std::string key, float radius, float padding, float yOffset, int queueCount, ItemSpawnType type)
 {
 	Item item;
 	item.key = key;
-	item.min = min;
-	item.max = max;
-	item.yOffset;
+	item.yOffset = yOffset;
 	item.radius = radius;
 	item.padding = padding;
 
-	switch (type)
+	for (size_t i = 0; i < queueCount; i++)
 	{
-		case ItemSpawnType::DYNAMIC:
-			dynamicItems.push_back(item);
-			break;
-		case ItemSpawnType::STATIC:
-			staticItems.push_back(item);
-			break;
-		default:
-			break;
+		switch (type)
+		{
+			case ItemSpawnType::ITEM:
+				dynamicItems.push_back(item); break;
+
+			default:
+			case ItemSpawnType::PROP:
+				staticItems.push_back(item); break;
+		}
 	}
 }
+
 
 void ObjectSpawner::DrawDebug()
 {
@@ -132,7 +176,7 @@ std::vector<dx::XMFLOAT2> ObjectSpawner::CreateSpawnPositions(PointQuadTree& tre
 
 			if (chunk != nullptr && chunk->GetType() == ChunkType::TERRAIN)
 			{
-				tree.Insert(point);
+				//tree.Insert(point);
 				validPoints.push_back(point);
 			}
 			else

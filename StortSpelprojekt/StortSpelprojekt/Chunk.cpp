@@ -74,6 +74,7 @@ void Chunk::SetupCollisionObject(float* heightMap)
 	transform.setPosition(btPosition);
 
 	rp::PhysicsWorld* world = Physics::Instance().GetWorld();
+
 #if  USE_RIGIDBODY
 
 	body = world->createRigidBody(transform);
