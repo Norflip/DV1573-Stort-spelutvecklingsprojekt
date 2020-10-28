@@ -1,5 +1,4 @@
 #pragma once
-#include <functional>
 #include "ObjectPooler.h"
 #include "ResourceManager.h"
 #include "SegmentDescription.h"

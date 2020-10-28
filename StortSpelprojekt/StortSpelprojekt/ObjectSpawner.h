@@ -3,11 +3,12 @@
 #include "PointQuadTree.h"
 #include "PossionDiscSampler.h"
 #include "Random.h"
+#include "SaveState.h"
 
 enum class ItemSpawnType
 {
-	DYNAMIC,
-	STATIC
+	ITEM,
+	PROP
 };
 
 class ObjectSpawner
@@ -27,7 +28,7 @@ public:
 
 	void Initialize(Object* root, ObjectPooler* pooler);
 
-	void Spawn(PointQuadTree& tree, std::unordered_map<int, Chunk*>& chunkMap, std::vector<Chunk*>& chunks);
+	void Spawn(const SaveState& state, PointQuadTree& tree, std::unordered_map<int, Chunk*>& chunkMap, std::vector<Chunk*>& chunks);
 	void Despawn();
 
 	void RegisterItem(std::string key, float radius, float padding, float yOffset, int queueCount, ItemSpawnType type);

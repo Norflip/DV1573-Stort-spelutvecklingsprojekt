@@ -15,9 +15,12 @@ void ObjectSpawner::Initialize(Object* root, ObjectPooler* pooler)
 	this->root = root;
 }
 
-void ObjectSpawner::Spawn(PointQuadTree& tree, std::unordered_map<int, Chunk*>& chunkMap, std::vector<Chunk*>& chunks)
+void ObjectSpawner::Spawn(const SaveState& state, PointQuadTree& tree, std::unordered_map<int, Chunk*>& chunkMap, std::vector<Chunk*>& chunks)
 {
+	Random::SetSeed(state.GetSeed(0));
 	propSpawnPositions = CreateSpawnPositions(tree, 10.0f, chunkMap);
+
+	Random::SetSeed(state.GetSeed(1));
 	itemSpawnPositions = CreateSpawnPositions(tree, 20.0f, chunkMap);
 
 
@@ -62,7 +65,10 @@ void ObjectSpawner::Spawn(PointQuadTree& tree, std::unordered_map<int, Chunk*>& 
 			object->GetComponent<RigidBodyComponent>()->SetPosition(position);
 			// kör med chunk istället för root då dom ändå inte kan flyttas.
 			Transform::SetParentChild(root->GetTransform(), object->GetTransform());
-			
+
+			// kräver inverse av parent world matrix
+			//Transform::SetParentChild(chunk->GetOwner()->GetTransform(), object->GetTransform());
+
 			items.push_back(object);
 			propIndex++;
 		}
@@ -121,11 +127,11 @@ void ObjectSpawner::RegisterItem(std::string key, float radius, float padding, f
 	{
 		switch (type)
 		{
-			case ItemSpawnType::DYNAMIC:
+			case ItemSpawnType::ITEM:
 				dynamicItems.push_back(item); break;
 
 			default:
-			case ItemSpawnType::STATIC:
+			case ItemSpawnType::PROP:
 				staticItems.push_back(item); break;
 		}
 	}

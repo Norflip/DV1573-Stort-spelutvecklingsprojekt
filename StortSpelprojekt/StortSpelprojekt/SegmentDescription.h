@@ -7,12 +7,12 @@ struct SegmentDescription
 	int directionalSteps;
 	Noise::Settings noiseSettings;
 
-	SegmentDescription(int seed, int maxSteps, int directionalSteps)
+	SegmentDescription(int noiseSeed, int maxSteps, int directionalSteps)
 	{
 		this->maxSteps = maxSteps;
 		this->directionalSteps = directionalSteps;
 
-		this->noiseSettings = Noise::Settings (seed);
+		this->noiseSettings = Noise::Settings (noiseSeed);
 		this->noiseSettings.octaves = 5;
 		this->noiseSettings.persistance = 0.5f;
 		this->noiseSettings.lacunarity = 1.4f;

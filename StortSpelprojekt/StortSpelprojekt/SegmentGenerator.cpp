@@ -30,7 +30,7 @@ void SegmentGenerator::Initialize(Object* root, ResourceManager* resourceManager
 	physics.MutexUnlock();
 }
 
-void SegmentGenerator::Construct(const SegmentDescription& description)
+void SegmentGenerator::Construct(const SaveState& state, const SegmentDescription& description)
 {
 	assert(initialized);
 
@@ -54,7 +54,7 @@ void SegmentGenerator::Construct(const SegmentDescription& description)
 			CreateChunk(pair.first, root, description, pair.second);
 		}
 
-		spawner->Spawn(treePoints, chunkMap, chunks);
+		spawner->Spawn(state, treePoints, chunkMap, chunks);
 		constructed = true;
 	}
 }

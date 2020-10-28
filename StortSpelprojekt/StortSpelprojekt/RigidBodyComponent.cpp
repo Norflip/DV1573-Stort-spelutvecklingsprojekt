@@ -1,7 +1,7 @@
 #include "RigidBodyComponent.h"
 #include "Physics.h"
 
-RigidBodyComponent::RigidBodyComponent(float mass, FilterGroups group, FilterGroups mask, bool dynamic) : mass(mass), group(group), collisionMask(mask), dynamic(dynamic)
+RigidBodyComponent::RigidBodyComponent(float mass, FilterGroups group, FilterGroups mask, BodyType type) : mass(mass), group(group), collisionMask(mask), type(type)
 {
 }
 
@@ -135,12 +135,12 @@ void RigidBodyComponent::m_InitializeBody(rp::PhysicsWorld* world)
 	currentTransform = ConvertToBtTransform(transform);
 	previousTransform = currentTransform;
 
-	rp::BodyType type = dynamic ? rp::BodyType::DYNAMIC : rp::BodyType::KINEMATIC;
+	rp::BodyType bodyType = static_cast<rp::BodyType>((int)type);
 	if (mass == 0.0f)
-		type = rp::BodyType::STATIC;
+		bodyType = rp::BodyType::STATIC;
 
 	body = world->createRigidBody(currentTransform);
-	body->setType(type);
+	body->setType(bodyType);
 	body->setMass(mass);
 	body->setUserData(static_cast<void*>(GetOwner()));
 

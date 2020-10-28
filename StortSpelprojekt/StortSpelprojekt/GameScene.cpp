@@ -47,7 +47,7 @@ void GameScene::Initialize(Renderer* renderer)
 
 		//object->AddComponent<DebugBoxShapeComponent>();
 		//object->AddComponent<BoxColliderComponent>(dx::XMFLOAT3(0.5f, 0.5f, 0.5f), dx::XMFLOAT3(0, 0, 0));
-		RigidBodyComponent* rd = object->AddComponent<RigidBodyComponent>(10.0f, FilterGroups::DEFAULT, FilterGroups::EVERYTHING, true);
+		RigidBodyComponent* rd = object->AddComponent<RigidBodyComponent>(10.0f, FilterGroups::DEFAULT, FilterGroups::EVERYTHING, BodyType::DYNAMIC);
 		Physics::Instance().RegisterRigidBody(rd);
 		return object;
 	});
@@ -104,7 +104,7 @@ void GameScene::InitializeObjects()
 
 	playerObject->AddComponent<CapsuleColliderComponent>(0.5f, 4.5f, zero);
 	physics.MutexLock();
-	RigidBodyComponent* rb = playerObject->AddComponent<RigidBodyComponent>(60.f, FilterGroups::PLAYER, FilterGroups::EVERYTHING, true);
+	RigidBodyComponent* rb = playerObject->AddComponent<RigidBodyComponent>(60.f, FilterGroups::PLAYER, FilterGroups::EVERYTHING, BodyType::DYNAMIC);
 	physics.RegisterRigidBody(rb);
 	physics.MutexUnlock();
 	playerObject->AddComponent<ControllerComp>(cameraObject); /////////////////
@@ -392,7 +392,7 @@ void GameScene::Update(const float& deltaTime)
 
 				//object->AddComponent<DebugBoxShapeComponent>();
 				//object->AddComponent<BoxColliderComponent>(dx::XMFLOAT3(0.5f, 0.5f, 0.5f), dx::XMFLOAT3(0, 0, 0));
-				RigidBodyComponent* rd = object->AddComponent<RigidBodyComponent>(10.0f, FilterGroups::DEFAULT, FilterGroups::EVERYTHING, true);
+				RigidBodyComponent* rd = object->AddComponent<RigidBodyComponent>(10.0f, FilterGroups::DEFAULT, FilterGroups::EVERYTHING, BodyType::DYNAMIC);
 
 				Physics::Instance().RegisterRigidBody(rd);
 
