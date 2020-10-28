@@ -31,39 +31,57 @@ bool EnemyAttackComp::ChasePlayer(const float& deltaTime)
 	chasePlayer = false;
 	attackPlayer = false;
 
-	DirectX::XMFLOAT3 enemyPos;
-	dx::XMStoreFloat3(&enemyPos, GetOwner()->GetTransform().GetPosition());
-	DirectX::XMFLOAT3 playerPos;
-	dx::XMStoreFloat3(&playerPos, player->GetOwner()->GetTransform().GetPosition());
+	//DirectX::XMFLOAT3 enemyPos;
+	//dx::XMStoreFloat3(&enemyPos, GetOwner()->GetTransform().GetPosition());
+	//DirectX::XMFLOAT3 playerPos;
+	//dx::XMStoreFloat3(&playerPos, player->GetOwner()->GetTransform().GetPosition());
 
-	dx::XMFLOAT3 distanceF = { enemyPos.x - playerPos.x, enemyPos.y - playerPos.y, enemyPos.z - playerPos.z };
+	//dx::XMFLOAT3 distanceF = { enemyPos.x - playerPos.x, enemyPos.y - playerPos.y, enemyPos.z - playerPos.z };
 	dx::XMFLOAT3 moveDir = { 0.0f, 0.0f, 0.0f };
 
-	if(distanceF.x <= enemyStatsComp->GetRadius() && distanceF.z <= enemyStatsComp->GetRadius()
-		&& distanceF.x >= -enemyStatsComp->GetRadius() && distanceF.z >= -enemyStatsComp->GetRadius())
+
+	//testing better radius calculations
+	dx::XMVECTOR moveVec = dx::XMVectorSubtract(player->GetOwner()->GetTransform().GetPosition(), GetOwner()->GetTransform().GetPosition());
+	dx::XMVECTOR normVec = dx::XMVector3Normalize(moveVec); //now contains normalized vector from enemy to player
+	dx::XMFLOAT3 normDir;
+	dx::XMStoreFloat3(&normDir, normVec);
+
+	dx::XMVECTOR lenVec = dx::XMVector3Length(moveVec);//now contatins length
+	float length;
+	dx::XMStoreFloat(&length, lenVec);
+
+	if (length <= enemyStatsComp->GetRadius())
 	{
 		chasePlayer = true;
-		if (distanceF.x > playerRadius)
-		{
-			moveDir.x = -1.0f;
-		}
-		else if (distanceF.x < -playerRadius)
-		{
-			moveDir.x = 1.0f;
-		}
-
-		if (distanceF.z > playerRadius)
-		{
-			moveDir.z = -1.0f;
-		}
-		else if (distanceF.z < -playerRadius)
-		{
-			moveDir.z = 1.0f;
-		}
+		moveDir.x = normDir.x;
+		moveDir.z = normDir.z;
 	}
 
-	float length = (distanceF.x * distanceF.x + distanceF.y * distanceF.y + distanceF.z * distanceF.z);
-	if (length < playerRadius * playerRadius)
+	//if(distanceF.x <= enemyStatsComp->GetRadius() && distanceF.z <= enemyStatsComp->GetRadius()
+	//	&& distanceF.x >= -enemyStatsComp->GetRadius() && distanceF.z >= -enemyStatsComp->GetRadius())
+	//{
+	//	chasePlayer = true;
+	//	if (distanceF.x > playerRadius)
+	//	{
+	//		moveDir.x = -1.0f;
+	//	}
+	//	else if (distanceF.x < -playerRadius)
+	//	{
+	//		moveDir.x = 1.0f;
+	//	}
+
+	//	if (distanceF.z > playerRadius)
+	//	{
+	//		moveDir.z = -1.0f;
+	//	}
+	//	else if (distanceF.z < -playerRadius)
+	//	{
+	//		moveDir.z = 1.0f;
+	//	}
+	//}
+
+	//float length = (distanceF.x * distanceF.x + distanceF.y * distanceF.y + distanceF.z * distanceF.z);
+	if (length < playerRadius)//playerRadius * playerRadius)
 	{
 		attackPlayer = true;
 	}
@@ -71,8 +89,15 @@ bool EnemyAttackComp::ChasePlayer(const float& deltaTime)
 	GetOwner()->GetTransform().Translate(moveDir.x * enemyStatsComp->GetSpeed() * deltaTime, 0.0f,
 		moveDir.z * enemyStatsComp->GetSpeed() * deltaTime);
 
-	//rotation doesn't work
-	//GetOwner()->GetTransform().SmoothRotation(playerPos, deltaTime, true);
+	//Billboarding x & z axis for enemy Rotation
+	dx::XMVECTOR dirVec = dx::XMVector3Normalize(dx::XMVectorSubtract(GetOwner()->GetTransform().GetPosition(), player->GetOwner()->GetTransform().GetPosition()));
+	dx::XMFLOAT3 dirToPlayer;
+	dx::XMStoreFloat3(&dirToPlayer, dirVec);
+	float angle = 180.f + atan2f(dirToPlayer.x, dirToPlayer.z) * (180.f / Math::PI);
+	float rotation = angle * Math::ToRadians;
+	dx::XMVECTOR right = GetOwner()->GetTransform().TransformDirection({ 1,0,0 });
+	dx::XMVECTOR eulerRotation = dx::XMQuaternionMultiply(dx::XMQuaternionRotationAxis(right, 0), dx::XMQuaternionRotationAxis({ 0,1,0 }, rotation));
+	GetOwner()->GetTransform().SetRotation(eulerRotation);
 
 	return chasePlayer;
 }

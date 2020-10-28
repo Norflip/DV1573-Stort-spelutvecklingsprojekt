@@ -7,21 +7,21 @@ namespace dx = DirectX;
 constexpr float CLAMP_X = 1.5f;
 constexpr float WALK_FOV = 90.f;
 constexpr float RUN_FOV = 103.f;
-constexpr float FOV_INC = 0.5f; //how much fov increments each time
-constexpr float FOV_INC_RATE = 0.01f; //rate of fov incrementation in seconds (so
+//constexpr float FOV_INC = 0.5f; //how much fov increments each time
+//constexpr float FOV_INC_RATE = 0.01f; //rate of fov incrementation in seconds (so
 
 constexpr float CROUCH_VELOCITY = 0.5f;
 constexpr float CROUCH_ACCELERATION = 1.f;
 constexpr float WALK_VELOCITY = 8.f;
-constexpr float WALK_ACCELERATION = 1.5f;
+constexpr float WALK_ACCELERATION = 0.15f;
 constexpr float RUN_VELOCITY = 17.f;
-constexpr float RUN_ACCELERATION = 3.5f;
-constexpr float VELOCITY_INC_RATE = 0.1f; //how often
+constexpr float RUN_ACCELERATION = 0.35f;
+constexpr float VELOCITY_INC_RATE = 0.005f; //how often changes occur
 constexpr float VELOCITY_MULTIPLIER = 20.f;
 
 constexpr float CROUCH_OFFSET_PER = 0.2f;
-constexpr float CROUCH_LIMIT = -2.f;
-constexpr float CROUCH_INC_RATE = 0.01f; //how often
+constexpr float CROUCH_LIMIT = -0.7f;
+constexpr float CROUCH_INC_RATE = 0.01f; //how often changes occur
 constexpr float JUMP_VELOCITY = 5.f;
 
 constexpr dx::XMFLOAT3 RESET_POS = {20.f,3.f,20.f};

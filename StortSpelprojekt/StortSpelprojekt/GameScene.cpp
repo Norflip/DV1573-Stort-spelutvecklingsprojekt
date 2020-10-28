@@ -209,18 +209,18 @@ void GameScene::InitializeObjects()
 	/* For physics/ rigidbody pickup stuff */
 	Physics& phy = Physics::Instance();
 
-	Shader* defShader = resourceManager->GetShaderResource("defaultShader");
+	//Shader* defShader = resourceManager->GetShaderResource("defaultShader");
 
 //Axe//////////////////////////////////////////////////////////////////
 	std::vector<Mesh> axeMesh = ZWEBLoader::LoadMeshes(ZWEBLoadType::NoAnimation, "Models/AXE.ZWEB", renderer->GetDevice());
-	std::vector<Material> axeMat = ZWEBLoader::LoadMaterials("Models/AXE.ZWEB", skeletonShader, renderer->GetDevice());
+	std::vector<Material> axeMat = ZWEBLoader::LoadMaterials("Models/AXE.ZWEB", defaultShader, renderer->GetDevice());
 
 	Object* axeObject = new Object("Axe");
 
 	axeObject->AddComponent<MeshComponent>(axeMesh[0], axeMat[0]);
 	axeObject->GetTransform().SetPosition({ 0,0,0 });
 	axeObject->GetTransform().SetScale({ 1, 1, 1 });
-	axeObject->AddComponent<WeaponComponent>(cameraObject, input);
+	axeObject->AddComponent<WeaponComponent>(cameraObject);
 	AddObject(axeObject);
 
 	clock.Update();
