@@ -112,6 +112,7 @@ void EnemyAttackComp::UpdateAttackPlayer(const float& deltaTime)
 {
 	if (ChasePlayer(deltaTime) && attackPlayer)
 	{
+		// byebye
 		if (timer.GetSeconds() >= enemyStatsComp->GetAttackSpeed())
 		{
 			timer.Restart();

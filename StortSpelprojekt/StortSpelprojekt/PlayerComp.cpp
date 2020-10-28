@@ -17,6 +17,8 @@
 
 PlayerComp::PlayerComp(Renderer* renderer, CameraComponent* camComp, Physics& phys, GUIManager* guimanager, float health, float movementSpeed, float radius, float attack, float attackSpeed) : phy(phys)
 {
+	//attackTimer.Start();
+
 	this->guiMan = guimanager;
 	this->health = health;
 	this->attack = attack;
@@ -32,6 +34,7 @@ PlayerComp::PlayerComp(Renderer* renderer, CameraComponent* camComp, Physics& ph
 	this->radius = radius;
 	this->renderer = renderer;
 
+	//this->enemyStatsComp = enemyComp->GetComponent<EnemyStatsComp>();
 
 	// defaulting some shit
 	this->swapScene = NEXT_SCENE::GAME;
@@ -68,12 +71,11 @@ PlayerComp::~PlayerComp()
 
 void PlayerComp::Update(const float& deltaTime)
 {	
+	//attackTimer.Update();
 	Ray ray = cam->MouseToRay(p.x, p.y);
-
-	if (LMOUSE_PRESSED)
-	{
-		Physics& phy = Physics::Instance();
-				
+	Physics& phy = Physics::Instance();
+	if (KEY_DOWN(E))
+	{				
 		if (phy.RaytestSingle(ray, rayDistance, hit, FilterGroups::PICKUPS))
 		{
 			if (hit.object != nullptr)
@@ -103,25 +105,71 @@ void PlayerComp::Update(const float& deltaTime)
 				rp::RigidBody* objectRb = rbComp->GetRigidBody();
 				rbComp->RemoveCollidersFromBody(objectRb);
 				
-				phy.MutexLock();
-				phy.UnregisterRigidBody(hit.object->GetComponent<RigidBodyComponent>());
-				phy.MutexUnlock();
+				//phy.MutexLock();
+				//phy.UnregisterRigidBody(hit.object->GetComponent<RigidBodyComponent>());
+				//phy.MutexUnlock();
 				
 			}
 		}
-		else if (phy.RaytestSingle(ray, rayDistance, hit, FilterGroups::ENEMIES))
-		{
-			
-			std::cout << "Hit hit hit" << std::endl;
-		}
-
 	}
 	else
 	{
 		//DShape::DrawSphere(ray.GetPoint(10.0f), 0.2f, { 1, 0, 1 });
 	}
 
+	if (LMOUSE_DOWN)
+	{
+		if (phy.RaytestSingle(ray, 5.0f, hit, FilterGroups::ENEMIES))
+		{
+			if (hit.object != nullptr && hit.object->HasComponent<EnemyStatsComp>())
+			{				
+				if (hit.object->GetComponent<EnemyStatsComp>()->IsEnabled())
+				{
+					if (hit.object->GetComponent<EnemyStatsComp>()->GetHealth() >= 0.0f)
+					{
+						hit.object->GetComponent<EnemyStatsComp>()->LoseHealth(attack);
+						std::cout << "Hit hit hit" << std::endl;
+					}
+					else if (hit.object->GetComponent<EnemyStatsComp>()->GetHealth() <= 0.0f)
+					{
+						//hit.object.s  ->GetComponent<PickupComponent>()->SetActive(false);
 
+						RigidBodyComponent* rbComp = hit.object->GetComponent<RigidBodyComponent>();
+						rp::RigidBody* objectRb = rbComp->GetRigidBody();
+						rbComp->RemoveCollidersFromBody(objectRb);
+
+						////hit.object->GetComponent<EnemyStatsComp>()->SetEnabled(false);
+						////hit.object->GetComponent<EnemyStatsComp>()->SetEnabled(false);
+						///*hit.object->GetComponent<EnemyStatsComp>()->SetEnabled(false);
+						//RigidBodyComponent* rbComp = hit.object->GetComponent<RigidBodyComponent>();
+						//rp::RigidBody* objectRb = rbComp->GetRigidBody();
+						//rbComp->RemoveCollidersFromBody(objectRb);
+						//phy.UnregisterRigidBody(hit.object->GetComponent<RigidBodyComponent>());
+						//*/
+
+						hit.object->RemoveFlag(ObjectFlag::ENABLED);
+						hit.object->AddFlag(ObjectFlag::REMOVED);
+					}
+				}
+				else
+				{
+					std::cout << "YADDA" << std::endl;
+				}
+			}
+			else
+			{
+				std::cout << " jadda hallå " << std::endl;
+			}
+		}
+		else
+		{
+
+		}
+	}
+	else
+	{
+
+	}
 	//temp fix for wierd clock start at 
 	if (GameClock::Instance().GetFrameTime() / 1000 < 5.f)
 	{
@@ -135,7 +183,7 @@ void PlayerComp::Update(const float& deltaTime)
 		//std::cout << food<<std::endl;
 		
 		// make better later
-		if (fuel < 0 || health < 0 && !immortal)
+		if (fuel < 0 || health <= 0 && !immortal)
 			swapScene = NEXT_SCENE::LOSE;
 
 		if (food < 0)

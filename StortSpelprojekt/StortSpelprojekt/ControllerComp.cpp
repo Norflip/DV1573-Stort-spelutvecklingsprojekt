@@ -251,6 +251,7 @@ void ControllerComp::Update(const float& deltaTime)
 		{
 			float jumpVelocity = 0;
 			bool isCrouching = false;
+			camComp->SetFOV(60.0f); // dick move, fix this later
 			
 			if (IsGrounded() && KEY_DOWN(Space)) // FPcam //jump is  scuffed
 			{
@@ -302,7 +303,7 @@ void ControllerComp::Update(const float& deltaTime)
 			//float percentDeltaFov = deltaFOV / RUN_FOV;
 
 			this->fov = WALK_FOV + (percentVel * (diffFOV));
-			camComp->SetFOV(fov);
+			camComp->SetFOV(60.0f);
 
 			dx::XMVECTOR direction = dx::XMLoadFloat3(&dir);
 			direction = dx::XMVector3Normalize(direction);
