@@ -24,6 +24,9 @@ Engine::Engine(HINSTANCE hInstance) : window(hInstance), activeScene(nullptr)
 
 Engine::~Engine()
 {
+	delete renderer;
+	delete resourceManager;
+
 	for (int i = 0; i < scenes.size(); i++)
 	{
 		if (scenes[i])
