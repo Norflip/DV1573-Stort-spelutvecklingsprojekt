@@ -243,12 +243,19 @@
     <ClCompile Include="PointQuadTree.cpp">
       <Filter>Source Files\SpawnSystems</Filter>
     </ClCompile>
+    <ClCompile Include="AudioEngine.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="AudioMaster.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
     <ClCompile Include="ChunkGrid.cpp">
       <Filter>Source Files\SpawnSystems</Filter>
     </ClCompile>
     <ClCompile Include="Path.cpp">
       <Filter>Source Files\SpawnSystems</Filter>
     </ClCompile>
+    <ClCompile Include="WeaponComponent.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="BoundingBoxes.h">
@@ -462,6 +469,7 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="NodeWalkerComp.h">
+    <ClInclude Include="WeaponComponent.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="PickupComponent.h">
@@ -487,6 +495,12 @@
     </ClInclude>
     <ClInclude Include="PointQuadTree.h">
       <Filter>Source Files\SpawnSystems</Filter>
+    </ClInclude>
+    <ClInclude Include="AudioEngine.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="AudioMaster.h">
+      <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="ChunkGrid.h">
       <Filter>Source Files\SpawnSystems</Filter>

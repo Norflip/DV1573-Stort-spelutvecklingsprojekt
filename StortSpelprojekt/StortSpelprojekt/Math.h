@@ -173,4 +173,16 @@ namespace Math
 			return sqrtf(dx * dx + dy * dy);
 		}
 	}
+	inline float ShortestRotation(float currentDir, float nextDir)
+	{
+		float returnValue = 0;
+
+		if (abs(nextDir - currentDir) < PI)
+			returnValue = nextDir - currentDir;
+		else if (currentDir < nextDir)
+			returnValue = nextDir - currentDir - PI * 2.0f;
+		else
+			returnValue = nextDir - currentDir + PI * 2.0f;
+		return returnValue;
+	}
 }

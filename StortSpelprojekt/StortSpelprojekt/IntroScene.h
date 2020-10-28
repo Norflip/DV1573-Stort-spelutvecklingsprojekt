@@ -1,12 +1,14 @@
 #pragma once
 #include "Scene.h"
-
+#include "AudioMaster.h"
 class GUIFont;
 class SpriteRenderPass;
 
 class IntroScene : public Scene
 {
 private:
+	SoundEvent menuTest;
+	SoundEvent test2, test3;
 
 public:
 	IntroScene(ResourceManager* manager);
@@ -22,5 +24,5 @@ public:
 	void Update(const float& deltaTime) override;
 	void FixedUpdate(const float& fixedDeltaTime) override;
 	void Render() override;
-
+	
 };

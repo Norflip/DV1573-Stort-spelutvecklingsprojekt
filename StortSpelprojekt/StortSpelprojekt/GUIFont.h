@@ -4,7 +4,7 @@ class GUIFont : public GUIObject
 {
 public:
 	GUIFont();
-	GUIFont(Renderer&, const std::string& display, float x = 0, float y = 0);
+	GUIFont(Renderer&, const std::string& display, float x = 0, float y = 0, GuiGroup group = GuiGroup::Default);
 	~GUIFont();
 	void Draw(DirectX::SpriteBatch*) override;
 	void SetPosition(float x, float y) override;

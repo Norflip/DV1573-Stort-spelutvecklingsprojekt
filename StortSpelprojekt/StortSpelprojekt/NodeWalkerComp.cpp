@@ -68,10 +68,10 @@ void NodeWalkerComp::Start()
 	{
 		base->SetisDone(false);
 		legs->SetisDone(false);
-		base->doneDown = false;
-		legs->doneDown = false;
-		base->doneUp = false;
-		legs->doneUp = false;
+		base->SetAndGetDoneDown() = false;
+		legs->SetAndGetDoneDown() = false;
+		base->SetAndGetDoneUp() = false;
+		legs->SetAndGetDoneUp() = false;
 		base->SetTrack(SkeletonStateMachine::UP, true);
 		legs->SetTrack(SkeletonStateMachine::UP, true);
 	}
@@ -86,10 +86,10 @@ void NodeWalkerComp::Stop()
 		legs->SetisDone(false);
 		base->SetTrack(SkeletonStateMachine::DOWN, true);
 		legs->SetTrack(SkeletonStateMachine::DOWN, true);
-		base->doneDown = false;
-		legs->doneDown = false;
-		base->doneUp = false;
-		legs->doneUp = false;
+		base->SetAndGetDoneDown() = false;
+		legs->SetAndGetDoneDown() = false;
+		base->SetAndGetDoneUp() = false;
+		legs->SetAndGetDoneUp() = false;
 	}
 }
 
@@ -103,7 +103,7 @@ void NodeWalkerComp::Update(const float& deltaTime)
 		return;
 	}
 
-	if (base->doneUp)
+	if (base->SetAndGetDoneUp())
 	{
 		canWalk = true;
 		base->SetTrack(SkeletonStateMachine::WALK, false);

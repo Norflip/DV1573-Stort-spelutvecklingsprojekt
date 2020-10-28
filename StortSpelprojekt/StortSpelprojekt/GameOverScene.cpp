@@ -47,8 +47,8 @@ void GameOverScene::InitializeGUI()
 	GUISprite* restart = new GUISprite(*renderer, "Textures/Restart.png", 100, 200, 0, DrawDirection::Default, ClickFunction::Clickable);
 	GUISprite* quit = new GUISprite(*renderer, "Textures/Exit.png", 100, 400, 0, DrawDirection::Default, ClickFunction::Clickable);
 	GUIFont* fpsDisplay = new GUIFont(*renderer, "fps", windowWidth / 2, 50);
-	restart->SetActive();
-	quit->SetActive();
+	restart->SetActivated();
+	quit->SetActivated();
 
 	guiManager = new GUIManager(renderer, 100);
 	guiManager->AddGUIObject(lose, "lose");

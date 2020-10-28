@@ -160,6 +160,8 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="AudioMaster.cpp" />
+    <ClCompile Include="AudioEngine.cpp" />
     <ClCompile Include="EnemyAttackComp.cpp" />
     <ClCompile Include="EnemyIdleComp.cpp" />
     <ClCompile Include="EnemyPatrolComp.cpp" />
@@ -216,11 +218,14 @@
     <ClCompile Include="SkeletonMeshComponent.cpp" />
     <ClCompile Include="ThirdParty\SimplexNoise.cpp" />
     <ClCompile Include="Transform.cpp" />
+    <ClCompile Include="WeaponComponent.cpp" />
     <ClCompile Include="Window.cpp" />
     <ClCompile Include="WinScene.cpp" />
     <ClCompile Include="World.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="AudioMaster.h" />
+    <ClInclude Include="AudioEngine.h" />
     <ClInclude Include="EnemyAttackComp.h" />
     <ClInclude Include="EnemyIdleComp.h" />
     <ClInclude Include="EnemyPatrolComp.h" />
@@ -297,6 +302,7 @@
     <ClInclude Include="SkeletonMeshComponent.h" />
     <ClInclude Include="ThirdParty\SimplexNoise.h" />
     <ClInclude Include="Transform.h" />
+    <ClInclude Include="WeaponComponent.h" />
     <ClInclude Include="Window.h" />
     <ClInclude Include="WinScene.h" />
     <ClInclude Include="World.h" />
