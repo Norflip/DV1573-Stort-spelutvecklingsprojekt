@@ -23,6 +23,7 @@ public:
 	void SetHouse(Object* object) { this->house = object; }
 	void DrawDebug();
 
+	Path GetPath() const { return this->generator.GetPath(); }
 	void MoveHouseAndPlayerToStart();
 
 	float TMP_OFFSET = 0.0f;
