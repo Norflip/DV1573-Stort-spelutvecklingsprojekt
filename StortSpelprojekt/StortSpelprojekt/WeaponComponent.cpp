@@ -1,7 +1,7 @@
 #include "WeaponComponent.h"
 
-WeaponComponent::WeaponComponent(Object* object, Input& input)
-	:camObj(object), weaponPos({ 0,0,0 }), weaponRot({ 0,0,0 }), weaponScale({ 0,0,0 }), up({ 0,0,0 }), wepInput(&input), attacking(false)
+WeaponComponent::WeaponComponent(Object* object)
+	:camObj(object), weaponPos({ 0,0,0 }), weaponRot({ 0,0,0 }), weaponScale({ 0,0,0 }), up({ 0,0,0 }), attacking(false)
 {
 }
 
@@ -29,7 +29,7 @@ void WeaponComponent::SetPosition(float time)
 	attackTimer += time;
 	attackCooldown += time;
 	
-	if (wepInput->GetRightMouseKeyDown() && attackCooldown > 0.5)
+	if (LMOUSE_DOWN && attackCooldown > 0.5)
 	{
 		time = 0;
 		attackTimer = 0;
