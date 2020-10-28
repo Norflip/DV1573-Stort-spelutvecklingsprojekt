@@ -10,15 +10,12 @@ SamplerState linearSampler : register(s0);
 HS_CONSTANT_DATA_OUTPUT_GRASS hsPerIsoLinePatch(InputPatch<VS_OUTPUT_GRASS,1> input, uint i : SV_PrimitiveID)
 {
 	HS_CONSTANT_DATA_OUTPUT_GRASS output;
-
-	output.edgeTesselation[1] = input[0].tessFactor;
 	
 #if _DEBUG
-
+	output.edgeTesselation[0] = input[0].tessFactor;
 #endif
-
-	output.edgeTesselation[1] = 1;  //
-	output.edgeTesselation[0] = input[0].tessFactor;  //max grass per triangles
+	output.edgeTesselation[1] = 1;
+	output.edgeTesselation[0] = 64; //max grass per triangles
 	
 	output.triangleIndex = i;
 

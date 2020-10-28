@@ -15,15 +15,10 @@ GameScene::GameScene(ResourceManager* manager) : Scene(manager)
 
 GameScene::~GameScene()
 {
-
-	
 }
 
 void GameScene::Initialize(Renderer* renderer)
 {
-
-	
-
 	this->renderer = renderer;
 
 	// Should change values on resize event
@@ -70,9 +65,6 @@ void GameScene::InitializeObjects()
 	SegmentDescription desc(0, 10, 2);
 	desc.directionalSteps = 5;
 	desc.maxSteps = 10;
-
-	skyboxClass = new Skybox(renderer->GetDevice(), renderer->GetContext(), resourceManager->GetShaderResource("skyboxShader"));
-	skyboxClass->GetThisObject()->AddFlag(ObjectFlag::NO_CULL);
 
 	//SKELETON ANIMATION MODELS
 	bool defaultAnimation = false;
@@ -158,13 +150,11 @@ void GameScene::InitializeObjects()
 	physics.RegisterRigidBody(rbEnemy);
 	physics.MutexUnlock();
 
-
 	playerObject->AddComponent<PlayerAttackComp>(enemy);
 
 	//LOADING HOUSE AND LEGS AND ADDING SKELETONS TO THEM THE HOUSE ONLY HAS ONE JOINT CONNECTED TO IT
 	Shader* defaultShader = resourceManager->GetShaderResource("defaultShader");
 	Shader* skeletonAlphaShader = resourceManager->GetShaderResource("houseShader");
-	
 	
 	std::vector<Mesh> meshHouse = ZWEBLoader::LoadMeshes(ZWEBLoadType::SkeletonAnimation, "Models/House_Base.ZWEB", renderer->GetDevice());
 	std::vector<Material> matHouse = ZWEBLoader::LoadMaterials("Models/House_Base.ZWEB", skeletonAlphaShader, renderer->GetDevice());
@@ -203,7 +193,6 @@ void GameScene::InitializeObjects()
 	//AddObject( houseBaseObject,housesLegsObject);
 	baseComponent->GetOwner()->GetTransform().SetScale({ 0.5f, 0.5f, 0.5f });
 
-
 	NodeWalkerComp* nodeWalker = houseBaseObject->AddComponent<NodeWalkerComp>();
 	nodeWalker->InitAnimation();
 
@@ -211,9 +200,7 @@ void GameScene::InitializeObjects()
 	baseComponent->SetTrack(SkeletonStateMachine::IDLE, false);
 	AddObject(houseBaseObject);
 
-	
-
-//Axe//////////////////////////////////////////////////////////////////
+	//Axe//////////////////////////////////////////////////////////////////
 	std::vector<Mesh> axeMesh = ZWEBLoader::LoadMeshes(ZWEBLoadType::NoAnimation, "Models/AXE.ZWEB", renderer->GetDevice());
 	std::vector<Material> axeMat = ZWEBLoader::LoadMaterials("Models/AXE.ZWEB", defaultShader, renderer->GetDevice());
 
@@ -248,25 +235,17 @@ void GameScene::InitializeObjects()
 	dx::XMVECTOR asdf = dx::XMVectorSet(23, 3, 40 ,1);
 	enemy->GetTransform().SetPosition(asdf);
 
-
-
-
-
-
 	/* PICKUP STUFF DONT DELETE THESEEE */
 	/* PICKUP STUFF DONT DELETE THESEEE */
 	/* PICKUP STUFF DONT DELETE THESEEE */
 	/* PICKUP STUFF DONT DELETE THESEEE */
-
-	
-	Shader* defShader = resourceManager->GetShaderResource("defaultShader");
 
 	/* Health pickup stuff temporary */
-	std::vector<Mesh> healthkit = ZWEBLoader::LoadMeshes(ZWEBLoadType::NoAnimation, "Models/Health_Kit.ZWEB", renderer->GetDevice());
-	std::vector<Material> healthkitMaterial = ZWEBLoader::LoadMaterials("Models/Health_Kit.ZWEB", defShader, renderer->GetDevice());
+	//std::vector<Mesh> healthkit = ZWEBLoader::LoadMeshes(ZWEBLoadType::NoAnimation, "Models/Health_Kit.ZWEB", renderer->GetDevice());
+	//std::vector<Material> healthkitMaterial = ZWEBLoader::LoadMaterials("Models/Health_Kit.ZWEB", defaultShader, renderer->GetDevice());
 
-	Object* healthkitObject = new Object("healthObject");
-	healthkitObject->AddComponent<MeshComponent>(healthkit[0], healthkitMaterial[0]);
+	Object* healthkitObject = resourceManager->AssembleObject("HealthKit", "HealthKitMaterial");
+	//healthkitObject->AddComponent<MeshComponent>(healthkit[0], healthkitMaterial[0]);
 	healthkitObject->GetTransform().SetPosition({ 23,2,50 });
 	healthkitObject->AddComponent<BoxColliderComponent>(dx::XMFLOAT3{ 0.5f, 0.5f, 0.5f }, dx::XMFLOAT3{ 0, 0, 0 });
 	healthkitObject->AddComponent<PickupComponent>(Type::Health, 20.0f);
@@ -276,13 +255,12 @@ void GameScene::InitializeObjects()
 	physics.RegisterRigidBody(healthBody);
 	AddObject(healthkitObject);
 
-
 	///* Fuel pickup stuff temporary */
-	std::vector<Mesh> fuelCan = ZWEBLoader::LoadMeshes(ZWEBLoadType::NoAnimation, "Models/Fuel_Can_Red.ZWEB", renderer->GetDevice());
-	std::vector<Material> fuelCanMaterail = ZWEBLoader::LoadMaterials("Models/Fuel_Can_Red.ZWEB", defShader, renderer->GetDevice());
+	//std::vector<Mesh> fuelCan = ZWEBLoader::LoadMeshes(ZWEBLoadType::NoAnimation, "Models/Fuel_Can_Red.ZWEB", renderer->GetDevice());
+	//std::vector<Material> fuelCanMaterail = ZWEBLoader::LoadMaterials("Models/Fuel_Can_Red.ZWEB", defaultShader, renderer->GetDevice());
 
-	Object* fuelCanObject = new Object("fuelObject");
-	fuelCanObject->AddComponent<MeshComponent>(fuelCan[0], fuelCanMaterail[0]);
+	Object* fuelCanObject = resourceManager->AssembleObject("FuelCanGreen", "FuelCanGreenMaterial");// new Object("fuelObject");
+	//fuelCanObject->AddComponent<MeshComponent>(fuelCan[0], fuelCanMaterail[0]);
 	fuelCanObject->GetTransform().SetPosition({ 22,2,52 });
 	fuelCanObject->AddComponent<BoxColliderComponent>(dx::XMFLOAT3{ 0.5f, 0.5f, 0.5f }, dx::XMFLOAT3{ 0, 0, 0 });
 	fuelCanObject->AddComponent<PickupComponent>(Type::Fuel, 20.0f);
@@ -292,13 +270,12 @@ void GameScene::InitializeObjects()
 	physics.RegisterRigidBody(fuelBody);
 	AddObject(fuelCanObject);
 
-
 	///* Banana pickup stuff temporary */
-	std::vector<Mesh> beans = ZWEBLoader::LoadMeshes(ZWEBLoadType::NoAnimation, "Models/Soup_Can.ZWEB", renderer->GetDevice());
-	std::vector<Material> beansMaterial = ZWEBLoader::LoadMaterials("Models/Soup_Can.ZWEB", defShader, renderer->GetDevice());
+	//std::vector<Mesh> beans = ZWEBLoader::LoadMeshes(ZWEBLoadType::NoAnimation, "Models/Soup_Can.ZWEB", renderer->GetDevice());
+	//std::vector<Material> beansMaterial = ZWEBLoader::LoadMaterials("Models/Soup_Can.ZWEB", defaultShader, renderer->GetDevice());
 
-	Object* beansObject = new Object("bakedBeans");
-	beansObject->AddComponent<MeshComponent>(beans[0], beansMaterial[0]);
+	Object* beansObject = resourceManager->AssembleObject("Soup", "SoupMaterial");// new Object("bakedBeans");
+	//beansObject->AddComponent<MeshComponent>(beans[0], beansMaterial[0]);
 	beansObject->GetTransform().SetPosition({22, 2.0f, 53 });
 	beansObject->AddComponent<BoxColliderComponent>(dx::XMFLOAT3{ 0.5f, 0.5f, 0.5f }, dx::XMFLOAT3{ 0, 0, 0 });
 	beansObject->AddComponent<PickupComponent>(Type::Food, 20.0f);

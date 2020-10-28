@@ -8,9 +8,6 @@ Texture2D chunkData : register (t6);
 
 SamplerState LinearSampler : register(s0);
 
-
-
-
 /*Alter the commented values to change the grass*/
 [domain("isoline")]
 DS_OUTPUT_GRASS main(HS_CONSTANT_DATA_OUTPUT_GRASS input,
