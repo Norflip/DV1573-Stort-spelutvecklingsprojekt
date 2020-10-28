@@ -427,28 +427,28 @@ void GameScene::Update(const float& deltaTime)
 	Ray ray = camera->MouseToRay(p.x, p.y);
 	//std::cout << p.x << ", " << p.y << std::endl;
 
-	if (LMOUSE_PRESSED)
-	{
-		Physics& phy = Physics::Instance();
-		RayHit hit;
+	//if (LMOUSE_PRESSED)
+	//{
+	//	Physics& phy = Physics::Instance();
+	//	RayHit hit;
 
-		DShape::DrawLine(ray.origin, ray.GetPoint(1000.0f), { 1,1,0 });
+	//	DShape::DrawLine(ray.origin, ray.GetPoint(1000.0f), { 1,1,0 });
 
-		if (phy.RaytestSingle(ray, 1000.0f, hit, FilterGroups::EVERYTHING))
-		{
-			DShape::DrawLine(ray.origin, hit.position, { 1,1,0 });
-			DShape::DrawSphere(hit.position, 1.0f, { 0, 0, 1 });
+	//	if (phy.RaytestSingle(ray, 1000.0f, hit, FilterGroups::EVERYTHING))
+	//	{
+	//		DShape::DrawLine(ray.origin, hit.position, { 1,1,0 });
+	//		DShape::DrawSphere(hit.position, 1.0f, { 0, 0, 1 });
 
-			if (hit.object != nullptr)
-			{
-				std::cout << hit.object->GetName() << std::endl;
-			}
-		}	
-	}
-	else
-	{
-		DShape::DrawSphere(ray.GetPoint(10.0f), 0.2f, { 1, 0, 1 });
-	}
+	//		if (hit.object != nullptr)
+	//		{
+	//			std::cout << hit.object->GetName() << std::endl;
+	//		}
+	//	}	
+	//}
+	//else
+	//{
+	//	DShape::DrawSphere(ray.GetPoint(10.0f), 0.2f, { 1, 0, 1 });
+	//}
 	nextScene = NEXT_SCENE(player->GetComponent<PlayerComp>()->GetNextScene());
 
 	skyboxClass->GetThisObject()->GetTransform().SetPosition(camera->GetOwner()->GetTransform().GetPosition());
