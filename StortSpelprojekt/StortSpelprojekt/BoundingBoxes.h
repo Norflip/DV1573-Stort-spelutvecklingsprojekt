@@ -6,23 +6,16 @@ struct AABB //OBB can be added too if someone knows how.
 	dx::XMFLOAT3 min;
 	dx::XMFLOAT3 max;
 
-	dx::XMVECTOR c; //centerpoint
-	dx::XMVECTOR h; //positive half diagonal vector
+	dx::XMVECTOR c; 
+	dx::XMVECTOR h; 
 
-	
+	float height;
+	float radius;
+	float halfX, halfY, halfZ;
 
 };
 
-struct OBB
-{
-	dx::XMFLOAT3 min;
-	dx::XMFLOAT3 max;
 
-	dx::XMVECTOR c; //centerpoint
-	dx::XMVECTOR h; //positive half diagonal vector
-
-	//Something more, like 3 normals or something.
-};
 class BoundingBoxes
 {
 

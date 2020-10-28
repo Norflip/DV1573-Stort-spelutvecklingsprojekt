@@ -1,7 +1,7 @@
 #include "RigidBodyComponent.h"
 #include "Physics.h"
 
-RigidBodyComponent::RigidBodyComponent(float mass, FilterGroups group, FilterGroups mask, bool dynamic) : mass(mass), group(group), collisionMask(mask), dynamic(dynamic)
+RigidBodyComponent::RigidBodyComponent(float mass, FilterGroups group, FilterGroups mask, BodyType type) : mass(mass), group(group), collisionMask(mask), type(type)
 {
 }
 
@@ -116,10 +116,12 @@ void RigidBodyComponent::AddCollidersToBody(Object* obj, rp::RigidBody* body)
 	{
 		rp::Collider* collider = body->addCollider(colliders[i]->GetCollisionShape(), colliders[i]->GetTransform());
 		collider->setCollisionCategoryBits(static_cast<unsigned short>(group));
-		collider->setCollideWithMaskBits(static_cast<unsigned short>(collisionMask));
+		collider->setCollideWithMaskBits(static_cast<unsigned short>(collisionMask));		
+		collidersList.push_back(collider);
 	}
+		
 
-	std::cout << obj->GetName() << " has colliders: " << colliders.size() << std::endl;
+	assert(colliders.size() > 0);
 
 	//CHILDREN
 	const std::vector<Transform*>& children = GetOwner()->GetTransform().GetChildren();
@@ -129,18 +131,26 @@ void RigidBodyComponent::AddCollidersToBody(Object* obj, rp::RigidBody* body)
 	}
 }
 
+void RigidBodyComponent::RemoveCollidersFromBody(rp::RigidBody* body)
+{
+	for (auto i : collidersList)
+	{
+		body->removeCollider(i);
+	}
+}
+
 void RigidBodyComponent::m_InitializeBody(rp::PhysicsWorld* world)
 {
 	Transform& transform = GetOwner()->GetTransform();
 	currentTransform = ConvertToBtTransform(transform);
 	previousTransform = currentTransform;
 
-	rp::BodyType type = dynamic ? rp::BodyType::DYNAMIC : rp::BodyType::KINEMATIC;
+	rp::BodyType bodyType = static_cast<rp::BodyType>((int)type);
 	if (mass == 0.0f)
-		type = rp::BodyType::STATIC;
+		bodyType = rp::BodyType::STATIC;
 
 	body = world->createRigidBody(currentTransform);
-	body->setType(type);
+	body->setType(bodyType);
 	body->setMass(mass);
 	body->setUserData(static_cast<void*>(GetOwner()));
 

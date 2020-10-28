@@ -133,14 +133,24 @@ void Shader::CompilePS(ID3D11Device* device)
 
 		ID3DBlob* errorBlob = nullptr;
 		ID3DBlob* PSBlob = nullptr;
-		
+
 		// Convert the string to a wstring locally, without changing the content
-		std::wstring wPixel = std::wstring(pixelPath.begin(), pixelPath.end());
+		std::wstring wPath = std::wstring(pixelPath.begin(), pixelPath.end());
+
+		const D3D_SHADER_MACRO defines[] =
+		{
+#if _DEBUG
+			"_DEBUG", "1",
+#else
+			"_DEBUG", "0",
+#endif
+			NULL, NULL
+		};
 
 		HRESULT PSCompileResult = D3DCompileFromFile
 		(
-			wPixel.c_str(),
-			nullptr,
+			wPath.c_str(),
+			defines,
 			D3D_COMPILE_STANDARD_FILE_INCLUDE,
 			pixelEntry,
 			"ps_5_0",
@@ -150,12 +160,7 @@ void Shader::CompilePS(ID3D11Device* device)
 			&errorBlob
 		);
 
-		if (FAILED(PSCompileResult) && errorBlob)
-		{
-			OutputDebugStringA((char*)errorBlob->GetBufferPointer());
-			Log::Add(Log::LogLevel::Error, (char*)errorBlob->GetBufferPointer());
-			errorBlob->Release();
-		}
+		ASSERT_SHADER(PSCompileResult, errorBlob, wPath);
 
 		HRESULT PSCreateResult = device->CreatePixelShader(PSBlob->GetBufferPointer(), PSBlob->GetBufferSize(), nullptr, &this->pixelShader);
 		assert(SUCCEEDED(PSCreateResult));
@@ -178,15 +183,25 @@ void Shader::CompileVS(ID3D11Device* device)
 
 		ID3DBlob* errorBlob = nullptr;
 		ID3DBlob* VSBlob = nullptr;
-		
+
 		// Convert the string to a wstring locally, without changing the content
-		std::wstring wVertex = std::wstring(vertexPath.begin(), vertexPath.end());
+		std::wstring wPath = std::wstring(vertexPath.begin(), vertexPath.end());
+
+		const D3D_SHADER_MACRO defines[] =
+		{
+#if _DEBUG
+			"_DEBUG", "1",
+#else
+			"_DEBUG", "0",
+#endif
+			NULL, NULL
+		};
 
 		// VERTEX SHADER
 		HRESULT	VSCompileResult = D3DCompileFromFile
 		(
-			wVertex.c_str(),
-			nullptr,
+			wPath.c_str(),
+			defines,
 			D3D_COMPILE_STANDARD_FILE_INCLUDE,
 			vertexEntry,
 			"vs_5_0",
@@ -196,12 +211,7 @@ void Shader::CompileVS(ID3D11Device* device)
 			&errorBlob
 		);
 
-		if (FAILED(VSCompileResult) && errorBlob)
-		{
-			OutputDebugStringA((char*)errorBlob->GetBufferPointer());
-			Log::Add(Log::LogLevel::Error, (char*)errorBlob->GetBufferPointer());
-			errorBlob->Release();
-		}
+		ASSERT_SHADER(VSCompileResult, errorBlob, wPath);
 
 		HRESULT VSCreateResult = device->CreateVertexShader(VSBlob->GetBufferPointer(), VSBlob->GetBufferSize(), nullptr, &this->vertexShader);
 		assert(SUCCEEDED(VSCreateResult));
@@ -227,12 +237,22 @@ void Shader::CompileGS(ID3D11Device* device)
 		ID3DBlob* GSBlob = nullptr;
 
 		// Convert the string to a wstring locally, without changing the content
-		std::wstring wGeometry = std::wstring(geometryPath.begin(), geometryPath.end());
+		std::wstring wPath = std::wstring(geometryPath.begin(), geometryPath.end());
+
+		const D3D_SHADER_MACRO defines[] =
+		{
+#if _DEBUG
+			"_DEBUG", "1",
+#else
+			"_DEBUG", "0",
+#endif
+			NULL, NULL
+		};
 
 		HRESULT GSCompileResult = D3DCompileFromFile
 		(
-			wGeometry.c_str(),
-			nullptr,
+			wPath.c_str(),
+			defines,
 			D3D_COMPILE_STANDARD_FILE_INCLUDE,
 			geometryEntry,
 			"gs_5_0",
@@ -242,12 +262,7 @@ void Shader::CompileGS(ID3D11Device* device)
 			&errorBlob
 		);
 
-		if (FAILED(GSCompileResult) && errorBlob)
-		{
-			OutputDebugStringA((char*)errorBlob->GetBufferPointer());
-			Log::Add(Log::LogLevel::Error, (char*)errorBlob->GetBufferPointer());
-			errorBlob->Release();
-		}
+		ASSERT_SHADER(GSCompileResult, errorBlob, wPath);
 
 		HRESULT GSCreateResult = device->CreateGeometryShader(GSBlob->GetBufferPointer(), GSBlob->GetBufferSize(), nullptr, &this->geometryShader);
 		assert(SUCCEEDED(GSCreateResult));
@@ -270,12 +285,22 @@ void Shader::CompileHS(ID3D11Device* device)
 		ID3DBlob* HSBlob = nullptr;
 
 		// Convert the string to a wstring locally, without changing the content
-		std::wstring wHull = std::wstring(hullPath.begin(), hullPath.end());
+		std::wstring wPath = std::wstring(hullPath.begin(), hullPath.end());
+
+		const D3D_SHADER_MACRO defines[] =
+		{
+#if _DEBUG
+			"_DEBUG", "1",
+#else
+			"_DEBUG", "0",
+#endif
+			NULL, NULL
+		};
 
 		HRESULT HSCompileResult = D3DCompileFromFile
 		(
-			wHull.c_str(),
-			nullptr,
+			wPath.c_str(),
+			defines,
 			D3D_COMPILE_STANDARD_FILE_INCLUDE,
 			hullEntry,
 			"hs_5_0",
@@ -285,12 +310,7 @@ void Shader::CompileHS(ID3D11Device* device)
 			&errorBlob
 		);
 
-		if (FAILED(HSCompileResult) && errorBlob)
-		{
-			OutputDebugStringA((char*)errorBlob->GetBufferPointer());
-			Log::Add(Log::LogLevel::Error, (char*)errorBlob->GetBufferPointer());
-			errorBlob->Release();
-		}
+		ASSERT_SHADER(HSCompileResult, errorBlob, wPath);
 
 		HRESULT HSCreateResult = device->CreateHullShader(HSBlob->GetBufferPointer(), HSBlob->GetBufferSize(), nullptr, &this->hullShader);
 		assert(SUCCEEDED(HSCreateResult));
@@ -314,12 +334,21 @@ void Shader::CompileDS(ID3D11Device* device)
 		ID3DBlob* DSBlob = nullptr;
 
 		// Convert the string to a wstring locally, without changing the content
-		std::wstring wDomain = std::wstring(domainPath.begin(), domainPath.end());
+		std::wstring wPath = std::wstring(domainPath.begin(), domainPath.end());
 
+		const D3D_SHADER_MACRO defines[] =
+		{
+#if _DEBUG
+			"_DEBUG", "1",
+#else
+			"_DEBUG", "0",
+#endif
+			NULL, NULL
+		};
 		HRESULT DSCompileResult = D3DCompileFromFile
 		(
-			wDomain.c_str(),
-			nullptr,
+			wPath.c_str(),
+			defines,
 			D3D_COMPILE_STANDARD_FILE_INCLUDE,
 			domainEntry,
 			"ds_5_0",
@@ -329,12 +358,7 @@ void Shader::CompileDS(ID3D11Device* device)
 			&errorBlob
 		);
 
-		if (FAILED(DSCompileResult) && errorBlob)
-		{
-			OutputDebugStringA((char*)errorBlob->GetBufferPointer());
-			Log::Add(Log::LogLevel::Error, (char*)errorBlob->GetBufferPointer());
-			errorBlob->Release();
-		}
+		ASSERT_SHADER(DSCompileResult, errorBlob, wPath);
 
 		HRESULT DSCreateResult = device->CreateDomainShader(DSBlob->GetBufferPointer(), DSBlob->GetBufferSize(), nullptr, &this->domainShader);
 		assert(SUCCEEDED(DSCreateResult));
@@ -343,11 +367,11 @@ void Shader::CompileDS(ID3D11Device* device)
 
 void Shader::Unbind(ID3D11DeviceContext* context) const
 {
-	
+
 
 	int flag = static_cast<int>(shaderFlags);
 
-	
+
 
 	if ((flag & (int)ShaderBindFlag::HULL) != 0)
 		context->HSSetShader(nullptr, 0, 0);

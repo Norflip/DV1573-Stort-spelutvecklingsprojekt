@@ -79,9 +79,9 @@ DS_OUTPUT_GRASS main(HS_CONSTANT_DATA_OUTPUT_GRASS input,
 
 	float noiseSample = noiseMap.SampleLevel(LinearSampler, 4 * uvPlane, 0).r;
 
-	float disp = /*grassDisplacement*/ 1* pow(uv.x, 1.0); //grassDisplacement == Length
+	float disp = /*grassDisplacement*/ 0.125* pow(uv.x, 1.0); //grassDisplacement == Length
 
-	float dispT = /*grassDisplacement*/1* pow(uv.x, 1.0) * (noiseSample + 2.5 * abs(sin((time * 0.25) + noiseSample)));
+	float dispT = /*grassDisplacement*/0.125 * pow(uv.x, 1.0) * (noiseSample + 2.5 * abs(sin((time * 0.25) + noiseSample)));
 
 	dispT *= 0.1;
 

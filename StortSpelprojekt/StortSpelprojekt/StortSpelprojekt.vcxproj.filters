@@ -469,6 +469,8 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="NodeWalkerComp.h">
+		<Filter>Header Files</Filter>
+    </ClInclude>
     <ClInclude Include="WeaponComponent.h">
       <Filter>Header Files</Filter>
     </ClInclude>

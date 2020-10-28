@@ -55,12 +55,15 @@ void BoundingBoxes::CalcAABB(const Mesh& mesh)
 
 	aabb.h = DirectX::XMVectorScale(aabb.h, 1.0f / 2.0f);
 
+	aabb.radius = dx::XMVectorGetX(dx::XMVector3Length(aabb.h));
 	
-	//More calculations are needed for OBB but I don't know what.
-
+	aabb.height = aabb.max.y - aabb.min.y;
 	
+	aabb.halfX = (aabb.max.x - aabb.min.x)*0.5;
 
+	aabb.halfY = (aabb.max.y - aabb.min.y) * 0.5;
 
+	aabb.halfZ = (aabb.max.z - aabb.min.z) * 0.5;
 }
 
 void BoundingBoxes::CalcAABB()
@@ -100,7 +103,15 @@ void BoundingBoxes::CalcAABB()
 	aabb.h = DirectX::XMVectorScale(aabb.h, 1.0f / 2.0f);
 
 	
-	//More calculations are needed for OBB but I don't know what.
+	aabb.radius = dx::XMVectorGetX(dx::XMVector3Length(aabb.h));
+
+	aabb.height = aabb.max.y - aabb.min.y;
+
+	aabb.halfX = (aabb.max.x - aabb.min.x) * 0.5;
+
+	aabb.halfY = (aabb.max.y - aabb.min.y) * 0.5;
+
+	aabb.halfZ = (aabb.max.z - aabb.min.z) * 0.5;
 
 	
 }

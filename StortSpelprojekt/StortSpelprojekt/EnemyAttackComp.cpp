@@ -89,6 +89,7 @@ bool EnemyAttackComp::ChasePlayer(const float& deltaTime)
 	GetOwner()->GetTransform().Translate(moveDir.x * enemyStatsComp->GetSpeed() * deltaTime, 0.0f,
 		moveDir.z * enemyStatsComp->GetSpeed() * deltaTime);
 
+
 	//Billboarding x & z axis for enemy Rotation
 	dx::XMVECTOR dirVec = dx::XMVector3Normalize(dx::XMVectorSubtract(GetOwner()->GetTransform().GetPosition(), player->GetOwner()->GetTransform().GetPosition()));
 	dx::XMFLOAT3 dirToPlayer;
@@ -98,6 +99,11 @@ bool EnemyAttackComp::ChasePlayer(const float& deltaTime)
 	dx::XMVECTOR right = GetOwner()->GetTransform().TransformDirection({ 1,0,0 });
 	dx::XMVECTOR eulerRotation = dx::XMQuaternionMultiply(dx::XMQuaternionRotationAxis(right, 0), dx::XMQuaternionRotationAxis({ 0,1,0 }, rotation));
 	GetOwner()->GetTransform().SetRotation(eulerRotation);
+
+
+	dx::XMVECTOR a = GetOwner()->GetTransform().GetPosition(); //variable a??
+	GetOwner()->GetComponent<RigidBodyComponent>()->SetPosition(a);
+
 
 	return chasePlayer;
 }

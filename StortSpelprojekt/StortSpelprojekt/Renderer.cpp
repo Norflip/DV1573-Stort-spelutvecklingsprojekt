@@ -343,13 +343,26 @@ void Renderer::RemoveRenderPass(RenderPass* pass)
 
 void Renderer::AddItem(const RenderItem& item, bool transparent)
 {
-	RenderQueue& queue = (transparent) ? transparentItemQueue : opaqueItemQueue;
+	if (transparent)
+	{
+		size_t materialID = item.material->GetID();
+		auto found = transparentItemQueue.find(materialID);
 
-	size_t materialID = item.material->GetID();
-	if (queue.find(materialID) == queue.end())
-		queue.insert({ materialID, std::queue<RenderItem>() });
+		if (found == transparentItemQueue.end())
+			transparentItemQueue.insert({ materialID, std::queue<RenderItem>() });
 
-	queue[materialID].push(item);
+		transparentItemQueue[materialID].push(item);
+	}
+	else
+	{
+		size_t materialID = item.material->GetID();
+		auto found = opaqueItemQueue.find(materialID);
+
+		if (found == opaqueItemQueue.end())
+			opaqueItemQueue.insert({ materialID, std::queue<RenderItem>() });
+
+		opaqueItemQueue[materialID].push(item);
+	}
 }
 
 void Renderer::DrawRenderItem(const RenderItem& item)

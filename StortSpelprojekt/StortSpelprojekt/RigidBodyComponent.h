@@ -21,6 +21,13 @@ enum class ForceMode
 	IMPULSE
 };
 
+enum class BodyType
+{
+	STATIC = 0,
+	KINEMATIC = 1,
+	DYNAMIC = 2
+};
+
 enum class FilterGroups : unsigned short;
 
 #define STATIC_BODY 0
@@ -28,7 +35,7 @@ enum class FilterGroups : unsigned short;
 class RigidBodyComponent : public Component
 {
 public:
-	RigidBodyComponent(float mass, FilterGroups group, FilterGroups collidesWith, bool dynamic);
+	RigidBodyComponent(float mass, FilterGroups group, FilterGroups collidesWith, BodyType type);
 	virtual ~RigidBodyComponent();
 
 	void m_InitializeBody(rp::PhysicsWorld* world);
@@ -51,7 +58,7 @@ public:
 	virtual dx::XMFLOAT3 GetAngularVelocity()const;
 	void EnableGravity(const bool isEnabled) { body->enableGravity(isEnabled); };
 	
-	bool IsDynamic() const { return mass != 0.0f && dynamic; }
+	BodyType GetType() const { return this->type; }
 	FilterGroups GetGroup() const { return this->group; }
 	FilterGroups GetCollidesWith() const { return this->collisionMask; }
 
@@ -65,10 +72,13 @@ public:
 
 	void PhysicRelease();
 
+	void RemoveCollidersFromBody(rp::RigidBody* body);	// MAYBE HEAAAA? 
+
 private:
 	rp::Transform ConvertToBtTransform(const Transform& transform) const;
 	void AddCollidersToBody(Object* obj, rp::RigidBody* body);
 
+	std::vector<rp::Collider*> collidersList;
 	FilterGroups group;
 	FilterGroups collisionMask;
 
@@ -76,9 +86,11 @@ private:
 	rp::Transform previousTransform;
 
 	rp::RigidBody* body;
-	bool dynamic;
+	
 	float mass;
 	bool lockRotation;
+	BodyType type;
 
 	std::vector<std::function<void(CollisionInfo)>> callbacks;
+
 };
