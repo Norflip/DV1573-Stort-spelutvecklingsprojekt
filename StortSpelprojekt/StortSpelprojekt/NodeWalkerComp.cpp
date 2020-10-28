@@ -66,6 +66,7 @@ void NodeWalkerComp::Start()
 {
 	if (!canWalk)
 	{
+		canWalk = true;
 		base->SetisDone(false);
 		legs->SetisDone(false);
 		base->SetAndGetDoneDown() = false;
@@ -105,7 +106,7 @@ void NodeWalkerComp::Update(const float& deltaTime)
 
 	if (base->SetAndGetDoneUp())
 	{
-		canWalk = true;
+		//canWalk = true;
 		base->SetTrack(SkeletonStateMachine::WALK, false);
 		legs->SetTrack(SkeletonStateMachine::WALK, false);
 	}
@@ -172,14 +173,11 @@ void NodeWalkerComp::Update(const float& deltaTime)
 		const int skip = 10;
 		if (KEY_DOWN(Up) && this->nextChosen < (int)this->thePath.CountPoints())
 		{
-			//if (nodes[currentNode].nextMiddle != -1)
-			//{
-				//this->nextChosen = nodes[currentNode].nextMiddle;
-
+			
 			this->nextChosen = currentNode + skip; //skip is 10
-				//canWalk = true;
+			//canWalk = true;
 			Start();
-			//}
+	
 		}
 	
 	}

@@ -211,7 +211,6 @@ void GameScene::InitializeObjects()
 	baseComponent->SetTrack(SkeletonStateMachine::IDLE, false);
 	AddObject(houseBaseObject);
 
-	
 
 //Axe//////////////////////////////////////////////////////////////////
 	std::vector<Mesh> axeMesh = ZWEBLoader::LoadMeshes(ZWEBLoadType::NoAnimation, "Models/AXE.ZWEB", renderer->GetDevice());
@@ -245,7 +244,7 @@ void GameScene::InitializeObjects()
 	nodeWalker->InitializePath(world.GetPath());
 	world.MoveHouseAndPlayerToStart();
 
-	dx::XMVECTOR asdf = dx::XMVectorSet(23, 3, 40 ,1);
+	dx::XMVECTOR asdf = dx::XMVectorSet(23, 3, 40 ,1); //???
 	enemy->GetTransform().SetPosition(asdf);
 
 
