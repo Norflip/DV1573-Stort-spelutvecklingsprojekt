@@ -19,10 +19,11 @@ enum class GuiGroup : unsigned int
 	Lore = 1 << 1,
 	Options = 1 << 2,
 	HowToPlay = 1 << 3,
-	Intro = 1 << 4
+	Intro = 1 << 4,
+	Font = 1 << 5
 	
 };
-
+DEFINE_ENUM_FLAG_OPERATORS(GuiGroup)
 // Virtual base class to inherit from
 class GUIObject
 {
@@ -36,7 +37,6 @@ public:
 	bool GetActivated() { return this->active; };
 	void SetVisible(bool set = true) { this->visible = set; };
 	bool GetVisible() { return this->visible; };
-	void SetGroup(GuiGroup group) { this->group = group; };
 	bool HasGroup(GuiGroup flag) const;
 	void AddGroup(GuiGroup flag);
 	void RemoveGroup(GuiGroup flag);
@@ -49,7 +49,7 @@ private:
 	bool active;
 	bool visible = true;
 protected:
-	GuiGroup group;
+	GuiGroup group = GuiGroup::None;
 };
 
 class GUIManager : public RenderPass
@@ -68,6 +68,7 @@ public:
 
 private:
 	ID3D11RasterizerState* testState;
+	ID3D11SamplerState* samplerState;
 	bool active = false;
 	dx::SpriteBatch* spriteBatch;
 	Renderer* renderer;
