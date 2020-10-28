@@ -59,15 +59,18 @@ void ObjectSpawner::Spawn(const SaveState& state, PointQuadTree& tree, std::unor
 			dx::XMFLOAT3 chunkPos;
 			dx::XMStoreFloat3(&chunkPos, chunk->GetOwner()->GetTransform().GetWorldPosition());
 
+			dx::XMMATRIX invWorld = dx::XMMatrixInverse(nullptr, chunk->GetOwner()->GetTransform().GetWorldMatrix());
+
 			Object* object = pooler->GetItem(item.key);
 			dx::XMVECTOR position = dx::XMVectorSet(pos.x, y, pos.y, 0.0f);
+			dx::XMVECTOR pos = dx::XMVector3Transform(position, invWorld);
 
-			object->GetComponent<RigidBodyComponent>()->SetPosition(position);
+			object->GetComponent<RigidBodyComponent>()->SetPosition(pos);
 			// kör med chunk istället för root då dom ändå inte kan flyttas.
-			Transform::SetParentChild(root->GetTransform(), object->GetTransform());
+			//Transform::SetParentChild(root->GetTransform(), object->GetTransform());
 
 			// kräver inverse av parent world matrix
-			//Transform::SetParentChild(chunk->GetOwner()->GetTransform(), object->GetTransform());
+			Transform::SetParentChild(chunk->GetOwner()->GetTransform(), object->GetTransform());
 
 			items.push_back(object);
 			propIndex++;
