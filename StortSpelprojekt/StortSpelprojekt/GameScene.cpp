@@ -90,27 +90,32 @@ void GameScene::InitializeObjects()
 	SkeletonAni skeletonbaseMonsterDeath = ZWEBLoader::LoadSkeletonOnly("Models/baseMonsterDeath.ZWEB", skeletonMesh[0].GetBoneIDS(), defaultAnimation);
 
 	//Player & Camera
-	dx::XMFLOAT3 playerSpawn = { 10,10,10 };
+	dx::XMFLOAT3 playerSpawn = { 10,2,10 };
 	dx::XMFLOAT3 zero = { 0.f, 0.f, 0.f };
 	dx::XMVECTOR playerSpawnVec = dx::XMLoadFloat3(&playerSpawn);
 	Object* playerObject = new Object("player", ObjectFlag::ENABLED);
 	Object* cameraObject = new Object("camera", ObjectFlag::ENABLED);
-	//Transform::SetParentChild(playerObject->GetTransform(), cameraObject->GetTransform());
 	this->player = playerObject;
 	camera = cameraObject->AddComponent<CameraComponent>(60.0f, true);
 	camera->Resize(this->windowWidth, this->windowHeight);
 	cameraObject->GetTransform().SetPosition(playerSpawnVec);
 	playerObject->GetTransform().SetPosition(playerSpawnVec);
 
-	playerObject->AddComponent<CapsuleColliderComponent>(0.5f, 4.5f, zero);
+	//Mesh* meshP = resourceManager->GetResource<Mesh>("Test");
+	//Material* materialP = resourceManager->GetResource<Material>("TestMaterial");
+	//playerObject->AddComponent<MeshComponent>(*meshP, *materialP);
+	playerObject->AddComponent<CapsuleColliderComponent>(0.5f, 1.8f, zero);
+
 	physics.MutexLock();
 	RigidBodyComponent* rb = playerObject->AddComponent<RigidBodyComponent>(60.f, FilterGroups::PLAYER, FilterGroups::EVERYTHING, BodyType::DYNAMIC);
 	physics.RegisterRigidBody(rb);
 	physics.MutexUnlock();
+
 	playerObject->AddComponent<ControllerComp>(cameraObject); /////////////////
 	//Transform::SetParentChild(playerObject->GetTransform(),cameraObject->GetTransform());
 	playerObject->AddComponent<PlayerComp>(renderer, camera, Physics::Instance(), guiManager, 100, 2, 3, 25, 3);
-	playerStatsComp = playerObject->GetComponent<PlayerComp>();
+	//playerStatsComp = playerObject->GetComponent<PlayerComp>(); //
+
 	AddObject(cameraObject, playerObject);
 	AddObject(playerObject);
 
@@ -137,7 +142,7 @@ void GameScene::InitializeObjects()
 	enemy->GetTransform().SetPosition(dx::XMLoadFloat3(&enemyTranslation));
 	enemy->GetTransform().SetScale({ 0.125f, 0.125f, 0.125f });
 	enemy->AddComponent<EnemyStatsComp>(100, 0.5f, 5, 25, 3);
-	enemyStatsComp = enemy->GetComponent<EnemyStatsComp>();
+	//enemyStatsComp = enemy->GetComponent<EnemyStatsComp>();
 	enemy->AddComponent<EnemyAttackComp>(player->GetComponent<PlayerComp>());
 	EnemySMComp* stateMachine = enemy->AddComponent<EnemySMComp>(EnemyState::IDLE);
 	stateMachine->RegisterState(EnemyState::IDLE, enemy->AddComponent<EnemyIdleComp>());
@@ -187,11 +192,15 @@ void GameScene::InitializeObjects()
 	baseComponent->SetAnimationTrack(skeletonHouseBaseDown, SkeletonStateMachine::DOWN);
 
 	Transform::SetParentChild(baseComponent->GetOwner()->GetTransform(), legsComponent->GetOwner()->GetTransform());
-
+	//AddObject(housesLegsObject, houseBaseObject);
+	//AddObject( houseBaseObject,housesLegsObject);
 	baseComponent->GetOwner()->GetTransform().SetScale({ 0.5f, 0.5f, 0.5f });
+
 
 	NodeWalkerComp* nodeWalker = houseBaseObject->AddComponent<NodeWalkerComp>();
 	nodeWalker->InitAnimation();
+	
+	
 
 	legsComponent->SetTrack(SkeletonStateMachine::IDLE, false);
 	baseComponent->SetTrack(SkeletonStateMachine::IDLE, false);
@@ -225,7 +234,7 @@ void GameScene::InitializeObjects()
 	world.ConstructSegment(state, desc);
 	world.SetPlayer(player);
 	world.SetHouse(houseBaseObject);
-
+	nodeWalker->InitializePath(world.GetPath());
 	world.MoveHouseAndPlayerToStart();
 }
 
@@ -418,28 +427,28 @@ void GameScene::Update(const float& deltaTime)
 	Ray ray = camera->MouseToRay(p.x, p.y);
 	//std::cout << p.x << ", " << p.y << std::endl;
 
-	if (LMOUSE_PRESSED)
-	{
-		Physics& phy = Physics::Instance();
-		RayHit hit;
+	//if (LMOUSE_PRESSED)
+	//{
+	//	Physics& phy = Physics::Instance();
+	//	RayHit hit;
 
-		DShape::DrawLine(ray.origin, ray.GetPoint(1000.0f), { 1,1,0 });
+	//	DShape::DrawLine(ray.origin, ray.GetPoint(1000.0f), { 1,1,0 });
 
-		if (phy.RaytestSingle(ray, 1000.0f, hit, FilterGroups::EVERYTHING))
-		{
-			DShape::DrawLine(ray.origin, hit.position, { 1,1,0 });
-			DShape::DrawSphere(hit.position, 1.0f, { 0, 0, 1 });
+	//	if (phy.RaytestSingle(ray, 1000.0f, hit, FilterGroups::EVERYTHING))
+	//	{
+	//		DShape::DrawLine(ray.origin, hit.position, { 1,1,0 });
+	//		DShape::DrawSphere(hit.position, 1.0f, { 0, 0, 1 });
 
-			if (hit.object != nullptr)
-			{
-				std::cout << hit.object->GetName() << std::endl;
-			}
-		}	
-	}
-	else
-	{
-		DShape::DrawSphere(ray.GetPoint(10.0f), 0.2f, { 1, 0, 1 });
-	}
+	//		if (hit.object != nullptr)
+	//		{
+	//			std::cout << hit.object->GetName() << std::endl;
+	//		}
+	//	}	
+	//}
+	//else
+	//{
+	//	DShape::DrawSphere(ray.GetPoint(10.0f), 0.2f, { 1, 0, 1 });
+	//}
 	nextScene = NEXT_SCENE(player->GetComponent<PlayerComp>()->GetNextScene());
 
 	skyboxClass->GetThisObject()->GetTransform().SetPosition(camera->GetOwner()->GetTransform().GetPosition());
