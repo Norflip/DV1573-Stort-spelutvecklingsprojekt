@@ -220,7 +220,7 @@ void GameScene::InitializeObjects()
 	axeObject->AddComponent<MeshComponent>(axeMesh[0], axeMat[0]);
 	axeObject->GetTransform().SetPosition({ 0,0,0 });
 	axeObject->GetTransform().SetScale({ 1, 1, 1 });
-	axeObject->AddComponent<WeaponComponent>(cameraObject, input);
+	axeObject->AddComponent<WeaponComponent>(cameraObject);
 	AddObject(axeObject);
 
 	clock.Update();
