@@ -74,12 +74,11 @@ void GameScene::InitializeObjects()
 
 	
 	//Player & Camera
-	dx::XMFLOAT3 playerSpawn = { 10,10,10 };
+	dx::XMFLOAT3 playerSpawn = { 10,2,10 };
 	dx::XMFLOAT3 zero = { 0.f, 0.f, 0.f };
 	dx::XMVECTOR playerSpawnVec = dx::XMLoadFloat3(&playerSpawn);
 	Object* playerObject = new Object("player", ObjectFlag::ENABLED);
 	Object* cameraObject = new Object("camera", ObjectFlag::ENABLED);
-	//Transform::SetParentChild(playerObject->GetTransform(), cameraObject->GetTransform());
 	this->player = playerObject;
 	camera = cameraObject->AddComponent<CameraComponent>(60.0f, true);
 	camera->Resize(this->windowWidth, this->windowHeight);
@@ -95,7 +94,6 @@ void GameScene::InitializeObjects()
 	physics.RegisterRigidBody(rb);
 	physics.MutexUnlock();
 	playerObject->AddComponent<ControllerComp>(cameraObject);
-	//Transform::SetParentChild(playerObject->GetTransform(),cameraObject->GetTransform());
 	playerObject->AddComponent<PlayerComp>(renderer, camera, Physics::Instance(), guiManager, 50000, 2, 10, 25, 3);
 
 	AddObject(cameraObject, playerObject);
@@ -205,11 +203,15 @@ void GameScene::InitializeObjects()
 	baseComponent->SetAnimationTrack(skeletonHouseBaseDown, SkeletonStateMachine::DOWN);
 
 	Transform::SetParentChild(baseComponent->GetOwner()->GetTransform(), legsComponent->GetOwner()->GetTransform());
-
+	//AddObject(housesLegsObject, houseBaseObject);
+	//AddObject( houseBaseObject,housesLegsObject);
 	baseComponent->GetOwner()->GetTransform().SetScale({ 0.5f, 0.5f, 0.5f });
+
 
 	NodeWalkerComp* nodeWalker = houseBaseObject->AddComponent<NodeWalkerComp>();
 	nodeWalker->InitAnimation();
+	
+	
 
 
 	legsComponent->SetTrack(SkeletonStateMachine::IDLE, false);
@@ -296,7 +298,7 @@ void GameScene::InitializeObjects()
 	world.ConstructSegment(state, desc);
 	world.SetPlayer(player);
 	world.SetHouse(houseBaseObject);
-
+	nodeWalker->InitializePath(world.GetPath());
 	world.MoveHouseAndPlayerToStart();
 }
 

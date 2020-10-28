@@ -4,12 +4,12 @@ bool ControllerComp::IsGrounded() const
 {
 	dx::XMFLOAT3 origin;
 	dx::XMStoreFloat3(&origin, GetOwner()->GetTransform().GetPosition());
-	//origin.z += 2.f;
+	origin.z += 2.f;
 	Ray ray(origin, DOWN_VEC);
 	RayHit hit;
 
 	//TERRAIN or default depending on if u can jump from on top of objects
-	float distance = 2.7f;
+	float distance = 2.6f;
 	Physics& phy = Physics::Instance();
 	phy.RaytestSingle(ray, distance, hit, FilterGroups::TERRAIN);
 	
@@ -144,7 +144,7 @@ void ControllerComp::Update(const float& deltaTime)
 			xClamp = -CLAMP_X;
 			xPos = 0.f;
 		}
-		std::cout << "clamp, x: " << xClamp << std::endl;
+		//std::cout << "clamp, x: " << xClamp << std::endl;
 		//rotate view
 		Transform& transform = cameraObject->GetTransform();
 		dx::XMVECTOR right = transform.TransformDirection({ 1,0,0 });
