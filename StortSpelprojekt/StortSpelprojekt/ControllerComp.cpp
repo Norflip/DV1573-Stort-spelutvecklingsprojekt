@@ -240,7 +240,7 @@ void ControllerComp::Update(const float& deltaTime)
 		{
 			float jumpVelocity = 0;
 			bool isCrouching = false;
-			camComp->SetFOV(fov);
+			camComp->SetFOV(60.0f); // dick move, fix this later
 			if (IsGrounded() && KEY_DOWN(Space)) // FPcam //jump is  scuffed
 			{
 				jumpVelocity = JUMP_VELOCITY;

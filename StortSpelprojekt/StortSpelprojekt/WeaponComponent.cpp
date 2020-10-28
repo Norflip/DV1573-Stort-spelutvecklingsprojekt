@@ -20,7 +20,7 @@ void WeaponComponent::SetPosition(float time)
 
 	up = { 0.0f, 1.0f, 1.0f };
 	inverseViewMatrix = dx::XMMatrixInverse(nullptr, camComp->GetViewMatrix());
-	wepOffTrans = dx::XMMatrixTranslation(0.3f, -0.2f, 0.8f);
+	wepOffTrans = dx::XMMatrixTranslation(0.3f, -0.4f, 0.8f);
 	wepOffRot = dx::XMMatrixRotationAxis(up, dx::XMConvertToRadians(-40.0f));
 
 

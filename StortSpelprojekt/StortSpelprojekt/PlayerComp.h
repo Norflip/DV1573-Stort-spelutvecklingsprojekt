@@ -57,12 +57,14 @@ private:
 	NEXT_SCENE swapScene;
 	Renderer* renderer;
 	POINT p;
-	
+
+	EnemyStatsComp* enemyStatsComp;
 	float rayDistance;	
 
 	RayHit hit;
 	Physics& phy;
 	CameraComponent* cam;
+	//GameClock attackTimer;
 
 	bool foodEmpty;
 	bool gg;

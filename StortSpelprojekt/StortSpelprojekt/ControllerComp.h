@@ -12,10 +12,10 @@ constexpr float FOV_INC_RATE = 0.01f; //rate of fov incrementation in seconds (s
 
 constexpr float CROUCH_VELOCITY = 0.5f;
 constexpr float CROUCH_ACCELERATION = 1.f;
-constexpr float WALK_VELOCITY = 8.f;
+constexpr float WALK_VELOCITY = 25.f;
 constexpr float WALK_ACCELERATION = 1.5f;
-constexpr float RUN_VELOCITY = 17.f;
-constexpr float RUN_ACCELERATION = 3.5f;
+constexpr float RUN_VELOCITY = 50.f;
+constexpr float RUN_ACCELERATION = 5.5f;
 constexpr float VELOCITY_INC_RATE = 0.1f; //how often
 constexpr float VELOCITY_MULTIPLIER = 20.f;
 

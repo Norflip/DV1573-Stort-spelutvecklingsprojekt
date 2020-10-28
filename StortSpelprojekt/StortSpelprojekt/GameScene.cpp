@@ -112,7 +112,7 @@ void GameScene::InitializeObjects()
 
 	playerObject->AddComponent<ControllerComp>(cameraObject); /////////////////
 	//Transform::SetParentChild(playerObject->GetTransform(),cameraObject->GetTransform());
-	playerObject->AddComponent<PlayerComp>(renderer, camera, Physics::Instance(), guiManager, 100, 2, 3, 25, 3);
+	playerObject->AddComponent<PlayerComp>(renderer, camera, Physics::Instance(), guiManager, 100, 2, 3, 50, 3);
 	//playerStatsComp = playerObject->GetComponent<PlayerComp>(); //
 
 	AddObject(cameraObject, playerObject);
@@ -137,11 +137,11 @@ void GameScene::InitializeObjects()
 	baseMonsterComp->BlendAnimations();
 
 	//Enemy object //comments
-	dx::XMFLOAT3 enemyTranslation = dx::XMFLOAT3(23, 6, 46);
+	dx::XMFLOAT3 enemyTranslation = dx::XMFLOAT3(23, 7, 46);
 	enemy->GetTransform().SetPosition(dx::XMLoadFloat3(&enemyTranslation));
 	enemy->GetTransform().SetScale({ 0.125f, 0.125f, 0.125f });
-	enemy->AddComponent<EnemyStatsComp>(100, 0.5f, 5, 25, 3);
-	enemy->AddComponent<BoxColliderComponent>(dx::XMFLOAT3{ 0.5f, 0.5f, 0.5f }, dx::XMFLOAT3{ 0, 0, 0 });
+	enemy->AddComponent<EnemyStatsComp>(100, 0.5f, 5, 5, 3);
+	enemy->AddComponent<BoxColliderComponent>(dx::XMFLOAT3{ 1, 1, 1 }, dx::XMFLOAT3{ 0, 0, 0 });
 
 	//enemyStatsComp = enemy->GetComponent<EnemyStatsComp>();
 	enemy->AddComponent<EnemyAttackComp>(player->GetComponent<PlayerComp>());
@@ -153,7 +153,7 @@ void GameScene::InitializeObjects()
 	AddObject(enemy);
 
 	physics.MutexLock();
-	RigidBodyComponent* rbEnemy = enemy->AddComponent<RigidBodyComponent>(0, FilterGroups::ENEMIES, FilterGroups::PROPS, BodyType::STATIC);
+	RigidBodyComponent* rbEnemy = enemy->AddComponent<RigidBodyComponent>(0, FilterGroups::ENEMIES, FilterGroups::PLAYER, BodyType::STATIC);
 	//rbEnemy.
 	physics.RegisterRigidBody(rbEnemy);
 	physics.MutexUnlock();
@@ -215,19 +215,14 @@ void GameScene::InitializeObjects()
 
 //Axe//////////////////////////////////////////////////////////////////
 	std::vector<Mesh> axeMesh = ZWEBLoader::LoadMeshes(ZWEBLoadType::NoAnimation, "Models/AXE.ZWEB", renderer->GetDevice());
-	std::vector<Material> axeMat = ZWEBLoader::LoadMaterials("Models/AXE.ZWEB", skeletonShader, renderer->GetDevice());
+	std::vector<Material> axeMat = ZWEBLoader::LoadMaterials("Models/AXE.ZWEB", defaultShader, renderer->GetDevice());
 	Object* axeObject = new Object("Axe");
 
 	axeObject->AddComponent<MeshComponent>(axeMesh[0], axeMat[0]);
 	axeObject->GetTransform().SetPosition({ 0,0,0 });
 	axeObject->GetTransform().SetScale({ 1, 1, 1 });
 	axeObject->AddComponent<WeaponComponent>(cameraObject);
-
-	/*
-	RigidBodyComponent* axeBody;
-	axeBody = axeObject->AddComponent<RigidBodyComponent>(0, FilterGroups::DEFAULT, FilterGroups::EVERYTHING, false);
-	physics.RegisterRigidBody(axeBody);
-	*/
+		
 	AddObject(axeObject);
 
 	clock.Update();
@@ -249,14 +244,10 @@ void GameScene::InitializeObjects()
 
 
 
-
-
-
 	/* PICKUP STUFF DONT DELETE THESEEE */
 	/* PICKUP STUFF DONT DELETE THESEEE */
 	/* PICKUP STUFF DONT DELETE THESEEE */
 	/* PICKUP STUFF DONT DELETE THESEEE */
-
 	
 	Shader* defShader = resourceManager->GetShaderResource("defaultShader");
 
@@ -271,7 +262,7 @@ void GameScene::InitializeObjects()
 	healthkitObject->AddComponent<PickupComponent>(Type::Health, 20.0f);
 
 	RigidBodyComponent* healthBody;
-	healthBody = healthkitObject->AddComponent<RigidBodyComponent>(0, FilterGroups::PICKUPS, FilterGroups::PLAYER, BodyType::KINEMATIC);
+	healthBody = healthkitObject->AddComponent<RigidBodyComponent>(0, FilterGroups::PICKUPS, FilterGroups::PLAYER, BodyType::DYNAMIC);
 	physics.RegisterRigidBody(healthBody);
 	AddObject(healthkitObject);
 
@@ -287,7 +278,7 @@ void GameScene::InitializeObjects()
 	fuelCanObject->AddComponent<PickupComponent>(Type::Fuel, 20.0f);
 
 	RigidBodyComponent* fuelBody;
-	fuelBody = fuelCanObject->AddComponent<RigidBodyComponent>(0, FilterGroups::PICKUPS, FilterGroups::PLAYER, BodyType::KINEMATIC);
+	fuelBody = fuelCanObject->AddComponent<RigidBodyComponent>(0, FilterGroups::PICKUPS, FilterGroups::PLAYER, BodyType::DYNAMIC);
 	physics.RegisterRigidBody(fuelBody);
 	AddObject(fuelCanObject);
 
@@ -303,7 +294,7 @@ void GameScene::InitializeObjects()
 	beansObject->AddComponent<PickupComponent>(Type::Food, 20.0f);
 
 	RigidBodyComponent* beansBody;
-	beansBody = beansObject->AddComponent<RigidBodyComponent>(0, FilterGroups::PICKUPS, FilterGroups::PLAYER, BodyType::KINEMATIC);
+	beansBody = beansObject->AddComponent<RigidBodyComponent>(0, FilterGroups::PICKUPS, FilterGroups::PLAYER, BodyType::DYNAMIC);
 	physics.RegisterRigidBody(beansBody);
 	AddObject(beansObject);
 }
@@ -347,7 +338,7 @@ void GameScene::InitializeGUI()
 	GUIFont* enemyDisplay = new GUIFont(*renderer, "enemyHealth", 50, 150);*/
 
 	//CROSSHAIR
-	GUISprite* dot = new GUISprite(*renderer, "Textures/Dot.png", (windowWidth / 2) - 6, (windowHeight / 2) - 6, 0, DrawDirection::BottomLeft, ClickFunction::NotClickable);
+	GUISprite* dot = new GUISprite(*renderer, "Textures/TestFix2.png", (windowWidth / 2) - 6, (windowHeight / 2) - 6, 0, DrawDirection::BottomLeft, ClickFunction::NotClickable);
 	//GUISprite* crosshair = new GUISprite(*renderer, "Textures/Crosshair.png", (windowWidth / 2) - 25, (windowHeight / 2) - 25, 0, DrawDirection::BottomLeft, ClickFunction::NotClickable);
 
 	// INSERTIONS
@@ -523,8 +514,8 @@ void GameScene::Update(const float& deltaTime)
 
 	skyboxClass->GetThisObject()->GetTransform().SetPosition(camera->GetOwner()->GetTransform().GetPosition());
 
-	if (enemy->GetComponent<EnemyStatsComp>()->GetHealth() <= 0)
-		RemoveEnemy();
+	//if (enemy->GetComponent<EnemyStatsComp>()->GetHealth() <= 0)
+	//	RemoveEnemy();
 
 	/*POINT pa = input.GetMousePos();
 	Ray ray = camera->MouseToRay(p.x, p.y);*/
