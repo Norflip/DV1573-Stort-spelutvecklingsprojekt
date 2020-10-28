@@ -2,10 +2,10 @@
 
 NodeWalkerComp::NodeWalkerComp()
 {
-	this->speed = 16.2f;
-	this->currentNode = 0;
+	this->speed = 1.0f;// 16.2f;
+	this->currentNode = CHUNK_SIZE;
 	this->nextChosen = -1;
-	this->nodeRadius = 0.9f;
+	this->nodeRadius = 0.3f;
 	this->canWalk = false;
 	this->length = 0.f;
 
@@ -28,13 +28,16 @@ NodeWalkerComp::~NodeWalkerComp()
 
 void NodeWalkerComp::InitializePath(Path thePath)
 {
-	
+
 	this->thePath = thePath;
 	//std::cout <<"Nr of: "<< thePath.CountPoints() << std::endl;
 	//dx::XMFLOAT3 pos3 = { thePath.GetPoint(this->currentNode).x + offset,HEIGHT, thePath.GetPoint(this->currentNode).y + offset };
 	dx::XMFLOAT3 pos3 = { thePath.GetPoint(this->currentNode).x + OFFSET,HEIGHT, thePath.GetPoint(this->currentNode).y + OFFSET };
 	dx::XMVECTOR startPos = dx::XMLoadFloat3(&pos3);
 	this->GetOwner()->GetTransform().SetPosition(startPos);
+
+	if (GetOwner()->HasComponent<RigidBodyComponent>())
+		GetOwner()->GetComponent<RigidBodyComponent>()->SetPosition(startPos);
 }
 
 void NodeWalkerComp::InitAnimation()
@@ -53,19 +56,22 @@ void NodeWalkerComp::InitAnimation()
 
 void NodeWalkerComp::Reset()
 {
-	this->currentNode = 0;
+	this->currentNode = CHUNK_SIZE;
 	this->nextChosen = -1;
 	this->canWalk = false;
 
 	dx::XMFLOAT3 pos3 = { thePath.GetPoint(this->currentNode).x + OFFSET,HEIGHT, thePath.GetPoint(this->currentNode).y + OFFSET };
 	dx::XMVECTOR startPos = dx::XMLoadFloat3(&pos3);
 	this->GetOwner()->GetTransform().SetPosition(startPos);
+	if (GetOwner()->HasComponent<RigidBodyComponent>())
+		GetOwner()->GetComponent<RigidBodyComponent>()->SetPosition(startPos);
 }
 
 void NodeWalkerComp::Start()
 {
 	if (!canWalk)
 	{
+		canWalk = true;
 		base->SetisDone(false);
 		legs->SetisDone(false);
 		base->SetAndGetDoneDown() = false;
@@ -95,55 +101,50 @@ void NodeWalkerComp::Stop()
 
 void NodeWalkerComp::Update(const float& deltaTime)
 {
-	bool hasBase = base != nullptr;
-
-	if (!hasBase)
-	{
-		std::cout << GetOwner()->GetName() << " > IsBaseObjectNull:  " << (hasBase ? "false" : "true") << std::endl;
-		return;
-	}
 
 	if (base->SetAndGetDoneUp())
 	{
-		canWalk = true;
+		//canWalk = true;
 		base->SetTrack(SkeletonStateMachine::WALK, false);
 		legs->SetTrack(SkeletonStateMachine::WALK, false);
 	}
-	
-	if(KEY_DOWN(I)) //used to display info and test paths
-	{
-		std::string text = "Options: ";
-		//if (!canWalk)
-		//{
-		//	if (nodes[currentNode].nextLeft != -1)
-		//		text += "[Left]";
-		//	if (nodes[currentNode].nextMiddle != -1)
-		//		text += "[Middle]";
-		//	if (nodes[currentNode].nextRight != -1)
-		//		text += "[Right]";
-		//}
-		//else 
-		//	text += "[Is walking rn..]";
 
-		//std::cout << "Current Node: " << nodes[currentNode].name << " (" << std::to_string(currentNode) << ")" << std::endl
-		//	<< "Next Node: " << std::to_string(nextChosen) << std::endl
-		//	<< "Can Walk: " << canWalk << std::endl
-		//	<< text << std::endl
-		//	<< "Length: " << std::to_string(this->length) << std::endl;
+	//if (KEY_DOWN(I)) //used to display info and test paths
+	//{
+	//	std::string text = "Options: ";
+	//	//if (!canWalk)
+	//	//{
+	//	//	if (nodes[currentNode].nextLeft != -1)
+	//	//		text += "[Left]";
+	//	//	if (nodes[currentNode].nextMiddle != -1)
+	//	//		text += "[Middle]";
+	//	//	if (nodes[currentNode].nextRight != -1)
+	//	//		text += "[Right]";
+	//	//}
+	//	//else 
+	//	//	text += "[Is walking rn..]";
 
-		std::cout << "Current Node: (" << std::to_string(this->currentNode) << ")" << std::endl
-			<< "Next Node: " << std::to_string(nextChosen) << std::endl
-			<< "Can Walk: " << canWalk << std::endl
-			<< text << std::endl
-			<< "Length: " << std::to_string(this->length) << std::endl;
+	//	//std::cout << "Current Node: " << nodes[currentNode].name << " (" << std::to_string(currentNode) << ")" << std::endl
+	//	//	<< "Next Node: " << std::to_string(nextChosen) << std::endl
+	//	//	<< "Can Walk: " << canWalk << std::endl
+	//	//	<< text << std::endl
+	//	//	<< "Length: " << std::to_string(this->length) << std::endl;
 
-	}
+	//	std::cout << "Current Node: (" << std::to_string(this->currentNode) << ")" << std::endl
+	//		<< "Next Node: " << std::to_string(nextChosen) << std::endl
+	//		<< "Can Walk: " << canWalk << std::endl
+	//		<< text << std::endl
+	//		<< "Length: " << std::to_string(this->length) << std::endl;
+
+	//}
+
+
 	if (KEY_DOWN(R))
 		this->Reset();
 
-	if (KEY_PRESSED(Down))
-		//canWalk = false;
-		Stop();
+	//if (KEY_PRESSED(Down))
+	//	//canWalk = false;
+	//	Stop();
 
 
 	if (canWalk)
@@ -157,6 +158,7 @@ void NodeWalkerComp::Update(const float& deltaTime)
 		{
 			//canWalk = false;
 			Stop();
+			//Start();
 			this->currentNode = this->nextChosen;
 		}
 		else
@@ -164,23 +166,26 @@ void NodeWalkerComp::Update(const float& deltaTime)
 			vdir = dx::XMVector3Normalize(vdir);
 			vdir = dx::XMVectorScale(vdir, speed * deltaTime);
 			dx::XMStoreFloat3(&dir, vdir);
+
 			GetOwner()->GetTransform().Translate(dir.x, dir.y, dir.z);
+
+			if (GetOwner()->HasComponent<RigidBodyComponent>())
+			{
+				GetOwner()->GetComponent<RigidBodyComponent>()->SetPosition(GetOwner()->GetTransform().GetWorldPosition());
+			}
 		}
 	}
 	else
 	{
 		const int skip = 10;
-		if (KEY_DOWN(Up) && this->nextChosen < (int)this->thePath.CountPoints())
+		if (/*KEY_DOWN(Up) &&  */ this->nextChosen < (int)this->thePath.CountPoints())
 		{
-			//if (nodes[currentNode].nextMiddle != -1)
-			//{
-				//this->nextChosen = nodes[currentNode].nextMiddle;
 
 			this->nextChosen = currentNode + skip; //skip is 10
-				//canWalk = true;
+			//canWalk = true;
 			Start();
-			//}
+
 		}
-	
+
 	}
 }

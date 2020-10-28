@@ -84,24 +84,35 @@ void ControllerComp::Initialize()
 
 void ControllerComp::Update(const float& deltaTime)
 {
+	//
+	//9 = reset 
+	//0 = reset position rotation and xClamp
+
 	Physics& phy = Physics::Instance();
 	DirectX::XMFLOAT3 dir = { 0.f,0.f,0.f };
 	this->fovTimer += deltaTime;
 	this->velocityTimer += deltaTime; 
 	this->crouchTimer += deltaTime;
 	dx::XMVECTOR groundRotation;
-
+	phy.MutexLock();
 	if (KEY_DOWN(D0))
 	{
 		this->xClamp = 0.f;
-		dx::XMVECTOR reset = dx::XMLoadFloat4(&RESET_ROT);
-		this->cameraObject->GetTransform().SetRotation(reset);
+		dx::XMVECTOR resetRot = dx::XMLoadFloat4(&RESET_ROT);
+		this->cameraObject->GetTransform().SetRotation(resetRot);
 		this->groundQuaterion = RESET_ROT;
 		this->cameraOffset = { 0.f,0.f,0.f };
 		dx::XMVECTOR resetPos = dx::XMLoadFloat3(&RESET_POS);
 		GetOwner()->GetTransform().SetPosition(resetPos);
 		rbComp->SetPosition(resetPos);
 		rbComp->SetLinearVelocity({ 0.f, 0.f, 0.f });
+	}
+	if (KEY_DOWN(D9))
+	{
+		this->xClamp = 0.f;
+		dx::XMVECTOR resetRot = dx::XMLoadFloat4(&RESET_ROT);
+		this->cameraObject->GetTransform().SetRotation(resetRot);
+		this->groundQuaterion = RESET_ROT;
 	}
 	if (KEY_DOWN(O))
 	{
@@ -146,8 +157,7 @@ void ControllerComp::Update(const float& deltaTime)
 		}
 		//std::cout << "clamp, x: " << xClamp << std::endl;
 		//rotate view
-		Transform& transform = cameraObject->GetTransform();
-		dx::XMVECTOR right = transform.TransformDirection({ 1,0,0 });
+		dx::XMVECTOR right = cameraObject->GetTransform().TransformDirection({ 1,0,0 });
 		dx::XMVECTOR eulerRotation = dx::XMQuaternionMultiply(dx::XMQuaternionRotationAxis(right, xPos), dx::XMQuaternionRotationAxis({ 0,1,0 }, yPos));
 
 		//rotate walking direction to allign to ground
@@ -155,10 +165,8 @@ void ControllerComp::Update(const float& deltaTime)
 		groundRotation = dx::XMQuaternionMultiply(dx::XMLoadFloat4(&this->groundQuaterion), groundRotation);
 		dx::XMStoreFloat4(&groundQuaterion, groundRotation); 
 
-		transform.SetRotation(dx::XMQuaternionMultiply(transform.GetRotation(), eulerRotation)); //rotate view
+		cameraObject->GetTransform().SetRotation(dx::XMQuaternionMultiply(cameraObject->GetTransform().GetRotation(), eulerRotation)); //rotate view
 		Input::Instance().ResetRelative();
-
-
 		
 		if (KEY_PRESSED(W) || KEY_PRESSED(S) || KEY_PRESSED(A) || KEY_PRESSED(D))
 		{
@@ -170,11 +178,14 @@ void ControllerComp::Update(const float& deltaTime)
 					this->velocity += RUN_ACCELERATION;
 					this->velocityTimer = 0.f;
 				}
-				if (this->fov < RUN_FOV && this->fovTimer >= FOV_INC_RATE)
-				{
-					this->fov += FOV_INC;
-					this->fovTimer = 0.f;
-				}
+
+
+
+				//if (this->fov < RUN_FOV && this->fovTimer >= FOV_INC_RATE)
+				//{
+				//	this->fov += FOV_INC;
+				//	this->fovTimer = 0.f;
+				//}
 			}
 			else
 			{
@@ -183,13 +194,12 @@ void ControllerComp::Update(const float& deltaTime)
 					this->velocity -= RUN_ACCELERATION;
 					this->velocityTimer = 0.f;
 				}
-				if (this->fov > WALK_FOV && this->fovTimer >= FOV_INC_RATE)
-				{
-					this->fov -= FOV_INC;
-					this->fovTimer = 0.f;
-				}
+				//if (this->fov > WALK_FOV && this->fovTimer >= FOV_INC_RATE)
+				//{
+				//	this->fov -= FOV_INC;
+				//	this->fovTimer = 0.f;
+				//}
 			}
-
 
 			if (KEY_PRESSED(W))
 				dir.z += 1.f;
@@ -208,11 +218,12 @@ void ControllerComp::Update(const float& deltaTime)
 		}
 		else
 		{
-			if (this->velocity > 0.f && velocityTimer >= VELOCITY_INC_RATE)
+			this->velocity = 0;
+			/*if (this->velocity > 0.f && velocityTimer >= VELOCITY_INC_RATE)
 			{
 				this->velocity -= WALK_ACCELERATION;
 				this->velocityTimer = 0.f;
-			}
+			}*/
 		}
 		
 		if (freeCam) //flying camera
@@ -225,7 +236,7 @@ void ControllerComp::Update(const float& deltaTime)
 			dx::XMVECTOR direction = dx::XMLoadFloat3(&dir);
 			direction = dx::XMVector3Normalize(direction);
 
-			phy.MutexLock();
+			//phy.MutexLock();
 			direction = cameraObject->GetTransform().TransformDirection(direction);
 			direction = dx::XMVectorScale(direction, RUN_VELOCITY * deltaTime);
 			dx::XMStoreFloat3(&dir, direction);
@@ -234,13 +245,14 @@ void ControllerComp::Update(const float& deltaTime)
 			rbComp->SetLinearVelocity({ dir.x * VELOCITY_MULTIPLIER, dir.y * VELOCITY_MULTIPLIER, dir.z * VELOCITY_MULTIPLIER });
 			dx::XMVECTOR capsule = dx::XMLoadFloat4(&RESET_ROT);
 			rbComp->SetRotation(capsule);
-			phy.MutexUnlock();
+			//phy.MutexUnlock();
 		}
 		else //First Person specific actions
 		{
 			float jumpVelocity = 0;
 			bool isCrouching = false;
 			camComp->SetFOV(60.0f); // dick move, fix this later
+			
 			if (IsGrounded() && KEY_DOWN(Space)) // FPcam //jump is  scuffed
 			{
 				jumpVelocity = JUMP_VELOCITY;
@@ -268,7 +280,7 @@ void ControllerComp::Update(const float& deltaTime)
 			}
 			else
 			{
-				if (this->velocity < WALK_VELOCITY && velocityTimer >= VELOCITY_INC_RATE)
+				if (this->velocity + CROUCH_ACCELERATION < WALK_VELOCITY && velocityTimer >= VELOCITY_INC_RATE)
 				{
 					this->velocity += CROUCH_ACCELERATION;
 					this->velocityTimer = 0.f;
@@ -280,10 +292,23 @@ void ControllerComp::Update(const float& deltaTime)
 				}
 			}
 
+			std::cout << "vel: " << this->velocity << std::endl;
+			//float diffVel = RUN_VELOCITY - WALK_VELOCITY; //17-8 =7
+			float diffFOV = RUN_FOV - WALK_FOV; //103-90 //13
+
+			float deltaVel = RUN_VELOCITY - this->velocity;
+			//float deltaFOV = RUN_FOV - this->fov;
+
+			float percentVel = deltaVel / RUN_VELOCITY;
+			//float percentDeltaFov = deltaFOV / RUN_FOV;
+
+			this->fov = WALK_FOV + (percentVel * (diffFOV));
+			camComp->SetFOV(fov);
+
 			dx::XMVECTOR direction = dx::XMLoadFloat3(&dir);
 			direction = dx::XMVector3Normalize(direction);
 
-			phy.MutexLock();
+			//phy.MutexLock();
 			direction = cameraObject->GetTransform().TransformDirectionCustomRotation(direction, groundRotation);
 			direction = dx::XMVectorScale(direction, this->velocity * deltaTime);
 			dx::XMStoreFloat3(&dir, direction);
@@ -294,28 +319,27 @@ void ControllerComp::Update(const float& deltaTime)
 			rbComp->SetLinearVelocity({ dir.x * VELOCITY_MULTIPLIER, vel.y + jumpVelocity, dir.z * VELOCITY_MULTIPLIER });
 			dx::XMVECTOR capsule = dx::XMLoadFloat4(&RESET_ROT);
 			//capsuleComp->SetRotation(capsule);
-			
-
 			rbComp->SetRotation(capsule);
 
 			//std::cout << "Cap, x: " << capsuleComp->GetTransform().getOrientation().x << ", y: " << capsuleComp->GetTransform().getOrientation().y << ", z: " << capsuleComp->GetTransform().getOrientation().z << ", w:" << capsuleComp->GetTransform().getOrientation().w << std::endl;
 			//dx::XMFLOAT4 rot;
 			//dx::XMStoreFloat4(&rot, rbComp->GetRotation());
 			//std::cout << "rb, x: " << rot.x << ", y:" << rot.y << ", z:" << rot.z << ", w:" << rot.w << std::endl;
-			phy.MutexUnlock();
+			//phy.MutexUnlock();
 		}
+		//phy.MutexUnlock();
 	}
 	else
 	{
-		phy.MutexLock();
+		//phy.MutexLock();
 		//	Input::Instance().FreeMouse();
 
 		rbComp->SetLinearVelocity({ 0.f, 0.f, 0.f });
 		dx::XMVECTOR capsule = dx::XMLoadFloat4(&RESET_ROT);
 		rbComp->SetRotation(capsule);
-		phy.MutexUnlock();
+		//phy.MutexUnlock();
 	}
-
+	phy.MutexUnlock();
 #if NDEBUG 
 
 	// fixes a bug in release where the compiler removes the variables

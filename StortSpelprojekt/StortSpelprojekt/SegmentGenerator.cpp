@@ -327,6 +327,7 @@ void SegmentGenerator::InitializeTrees(ResourceManager* resources)
 
 void SegmentGenerator::AddTreesToChunk(Chunk* chunk, std::vector<ChunkPointInformation>& chunkInformation)
 {
+	Physics& physics = Physics::Instance();
 	PossionDiscSampler sampler;
 	Points points = sampler.GeneratePoints(5.0f, { CHUNK_SIZE, CHUNK_SIZE }, 5);
 
@@ -345,6 +346,7 @@ void SegmentGenerator::AddTreesToChunk(Chunk* chunk, std::vector<ChunkPointInfor
 		size_t nrOfInstancedStyTrees = validPoints.size();
 		if (nrOfInstancedStyTrees > 0)
 		{
+			
 			std::vector<Mesh::InstanceData> treesInstanced(nrOfInstancedStyTrees);
 			dx::XMFLOAT2 posXZ = Chunk::IndexToWorldXZ(chunk->GetIndex());
 
@@ -355,7 +357,7 @@ void SegmentGenerator::AddTreesToChunk(Chunk* chunk, std::vector<ChunkPointInfor
 
 				dx::XMFLOAT3 position(posXZ.x + validPoints[i].x, y, posXZ.y + validPoints[i].y);
 				treesInstanced[i].instancePosition = position;
-
+				
 				dx::XMMATRIX translation = dx::XMMatrixScaling(2.0f, 2.0f, 2.0f) * dx::XMMatrixTranslation(position.x, position.y, position.z);
 				dx::XMStoreFloat4x4(&treesInstanced[i].instanceWorld, translation);
 			}
@@ -368,6 +370,17 @@ void SegmentGenerator::AddTreesToChunk(Chunk* chunk, std::vector<ChunkPointInfor
 
 			Object* tree = new Object("tree");
 			tree->AddComponent<InstancedMeshComponent>(stylizedTreeModel, stylizedTreeMaterial);
+			BoundingBoxes bbInfo(stylizedTreeModel[0]);
+			bbInfo.CalcAABB();
+			dx::XMFLOAT3 extends(bbInfo.GetAABB().halfX, bbInfo.GetAABB().halfY, bbInfo.GetAABB().halfZ);
+			for (int ins = 0; ins < (int)nrOfInstancedStyTrees; ins++)
+			{
+				BoxColliderComponent* collider = tree->AddComponent<BoxColliderComponent>(extends, stylizedTreeModel[0].instanceData[ins].instancePosition);
+			}
+			
+			RigidBodyComponent* rbody =tree->AddComponent<RigidBodyComponent>(0, FilterGroups::PROPS, FilterGroups::EVERYTHING, BodyType::STATIC);
+			
+			physics.RegisterRigidBody(rbody);
 
 			Transform::SetParentChild(chunk->GetOwner()->GetTransform(), tree->GetTransform());
 		}
