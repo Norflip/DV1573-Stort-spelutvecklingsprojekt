@@ -211,6 +211,57 @@ void GameScene::InitializeObjects()
 
 	Shader* defShader = resourceManager->GetShaderResource("defaultShader");
 
+	/* Health pickup stuff temporary */
+	std::vector<Mesh> healthkit = ZWEBLoader::LoadMeshes(ZWEBLoadType::NoAnimation, "Models/Health_Kit.ZWEB", renderer->GetDevice());
+	std::vector<Material> healthkitMaterial = ZWEBLoader::LoadMaterials("Models/Health_Kit.ZWEB", defShader, renderer->GetDevice());
+
+	Object* healthkitObject = new Object("healthObject");
+	healthkitObject->AddComponent<MeshComponent>(healthkit[0], healthkitMaterial[0]);
+	healthkitObject->GetTransform().SetPosition({ 10,1,10 });
+	healthkitObject->AddComponent<BoxColliderComponent>(dx::XMFLOAT3{ 0.5f, 0.5f, 0.5f }, dx::XMFLOAT3{ 0, 0, 0 });
+	healthkitObject->AddComponent<PickupComponent>(Type::Health, 20.0f);
+
+	RigidBodyComponent* healthBody;
+	healthBody = healthkitObject->AddComponent<RigidBodyComponent>(0, FilterGroups::PICKUPS, FilterGroups::PLAYER, false);
+
+	phy.RegisterRigidBody(healthBody);
+	AddObject(healthkitObject);
+
+
+	/* Fuel pickup stuff temporary */
+	std::vector<Mesh> fuelCan = ZWEBLoader::LoadMeshes(ZWEBLoadType::NoAnimation, "Models/Fuel_Can_Red.ZWEB", renderer->GetDevice());
+	std::vector<Material> fuelCanMaterail = ZWEBLoader::LoadMaterials("Models/Fuel_Can_Red.ZWEB", defShader, renderer->GetDevice());
+
+	Object* fuelCanObject = new Object("fuelObject");
+	fuelCanObject->AddComponent<MeshComponent>(fuelCan[0], fuelCanMaterail[0]);
+	fuelCanObject->GetTransform().SetPosition({ 10,1,12 });
+	fuelCanObject->AddComponent<BoxColliderComponent>(dx::XMFLOAT3{ 0.5f, 0.5f, 0.5f }, dx::XMFLOAT3{ 0, 0, 0 });
+	fuelCanObject->AddComponent<PickupComponent>(Type::Fuel, 20.0f);
+
+	RigidBodyComponent* fuelBody;
+	fuelBody = fuelCanObject->AddComponent<RigidBodyComponent>(0, FilterGroups::PICKUPS, FilterGroups::PLAYER, false);
+
+	phy.RegisterRigidBody(fuelBody);
+	AddObject(fuelCanObject);
+
+
+	/* Beans pickup stuff temporary */
+	std::vector<Mesh> beans = ZWEBLoader::LoadMeshes(ZWEBLoadType::NoAnimation, "Models/Soup_Can.ZWEB", renderer->GetDevice());
+	std::vector<Material> beansMaterial = ZWEBLoader::LoadMaterials("Models/Soup_Can.ZWEB", defShader, renderer->GetDevice());
+
+	Object* beansObject = new Object("bakedBeans");
+	beansObject->AddComponent<MeshComponent>(beans[0], beansMaterial[0]);
+	beansObject->GetTransform().SetPosition({ 10, 1, 13 });
+	beansObject->AddComponent<BoxColliderComponent>(dx::XMFLOAT3{ 0.5f, 0.5f, 0.5f }, dx::XMFLOAT3{ 0, 0, 0 });
+	beansObject->AddComponent<PickupComponent>(Type::Food, 20.0f);
+
+	RigidBodyComponent* beansBody;
+	beansBody = beansObject->AddComponent<RigidBodyComponent>(0, FilterGroups::PICKUPS, FilterGroups::PLAYER, false);
+
+	phy.RegisterRigidBody(beansBody);
+	AddObject(beansObject);
+
+
 //Axe//////////////////////////////////////////////////////////////////
 	std::vector<Mesh> axeMesh = ZWEBLoader::LoadMeshes(ZWEBLoadType::NoAnimation, "Models/AXE.ZWEB", renderer->GetDevice());
 	std::vector<Material> axeMat = ZWEBLoader::LoadMaterials("Models/AXE.ZWEB", skeletonShader, renderer->GetDevice());
