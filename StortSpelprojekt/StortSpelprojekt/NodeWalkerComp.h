@@ -58,5 +58,7 @@ public:
 	//void InsertNode(const Node &theNode);
 	//void InsertNodes(std::vector<Node> someNodes);
 
+	void SetPosition(dx::XMVECTOR pos);
+
 };
 

@@ -15,7 +15,7 @@ void World::Initialize(Object* root, ResourceManager* resources, ObjectPooler* p
 	ObjectSpawner* spawner = new ObjectSpawner();
 	spawner->Initialize(root, pooler);
 	RegisterToPool(pooler, spawner, std::map<std::string, int>());
-	
+
 	generator.Initialize(root, resources, spawner, renderer->GetDevice(), renderer->GetContext());
 	playerIndex = dx::XMINT2(-5000, -5000);
 }
@@ -23,7 +23,7 @@ void World::Initialize(Object* root, ResourceManager* resources, ObjectPooler* p
 void World::ConstructSegment(SaveState state, SegmentDescription description)
 {
 	//@TODO MOVE PLAYER AND HOUSE
-	
+
 
 	Physics& physics = Physics::Instance();
 	physics.MutexLock();
@@ -92,12 +92,15 @@ void World::MoveHouseAndPlayerToStart()
 	{
 		std::vector<dx::XMINT2> indexes = generator.GetPath().GetIndexes();
 		dx::XMINT2 spawnIndex = indexes[1];
-		
+
 		dx::XMVECTOR position = dx::XMVectorAdd(Chunk::IndexToWorld(spawnIndex, 0.0f), dx::XMVectorSet(CHUNK_SIZE / 2.0f, 0, CHUNK_SIZE / 2.0f, 0));
 		house->GetTransform().SetPosition(position);
 
+		if (house->HasComponent<RigidBodyComponent>())
+			house->GetComponent<RigidBodyComponent>()->SetPosition(position);
+
 		position = dx::XMVectorAdd(position, dx::XMVectorSet(5, 12, 0, 0));
-	
+
 		player->GetTransform().SetPosition(position);
 		player->GetComponent<RigidBodyComponent>()->SetPosition(position);
 	}
@@ -128,55 +131,55 @@ void World::RegisterToPool(ObjectPooler* pooler, ObjectSpawner* spawner, const s
 {
 
 	pooler->Register("Health_kit", 0, [](ResourceManager* resources)
-	{
-		Object* object = resources->AssembleObject("HealthKit", "HealthKitMaterial");
+		{
+			Object* object = resources->AssembleObject("HealthKit", "HealthKitMaterial");
 
 
-		object->AddComponent<BoxColliderComponent>(dx::XMFLOAT3(0.5f, 0.5f, 0.5f), dx::XMFLOAT3(0, 0, 0));
-		object->AddComponent<PickupComponent>(Type::Health, 20.0f);
+			object->AddComponent<BoxColliderComponent>(dx::XMFLOAT3(0.5f, 0.5f, 0.5f), dx::XMFLOAT3(0, 0, 0));
+			object->AddComponent<PickupComponent>(Type::Health, 20.0f);
 
-		RigidBodyComponent* rd = object->AddComponent<RigidBodyComponent>(10.0f, FilterGroups::PICKUPS, FilterGroups::EVERYTHING, BodyType::KINEMATIC);
-		Physics::Instance().RegisterRigidBody(rd);
+			RigidBodyComponent* rd = object->AddComponent<RigidBodyComponent>(10.0f, FilterGroups::PICKUPS, FilterGroups::EVERYTHING, BodyType::KINEMATIC);
+			Physics::Instance().RegisterRigidBody(rd);
 
-		return object;
-	});
+			return object;
+		});
 
 	pooler->Register("Fuel_can", 0, [](ResourceManager* resources)
-	{
-		Object* object = resources->AssembleObject("FuelCan", "FuelCanMaterial");
+		{
+			Object* object = resources->AssembleObject("FuelCan", "FuelCanMaterial");
 
-		object->AddComponent<BoxColliderComponent>(dx::XMFLOAT3(0.5f, 0.5f, 0.5f), dx::XMFLOAT3(0, 0, 0));
-		object->AddComponent<PickupComponent>(Type::Fuel, 20.0f);
+			object->AddComponent<BoxColliderComponent>(dx::XMFLOAT3(0.5f, 0.5f, 0.5f), dx::XMFLOAT3(0, 0, 0));
+			object->AddComponent<PickupComponent>(Type::Fuel, 20.0f);
 
-		RigidBodyComponent* rd = object->AddComponent<RigidBodyComponent>(10.0f, FilterGroups::PICKUPS, FilterGroups::EVERYTHING, BodyType::KINEMATIC);
+			RigidBodyComponent* rd = object->AddComponent<RigidBodyComponent>(10.0f, FilterGroups::PICKUPS, FilterGroups::EVERYTHING, BodyType::KINEMATIC);
 
-		Physics::Instance().RegisterRigidBody(rd);
-		return object;
-	});
+			Physics::Instance().RegisterRigidBody(rd);
+			return object;
+		});
 
 	pooler->Register("Baked_beans", 0, [](ResourceManager* resources)
-	{
-		Object* object = resources->AssembleObject("BakedBeans", "BakedBeansMaterial");
+		{
+			Object* object = resources->AssembleObject("BakedBeans", "BakedBeansMaterial");
 
-		object->AddComponent<BoxColliderComponent>(dx::XMFLOAT3(0.5f, 0.5f, 0.5f), dx::XMFLOAT3(0, 0, 0));
-		object->AddComponent<PickupComponent>(Type::Food, 20.0f);
+			object->AddComponent<BoxColliderComponent>(dx::XMFLOAT3(0.5f, 0.5f, 0.5f), dx::XMFLOAT3(0, 0, 0));
+			object->AddComponent<PickupComponent>(Type::Food, 20.0f);
 
-		RigidBodyComponent* rd = object->AddComponent<RigidBodyComponent>(10.0f, FilterGroups::PICKUPS, FilterGroups::EVERYTHING, BodyType::KINEMATIC);
+			RigidBodyComponent* rd = object->AddComponent<RigidBodyComponent>(10.0f, FilterGroups::PICKUPS, FilterGroups::EVERYTHING, BodyType::KINEMATIC);
 
-		Physics::Instance().RegisterRigidBody(rd);
-		return object;
-	});
+			Physics::Instance().RegisterRigidBody(rd);
+			return object;
+		});
 
 	pooler->Register("static_sphere", 0, [](ResourceManager* resources)
-	{
-		Object* object = resources->AssembleObject("Test", "TestMaterial");
+		{
+			Object* object = resources->AssembleObject("Test", "TestMaterial");
 
-		object->AddComponent<BoxColliderComponent>(dx::XMFLOAT3(0.5f, 0.5f, 0.5f), dx::XMFLOAT3(0, 0, 0));
+			object->AddComponent<BoxColliderComponent>(dx::XMFLOAT3(0.5f, 0.5f, 0.5f), dx::XMFLOAT3(0, 0, 0));
 
-		RigidBodyComponent* rd = object->AddComponent<RigidBodyComponent>(0.0f, FilterGroups::PROPS, FilterGroups::EVERYTHING, BodyType::STATIC);
-		Physics::Instance().RegisterRigidBody(rd);
-		return object;
-	});
+			RigidBodyComponent* rd = object->AddComponent<RigidBodyComponent>(0.0f, FilterGroups::PROPS, FilterGroups::EVERYTHING, BodyType::STATIC);
+			Physics::Instance().RegisterRigidBody(rd);
+			return object;
+		});
 
 	spawner->RegisterItem("Health_kit", 1.0f, 1.0f, 0.0f, TryGetQueueCount("Health_kit", queueCountTable), ItemSpawnType::ITEM);
 	spawner->RegisterItem("Fuel_can", 1.0f, 1.0f, 0.0f, TryGetQueueCount("Fuel_can", queueCountTable), ItemSpawnType::ITEM);
