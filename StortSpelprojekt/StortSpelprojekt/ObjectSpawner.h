@@ -5,7 +5,6 @@
 #include "Random.h"
 #include "SaveState.h"
 
-#define SPAWN_PROPS 0
 #define SPAWN_ITEMS 1
 
 enum class ItemSpawnType
