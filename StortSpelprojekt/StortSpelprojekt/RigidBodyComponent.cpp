@@ -116,8 +116,10 @@ void RigidBodyComponent::AddCollidersToBody(Object* obj, rp::RigidBody* body)
 	{
 		rp::Collider* collider = body->addCollider(colliders[i]->GetCollisionShape(), colliders[i]->GetTransform());
 		collider->setCollisionCategoryBits(static_cast<unsigned short>(group));
-		collider->setCollideWithMaskBits(static_cast<unsigned short>(collisionMask));
+		collider->setCollideWithMaskBits(static_cast<unsigned short>(collisionMask));		
+		collidersList.push_back(collider);
 	}
+		
 
 	assert(colliders.size() > 0);
 
@@ -126,6 +128,14 @@ void RigidBodyComponent::AddCollidersToBody(Object* obj, rp::RigidBody* body)
 	for (size_t i = 0; i < children.size(); i++)
 	{
 		AddCollidersToBody(children[i]->GetOwner(), body);
+	}
+}
+
+void RigidBodyComponent::RemoveCollidersFromBody(rp::RigidBody* body)
+{
+	for (auto i : collidersList)
+	{
+		body->removeCollider(i);
 	}
 }
 

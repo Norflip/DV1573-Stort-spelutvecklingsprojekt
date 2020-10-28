@@ -60,8 +60,8 @@ void GameScene::InitializeObjects()
 	skyboxClass = new Skybox(renderer->GetDevice(), renderer->GetContext(), resourceManager->GetShaderResource("skyboxShader"));
 	skyboxClass->GetThisObject()->AddFlag(ObjectFlag::NO_CULL);
 	Physics& physics = Physics::Instance();
-
-	
+		
+	/* For physics/ rigidbody pickup stuff */
 
 	SaveState state;
 	state.seed = 1337;
@@ -75,7 +75,6 @@ void GameScene::InitializeObjects()
 	skyboxClass->GetThisObject()->AddFlag(ObjectFlag::NO_CULL);
 
 	//SKELETON ANIMATION MODELS
-
 	bool defaultAnimation = false;
 	bool parentAnimation = true;
 	Shader* skeletonShader = resourceManager->GetShaderResource("skeletonShader");
@@ -138,10 +137,12 @@ void GameScene::InitializeObjects()
 	baseMonsterComp->BlendAnimations();
 
 	//Enemy object //comments
-	dx::XMFLOAT3 enemyTranslation = dx::XMFLOAT3(14, 3, 2);
+	dx::XMFLOAT3 enemyTranslation = dx::XMFLOAT3(23, 6, 46);
 	enemy->GetTransform().SetPosition(dx::XMLoadFloat3(&enemyTranslation));
 	enemy->GetTransform().SetScale({ 0.125f, 0.125f, 0.125f });
 	enemy->AddComponent<EnemyStatsComp>(100, 0.5f, 5, 25, 3);
+	enemy->AddComponent<BoxColliderComponent>(dx::XMFLOAT3{ 0.5f, 0.5f, 0.5f }, dx::XMFLOAT3{ 0, 0, 0 });
+
 	//enemyStatsComp = enemy->GetComponent<EnemyStatsComp>();
 	enemy->AddComponent<EnemyAttackComp>(player->GetComponent<PlayerComp>());
 	EnemySMComp* stateMachine = enemy->AddComponent<EnemySMComp>(EnemyState::IDLE);
@@ -150,6 +151,13 @@ void GameScene::InitializeObjects()
 	stateMachine->RegisterState(EnemyState::ATTACK, enemy->AddComponent<EnemyAttackComp>(player->GetComponent<PlayerComp>()));
 	stateMachine->InitAnimation();
 	AddObject(enemy);
+
+	physics.MutexLock();
+	RigidBodyComponent* rbEnemy = enemy->AddComponent<RigidBodyComponent>(0, FilterGroups::ENEMIES, FilterGroups::PROPS, BodyType::STATIC);
+	//rbEnemy.
+	physics.RegisterRigidBody(rbEnemy);
+	physics.MutexUnlock();
+
 
 	playerObject->AddComponent<PlayerAttackComp>(enemy);
 
@@ -175,7 +183,6 @@ void GameScene::InitializeObjects()
 	SkeletonAni skeletonHouseLegsDown = ZWEBLoader::LoadSkeletonOnly("Models/House_Legs - SIT DOWN - IDLE.ZWEB", skeletonMeshHouseLegs[0].GetBoneIDS(), defaultAnimation);
 
 	Object* houseBaseObject = new Object("houseBase");
-
 	Object* housesLegsObject = new Object("houseLegs");
 
 	SkeletonMeshComponent* baseComponent = houseBaseObject->AddComponent<SkeletonMeshComponent>(meshHouse[0], matHouse[0]);
@@ -199,28 +206,28 @@ void GameScene::InitializeObjects()
 
 	NodeWalkerComp* nodeWalker = houseBaseObject->AddComponent<NodeWalkerComp>();
 	nodeWalker->InitAnimation();
-	
-	
 
 	legsComponent->SetTrack(SkeletonStateMachine::IDLE, false);
 	baseComponent->SetTrack(SkeletonStateMachine::IDLE, false);
 	AddObject(houseBaseObject);
 
-	/* For physics/ rigidbody pickup stuff */
-	Physics& phy = Physics::Instance();
-
-	Shader* defShader = resourceManager->GetShaderResource("defaultShader");
+	
 
 //Axe//////////////////////////////////////////////////////////////////
 	std::vector<Mesh> axeMesh = ZWEBLoader::LoadMeshes(ZWEBLoadType::NoAnimation, "Models/AXE.ZWEB", renderer->GetDevice());
 	std::vector<Material> axeMat = ZWEBLoader::LoadMaterials("Models/AXE.ZWEB", skeletonShader, renderer->GetDevice());
-
 	Object* axeObject = new Object("Axe");
 
 	axeObject->AddComponent<MeshComponent>(axeMesh[0], axeMat[0]);
 	axeObject->GetTransform().SetPosition({ 0,0,0 });
 	axeObject->GetTransform().SetScale({ 1, 1, 1 });
-	axeObject->AddComponent<WeaponComponent>(cameraObject, input);
+	axeObject->AddComponent<WeaponComponent>(cameraObject);
+
+	/*
+	RigidBodyComponent* axeBody;
+	axeBody = axeObject->AddComponent<RigidBodyComponent>(0, FilterGroups::DEFAULT, FilterGroups::EVERYTHING, false);
+	physics.RegisterRigidBody(axeBody);
+	*/
 	AddObject(axeObject);
 
 	clock.Update();
@@ -236,6 +243,69 @@ void GameScene::InitializeObjects()
 	world.SetHouse(houseBaseObject);
 	nodeWalker->InitializePath(world.GetPath());
 	world.MoveHouseAndPlayerToStart();
+
+	dx::XMVECTOR asdf = dx::XMVectorSet(23, 3, 40 ,1);
+	enemy->GetTransform().SetPosition(asdf);
+
+
+
+
+
+
+	/* PICKUP STUFF DONT DELETE THESEEE */
+	/* PICKUP STUFF DONT DELETE THESEEE */
+	/* PICKUP STUFF DONT DELETE THESEEE */
+	/* PICKUP STUFF DONT DELETE THESEEE */
+
+	
+	Shader* defShader = resourceManager->GetShaderResource("defaultShader");
+
+	/* Health pickup stuff temporary */
+	std::vector<Mesh> healthkit = ZWEBLoader::LoadMeshes(ZWEBLoadType::NoAnimation, "Models/Health_Kit.ZWEB", renderer->GetDevice());
+	std::vector<Material> healthkitMaterial = ZWEBLoader::LoadMaterials("Models/Health_Kit.ZWEB", defShader, renderer->GetDevice());
+
+	Object* healthkitObject = new Object("healthObject");
+	healthkitObject->AddComponent<MeshComponent>(healthkit[0], healthkitMaterial[0]);
+	healthkitObject->GetTransform().SetPosition({ 23,2,50 });
+	healthkitObject->AddComponent<BoxColliderComponent>(dx::XMFLOAT3{ 0.5f, 0.5f, 0.5f }, dx::XMFLOAT3{ 0, 0, 0 });
+	healthkitObject->AddComponent<PickupComponent>(Type::Health, 20.0f);
+
+	RigidBodyComponent* healthBody;
+	healthBody = healthkitObject->AddComponent<RigidBodyComponent>(0, FilterGroups::PICKUPS, FilterGroups::PLAYER, BodyType::KINEMATIC);
+	physics.RegisterRigidBody(healthBody);
+	AddObject(healthkitObject);
+
+
+	///* Fuel pickup stuff temporary */
+	std::vector<Mesh> fuelCan = ZWEBLoader::LoadMeshes(ZWEBLoadType::NoAnimation, "Models/Fuel_Can_Red.ZWEB", renderer->GetDevice());
+	std::vector<Material> fuelCanMaterail = ZWEBLoader::LoadMaterials("Models/Fuel_Can_Red.ZWEB", defShader, renderer->GetDevice());
+
+	Object* fuelCanObject = new Object("fuelObject");
+	fuelCanObject->AddComponent<MeshComponent>(fuelCan[0], fuelCanMaterail[0]);
+	fuelCanObject->GetTransform().SetPosition({ 22,2,52 });
+	fuelCanObject->AddComponent<BoxColliderComponent>(dx::XMFLOAT3{ 0.5f, 0.5f, 0.5f }, dx::XMFLOAT3{ 0, 0, 0 });
+	fuelCanObject->AddComponent<PickupComponent>(Type::Fuel, 20.0f);
+
+	RigidBodyComponent* fuelBody;
+	fuelBody = fuelCanObject->AddComponent<RigidBodyComponent>(0, FilterGroups::PICKUPS, FilterGroups::PLAYER, BodyType::KINEMATIC);
+	physics.RegisterRigidBody(fuelBody);
+	AddObject(fuelCanObject);
+
+
+	///* Banana pickup stuff temporary */
+	std::vector<Mesh> beans = ZWEBLoader::LoadMeshes(ZWEBLoadType::NoAnimation, "Models/Soup_Can.ZWEB", renderer->GetDevice());
+	std::vector<Material> beansMaterial = ZWEBLoader::LoadMaterials("Models/Soup_Can.ZWEB", defShader, renderer->GetDevice());
+
+	Object* beansObject = new Object("bakedBeans");
+	beansObject->AddComponent<MeshComponent>(beans[0], beansMaterial[0]);
+	beansObject->GetTransform().SetPosition({22, 2.0f, 53 });
+	beansObject->AddComponent<BoxColliderComponent>(dx::XMFLOAT3{ 0.5f, 0.5f, 0.5f }, dx::XMFLOAT3{ 0, 0, 0 });
+	beansObject->AddComponent<PickupComponent>(Type::Food, 20.0f);
+
+	RigidBodyComponent* beansBody;
+	beansBody = beansObject->AddComponent<RigidBodyComponent>(0, FilterGroups::PICKUPS, FilterGroups::PLAYER, BodyType::KINEMATIC);
+	physics.RegisterRigidBody(beansBody);
+	AddObject(beansObject);
 }
 
 void GameScene::InitializeGUI()
