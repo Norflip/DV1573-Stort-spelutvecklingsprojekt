@@ -46,6 +46,7 @@ public:
 	dx::XMVECTOR GetWorldPosition() const;
 	dx::XMVECTOR GetPosition() const { return dx::XMLoadFloat3(&this->position); }
 	void SetPosition(dx::XMVECTOR position);
+	void SetWorldPosition(dx::XMVECTOR position);
 
 	dx::XMVECTOR GetScale() const { return dx::XMLoadFloat3(&this->scale); }
 	void SetScale(dx::XMVECTOR scale);
