@@ -213,7 +213,7 @@ void GameScene::InitializeObjects()
 
 //Axe//////////////////////////////////////////////////////////////////
 	std::vector<Mesh> axeMesh = ZWEBLoader::LoadMeshes(ZWEBLoadType::NoAnimation, "Models/AXE.ZWEB", renderer->GetDevice());
-	std::vector<Material> axeMat = ZWEBLoader::LoadMaterials("Models/AXE.ZWEB", skeletonShader, renderer->GetDevice());
+	std::vector<Material> axeMat = ZWEBLoader::LoadMaterials("Models/AXE.ZWEB", defShader, renderer->GetDevice());
 
 	Object* axeObject = new Object("Axe");
 
