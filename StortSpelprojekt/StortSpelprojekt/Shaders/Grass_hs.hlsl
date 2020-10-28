@@ -1,26 +1,23 @@
 #include "CommonBuffers.hlsl"
 #include "IO.hlsl"
 
-
-
-
 Texture2D grassHeightMap : register (t1);
 Texture2D chunkData : register (t6);
 SamplerState linearSampler : register(s0);
-
 
 /*Alter the commented values to change the grass*/
 // Patch Constant Function
 HS_CONSTANT_DATA_OUTPUT_GRASS hsPerIsoLinePatch(InputPatch<VS_OUTPUT_GRASS,1> input, uint i : SV_PrimitiveID)
 {
 	HS_CONSTANT_DATA_OUTPUT_GRASS output;
-
-
-
-	output.edgeTesselation[1] = 1;  //
-	output.edgeTesselation[0] = input[0].tessFactor;  //max grass per triangles
 	
-	
+	output.edgeTesselation[1] = 1;
+
+#if _DEBUG
+	output.edgeTesselation[0] = input[0].tessFactor;
+#else
+	output.edgeTesselation[0] = 64; //max grass per triangles
+#endif
 
 	output.triangleIndex = i;
 
@@ -70,4 +67,3 @@ HS_OUTPUT_GRASS main(InputPatch<VS_OUTPUT_GRASS, 1> p,
 	
 	return output;
 }
-
