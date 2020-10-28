@@ -95,7 +95,7 @@ void GameOverScene::Update(const float& deltaTime)
 
 void GameOverScene::FixedUpdate(const float& fixedDeltaTime)
 {
-	Scene::FixedUpdate(fixedDeltaTime);
+	//Scene::FixedUpdate(fixedDeltaTime);
 }
 
 void GameOverScene::Render()

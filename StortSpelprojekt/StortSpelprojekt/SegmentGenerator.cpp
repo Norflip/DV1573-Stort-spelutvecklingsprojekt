@@ -8,11 +8,12 @@ SegmentGenerator::~SegmentGenerator()
 {
 }
 
-void SegmentGenerator::Initialize(Object* root, ResourceManager* resourceManager, ObjectPooler* pooler, ID3D11Device* device, ID3D11DeviceContext* context)
+void SegmentGenerator::Initialize(Object* root, ResourceManager* resourceManager, ObjectSpawner* spawner, ID3D11Device* device, ID3D11DeviceContext* context)
 {
 	this->root = root;
 	this->device = device;
 	this->context = context;
+	this->spawner = spawner;
 	this->initialized = true;
 
 	Material* mat = resourceManager->GetResource<Material>("Test");
@@ -25,44 +26,11 @@ void SegmentGenerator::Initialize(Object* root, ResourceManager* resourceManager
 	Physics& physics = Physics::Instance();
 	physics.MutexLock();
 
-	pooler->Register("dynamic_stone", 0, [](ResourceManager* resources)
-	{
-		Object* object = new Object("dynamic_stone");
-		Mesh* mesh1 = resources->GetResource<Mesh>("Test");
-		Material* material1 = resources->GetResource<Material>("TestMaterial");
-		
-		object->AddComponent<MeshComponent>(*mesh1, *material1);
-		object->AddComponent<BoxColliderComponent>(dx::XMFLOAT3(0.5f, 0.5f, 0.5f), dx::XMFLOAT3(0, 0, 0));
-		
-		RigidBodyComponent* rd = object->AddComponent<RigidBodyComponent>(5.0f, FilterGroups::PICKUPS, FilterGroups::EVERYTHING, true);
-		Physics::Instance().RegisterRigidBody(rd);
-
-		return object;
-	});
-
-	pooler->Register("static_sphere", 0, [](ResourceManager* resources)
-		{
-			Object* object = new Object("static_sphere");
-			Mesh* mesh1 = resources->GetResource<Mesh>("Test2");
-			Material* material1 = resources->GetResource<Material>("Test2Material");
-
-			object->AddComponent<MeshComponent>(*mesh1, *material1);
-			object->AddComponent<BoxColliderComponent>(dx::XMFLOAT3(0.5f, 0.5f, 0.5f), dx::XMFLOAT3(0, 0, 0));
-
-			RigidBodyComponent* rd = object->AddComponent<RigidBodyComponent>(0.0f, FilterGroups::PROPS, FilterGroups::EVERYTHING, false);
-			
-			Physics::Instance().RegisterRigidBody(rd);
-			return object;
-		});
-
-
-	spawner.Initialize(root, pooler);
-	spawner.AddItem("dynamic_stone", 1.0f, 1.0f, 10, 25, 0.0f, ItemSpawnType::DYNAMIC);
-	spawner.AddItem("static_sphere", 1.0f, 1.0f, 10, 25, 0.0f, ItemSpawnType::STATIC);
+	
 	physics.MutexUnlock();
 }
 
-void SegmentGenerator::Construct(const SegmentDescription& description)
+void SegmentGenerator::Construct(const SaveState& state, const SegmentDescription& description)
 {
 	assert(initialized);
 
@@ -86,7 +54,7 @@ void SegmentGenerator::Construct(const SegmentDescription& description)
 			CreateChunk(pair.first, root, description, pair.second);
 		}
 
-		spawner.Spawn(treePoints, chunkMap, chunks);
+		spawner->Spawn(state, treePoints, chunkMap, chunks);
 		constructed = true;
 	}
 }
@@ -102,7 +70,7 @@ void SegmentGenerator::Deconstruct()
 			delete chunks[i];
 		}
 
-		spawner.Despawn();
+		spawner->Despawn();
 		constructed = false;
 		chunks.clear();
 		grid.Clear();
@@ -143,7 +111,7 @@ Chunk* SegmentGenerator::GetChunk(float x, float z) const
 void SegmentGenerator::DrawDebug()
 {
 	treePoints.Draw(dx::XMFLOAT3(0, 0, 0));
-	spawner.DrawDebug();
+	spawner->DrawDebug();
 
 	// PATH
 	const float offset = CHUNK_SIZE / 2.0f;
@@ -387,7 +355,7 @@ void SegmentGenerator::AddTreesToChunk(Chunk* chunk, std::vector<ChunkPointInfor
 				dx::XMFLOAT3 position(posXZ.x + validPoints[i].x, y, posXZ.y + validPoints[i].y);
 				treesInstanced[i].instancePosition = position;
 
-				dx::XMMATRIX translation = dx::XMMatrixScaling(0.5f, 0.5f, 0.5f) * dx::XMMatrixTranslation(position.x, position.y, position.z);
+				dx::XMMATRIX translation = dx::XMMatrixScaling(2.0f, 2.0f, 2.0f) * dx::XMMatrixTranslation(position.x, position.y, position.z);
 				dx::XMStoreFloat4x4(&treesInstanced[i].instanceWorld, translation);
 			}
 
