@@ -65,10 +65,13 @@ public:
 
 	void PhysicRelease();
 
+	void RemoveCollidersFromBody(rp::RigidBody* body);	// MAYBE HEAAAA? 
+
 private:
 	rp::Transform ConvertToBtTransform(const Transform& transform) const;
 	void AddCollidersToBody(Object* obj, rp::RigidBody* body);
 
+	std::vector<rp::Collider*> collidersList;
 	FilterGroups group;
 	FilterGroups collisionMask;
 
@@ -81,4 +84,5 @@ private:
 	bool lockRotation;
 
 	std::vector<std::function<void(CollisionInfo)>> callbacks;
+
 };

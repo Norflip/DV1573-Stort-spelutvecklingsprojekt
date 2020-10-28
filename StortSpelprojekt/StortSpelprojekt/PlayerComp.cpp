@@ -36,10 +36,12 @@ PlayerComp::PlayerComp(Renderer* renderer, CameraComponent* camComp, Physics& ph
 	// defaulting some shit
 	this->swapScene = NEXT_SCENE::GAME;
 	this->foodLossPerSecond = 0.3f;
-	this->food = 80.0f;
+	this->food = 50.0f;
 	this->fuelBurnPerMeter = 0.7f;
-	this->fuel = 80.0f;
+	this->fuel = 50.0f;
 	this->healthLossPerSecond = 0.5f;
+
+	this->health = 50.0f; // <------------------ DONT FORGET TO REMOVE THIS LATER!
 
 	this->fuelDippingBar = static_cast<GUISprite*>(guiMan->GetGUIObject("fuelDippingBar"));
 	this->foodDippingBar = static_cast<GUISprite*>(guiMan->GetGUIObject("foodDippingBar"));
@@ -94,8 +96,17 @@ void PlayerComp::Update(const float& deltaTime)
 					if ((fuel + temp) <= 100.0f)
 						fuel += temp;
 				}
-
+				
 				hit.object->GetComponent<PickupComponent>()->SetActive(false);
+
+				RigidBodyComponent* rbComp = hit.object->GetComponent<RigidBodyComponent>();
+				rp::RigidBody* objectRb = rbComp->GetRigidBody();
+				rbComp->RemoveCollidersFromBody(objectRb);
+				
+				phy.MutexLock();
+				phy.UnregisterRigidBody(hit.object->GetComponent<RigidBodyComponent>());
+				phy.MutexUnlock();
+				
 			}
 		}
 	}
