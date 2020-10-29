@@ -105,7 +105,6 @@ private:
 	ConstantBuffer<cb_Scene> sceneBuffer;
 	ConstantBuffer<cb_Material> materialBuffer;
 
-
 	std::vector<dx::XMFLOAT4X4> srv_skeleton_data;
 	ID3D11Buffer* skeleton_srvbuffer;
 	ID3D11ShaderResourceView* skeleton_srv;
@@ -125,7 +124,9 @@ private:
 	const float BLENDSTATEMASK[4] = { 0.0f };
 	
 	bool drawShapes = true;
-  
+
+	float xPos= 0;
+	float yPos =0;
 	//rasterizer
 	ID3D11RasterizerState* rasterizerStateCullBack;
 	ID3D11RasterizerState* rasterizerStateCullNone;

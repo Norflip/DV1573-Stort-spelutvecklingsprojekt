@@ -166,6 +166,7 @@ void ControllerComp::Update(const float& deltaTime)
 		dx::XMStoreFloat4(&groundQuaterion, groundRotation); 
 
 		cameraObject->GetTransform().SetRotation(dx::XMQuaternionMultiply(cameraObject->GetTransform().GetRotation(), eulerRotation)); //rotate view
+		// need to push this data to renderer
 		Input::Instance().ResetRelative();
 		
 		if (KEY_PRESSED(W) || KEY_PRESSED(S) || KEY_PRESSED(A) || KEY_PRESSED(D))

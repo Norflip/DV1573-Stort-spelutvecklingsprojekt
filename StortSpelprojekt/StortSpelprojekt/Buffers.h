@@ -65,7 +65,7 @@ struct cb_Scene
 	int id;
 	float factor;
 	float time;
-	dx::XMFLOAT2 padding11;
+	dx::XMFLOAT2 mousePos;
 };
 
 __declspec(align(16))

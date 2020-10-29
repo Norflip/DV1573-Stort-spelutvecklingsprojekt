@@ -6,6 +6,7 @@ Input::Input()
 	this->width = 0;
 	this->xPosRelative = 0;
 	this->yPosRelative = 0;
+
 	mouse.SetMode(DirectX::Mouse::MODE_ABSOLUTE);
 }
 
@@ -102,9 +103,14 @@ POINT Input::GetMousePosRelative()const
 {
 	return { this->xPosRelative,this->yPosRelative };
 }
-
+POINT Input::GetPrevMousePosRelative()const
+{
+	return { this->xPosRelativePrev,this->yPosRelativePrev };
+}
 void Input::ResetRelative()
 {
+	this->xPosRelativePrev = xPosRelative;
+	this->yPosRelativePrev = yPosRelative;
 	this->xPosRelative = 0;
 	this->yPosRelative = 0;
 }
