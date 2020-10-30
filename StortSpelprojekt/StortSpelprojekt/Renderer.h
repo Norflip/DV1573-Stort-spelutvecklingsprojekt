@@ -1,6 +1,5 @@
 #pragma once
 
-
 #include "DXHelper.h"
 #include "Mesh.h"
 #include "Buffers.h"

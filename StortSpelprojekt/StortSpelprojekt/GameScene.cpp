@@ -231,7 +231,6 @@ void GameScene::InitializeObjects()
 	enemy->GetTransform().SetPosition(asdf);
 
 
-
 	/* PICKUP STUFF DONT DELETE THESEEE */
 	/* PICKUP STUFF DONT DELETE THESEEE */
 	/* PICKUP STUFF DONT DELETE THESEEE */
