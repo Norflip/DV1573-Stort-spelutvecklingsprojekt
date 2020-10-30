@@ -1,10 +1,5 @@
+#include "stdafx.h"
 #include "DXHelper.h"
-
-
-
-
-
-
 void DXHelper::CreateSwapchain(const Window& window, _Out_ ID3D11Device** device, _Out_ ID3D11DeviceContext** context, _Out_ IDXGISwapChain** swapchain)
 
 {

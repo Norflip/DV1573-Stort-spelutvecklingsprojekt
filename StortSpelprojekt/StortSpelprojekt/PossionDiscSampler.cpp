@@ -1,3 +1,4 @@
+#include "stdafx.h"
 #include "PossionDiscSampler.h"
 
 PossionDiscSampler::PossionDiscSampler(int seed) : distribution(0.0f, 1.0f)

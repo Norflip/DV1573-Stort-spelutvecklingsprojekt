@@ -1,3 +1,4 @@
+#include "stdafx.h"
 #include "GameScene.h"
 #include "GUISprite.h"
 #include "GUIFont.h"
@@ -216,7 +217,7 @@ void GameScene::InitializeObjects()
 	AddObject(axeObject);
 
 	clock.Update();
-
+	clock.Update();
 	/* * * * * * * * ** * * * * */
 	//Log::Add("PRINTING SCENE HIERARCHY ----");
 	//PrintSceneHierarchy(root, 0);

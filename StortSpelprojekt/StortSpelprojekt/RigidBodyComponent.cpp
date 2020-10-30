@@ -1,3 +1,4 @@
+#include "stdafx.h"
 #include "RigidBodyComponent.h"
 #include "Physics.h"
 

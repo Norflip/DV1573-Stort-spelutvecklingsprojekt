@@ -1,3 +1,4 @@
+#include "stdafx.h"
 #include "EnemyAttackComp.h"
 #include "PlayerComp.h"
 EnemyAttackComp::EnemyAttackComp(PlayerComp* player)

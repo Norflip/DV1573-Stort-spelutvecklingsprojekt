@@ -1,3 +1,4 @@
+
 /**
  * @file    SimplexNoise.cpp
  * @brief   A Perlin Simplex Noise C++ Implementation (1D, 2D, 3D).

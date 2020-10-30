@@ -1,3 +1,4 @@
+#include "stdafx.h"
 #include "PointQuadTree.h"
 
 PointQuadTree::PointQuadTree(dx::XMFLOAT2 min, dx::XMFLOAT2 max) : PointQuadTree(0, min, max) {}

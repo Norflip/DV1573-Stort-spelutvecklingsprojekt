@@ -1,10 +1,6 @@
 #pragma once
-
-
-
-
-
-class GUIManager;
+#include "GUIManager.h"
+#include "SpriteFont.h"
 class GUIFont : public GUIObject
 {
 public:

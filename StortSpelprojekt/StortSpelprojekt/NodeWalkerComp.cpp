@@ -1,3 +1,4 @@
+#include "stdafx.h"
 #include "NodeWalkerComp.h"
 
 NodeWalkerComp::NodeWalkerComp()

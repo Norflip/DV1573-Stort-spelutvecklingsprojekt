@@ -1,17 +1,13 @@
 #pragma once
 
 enum NEXT_SCENE { INTRO = 0, LOSE = 1, GAME = 2, WIN = 3 };
+#include <string>
 #include <vector>
 #include "Object.h"
 #include "HeightMap.h"
 #include "ShittyOBJLoader.h"
-#include "Input.h"
-#include "GameClock.h"
-#include "CameraComponent.h"
 #include "MoveComponent.h"
 #include "ControllerComp.h"
-#include "MeshComponent.h"
-#include "ZWEBLoader.h"
 #include "SkeletonMeshComponent.h"
 #include "PointLightComponent.h"
 #include "NodeWalkerComp.h"
@@ -21,13 +17,11 @@ enum NEXT_SCENE { INTRO = 0, LOSE = 1, GAME = 2, WIN = 3 };
 
 #include "Skybox.h"
 #include "SaveState.h"
-#include "DShape.h"
 #include "GUIManager.h"
-#include <string>
+
 
 #include "Physics.h"
 #include "RigidBodyComponent.h"
-#include "BoxColliderComponent.h"
 #include "SphereColliderComponent.h"
 #include "CapsuleColliderComponent.h"
 #include "DebugBoxShapeComponent.h"

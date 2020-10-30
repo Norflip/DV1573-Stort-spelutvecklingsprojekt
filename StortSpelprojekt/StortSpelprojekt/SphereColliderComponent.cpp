@@ -1,3 +1,4 @@
+#include "stdafx.h"
 #include "SphereColliderComponent.h"
 #include "Physics.h"
 

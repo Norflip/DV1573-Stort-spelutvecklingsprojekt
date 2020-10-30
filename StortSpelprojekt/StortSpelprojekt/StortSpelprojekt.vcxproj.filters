@@ -255,7 +255,12 @@
     <ClCompile Include="Path.cpp">
       <Filter>Source Files\SpawnSystems</Filter>
     </ClCompile>
-    <ClCompile Include="WeaponComponent.cpp" />
+    <ClCompile Include="stdafx.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="WeaponComponent.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="BoundingBoxes.h">
@@ -469,7 +474,7 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="NodeWalkerComp.h">
-		<Filter>Header Files</Filter>
+      <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="WeaponComponent.h">
       <Filter>Header Files</Filter>
@@ -509,6 +514,9 @@
     </ClInclude>
     <ClInclude Include="Path.h">
       <Filter>Source Files\SpawnSystems</Filter>
+    </ClInclude>
+    <ClInclude Include="stdafx.h">
+      <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

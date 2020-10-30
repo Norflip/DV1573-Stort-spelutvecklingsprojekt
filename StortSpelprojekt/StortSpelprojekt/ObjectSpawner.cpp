@@ -1,3 +1,4 @@
+#include "stdafx.h"
 #include "ObjectSpawner.h"
 #include "ResourceManager.h"
 
