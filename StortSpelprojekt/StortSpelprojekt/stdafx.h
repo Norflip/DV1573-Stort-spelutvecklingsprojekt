@@ -16,6 +16,9 @@
 #include <DirectXMath.h>
 #include <map>
 #include <SimpleMath.h>
+#include <functional>
+#include <queue>
+#include <random>
 //GLOBAL HEADERS
 #include "Random.h"
 #include "Physics.h"

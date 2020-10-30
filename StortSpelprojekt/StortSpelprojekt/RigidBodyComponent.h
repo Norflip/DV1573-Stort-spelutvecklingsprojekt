@@ -6,9 +6,6 @@
 #include "BoxColliderComponent.h"
 #include "SphereColliderComponent.h"
 #include "CapsuleColliderComponent.h"
-
-#include <vector>
-#include <functional>
 #include "CollisionInfo.h"
 
 namespace dx = DirectX;
