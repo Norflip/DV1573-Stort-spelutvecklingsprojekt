@@ -40,9 +40,7 @@ GUISprite::GUISprite(Renderer& renderer , std::string filePath, float xPos, floa
 
 	width = desc.Width;
 	height = desc.Height;
-	std::cout << width << "  " << height << std::endl;
 	assert(SUCCEEDED(result));
-
 
 	//directions
 	SetPos(xPos, yPos, dir);
@@ -155,6 +153,7 @@ bool GUISprite::IsMouseOver()
 		}
 	}
 
+	return false;
 }
 
 void GUISprite::Update()

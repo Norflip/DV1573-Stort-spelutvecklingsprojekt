@@ -8,8 +8,8 @@ namespace dx = DirectX;
 
 class PointQuadTree
 {
-	const int MAX_LEVELS = 8;
-	const int MAX_POINTS = 8;
+	const size_t MAX_LEVELS = 8;
+	const size_t MAX_POINTS = 8;
 
 public:
 	PointQuadTree(dx::XMFLOAT2 min, dx::XMFLOAT2 max);

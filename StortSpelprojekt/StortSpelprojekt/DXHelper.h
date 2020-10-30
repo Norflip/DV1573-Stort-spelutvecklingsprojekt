@@ -59,7 +59,7 @@ namespace DXHelper
 	void CreateConstBuffer(ID3D11Device* device, ID3D11Buffer** buffer, void* initdata, unsigned int byteSize);
 	void BindConstBuffer(ID3D11DeviceContext* context, ID3D11Buffer* buffer, void* data, size_t slot, ShaderBindFlag flag);
 
-	D3D11_MAPPED_SUBRESOURCE& BindInstanceBuffer(ID3D11DeviceContext* context, ID3D11Buffer* buffer);
+	D3D11_MAPPED_SUBRESOURCE BindInstanceBuffer(ID3D11DeviceContext* context, ID3D11Buffer* buffer);
 
 	void UnBindInstanceBuffer(ID3D11DeviceContext* context, ID3D11Buffer* buffer);
 

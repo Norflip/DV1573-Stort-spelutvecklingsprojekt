@@ -148,7 +148,7 @@ dx::XMINT2 Chunk::WorldToIndex(float x, float z)
 int Chunk::WorldToIndex1D(float x, float z)
 {
 	dx::XMINT2 index = WorldToIndex(x, z);
-	return HASH2D_I(x, z);
+	return HASH2D_I(index.x, index.y);
 }
 
 void Chunk::PhysicRelease()

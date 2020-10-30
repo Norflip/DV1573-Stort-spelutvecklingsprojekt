@@ -3,13 +3,15 @@
 #include <chrono>
 #include "Math.h"
 
+#define FCAST(item) static_cast<float>(item)
+
 namespace Random
 {
-	static std::default_random_engine m_rngEngine (time(NULL));
+	static std::default_random_engine m_rngEngine (static_cast<size_t>(time(NULL)));
 	static std::uniform_real_distribution<float> m_distribution(0.0f, 1.0f);
 	static bool m_seeded;
 	
-	inline void SetSeed(int seed)
+	inline void SetSeed(unsigned int seed)
 	{
 		m_rngEngine.seed(seed);
 		m_seeded = true;
@@ -26,7 +28,6 @@ namespace Random
 		y = Value();
 	}
 
-
 	inline float Range(float min, float max)
 	{
 		float range = (max - min);
@@ -35,11 +36,9 @@ namespace Random
 
 	inline int Range(int min, int max)
 	{
-		float range = (max - min);
-		return min + range * Value();
+		int range = (max - min);
+		return ICAST(min + FCAST(range) * Value());
 	}
-
-
 
 	inline float RadAngle()
 	{
@@ -48,7 +47,7 @@ namespace Random
 
 	inline int GenerateSeed()
 	{
-		return time(NULL);
+		return static_cast<size_t>(time(NULL));
 	}
 
 	inline void PointOnDisc(float radius, float& x, float& y)

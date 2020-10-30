@@ -219,11 +219,9 @@ bool CameraComponent::CullAgainstAABB(const AABB& aabb, const dx::XMFLOAT3 world
 	return !inViewResult;
 }
 
-Ray CameraComponent::MouseToRay(const float& x, const float& y) const
+Ray CameraComponent::MouseToRay(const unsigned int& x, const unsigned int& y) const
 {
-	dx::XMVECTOR screenPosition = dx::XMVectorSet(x, y, 0.0f, 0.0f);
-
-
+	dx::XMVECTOR screenPosition = dx::XMVectorSet(FCAST(x), FCAST(y), 0.0f, 0.0f);
 	dx::XMVECTOR worldPosition = dx::XMVector3Unproject(screenPosition, 0, 0, (float)width, (float)height, 0.0f, 1.0f, GetProjectionMatrix(), GetViewMatrix(), dx::XMMatrixIdentity());
 
 	dx::XMVECTOR position = GetOwner()->GetTransform().GetPosition();

@@ -13,31 +13,9 @@ namespace Math
 	constexpr float ToDegree = 57.295779f;
 	constexpr float PI = 3.14159265359f;
 
-	template<typename T> 
-	inline T InverseLerp(T a, T b, T t)
+	inline float InverseLerp(float a, float b, float t)
 	{
 		return (t - a) / (b - a);
-	}
-
-	template<typename T>
-	inline T Lerp(T a, T b, T t)
-	{
-		return a + (b - a) * t;
-	}
-
-	template<typename T>
-	inline T Move(T a, T b, T delta)
-	{
-		if (abs(b - a) <= delta)
-			return b;
-
-		int sign = (b - a) >= 0.0f ? 1.0f : -1.0f;
-		return a + sign * delta;
-	}
-
-	inline dx::XMFLOAT2 Lerp(dx::XMFLOAT2 a, dx::XMFLOAT2 b, float t)
-	{
-		return dx::XMFLOAT2(Lerp(a.x, b.x, t), Lerp(a.y, b.y, t));
 	}
 
 	inline dx::XMFLOAT2 InverseLerp(dx::XMFLOAT2 a, dx::XMFLOAT2 b, float t)
@@ -45,9 +23,28 @@ namespace Math
 		return dx::XMFLOAT2(InverseLerp(a.x, b.x, t), InverseLerp(a.y, b.y, t));
 	}
 
+	inline float Lerp(float a, float b, float t)
+	{
+		return a + (b - a) * t;
+	}
+
+	inline dx::XMFLOAT2 Lerp(dx::XMFLOAT2 a, dx::XMFLOAT2 b, float t)
+	{
+		return dx::XMFLOAT2(Lerp(a.x, b.x, t), Lerp(a.y, b.y, t));
+	}
+
 	inline dx::XMFLOAT3 Lerp(dx::XMFLOAT3 a, dx::XMFLOAT3 b, float t)
 	{
 		return dx::XMFLOAT3(Lerp(a.x, b.x, t), Lerp(a.y, b.y, t), Lerp(a.z, b.z, t));
+	}
+
+	inline float Move(float a, float b, float delta)
+	{
+		if (abs(b - a) <= delta)
+			return b;
+
+		float sign = (b - a) >= 0.0f ? 1.0f : -1.0f;
+		return a + sign * delta;
 	}
 
 	inline dx::XMFLOAT2 Move (dx::XMFLOAT2 a, dx::XMFLOAT2 b, float delta)
@@ -64,35 +61,34 @@ namespace Math
 		return dx::XMFLOAT2(a.x + x / dist * delta, a.y + y / dist * delta);
 	}
 
-	template<typename T>
-	inline T Remap(T imin, T imax, T omin, T omax, float v)
+	inline float Remap(float imin, float imax, float omin, float omax, float v)
 	{
-		T t = InverseLerp(imin, imax, v);
+		float t = InverseLerp(imin, imax, v);
 		return Lerp(omin, omax, t);
 	}
 
-	inline float Pack3DVector(float x, float y, float z)
-	{
-		typedef unsigned char UC;
-		UC cx = static_cast<UC>(((x + 1.0f) * 0.5f) * 255.0f);
-		UC cy = static_cast<UC>(((y + 1.0f) * 0.5f) * 255.0f);
-		UC cz = static_cast<UC>(((z + 1.0f) * 0.5f) * 255.0f);
-		return static_cast<float>((cx << 16) | (cy << 8) | cz);
-	}
+	//inline float Pack3DVector(float x, float y, float z)
+	//{
+	//	typedef unsigned char UC;
+	//	UC cx = static_cast<UC>(((x + 1.0f) * 0.5f) * 255.0f);
+	//	UC cy = static_cast<UC>(((y + 1.0f) * 0.5f) * 255.0f);
+	//	UC cz = static_cast<UC>(((z + 1.0f) * 0.5f) * 255.0f);
+	//	return static_cast<float>((cx << 16) | (cy << 8) | cz);
+	//}
 
-	// DENNA SKA TILL HLSL
-	inline void Unpack3DVector (float src, float& r, float& g, float& b)
-	{
-		// Unpack to the 0-255 range
-		r = floor(src / 65536.0f);
-		g = floor(fmod(src, 65536.0f) / 256.0f);
-		b = fmod(src, 256.0f);
+	//// DENNA SKA TILL HLSL
+	//inline void Unpack3DVector (float src, float& r, float& g, float& b)
+	//{
+	//	// Unpack to the 0-255 range
+	//	r = floor(src / 65536.0f);
+	//	g = floor(fmod(src, 65536.0f) / 256.0f);
+	//	b = fmod(src, 256.0f);
 
-		//Unpack to the -1..1 range
-		r = (r / 255.0f * 2.0f) - 1.0f;
-		g = (g / 255.0f * 2.0f) - 1.0f;
-		b = (b / 255.0f * 2.0f) - 1.0f;
-	}
+	//	//Unpack to the -1..1 range
+	//	r = (r / 255.0f * 2.0f) - 1.0f;
+	//	g = (g / 255.0f * 2.0f) - 1.0f;
+	//	b = (b / 255.0f * 2.0f) - 1.0f;
+	//}
 
 	inline std::vector<dx::XMFLOAT2> SmoothCurve(dx::XMFLOAT2 a, dx::XMFLOAT2 b, dx::XMFLOAT2 center, float smoothness)
 	{
@@ -107,7 +103,7 @@ namespace Math
 
 		for (int pointInTimeOnCurve = 0; pointInTimeOnCurve < curvedLength + 1; pointInTimeOnCurve++)
 		{
-			t = InverseLerp<float>(0, curvedLength, pointInTimeOnCurve);
+			t = InverseLerp(0, static_cast<float>(curvedLength), static_cast<float>(pointInTimeOnCurve));
 
 			points.clear();
 			points.resize(pointsLength);

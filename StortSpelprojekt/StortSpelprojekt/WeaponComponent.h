@@ -7,6 +7,7 @@
 
 namespace dx = DirectX;
 
+ALIGN16 
 class WeaponComponent : public Component
 {
 public:
@@ -14,6 +15,8 @@ public:
 
 	virtual void Initialize() override;
 	virtual void Update(const float& deltaTime) override;
+
+	ALIGN16_ALLOC;
 
 private:
 	Object* camObj;

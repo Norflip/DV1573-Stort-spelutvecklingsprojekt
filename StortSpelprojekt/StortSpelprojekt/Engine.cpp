@@ -27,7 +27,7 @@ Engine::~Engine()
 	delete renderer;
 	delete resourceManager;
 
-	for (int i = 0; i < scenes.size(); i++)
+	for (size_t i = 0; i < scenes.size(); i++)
 	{
 		if (scenes[i])
 		{
@@ -112,7 +112,7 @@ void Engine::Exit()
 void Engine::RegisterScene(size_t id, Scene* scene)
 {
 	auto sceneIt = this->scenes.find(id);
-	assert(sceneIt == scenes.end(), "Conflicting scene IDs");
+	assert(sceneIt == scenes.end());
 
 	scene->Initialize(renderer);
 	this->scenes.insert({ id, scene });
@@ -128,7 +128,7 @@ void Engine::UnregisterScene(size_t id)
 void Engine::SwitchScene(size_t id)
 {
 	auto sceneIt = this->scenes.find(id);
-	assert(sceneIt != scenes.end(), "No scene with ID " + std::to_string(id));
+	assert(sceneIt != scenes.end());
 
 	if (activeScene == nullptr)
 	{

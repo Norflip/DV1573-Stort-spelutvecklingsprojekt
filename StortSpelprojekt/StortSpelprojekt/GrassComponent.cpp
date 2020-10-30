@@ -10,7 +10,7 @@ GrassComponent::GrassComponent(size_t chunkTriangleCount, ID3D11Device* device, 
 	Mesh::Vertex v;
 	grassV.push_back(v);
 
-	for (int triangle = 0; triangle < chunkTriangleCount; triangle++)
+	for (size_t triangle = 0; triangle < chunkTriangleCount; triangle++)
 	{
 		grassI.push_back(triangle);
 	}
@@ -85,7 +85,7 @@ void GrassComponent::InitializeGrass(Mesh& chunkMesh, ID3D11Device* device, ID3D
 	std::vector<GrassStraw> pData(vertices.size());
 	std::vector<dx::XMFLOAT4> indexData(indices.size());
 
-	for (int i = 0; i < vertices.size(); i++)
+	for (size_t i = 0; i < vertices.size(); i++)
 	{
 		dx::XMFLOAT3 position = vertices[i].position;
 		dx::XMFLOAT2 uv = vertices[i].uv;
@@ -109,7 +109,7 @@ void GrassComponent::InitializeGrass(Mesh& chunkMesh, ID3D11Device* device, ID3D
 	DXHelper::BindStructuredBuffer(context, grassBfr, pData, GRASS_STRAWS_SRV_SLOT, ShaderBindFlag::HULL, &grassSrv);
 	DXHelper::BindStructuredBuffer(context, grassBfr, pData, GRASS_STRAWS_SRV_SLOT, ShaderBindFlag::DOMAINS, &grassSrv);
 
-	for (int i = 0; i < indices.size(); i++)
+	for (size_t i = 0; i < indices.size(); i++)
 	{
 		indexData[i].x = (float)indices[i];
 	}
@@ -121,7 +121,7 @@ void GrassComponent::InitializeGrass(Mesh& chunkMesh, ID3D11Device* device, ID3D
 	DXHelper::BindStructuredBuffer(context, grassIndexBfr, indexData, GRASS_INDICES_SRV_SLOT, ShaderBindFlag::DOMAINS, &grassIndexSrv);
 
 	std::vector<dx::XMFLOAT4> bcData(MAX_STRANDS);
-	for (int i = 0; i < MAX_STRANDS; i++) //maximum strands per triangle.
+	for (size_t i = 0; i < MAX_STRANDS; i++) //maximum strands per triangle.
 	{
 		float barycentric1 = rand() / (float)(RAND_MAX);
 		float barycentric2 = rand() / (float)(RAND_MAX);

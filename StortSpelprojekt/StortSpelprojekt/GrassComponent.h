@@ -15,9 +15,10 @@ struct GrassStraw
 	dx::XMFLOAT4 uv;
 };
 
+ALIGN16
 class GrassComponent : public Component
 {
-	const int MAX_STRANDS = 64;
+	const size_t MAX_STRANDS = 64;
 
 
 public:
@@ -28,6 +29,7 @@ public:
 	void Draw(Renderer* renderer, CameraComponent* camera) override;
 
 	Material& GetMaterial();
+	ALIGN16_ALLOC;
 
 private:
 	Texture height;

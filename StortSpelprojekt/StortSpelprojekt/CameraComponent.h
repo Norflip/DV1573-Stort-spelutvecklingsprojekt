@@ -23,7 +23,7 @@ public:
 	dx::XMMATRIX GetProjectionMatrix() const;
 
 	bool CullAgainstAABB(const AABB& aabb, const dx::XMFLOAT3 worldPos);
-	Ray MouseToRay(const float& x, const float& y) const;
+	Ray MouseToRay(const unsigned int& x, const unsigned int& y) const;
 	static CameraComponent* mainCamera;
 
 private:

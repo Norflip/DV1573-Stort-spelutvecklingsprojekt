@@ -16,6 +16,7 @@ namespace dx = DirectX;
 
 class RenderPass;
 
+ALIGN16
 class Renderer
 {
 	const FLOAT DEFAULT_BG_COLOR[4] = { 0.3f, 0.1f, 0.2f, 1.0f };
@@ -79,6 +80,8 @@ public:
 	RenderTexture& GetMidbuffer() { return this->midbuffer; }
 
 	void RemoveRenderPass(RenderPass*);
+
+	ALIGN16_ALLOC;
 
 private:
 	void AddItem(const RenderItem& item, bool transparent);
