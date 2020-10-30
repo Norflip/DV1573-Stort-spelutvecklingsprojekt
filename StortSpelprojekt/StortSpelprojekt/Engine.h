@@ -1,7 +1,5 @@
 #pragma once
 #include <chrono>
-#include <assert.h>
-#include <unordered_map>
 #include <thread>
 
 #include "Window.h"
@@ -12,7 +10,6 @@
 #include "IntroScene.h"
 #include "GameOverScene.h"
 #include "WinScene.h"
-namespace dx = DirectX;
 
 constexpr int FIXED_FPS = 60;
 constexpr float TARGET_FIXED_DELTA = 1.0f / FIXED_FPS;

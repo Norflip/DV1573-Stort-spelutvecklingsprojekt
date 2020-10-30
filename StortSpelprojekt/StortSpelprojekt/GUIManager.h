@@ -1,15 +1,10 @@
 #pragma once
-#include <unordered_map>
 #include <SpriteBatch.h>
 #include <SpriteFont.h>
-#include <string>
 
 #include "DirectXHelpers.h"
 #include "Renderer.h"
 #include "RenderPass.h"
-#include "Input.h"
-
-namespace dx = DirectX;
 
 
 enum class GuiGroup : unsigned int

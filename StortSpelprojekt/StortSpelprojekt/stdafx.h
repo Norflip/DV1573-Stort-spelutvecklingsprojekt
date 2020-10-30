@@ -35,7 +35,7 @@
 #include "Log.h"
 #include "GameClock.h"
 #include "ZWEBLoader.h"
-
+#include "DirectXHelpers.h"
 //GLOBAL NAMESPACES
 namespace dx = DirectX;
 
