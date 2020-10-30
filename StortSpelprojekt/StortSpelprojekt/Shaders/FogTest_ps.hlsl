@@ -187,14 +187,14 @@ float4 main(PixelInputType input) : SV_TARGET
     //st += st * abs(sin(time * 0.1)*3.0);
 
     float2 q = float2(0,0);
-    q.x = fbm(st + 0.00 * time + (mousePos / 720));
-    q.y = fbm(st + float2(1.0, 0.0) + (mousePos / 720));
+    q.x = fbm(st + 0.00 * time + (mousePos / 690));
+    q.y = fbm(st + float2(1.0, 0.0) + (mousePos / 690));
 
     float2 r = float2(0, 0);
-    r.x = fbm(st + 1.0 * q + float2(1.7, 9.2) + 0.15 * time +(mousePos / 720));
-    r.y = fbm(st + 1.0 * q + float2(8.3, 2.8) + 0.126 * time + (mousePos / 720));
+    r.x = fbm(st + 1.0 * q + float2(1.7, 9.2) + 0.15 * time +(mousePos / 690)); //2pi r
+    r.y = fbm(st + 1.0 * q + float2(8.3, 2.8) + 0.126 * time + (mousePos / 690)); //2pi r
 
-    float f = fbm(st + r + (mousePos / 720));
+    float f = fbm(st + r + (mousePos / 690));
     float3 color = float3(0,0,0);
 
     color = lerp(float3(0.101961, 0.619608, 0.666667),
