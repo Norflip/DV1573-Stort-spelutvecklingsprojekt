@@ -51,6 +51,7 @@ public:
 
 	POINT GetMousePos() const;
 	POINT GetMousePosRelative() const;
+	POINT GetPrevMousePosRelative() const;
 	void ResetRelative();
 	void UpdateInputs();
 	void UpdateMsg(UINT umsg, WPARAM wParam, LPARAM lParam);
@@ -69,6 +70,8 @@ private:
 	RECT windowRect; //confine mouse
 	// mouse variables	
 	int xPosRelative, yPosRelative;
+	int xPosRelativePrev = 0;
+	int yPosRelativePrev = 0;
 	DirectX::Mouse mouse;
 	DirectX::Mouse::ButtonStateTracker mouseButtons;
 	// keyboard variables

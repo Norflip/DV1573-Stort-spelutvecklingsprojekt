@@ -2,6 +2,7 @@
 
 Texture2D screenTexture : register (t0);
 Texture2D depthTexture : register (t1);
+Texture2D skyTexture : register (t5);
 SamplerState defaultSampleType : register (s0);
 
 struct PixelInputType
@@ -186,14 +187,14 @@ float4 main(PixelInputType input) : SV_TARGET
     //st += st * abs(sin(time * 0.1)*3.0);
 
     float2 q = float2(0,0);
-    q.x = fbm(st + 0.00 * time);
-    q.y = fbm(st + float2(1.0, 0.0));
+    q.x = fbm(st + 0.00 * time + (mousePos / 690));
+    q.y = fbm(st + float2(1.0, 0.0) + (mousePos / 690));
 
     float2 r = float2(0, 0);
-    r.x = fbm(st + 1.0 * q + float2(1.7, 9.2) + 0.15 * time);
-    r.y = fbm(st + 1.0 * q + float2(8.3, 2.8) + 0.126 * time);
+    r.x = fbm(st + 1.0 * q + float2(1.7, 9.2) + 0.15 * time +(mousePos / 690)); //2pi r
+    r.y = fbm(st + 1.0 * q + float2(8.3, 2.8) + 0.126 * time + (mousePos / 690)); //2pi r
 
-    float f = fbm(st + r);
+    float f = fbm(st + r + (mousePos / 690));
     float3 color = float3(0,0,0);
 
     color = lerp(float3(0.101961, 0.619608, 0.666667),
@@ -213,14 +214,15 @@ float4 main(PixelInputType input) : SV_TARGET
     //return float4(I, I, I, 1.0f);
     diffuseColor = screenTexture.Sample(defaultSampleType, input.uv);
   //  return diffuseColor;
-
+    float4 background = skyTexture.Sample(defaultSampleType, input.uv);
 
    // float4 fogColor = float4(0.1f, 0.1f, 0.4f, 1.0f);
     float4 fogColor = float4(1, 1, 1, 1.0f);
     fogColor = float4(((f * f * f + .6 * f * f + .5 * f) * color).xyz, 1.0f);
 
     //fogColor = (f * f * f + .6 * f * f + .5 * f) * fogColor;
-
-    return lerp(diffuseColor, fogColor, fogFactor);
+    //diffuseColor = diffuseColor + (background*0.3f);
+    float4 result = lerp(diffuseColor, fogColor, fogFactor);
+    return result;
     //return diffuseColor + float4(d, d, d, 1.0f);
 }

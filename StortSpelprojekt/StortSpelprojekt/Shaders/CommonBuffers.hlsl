@@ -38,7 +38,7 @@ cbuffer cb_Scene : register(b2)
 	int id;
 	float factor;
 	float time;
-	float2 pad2;
+	float2 mousePos;
 }
 
 cbuffer cb_Lights : register(b3)

@@ -2,7 +2,7 @@
 #include "RenderPass.h"
 #include "FogRenderPass.h"
 #include "DShape.h"
-
+#include "Input.h"
 Renderer::Renderer() : device(nullptr), context(nullptr), swapchain(nullptr), skeleton_srvbuffer(nullptr), skeleton_srv(nullptr)
 {
 	srand(unsigned int(time(0)));
@@ -170,6 +170,13 @@ void Renderer::RenderFrame(CameraComponent* camera, float time, RenderTexture& t
 	data.id = ids;
 	data.factor = color;
 	data.time = time;
+	std::cout << xPos << std::endl;
+	std::cout << yPos << std::endl;
+	xPos += (float)Input::Instance().GetPrevMousePosRelative().y;
+	yPos += (float)Input::Instance().GetPrevMousePosRelative().x;
+	data.mousePos = { xPos,yPos };
+	//data.mousePos = { (float)Input::Instance().GetMousePos().x, (float)Input::Instance().GetMousePos().y };
+	// put in mouse pos delta here
 	dx::XMStoreFloat3(&data.cameraPosition, camera->GetOwner()->GetTransform().GetPosition());
 	dx::XMStoreFloat4x4(&data.invProjection, dx::XMMatrixTranspose(dx::XMMatrixInverse(NULL, camera->GetProjectionMatrix())));
 	dx::XMStoreFloat4x4(&data.invView, dx::XMMatrixTranspose(dx::XMMatrixInverse(NULL, camera->GetViewMatrix())));
