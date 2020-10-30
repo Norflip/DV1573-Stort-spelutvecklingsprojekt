@@ -3,27 +3,23 @@
 #define win32_lean_and_mean
 
 //Should never change
-#include "ZWEBLoader.h"
+#include <react3d.h>
+#include <vector>
+#include <iostream>
+#include <unordered_map>
+#include <mutex>
+#include <string>
+#include <vector>
+#include <fstream>
+#include <Windows.h> 
+
+//New list, all objects here will be accessible as global
+#include "Random.h"
+#include "Physics.h"
 #include "Window.h"
 #include "Input.h"
-#include "GUIFont.h"
-#include "GUISprite.h"
-#include "BoxColliderComponent.h"
-#include "CameraComponent.h"
-#include "Collider.h"
-#include "CollisionInfo.h"
-#include "Component.h"
-#include "ConstantBuffer.h"
-#include "DebugBoxShapeComponent.h"
-#include "DShape.h"
-#include "Engine.h"
-#include "GameClock.h"
-#include "Log.h"
-#include "Material.h"
-#include "Mesh.h"
-#include "MeshComponent.h"
-#include "PointQuadTree.h"
-#include "Random.h"
-//Might be changed
 #include "Message.h"
 #include "MessageBus.h"
+#include "Log.h"
+#include "GameClock.h"
+#include "ZWEBLoader.h"
