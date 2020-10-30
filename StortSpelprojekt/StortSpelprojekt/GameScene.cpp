@@ -147,7 +147,6 @@ void GameScene::InitializeObjects()
 	//rbEnemy.
 	physics.RegisterRigidBody(rbEnemy);
 	physics.MutexUnlock();
-
 	playerObject->AddComponent<PlayerAttackComp>(enemy);
 
 	//LOADING HOUSE AND LEGS AND ADDING SKELETONS TO THEM THE HOUSE ONLY HAS ONE JOINT CONNECTED TO IT

@@ -24,7 +24,7 @@ public:
 	void ReadObjects(ID3D11Device* device);
 	void ReadLights();
 	void ReadShaders(ID3D11Device* device);
-
+	void ReadMaterials(ID3D11Device* device);
 	void CompileShaders(ID3D11Device* device);
 	Object* AssembleObject(std::string meshName, std::string materialName);
 
