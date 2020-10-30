@@ -8,8 +8,8 @@ Transform::Transform(Object* owner) : Transform(owner,dx::XMVectorZero(), dx::XM
 
 Transform::Transform(Object* owner, dx::XMVECTOR position, dx::XMVECTOR rotation, dx::XMVECTOR scale) : owner(owner), parent(nullptr)
 {
-	dx::XMStoreFloat3(&this->position, position);
-	dx::XMStoreFloat4(&this->rotation, rotation);
+	dx::XMStoreFloat3(&this->localPosition, position);
+	dx::XMStoreFloat4(&this->localRotation, rotation);
 	dx::XMStoreFloat3(&this->scale, scale);
 	changedThisFrame = true;
 }
@@ -26,9 +26,9 @@ void Transform::Translate(float x, float y, float z)
 	{
 		changedThisFrame = true;
 
-		position.x += x;
-		position.y += y;
-		position.z += z;
+		localPosition.x += x;
+		localPosition.y += y;
+		localPosition.z += z;
 	}
 }
 
@@ -43,15 +43,10 @@ void Transform::Rotate(float pitch, float yaw, float roll)
 		dx::XMVECTOR right = TransformDirection({ 1,0,0 });
 		dx::XMVECTOR eulerRotation = dx::XMQuaternionMultiply(dx::XMQuaternionRotationAxis(right, pitch), dx::XMQuaternionRotationAxis({ 0,1,0 }, yaw));
 
-
 		//dx::XMVECTOR eulerRotation = dx::XMQuaternionRotationRollPitchYaw(pitch, yaw, roll);
-		dx::XMVECTOR newRotation = dx::XMQuaternionMultiply(dx::XMLoadFloat4(&rotation), eulerRotation);
+		dx::XMVECTOR newRotation = dx::XMQuaternionMultiply(dx::XMLoadFloat4(&localRotation), eulerRotation);
+		dx::XMStoreFloat4(&localRotation, newRotation);
 
-		dx::XMStoreFloat4(&rotation, newRotation);
-
-		//rotationQuaternion.x += pitch;
-		//rotationQuaternion.y += yaw;
-		//rotationQuaternion.z += roll;
 	}
 }
 
@@ -106,6 +101,14 @@ void Transform::ClearFromHierarchy(Transform& transform)
 	}
 }
 
+
+
+
+dx::XMVECTOR Transform::GetLocalPosition()
+{
+	return dx::XMLoadFloat3(&this->localPosition);
+}
+
 dx::XMVECTOR Transform::GetWorldPosition() const
 {
 	dx::XMVECTOR pos, rot, scale;
@@ -113,10 +116,10 @@ dx::XMVECTOR Transform::GetWorldPosition() const
 	return pos;
 }
 
-void Transform::SetPosition(dx::XMVECTOR position)
+void Transform::SetLocalPosition(dx::XMVECTOR position)
 {
 	ASSERT_STATIC_OBJECT;
-	dx::XMStoreFloat3(&this->position, position); 
+	dx::XMStoreFloat3(&this->localPosition, position);
 	changedThisFrame = true;
 }
 
@@ -129,40 +132,69 @@ void Transform::SetWorldPosition(dx::XMVECTOR position)
 		dx::XMMATRIX invWorld = dx::XMMatrixInverse(nullptr, parent->GetWorldMatrix());
 		pos = dx::XMVector3Transform(pos, invWorld);
 	}
-	
-	SetPosition(pos);
+
+	SetLocalPosition(pos);
+}
+
+
+dx::XMVECTOR Transform::GetLocalRotation() const
+{
+	return dx::XMLoadFloat4(&this->localRotation);
+}
+
+dx::XMVECTOR Transform::GetWorldRotation() const
+{
+	dx::XMVECTOR pos, rot, scale;
+	dx::XMMatrixDecompose(&scale, &rot, &pos, GetWorldMatrix());
+	return rot;
+}
+
+void Transform::SetLocalRotation(dx::XMVECTOR rotation)
+{
+	ASSERT_STATIC_OBJECT;
+	dx::XMStoreFloat4(&this->localRotation, rotation);
+	changedThisFrame = true;
+}
+
+void Transform::SetWorldRotation(dx::XMVECTOR rotation)
+{
+	dx::XMVECTOR rot = rotation;
+
+	if (parent != nullptr)
+	{
+		dx::XMMATRIX invWorld = dx::XMMatrixInverse(nullptr, parent->GetWorldMatrix());
+		dx::XMVECTOR parentRot = dx::XMQuaternionInverse(parent->GetWorldRotation());
+		rot = dx::XMQuaternionMultiply(rot, parentRot);
+	}
+
+	SetLocalRotation(rot);
 }
 
 void Transform::SetScale(dx::XMVECTOR scale)
 {
 	ASSERT_STATIC_OBJECT;
-	dx::XMStoreFloat3(&this->scale, scale); 
-	changedThisFrame = true;
-}
-
-void Transform::SetRotation(dx::XMVECTOR rotation)
-{
-	ASSERT_STATIC_OBJECT;
-	dx::XMStoreFloat4(&this->rotation, rotation); 
+	dx::XMStoreFloat3(&this->scale, scale);
 	changedThisFrame = true;
 }
 
 void Transform::SmoothRotation(dx::XMFLOAT3 endPos, float deltaTime, bool changeDir)
 {
-	float nextDir = 0;
-	float currentDir = rotation.y;
-	DirectX::XMVECTOR directionVector = { position.x - endPos.x,0, position.z - endPos.z };
+	//float nextDir = 0;
+	//float currentDir = localRotation.y;
+	//DirectX::XMVECTOR directionVector = { position.x - endPos.x,0, position.z - endPos.z };
 
-	if (changeDir)
-		nextDir = atan2(DirectX::XMVectorGetByIndex(directionVector, 0), DirectX::XMVectorGetByIndex(directionVector, 2));
+	//if (changeDir)
+	//	nextDir = atan2(DirectX::XMVectorGetByIndex(directionVector, 0), DirectX::XMVectorGetByIndex(directionVector, 2));
 
-	Rotate(0, Math::ShortestRotation(currentDir, nextDir) * (deltaTime * 3.14f), 0);
+	//Rotate(0, Math::ShortestRotation(currentDir, nextDir) * (deltaTime * 3.14f), 0);
 
-	if (DirectX::XMVectorGetByIndex(GetRotation(), 1) < -Math::PI * 2)
-		SetRotation({ 0, DirectX::XMVectorGetByIndex(GetRotation(), 1) + Math::PI * 2, 0 });
-	if (DirectX::XMVectorGetByIndex(GetRotation(), 1) > Math::PI * 2)
-		SetRotation({ 0, DirectX::XMVectorGetByIndex(GetRotation(), 1) - Math::PI * 2, 0 });
+	//if (DirectX::XMVectorGetByIndex(GetRotation(), 1) < -Math::PI * 2)
+	//	SetRotation({ 0, DirectX::XMVectorGetByIndex(GetRotation(), 1) + Math::PI * 2, 0 });
+	//if (DirectX::XMVectorGetByIndex(GetRotation(), 1) > Math::PI * 2)
+	//	SetRotation({ 0, DirectX::XMVectorGetByIndex(GetRotation(), 1) - Math::PI * 2, 0 });
 }
+
+
 
 dx::XMMATRIX Transform::GetWorldMatrix() const
 {
@@ -176,15 +208,15 @@ dx::XMMATRIX Transform::GetWorldMatrix() const
 dx::XMMATRIX Transform::GetLocalWorldMatrix() const
 {
 	return dx::XMMatrixScalingFromVector(dx::XMLoadFloat3(&this->scale)) *
-		dx::XMMatrixRotationQuaternion(dx::XMLoadFloat4(&this->rotation)) *
-		dx::XMMatrixTranslationFromVector(dx::XMLoadFloat3(&this->position));
+		dx::XMMatrixRotationQuaternion(dx::XMLoadFloat4(&this->localRotation)) *
+		dx::XMMatrixTranslationFromVector(dx::XMLoadFloat3(&this->localPosition));
 }
 
 DirectX::XMVECTOR Transform::TransformDirection(DirectX::XMVECTOR direction) const
 {
 
 	//dx::XMMATRIX rot = dx::XMMatrixRotationQuaternion();		// rotation matrix
-	return DirectX::XMVector3Rotate(dx::XMVector3Normalize(direction), dx::XMLoadFloat4(&this->rotation));	// rotates the direction with the matrix
+	return DirectX::XMVector3Rotate(dx::XMVector3Normalize(direction), dx::XMLoadFloat4(&this->localRotation));	// rotates the direction with the matrix
 }
 
 DirectX::XMVECTOR Transform::TransformDirectionCustomRotation(DirectX::XMVECTOR direction, DirectX::XMVECTOR cRotation) const
