@@ -7,6 +7,7 @@
 #include <vector>
 #include <iostream>
 #include <unordered_map>
+#include <unordered_set>
 #include <mutex>
 #include <string>
 #include <vector>
@@ -19,6 +20,11 @@
 #include <functional>
 #include <queue>
 #include <random>
+#include <assert.h>
+#include <bitset>
+#include <array>
+#include <algorithm>
+
 //GLOBAL HEADERS
 #include "Random.h"
 #include "Physics.h"

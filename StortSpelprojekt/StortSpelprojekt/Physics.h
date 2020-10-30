@@ -1,14 +1,7 @@
 #pragma once
-#include <react3d.h>
-
 #include "CollisionInfo.h"
 #include "Ray.h"
 #include "PhysicCallbacks.h"
-
-#include <vector>
-#include <iostream>
-#include <unordered_map>
-#include <mutex>
 
 enum class FilterGroups : unsigned short
 {

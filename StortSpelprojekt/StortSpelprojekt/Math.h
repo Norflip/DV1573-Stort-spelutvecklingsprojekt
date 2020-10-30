@@ -1,9 +1,5 @@
 #pragma once
-#include <DirectXMath.h>
 namespace dx = DirectX;
-#include <vector>
-#include <algorithm>
-
 #define HASH2D_F(X,Y) std::hash<float>()(X) * 100000 + std::hash<float>()(Y)
 #define HASH2D_I(X,Y) std::hash<int>()(X) * 100000 + std::hash<int>()(Y)
 

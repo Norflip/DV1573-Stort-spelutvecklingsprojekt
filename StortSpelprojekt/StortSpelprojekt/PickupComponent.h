@@ -3,7 +3,6 @@
 #include "Object.h"
 #include "Physics.h"
 #include "RigidBodyComponent.h"
-//#include "BoxColliderComponent.h"
 namespace dx = DirectX;
 
 
