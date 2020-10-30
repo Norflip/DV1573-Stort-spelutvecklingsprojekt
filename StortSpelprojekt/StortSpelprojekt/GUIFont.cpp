@@ -1,3 +1,4 @@
+#include "GUIManager.h"
 #include "SpriteFont.h"
 #include "GUIFont.h"
 

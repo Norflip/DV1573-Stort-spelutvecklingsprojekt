@@ -1,5 +1,10 @@
 #pragma once
-#include "GUIManager.h"
+
+
+
+
+
+class GUIManager;
 class GUIFont : public GUIObject
 {
 public:

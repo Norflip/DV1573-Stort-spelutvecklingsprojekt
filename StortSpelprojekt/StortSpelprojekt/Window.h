@@ -14,7 +14,6 @@
 #define WIN32_LEAN_AND_MEAN
 #include <Windows.h> 
 
-
 class Window
 {
 	const LPCWSTR CLASS_NAME = L"StortSpel_CLASS_INTE_HELT_HUNDRA_PA_VAD_DENNA_GOR";

@@ -1,3 +1,6 @@
+
+
+#include "Shader.h"
 #include "Skybox.h"
 
 Skybox::Skybox(ID3D11Device* device, ID3D11DeviceContext* context, Shader* shader)

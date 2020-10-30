@@ -2,6 +2,10 @@
 #include "Component.h"
 #include "Collider.h"
 
+class Collider;
+class Component;
+
+
 namespace dx = DirectX;
 
 class SphereColliderComponent : public Component, public Collider

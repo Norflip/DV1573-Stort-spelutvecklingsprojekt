@@ -1,3 +1,5 @@
+
+#include "GUIManager.h"
 #include "GUISprite.h"
 
 

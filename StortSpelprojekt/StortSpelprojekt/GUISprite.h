@@ -1,6 +1,6 @@
 #pragma once
 
-#include "GUIManager.h"
+
 #include "DirectXHelpers.h"
 #include <WICTextureLoader.h>
 #include <DirectXMath.h>
@@ -8,6 +8,7 @@
 #include "Renderer.h"
 #include <wrl.h>
 #include <iostream>
+class GUIManager;
 namespace dx = DirectX;
 
 enum DrawDirection : uint32_t
