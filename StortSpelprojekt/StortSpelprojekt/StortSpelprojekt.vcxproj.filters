@@ -255,7 +255,9 @@
     <ClCompile Include="Path.cpp">
       <Filter>Source Files\SpawnSystems</Filter>
     </ClCompile>
-    <ClCompile Include="WeaponComponent.cpp" />
+    <ClCompile Include="WeaponComponent.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="BoundingBoxes.h">

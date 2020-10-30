@@ -47,10 +47,12 @@ ALIGN16
 class Scene
 {
 public:
-	Scene(ResourceManager* manager);
+	Scene();
 	virtual ~Scene();
 
-	virtual void Initialize(Renderer* renderer) = 0;
+	virtual void SetDepedencies(ResourceManager* manager, Renderer* renderer, Window* window);
+
+	virtual void Initialize() = 0;
 	virtual void InitializeObjects() = 0;
 	virtual void InitializeGUI() = 0;
 	
@@ -77,9 +79,14 @@ private:
 
 protected:
 	Object* root;
-	CameraComponent* camera;
 	Renderer* renderer;
+	ResourceManager* resources;
+	Window* window;
+
+	CameraComponent* camera;
+	
 	GameClock clock;
+
 	Input& input;
 	Object* enemy;
 	Object* player;
@@ -89,12 +96,10 @@ protected:
 	dx::SpriteBatch* spriteBatch;
 	SpriteRenderPass* spritePass;	
 
-	ObjectPooler pooler;
+	ObjectPooler* pooler;
 	GUIManager* guiManager;		
 	
 	Skybox* skyboxClass;		
-	ResourceManager* resourceManager;
-	Window* window;
 
 	bool quit;	
 

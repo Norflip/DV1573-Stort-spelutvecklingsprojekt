@@ -14,7 +14,7 @@ private:
 
 public:
 	ResourceManager();
-	~ResourceManager();
+	virtual ~ResourceManager();
 
 	template <typename T> void AddResource(std::string key, T* resource);
 	void AddShaderResource(std::string key, Shader* shader);

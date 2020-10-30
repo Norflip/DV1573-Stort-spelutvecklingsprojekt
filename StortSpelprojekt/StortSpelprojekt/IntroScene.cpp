@@ -3,29 +3,19 @@
 #include "GUISprite.h"
 #include "GUIFont.h"
 
-IntroScene::IntroScene(ResourceManager* manager) : Scene(manager)
+IntroScene::IntroScene()
 {
 	
 }
 
 IntroScene::~IntroScene()
 {
-	AudioMaster::Instance().StopSoundEvent(menuTest);
+
 }
 
-void IntroScene::Initialize(Renderer* renderer)
+void IntroScene::Initialize()
 {
-	
-	this->renderer = renderer;
 
-	/*Physics& physics = Physics::Instance();
-	physics.Initialize({ 0, -10.0f, 0 });*/
-
-	// Should change values on resize event
-	this->window = renderer->GetOutputWindow();
-
-	//Input::Instance().SetWindow(window->GetHWND(), window->GetHeight(), window->GetWidth());
-	input.SetWindow(window->GetHWND(), window->GetHeight(), window->GetWidth());
 }
 
 void IntroScene::InitializeObjects()
@@ -45,7 +35,7 @@ void IntroScene::InitializeObjects()
 
 	ShowCursor(true); 
 
-	skyboxClass = new Skybox(renderer->GetDevice(), renderer->GetContext(), resourceManager->GetShaderResource("skyboxShader"));
+	skyboxClass = new Skybox(renderer->GetDevice(), renderer->GetContext(), resources->GetShaderResource("skyboxShader"));
 	skyboxClass->GetThisObject()->AddFlag(ObjectFlag::NO_CULL);
 }
 
@@ -116,18 +106,19 @@ void IntroScene::InitializeGUI()
 
 void IntroScene::OnActivate()
 {
-	root = new Object("sceneRoot", ObjectFlag::DEFAULT);
-	nextScene = INTRO;
-	input.SetMouseMode(dx::Mouse::MODE_ABSOLUTE);
 	InitializeGUI();
 	InitializeObjects();
+	nextScene = INTRO;
+	input.SetMouseMode(dx::Mouse::MODE_ABSOLUTE);
 }
 
 void IntroScene::OnDeactivate()
 {
+	AudioMaster::Instance().StopSoundEvent(menuTest);
 	renderer->RemoveRenderPass(guiManager);
-	delete root;
-	root = nullptr;
+
+	delete guiManager;
+	guiManager = nullptr;
 }
 
 void IntroScene::Update(const float& deltaTime)
@@ -169,16 +160,5 @@ void IntroScene::Update(const float& deltaTime)
 
 void IntroScene::FixedUpdate(const float& fixedDeltaTime)
 {
-	Scene::FixedUpdate(fixedDeltaTime);
+	//Scene::FixedUpdate(fixedDeltaTime);
 }
-
-void IntroScene::Render()
-{
-	skyboxClass->GetThisObject()->Draw(renderer, camera);
-
-	root->Draw(renderer, camera);
-	//worldGenerator.DrawShapes();
-
-	renderer->RenderFrame(camera, (float)clock.GetSeconds());
-}
-

@@ -122,7 +122,7 @@ void RigidBodyComponent::AddCollidersToBody(Object* obj, rp::RigidBody* body)
 		
 
 	assert(colliders.size() > 0);
-	std::cout << (GetOwner()->GetName() + " has " + std::to_string(colliders.size()) + " colliders\n");
+	//std::cout << (GetOwner()->GetName() + " has " + std::to_string(colliders.size()) + " colliders\n");
 
 	//CHILDREN
 	const std::vector<Transform*>& children = GetOwner()->GetTransform().GetChildren();

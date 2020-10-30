@@ -6,15 +6,11 @@
 
 
 
-Scene::Scene(ResourceManager* resources) : input(Input::Instance()), pooler(resources)
+Scene::Scene() : input(Input::Instance())
 {
 	skyboxClass = nullptr;
 	renderer = nullptr;
 	camera = nullptr;
-
-	//root = new Object("sceneRoot", ObjectFlag::DEFAULT);
-	resourceManager = resources;
-
 	quit = false;
 }
 
@@ -23,28 +19,25 @@ Scene::~Scene()
 	delete skyboxClass;
 	skyboxClass = nullptr;
 
-	/*delete root;
-	root = nullptr;	*/
+	delete root;
+	root = nullptr;	
 }
 
-void Scene::Initialize(Renderer* renderer)
+void Scene::SetDepedencies(ResourceManager* resources, Renderer* renderer, Window* window)
 {
-
-}
-
-void Scene::InitializeObjects()
-{
-
+	this->resources = resources;
+	this->renderer = renderer;
+	this->window = window;
+	this->pooler = new ObjectPooler(resources);
+	this->root = new Object("root");
+	this->input.SetWindow(window->GetHWND(), window->GetHeight(), window->GetWidth());
 }
 
 void Scene::Update(const float& deltaTime)
 {
 	clock.Update();
-
 	input.UpdateInputs();
-
 	root->Update(deltaTime);
-
 	GameClock::Instance().Update();
 
 	//renderer->UpdateTime((float)clock.GetSeconds());
@@ -58,7 +51,7 @@ void Scene::Update(const float& deltaTime)
 	if (KEY_PRESSED(P))
 	{
 		std::cout << "Compiling: " << std::endl;
-		resourceManager->CompileShaders(renderer->GetDevice());
+		resources->CompileShaders(renderer->GetDevice());
 	}
 }
 

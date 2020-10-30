@@ -3,7 +3,7 @@
 #include "GUISprite.h"
 #include "GUIFont.h"
 
-WinScene::WinScene(ResourceManager* manager) : Scene(manager)
+WinScene::WinScene() : Scene()
 {
 	
 }
@@ -12,14 +12,9 @@ WinScene::~WinScene()
 {
 }
 
-void WinScene::Initialize(Renderer* renderer)
+void WinScene::Initialize()
 {
-	this->renderer = renderer;
 
-	// Should change values on resize event
-	this->window = renderer->GetOutputWindow();
-
-	Input::Instance().SetWindow(window->GetHWND(), window->GetHeight(), window->GetWidth());
 }
 
 void WinScene::InitializeObjects()
@@ -36,7 +31,7 @@ void WinScene::InitializeObjects()
 
 
 
-	skyboxClass = new Skybox(renderer->GetDevice(), renderer->GetContext(), resourceManager->GetShaderResource("skyboxShader"));
+	skyboxClass = new Skybox(renderer->GetDevice(), renderer->GetContext(), resources->GetShaderResource("skyboxShader"));
 	skyboxClass->GetThisObject()->AddFlag(ObjectFlag::NO_CULL);
 }
 
