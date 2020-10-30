@@ -5,6 +5,7 @@
 class GUIFont;
 class SpriteRenderPass;
 
+ALIGN16
 class GameScene : public Scene
 {
 private:
@@ -26,6 +27,9 @@ public:
 	void Update(const float& deltaTime) override;
 	void FixedUpdate(const float& fixedDeltaTime) override;
 	void Render() override;
+
+	ALIGN16_ALLOC;
+
 private:
 	World world;
 	

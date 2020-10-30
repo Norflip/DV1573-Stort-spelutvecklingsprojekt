@@ -23,6 +23,7 @@ enum ClickFunction
 	NotClickable = 1,
 };
 
+ALIGN16
 class GUISprite :public GUIObject
 {
 
@@ -47,11 +48,13 @@ public:
 	void AddFlag(ObjectFlag flag);
 	void RemoveFlag(ObjectFlag flag);
 
+	ALIGN16_ALLOC;
+
 private:
 	std::string filePath;
 	float xPos, yPos;
 	float relativeXPos, relativeYPos;
-	float width, height;
+	size_t width, height;
 	float xScale, yScale;
 	float rotation;
 	float layerDepth;

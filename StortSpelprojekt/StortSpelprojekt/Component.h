@@ -19,6 +19,8 @@ inline size_t GetComponentTypeID() noexcept
 	return typeID;
 }
 
+
+ALIGN16
 class Component
 {
 public:
@@ -34,6 +36,7 @@ public:
 	Object* GetOwner() const { return this->owner; }
 	bool IsEnabled() const {return enable;}
 	void SetEnabled(bool enable) { this->enable = enable; }
+	ALIGN16_ALLOC;
 
 private:
 	Object* owner;

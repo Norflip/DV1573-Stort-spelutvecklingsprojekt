@@ -23,7 +23,7 @@ public:
 	float GetAttackSpeed() const { return attackSpeed; }
 	float GetFuel()const { return fuel; }
 	float GetFood()const { return food; }
-	float GetCurrentWeapon()const { return currentWeapon; }
+	int GetCurrentWeapon()const { return currentWeapon; }
 	float GetSprintSpeed()const { return SprintSpeed; }
 	float GetCrouchSpeed()const { return crouchSpeed; }
 	float GetMovementspeed()const { return movementSpeed; }

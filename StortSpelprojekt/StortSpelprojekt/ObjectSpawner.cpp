@@ -130,7 +130,7 @@ void ObjectSpawner::RegisterItem(std::string key, float radius, float padding, f
 	item.radius = radius;
 	item.padding = padding;
 
-	for (size_t i = 0; i < queueCount; i++)
+	for (size_t i = 0; i < UICAST(queueCount); i++)
 	{
 		switch (type)
 		{
@@ -167,7 +167,7 @@ std::vector<dx::XMFLOAT2> ObjectSpawner::CreateSpawnPositions(PointQuadTree& tre
 	dx::XMFLOAT2 max = tree.GetMax();
 
 	PossionDiscSampler sampler;
-	std::vector<dx::XMFLOAT2> points = sampler.GeneratePoints(radius, dx::XMFLOAT2(max.x - min.x, max.y - min.y), 5);
+	std::vector<dx::XMFLOAT2> points = sampler.GeneratePoints(radius, dx::XMFLOAT2(max.x - min.x, max.y - min.y), false, 5);
 	std::vector<dx::XMFLOAT2> validPoints;
 	size_t fails = 0;
 

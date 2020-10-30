@@ -30,6 +30,8 @@ AudioMaster::~AudioMaster()
 
 void AudioMaster::LoadFile(const std::wstring fileName, SoundEvent& soundEvent, const AudioTypes& soundType)
 {
+	ZeroMemory(&soundEvent, sizeof(SoundEvent));
+
 	/* Load soundfile with engine into a wave and make it playable */
 	engine->LoadFile(fileName, soundEvent.audioData, &waveFormatEx, soundEvent.waveLength);
 	soundEvent.waveFormat = *waveFormatEx;

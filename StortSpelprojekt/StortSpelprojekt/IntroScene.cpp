@@ -23,11 +23,7 @@ void IntroScene::Initialize(Renderer* renderer)
 	physics.Initialize({ 0, -10.0f, 0 });*/
 
 	// Should change values on resize event
-	Window* window = renderer->GetOutputWindow();
-
-	windowHeight = window->GetHeight();
-	windowWidth = window->GetWidth();
-
+	this->window = renderer->GetOutputWindow();
 
 	//Input::Instance().SetWindow(window->GetHWND(), window->GetHeight(), window->GetWidth());
 	input.SetWindow(window->GetHWND(), window->GetHeight(), window->GetWidth());
@@ -43,7 +39,7 @@ void IntroScene::InitializeObjects()
 
 	Object* cameraObject = new Object("camera", ObjectFlag::ENABLED);
 	camera = cameraObject->AddComponent<CameraComponent>(60.0f, true);
-	camera->Resize(windowWidth, windowHeight);
+	camera->Resize(window->GetWidth(), window->GetHeight());
 	//cameraObject2->AddComponent<ControllerComponent>();
 	this->player = cameraObject;
 	AddObject(cameraObject);
@@ -56,6 +52,8 @@ void IntroScene::InitializeObjects()
 
 void IntroScene::InitializeGUI()
 {
+	float windowWidth = FCAST(window->GetWidth());
+
 	//spriteBatch = new DirectX::SpriteBatch(renderer->GetContext());
 	GUISprite* titleSprite = new GUISprite(*renderer, "Textures/OnceUponATime.png", windowWidth / 2 - 100, 100, 0, DrawDirection::Default, ClickFunction::NotClickable);
 	GUISprite* startSprite = new GUISprite(*renderer, "Textures/Start.png", 100, 100, 0, DrawDirection::Default, ClickFunction::Clickable);

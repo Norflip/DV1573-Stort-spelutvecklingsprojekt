@@ -6,6 +6,7 @@
 #include "BoundingBoxes.h"
 #include "Object.h"
 
+ALIGN16
 class MeshComponent : public Component
 {
 public:
@@ -18,6 +19,8 @@ public:
 
 	void Draw(Renderer* renderer, CameraComponent* camera) override;
 	BoundingBoxes& GetBoundingBoxes() { return this->boundingBoxes; }
+
+	ALIGN16_ALLOC;
 
 private:
 	std::vector<Mesh> meshes;

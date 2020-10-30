@@ -4,6 +4,7 @@
 
 #include "../include/DDSTextureLoader.h"
 
+ALIGN16
 class Skybox
 {
 public:
@@ -21,6 +22,8 @@ public:
 	/*dx::XMFLOAT4 GetDiffuse() { return this->diffuse; }
 	dx::XMFLOAT4 GetAmbient() { return this->ambient; }
 	dx::XMFLOAT4 GetSpecular() { return this->specular; }*/
+	ALIGN16_ALLOC;
+
 
 private:	
 	HRESULT hr;

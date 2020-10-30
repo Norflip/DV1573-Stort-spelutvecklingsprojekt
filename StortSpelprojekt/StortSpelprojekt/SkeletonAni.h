@@ -40,7 +40,8 @@ public:
 	std::string GetRootName();
 	unsigned int GetNrOfBones() const;
 	void SetUpOffsetsFromMatrices(std::vector<SkeletonOffsetsHeader>& offsets);
-	std::vector<Bone>& GetRootKeyJoints();
+
+	std::vector<Bone>* GetRootKeyJoints();
 	void SetUpIDMapAndFrames(std::map<std::string, unsigned int> boneIDMap, float fps, float aniLenght);
 	void SetUpKeys(std::string boneName, std::vector<SkeletonKeysHeader>& keys);
 	std::map<std::string, unsigned int>& GetBoneIDMap();

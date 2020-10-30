@@ -58,30 +58,30 @@ void SkeletonMeshComponent::RunAnimation(const float& deltaTime)
 	}
 	if (currentAni == SkeletonStateMachine::IDLE)
 	{	
-		finalTransforms = skeletonAnimations[0].Makeglobal(elapsedTime, dx::XMMatrixIdentity(), skeletonAnimations[0].GetRootKeyJoints());
+		finalTransforms = skeletonAnimations[0].Makeglobal(elapsedTime, dx::XMMatrixIdentity(), *skeletonAnimations[0].GetRootKeyJoints());
 		
 	}
 	else if (currentAni == SkeletonStateMachine::WALK)
 	{
-		finalTransforms = skeletonAnimations[1].Makeglobal(elapsedTime, dx::XMMatrixIdentity(), skeletonAnimations[1].GetRootKeyJoints());
+		finalTransforms = skeletonAnimations[1].Makeglobal(elapsedTime, dx::XMMatrixIdentity(), *skeletonAnimations[1].GetRootKeyJoints());
 	}
 	else if (currentAni == SkeletonStateMachine::RUN|| currentAni == SkeletonStateMachine::UP)
 	{
-		finalTransforms = skeletonAnimations[2].Makeglobal(elapsedTime, dx::XMMatrixIdentity(), skeletonAnimations[2].GetRootKeyJoints());
+		finalTransforms = skeletonAnimations[2].Makeglobal(elapsedTime, dx::XMMatrixIdentity(), *skeletonAnimations[2].GetRootKeyJoints());
 	}
 	else if (currentAni == SkeletonStateMachine::ATTACK || currentAni == SkeletonStateMachine::DOWN)
 	{
-		finalTransforms = skeletonAnimations[3].Makeglobal(elapsedTime, dx::XMMatrixIdentity(), skeletonAnimations[3].GetRootKeyJoints());
+		finalTransforms = skeletonAnimations[3].Makeglobal(elapsedTime, dx::XMMatrixIdentity(), *skeletonAnimations[3].GetRootKeyJoints());
 
 		
 	}
 	else if (currentAni == SkeletonStateMachine::DEATH)
 	{
-		finalTransforms = skeletonAnimations[4].Makeglobal(elapsedTime, dx::XMMatrixIdentity(), skeletonAnimations[4].GetRootKeyJoints());
+		finalTransforms = skeletonAnimations[4].Makeglobal(elapsedTime, dx::XMMatrixIdentity(), *skeletonAnimations[4].GetRootKeyJoints());
 	}
 	else if (currentAni == SkeletonStateMachine::BLENDED)
 	{
-		finalTransforms = skeletonAnimations[5].Makeglobal(elapsedTime, dx::XMMatrixIdentity(), skeletonAnimations[4].GetRootKeyJoints());
+		finalTransforms = skeletonAnimations[5].Makeglobal(elapsedTime, dx::XMMatrixIdentity(), *skeletonAnimations[4].GetRootKeyJoints());
 	}
 	
 }
@@ -171,7 +171,7 @@ void SkeletonMeshComponent::PlayOnce()
 			if (animationTime < skeletonAnimations[0].GetAniLength())
 			{
 
-				finalTransforms = skeletonAnimations[0].Makeglobal(time, dx::XMMatrixIdentity(), skeletonAnimations[0].GetRootKeyJoints());
+				finalTransforms = skeletonAnimations[0].Makeglobal(time, dx::XMMatrixIdentity(), *skeletonAnimations[0].GetRootKeyJoints());
 			}
 			else
 			{
@@ -194,8 +194,7 @@ void SkeletonMeshComponent::PlayOnce()
 
 			if (animationTime < skeletonAnimations[1].GetAniLength())
 			{
-
-				finalTransforms = skeletonAnimations[1].Makeglobal(time, dx::XMMatrixIdentity(), skeletonAnimations[1].GetRootKeyJoints());
+				finalTransforms = skeletonAnimations[1].Makeglobal(time, dx::XMMatrixIdentity(), *skeletonAnimations[1].GetRootKeyJoints());
 			}
 			else
 			{
@@ -220,7 +219,7 @@ void SkeletonMeshComponent::PlayOnce()
 			if (animationTime < skeletonAnimations[3].GetAniLength())
 			{
 				
-				finalTransforms = skeletonAnimations[3].Makeglobal(time, dx::XMMatrixIdentity(), skeletonAnimations[3].GetRootKeyJoints());
+				finalTransforms = skeletonAnimations[3].Makeglobal(time, dx::XMMatrixIdentity(), *skeletonAnimations[3].GetRootKeyJoints());
 				
 			}
 			else
@@ -248,7 +247,7 @@ void SkeletonMeshComponent::PlayOnce()
 			if (animationTime < skeletonAnimations[3].GetAniLength())
 			{
 				
-				finalTransforms = skeletonAnimations[3].Makeglobal(time, dx::XMMatrixIdentity(), skeletonAnimations[3].GetRootKeyJoints());
+				finalTransforms = skeletonAnimations[3].Makeglobal(time, dx::XMMatrixIdentity(), *skeletonAnimations[3].GetRootKeyJoints());
 			}
 			else
 			{
@@ -279,7 +278,7 @@ void SkeletonMeshComponent::PlayOnce()
 			if (animationTime < skeletonAnimations[4].GetAniLength())
 			{
 				
-				finalTransforms = skeletonAnimations[4].Makeglobal(time, dx::XMMatrixIdentity(), skeletonAnimations[4].GetRootKeyJoints());
+				finalTransforms = skeletonAnimations[4].Makeglobal(time, dx::XMMatrixIdentity(), *skeletonAnimations[4].GetRootKeyJoints());
 			}
 			else
 			{

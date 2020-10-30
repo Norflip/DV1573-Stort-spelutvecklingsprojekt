@@ -7,6 +7,8 @@
 
 constexpr std::size_t MAX_SHADER_SLOTS = 5;
 
+
+ALIGN16
 class Material
 {
 	static size_t idCounter;
@@ -43,6 +45,8 @@ public:
 
 	size_t GetID() const { return this->id; }
 	Shader* GetShader() { return this->shader; }
+
+	ALIGN16_ALLOC;
 
 private:
 	Shader* shader;

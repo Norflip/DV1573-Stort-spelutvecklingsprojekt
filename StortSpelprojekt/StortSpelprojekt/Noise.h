@@ -28,8 +28,8 @@ namespace Noise
 			this->persistance = 0.0f;
 			this->lacunarity = 0.0f;
 
-			this->xOffset = Random::Range(-100000, 100000);
-			this->yOffset = Random::Range(-100000, 100000);
+			this->xOffset = Random::Range(-100000.f, 100000.f);
+			this->yOffset = Random::Range(-100000.f, 100000.f);
 		}
 	};
 

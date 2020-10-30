@@ -99,7 +99,7 @@ void ObjectPooler::Warm(Pool* pool, size_t amount, bool additive)
 {
 	if (amount > 0)
 	{
-		int toAdd = amount;
+		size_t toAdd = amount;
 		if (additive)
 			toAdd -= pool->inside.size();
 

@@ -6,6 +6,7 @@
 
 WinScene::WinScene(ResourceManager* manager) : Scene(manager)
 {
+	
 }
 
 WinScene::~WinScene()
@@ -17,10 +18,7 @@ void WinScene::Initialize(Renderer* renderer)
 	this->renderer = renderer;
 
 	// Should change values on resize event
-	Window* window = renderer->GetOutputWindow();
-
-	windowHeight = window->GetHeight();
-	windowWidth = window->GetWidth();
+	this->window = renderer->GetOutputWindow();
 
 	Input::Instance().SetWindow(window->GetHWND(), window->GetHeight(), window->GetWidth());
 }
@@ -29,7 +27,7 @@ void WinScene::InitializeObjects()
 {
 	Object* cameraObject = new Object("camera", ObjectFlag::ENABLED);
 	camera = cameraObject->AddComponent<CameraComponent>(60.0f, true);
-	camera->Resize(windowWidth, windowHeight);
+	camera->Resize(window->GetWidth(), window->GetHeight());
 	this->player = cameraObject;
 	//cameraObject3->AddComponent<ControllerComponent>();
 	AddObject(cameraObject);
@@ -45,6 +43,8 @@ void WinScene::InitializeObjects()
 
 void WinScene::InitializeGUI()
 {
+	float windowWidth = static_cast<float>(window->GetWidth());
+
 	GUISprite* win = new GUISprite(*renderer, "Textures/Win.png", windowWidth / 2 - 120, 100, 0, DrawDirection::Default, ClickFunction::NotClickable);
 	GUISprite* restart = new GUISprite(*renderer, "Textures/Restart.png", 100, 200, 0, DrawDirection::Default, ClickFunction::Clickable);
 	GUISprite* quit = new GUISprite(*renderer, "Textures/Exit.png", 100, 400, 0, DrawDirection::Default, ClickFunction::Clickable);

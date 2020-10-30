@@ -87,7 +87,7 @@ void DXHelper::BindConstBuffer(ID3D11DeviceContext* context, ID3D11Buffer* buffe
 
 }
 
-D3D11_MAPPED_SUBRESOURCE& DXHelper::BindInstanceBuffer(ID3D11DeviceContext* context, ID3D11Buffer* buffer)
+D3D11_MAPPED_SUBRESOURCE DXHelper::BindInstanceBuffer(ID3D11DeviceContext* context, ID3D11Buffer* buffer)
 {
 	D3D11_MAPPED_SUBRESOURCE mappedData = {}; //zeroing out the memory like this.
 	

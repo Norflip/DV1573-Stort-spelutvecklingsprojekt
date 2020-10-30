@@ -17,10 +17,7 @@ void GameOverScene::Initialize(Renderer* renderer)
 	this->renderer = renderer;
 
 	// Should change values on resize event
-	Window* window = renderer->GetOutputWindow();
-
-	windowHeight = window->GetHeight();
-	windowWidth = window->GetWidth();
+	this->window = renderer->GetOutputWindow();
 
 	Input::Instance().SetWindow(window->GetHWND(), window->GetHeight(), window->GetWidth());
 }
@@ -29,7 +26,7 @@ void GameOverScene::InitializeObjects()
 {
 	
 	camera = cameraObject->AddComponent<CameraComponent>(60.0f, true);
-	camera->Resize(windowWidth, windowHeight);
+	camera->Resize(window->GetWidth(), window->GetHeight());
 	this->player = cameraObject;
 	//cameraObject3->AddComponent<ControllerComponent>();
 	AddObject(cameraObject);
@@ -43,6 +40,7 @@ void GameOverScene::InitializeObjects()
 
 void GameOverScene::InitializeGUI()
 {
+	float windowWidth = FCAST(window->GetWidth());
 	//spriteBatch = new DirectX::SpriteBatch(renderer->GetContext());
 	GUISprite* lose = new GUISprite(*renderer, "Textures/Died.png", windowWidth / 2 - 120, 100, 0, DrawDirection::Default, ClickFunction::NotClickable);
 	GUISprite* restart = new GUISprite(*renderer, "Textures/Restart.png", 100, 200, 0, DrawDirection::Default, ClickFunction::Clickable);

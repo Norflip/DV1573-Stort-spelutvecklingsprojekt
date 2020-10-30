@@ -18,6 +18,8 @@ public:
 	std::string GetString() const;
 	void Update() {};
 
+	ALIGN16_ALLOC;
+
 private:
 	Renderer* renderer;
 	DirectX::SpriteFont* spriteFont;

@@ -1,6 +1,7 @@
 #pragma once
 #include "RenderPass.h"
 
+ALIGN16
 class FogRenderPass : public RenderPass
 {
 public:
@@ -27,6 +28,8 @@ public:
 		ID3D11ShaderResourceView* nullSRV[1] = { nullptr };
 		renderer->GetContext()->PSSetShaderResources(1, 1, nullSRV);
 	}
+
+	ALIGN16_ALLOC;
 
 private:
 	Material material;

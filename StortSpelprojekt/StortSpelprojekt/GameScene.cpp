@@ -23,10 +23,7 @@ void GameScene::Initialize(Renderer* renderer)
 	this->renderer = renderer;
 
 	// Should change values on resize event
-	Window* window = renderer->GetOutputWindow();
-
-	windowHeight = window->GetHeight();
-	windowWidth = window->GetWidth();
+	this->window = renderer->GetOutputWindow();
 
 	Physics& physics = Physics::Instance();
 	physics.Initialize({ 0, -10.0f, 0 });
@@ -89,7 +86,7 @@ void GameScene::InitializeObjects()
 	Object* cameraObject = new Object("camera", ObjectFlag::ENABLED);
 	this->player = playerObject;
 	camera = cameraObject->AddComponent<CameraComponent>(60.0f, true);
-	camera->Resize(this->windowWidth, this->windowHeight);
+	camera->Resize(window->GetWidth(), window->GetHeight());
 	cameraObject->GetTransform().SetPosition(playerSpawnVec);
 	playerObject->GetTransform().SetPosition(playerSpawnVec);
 
@@ -105,7 +102,7 @@ void GameScene::InitializeObjects()
 
 	playerObject->AddComponent<ControllerComp>(cameraObject); /////////////////
 	//Transform::SetParentChild(playerObject->GetTransform(),cameraObject->GetTransform());
-	playerObject->AddComponent<PlayerComp>(renderer, camera, Physics::Instance(), guiManager, 100, 2, 3, 50, 3);
+	playerObject->AddComponent<PlayerComp>(renderer, camera, Physics::Instance(), guiManager, 100.f, 2.f, 3.f, 50.f, 3.f);
 	//playerStatsComp = playerObject->GetComponent<PlayerComp>(); //
 
 	AddObject(cameraObject, playerObject);
@@ -115,7 +112,7 @@ void GameScene::InitializeObjects()
 
 	dx::XMFLOAT3 lightTranslation = dx::XMFLOAT3(0.0f, 0.0f, -1.0f);
 	testPointLight->GetTransform().SetPosition(dx::XMLoadFloat3(&lightTranslation));
-	testPointLight->AddComponent<PointLightComponent>(dx::XMFLOAT4(0.8f, 0.8f, 0.8f, 1.0f), 25);
+	testPointLight->AddComponent<PointLightComponent>(dx::XMFLOAT4(0.8f, 0.8f, 0.8f, 1.0f), 25.f);
 
 	AddObject(testPointLight, playerObject);
 
@@ -133,7 +130,7 @@ void GameScene::InitializeObjects()
 	dx::XMFLOAT3 enemyTranslation = dx::XMFLOAT3(23, 7, 46);
 	enemy->GetTransform().SetPosition(dx::XMLoadFloat3(&enemyTranslation));
 	enemy->GetTransform().SetScale({ 0.125f, 0.125f, 0.125f });
-	enemy->AddComponent<EnemyStatsComp>(100, 0.5f, 5, 5, 3);
+	enemy->AddComponent<EnemyStatsComp>(100.f, 0.5f, 5.f, 5.f, 3.f);
 	enemy->AddComponent<BoxColliderComponent>(dx::XMFLOAT3{ 1, 1, 1 }, dx::XMFLOAT3{ 0, 0, 0 });
 
 	//enemyStatsComp = enemy->GetComponent<EnemyStatsComp>();
@@ -146,7 +143,7 @@ void GameScene::InitializeObjects()
 	AddObject(enemy);
 
 	physics.MutexLock();
-	RigidBodyComponent* rbEnemy = enemy->AddComponent<RigidBodyComponent>(0, FilterGroups::ENEMIES, FilterGroups::PLAYER, BodyType::STATIC);
+	RigidBodyComponent* rbEnemy = enemy->AddComponent<RigidBodyComponent>(0.f, FilterGroups::ENEMIES, FilterGroups::PLAYER, BodyType::STATIC);
 	//rbEnemy.
 	physics.RegisterRigidBody(rbEnemy);
 	physics.MutexUnlock();
@@ -253,7 +250,7 @@ void GameScene::InitializeObjects()
 	healthkitObject->AddComponent<PickupComponent>(Type::Health, 20.0f);
 
 	RigidBodyComponent* healthBody;
-	healthBody = healthkitObject->AddComponent<RigidBodyComponent>(0, FilterGroups::PICKUPS, FilterGroups::PLAYER, BodyType::DYNAMIC);
+	healthBody = healthkitObject->AddComponent<RigidBodyComponent>(0.f, FilterGroups::PICKUPS, FilterGroups::PLAYER, BodyType::DYNAMIC);
 	physics.RegisterRigidBody(healthBody);
 	AddObject(healthkitObject);
 
@@ -268,7 +265,7 @@ void GameScene::InitializeObjects()
 	fuelCanObject->AddComponent<PickupComponent>(Type::Fuel, 20.0f);
 
 	RigidBodyComponent* fuelBody;
-	fuelBody = fuelCanObject->AddComponent<RigidBodyComponent>(0, FilterGroups::PICKUPS, FilterGroups::PLAYER, BodyType::DYNAMIC);
+	fuelBody = fuelCanObject->AddComponent<RigidBodyComponent>(0.f, FilterGroups::PICKUPS, FilterGroups::PLAYER, BodyType::DYNAMIC);
 	physics.RegisterRigidBody(fuelBody);
 	AddObject(fuelCanObject);
 
@@ -283,13 +280,16 @@ void GameScene::InitializeObjects()
 	beansObject->AddComponent<PickupComponent>(Type::Food, 20.0f);
 
 	RigidBodyComponent* beansBody;
-	beansBody = beansObject->AddComponent<RigidBodyComponent>(0, FilterGroups::PICKUPS, FilterGroups::PLAYER, BodyType::DYNAMIC);
+	beansBody = beansObject->AddComponent<RigidBodyComponent>(0.f, FilterGroups::PICKUPS, FilterGroups::PLAYER, BodyType::DYNAMIC);
 	physics.RegisterRigidBody(beansBody);
 	AddObject(beansObject);
 }
 
 void GameScene::InitializeGUI()
 {
+
+	float windowWidth = FCAST(window->GetWidth());
+	float windowHeight = FCAST(window->GetHeight());
 	//GUISTUFF//
 
 	//INFO, WE ARE DRAWING BACK TO FRONT. IF YOU WANT SOMETHING TO BE IN FRONT. SET VALUE TO 0. IF YOU WANT IT IN BACK USE 0.1 -> 1
@@ -474,7 +474,7 @@ void GameScene::Update(const float& deltaTime)
 	p.x = renderer->GetOutputWindow()->GetWidth() / 2;
 	p.y = renderer->GetOutputWindow()->GetHeight() / 2;
 
-	Ray ray = camera->MouseToRay(p.x, p.y);
+	Ray ray = camera->MouseToRay(UICAST(p.x), UICAST(p.y));
 	//std::cout << p.x << ", " << p.y << std::endl;
 
 	//if (LMOUSE_PRESSED)

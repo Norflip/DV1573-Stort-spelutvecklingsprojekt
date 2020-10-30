@@ -20,7 +20,7 @@ Points PossionDiscSampler::GeneratePoints(float radius, dx::XMFLOAT2 regionSize,
 	const int rows = static_cast<int>(ceilf(regionSize.y / cellSize));
 	int* grid = new int[cols * rows];
 
-	for (size_t i = 0; i < cols * rows; i++)
+	for (size_t i = 0; i < UICAST(cols * rows); i++)
 		grid[i] = 0;
 
 	spawnPoints.push_back(dx::XMFLOAT2(regionSize.x / 2.0f, regionSize.y / 2.0f));
@@ -33,7 +33,7 @@ Points PossionDiscSampler::GeneratePoints(float radius, dx::XMFLOAT2 regionSize,
 		dx::XMFLOAT2 center = spawnPoints[index];
 		bool accepted = false;
 
-		for (size_t i = 0; i < rejectionCount; i++)
+		for (size_t i = 0; i < UICAST(rejectionCount); i++)
 		{
 			// random.value
 			float angle = distribution(rngEngine) * Math::PI * 2.0f;

@@ -28,9 +28,11 @@ public:
 	bool IsRunning() const { return this->running; }
 
 	Scene* GetActiveScene() const { return this->activeScene; }
-	void RegisterScene (size_t id, Scene* scene);
+	void RegisterScene(size_t id, Scene* scene);
 	void UnregisterScene(size_t id);
-	void SwitchScene (size_t id);
+	void SwitchScene(size_t id);
+
+	ALIGN16_ALLOC;
 
 private:
 	static void FixedUpdateLoop(Engine* engine);
