@@ -1,3 +1,4 @@
+#include "stdafx.h"
 #include "CapsuleColliderComponent.h"
 #include "Physics.h"
 

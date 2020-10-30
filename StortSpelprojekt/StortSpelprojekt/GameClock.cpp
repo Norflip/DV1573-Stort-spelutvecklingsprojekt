@@ -1,3 +1,4 @@
+#include "stdafx.h"
 #include "GameClock.h"
 #include <iostream>
 GameClock::GameClock()

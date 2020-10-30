@@ -1,3 +1,4 @@
+#include "stdafx.h"
 #include "AudioEngine.h"
 
 AudioEngine::AudioEngine() : audioMaster(nullptr), masterVoice(nullptr), sourceReader(nullptr), nativeMediaType(nullptr), partialType(nullptr), uncompressedAudioFile(nullptr), sourceReaderConfig(nullptr), sample(nullptr), buffer(nullptr), localAudioData(NULL)

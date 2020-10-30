@@ -1,3 +1,4 @@
+#include "stdafx.h"
 #include "Renderer.h"
 #include "RenderPass.h"
 #include "FogRenderPass.h"

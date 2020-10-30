@@ -1,6 +1,4 @@
 #pragma once
-#include <react3d.h>
-#include <DirectXMath.h>
 #include "Transform.h"
 #include "Component.h"
 #include "Object.h"
@@ -8,9 +6,6 @@
 #include "BoxColliderComponent.h"
 #include "SphereColliderComponent.h"
 #include "CapsuleColliderComponent.h"
-
-#include <vector>
-#include <functional>
 #include "CollisionInfo.h"
 
 namespace dx = DirectX;

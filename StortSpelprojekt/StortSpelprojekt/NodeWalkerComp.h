@@ -1,12 +1,8 @@
 #pragma once
 #include "SkeletonMeshComponent.h"
 #include "Path.h"
-//#include "Component.h"
-//#include "Transform.h"
-//#include <DirectXMath.h>
-//#include "Object.h"
 #include "Input.h"
-
+// why are these global?
 constexpr float HEIGHT = 1.f; //height from ground
 const float OFFSET = CHUNK_SIZE / 2.0f;
 

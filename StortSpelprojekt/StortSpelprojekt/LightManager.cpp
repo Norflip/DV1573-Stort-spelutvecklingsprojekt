@@ -1,3 +1,4 @@
+#include "stdafx.h"
 #include "LightManager.h"
 #include "PointLightComponent.h"
 

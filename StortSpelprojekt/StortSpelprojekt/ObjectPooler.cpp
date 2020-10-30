@@ -1,3 +1,4 @@
+#include "stdafx.h"
 #include "ObjectPooler.h"
 
 ObjectPooler::ObjectPooler(ResourceManager* resources) : resourceManager(resources) {}

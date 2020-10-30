@@ -1,3 +1,4 @@
+#include "stdafx.h"
 #include "ChunkGrid.h"
 
 void ChunkGrid::Generate(int maxSteps, int padding, int directionalSteps)

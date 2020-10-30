@@ -1,3 +1,4 @@
+#include "stdafx.h"
 #include "EnemySMComp.h"
 
 EnemySMComp::EnemySMComp(EnemyState state) :

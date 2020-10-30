@@ -1,3 +1,4 @@
+#include "stdafx.h"
 #include "PickupComponent.h"
 
 PickupComponent::PickupComponent(Type type, float amount): pickupType(type)

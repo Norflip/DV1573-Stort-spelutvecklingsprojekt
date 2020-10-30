@@ -1,7 +1,6 @@
 #pragma once
 #include "GUIManager.h"
-
-ALIGN16
+#include "SpriteFont.h"
 class GUIFont : public GUIObject
 {
 public:

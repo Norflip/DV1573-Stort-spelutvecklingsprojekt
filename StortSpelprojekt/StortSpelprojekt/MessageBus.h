@@ -1,8 +1,4 @@
 #pragma once
-#include <functional>
-#include <queue>
-#include <vector>
-#include "Message.h"
 
 template <typename T>
 class MessageBus

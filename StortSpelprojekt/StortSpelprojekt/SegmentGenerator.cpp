@@ -1,3 +1,4 @@
+#include "stdafx.h"
 #include "SegmentGenerator.h"
 
 SegmentGenerator::SegmentGenerator() : constructed(false), treePoints(dx::XMFLOAT2(0,0), dx::XMFLOAT2(0, 0))

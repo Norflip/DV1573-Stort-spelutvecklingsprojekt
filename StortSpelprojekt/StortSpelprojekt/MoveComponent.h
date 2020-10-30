@@ -1,8 +1,6 @@
 #pragma once
 #include "Component.h"
 #include "Object.h"
-//#include <DirectXMath.h>
-namespace dx = DirectX;
 class MoveComponent:public Component
 {
 private:

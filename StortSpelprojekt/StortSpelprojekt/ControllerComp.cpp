@@ -1,3 +1,4 @@
+#include "stdafx.h"
 #include "ControllerComp.h"
 
 bool ControllerComp::IsGrounded() const

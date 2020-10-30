@@ -1,38 +1,29 @@
 #pragma once
 
 enum NEXT_SCENE { INTRO = 0, LOSE = 1, GAME = 2, WIN = 3 };
-#include <vector>
+
+//THIS MESS NEEDS TO DIE A HORRIBLE DEATH
 #include "Object.h"
 #include "HeightMap.h"
 #include "ShittyOBJLoader.h"
-#include "Input.h"
-#include "GameClock.h"
-#include "CameraComponent.h"
 #include "MoveComponent.h"
 #include "ControllerComp.h"
-#include "MeshComponent.h"
-#include "ZWEBLoader.h"
 #include "SkeletonMeshComponent.h"
 #include "PointLightComponent.h"
 #include "NodeWalkerComp.h"
 #include "EnemyStatsComp.h"
 #include "EnemySMComp.h"
 #include "PlayerAttackComp.h"
-
 #include "Skybox.h"
 #include "SaveState.h"
-#include "DShape.h"
 #include "GUIManager.h"
-#include <string>
-
 #include "Physics.h"
 #include "RigidBodyComponent.h"
-#include "BoxColliderComponent.h"
 #include "SphereColliderComponent.h"
 #include "CapsuleColliderComponent.h"
 #include "DebugBoxShapeComponent.h"
 #include "PickupComponent.h"
-
+//Might need to yeet
 #include "ResourceManager.h"
 #include "ObjectPooler.h"
 #include "WeaponComponent.h"

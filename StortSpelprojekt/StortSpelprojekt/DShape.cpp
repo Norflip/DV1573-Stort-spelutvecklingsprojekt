@@ -1,3 +1,4 @@
+#include "stdafx.h"
 #include "DShape.h"
 
 DShape::~DShape()

@@ -1,3 +1,4 @@
+#include "stdafx.h"
 #include "EnemyPatrolComp.h"
 
 EnemyPatrolComp::EnemyPatrolComp()

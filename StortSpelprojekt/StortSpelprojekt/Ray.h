@@ -1,6 +1,5 @@
 #pragma once
 #include "Math.h"
-#include <DirectXMath.h>
 namespace dx = DirectX;
 
 struct Ray

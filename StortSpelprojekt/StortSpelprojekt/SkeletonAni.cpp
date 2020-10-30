@@ -1,3 +1,4 @@
+#include "stdafx.h"
 #include "SkeletonAni.h"
 
 dx::SimpleMath::Matrix& SkeletonAni::Lerp(float elapsedTime, std::vector<Bone>& keys)

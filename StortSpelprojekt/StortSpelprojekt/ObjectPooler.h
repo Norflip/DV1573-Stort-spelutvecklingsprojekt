@@ -2,10 +2,6 @@
 #include "Object.h"
 #include "PoolReturnCallback.h"
 #include "ResourceManager.h"
-#include <assert.h>
-#include <functional>
-#include <queue>
-#include <unordered_set>
 
 constexpr size_t POOL_MAX_LIMIT = 8000;
 

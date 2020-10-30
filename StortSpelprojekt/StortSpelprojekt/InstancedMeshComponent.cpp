@@ -1,3 +1,4 @@
+#include "stdafx.h"
 #include "InstancedMeshComponent.h"
 
 InstancedMeshComponent::InstancedMeshComponent(Mesh mesh, Material material) : boundingBoxes(mesh)

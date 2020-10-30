@@ -1,9 +1,5 @@
 #pragma once
-#include <DirectXMath.h>
-#include "Math.h"
-#include <vector>
-#include <random>
-#include <iostream>
+
 
 namespace dx = DirectX;
 
