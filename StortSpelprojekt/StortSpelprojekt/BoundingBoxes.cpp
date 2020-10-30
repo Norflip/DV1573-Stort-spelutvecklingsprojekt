@@ -1,3 +1,4 @@
+#include "stdafx.h"
 #include "BoundingBoxes.h"
 
 BoundingBoxes::BoundingBoxes(const Mesh& mesh)

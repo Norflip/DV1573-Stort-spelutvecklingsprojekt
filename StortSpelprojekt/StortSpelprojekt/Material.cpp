@@ -1,3 +1,4 @@
+#include "stdafx.h"
 #include "Material.h"
 
 size_t Material::idCounter = 0;

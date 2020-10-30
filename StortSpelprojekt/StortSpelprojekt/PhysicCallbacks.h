@@ -2,7 +2,6 @@
 #include "Object.h"
 #include "RigidBodyComponent.h"
 #include "Ray.h"
-#include <react3d.h>
 
 class RaycastSingleResultCallback : public rp::RaycastCallback {
 

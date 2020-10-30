@@ -1,3 +1,4 @@
+#include "stdafx.h"
 #include "WeaponComponent.h"
 
 WeaponComponent::WeaponComponent(Object* object)

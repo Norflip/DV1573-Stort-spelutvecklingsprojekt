@@ -1,6 +1,4 @@
 #pragma once
-#include <queue>
-#include <unordered_map>
 
 #include "DXHelper.h"
 #include "Mesh.h"
@@ -12,7 +10,6 @@
 #include "ConstantBuffer.h"
 
 #include <time.h>
-namespace dx = DirectX;
 
 class RenderPass;
 

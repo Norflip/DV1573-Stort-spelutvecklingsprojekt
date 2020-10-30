@@ -1,3 +1,4 @@
+#include "stdafx.h"
 #include "EnemyIdleComp.h"
 
 EnemyIdleComp::EnemyIdleComp()

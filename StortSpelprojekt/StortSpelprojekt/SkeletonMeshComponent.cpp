@@ -1,3 +1,4 @@
+#include "stdafx.h"
 #include "SkeletonMeshComponent.h"
 
 SkeletonMeshComponent::SkeletonMeshComponent(Mesh mesh, Material material) : mesh(mesh), material(material), boundingBoxes(mesh)

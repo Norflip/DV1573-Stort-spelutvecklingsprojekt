@@ -1,3 +1,4 @@
+#include "stdafx.h"
 #include "WinScene.h"
 #include "RenderPass.h"
 #include "GUISprite.h"
@@ -73,7 +74,6 @@ void WinScene::OnDeactivate()
 void WinScene::Update(const float& deltaTime)
 {
 	Scene::Update(deltaTime);
-
 	static_cast<GUIFont*>(guiManager->GetGUIObject("fps"))->SetString(std::to_string((int)GameClock::Instance().GetFramesPerSecond()));
 
 	if (static_cast<GUISprite*>(guiManager->GetGUIObject("quit"))->IsClicked())

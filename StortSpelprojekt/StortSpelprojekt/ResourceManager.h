@@ -1,8 +1,4 @@
 #pragma once
-#include <unordered_map>
-#include <string>
-#include <fstream>
-#include "ZWEBLoader.h"
 
 class ResourceManager
 {

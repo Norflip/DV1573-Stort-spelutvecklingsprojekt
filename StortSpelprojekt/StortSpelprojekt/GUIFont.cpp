@@ -1,4 +1,4 @@
-#include "SpriteFont.h"
+#include "stdafx.h"
 #include "GUIFont.h"
 
 GUIFont::GUIFont()

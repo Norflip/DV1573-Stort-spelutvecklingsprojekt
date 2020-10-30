@@ -1,3 +1,4 @@
+#include "stdafx.h"
 #include "GameOverScene.h"
 #include "RenderPass.h"
 #include "GUISprite.h"

@@ -1,3 +1,4 @@
+#include "stdafx.h"
 #include "World.h"
 #include "Input.h"
 #include "PickupComponent.h"

@@ -1,10 +1,6 @@
 #pragma once
-#include <string>
-#include <DirectXMath.h>
-#include <map>
-#include <ImportZWEB.h>
+
 #include "Buffers.h"
-#include <SimpleMath.h>
 
 #define CLAMP(x, low, high)  (((x) > (high)) ? (high) : (((x) < (low)) ? (low) : (x)))
 

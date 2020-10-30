@@ -1,3 +1,4 @@
+#include "stdafx.h"
 #include "Scene.h"
 #include "RenderPass.h"
 #include "GUISprite.h"

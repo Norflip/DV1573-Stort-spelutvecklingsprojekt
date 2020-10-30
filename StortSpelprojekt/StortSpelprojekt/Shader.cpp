@@ -1,3 +1,4 @@
+
 #include "Shader.h"
 
 Shader::Shader() : pixelShader(nullptr), vertexShader(nullptr), inputLayout(nullptr), geometryShader(nullptr), hullShader(nullptr), domainShader(nullptr)
@@ -62,7 +63,7 @@ void Shader::SetInputLayoutStructure(size_t arraySize, D3D11_INPUT_ELEMENT_DESC*
 }
 
 void Shader::Compile(ID3D11Device* device)
-{
+{	
 	CompileVS(device);
 	CompilePS(device);
 	CompileGS(device);
@@ -112,7 +113,6 @@ void Shader::CompilePS(ID3D11Device* device)
 			//delete pixelShader;
 			//pixelShader = nullptr;
 		}
-
 		ID3DBlob* errorBlob = nullptr;
 		ID3DBlob* PSBlob = nullptr;
 

@@ -1,9 +1,5 @@
 #pragma once
-#include <d3d11.h>  
-#include <DirectXMath.h>
-#include <vector>
-#include <map>
-#include <string>
+#include <d3d11.h>
 #include "SkeletonAni.h"
 #include "DXHelper.h"
 
