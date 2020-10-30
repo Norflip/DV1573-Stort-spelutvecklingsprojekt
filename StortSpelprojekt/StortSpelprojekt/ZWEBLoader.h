@@ -1,6 +1,4 @@
 #pragma once
-#include <ImportZWEB.h>
-#include <DirectXMath.h>
 #include "MeshComponent.h"
 
 enum ZWEBLoadType

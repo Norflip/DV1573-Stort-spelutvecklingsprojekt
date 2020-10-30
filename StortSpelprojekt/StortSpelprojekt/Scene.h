@@ -1,8 +1,8 @@
 #pragma once
 
 enum NEXT_SCENE { INTRO = 0, LOSE = 1, GAME = 2, WIN = 3 };
-#include <string>
-#include <vector>
+
+//THIS MESS NEEDS TO DIE A HORRIBLE DEATH
 #include "Object.h"
 #include "HeightMap.h"
 #include "ShittyOBJLoader.h"
@@ -14,20 +14,15 @@ enum NEXT_SCENE { INTRO = 0, LOSE = 1, GAME = 2, WIN = 3 };
 #include "EnemyStatsComp.h"
 #include "EnemySMComp.h"
 #include "PlayerAttackComp.h"
-
 #include "Skybox.h"
 #include "SaveState.h"
 #include "GUIManager.h"
-
-
 #include "Physics.h"
 #include "RigidBodyComponent.h"
 #include "SphereColliderComponent.h"
 #include "CapsuleColliderComponent.h"
 #include "DebugBoxShapeComponent.h"
 #include "PickupComponent.h"
-
-
 #include "ResourceManager.h"
 #include "ObjectPooler.h"
 #include "WeaponComponent.h"

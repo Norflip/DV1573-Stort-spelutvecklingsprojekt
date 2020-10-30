@@ -1,6 +1,4 @@
 #pragma once
-#include <react3d.h>
-#include <DirectXMath.h>
 #include "Transform.h"
 #include "Component.h"
 #include "Object.h"

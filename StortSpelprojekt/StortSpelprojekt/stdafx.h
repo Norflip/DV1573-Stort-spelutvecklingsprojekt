@@ -2,7 +2,7 @@
 
 #define win32_lean_and_mean
 
-//Should never change
+//GLOBAL INCLUDES
 #include <react3d.h>
 #include <vector>
 #include <iostream>
@@ -12,8 +12,11 @@
 #include <vector>
 #include <fstream>
 #include <Windows.h> 
-
-//New list, all objects here will be accessible as global
+#include <ImportZWEB.h>
+#include <DirectXMath.h>
+#include <map>
+#include <SimpleMath.h>
+//GLOBAL HEADERS
 #include "Random.h"
 #include "Physics.h"
 #include "Window.h"
@@ -23,3 +26,8 @@
 #include "Log.h"
 #include "GameClock.h"
 #include "ZWEBLoader.h"
+
+//GLOBAL NAMESPACES
+namespace dx = DirectX;
+
+//GLOBAL ENUMS
