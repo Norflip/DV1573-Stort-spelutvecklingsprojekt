@@ -277,7 +277,6 @@
     <ClInclude Include="DXHelper.h" />
     <ClInclude Include="Engine.h" />
     <ClInclude Include="Input.h" />
-    <ClInclude Include="Log.h" />
     <ClInclude Include="Material.h" />
     <ClInclude Include="Mesh.h" />
     <ClInclude Include="MeshComponent.h" />

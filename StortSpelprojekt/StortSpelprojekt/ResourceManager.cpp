@@ -27,9 +27,8 @@ void ResourceManager::AddShaderResource(std::string key, Shader* shader)
 		shaderResources.insert({ key, shader });
 }
 
-Shader*& ResourceManager::GetShaderResource(std::string key)
+Shader* ResourceManager::GetShaderResource(std::string key)
 {
-	Shader* crap = nullptr;
 	auto iterator = shaderResources.find(key);
 
 	if (iterator != shaderResources.end())
@@ -40,7 +39,7 @@ Shader*& ResourceManager::GetShaderResource(std::string key)
 	{
 		// Wouldnt let me return nullptr directly
 		// But this nullptr varible is somehow fine
-		return crap;
+		return nullptr;
 	}
 }
 

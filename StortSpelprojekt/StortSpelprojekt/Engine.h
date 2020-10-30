@@ -5,7 +5,6 @@
 #include <thread>
 
 #include "Window.h"
-#include "Log.h"
 //#include "Scene.h"
 
 #include "GameScene.h"

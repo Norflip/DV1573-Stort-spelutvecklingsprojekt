@@ -131,7 +131,6 @@ void DShape::CompileShaders(ID3D11Device* device)
 	if (FAILED(psResult0) && errorBlob)
 	{
 		OutputDebugStringA((char*)errorBlob->GetBufferPointer());
-		Log::Add(Log::LogLevel::Error, (char*)errorBlob->GetBufferPointer());
 		errorBlob->Release();
 	}
 #endif
@@ -161,7 +160,6 @@ void DShape::CompileShaders(ID3D11Device* device)
 	if (FAILED(psResult1) && errorBlob)
 	{
 		OutputDebugStringA((char*)errorBlob->GetBufferPointer());
-		Log::Add(Log::LogLevel::Error, (char*)errorBlob->GetBufferPointer());
 		errorBlob->Release();
 	}
 #endif

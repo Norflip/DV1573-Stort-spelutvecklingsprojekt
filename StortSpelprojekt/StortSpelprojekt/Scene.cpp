@@ -109,8 +109,8 @@ void Scene::PrintSceneHierarchy(Object* object, size_t level) const
 		indent += "L  ";
 	}
 
-	Log::Add(indent + object->GetName());
-
+	std::cout << (indent + object->GetName()) << std::endl;
+	
 	if (object->GetTransform().CountChildren() > 0)
 	{
 		auto children = object->GetTransform().GetChildren();

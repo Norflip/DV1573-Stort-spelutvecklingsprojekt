@@ -5,15 +5,8 @@
 #include <d3dcompiler.h>
 #include <assert.h>
 
-#include "Log.h"
 #include "Window.h"
 #include "DXHelper.h"
-
-#define ASSERT_SHADER(RESULT, eBLOB, wTEXT) if (FAILED(RESULT) && eBLOB) { \
-		MessageBox(NULL, wTEXT.c_str(), L"Error shader compile", MB_OK); \
-		OutputDebugStringA((char*)eBLOB->GetBufferPointer()); \
-		Log::Add(Log::LogLevel::Error, (char*)eBLOB->GetBufferPointer());\
-		eBLOB->Release(); } \
 
 class Shader
 {

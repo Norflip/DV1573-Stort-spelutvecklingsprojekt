@@ -20,7 +20,7 @@ public:
 	void AddShaderResource(std::string key, Shader* shader);
 
 	template <typename T> T* GetResource(std::string key);
-	Shader*& GetShaderResource(std::string key);
+	Shader* GetShaderResource(std::string key);
 	void RemoveResource(std::string key);
 
 	void InitializeResources(ID3D11Device* device);
