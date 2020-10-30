@@ -24,7 +24,9 @@ enum class GuiGroup : unsigned int
 	
 };
 DEFINE_ENUM_FLAG_OPERATORS(GuiGroup)
+
 // Virtual base class to inherit from
+ALIGN16 
 class GUIObject
 {
 public:

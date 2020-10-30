@@ -1,5 +1,7 @@
 #pragma once
 #include "GUIManager.h"
+
+ALIGN16
 class GUIFont : public GUIObject
 {
 public:
@@ -16,6 +18,8 @@ public:
 	void SetFontColor(DirectX::XMVECTORF32 fontColor);
 	std::string GetString() const;
 	void Update() {};
+
+	ALIGN16_ALLOC;
 
 private:
 	Renderer* renderer;

@@ -9,11 +9,10 @@ void ChunkGrid::Generate(int maxSteps, int padding, int directionalSteps)
 	dx::XMINT2 current(0, 0);
 	dx::XMINT2 direction(0, 1);
 
-	int x, y;
 	int steps = maxSteps;
 	while (steps > 0)
 	{
-		for (size_t i = 0; i < directionalSteps; i++)
+		for (size_t i = 0; i < UICAST(directionalSteps); i++)
 		{
 			current.x += direction.x;
 			current.y += direction.y;
@@ -49,7 +48,7 @@ void ChunkGrid::Clear()
 
 void ChunkGrid::AddChunksFromPath(std::vector<dx::XMINT2>& points, std::vector<dx::XMINT2>& path, std::unordered_map<int, ChunkInfo>& chunks)
 {
-	int size = points.size();
+	size_t size = points.size();
 	for (size_t i = 0; i < size; i++)
 	{
 		int index = HASH2D_I(points[i].x, points[i].y);
@@ -68,7 +67,7 @@ void ChunkGrid::AddPrePostChunks(const dx::XMINT2& start, const dx::XMINT2& dire
 {
 	dx::XMINT2 current = start;
 
-	for (size_t i = 0; i < steps; i++)
+	for (size_t i = 0; i < UICAST(steps); i++)
 	{
 		current.x += direction.x;
 		current.y += direction.y;
@@ -138,7 +137,7 @@ void ChunkGrid::FindMinMax(std::unordered_map<int, ChunkInfo>& chunks)
 
 	for (auto i : chunks)
 	{
-		dx::XMINT2 index = i.second.first;
+		index = i.second.first;
 		if (first)
 		{
 			minIndex = maxIndex = index;

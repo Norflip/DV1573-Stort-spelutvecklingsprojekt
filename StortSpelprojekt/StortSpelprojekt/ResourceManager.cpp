@@ -168,7 +168,7 @@ void ResourceManager::ReadShaders(ID3D11Device* device)
 			}
 			else
 			{
-				std:getline(file, line);
+				std::getline(file, line);
 				pos = line.find(delimiter);
 				std::string check = line.substr(0, pos);
 				

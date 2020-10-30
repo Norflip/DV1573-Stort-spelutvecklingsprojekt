@@ -119,7 +119,7 @@ void SegmentGenerator::DrawDebug()
 	
 	const int skip = 10;
 
-	for (auto i = 0; i < points.size(); i += skip)
+	for (size_t i = 0; i < points.size(); i += skip)
 	{
 		dx::XMFLOAT2 point0 = points[i];
 		dx::XMFLOAT3 worldPoint(point0.x + offset, 5, point0.y + offset);
@@ -329,7 +329,7 @@ void SegmentGenerator::AddTreesToChunk(Chunk* chunk, std::vector<ChunkPointInfor
 {
 	Physics& physics = Physics::Instance();
 	PossionDiscSampler sampler;
-	Points points = sampler.GeneratePoints(5.0f, { CHUNK_SIZE, CHUNK_SIZE }, 5);
+	Points points = sampler.GeneratePoints(5.0f, { CHUNK_SIZE, CHUNK_SIZE }, false, 5);
 
 	//std::cout << "POINTS: " << points.size() << std::endl;
 
@@ -378,7 +378,7 @@ void SegmentGenerator::AddTreesToChunk(Chunk* chunk, std::vector<ChunkPointInfor
 				BoxColliderComponent* collider = tree->AddComponent<BoxColliderComponent>(extends, stylizedTreeModel[0].instanceData[ins].instancePosition);
 			}
 			
-			RigidBodyComponent* rbody =tree->AddComponent<RigidBodyComponent>(0, FilterGroups::PROPS, FilterGroups::EVERYTHING, BodyType::STATIC);
+			RigidBodyComponent* rbody =tree->AddComponent<RigidBodyComponent>(0.f, FilterGroups::PROPS, FilterGroups::EVERYTHING, BodyType::STATIC);
 			
 			physics.RegisterRigidBody(rbody);
 

@@ -469,7 +469,7 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="NodeWalkerComp.h">
-		<Filter>Header Files</Filter>
+      <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="WeaponComponent.h">
       <Filter>Header Files</Filter>
@@ -510,6 +510,9 @@
     <ClInclude Include="Path.h">
       <Filter>Source Files\SpawnSystems</Filter>
     </ClInclude>
+    <ClInclude Include="Defines.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <Filter Include="Header Files">
@@ -529,5 +532,6 @@
     <None Include="packages.config">
       <Filter>Resource Files</Filter>
     </None>
+    <None Include="cpp.hint" />
   </ItemGroup>
 </Project>

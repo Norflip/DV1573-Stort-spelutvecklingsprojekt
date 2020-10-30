@@ -4,6 +4,7 @@
 class GUIFont;
 class SpriteRenderPass;
 
+ALIGN16
 class GameOverScene : public Scene
 {
 private:
@@ -23,4 +24,6 @@ public:
 	void FixedUpdate(const float& fixedDeltaTime) override;
 	void Render() override;
 	Object* cameraObject = new Object("camera", ObjectFlag::ENABLED);
+	ALIGN16_ALLOC;
+
 };

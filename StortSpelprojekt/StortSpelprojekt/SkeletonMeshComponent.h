@@ -22,6 +22,7 @@ enum SkeletonStateMachine
 };
 
 
+ALIGN16
 class SkeletonMeshComponent : public Component
 {
 public:
@@ -45,6 +46,9 @@ public:
 	void SetisDone(bool);
 	bool& SetAndGetDoneDown();
 	bool& SetAndGetDoneUp();
+
+	ALIGN16_ALLOC;
+
 private:
 	Mesh mesh;
 	Material material;

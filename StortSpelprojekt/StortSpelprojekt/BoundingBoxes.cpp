@@ -3,8 +3,8 @@
 BoundingBoxes::BoundingBoxes(const Mesh& mesh)
 	:basicMesh(mesh)
 {
-	aabb.c = {( 0, 0, 0) };
-	aabb.h = { (0, 0, 0) };
+	aabb.c = dx::XMVectorZero();// {(0, 0, 0) };
+	aabb.h = dx::XMVectorZero();
 	aabb.min = dx::XMFLOAT3(0, 0, 0);
 	aabb.max = dx::XMFLOAT3(0, 0, 0) ;
 }
@@ -59,11 +59,11 @@ void BoundingBoxes::CalcAABB(const Mesh& mesh)
 	
 	aabb.height = aabb.max.y - aabb.min.y;
 	
-	aabb.halfX = (aabb.max.x - aabb.min.x)*0.5;
+	aabb.halfX = (aabb.max.x - aabb.min.x) * 0.5f;
 
-	aabb.halfY = (aabb.max.y - aabb.min.y) * 0.5;
+	aabb.halfY = (aabb.max.y - aabb.min.y) * 0.5f;
 
-	aabb.halfZ = (aabb.max.z - aabb.min.z) * 0.5;
+	aabb.halfZ = (aabb.max.z - aabb.min.z) * 0.5f;
 }
 
 void BoundingBoxes::CalcAABB()
@@ -107,11 +107,11 @@ void BoundingBoxes::CalcAABB()
 
 	aabb.height = aabb.max.y - aabb.min.y;
 
-	aabb.halfX = (aabb.max.x - aabb.min.x) * 0.5;
+	aabb.halfX = (aabb.max.x - aabb.min.x) * 0.5f;
 
-	aabb.halfY = (aabb.max.y - aabb.min.y) * 0.5;
+	aabb.halfY = (aabb.max.y - aabb.min.y) * 0.5f;
 
-	aabb.halfZ = (aabb.max.z - aabb.min.z) * 0.5;
+	aabb.halfZ = (aabb.max.z - aabb.min.z) * 0.5f;
 
 	
 }

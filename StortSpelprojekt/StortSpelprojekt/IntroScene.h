@@ -4,6 +4,7 @@
 class GUIFont;
 class SpriteRenderPass;
 
+ALIGN16
 class IntroScene : public Scene
 {
 private:
@@ -25,4 +26,6 @@ public:
 	void FixedUpdate(const float& fixedDeltaTime) override;
 	void Render() override;
 	
+	ALIGN16_ALLOC;
+
 };

@@ -34,6 +34,7 @@ constexpr std::size_t maxComponents = 40;
 using ComponentBitSet = std::bitset<maxComponents>;
 using ComponentArray = std::array<std::vector<Component*>, maxComponents>;
 
+ALIGN16
 class Object
 {
 	static size_t idCounter;
@@ -71,7 +72,8 @@ public:
 	Transform& GetTransform() { return this->transform; }
 
 	size_t GetID() const { return this->id; }
-	
+	ALIGN16_ALLOC;
+
 private:
 	ObjectFlag flags;
 	Transform transform;

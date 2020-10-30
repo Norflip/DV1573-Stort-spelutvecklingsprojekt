@@ -57,6 +57,7 @@ public:
 		static AudioMaster instance;
 		return instance;
 	}
-	AudioMaster(AudioMaster& const) = delete;
-	void operator = (AudioMaster& const) = delete;
+
+	AudioMaster(AudioMaster const&) = delete;
+	void operator = (AudioMaster const& ) = delete;
 };

@@ -33,7 +33,6 @@ enum NEXT_SCENE { INTRO = 0, LOSE = 1, GAME = 2, WIN = 3 };
 #include "DebugBoxShapeComponent.h"
 #include "PickupComponent.h"
 
-
 #include "ResourceManager.h"
 #include "ObjectPooler.h"
 #include "WeaponComponent.h"
@@ -42,11 +41,11 @@ class GUIFont;
 class SpriteRenderPass;
 class PlayerComp;
 
-#define immortal 0
+constexpr auto immortal = 0;
 
+ALIGN16
 class Scene
 {
-	
 public:
 	Scene(ResourceManager* manager);
 	virtual ~Scene();
@@ -95,8 +94,8 @@ protected:
 	
 	Skybox* skyboxClass;		
 	ResourceManager* resourceManager;
+	Window* window;
 
-	float windowHeight, windowWidth;
 	bool quit;	
 
 };

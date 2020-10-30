@@ -11,7 +11,7 @@ constexpr size_t CB_GRASS_PARAMETERS_SLOT = 4;
 
 constexpr size_t POINT_LIGHT_COUNT = 16;
 
-__declspec(align(16))
+ALIGN16
 struct cb_Object
 {
 	dx::XMFLOAT4X4 mvp;
@@ -20,7 +20,7 @@ struct cb_Object
 	dx::XMFLOAT4X4 wv;
 };
 
-__declspec(align(16))
+ALIGN16
 struct cb_Material
 {
 	dx::XMFLOAT4 ambient;
@@ -33,7 +33,7 @@ struct cb_Material
 	float paddingTwo;
 };
 
-__declspec(align(16))
+ALIGN16
 struct s_PointLight
 {
 	dx::XMFLOAT4 lightColor;
@@ -43,7 +43,7 @@ struct s_PointLight
 	float paddingThree;
 };
 
-__declspec(align(16))
+ALIGN16
 struct cb_Lights
 {
 	s_PointLight pointLights[POINT_LIGHT_COUNT];
@@ -55,7 +55,7 @@ struct cb_Lights
 
 };
 
-__declspec(align(16))
+ALIGN16
 struct cb_Scene
 {
 	dx::XMFLOAT4X4 invProjection;
@@ -68,7 +68,7 @@ struct cb_Scene
 	dx::XMFLOAT2 mousePos;
 };
 
-__declspec(align(16))
+ALIGN16
 struct cb_grass
 {
 	float pixelSize;

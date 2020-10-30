@@ -133,15 +133,21 @@ void SkeletonAni::SetUpOffsetsFromMatrices(std::vector<SkeletonOffsetsHeader>& o
     }
 }
 
-std::vector<Bone>& SkeletonAni::GetRootKeyJoints()
+std::vector<Bone>* SkeletonAni::GetRootKeyJoints()
 {
-    for (unsigned int i = 0; i < keyBones.size(); i++)
+    bool found = false;
+    std::vector<Bone>* bones = nullptr;
+
+    for (unsigned int i = 0; i < keyBones.size() && !found; i++)
     {
         if (keyBones[i][0].name == GetRootName())
         {
-            return keyBones[i];
+            bones = &keyBones[i];
+            found = true;
         }
     }
+
+    return bones;
 }
 
 void SkeletonAni::SetUpIDMapAndFrames(std::map<std::string, unsigned int> boneIDMap, float fps, float aniLenght)

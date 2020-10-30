@@ -170,16 +170,19 @@ void PlayerComp::Update(const float& deltaTime)
 	{
 
 	}
+
+	float frameTime = FCAST(GameClock::Instance().GetFrameTime() / 1000.0);
+
 	//temp fix for wierd clock start at 
-	if (GameClock::Instance().GetFrameTime() / 1000 < 5.f)
+	if (frameTime < 5.f)
 	{
 		//loose fuel
 		//std::cout << GameClock::Instance().GetFrameTime() / 1000;
-		fuel -= GameClock::Instance().GetFrameTime() / 1000 * fuelBurnPerMeter;
+		fuel -= frameTime * fuelBurnPerMeter;
 		//std::cout << fuel <<std::endl;
 
 		// loose food
-		food -= GameClock::Instance().GetFrameTime() / 1000 * foodLossPerSecond;
+		food -= frameTime * foodLossPerSecond;
 		//std::cout << food<<std::endl;
 		
 		// make better later
@@ -191,7 +194,7 @@ void PlayerComp::Update(const float& deltaTime)
 
 		if (foodEmpty)
 		{
-			health -= GameClock::Instance().GetFrameTime() / 1000 * healthLossPerSecond;
+			health -= frameTime * healthLossPerSecond;
 		}
 	}
 	
