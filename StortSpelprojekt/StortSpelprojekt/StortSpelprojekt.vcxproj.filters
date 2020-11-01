@@ -67,6 +67,9 @@
     <FxCompile Include="Shaders\FogTest_ps.hlsl">
       <Filter>Resource Files</Filter>
     </FxCompile>
+    <FxCompile Include="FXAA_ps.hlsl">
+      <Filter>Resource Files</Filter>
+    </FxCompile>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="BoundingBoxes.cpp">
@@ -520,6 +523,9 @@
     </ClInclude>
     <ClInclude Include="Defines.h">
       <Filter>Source Files</Filter>
+    </ClInclude>
+    <ClInclude Include="FXAARenderPass.h">
+      <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

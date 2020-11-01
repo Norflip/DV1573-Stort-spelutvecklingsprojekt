@@ -69,6 +69,11 @@ void GameScene::InitializeObjects()
 	bool parentAnimation = true;
 	Shader* skeletonShader = resourceManager->GetShaderResource("skeletonShader");
 
+	Shader* fxaa = new Shader;
+	fxaa->SetVertexShader("Shaders/ScreenQuad_vs.hlsl");
+	fxaa->SetPixelShader("Shaders/FXAA_ps.hlsl");
+	fxaa->Compile(renderer->GetDevice());
+
 	std::vector<Mesh> skeletonMesh = ZWEBLoader::LoadMeshes(ZWEBLoadType::SkeletonAnimation, "Models/baseMonster.ZWEB", renderer->GetDevice());
 	std::vector<Material> skeletonMat = ZWEBLoader::LoadMaterials("Models/baseMonster.ZWEB", skeletonShader, renderer->GetDevice());
 
@@ -214,11 +219,6 @@ void GameScene::InitializeObjects()
 	AddObject(axeObject);
 
 	clock.Update();
-	clock.Update();
-	/* * * * * * * * ** * * * * */
-	//Log::Add("PRINTING SCENE HIERARCHY ----");
-	//PrintSceneHierarchy(root, 0);
-	/*Log::Add("----");*/
 
 	world.Initialize(root, resourceManager, &pooler, renderer);
 	world.ConstructSegment(state, desc);
@@ -230,20 +230,13 @@ void GameScene::InitializeObjects()
 	dx::XMVECTOR asdf = dx::XMVectorSet(23, 3, 40 ,1); //???
 	enemy->GetTransform().SetPosition(asdf);
 
-
 	/* PICKUP STUFF DONT DELETE THESEEE */
 	/* PICKUP STUFF DONT DELETE THESEEE */
 	/* PICKUP STUFF DONT DELETE THESEEE */
 	/* PICKUP STUFF DONT DELETE THESEEE */
-	
-	Shader* defShader = resourceManager->GetShaderResource("defaultShader");
 
 	/* Health pickup stuff temporary */
-	//std::vector<Mesh> healthkit = ZWEBLoader::LoadMeshes(ZWEBLoadType::NoAnimation, "Models/Health_Kit.ZWEB", renderer->GetDevice());
-	//std::vector<Material> healthkitMaterial = ZWEBLoader::LoadMaterials("Models/Health_Kit.ZWEB", defaultShader, renderer->GetDevice());
-
 	Object* healthkitObject = resourceManager->AssembleObject("HealthKit", "HealthKitMaterial");
-	//healthkitObject->AddComponent<MeshComponent>(healthkit[0], healthkitMaterial[0]);
 	healthkitObject->GetTransform().SetPosition({ 23,2,50 });
 	healthkitObject->AddComponent<BoxColliderComponent>(dx::XMFLOAT3{ 0.5f, 0.5f, 0.5f }, dx::XMFLOAT3{ 0, 0, 0 });
 	healthkitObject->AddComponent<PickupComponent>(Type::Health, 20.0f);
@@ -254,11 +247,7 @@ void GameScene::InitializeObjects()
 	AddObject(healthkitObject);
 
 	///* Fuel pickup stuff temporary */
-	//std::vector<Mesh> fuelCan = ZWEBLoader::LoadMeshes(ZWEBLoadType::NoAnimation, "Models/Fuel_Can_Red.ZWEB", renderer->GetDevice());
-	//std::vector<Material> fuelCanMaterail = ZWEBLoader::LoadMaterials("Models/Fuel_Can_Red.ZWEB", defaultShader, renderer->GetDevice());
-
-	Object* fuelCanObject = resourceManager->AssembleObject("FuelCanGreen", "FuelCanGreenMaterial");// new Object("fuelObject");
-	//fuelCanObject->AddComponent<MeshComponent>(fuelCan[0], fuelCanMaterail[0]);
+	Object* fuelCanObject = resourceManager->AssembleObject("FuelCanGreen", "FuelCanGreenMaterial");
 	fuelCanObject->GetTransform().SetPosition({ 22,2,52 });
 	fuelCanObject->AddComponent<BoxColliderComponent>(dx::XMFLOAT3{ 0.5f, 0.5f, 0.5f }, dx::XMFLOAT3{ 0, 0, 0 });
 	fuelCanObject->AddComponent<PickupComponent>(Type::Fuel, 20.0f);
@@ -268,12 +257,7 @@ void GameScene::InitializeObjects()
 	physics.RegisterRigidBody(fuelBody);
 	AddObject(fuelCanObject);
 
-	///* Banana pickup stuff temporary */
-	//std::vector<Mesh> beans = ZWEBLoader::LoadMeshes(ZWEBLoadType::NoAnimation, "Models/Soup_Can.ZWEB", renderer->GetDevice());
-	//std::vector<Material> beansMaterial = ZWEBLoader::LoadMaterials("Models/Soup_Can.ZWEB", defaultShader, renderer->GetDevice());
-
-	Object* beansObject = resourceManager->AssembleObject("Soup", "SoupMaterial");// new Object("bakedBeans");
-	//beansObject->AddComponent<MeshComponent>(beans[0], beansMaterial[0]);
+	Object* beansObject = resourceManager->AssembleObject("Soup", "SoupMaterial");
 	beansObject->GetTransform().SetPosition({22, 2.0f, 53 });
 	beansObject->AddComponent<BoxColliderComponent>(dx::XMFLOAT3{ 0.5f, 0.5f, 0.5f }, dx::XMFLOAT3{ 0, 0, 0 });
 	beansObject->AddComponent<PickupComponent>(Type::Food, 20.0f);

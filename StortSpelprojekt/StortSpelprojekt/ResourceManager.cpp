@@ -7,18 +7,18 @@ ResourceManager::ResourceManager()
 
 ResourceManager::~ResourceManager()
 {
-	for (auto i : resources)
-	{
-		delete i.second;
-	}
+	//for (auto i : resources)
+	//{
+	//	delete i.second;
+	//}
 
-	for (auto i : shaderResources)
-	{
-		delete i.second;
-	}
+	//for (auto i : shaderResources)
+	//{
+	//	delete i.second;
+	//}
 
-	resources.clear();
-	shaderResources.clear();
+	//resources.clear();
+	//shaderResources.clear();
 }
 
 void ResourceManager::AddShaderResource(std::string key, Shader* shader)

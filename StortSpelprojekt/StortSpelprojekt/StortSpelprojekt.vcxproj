@@ -256,6 +256,7 @@
     <ClInclude Include="ControllerComp.h" />
     <ClInclude Include="DebugBoxShapeComponent.h" />
     <ClInclude Include="DShape.h" />
+    <ClInclude Include="FXAARenderPass.h" />
     <ClInclude Include="GameOverScene.h" />
     <ClInclude Include="GameScene.h" />
     <ClInclude Include="ChunkGrid.h" />
@@ -325,6 +326,9 @@
     <ClInclude Include="ZWEBLoader.h" />
   </ItemGroup>
   <ItemGroup>
+    <FxCompile Include="FXAA_ps.hlsl">
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">true</ExcludedFromBuild>
+    </FxCompile>
     <FxCompile Include="Shaders\Alpha_ps.hlsl">
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">true</ExcludedFromBuild>
       <ShaderModel Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">4.0</ShaderModel>
