@@ -75,7 +75,7 @@ void EnemySMComp::Update(const float& deltaTime)
 	//{
 	//	SetState(switchState[currentState]);
 	//}
-	if (enemyAttackComp->GetChasePlayer())
+	if (enemyAttackComp && enemyAttackComp->GetChasePlayer())
 	{
 		SetState(EnemyState::ATTACK);
 	}

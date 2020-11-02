@@ -374,14 +374,14 @@ void SegmentGenerator::AddTreesToChunk(Chunk* chunk, std::vector<ChunkPointInfor
 			BoundingBoxes bbInfo(stylizedTreeModel[0]);
 			bbInfo.CalcAABB();
 			dx::XMFLOAT3 extends(bbInfo.GetAABB().halfX, bbInfo.GetAABB().halfY, bbInfo.GetAABB().halfZ);
-			for (int ins = 0; ins < (int)nrOfInstancedStyTrees; ins++)
-			{
-				BoxColliderComponent* collider = tree->AddComponent<BoxColliderComponent>(extends, stylizedTreeModel[0].instanceData[ins].instancePosition);
-			}
+			//for (int ins = 0; ins < (int)nrOfInstancedStyTrees; ins++)
+			//{
+			//	BoxColliderComponent* collider = tree->AddComponent<BoxColliderComponent>(extends, stylizedTreeModel[0].instanceData[ins].instancePosition);
+			//}
 			
-			RigidBodyComponent* rbody =tree->AddComponent<RigidBodyComponent>(0.f, FilterGroups::PROPS, FilterGroups::EVERYTHING, BodyType::STATIC);
-			
-			physics.RegisterRigidBody(rbody);
+			//RigidBodyComponent* rbody =tree->AddComponent<RigidBodyComponent>(0.f, FilterGroups::PROPS, FilterGroups::EVERYTHING, BodyType::STATIC);
+			//
+			//physics.RegisterRigidBody(rbody);
 
 			Transform::SetParentChild(chunk->GetOwner()->GetTransform(), tree->GetTransform());
 		}

@@ -78,82 +78,11 @@ void GameScene::InitializeObjects()
 	SkeletonAni skeletonbaseMonsterAttack = ZWEBLoader::LoadSkeletonOnly("Models/baseMonsterAttack.ZWEB", skeletonMesh[0].GetBoneIDS(), defaultAnimation);
 	SkeletonAni skeletonbaseMonsterDeath = ZWEBLoader::LoadSkeletonOnly("Models/baseMonsterDeath.ZWEB", skeletonMesh[0].GetBoneIDS(), defaultAnimation);
 
-	//Player & Camera
-	dx::XMFLOAT3 playerSpawn = { 10,2,10 };
-	dx::XMFLOAT3 zero = { 0.f, 0.f, 0.f };
-	dx::XMVECTOR playerSpawnVec = dx::XMLoadFloat3(&playerSpawn);
-	Object* playerObject = new Object("player", ObjectFlag::ENABLED);
-	Object* cameraObject = new Object("camera", ObjectFlag::ENABLED);
-	this->player = playerObject;
-	camera = cameraObject->AddComponent<CameraComponent>(60.0f, true);
-	camera->Resize(window->GetWidth(), window->GetHeight());
-	cameraObject->GetTransform().SetPosition(playerSpawnVec);
-	playerObject->GetTransform().SetPosition(playerSpawnVec);
-
-	//Mesh* meshP = resourceManager->GetResource<Mesh>("Test");
-	//Material* materialP = resourceManager->GetResource<Material>("TestMaterial");
-	//playerObject->AddComponent<MeshComponent>(*meshP, *materialP);
-	playerObject->AddComponent<CapsuleColliderComponent>(0.5f, 1.8f, zero);
-
-	physics.MutexLock();
-	RigidBodyComponent* rb = playerObject->AddComponent<RigidBodyComponent>(60.f, FilterGroups::PLAYER, FilterGroups::EVERYTHING, BodyType::DYNAMIC);
-	physics.RegisterRigidBody(rb);
-	physics.MutexUnlock();
-
-	playerObject->AddComponent<ControllerComp>(cameraObject); /////////////////
-	//Transform::SetParentChild(playerObject->GetTransform(),cameraObject->GetTransform());
-	playerObject->AddComponent<PlayerComp>(renderer, camera, Physics::Instance(), guiManager, 100.f, 2.f, 3.f, 50.f, 3.f);
-	//playerStatsComp = playerObject->GetComponent<PlayerComp>(); //
-
-	AddObject(cameraObject, playerObject);
-	AddObject(playerObject);
-
-	Object* testPointLight = new Object("body_pointLight");
-
-	dx::XMFLOAT3 lightTranslation = dx::XMFLOAT3(0.0f, 0.0f, -1.0f);
-	testPointLight->GetTransform().SetPosition(dx::XMLoadFloat3(&lightTranslation));
-	testPointLight->AddComponent<PointLightComponent>(dx::XMFLOAT4(0.8f, 0.8f, 0.8f, 1.0f), 25.f);
-
-	AddObject(testPointLight, playerObject);
-
-	//LOADING BASE MONSTER; ADDING SKELETONS TO IT
-	enemy = new Object("enemy", ObjectFlag::ENABLED);
-	SkeletonMeshComponent* baseMonsterComp = enemy->AddComponent<SkeletonMeshComponent>(skeletonMesh[0], skeletonMat[0]);
-	baseMonsterComp->SetAnimationTrack(skeletonbaseMonsterIdle, SkeletonStateMachine::IDLE);
-	baseMonsterComp->SetAnimationTrack(skeletonbaseMonsterWalk, SkeletonStateMachine::WALK);
-	baseMonsterComp->SetAnimationTrack(skeletonbaseMonsterRun, SkeletonStateMachine::RUN);
-	baseMonsterComp->SetAnimationTrack(skeletonbaseMonsterAttack, SkeletonStateMachine::ATTACK);
-	baseMonsterComp->SetAnimationTrack(skeletonbaseMonsterDeath, SkeletonStateMachine::DEATH);
-	baseMonsterComp->BlendAnimations();
-
-	//Enemy object //comments
-	dx::XMFLOAT3 enemyTranslation = dx::XMFLOAT3(23, 7, 46);
-	enemy->GetTransform().SetPosition(dx::XMLoadFloat3(&enemyTranslation));
-	enemy->GetTransform().SetScale({ 0.125f, 0.125f, 0.125f });
-	enemy->AddComponent<EnemyStatsComp>(100.f, 0.5f, 5.f, 5.f, 3.f);
-	enemy->AddComponent<BoxColliderComponent>(dx::XMFLOAT3{ 1, 1, 1 }, dx::XMFLOAT3{ 0, 0, 0 });
-
-	//enemyStatsComp = enemy->GetComponent<EnemyStatsComp>();
-	enemy->AddComponent<EnemyAttackComp>(player->GetComponent<PlayerComp>());
-	EnemySMComp* stateMachine = enemy->AddComponent<EnemySMComp>(EnemyState::IDLE);
-	stateMachine->RegisterState(EnemyState::IDLE, enemy->AddComponent<EnemyIdleComp>());
-	stateMachine->RegisterState(EnemyState::PATROL, enemy->AddComponent<EnemyPatrolComp>());
-	stateMachine->RegisterState(EnemyState::ATTACK, enemy->AddComponent<EnemyAttackComp>(player->GetComponent<PlayerComp>()));
-	stateMachine->InitAnimation();
-	AddObject(enemy);
-
-	physics.MutexLock();
-	RigidBodyComponent* rbEnemy = enemy->AddComponent<RigidBodyComponent>(0.f, FilterGroups::ENEMIES, FilterGroups::PLAYER, BodyType::STATIC);
-	//rbEnemy.
-	physics.RegisterRigidBody(rbEnemy);
-	physics.MutexUnlock();
-
-	playerObject->AddComponent<PlayerAttackComp>(enemy);
 
 	//LOADING HOUSE AND LEGS AND ADDING SKELETONS TO THEM THE HOUSE ONLY HAS ONE JOINT CONNECTED TO IT
 	Shader* defaultShader = resourceManager->GetShaderResource("defaultShader");
 	Shader* skeletonAlphaShader = resourceManager->GetShaderResource("houseShader");
-	
+
 	std::vector<Mesh> meshHouse = ZWEBLoader::LoadMeshes(ZWEBLoadType::SkeletonAnimation, "Models/House_Base.ZWEB", renderer->GetDevice());
 	std::vector<Material> matHouse = ZWEBLoader::LoadMaterials("Models/House_Base.ZWEB", skeletonAlphaShader, renderer->GetDevice());
 
@@ -191,8 +120,6 @@ void GameScene::InitializeObjects()
 	baseComponent->SetAnimationTrack(skeletonHouseBaseDown, SkeletonStateMachine::DOWN);
 
 	Transform::SetParentChild(baseComponent->GetOwner()->GetTransform(), legsComponent->GetOwner()->GetTransform());
-	//AddObject(housesLegsObject, houseBaseObject);
-	//AddObject( houseBaseObject,housesLegsObject);
 	baseComponent->GetOwner()->GetTransform().SetScale({ 0.5f, 0.5f, 0.5f });
 
 	NodeWalkerComp* nodeWalker = houseBaseObject->AddComponent<NodeWalkerComp>();
@@ -201,6 +128,78 @@ void GameScene::InitializeObjects()
 	legsComponent->SetTrack(SkeletonStateMachine::IDLE, false);
 	baseComponent->SetTrack(SkeletonStateMachine::IDLE, false);
 	AddObject(houseBaseObject);
+
+	//Player & Camera
+	dx::XMFLOAT3 playerSpawn = { 10,2,10 };
+	dx::XMFLOAT3 zero = { 0.f, 0.f, 0.f };
+	dx::XMVECTOR playerSpawnVec = dx::XMLoadFloat3(&playerSpawn);
+	Object* playerObject = new Object("player", ObjectFlag::ENABLED);
+	Object* cameraObject = new Object("camera", ObjectFlag::ENABLED);
+	this->player = playerObject;
+	camera = cameraObject->AddComponent<CameraComponent>(60.0f, true);
+	camera->Resize(window->GetWidth(), window->GetHeight());
+	cameraObject->GetTransform().SetPosition(playerSpawnVec);
+	playerObject->GetTransform().SetPosition(playerSpawnVec);
+
+	//Mesh* meshP = resourceManager->GetResource<Mesh>("Test");
+	//Material* materialP = resourceManager->GetResource<Material>("TestMaterial");
+	//playerObject->AddComponent<MeshComponent>(*meshP, *materialP);
+	playerObject->AddComponent<CapsuleColliderComponent>(0.5f, 1.8f, zero);
+
+	physics.MutexLock();
+	RigidBodyComponent* rb = playerObject->AddComponent<RigidBodyComponent>(60.f, FilterGroups::PLAYER, FilterGroups::EVERYTHING, BodyType::DYNAMIC);
+	physics.RegisterRigidBody(rb);
+	physics.MutexUnlock();
+
+	playerObject->AddComponent<ControllerComp>(cameraObject, houseBaseObject); /////////////////
+	//Transform::SetParentChild(playerObject->GetTransform(),cameraObject->GetTransform());
+	playerObject->AddComponent<PlayerComp>(renderer, camera, Physics::Instance(), guiManager, 100.f, 2.f, 3.f, 50.f, 3.f);
+	//playerStatsComp = playerObject->GetComponent<PlayerComp>(); //
+
+	AddObject(cameraObject, playerObject);
+	AddObject(playerObject);
+
+	Object* testPointLight = new Object("body_pointLight");
+
+	dx::XMFLOAT3 lightTranslation = dx::XMFLOAT3(0.0f, 0.0f, -1.0f);
+	testPointLight->GetTransform().SetPosition(dx::XMLoadFloat3(&lightTranslation));
+	testPointLight->AddComponent<PointLightComponent>(dx::XMFLOAT4(0.8f, 0.8f, 0.8f, 1.0f), 25.f);
+
+	AddObject(testPointLight, playerObject);
+
+	//LOADING BASE MONSTER; ADDING SKELETONS TO IT
+	enemy = new Object("enemy", ObjectFlag::ENABLED);
+	SkeletonMeshComponent* baseMonsterComp = enemy->AddComponent<SkeletonMeshComponent>(skeletonMesh[0], skeletonMat[0]);
+	baseMonsterComp->SetAnimationTrack(skeletonbaseMonsterIdle, SkeletonStateMachine::IDLE);
+	baseMonsterComp->SetAnimationTrack(skeletonbaseMonsterWalk, SkeletonStateMachine::WALK);
+	baseMonsterComp->SetAnimationTrack(skeletonbaseMonsterRun, SkeletonStateMachine::RUN);
+	baseMonsterComp->SetAnimationTrack(skeletonbaseMonsterAttack, SkeletonStateMachine::ATTACK);
+	baseMonsterComp->SetAnimationTrack(skeletonbaseMonsterDeath, SkeletonStateMachine::DEATH);
+	baseMonsterComp->BlendAnimations();
+
+	//Enemy object //comments
+	dx::XMFLOAT3 enemyTranslation = dx::XMFLOAT3(23, 5, 46);
+	enemy->GetTransform().SetPosition(dx::XMLoadFloat3(&enemyTranslation));
+	enemy->GetTransform().SetScale({ 0.125f, 0.125f, 0.125f });
+	enemy->AddComponent<EnemyStatsComp>(100.f, 0.5f, 5.f, 5.f, 3.f);
+	enemy->AddComponent<BoxColliderComponent>(dx::XMFLOAT3{ 1, 1, 1 }, dx::XMFLOAT3{ 0, 0, 0 });
+
+	physics.MutexLock();
+	RigidBodyComponent* rbEnemy = enemy->AddComponent<RigidBodyComponent>(10.f, FilterGroups::ENEMIES, FilterGroups::EVERYTHING, BodyType::DYNAMIC);
+	physics.RegisterRigidBody(rbEnemy);
+	physics.MutexUnlock();
+
+	enemy->AddComponent<EnemyAttackComp>(player->GetComponent<PlayerComp>());
+	EnemySMComp* stateMachine = enemy->AddComponent<EnemySMComp>(EnemyState::IDLE);
+	stateMachine->RegisterState(EnemyState::IDLE, enemy->AddComponent<EnemyIdleComp>());
+	stateMachine->RegisterState(EnemyState::PATROL, enemy->AddComponent<EnemyPatrolComp>());
+	stateMachine->RegisterState(EnemyState::ATTACK, enemy->AddComponent<EnemyAttackComp>(player->GetComponent<PlayerComp>()));
+	stateMachine->InitAnimation();
+	AddObject(enemy);
+
+	playerObject->AddComponent<PlayerAttackComp>(enemy);
+	
+
 
 	std::vector<Mesh> axeMesh = ZWEBLoader::LoadMeshes(ZWEBLoadType::NoAnimation, "Models/AXE.ZWEB", renderer->GetDevice());
 	std::vector<Material> axeMat = ZWEBLoader::LoadMaterials("Models/AXE.ZWEB", defaultShader, renderer->GetDevice());
