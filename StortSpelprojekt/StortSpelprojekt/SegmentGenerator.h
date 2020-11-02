@@ -27,6 +27,8 @@ class SegmentGenerator
 	const float MIN_TERRAIN_HEIGHT = 0.1f;
 	const float TERRAIN_BASE_HEIGHT = 1.0f;
 
+	const float TREE_HEIGHT_ADJUSTMENT_FACTOR = 0.9f;
+
 public:
 	SegmentGenerator();
 	virtual ~SegmentGenerator();
