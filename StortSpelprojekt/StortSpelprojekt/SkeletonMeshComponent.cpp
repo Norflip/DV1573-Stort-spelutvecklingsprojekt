@@ -1,7 +1,8 @@
 #include "stdafx.h"
 #include "SkeletonMeshComponent.h"
 
-SkeletonMeshComponent::SkeletonMeshComponent(Mesh* mesh, Material* material) : mesh(mesh), material(material), bounds()
+SkeletonMeshComponent::SkeletonMeshComponent(Mesh* mesh, Material* material, float timeScale) : mesh(mesh), material(material), bounds(),
+timeScale(timeScale)
 {
 	bounds.CalculateAABB(mesh);
 	currentAni = SkeletonStateMachine::NONE;
@@ -45,6 +46,8 @@ void SkeletonMeshComponent::Draw(Renderer* renderer, CameraComponent* camera)
 void SkeletonMeshComponent::RunAnimation(const float& deltaTime)
 {
 	elapsedTime += deltaTime;
+	
+	
 	if (elapsedTime >= 60.0f)
 	{
 		elapsedTime = 0.0f; //I just dont like the idea of it running to infinity.
@@ -62,12 +65,12 @@ void SkeletonMeshComponent::RunAnimation(const float& deltaTime)
 	{
 		finalTransforms = skeletonAnimations[2].Makeglobal(elapsedTime, dx::XMMatrixIdentity(), *skeletonAnimations[2].GetRootKeyJoints());
 	}
-	else if (currentAni == SkeletonStateMachine::ATTACK || currentAni == SkeletonStateMachine::DOWN)
+	else if (currentAni == SkeletonStateMachine::ATTACK|| currentAni == SkeletonStateMachine::DOWN)
 	{
 		finalTransforms = skeletonAnimations[3].Makeglobal(elapsedTime, dx::XMMatrixIdentity(), *skeletonAnimations[3].GetRootKeyJoints());
 
-		
 	}
+	
 	else if (currentAni == SkeletonStateMachine::DEATH)
 	{
 		finalTransforms = skeletonAnimations[4].Makeglobal(elapsedTime, dx::XMMatrixIdentity(), *skeletonAnimations[4].GetRootKeyJoints());
@@ -157,7 +160,7 @@ void SkeletonMeshComponent::PlayOnce()
 			timer.Restart();
 			timer.Update();
 			time = (float)timer.GetSeconds();
-
+			time *= timeScale;
 
 			float animationTime = time * skeletonAnimations[0].GetFPS();
 
@@ -181,7 +184,7 @@ void SkeletonMeshComponent::PlayOnce()
 			timer.Restart();
 			timer.Update();
 			time = (float)timer.GetSeconds();
-
+			time *= timeScale;
 
 			float animationTime = time * skeletonAnimations[1].GetFPS();
 
@@ -202,11 +205,10 @@ void SkeletonMeshComponent::PlayOnce()
 		if (!done)
 		{
 			
-			
 			timer.Start();
 			timer.Update();
 			time = (float)timer.GetSeconds();
-
+			time *= timeScale;
 			float animationTime = time * skeletonAnimations[3].GetFPS();
 
 			if (animationTime < skeletonAnimations[3].GetAniLength())
@@ -234,6 +236,7 @@ void SkeletonMeshComponent::PlayOnce()
 			timer.Update();
 			time = (float)timer.GetSeconds();
 			
+			time *= timeScale;
 
 			float animationTime = time * skeletonAnimations[3].GetFPS();
 
@@ -265,7 +268,7 @@ void SkeletonMeshComponent::PlayOnce()
 			timer.Start();
 			timer.Update();
 			time = (float)timer.GetSeconds();
-
+			time *= timeScale;
 			float animationTime = time * skeletonAnimations[4].GetFPS();
 			
 			if (animationTime < skeletonAnimations[4].GetAniLength())
@@ -289,7 +292,7 @@ void SkeletonMeshComponent::BlendAnimations()
 	//Need to have matching bones, need to know names, need to have the same fps and possibly same number of keys.
 
 	//skapa ett nytt track.
-	//ta bort alla ben ovanför/under rooten. alla keyframes och offsets. lägg till från andra tracket.
+	//ta bort alla ben ovanfï¿½r/under rooten. alla keyframes och offsets. lï¿½gg till frï¿½n andra tracket.
 	std::map<std::string, unsigned int> map1;
 	std::map<std::string, unsigned int> map2;
 
