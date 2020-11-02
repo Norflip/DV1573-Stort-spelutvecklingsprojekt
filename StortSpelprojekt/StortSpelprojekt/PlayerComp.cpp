@@ -98,6 +98,7 @@ void PlayerComp::Update(const float& deltaTime)
 				{
 					if ((fuel + temp) <= 100.0f)
 						fuel += temp;
+
 				}
 				
 				hit.object->GetComponent<PickupComponent>()->SetActive(false);

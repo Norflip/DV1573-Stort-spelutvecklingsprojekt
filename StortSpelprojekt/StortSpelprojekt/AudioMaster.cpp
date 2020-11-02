@@ -7,6 +7,8 @@ AudioMaster::AudioMaster()
 	if (!engine)
 		engine = new AudioEngine;
 	engine->Initialize();
+	bool puffi = 0;
+	engine->Initialize3DAudio();
 
 	/* Create different soundchannels */
 	engine->GetAudioMaster()->CreateSubmixVoice(&soundsSubmix, 1, 44100, 0, 0, 0, 0);
@@ -28,7 +30,7 @@ AudioMaster::~AudioMaster()
 		delete engine;
 }
 
-void AudioMaster::LoadFile(const std::wstring fileName, SoundEvent& soundEvent, const AudioTypes& soundType)
+void AudioMaster::LoadFile(const std::wstring fileName, std::string name, SoundEvent& soundEvent, const AudioTypes& soundType)
 {
 	//ZeroMemory(&soundEvent, sizeof(SoundEvent));
 
@@ -50,6 +52,9 @@ void AudioMaster::LoadFile(const std::wstring fileName, SoundEvent& soundEvent, 
 	soundEvent.audioBuffer.pAudioData = (BYTE* const)&soundEvent.audioData[0];
 	soundEvent.audioBuffer.pContext = nullptr;
 	soundEvent.audioBuffer.LoopCount = XAUDIO2_LOOP_INFINITE;
+
+
+	sound.insert({ name, soundEvent });
 }
 
 void AudioMaster::PlaySoundEvent(const SoundEvent& soundEvent)

@@ -44,7 +44,7 @@ public:
 	virtual ~AudioMaster();
 
 	/* Load sound (not streaming atm) */
-	void LoadFile(const std::wstring fileName, SoundEvent& soundEvent, const AudioTypes& soundType);
+	void LoadFile(const std::wstring fileName, std::string name, SoundEvent& soundEvent, const AudioTypes& soundType);
 
 	void PlaySoundEvent(const SoundEvent& soundEvent);
 	void StopSoundEvent(const SoundEvent& soundEvent);
@@ -60,4 +60,6 @@ public:
 
 	AudioMaster(AudioMaster const&) = delete;
 	void operator = (AudioMaster const& ) = delete;
+
+	std::unordered_map<std::string, SoundEvent> sound;
 };

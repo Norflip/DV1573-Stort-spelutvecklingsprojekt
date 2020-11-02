@@ -22,8 +22,8 @@ void IntroScene::Initialize()
 void IntroScene::InitializeObjects()
 {
 	//audioComponent.LoadFile(L"Sounds/PopCulture.mp3", menuTest, AudioTypes::Music);
-	AudioMaster::Instance().LoadFile(L"Sounds/jakestuff.mp3", menuTest, AudioTypes::Music);
-	AudioMaster::Instance().LoadFile(L"Sounds/yay.wav", test2, AudioTypes::Sound);
+	AudioMaster::Instance().LoadFile(L"Sounds/jakestuff.mp3", "menusound", menuTest, AudioTypes::Music);
+	AudioMaster::Instance().LoadFile(L"Sounds/yay.wav", "axeSound", axe, AudioTypes::Sound);
 	AudioMaster::Instance().SetVolume(AudioTypes::Music, 0.7f);
 	AudioMaster::Instance().PlaySoundEvent(menuTest);
 
