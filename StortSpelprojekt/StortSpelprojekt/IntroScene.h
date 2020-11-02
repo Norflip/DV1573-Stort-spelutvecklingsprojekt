@@ -9,7 +9,7 @@ class IntroScene : public Scene
 {
 private:
 	SoundEvent menuTest;
-	SoundEvent axe, test3;
+	SoundEvent pickupSound, axeSwingSound;
 
 public:
 	IntroScene();

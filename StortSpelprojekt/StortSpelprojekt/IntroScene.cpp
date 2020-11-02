@@ -22,10 +22,12 @@ void IntroScene::Initialize()
 void IntroScene::InitializeObjects()
 {
 	//audioComponent.LoadFile(L"Sounds/PopCulture.mp3", menuTest, AudioTypes::Music);
-	AudioMaster::Instance().LoadFile(L"Sounds/jakestuff.mp3", "menusound", menuTest, AudioTypes::Music);
-	AudioMaster::Instance().LoadFile(L"Sounds/yay.wav", "axeSound", axe, AudioTypes::Sound);
+	AudioMaster::Instance().LoadFile(L"Sounds/jakestuff.mp3", "menusound", menuTest, AudioTypes::Music, true);
+	AudioMaster::Instance().LoadFile(L"Sounds/yay.wav", "pickupSound", pickupSound, AudioTypes::Sound, false);
+	AudioMaster::Instance().LoadFile(L"Sounds/swinging_axe.mp3", "axeSwing", axeSwingSound, AudioTypes::Sound, false);
 	AudioMaster::Instance().SetVolume(AudioTypes::Music, 0.7f);
-	AudioMaster::Instance().PlaySoundEvent(menuTest);
+	AudioMaster::Instance().SetVolume(AudioTypes::Sound, 0.7f);
+	AudioMaster::Instance().PlaySoundEvent("menusound");
 
 	Object* cameraObject = new Object("camera", ObjectFlag::ENABLED);
 	camera = cameraObject->AddComponent<CameraComponent>(60.0f, true);
@@ -52,6 +54,28 @@ void IntroScene::InitializeGUI()
 	GUISprite* loreSprite = new GUISprite(*renderer, "Textures/Lore.png", 100, 550, 0, DrawDirection::Default, ClickFunction::Clickable);
 	GUISprite* quitSprite = new GUISprite(*renderer, "Textures/Exit.png", 100, 700, 0, DrawDirection::Default, ClickFunction::Clickable);
 	GUISprite* backSprite = new GUISprite(*renderer, "Textures/BackButton.png", 100, 100, 0, DrawDirection::Default, ClickFunction::Clickable,GuiGroup::HowToPlay);
+
+	GUISprite* musicSprite = new GUISprite(*renderer, "Textures/Music.png", 110, 250, 0, DrawDirection::Default, ClickFunction::NotClickable, GuiGroup::Options);
+	musicSprite->SetVisible(false);
+
+	GUISprite* soundEffectsSprite = new GUISprite(*renderer, "Textures/SoundeffectsButton.png", 160, 400, 0, DrawDirection::Default, ClickFunction::NotClickable, GuiGroup::Options);	
+	soundEffectsSprite->SetVisible(false);
+
+	GUISprite* lowerMusicSprite = new GUISprite(*renderer, "Textures/lowerVolumeButton.png", 800, 250, 0, DrawDirection::Default, ClickFunction::Clickable, GuiGroup::Options);
+	GUISprite* volumeMusicSprite = new GUISprite(*renderer, "Textures/volumeButton.png", 900, 250, 0, DrawDirection::Default, ClickFunction::NotClickable, GuiGroup::Options);
+	GUISprite* higherMusicSprite = new GUISprite(*renderer, "Textures/higherVolumeButton.png", 1150, 250, 0, DrawDirection::Default, ClickFunction::Clickable, GuiGroup::Options);
+	lowerMusicSprite->SetVisible(false);
+	volumeMusicSprite->SetVisible(false);
+	higherMusicSprite->SetVisible(false);
+
+	GUISprite* lowerSoundEffectMusic = new GUISprite(*renderer, "Textures/lowerVolumeButton.png", 800, 400, 0, DrawDirection::Default, ClickFunction::Clickable, GuiGroup::Options);
+	GUISprite* volumeSoundEffectMusic = new GUISprite(*renderer, "Textures/volumeButton.png", 900, 400, 0, DrawDirection::Default, ClickFunction::NotClickable, GuiGroup::Options);
+	GUISprite* higherSoundEffectMusic = new GUISprite(*renderer, "Textures/higherVolumeButton.png", 1150, 400, 0, DrawDirection::Default, ClickFunction::Clickable, GuiGroup::Options);
+	lowerSoundEffectMusic->SetVisible(false);
+	volumeSoundEffectMusic->SetVisible(false);
+	higherSoundEffectMusic->SetVisible(false);	
+
+
 	GUIFont* fpsDisplay = new GUIFont(*renderer, "fps", windowWidth / 2, 50);
 	fpsDisplay->AddGroup(GuiGroup::Font);
 	fpsDisplay->AddGroup(GuiGroup::Default);
@@ -84,7 +108,6 @@ void IntroScene::InitializeGUI()
 	loreText->AddGroup(GuiGroup::Lore);
 	loreText->AddGroup(GuiGroup::Font);
 
-
 	//
 
 	backSprite->SetVisible(false);
@@ -102,6 +125,20 @@ void IntroScene::InitializeGUI()
 	guiManager->AddGUIObject(fpsDisplay, "fps");
 	guiManager->AddGUIObject(howToPlayText, "howToPlayText");
 	guiManager->AddGUIObject(loreText, "loreText");
+
+	//
+
+	guiManager->AddGUIObject(musicSprite, "musicText");
+	guiManager->AddGUIObject(soundEffectsSprite, "soundeffectText");
+
+	guiManager->AddGUIObject(lowerSoundEffectMusic, "lowerSoundeffectSprite");
+	guiManager->AddGUIObject(volumeSoundEffectMusic, "volumeSoundeffectSprite");
+	guiManager->AddGUIObject(higherSoundEffectMusic, "higherSoundeffectSprite");
+
+	guiManager->AddGUIObject(lowerMusicSprite, "lowerMusicSprite");
+	guiManager->AddGUIObject(volumeMusicSprite, "volumeMusicSprite");
+	guiManager->AddGUIObject(higherMusicSprite, "higherMusicSprite");
+
 	renderer->AddRenderPass(guiManager);
 }
 
@@ -115,7 +152,7 @@ void IntroScene::OnActivate()
 
 void IntroScene::OnDeactivate()
 {
-	AudioMaster::Instance().StopSoundEvent(menuTest);
+	AudioMaster::Instance().StopSoundEvent("menusound");
 	renderer->RemoveRenderPass(guiManager);
 
 	delete guiManager;
@@ -131,12 +168,12 @@ void IntroScene::Update(const float& deltaTime)
 
 	if (static_cast<GUISprite*>(guiManager->GetGUIObject("startSprite"))->IsClicked())
 	{
-		AudioMaster::Instance().StopSoundEvent(menuTest);
+		AudioMaster::Instance().StopSoundEvent("menusound");
 		nextScene = GAME;
 	}
 	else if (static_cast<GUISprite*>(guiManager->GetGUIObject("quitSprite"))->IsClicked())
 	{
-		AudioMaster::Instance().StopSoundEvent(menuTest);
+		AudioMaster::Instance().StopSoundEvent("menusound");
 		quit = true;
 	}	
 
@@ -154,6 +191,31 @@ void IntroScene::Update(const float& deltaTime)
 
 	if (static_cast<GUISprite*>(guiManager->GetGUIObject("backSprite"))->IsClicked())	
 		guiManager->ChangeGuiGroup(GuiGroup::Default);
+
+
+	/* Volume stuff for music */
+	if (static_cast<GUISprite*>(guiManager->GetGUIObject("lowerMusicSprite"))->IsClicked())
+	{
+		float currentVol = AudioMaster::Instance().GetVolume(AudioTypes::Music);
+		if (currentVol > 0.0f)
+			currentVol -= 0.1f;
+		else
+			currentVol = 0.0f;
+
+		AudioMaster::Instance().SetVolume(AudioTypes::Music, currentVol);
+	}
+
+	if (static_cast<GUISprite*>(guiManager->GetGUIObject("higherMusicSprite"))->IsClicked())
+	{
+		float currentVol = AudioMaster::Instance().GetVolume(AudioTypes::Music);
+		if (currentVol < 1.0f)
+			currentVol += 0.1f;
+		else
+			currentVol = 1.0f;
+
+		AudioMaster::Instance().SetVolume(AudioTypes::Music, currentVol);
+	}
+		
 
 
 	guiManager->UpdateAll();

@@ -5,6 +5,7 @@
 #include "GUISprite.h"
 #include "Scene.h"
 
+#include "AudioMaster.h"
 
 class PlayerComp :
     public Component
@@ -12,7 +13,7 @@ class PlayerComp :
 public:
 	//enum NEXT_SCENE { INTRO, LOSE, GAME, WIN };
 
-
+	
 	//PlayerComp();
 	PlayerComp(Renderer* renderer, CameraComponent* camComp, Physics& phys, GUIManager* guimanager, float health, float movementSpeed, float radius, float attack, float attackSpeed);
 	virtual ~PlayerComp();

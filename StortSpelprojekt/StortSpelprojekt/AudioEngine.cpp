@@ -60,7 +60,7 @@ void AudioEngine::Initialize3DAudio()
 	DWORD dwChannel;
 	masterVoice->GetChannelMask(&dwChannel);
 	bool fucki1 = 0;
-	X3DAUDIO_HANDLE X3DInstance;
+	/*X3DAUDIO_HANDLE X3DInstance;
 	HRESULT hr = X3DAudioInitialize(dwChannel, X3DAUDIO_SPEED_OF_SOUND, X3DInstance);
 	if (FAILED(hr))
 		OutputDebugStringW(L"Fuck it, blablabla");
@@ -90,7 +90,7 @@ void AudioEngine::Initialize3DAudio()
 		X3DAUDIO_CALCULATE_MATRIX | X3DAUDIO_CALCULATE_DOPPLER | X3DAUDIO_CALCULATE_LPF_DIRECT | X3DAUDIO_CALCULATE_REVERB,
 		&dspSettings);
 
-	masterVoice->SetOutputMatrix(masterVoice, 1, 1, matrix);
+	masterVoice->SetOutputMatrix(masterVoice, 1, 1, matrix);*/
 	//sourceVoice->SetFrequencyRatio(XAUDIO2_MIN_FREQ_RATIO, XAUDIO2_COMMIT_NOW);
 }
 

@@ -79,8 +79,10 @@ void PlayerComp::Update(const float& deltaTime)
 	{				
 		if (phy.RaytestSingle(ray, rayDistance, hit, FilterGroups::PICKUPS))
 		{
+			
 			if (hit.object != nullptr)
-			{				
+			{	
+				AudioMaster::Instance().PlaySoundEvent("pickupSound");
 				Type pickupType = hit.object->GetComponent<PickupComponent>()->GetType();
 				float temp = hit.object->GetComponent<PickupComponent>()->GetAmount();
 				
@@ -88,6 +90,7 @@ void PlayerComp::Update(const float& deltaTime)
 				{
 					if ((health + temp) <= 100.0f)
 						health += temp;
+					
 				}
 				else if (pickupType == Type::Food)
 				{
@@ -121,6 +124,7 @@ void PlayerComp::Update(const float& deltaTime)
 
 	if (LMOUSE_DOWN)
 	{
+		
 		if (phy.RaytestSingle(ray, 5.0f, hit, FilterGroups::ENEMIES))
 		{
 			if (hit.object != nullptr && hit.object->HasComponent<EnemyStatsComp>())
@@ -128,14 +132,14 @@ void PlayerComp::Update(const float& deltaTime)
 				if (hit.object->GetComponent<EnemyStatsComp>()->IsEnabled())
 				{
 					if (hit.object->GetComponent<EnemyStatsComp>()->GetHealth() >= 0.0f)
-					{
+					{						
 						hit.object->GetComponent<EnemyStatsComp>()->LoseHealth(attack);
 						std::cout << "Hit hit hit" << std::endl;
 					}
 					else if (hit.object->GetComponent<EnemyStatsComp>()->GetHealth() <= 0.0f)
 					{
 						//hit.object.s  ->GetComponent<PickupComponent>()->SetActive(false);
-
+						
 						RigidBodyComponent* rbComp = hit.object->GetComponent<RigidBodyComponent>();
 						rp::RigidBody* objectRb = rbComp->GetRigidBody();
 						rbComp->RemoveCollidersFromBody(objectRb);

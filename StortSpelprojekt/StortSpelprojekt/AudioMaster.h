@@ -44,10 +44,10 @@ public:
 	virtual ~AudioMaster();
 
 	/* Load sound (not streaming atm) */
-	void LoadFile(const std::wstring fileName, std::string name, SoundEvent& soundEvent, const AudioTypes& soundType);
+	void LoadFile(const std::wstring fileName, std::string name, SoundEvent& soundEvent, const AudioTypes& soundType, bool loop);
 
-	void PlaySoundEvent(const SoundEvent& soundEvent);
-	void StopSoundEvent(const SoundEvent& soundEvent);
+	void PlaySoundEvent(std::string soundName);
+	void StopSoundEvent(std::string name);
 
 	void SetVolume(const AudioTypes& audioType, const float volume);
 	float GetVolume(const AudioTypes& audioType) const;
@@ -61,5 +61,6 @@ public:
 	AudioMaster(AudioMaster const&) = delete;
 	void operator = (AudioMaster const& ) = delete;
 
-	std::unordered_map<std::string, SoundEvent> sound;
+	/* Store shiet */
+	std::unordered_map<std::string, SoundEvent> soundTracks;
 };
