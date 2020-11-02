@@ -389,7 +389,7 @@ void SegmentGenerator::AddTreesToChunk(Chunk* chunk, std::vector<ChunkPointInfor
 
 			tree->AddComponent<BoxColliderComponent>(colliderExtends, colliderPositions);
 
-			std::cout << "COLLIDERS: " << std::to_string(colliderPositions.size()) << " / " << std::to_string(nrOfInstancedStyTrees) << std::endl;
+			//std::cout << "COLLIDERS: " << std::to_string(colliderPositions.size()) << " / " << std::to_string(nrOfInstancedStyTrees) << std::endl;
 
 			//for (size_t i = 0; i < nrOfInstancedStyTrees; i++)
 			//{
