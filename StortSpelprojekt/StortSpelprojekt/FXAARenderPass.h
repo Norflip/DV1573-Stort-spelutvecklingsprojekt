@@ -14,7 +14,7 @@ public:
 		shader->SetPixelShader("Shaders/FXAA_ps.hlsl", "main");
 		shader->SetVertexShader("Shaders/ScreenQuad_vs.hlsl");
 		shader->Compile(device);
-		material = Material(shader);
+		material = new Material(shader);
 	}
 
 	void Pass(Renderer* renderer, RenderTexture& inTexture, RenderTexture& outTexture) override
@@ -33,6 +33,6 @@ public:
 	ALIGN16_ALLOC;
 
 private:
-	Material material;
+	Material* material;
 
 };
