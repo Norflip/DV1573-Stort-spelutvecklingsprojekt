@@ -9,7 +9,7 @@ constexpr std::size_t MAX_SHADER_SLOTS = 5;
 
 
 ALIGN16
-class Material
+class Material : public Resource
 {
 	static size_t idCounter;
 

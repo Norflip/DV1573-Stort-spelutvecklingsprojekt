@@ -3,7 +3,7 @@
 
 
 GrassComponent::GrassComponent(size_t chunkTriangleCount, ID3D11Device* device, Shader* shader)
-	: grassMat(shader)
+	: grassMat(new Material(shader))
 {
 	std::vector<Mesh::Vertex> grassV;
 	std::vector<unsigned int> grassI;
@@ -16,72 +16,43 @@ GrassComponent::GrassComponent(size_t chunkTriangleCount, ID3D11Device* device, 
 		grassI.push_back(triangle);
 	}
 
-	grassMesh = Mesh(device, grassV, grassI, D3D11_PRIMITIVE_TOPOLOGY_1_CONTROL_POINT_PATCHLIST);
+	grassMesh = new Mesh(grassV, grassI, D3D11_PRIMITIVE_TOPOLOGY_1_CONTROL_POINT_PATCHLIST);
+	grassMesh->Initialize(device);
 
 	height.LoadTexture(device, L"Textures/grassHeight.png");
 	diffuse.LoadTexture(device, L"Textures/grassDiff.png");
 	noise.LoadTexture(device, L"Textures/noise.png");
 
 
-	grassMat.SetTexture(diffuse, TEXTURE_DIFFUSE_SLOT, ShaderBindFlag::DOMAINS);
-	grassMat.SetTexture(noise, TEXTURE_NOISE_SLOT, ShaderBindFlag::DOMAINS);
-	grassMat.SetTexture(height, TEXTURE_HEIGHT_SLOT, ShaderBindFlag::HULL);
-	grassMat.SetTexture(height, TEXTURE_HEIGHT_SLOT, ShaderBindFlag::DOMAINS);
+	grassMat->SetTexture(diffuse, TEXTURE_DIFFUSE_SLOT, ShaderBindFlag::DOMAINS);
+	grassMat->SetTexture(noise, TEXTURE_NOISE_SLOT, ShaderBindFlag::DOMAINS);
+	grassMat->SetTexture(height, TEXTURE_HEIGHT_SLOT, ShaderBindFlag::HULL);
+	grassMat->SetTexture(height, TEXTURE_HEIGHT_SLOT, ShaderBindFlag::DOMAINS);
 
 
 
 	auto sampler = DXHelper::CreateSampler(D3D11_FILTER_MIN_MAG_MIP_LINEAR, D3D11_TEXTURE_ADDRESS_WRAP, device);
-	grassMat.SetSampler(sampler, 0, ShaderBindFlag::HULL);
-	grassMat.SetSampler(sampler, 0, ShaderBindFlag::DOMAINS);
-	grassMat.SetSampler(sampler, 0, ShaderBindFlag::PIXEL);
+	grassMat->SetSampler(sampler, 0, ShaderBindFlag::HULL);
+	grassMat->SetSampler(sampler, 0, ShaderBindFlag::DOMAINS);
+	grassMat->SetSampler(sampler, 0, ShaderBindFlag::PIXEL);
 
 }
 
 GrassComponent::~GrassComponent()
 {
-	if (grassBfr)
-	{
-		grassBfr->Release();
-		grassBfr = nullptr;
-	}
-	if (grassSrv)
-	{
-		grassSrv->Release();
-		grassSrv = nullptr;
-	}
-	if (grassIndexBfr)
-	{
-		grassIndexBfr->Release();
-		grassIndexBfr = nullptr;
-	}
-	if (grassIndexSrv)
-	{
-		grassIndexSrv->Release();
-		grassIndexSrv = nullptr;
-	}
-
-	if (grassBCBfr)
-	{
-		grassBCBfr->Release();
-		grassBCBfr = nullptr;
-	}
-	if (grassBCSRV)
-	{
-		grassBCSRV->Release();
-		grassBCSRV = nullptr;
-	}
-	if (grassCBuffer)
-	{
-
-		grassCBuffer->Release();
-		grassCBuffer = nullptr;
-	}
+	RELEASE(grassBfr);
+	RELEASE(grassSrv);
+	RELEASE(grassIndexBfr);
+	RELEASE(grassIndexSrv);
+	RELEASE(grassBCBfr);
+	RELEASE(grassBCSRV);
+	RELEASE(grassCBuffer);
 }
 
-void GrassComponent::InitializeGrass(Mesh& chunkMesh, ID3D11Device* device, ID3D11DeviceContext* context)
+void GrassComponent::InitializeGrass(Mesh* chunkMesh, ID3D11Device* device, ID3D11DeviceContext* context)
 {
-	std::vector<Mesh::Vertex>& vertices = chunkMesh.vertices;
-	std::vector<unsigned int>& indices = chunkMesh.indices;
+	std::vector<Mesh::Vertex>& vertices = chunkMesh->GetVertices();
+	std::vector<unsigned int>& indices = chunkMesh->GetIndices();
 
 	std::vector<GrassStraw> pData(vertices.size());
 	std::vector<dx::XMFLOAT4> indexData(indices.size());
@@ -165,13 +136,8 @@ void GrassComponent::Draw(Renderer* renderer, CameraComponent* camera)
 {
 
 
-	renderer->DrawGrass(*camera, grassMesh, grassMat, this->GetOwner()->GetTransform().GetWorldMatrix());
+	renderer->DrawGrass(grassMesh, grassMat, this->GetOwner()->GetTransform().GetWorldMatrix(), camera);
 
-}
-
-Material& GrassComponent::GetMaterial()
-{
-	return grassMat;
 }
 
 

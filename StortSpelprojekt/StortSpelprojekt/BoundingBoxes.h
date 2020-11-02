@@ -21,15 +21,15 @@ class BoundingBoxes
 
 private:
 	AABB aabb; 
-	Mesh basicMesh;
+	Mesh* basicMesh;
 	
 public:
-	BoundingBoxes(const Mesh& mesh);
+	BoundingBoxes(Mesh* mesh);
 	virtual ~BoundingBoxes();
 
 	void SetAABB(const AABB& aabb) { this->aabb=aabb; }
 	
-	const AABB& GetAABB() { return this->aabb; }
+	const AABB& GetAABB() const { return this->aabb; }
 
 	
 	void CalcAABB(const Mesh& mesh); // can also be used to calc OBB if someone knows how.

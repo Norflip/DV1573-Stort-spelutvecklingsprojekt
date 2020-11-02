@@ -51,7 +51,7 @@ struct VS_INSTANCE_INPUT
 	float3 tangent	: TANGENT;
 	float3 binormal : BINORMAL;
 	uint id	: SV_InstanceID;
-	float4x4 instanceWorld : INSTANCEWORLD;
+    row_major matrix instanceWorld : INSTANCEWORLD;
 	float3 instancePos : INSTANCEPOS;
 };
 
