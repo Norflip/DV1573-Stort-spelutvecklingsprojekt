@@ -8,7 +8,7 @@
 #include "Object.h"
 #include "GameClock.h"
 
-enum SkeletonStateMachine
+enum class SkeletonStateMachine
 {
 	IDLE,
 	WALK,
@@ -21,12 +21,19 @@ enum SkeletonStateMachine
 	BLENDED
 };
 
+enum class SkeletonType
+{
+	BaseEnemy,
+	ChargerEnemy,
+	HouseBase,
+	HouseLegs
 
+};
 ALIGN16
 class SkeletonMeshComponent : public Component
 {
 public:
-	SkeletonMeshComponent(Mesh* mesh, Material* material);
+	SkeletonMeshComponent(Mesh* mesh, Material* material, SkeletonType skeletonType);
 	virtual ~SkeletonMeshComponent();
 
 	Mesh* GetMesh() const { return this->mesh; }
@@ -40,13 +47,12 @@ public:
 	SkeletonAni& GetAnimationTrack(unsigned int trackNr);
 
 	void SetTrack(const SkeletonStateMachine& type, bool playOnce);
-	
+	SkeletonType type;
 	void BlendAnimations();
 	bool GetIsDone();
 	void SetisDone(bool);
 	bool& SetAndGetDoneDown();
 	bool& SetAndGetDoneUp();
-
 	ALIGN16_ALLOC;
 
 private:

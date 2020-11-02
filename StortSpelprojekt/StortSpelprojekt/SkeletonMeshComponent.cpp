@@ -1,7 +1,8 @@
 #include "stdafx.h"
 #include "SkeletonMeshComponent.h"
 
-SkeletonMeshComponent::SkeletonMeshComponent(Mesh* mesh, Material* material) : mesh(mesh), material(material), boundingBoxes(mesh)
+SkeletonMeshComponent::SkeletonMeshComponent(Mesh* mesh, Material* material, SkeletonType skeletonType) : mesh(mesh), material(material), boundingBoxes(mesh),
+type(skeletonType)
 {
 	boundingBoxes.CalcAABB();
 	currentAni = SkeletonStateMachine::NONE;
@@ -52,6 +53,8 @@ void SkeletonMeshComponent::Draw(Renderer* renderer, CameraComponent* camera)
 void SkeletonMeshComponent::RunAnimation(const float& deltaTime)
 {
 	elapsedTime += deltaTime;
+	
+	
 	if (elapsedTime >= 60.0f)
 	{
 		elapsedTime = 0.0f; //I just dont like the idea of it running to infinity.
@@ -69,12 +72,12 @@ void SkeletonMeshComponent::RunAnimation(const float& deltaTime)
 	{
 		finalTransforms = skeletonAnimations[2].Makeglobal(elapsedTime, dx::XMMatrixIdentity(), *skeletonAnimations[2].GetRootKeyJoints());
 	}
-	else if (currentAni == SkeletonStateMachine::ATTACK || currentAni == SkeletonStateMachine::DOWN)
+	else if (currentAni == SkeletonStateMachine::ATTACK|| currentAni == SkeletonStateMachine::DOWN)
 	{
 		finalTransforms = skeletonAnimations[3].Makeglobal(elapsedTime, dx::XMMatrixIdentity(), *skeletonAnimations[3].GetRootKeyJoints());
 
-		
 	}
+	
 	else if (currentAni == SkeletonStateMachine::DEATH)
 	{
 		finalTransforms = skeletonAnimations[4].Makeglobal(elapsedTime, dx::XMMatrixIdentity(), *skeletonAnimations[4].GetRootKeyJoints());
@@ -188,7 +191,10 @@ void SkeletonMeshComponent::PlayOnce()
 			timer.Restart();
 			timer.Update();
 			time = (float)timer.GetSeconds();
-
+			if (type == SkeletonType::HouseBase || type == SkeletonType::HouseLegs)
+			{
+				time /= 10.0f;
+			}
 
 			float animationTime = time * skeletonAnimations[1].GetFPS();
 
@@ -209,11 +215,13 @@ void SkeletonMeshComponent::PlayOnce()
 		if (!done)
 		{
 			
-			
 			timer.Start();
 			timer.Update();
 			time = (float)timer.GetSeconds();
-
+			if (type == SkeletonType::HouseBase || type == SkeletonType::HouseLegs)
+			{
+				time /= 10.0f;
+			}
 			float animationTime = time * skeletonAnimations[3].GetFPS();
 
 			if (animationTime < skeletonAnimations[3].GetAniLength())
@@ -240,7 +248,10 @@ void SkeletonMeshComponent::PlayOnce()
 			timer.Restart();
 			timer.Update();
 			time = (float)timer.GetSeconds();
-			
+			if (type == SkeletonType::HouseBase || type == SkeletonType::HouseLegs)
+			{
+				time /= 10.0f;
+			}
 
 			float animationTime = time * skeletonAnimations[3].GetFPS();
 

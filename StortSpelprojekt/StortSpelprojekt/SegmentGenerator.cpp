@@ -388,9 +388,9 @@ void SegmentGenerator::AddTreesToChunk(Chunk* chunk, std::vector<ChunkPointInfor
 				BoxColliderComponent* collider = tree->AddComponent<BoxColliderComponent>(extends, treesInstanced[i].instancePosition);
 			}
 
-			RigidBodyComponent* rbody = tree->AddComponent<RigidBodyComponent>(0.f, FilterGroups::PROPS, FilterGroups::EVERYTHING, BodyType::STATIC);
+			//RigidBodyComponent* rbody = tree->AddComponent<RigidBodyComponent>(0.f, FilterGroups::PROPS, FilterGroups::EVERYTHING, BodyType::STATIC);
 
-			physics.RegisterRigidBody(rbody);
+			//physics.RegisterRigidBody(rbody);
 
 
 		}
