@@ -67,9 +67,6 @@
     <FxCompile Include="Shaders\FogTest_ps.hlsl">
       <Filter>Resource Files</Filter>
     </FxCompile>
-    <FxCompile Include="FXAA_ps.hlsl">
-      <Filter>Resource Files</Filter>
-    </FxCompile>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="BoundingBoxes.cpp">

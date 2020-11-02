@@ -13,9 +13,9 @@ static const float QUALITY[12] = {1.0f, 1.0f, 1.0f, 1.0f, 1.0f, 1.5f, 2.0f, 2.0f
 
 //static float index = 0;
 
-struct VertexInputType
+struct PixelInputType
 {
-	float4 position : POSITION;
+	float4 position : SV_POSITION;
 	float2 uv : TEXCOORD0;
 };
 
@@ -43,7 +43,7 @@ float RgbToLuma(float3 color)
 //	}
 //}
 
-float4 main(VertexInputType input) : SV_TARGET
+float4 main(PixelInputType input) : SV_TARGET
 {
 	float3 color = screenTexture.Sample(defaultSampleType, input.uv).rgb;
 	float4 finalColor = float4(0.0f, 0.0f, 0.0f, 0.0f);
