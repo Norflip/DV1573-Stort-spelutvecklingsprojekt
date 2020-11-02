@@ -32,7 +32,7 @@ class GUIFont;
 class SpriteRenderPass;
 class PlayerComp;
 
-constexpr auto immortal = 0;
+constexpr auto immortal = 1;
 
 ALIGN16
 class Scene

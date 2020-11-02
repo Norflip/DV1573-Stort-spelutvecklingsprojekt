@@ -57,7 +57,7 @@ private:
 	NEXT_SCENE swapScene;
 	Renderer* renderer;
 	POINT p;
-
+	//std::vector<WeaponComponent* >weaponsList;
 	EnemyStatsComp* enemyStatsComp;
 	float rayDistance;	
 

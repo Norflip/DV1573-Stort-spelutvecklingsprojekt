@@ -62,7 +62,8 @@ PlayerComp::PlayerComp(Renderer* renderer, CameraComponent* camComp, Physics& ph
 	cam = camComp;
 	// per frame shit
 	this->rayDistance = 2.0f;
-	
+	//this->GetOwner()->GetComponen
+	//weaponsList.push_back()
 }
 
 PlayerComp::~PlayerComp()
@@ -123,7 +124,7 @@ void PlayerComp::Update(const float& deltaTime)
 		if (phy.RaytestSingle(ray, 5.0f, hit, FilterGroups::ENEMIES))
 		{
 			if (hit.object != nullptr && hit.object->HasComponent<EnemyStatsComp>())
-			{				
+			{
 				if (hit.object->GetComponent<EnemyStatsComp>()->IsEnabled())
 				{
 					if (hit.object->GetComponent<EnemyStatsComp>()->GetHealth() >= 0.0f)
@@ -133,43 +134,15 @@ void PlayerComp::Update(const float& deltaTime)
 					}
 					else if (hit.object->GetComponent<EnemyStatsComp>()->GetHealth() <= 0.0f)
 					{
-						//hit.object.s  ->GetComponent<PickupComponent>()->SetActive(false);
-
 						RigidBodyComponent* rbComp = hit.object->GetComponent<RigidBodyComponent>();
 						rp::RigidBody* objectRb = rbComp->GetRigidBody();
 						rbComp->RemoveCollidersFromBody(objectRb);
-
-						////hit.object->GetComponent<EnemyStatsComp>()->SetEnabled(false);
-						////hit.object->GetComponent<EnemyStatsComp>()->SetEnabled(false);
-						///*hit.object->GetComponent<EnemyStatsComp>()->SetEnabled(false);
-						//RigidBodyComponent* rbComp = hit.object->GetComponent<RigidBodyComponent>();
-						//rp::RigidBody* objectRb = rbComp->GetRigidBody();
-						//rbComp->RemoveCollidersFromBody(objectRb);
-						//phy.UnregisterRigidBody(hit.object->GetComponent<RigidBodyComponent>());
-						//*/
-
 						hit.object->RemoveFlag(ObjectFlag::ENABLED);
 						hit.object->AddFlag(ObjectFlag::REMOVED);
 					}
 				}
-				else
-				{
-					std::cout << "YADDA" << std::endl;
-				}
-			}
-			else
-			{
-				std::cout << " jadda hallå " << std::endl;
 			}
 		}
-		else
-		{
-
-		}
-	}
-	else
-	{
-
 	}
 
 	float frameTime = FCAST(GameClock::Instance().GetFrameTime() / 1000.0);
@@ -187,7 +160,7 @@ void PlayerComp::Update(const float& deltaTime)
 		//std::cout << food<<std::endl;
 		
 		// make better later
-		if (fuel < 0 || health <= 0 && !immortal)
+		if ((fuel < 0 || health <= 0) && !immortal)
 			swapScene = NEXT_SCENE::LOSE;
 
 		if (food < 0)
