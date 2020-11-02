@@ -185,6 +185,11 @@ void PlayerComp::Update(const float& deltaTime)
 	//healthDippingBar->SetScaleDipping(0);
 }
 
+void PlayerComp::InsertWeapon(WeaponComponent* weapon, std::string name)
+{
+	this->weaponsList.insert(make_pair(name, weapon) );
+}
+
 float PlayerComp::ReverseAndClamp(float inputValue)
 {
 	return 1.0f - (inputValue / 100.0f);

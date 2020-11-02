@@ -44,7 +44,7 @@ public:
 	void SetFood(float food) { this->fuel = food; }
 	void SetCurrentWeapon(int currentWeapon) { this->currentWeapon = currentWeapon; }// some ui stuff here?
 	void SetguiMan(GUIManager* guiMan) { this->guiMan = guiMan; }
-	
+	void InsertWeapon(WeaponComponent* weapon, std::string name);
 	NEXT_SCENE GetNextScene() { return this->swapScene; }
 private:
 	float health, attack, attackSpeed, fuel, food;
@@ -57,7 +57,7 @@ private:
 	NEXT_SCENE swapScene;
 	Renderer* renderer;
 	POINT p;
-	//std::vector<WeaponComponent* >weaponsList;
+	std::unordered_map<std::string, WeaponComponent*> weaponsList;
 	EnemyStatsComp* enemyStatsComp;
 	float rayDistance;	
 
