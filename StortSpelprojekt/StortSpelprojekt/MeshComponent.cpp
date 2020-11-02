@@ -1,18 +1,17 @@
 #include "stdafx.h"
 #include "MeshComponent.h"
 
-MeshComponent::MeshComponent(Mesh* mesh, Material* material) : boundingBoxes(mesh), instanced(false)
+MeshComponent::MeshComponent(Mesh* mesh, Material* material) : bounds(), instanced(false)
 {
 	meshes.push_back(mesh);
 	materials.push_back(material);
-	boundingBoxes.CalcAABB();
-
+	bounds.CalculateAABB(meshes);
 }
 
 MeshComponent::MeshComponent(std::vector<Mesh*> meshes, std::vector<Material*> materials) 
-	: meshes(meshes), materials(materials), boundingBoxes(meshes[0]), instanced(false)
+	: meshes(meshes), materials(materials), bounds(), instanced(false)
 {
-
+	bounds.CalculateAABB(meshes);
 }
 
 MeshComponent::~MeshComponent() 
@@ -48,14 +47,10 @@ void MeshComponent::DrawNonInstanced(Renderer* renderer, CameraComponent* camera
 	dx::XMFLOAT3 tmpPos;
 	dx::XMStoreFloat3(&tmpPos, GetOwner()->GetTransform().GetWorldPosition());
 
-	if (!camera->CullAgainstAABB(boundingBoxes.GetAABB(), tmpPos))
+	if (GetOwner()->HasFlag(ObjectFlag::NO_CULL) || camera->InView(bounds, GetOwner()->GetTransform().GetWorldMatrix()))
 	{
 		for (size_t i = 0; i < meshes.size(); i++)
 			renderer->Draw(meshes[i], materials[i], GetOwner()->GetTransform().GetWorldMatrix(), camera);
-	}
-	else
-	{
-		std::cout << (GetOwner()->GetName() + " CULLED") << std::endl;
 	}
 }
 
@@ -71,16 +66,12 @@ void MeshComponent::DrawInstanced(Renderer* renderer, CameraComponent* camera) c
 		for (size_t i = 0; i < meshes.size(); i++)
 		{
 			size_t instanceCount = 0;
-			dx::XMFLOAT3 tmpPos;
-
 			D3D11_MAPPED_SUBRESOURCE mappedData = DXHelper::BindInstanceBuffer(renderer->GetContext(), instanceBuffer);
 			Mesh::InstanceData* dataView = reinterpret_cast<Mesh::InstanceData*>(mappedData.pData);
 
 			for (size_t instance = 0; instance < instanceData.size(); instance++) //cull all the instances
 			{
-				tmpPos = instanceData[instance].instancePosition; //If the position is depending on a parent then update this variable with that parent. This is for static meshes.
-
-				if (!camera->CullAgainstAABB(boundingBoxes.GetAABB(), tmpPos)) //the bounding box is in local space so it's same for every instance.
+				if (camera->InView(bounds, dx::XMLoadFloat4x4(&instanceData[instance].instanceWorld))) //the bounding box is in local space so it's same for every instance.
 				{
 					dataView[instanceCount++] = instanceData[instance];
 				}
