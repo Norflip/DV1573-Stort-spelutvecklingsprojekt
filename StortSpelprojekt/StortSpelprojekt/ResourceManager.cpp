@@ -7,10 +7,10 @@ ResourceManager::ResourceManager()
 
 ResourceManager::~ResourceManager()
 {
-	/*for (auto i : resources)
+	for (auto i : resources)
 	{
 		delete i.second;
-	}*/
+	}
 
 	for (auto i : shaderResources)
 	{
