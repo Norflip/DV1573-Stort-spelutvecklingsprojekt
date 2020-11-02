@@ -368,7 +368,7 @@ void SegmentGenerator::AddTreesToChunk(Chunk* chunk, std::vector<ChunkPointInfor
 				dx::XMStoreFloat4x4(&treesInstanced[i].instanceWorld, dx::XMMatrixTranspose(translation));
 			}
 
-			Object* tree = new Object("tree", ObjectFlag::DEFAULT | ObjectFlag::NO_CULL);
+			Object* tree = new Object("tree", ObjectFlag::DEFAULT);
 
 			Transform::SetParentChild(chunk->GetOwner()->GetTransform(), tree->GetTransform());
 			MeshComponent* meshComp = tree->AddComponent<MeshComponent>(stylizedTreeModel, stylizedTreeMaterial);

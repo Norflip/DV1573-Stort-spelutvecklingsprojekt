@@ -120,9 +120,7 @@ void ObjectSpawner::Spawn(const SaveState& state, PointQuadTree& tree, std::unor
 	size_t index = 0;
 	for (auto i : data)
 	{
-		std::cout << i.second.instancedData.size() << std::endl;
-
-		Object* props = new Object("props_" + std::to_string(index), ObjectFlag::DEFAULT | ObjectFlag::NO_CULL);
+		Object* props = new Object("props_" + std::to_string(index), ObjectFlag::DEFAULT /* | ObjectFlag::NO_CULL */);
 		MeshComponent* mc = props->AddComponent<MeshComponent>(i.second.prop->mesh, i.second.prop->material);
 		mc->SetInstanceable(0, i.second.instancedData, i.second.instancedData.size(), device);
 
@@ -139,7 +137,6 @@ void ObjectSpawner::Spawn(const SaveState& state, PointQuadTree& tree, std::unor
 
 	for (size_t i = 0; i < itemSpawnPositions.size(); i++)
 	{
-		std::cout << std::to_string(i) << std::endl;
 		itemIndex %= items.size();
 		Item& item = items[itemIndex];
 

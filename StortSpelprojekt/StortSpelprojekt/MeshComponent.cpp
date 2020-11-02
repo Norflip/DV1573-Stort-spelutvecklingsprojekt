@@ -56,28 +56,35 @@ void MeshComponent::DrawNonInstanced(Renderer* renderer, CameraComponent* camera
 
 void MeshComponent::DrawInstanced(Renderer* renderer, CameraComponent* camera) const
 {
+	for (size_t i = 0; i < meshes.size(); i++)
+		renderer->DrawInstanced(meshes[i], instanceData.size(), instanceBuffer, materials[i], camera);
+	return; // FIX
+
 	if (GetOwner()->HasFlag(ObjectFlag::NO_CULL))
 	{
-		for (size_t i = 0; i < meshes.size(); i++)
-			renderer->DrawInstanced(meshes[i], instanceData.size(), instanceBuffer,  materials[i], camera);
+	
 	}
 	else
 	{
 		for (size_t i = 0; i < meshes.size(); i++)
 		{
-			size_t instanceCount = 0;
-			D3D11_MAPPED_SUBRESOURCE mappedData = DXHelper::BindInstanceBuffer(renderer->GetContext(), instanceBuffer);
-			Mesh::InstanceData* dataView = reinterpret_cast<Mesh::InstanceData*>(mappedData.pData);
+			D3D11_MAPPED_SUBRESOURCE mappedData;
+			ZeroMemory(&mappedData, sizeof(D3D11_MAPPED_SUBRESOURCE));
 
-			for (size_t instance = 0; instance < instanceData.size(); instance++) //cull all the instances
+			renderer->GetContext()->Map(instanceBuffer, 0, D3D11_MAP_WRITE_DISCARD, 0, &mappedData);
+			Mesh::InstanceData* dataView = reinterpret_cast<Mesh::InstanceData*>(mappedData.pData);
+			size_t instanceCount = 0;
+
+			for (size_t i = 0; i < instanceData.size(); i++) //cull all the instances
 			{
-				if (camera->InView(bounds, dx::XMLoadFloat4x4(&instanceData[instance].instanceWorld))) //the bounding box is in local space so it's same for every instance.
+				if (camera->InView(bounds, dx::XMLoadFloat4x4(&instanceData[i].instanceWorld))) //the bounding box is in local space so it's same for every instance.
 				{
-					dataView[instanceCount++] = instanceData[instance];
+					dataView[instanceCount] = instanceData[i];
+					instanceCount++;
 				}
 			}
 
-			DXHelper::UnBindInstanceBuffer(renderer->GetContext(), instanceBuffer);
+			renderer->GetContext()->Unmap(instanceBuffer, 0);
 			//meshes[i]->SetInstanceNr(instances);
 
 			if (instanceCount > 0)
