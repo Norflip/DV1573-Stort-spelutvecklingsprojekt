@@ -10,7 +10,6 @@ public:
 	CapsuleColliderComponent(float radius, float height, dx::XMFLOAT3 position);
 	CapsuleColliderComponent(std::vector<float> radius, std::vector<float> heights, std::vector<dx::XMFLOAT3> positions);
 
-	CapsuleColliderComponent(float radius, float height, dx::XMFLOAT3 position);
 	virtual~CapsuleColliderComponent() {};
 	virtual void Initialize() override;
 

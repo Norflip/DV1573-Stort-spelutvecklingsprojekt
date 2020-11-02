@@ -354,10 +354,9 @@ void SegmentGenerator::AddTreesToChunk(Chunk* chunk, std::vector<ChunkPointInfor
 			std::vector<Mesh::InstanceData> treesInstanced(nrOfInstancedStyTrees);
 			dx::XMFLOAT2 posXZ = Chunk::IndexToWorldXZ(chunk->GetIndex());
 
-			BoundingBoxes bbInfo(stylizedTreeModel[0]);
-			bbInfo.CalcAABB();
-
-			dx::XMFLOAT3 extends(bbInfo.GetAABB().halfX, bbInfo.GetAABB().halfY, bbInfo.GetAABB().halfZ);
+			BoundingBox bbInfo;
+			bbInfo.CalculateAABB(stylizedTreeModel[0]);
+			dx::XMFLOAT3 extends = bbInfo.GetExtends();
 
 			std::vector<dx::XMFLOAT3> colliderPositions;
 			std::vector<dx::XMFLOAT3> colliderExtends;

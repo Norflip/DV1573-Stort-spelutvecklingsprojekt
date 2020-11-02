@@ -3,7 +3,10 @@
 #include "Physics.h"
 
 SphereColliderComponent::SphereColliderComponent(float radius, dx::XMFLOAT3 position)
-	:radius(radius), Collider(position) {}
+	: Collider(position) 
+{
+	this->radius.push_back(radius);
+}
 
 SphereColliderComponent::SphereColliderComponent(std::vector<float> radius, std::vector<dx::XMFLOAT3> positions) 
 	: radius(radius), Collider(positions) {}
