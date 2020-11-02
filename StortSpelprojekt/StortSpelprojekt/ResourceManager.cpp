@@ -7,18 +7,18 @@ ResourceManager::ResourceManager()
 
 ResourceManager::~ResourceManager()
 {
-	//for (auto i : resources)
-	//{
-	//	delete i.second;
-	//}
+	/*for (auto i : resources)
+	{
+		delete i.second;
+	}*/
 
-	//for (auto i : shaderResources)
-	//{
-	//	delete i.second;
-	//}
+	for (auto i : shaderResources)
+	{
+		delete i.second;
+	}
 
-	//resources.clear();
-	//shaderResources.clear();
+	resources.clear();
+	shaderResources.clear();
 }
 
 void ResourceManager::AddShaderResource(std::string key, Shader* shader)
@@ -105,12 +105,12 @@ void ResourceManager::ReadObjects(ID3D11Device* device)
 
 			// Right now, it supports only 1 mesh and material for each path
 			// Will check if we need to load a whole vector with several meshes at the same time
-			std::vector<Material*> materials = ZWEBLoader::LoadMaterials(filepath, GetShaderResource(shader), device);
-			std::vector<Mesh*> meshes = ZWEBLoader::LoadMeshes(ZWEBLoadType::NoAnimation, filepath, device);
+			//std::vector<Material*> materials = ZWEBLoader::LoadMaterials(filepath, GetShaderResource(shader), device);
+			//std::vector<Mesh*> meshes = ZWEBLoader::LoadMeshes(ZWEBLoadType::NoAnimation, filepath, device);
 
 			auto sampler = DXHelper::CreateSampler(D3D11_FILTER_MIN_MAG_MIP_LINEAR, D3D11_TEXTURE_ADDRESS_WRAP, device);
 
-			if (meshes.size() > 1)
+			/*if (meshes.size() > 1)
 			{
 				for (int i = 0; i < meshes.size(); i++)
 				{
@@ -126,20 +126,20 @@ void ResourceManager::ReadObjects(ID3D11Device* device)
 
 				AddResource(name, meshes[0]);
 				AddResource(name + "Material", materials[0]);
-			}
+			}*/
 			
 
-			//material = ZWEBLoader::LoadMaterials(filepath, GetShaderResource(shader), device)[0];
+			Material* material = new Material;
+			*material = ZWEBLoader::LoadMaterials(filepath, GetShaderResource(shader), device)[0];
 
 			
-			//material->SetSampler(sampler, 0, ShaderBindFlag::PIXEL);
+			material->SetSampler(sampler, 0, ShaderBindFlag::PIXEL);
 
-			
-			//Mesh* mesh = new Mesh;
-			//*mesh = ZWEBLoader::LoadMeshes(ZWEBLoadType::NoAnimation, filepath, device)[0];
+			Mesh* mesh = new Mesh;
+			*mesh = ZWEBLoader::LoadMeshes(ZWEBLoadType::NoAnimation, filepath, device)[0];
 
-			//AddResource(name, mesh);
-			//AddResource(name + "Material", material);
+			AddResource(name, mesh);
+			AddResource(name + "Material", material);
 
 			std::getline(file, line);
 		}

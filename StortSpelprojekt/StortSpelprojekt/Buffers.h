@@ -51,8 +51,6 @@ struct cb_Lights
 	dx::XMFLOAT3 sunDirection;
 	float sunIntensity;
 	dx::XMFLOAT3 pad;
-	
-
 };
 
 ALIGN16
@@ -66,6 +64,7 @@ struct cb_Scene
 	float factor;
 	float time;
 	dx::XMFLOAT2 mousePos;
+	dx::XMFLOAT2 screenSize;
 };
 
 ALIGN16

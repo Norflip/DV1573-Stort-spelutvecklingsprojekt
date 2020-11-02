@@ -178,6 +178,8 @@ void Renderer::RenderFrame(CameraComponent* camera, float time, RenderTexture& t
 	xPos += (float)Input::Instance().GetPrevMousePosRelative().y;
 	yPos += (float)Input::Instance().GetPrevMousePosRelative().x;
 	data.mousePos = { xPos,yPos };
+	data.screenSize = { (float)outputWindow->GetWidth(), (float)outputWindow->GetHeight() };
+	
 	//data.mousePos = { (float)Input::Instance().GetMousePos().x, (float)Input::Instance().GetMousePos().y };
 	// put in mouse pos delta here
 	dx::XMStoreFloat3(&data.cameraPosition, camera->GetOwner()->GetTransform().GetPosition());

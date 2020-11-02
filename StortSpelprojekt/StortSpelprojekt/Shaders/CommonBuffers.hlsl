@@ -14,7 +14,6 @@ cbuffer cb_Object : register(b0)
 	row_major matrix world;
 	row_major matrix vp;
 	row_major matrix wv;
-
 };
 
 cbuffer cb_Material : register(b1)
@@ -39,6 +38,8 @@ cbuffer cb_Scene : register(b2)
 	float factor;
 	float time;
 	float2 mousePos;
+	float2 screenSize;
+	float2 pad4;
 }
 
 cbuffer cb_Lights : register(b3)
@@ -48,7 +49,6 @@ cbuffer cb_Lights : register(b3)
 	float3 sunDirection;
 	float sunIntensity;
 	float3 pad3;
-	
 };
 
 StructuredBuffer<float4x4> bones : register(t2);
