@@ -1,8 +1,8 @@
 #include "stdafx.h"
 #include "SkeletonMeshComponent.h"
 
-SkeletonMeshComponent::SkeletonMeshComponent(Mesh* mesh, Material* material, SkeletonType skeletonType) : mesh(mesh), material(material), bounds(),
-type(skeletonType)
+SkeletonMeshComponent::SkeletonMeshComponent(Mesh* mesh, Material* material, float timeScale) : mesh(mesh), material(material), bounds(),
+timeScale(timeScale)
 {
 	bounds.CalculateAABB(mesh);
 	currentAni = SkeletonStateMachine::NONE;
@@ -160,7 +160,7 @@ void SkeletonMeshComponent::PlayOnce()
 			timer.Restart();
 			timer.Update();
 			time = (float)timer.GetSeconds();
-
+			time *= timeScale;
 
 			float animationTime = time * skeletonAnimations[0].GetFPS();
 
@@ -184,10 +184,7 @@ void SkeletonMeshComponent::PlayOnce()
 			timer.Restart();
 			timer.Update();
 			time = (float)timer.GetSeconds();
-			if (type == SkeletonType::HouseBase || type == SkeletonType::HouseLegs)
-			{
-				time /= 10.0f;
-			}
+			time *= timeScale;
 
 			float animationTime = time * skeletonAnimations[1].GetFPS();
 
@@ -211,10 +208,7 @@ void SkeletonMeshComponent::PlayOnce()
 			timer.Start();
 			timer.Update();
 			time = (float)timer.GetSeconds();
-			if (type == SkeletonType::HouseBase || type == SkeletonType::HouseLegs)
-			{
-				time /= 10.0f;
-			}
+			time *= timeScale;
 			float animationTime = time * skeletonAnimations[3].GetFPS();
 
 			if (animationTime < skeletonAnimations[3].GetAniLength())
@@ -241,10 +235,8 @@ void SkeletonMeshComponent::PlayOnce()
 			timer.Restart();
 			timer.Update();
 			time = (float)timer.GetSeconds();
-			if (type == SkeletonType::HouseBase || type == SkeletonType::HouseLegs)
-			{
-				time /= 10.0f;
-			}
+			
+			time *= timeScale;
 
 			float animationTime = time * skeletonAnimations[3].GetFPS();
 
@@ -276,7 +268,7 @@ void SkeletonMeshComponent::PlayOnce()
 			timer.Start();
 			timer.Update();
 			time = (float)timer.GetSeconds();
-
+			time *= timeScale;
 			float animationTime = time * skeletonAnimations[4].GetFPS();
 			
 			if (animationTime < skeletonAnimations[4].GetAniLength())

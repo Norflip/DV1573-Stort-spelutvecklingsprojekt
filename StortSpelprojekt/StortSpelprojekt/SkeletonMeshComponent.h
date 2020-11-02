@@ -21,19 +21,12 @@ enum class SkeletonStateMachine
 	BLENDED
 };
 
-enum class SkeletonType
-{
-	BaseEnemy,
-	ChargerEnemy,
-	HouseBase,
-	HouseLegs
 
-};
 ALIGN16
 class SkeletonMeshComponent : public Component
 {
 public:
-	SkeletonMeshComponent(Mesh* mesh, Material* material, SkeletonType skeletonType);
+	SkeletonMeshComponent(Mesh* mesh, Material* material, float timeScale = 1.0f);
 	virtual ~SkeletonMeshComponent();
 
 	Mesh* GetMesh() const { return this->mesh; }
@@ -47,7 +40,6 @@ public:
 	SkeletonAni& GetAnimationTrack(unsigned int trackNr);
 
 	void SetTrack(const SkeletonStateMachine& type, bool playOnce);
-	SkeletonType type;
 	void BlendAnimations();
 	bool GetIsDone();
 	void SetisDone(bool);
@@ -56,6 +48,7 @@ public:
 	ALIGN16_ALLOC;
 
 private:
+	float timeScale = 1.0f;
 	Mesh* mesh;
 	Material* material;
 	std::vector<SkeletonAni> skeletonAnimations;
