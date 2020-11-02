@@ -1,10 +1,10 @@
 #include "stdafx.h"
 #include "SkeletonMeshComponent.h"
 
-SkeletonMeshComponent::SkeletonMeshComponent(Mesh* mesh, Material* material, SkeletonType skeletonType) : mesh(mesh), material(material), boundingBoxes(mesh),
+SkeletonMeshComponent::SkeletonMeshComponent(Mesh* mesh, Material* material, SkeletonType skeletonType) : mesh(mesh), material(material), bounds(),
 type(skeletonType)
 {
-	boundingBoxes.CalcAABB();
+	bounds.CalculateAABB(mesh);
 	currentAni = SkeletonStateMachine::NONE;
 	finalTransforms.resize(60);
 	doneDown = false;
@@ -29,13 +29,8 @@ void SkeletonMeshComponent::Update(const float& deltaTime)
 
 void SkeletonMeshComponent::Draw(Renderer* renderer, CameraComponent* camera)
 {
-	dx::XMFLOAT3 tmpPos;
-	dx::XMStoreFloat3(&tmpPos, GetOwner()->GetTransform().GetWorldPosition());
-
-	if (GetOwner()->HasFlag(ObjectFlag::NO_CULL) || !camera->CullAgainstAABB(boundingBoxes.GetAABB(), tmpPos))
-	{
-		
-		
+	if (GetOwner()->HasFlag(ObjectFlag::NO_CULL) || camera->InView(bounds, GetOwner()->GetTransform().GetWorldMatrix()))
+	{		
 		renderer->DrawSkeleton(mesh, material, GetOwner()->GetTransform().GetWorldMatrix(), camera, finalTransforms);
 		if (playOnce)
 		{
@@ -44,9 +39,7 @@ void SkeletonMeshComponent::Draw(Renderer* renderer, CameraComponent* camera)
 		else
 		{
 			RunAnimation(componentDeltaTime);
-		}
-
-		
+		}	
 	}
 }
 
@@ -307,7 +300,7 @@ void SkeletonMeshComponent::BlendAnimations()
 	//Need to have matching bones, need to know names, need to have the same fps and possibly same number of keys.
 
 	//skapa ett nytt track.
-	//ta bort alla ben ovanför/under rooten. alla keyframes och offsets. lägg till från andra tracket.
+	//ta bort alla ben ovanfï¿½r/under rooten. alla keyframes och offsets. lï¿½gg till frï¿½n andra tracket.
 	std::map<std::string, unsigned int> map1;
 	std::map<std::string, unsigned int> map2;
 

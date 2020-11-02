@@ -63,7 +63,7 @@ private:
 	std::unordered_map<SkeletonStateMachine, unsigned int> trackMap;
 	std::vector<dx::XMFLOAT4X4> finalTransforms;
 	SkeletonStateMachine currentAni = SkeletonStateMachine::NONE;
-	BoundingBoxes boundingBoxes;
+	BoundingBox bounds;
 	float componentDeltaTime = 0.0f;
 	GameClock timer;
 	bool playOnce = false;
