@@ -22,7 +22,7 @@ public:
 	void InitializeResources(ID3D11Device* device);
 
 	void ReadObjects(ID3D11Device* device);
-	void ReadLights();
+	void ReadTextures(ID3D11Device* device);
 	void ReadShaders(ID3D11Device* device);
 
 	void CompileShaders(ID3D11Device* device);

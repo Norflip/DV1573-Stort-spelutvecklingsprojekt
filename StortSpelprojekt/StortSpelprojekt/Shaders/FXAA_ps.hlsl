@@ -82,6 +82,8 @@ float4 main(VertexInputType input) : SV_TARGET
 	// Gradient in the corresponding direction
 	float gradientScaled = 0.25 * max(abs(gradient1), abs(gradient2));
 
+
+
 	//float stepLength = isHorizontal ? 
 	return float4(color, 1.0f);
 }
