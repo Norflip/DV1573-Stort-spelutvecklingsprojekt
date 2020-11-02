@@ -64,12 +64,12 @@ DS_OUTPUT_GRASS main(HS_CONSTANT_DATA_OUTPUT_GRASS input,
 	//float disp = /*grassDisplacement*/ (1* pow(uv.x, 1.0)) / 1.5; //grassDisplacement == Length
 	//float dispT = /*grassDisplacement*/(1 * pow(uv.x, 1.0) * (noiseSample + 2.5 * abs(sin((time * 0.25) + noiseSample)))) / 1.5;
 	
-	float disp = /*grassDisplacement*/ 0.125* pow(uv.x, 1.0); //grassDisplacement == Length
-	float dispT = /*grassDisplacement*/0.125 * pow(uv.x, 1.0) * (noiseSample + 2.5 * abs(sin((time * 0.25) + noiseSample)));
+	float disp = /*grassDisplacement*/ 0.2f * pow(uv.x, 1.0); //grassDisplacement == Length
+	float dispT = /*grassDisplacement*/0.2 * pow(uv.x, 1.0) * (noiseSample + 2.5 * abs(sin((time * 0.25) + noiseSample)));
 
 	dispT *= 0.1;
 
-	output.position = float4(pos.xyz, 1.0f);
+	output.position = float4(pos.x, pos.y - 0.4f, pos.z, 1.0f);
 	output.displacement = float3(dispT, disp, dispT);
 	output.tex.y = uv.x;
 	output.normal = mul(float4(normal, 0), world);
