@@ -1,5 +1,6 @@
 #pragma once
 #include "Renderer.h"
+#include "ResourceManager.h"
 
 class RenderPass
 {

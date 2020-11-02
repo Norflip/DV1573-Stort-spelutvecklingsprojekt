@@ -1,0 +1,8 @@
+Textures: 3
+
+TestTexture: Textures/Sylvanas.jpg
+
+GroundGrass: Textures/groundGrass.png
+
+StoneFloor: Textures/Stone_Floor_003_COLOR.jpg
+
