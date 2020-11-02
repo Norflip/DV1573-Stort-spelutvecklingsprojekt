@@ -22,7 +22,7 @@ public:
 	dx::XMMATRIX GetViewMatrix() const;
 	dx::XMMATRIX GetProjectionMatrix() const;
 
-	bool CullAgainstAABB(const AABB& aabb, const dx::XMFLOAT3 worldPos);
+	bool InView(const BoundingBox& bounds, const dx::XMMATRIX world);
 	Ray MouseToRay(const unsigned int& x, const unsigned int& y) const;
 	static CameraComponent* mainCamera;
 
