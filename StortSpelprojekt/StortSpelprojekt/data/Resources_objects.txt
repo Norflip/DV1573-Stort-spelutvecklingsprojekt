@@ -1,7 +1,7 @@
 Objects: 8
 
 Test: Models/brickSphere.ZWEB
-Shader: defaultShader
+Shader: instanceShader
 
 Test2: Models/sylvanas.ZWEB
 Shader: defaultShader

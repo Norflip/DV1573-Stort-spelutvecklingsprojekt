@@ -5,13 +5,7 @@
 #include "Random.h"
 #include "SaveState.h"
 
-#define SPAWN_ITEMS 1
-
-enum class ItemSpawnType
-{
-	ITEM,
-	PROP
-};
+#define SPAWN_ITEMS TRUE
 
 class ObjectSpawner
 {
@@ -22,6 +16,16 @@ class ObjectSpawner
 		float radius, padding;
 	};
 
+	struct InstancedProp
+	{
+		Mesh* mesh;
+		Material* material;
+
+		float yOffset;
+		float radius, padding;
+		size_t queueCount;
+	};
+
 	const float SPAWN_HEIGHT = 12.0f;
 
 public:
@@ -30,10 +34,11 @@ public:
 
 	void Initialize(Object* root, ObjectPooler* pooler);
 
-	void Spawn(const SaveState& state, PointQuadTree& tree, std::unordered_map<int, Chunk*>& chunkMap, std::vector<Chunk*>& chunks);
+	void Spawn(const SaveState& state, PointQuadTree& tree, std::unordered_map<int, Chunk*>& chunkMap, std::vector<Chunk*>& chunks, ID3D11Device* device);
 	void Despawn();
 
-	void RegisterItem(std::string key, float radius, float padding, float yOffset, int queueCount, ItemSpawnType type);
+	void RegisterItem(std::string key, float radius, float padding, float yOffset, size_t queueCount);
+	void RegisterInstancedItem(Mesh* mesh, Material* material, float radius, float padding, float yOffset, size_t queueCount);
 
 	void DrawDebug();
 
@@ -42,13 +47,15 @@ private:
 	Chunk* GetChunk(float x, float z, std::unordered_map<int, Chunk*>& chunkMap) const;
 
 private:
-	std::vector<Object*> items;
+	std::vector<Object*> activeItems;
+	std::vector<Object*> props;
+
 	ObjectPooler* pooler;
 	Object* root;
 
 	std::vector<dx::XMFLOAT2> itemSpawnPositions;
 	std::vector<dx::XMFLOAT2> propSpawnPositions;
 
-	std::vector<Item> staticItems;
-	std::vector<Item> dynamicItems;
+	std::vector<Item> items;
+	std::vector<InstancedProp> instancedProps;
 };
