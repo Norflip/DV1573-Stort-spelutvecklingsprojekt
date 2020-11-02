@@ -1,7 +1,7 @@
 #include "stdafx.h"
 #include "SegmentGenerator.h"
 
-SegmentGenerator::SegmentGenerator() : constructed(false), treePoints(dx::XMFLOAT2(0,0), dx::XMFLOAT2(0, 0))
+SegmentGenerator::SegmentGenerator() : constructed(false), treePoints(dx::XMFLOAT2(0, 0), dx::XMFLOAT2(0, 0))
 {
 }
 
@@ -27,7 +27,7 @@ void SegmentGenerator::Initialize(Object* root, ResourceManager* resourceManager
 	Physics& physics = Physics::Instance();
 	physics.MutexLock();
 
-	
+
 	physics.MutexUnlock();
 }
 
@@ -37,8 +37,8 @@ void SegmentGenerator::Construct(const SaveState& state, const SegmentDescriptio
 
 	if (!constructed)
 	{
-		CreateChunkMesh(chunkMesh, device);
-		
+		chunkMesh = CreateChunkMesh(device);
+
 		grid.Generate(description.maxSteps, CHUNK_PADDING, description.directionalSteps);
 		auto& chunkData = grid.GetChunks();
 
@@ -102,7 +102,7 @@ Chunk* SegmentGenerator::GetChunk(float x, float z) const
 	Chunk* chunk = nullptr;
 
 	auto find = chunkMap.find(hash);
-	
+
 	if (find != chunkMap.end())
 		chunk = find->second;
 
@@ -117,7 +117,7 @@ void SegmentGenerator::DrawDebug()
 	// PATH
 	const float offset = CHUNK_SIZE / 2.0f;
 	std::vector<dx::XMFLOAT2> points = grid.GetPath().GetPoints();
-	
+
 	const int skip = 10;
 
 	for (size_t i = 0; i < points.size(); i += skip)
@@ -157,10 +157,10 @@ std::vector<SegmentGenerator::ChunkPointInformation> SegmentGenerator::CreateChu
 
 			float sampledHeight = Noise::Sample(chunkPosXZ.x + x, chunkPosXZ.y + y, description.noiseSettings);
 			float worldHeight = sampledHeight * distance * TERRAIN_SCALE;
-			
+
 			worldHeight = std::max(worldHeight, MIN_TERRAIN_HEIGHT * 4.0f);
-			
-			
+
+
 			float height = worldHeight / TERRAIN_SCALE;
 
 			heightMap[x + size * y] = worldHeight;
@@ -201,36 +201,35 @@ Chunk* SegmentGenerator::CreateChunk(const dx::XMINT2& index, Object* root, cons
 
 	auto chunkDataSRV = DXHelper::CreateTexture(buffer, CHUNK_SIZE + 1, CHUNK_SIZE + 1, 4, DXGI_FORMAT_R8G8B8A8_UNORM, device);
 
-	Material material(chunkShader);
+	Material* material = new Material(chunkShader);
 	//cb_Material mat = material.GetMaterialData();
 	//mat.ambient = dx::XMFLOAT4(0.1f, 0.1f, 0.1f, 1);
 	//mat.diffuse = dx::XMFLOAT4(0.1f, 0.1f, 0.1f, 1);
 	//mat.specular = dx::XMFLOAT4(0.1f, 0.1f, 0.1f, 0.1f);
 
-	material.SetMaterialData(materialData);
+	material->SetMaterialData(materialData);
 
 	Texture texture(chunkDataSRV);
 
 	Texture grassTexture;
 	//grassTexture.LoadTexture(device, L"Textures/Grass_001_COLOR.jpg");
 	//grassTexture.LoadTexture(device, L"Textures/ground.png");
-	grassTexture.LoadTexture(device, L"Textures/groundGrass.png");
+	grassTexture.LoadTexture(device, L"Textures/newGrass.png");
 
 	Texture roadTexture;
 	roadTexture.LoadTexture(device, L"Textures/Stone_Floor_003_COLOR.jpg");
 
-	material.SetTexture(texture, 0, ShaderBindFlag::PIXEL | ShaderBindFlag::VERTEX);
-	material.SetTexture(grassTexture, 1, ShaderBindFlag::PIXEL);
-	material.SetTexture(roadTexture, 2, ShaderBindFlag::PIXEL);
+	material->SetTexture(texture, 0, ShaderBindFlag::PIXEL | ShaderBindFlag::VERTEX);
+	material->SetTexture(grassTexture, 1, ShaderBindFlag::PIXEL);
+	material->SetTexture(roadTexture, 2, ShaderBindFlag::PIXEL);
 
 	delete[] buffer;
 
 	auto dataSampler = DXHelper::CreateSampler(D3D11_FILTER_MIN_MAG_MIP_POINT, D3D11_TEXTURE_ADDRESS_CLAMP, device);
-	material.SetSampler(dataSampler, 0, ShaderBindFlag::PIXEL | ShaderBindFlag::VERTEX);
+	material->SetSampler(dataSampler, 0, ShaderBindFlag::PIXEL | ShaderBindFlag::VERTEX);
 
 	auto textureSampler = DXHelper::CreateSampler(D3D11_FILTER_MIN_MAG_MIP_LINEAR, D3D11_TEXTURE_ADDRESS_WRAP, device);
-	material.SetSampler(textureSampler, 1, ShaderBindFlag::PIXEL);
-
+	material->SetSampler(textureSampler, 1, ShaderBindFlag::PIXEL);
 
 	chunkObject->AddComponent<MeshComponent>(chunkMesh, material);
 
@@ -244,8 +243,10 @@ Chunk* SegmentGenerator::CreateChunk(const dx::XMINT2& index, Object* root, cons
 	return chunk;
 }
 
-void SegmentGenerator::CreateChunkMesh(Mesh& mesh, ID3D11Device* device)
+Mesh* SegmentGenerator::CreateChunkMesh(ID3D11Device* device)
 {
+	Mesh* mesh = nullptr;
+
 	if (!hasChunkMesh)
 	{
 		// CREATE CHUNK MESH
@@ -299,12 +300,15 @@ void SegmentGenerator::CreateChunkMesh(Mesh& mesh, ID3D11Device* device)
 		}
 
 		hasChunkMesh = true;
-		mesh = Mesh(device, vertices, indicies);
+		mesh = new Mesh(vertices, indicies);
+		mesh->Initialize(device);
 	}
 	else
 	{
 		mesh = chunkMesh;
 	}
+
+	return mesh;
 }
 
 void SegmentGenerator::InitializeTrees(ResourceManager* resources)
@@ -319,20 +323,20 @@ void SegmentGenerator::InitializeTrees(ResourceManager* resources)
 	//0 tree 1 leaves
 	stylizedTreeMaterial = ZWEBLoader::LoadMaterials("Models/tree.ZWEB", instanceShader, device);
 
-	stylizedTreeMaterial[0].SetSampler(sampler, 0, ShaderBindFlag::PIXEL);
-	stylizedTreeMaterial[1].SetSampler(sampler, 0, ShaderBindFlag::PIXEL);
+	stylizedTreeMaterial[0]->SetSampler(sampler, 0, ShaderBindFlag::PIXEL);
+	stylizedTreeMaterial[1]->SetSampler(sampler, 0, ShaderBindFlag::PIXEL);
 
-	stylizedTreeMaterial[0].SetShader(instanceShader);
-	stylizedTreeMaterial[1].SetShader(alphaInstanceShader);
+	stylizedTreeMaterial[0]->SetShader(instanceShader);
+	stylizedTreeMaterial[1]->SetShader(alphaInstanceShader);
 }
 
 void SegmentGenerator::AddTreesToChunk(Chunk* chunk, std::vector<ChunkPointInformation>& chunkInformation)
 {
 	Physics& physics = Physics::Instance();
 	PossionDiscSampler sampler;
-	Points points = sampler.GeneratePoints(5.0f, { CHUNK_SIZE, CHUNK_SIZE }, false, 5);
 
-	//std::cout << "POINTS: " << points.size() << std::endl;
+	Random::SetSeed(Random::GenerateSeed());
+	Points points = sampler.GeneratePoints(5.0f, { CHUNK_SIZE, CHUNK_SIZE }, false, 5);
 
 	if (points.size() > 0)
 	{
@@ -347,56 +351,58 @@ void SegmentGenerator::AddTreesToChunk(Chunk* chunk, std::vector<ChunkPointInfor
 		size_t nrOfInstancedStyTrees = validPoints.size();
 		if (nrOfInstancedStyTrees > 0)
 		{
-			
 			std::vector<Mesh::InstanceData> treesInstanced(nrOfInstancedStyTrees);
 			dx::XMFLOAT2 posXZ = Chunk::IndexToWorldXZ(chunk->GetIndex());
 
 			for (size_t i = 0; i < nrOfInstancedStyTrees; i++)
 			{
-				float y = chunk->SampleHeight(posXZ.x + validPoints[i].x, posXZ.y + validPoints[i].y) * 0.9f + FRACKIG_TREE_ADJUSTMENT;
+				float y = chunk->SampleHeight(posXZ.x + validPoints[i].x, posXZ.y + validPoints[i].y) * TREE_HEIGHT_ADJUSTMENT_FACTOR;
 				treePoints.Insert(dx::XMFLOAT2(posXZ.x + validPoints[i].x, posXZ.y + validPoints[i].y));
 
 				dx::XMFLOAT3 position(posXZ.x + validPoints[i].x, y, posXZ.y + validPoints[i].y);
 				treesInstanced[i].instancePosition = position;
-				
-				dx::XMMATRIX translation = dx::XMMatrixScaling(2.0f, 2.0f, 2.0f) * dx::XMMatrixTranslation(position.x, position.y, position.z);
-				dx::XMStoreFloat4x4(&treesInstanced[i].instanceWorld, translation);
-			}
 
-			stylizedTreeModel[0].CreateInstanceBuffer(device, treesInstanced);
-			stylizedTreeModel[0].SetInstanceNr(nrOfInstancedStyTrees);
-			stylizedTreeModel[1].CreateInstanceBuffer(device, treesInstanced);
-			stylizedTreeModel[1].SetInstanceNr(nrOfInstancedStyTrees);
-			stylizedTreeMaterial[1].SetTransparent(true);
+				float scale = Random::Range(1.4f, 2.0f);
+				dx::XMMATRIX rotation = dx::XMMatrixRotationQuaternion(dx::XMQuaternionRotationAxis({ 0,1,0 }, Random::RadAngle()));
+				dx::XMMATRIX translation = dx::XMMatrixScaling(scale, scale, scale) * rotation * dx::XMMatrixTranslation(position.x, position.y, position.z);
+				dx::XMStoreFloat4x4(&treesInstanced[i].instanceWorld, dx::XMMatrixTranspose(translation));
+			}
 
 			Object* tree = new Object("tree");
-			tree->AddComponent<InstancedMeshComponent>(stylizedTreeModel, stylizedTreeMaterial);
-			BoundingBoxes bbInfo(stylizedTreeModel[0]);
-			bbInfo.CalcAABB();
-			dx::XMFLOAT3 extends(bbInfo.GetAABB().halfX, bbInfo.GetAABB().halfY, bbInfo.GetAABB().halfZ);
-			for (int ins = 0; ins < (int)nrOfInstancedStyTrees; ins++)
-			{
-				BoxColliderComponent* collider = tree->AddComponent<BoxColliderComponent>(extends, stylizedTreeModel[0].instanceData[ins].instancePosition);
-			}
-			
-			RigidBodyComponent* rbody =tree->AddComponent<RigidBodyComponent>(0.f, FilterGroups::PROPS, FilterGroups::EVERYTHING, BodyType::STATIC);
-			
-			physics.RegisterRigidBody(rbody);
 
 			Transform::SetParentChild(chunk->GetOwner()->GetTransform(), tree->GetTransform());
+			MeshComponent* meshComp = tree->AddComponent<MeshComponent>(stylizedTreeModel, stylizedTreeMaterial);
+
+			meshComp->SetInstanceable(0, treesInstanced, nrOfInstancedStyTrees, device);
+
+			stylizedTreeMaterial[1]->SetTransparent(true);
+
+			BoundingBoxes bbInfo(stylizedTreeModel[0]);
+			bbInfo.CalcAABB();
+
+			dx::XMFLOAT3 extends(bbInfo.GetAABB().halfX, bbInfo.GetAABB().halfY, bbInfo.GetAABB().halfZ);
+
+			for (size_t i = 0; i < nrOfInstancedStyTrees; i++)
+			{
+				BoxColliderComponent* collider = tree->AddComponent<BoxColliderComponent>(extends, treesInstanced[i].instancePosition);
+			}
+
+			RigidBodyComponent* rbody = tree->AddComponent<RigidBodyComponent>(0.f, FilterGroups::PROPS, FilterGroups::EVERYTHING, BodyType::STATIC);
+
+			physics.RegisterRigidBody(rbody);
+
 		}
 	}
 }
 
 void SegmentGenerator::AddGrassToChunk(Chunk* chunk, Texture& texture)
 {
-	size_t chunkTriangleCount = chunkMesh.indices.size() / 3;
+	size_t chunkTriangleCount = chunkMesh->GetTriangleCount();
 	GrassComponent* grassComponent = chunk->GetOwner()->AddComponent<GrassComponent>(chunkTriangleCount, device, grassShader);
-	grassComponent->GetMaterial().SetTexture(texture, 6, ShaderBindFlag::HULL);
-	grassComponent->GetMaterial().SetTexture(texture, 6, ShaderBindFlag::DOMAINS);
+	grassComponent->GetMaterial()->SetTexture(texture, 6, ShaderBindFlag::HULL);
+	grassComponent->GetMaterial()->SetTexture(texture, 6, ShaderBindFlag::DOMAINS);
 
 	grassComponent->InitializeGrass(chunkMesh, device, context);
-
 }
 
 bool SegmentGenerator::ValidateTreePoint(const dx::XMFLOAT2& point, std::vector<ChunkPointInformation>& chunkInformation)

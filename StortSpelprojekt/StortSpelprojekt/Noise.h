@@ -2,7 +2,6 @@
 #include <numeric>
 #include "ThirdParty\SimplexNoise.h"
 #include "Chunk.h"
-#include "Log.h"
 #include "Random.h"
 
 namespace Noise

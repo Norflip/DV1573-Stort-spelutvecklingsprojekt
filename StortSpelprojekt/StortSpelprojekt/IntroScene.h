@@ -12,10 +12,10 @@ private:
 	SoundEvent test2, test3;
 
 public:
-	IntroScene(ResourceManager* manager);
-	~IntroScene();
+	IntroScene();
+	virtual ~IntroScene();
 
-	void Initialize(Renderer* renderer) override;
+	void Initialize() override;
 	void InitializeObjects() override;
 	void InitializeGUI() override;
 
@@ -24,7 +24,6 @@ public:
 
 	void Update(const float& deltaTime) override;
 	void FixedUpdate(const float& fixedDeltaTime) override;
-	void Render() override;
 	
 	ALIGN16_ALLOC;
 

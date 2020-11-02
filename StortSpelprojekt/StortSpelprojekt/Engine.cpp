@@ -3,8 +3,6 @@
 
 Engine::Engine(HINSTANCE hInstance) : window(hInstance), activeScene(nullptr)
 {
-	Log::Open();
-
 	window.Open(1600, 900);
 	renderer = new Renderer();
 	renderer->Initialize(&window);
@@ -15,19 +13,17 @@ Engine::Engine(HINSTANCE hInstance) : window(hInstance), activeScene(nullptr)
 	resourceManager = new ResourceManager;
 	resourceManager->InitializeResources(renderer->GetDevice());
 
-	RegisterScene(0, new IntroScene(resourceManager));
-	RegisterScene(1, new GameOverScene(resourceManager));
-	RegisterScene(2, new GameScene(resourceManager));
-	RegisterScene(3, new WinScene(resourceManager));
+	RegisterScene(0, new IntroScene());
+	RegisterScene(1, new GameOverScene());
+	RegisterScene(2, new GameScene());
+	RegisterScene(3, new WinScene());
 
 	SwitchScene(0);
 }
 
 Engine::~Engine()
 {
-	delete renderer;
-	delete resourceManager;
-
+	
 	for (size_t i = 0; i < scenes.size(); i++)
 	{
 		if (scenes[i])
@@ -35,6 +31,9 @@ Engine::~Engine()
 			delete scenes[i];
 		}
 	}
+
+	delete renderer;
+	delete resourceManager;
 }
 
 void Engine::Run()
@@ -115,7 +114,9 @@ void Engine::RegisterScene(size_t id, Scene* scene)
 	auto sceneIt = this->scenes.find(id);
 	assert(sceneIt == scenes.end());
 
-	scene->Initialize(renderer);
+	scene->SetDepedencies(resourceManager, renderer, renderer->GetOutputWindow());
+	scene->Initialize();
+	
 	this->scenes.insert({ id, scene });
 }
 

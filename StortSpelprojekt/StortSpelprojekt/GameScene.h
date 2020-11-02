@@ -13,10 +13,10 @@ private:
 
 	Object* bananaObject;
 public:
-	GameScene(ResourceManager* manager);
-	~GameScene();
+	GameScene();
+	virtual ~GameScene();
 
-	void Initialize(Renderer* renderer) override;
+	void Initialize() override;
 	void InitializeObjects() override;
 	void InitializeGUI() override;
 	void InitializeLights();

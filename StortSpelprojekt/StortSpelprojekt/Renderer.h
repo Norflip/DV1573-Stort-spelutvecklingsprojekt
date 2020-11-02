@@ -32,11 +32,13 @@ class Renderer
 		const Material* material;
 
 		Type type;
-		size_t instanceCount;
 		
 		std::vector<dx::XMFLOAT4X4>* bones;
 		dx::XMMATRIX world;
 		const CameraComponent* camera;
+		
+		ID3D11Buffer* instanceBuffer;
+		size_t instanceCount;
 	};
 
 	typedef std::unordered_map<size_t, std::queue<RenderItem>> RenderQueue;
@@ -55,10 +57,10 @@ public:
 	void RenderFrame(CameraComponent* camera, float time, RenderTexture& target, bool drawGUI = false, bool applyRenderPasses = true);
 
 	void AddRenderPass(RenderPass*);
-	void Draw(const Mesh& mesh, const Material& material, const dx::XMMATRIX& model, const CameraComponent& camera);
-	void DrawInstanced(const Mesh& mesh, const size_t& count, const Material& material, const CameraComponent& camera);
-	void DrawSkeleton(const Mesh& mesh, const Material& material, const dx::XMMATRIX& model, const CameraComponent& camera, std::vector<dx::XMFLOAT4X4>& bones);
-	void DrawGrass(const CameraComponent& camera, const Mesh& mesh, const Material& material, const dx::XMMATRIX& model);
+	void Draw(const Mesh* mesh, const Material* material, const dx::XMMATRIX& model, const CameraComponent* camera);
+	void DrawInstanced(const Mesh* mesh, const size_t& count, ID3D11Buffer* instanceBuffer, const Material* material, const CameraComponent* camera);
+	void DrawSkeleton(const Mesh* mesh, const Material* material, const dx::XMMATRIX& model, const CameraComponent* camera, std::vector<dx::XMFLOAT4X4>& bones);
+	void DrawGrass(const Mesh* mesh, const Material* material, const dx::XMMATRIX& model, const CameraComponent* camera);
 	
 	void SetCullBack(bool);
 
@@ -66,7 +68,7 @@ public:
 	ID3D11DeviceContext* GetContext() const { return this->context; }
 	Window* GetOutputWindow() const { return this->outputWindow; }
 
-	void DrawScreenQuad(const Material& Material);
+	void DrawScreenQuad(const Material* Material);
 
 	void ClearRenderTarget(const RenderTexture& target, bool clearDepth = true);
 	void SetRenderTarget(const RenderTexture& target, bool setDepth = true);
@@ -88,7 +90,8 @@ private:
 	void DrawRenderItemGrass(const RenderItem& item);
 	
 	void SetObjectBufferValues(const CameraComponent* camera, dx::XMMATRIX world, bool transpose);
-	
+	Mesh* CreateScreenQuad();
+
 private:
 	IDXGISwapChain* swapchain;
 	ID3D11Device* device;
@@ -98,8 +101,8 @@ private:
 	RenderTexture midbuffer;
 	RenderTexture renderPassSwapBuffers [2];
 	
-	Material screenQuadMaterial;
-	Mesh screenQuadMesh;
+	Material* screenQuadMaterial;
+	Mesh* screenQuadMesh;
 
 	ConstantBuffer<cb_Object> objectBuffer;
 	ConstantBuffer<cb_Scene> sceneBuffer;

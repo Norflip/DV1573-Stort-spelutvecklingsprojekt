@@ -41,7 +41,7 @@ public:
 		shader->SetPixelShader(path, entry);
 		shader->SetVertexShader("Shaders/ScreenQuad_vs.hlsl");
 		shader->Compile(device);
-		material = Material(shader);
+		material = new Material(shader);
 	}
 
 	void Pass(Renderer* renderer, RenderTexture& inTexture, RenderTexture& outTexture) override
@@ -54,7 +54,7 @@ public:
 	}
 
 private:
-	Material material;
+	Material* material;
 
 	//LPCWSTR path;
 	std::string path;

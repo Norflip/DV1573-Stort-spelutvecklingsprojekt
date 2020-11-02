@@ -25,19 +25,18 @@ public:
 	GrassComponent(size_t chunkTriangleCount, ID3D11Device* device, Shader* shader);
 	virtual ~GrassComponent();
 
-	void InitializeGrass(Mesh& chunkMesh, ID3D11Device* device, ID3D11DeviceContext* context);
+	void InitializeGrass(Mesh* chunkMesh, ID3D11Device* device, ID3D11DeviceContext* context);
 	void Draw(Renderer* renderer, CameraComponent* camera) override;
 
-	Material& GetMaterial();
+	Material* GetMaterial() const { return this->grassMat; }
 	ALIGN16_ALLOC;
 
 private:
 	Texture height;
 	Texture diffuse;
 	Texture noise;
-	Material grassMat;
-	Mesh grassMesh;
-
+	Material* grassMat;
+	Mesh* grassMesh;
 
 	ID3D11Buffer* grassBfr = nullptr;
 	ID3D11ShaderResourceView* grassSrv = nullptr;

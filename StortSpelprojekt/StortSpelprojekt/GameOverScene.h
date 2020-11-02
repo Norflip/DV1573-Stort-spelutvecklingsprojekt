@@ -10,10 +10,10 @@ class GameOverScene : public Scene
 private:
 
 public:
-	GameOverScene(ResourceManager* manager);
-	~GameOverScene();
+	GameOverScene();
+	virtual ~GameOverScene();
 
-	void Initialize(Renderer* renderer) override;
+	void Initialize() override;
 	void InitializeObjects() override;
 	void InitializeGUI() override;
 
@@ -22,8 +22,7 @@ public:
 
 	void Update(const float& deltaTime) override;
 	void FixedUpdate(const float& fixedDeltaTime) override;
-	void Render() override;
-	Object* cameraObject = new Object("camera", ObjectFlag::ENABLED);
+
 	ALIGN16_ALLOC;
 
 };

@@ -64,13 +64,13 @@ namespace ZWEBLoader //TO BE ADDED: FUNCTION TO LOAD LIGHTS
 
 		return skeletonAnimation;
 	}
-	inline std::vector<Mesh> LoadMeshes(ZWEBLoadType type, std::string scenePath, ID3D11Device* device)
+	inline std::vector<Mesh*> LoadMeshes(ZWEBLoadType type, std::string scenePath, ID3D11Device* device)
 	{
 
 		ZWEB::ZWEBImporter importer;
 		importer.importScene(scenePath);
 
-		std::vector<Mesh> meshes;
+		std::vector<Mesh*> meshes;
 		for (int mesh = 0; mesh < importer.getSceneInfo().nrOfMeshes; mesh++)
 		{
 			std::vector<unsigned int> indicesZweb(importer.getMeshInfo(mesh).nrOfindices);
@@ -142,28 +142,29 @@ namespace ZWEBLoader //TO BE ADDED: FUNCTION TO LOAD LIGHTS
 				}
 			}
 
-			Mesh meshObject(device, vertices, indicesZweb);
+			Mesh* meshObject = new Mesh(vertices, indicesZweb);
+			meshObject->Initialize(device);
 			
-			meshObject.SetMeshName((std::string)importer.getMeshInfo(mesh).name);
-			meshObject.SetBoneIDS(boneIDMap);
+			meshObject->SetMeshName((std::string)importer.getMeshInfo(mesh).name);
+			meshObject->SetBoneIDS(boneIDMap);
 
 			dx::XMFLOAT3 scale = { (importer.getMeshInfo(mesh).scale[0]), (importer.getMeshInfo(mesh).scale[1]), (importer.getMeshInfo(mesh).scale[2]) };
 			dx::XMFLOAT3 rotation = { (importer.getMeshInfo(mesh).rotation[0]), (importer.getMeshInfo(mesh).rotation[1]), (importer.getMeshInfo(mesh).rotation[2]) };
 			dx::XMFLOAT3 translation = { (importer.getMeshInfo(mesh).translation[0]), (importer.getMeshInfo(mesh).translation[1]), (importer.getMeshInfo(mesh).translation[2]) };
 
-			meshObject.SetSRT(scale, rotation, translation);
+			meshObject->SetSRT(scale, rotation, translation);
 			meshes.push_back(meshObject);
 		}
 		return meshes;
 	}
 
-	inline std::vector<Material> LoadMaterials(std::string scenePath, Shader* shader, ID3D11Device* device) //Each mesh has a material name there might be 5 meshes and 3 materials.
+	inline std::vector<Material*> LoadMaterials(std::string scenePath, Shader* shader, ID3D11Device* device) //Each mesh has a material name there might be 5 meshes and 3 materials.
 	{
 		ZWEB::ZWEBImporter importer;
 
 		importer.importScene(scenePath);
 
-		std::vector<Material> materials;
+		std::vector<Material*> materials;
 		std::string diffuseTName = "NULL";
 		std::string normalTName = "NULL";
 		std::string opacityName = "NULL";
@@ -171,14 +172,14 @@ namespace ZWEBLoader //TO BE ADDED: FUNCTION TO LOAD LIGHTS
 
 		for (unsigned short material = 0; material < importer.getSceneInfo().nrOfMaterials; material++)
 		{
-			Material mat(shader);
+			Material* mat = new Material(shader);
 			cb_Material materialData; 
 
 			materialData.ambient = DirectX::XMFLOAT4(importer.getMaterialInfo(material).ka[0], importer.getMaterialInfo(material).ka[1], importer.getMaterialInfo(material).ka[2], 1.0f);
 			materialData.diffuse = DirectX::XMFLOAT4(importer.getMaterialInfo(material).kd[0], importer.getMaterialInfo(material).kd[1], importer.getMaterialInfo(material).kd[2], 1.0f);
 			materialData.specular = DirectX::XMFLOAT4(importer.getMaterialInfo(material).ks[0], importer.getMaterialInfo(material).ks[1], importer.getMaterialInfo(material).ks[2], importer.getMaterialInfo(material).specularPower);// if the material is lambert and not Phong then this is default 0.
 
-			mat.SetName(importer.getMaterialInfo(material).name);
+			mat->SetName(importer.getMaterialInfo(material).name);
 
 			diffuseTName = importer.getMaterialInfo(material).albedoMapName;
 			normalTName = importer.getMaterialInfo(material).normalMapName;
@@ -194,7 +195,7 @@ namespace ZWEBLoader //TO BE ADDED: FUNCTION TO LOAD LIGHTS
 				bool success = texture.LoadTexture(device, pathWSTR.c_str());
 				assert(success);
 
-				mat.SetTexture(texture, 0, ShaderBindFlag::PIXEL);
+				mat->SetTexture(texture, 0, ShaderBindFlag::PIXEL);
 				materialData.hasAlbedo = 1;
 			}
 			else
@@ -209,7 +210,7 @@ namespace ZWEBLoader //TO BE ADDED: FUNCTION TO LOAD LIGHTS
 				bool success = texture.LoadTexture(device, pathWSTR.c_str());
 				assert(success);
 
-				mat.SetTexture(texture, 1, ShaderBindFlag::PIXEL); //This is default but can be manually changed afterwards.
+				mat->SetTexture(texture, 1, ShaderBindFlag::PIXEL); //This is default but can be manually changed afterwards.
 				materialData.hasNormalMap = 1;
 			}
 			else
@@ -224,10 +225,10 @@ namespace ZWEBLoader //TO BE ADDED: FUNCTION TO LOAD LIGHTS
 				bool success = texture.LoadTexture(device, pathWSTR.c_str());
 				assert(success);
 
-				mat.SetTexture(texture, 3, ShaderBindFlag::PIXEL); //This is default but can be manually changed afterwards.
+				mat->SetTexture(texture, 3, ShaderBindFlag::PIXEL); //This is default but can be manually changed afterwards.
 			}
 
-			mat.SetMaterialData(materialData);
+			mat->SetMaterialData(materialData);
 			materials.push_back(mat);
 		}
 		return materials;
