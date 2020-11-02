@@ -37,9 +37,11 @@ private:
 	int nextChosen;
 	float nodeRadius;
 	bool canWalk;
-	float length; //length is only saved for displaying
+	float length; 
+	dx::XMFLOAT3 lastPos;
 	SkeletonMeshComponent* base;
 	SkeletonMeshComponent* legs;
+	RigidBodyComponent* rbComp;
 public:
 	NodeWalkerComp();
 	virtual ~NodeWalkerComp();
@@ -50,11 +52,9 @@ public:
 	void Stop();
 
 	void Update(const float& deltaTime);
-	//void InsertNode(std::string name, int id, dx::XMFLOAT3 position, int nextMiddle, int nextLeft, int nextRight);
-	//void InsertNode(const Node &theNode);
-	//void InsertNodes(std::vector<Node> someNodes);
+	dx::XMFLOAT3 GetLastPos();
 
-	void SetPosition(dx::XMVECTOR pos);
+	//void SetPosition(dx::XMVECTOR pos);
 
 };
 
