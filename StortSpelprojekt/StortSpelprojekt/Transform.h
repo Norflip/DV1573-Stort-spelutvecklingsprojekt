@@ -41,7 +41,7 @@ public:
 
 	bool ChangedThisFrame() const { return this->changedThisFrame; }
 	void MarkNotChanged() { this->changedThisFrame = false; }
-
+	void MarkAsChanged() { this->changedThisFrame = true; }
 	
 
 	//dx::XMVECTOR GetPosition() const { GetWorldPosition(); }

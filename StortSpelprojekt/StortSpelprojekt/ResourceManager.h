@@ -13,7 +13,6 @@ public:
 	virtual ~ResourceManager();
 
 	void AddResource(std::string key, Resource* resource);
-	//template <typename T> void AddResource(std::string key, T* resource);
 	void AddShaderResource(std::string key, Shader* shader);
 
 	Resource* GetResource(std::string key);

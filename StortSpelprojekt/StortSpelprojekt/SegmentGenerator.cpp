@@ -55,7 +55,7 @@ void SegmentGenerator::Construct(const SaveState& state, const SegmentDescriptio
 			CreateChunk(pair.first, root, description, pair.second);
 		}
 
-		spawner->Spawn(state, treePoints, chunkMap, chunks);
+		spawner->Spawn(state, treePoints, chunkMap, chunks, device);
 		constructed = true;
 	}
 }

@@ -46,40 +46,38 @@ void CameraComponent::UpdateProjectionMatrix()
 
 std::vector<dx::XMFLOAT4>& CameraComponent::GetFrustumPlanes()
 {
-	//if (GetOwner()->GetTransform().ChangedThisFrame() || frustumPlanes.size() == 0)
-	//{
-		//std::cout << "update frustum" << std::endl;
+//	if (GetOwner()->GetTransform().ChangedThisFrame() || frustumPlanes.size() == 0)
+//	{
 
 		// x, y, z, and w represent A, B, C and D in the plane equation
 		// where ABC are the xyz of the planes normal, and D is the plane constant
-	if (frustumPlanes.size() != 6)
-		frustumPlanes = std::vector<dx::XMFLOAT4>(6);
-	//r means row
+		if (frustumPlanes.size() != 6)
+			frustumPlanes = std::vector<dx::XMFLOAT4>(6);
 
-	dx::XMMATRIX vp = dx::XMMatrixMultiply(GetViewMatrix(), GetProjectionMatrix());
-	DirectX::XMFLOAT4X4 mat;
-	XMStoreFloat4x4(&mat, vp);
+		dx::XMMATRIX vp = dx::XMMatrixMultiply(GetViewMatrix(), GetProjectionMatrix());
+		DirectX::XMFLOAT4X4 mat;
+		XMStoreFloat4x4(&mat, vp);
 
-	frustumPlanes[0] = { mat._14 - mat._11, mat._24 - mat._21, mat._34 - mat._31, mat._44 - mat._41 }; //right
-	frustumPlanes[1] = { mat._14 + mat._11, mat._24 + mat._21, mat._34 + mat._31, mat._44 + mat._41 }; //left
-	frustumPlanes[2] = { mat._14 + mat._12, mat._24 + mat._22, mat._34 + mat._32, mat._44 + mat._42 }; //bottom
-	frustumPlanes[3] = { mat._14 - mat._12, mat._24 - mat._22, mat._34 - mat._32, mat._44 - mat._42 }; //top
-	frustumPlanes[4] = { mat._13, mat._23, mat._33, mat._43 }; //near
-	frustumPlanes[5] = { mat._14 - mat._13, mat._24 - mat._23, mat._34 - mat._33, mat._44 - mat._43 }; //far
+		frustumPlanes[0] = { mat._14 - mat._11, mat._24 - mat._21, mat._34 - mat._31, mat._44 - mat._41 }; //right
+		frustumPlanes[1] = { mat._14 + mat._11, mat._24 + mat._21, mat._34 + mat._31, mat._44 + mat._41 }; //left
+		frustumPlanes[2] = { mat._14 + mat._12, mat._24 + mat._22, mat._34 + mat._32, mat._44 + mat._42 }; //bottom
+		frustumPlanes[3] = { mat._14 - mat._12, mat._24 - mat._22, mat._34 - mat._32, mat._44 - mat._42 }; //top
+		frustumPlanes[4] = { mat._13, mat._23, mat._33, mat._43 }; //near
+		frustumPlanes[5] = { mat._14 - mat._13, mat._24 - mat._23, mat._34 - mat._33, mat._44 - mat._43 }; //far
 
-	DirectX::XMFLOAT4 n;
+		DirectX::XMFLOAT4 n;
 
-	for (size_t i = 0; i < 6; i++)
-	{
-		n = frustumPlanes[i];
-		float d = (float)sqrtf(n.x * n.x + n.y * n.y + n.z * n.z);
+		for (size_t i = 0; i < 6; i++)
+		{
+			n = frustumPlanes[i];
+			float d = (float)sqrtf(n.x * n.x + n.y * n.y + n.z * n.z);
 
-		frustumPlanes[i].x /= d;
-		frustumPlanes[i].y /= d;
-		frustumPlanes[i].z /= d;
-		frustumPlanes[i].w /= d;
-	}
-	//	}
+			frustumPlanes[i].x /= d;
+			frustumPlanes[i].y /= d;
+			frustumPlanes[i].z /= d;
+			frustumPlanes[i].w /= d;
+		}
+	//}
 	return frustumPlanes;
 }
 
