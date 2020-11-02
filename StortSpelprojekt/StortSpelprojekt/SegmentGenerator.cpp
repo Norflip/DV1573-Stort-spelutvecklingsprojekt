@@ -382,6 +382,7 @@ void SegmentGenerator::AddTreesToChunk(Chunk* chunk, std::vector<ChunkPointInfor
 
 			dx::XMFLOAT3 extends(bbInfo.GetAABB().halfX, bbInfo.GetAABB().halfY, bbInfo.GetAABB().halfZ);
 
+
 			for (size_t i = 0; i < nrOfInstancedStyTrees; i++)
 			{
 				BoxColliderComponent* collider = tree->AddComponent<BoxColliderComponent>(extends, treesInstanced[i].instancePosition);
@@ -390,6 +391,7 @@ void SegmentGenerator::AddTreesToChunk(Chunk* chunk, std::vector<ChunkPointInfor
 			RigidBodyComponent* rbody = tree->AddComponent<RigidBodyComponent>(0.f, FilterGroups::PROPS, FilterGroups::EVERYTHING, BodyType::STATIC);
 
 			physics.RegisterRigidBody(rbody);
+
 
 		}
 	}

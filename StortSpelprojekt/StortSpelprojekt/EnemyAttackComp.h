@@ -23,5 +23,6 @@ class EnemyAttackComp : public Component
 		GameClock timer;
 		float playerRadius;
 		EnemyStatsComp* enemyStatsComp;
+		RigidBodyComponent* rbComp;
 		bool chasePlayer = false;
 };
