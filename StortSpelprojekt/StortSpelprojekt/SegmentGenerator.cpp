@@ -214,7 +214,7 @@ Chunk* SegmentGenerator::CreateChunk(const dx::XMINT2& index, Object* root, cons
 	Texture grassTexture;
 	//grassTexture.LoadTexture(device, L"Textures/Grass_001_COLOR.jpg");
 	//grassTexture.LoadTexture(device, L"Textures/ground.png");
-	grassTexture.LoadTexture(device, L"Textures/groundGrass.png");
+	grassTexture.LoadTexture(device, L"Textures/newGrass.png");
 
 	Texture roadTexture;
 	roadTexture.LoadTexture(device, L"Textures/Stone_Floor_003_COLOR.jpg");
@@ -381,6 +381,7 @@ void SegmentGenerator::AddTreesToChunk(Chunk* chunk, std::vector<ChunkPointInfor
 			bbInfo.CalculateAABB(stylizedTreeModel[0]);
 			dx::XMFLOAT3 extends = bbInfo.GetExtends();
 
+
 			for (size_t i = 0; i < nrOfInstancedStyTrees; i++)
 			{
 				BoxColliderComponent* collider = tree->AddComponent<BoxColliderComponent>(extends, treesInstanced[i].instancePosition);
@@ -389,6 +390,7 @@ void SegmentGenerator::AddTreesToChunk(Chunk* chunk, std::vector<ChunkPointInfor
 			RigidBodyComponent* rbody = tree->AddComponent<RigidBodyComponent>(0.f, FilterGroups::PROPS, FilterGroups::EVERYTHING, BodyType::STATIC);
 
 			physics.RegisterRigidBody(rbody);
+
 
 		}
 	}

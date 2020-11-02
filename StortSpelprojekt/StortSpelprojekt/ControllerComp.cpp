@@ -7,16 +7,35 @@ bool ControllerComp::IsGrounded() const
 	dx::XMStoreFloat3(&origin, GetOwner()->GetTransform().GetPosition());
 	//origin.z += 2.f;
 	Ray ray(origin, DOWN_VEC);
-	RayHit hit;
+	RayHit hitTerrain;
+	RayHit hitProps;
 
 	//TERRAIN or default depending on if u can jump from on top of objects
 	float distance = 1.45f;
 	Physics& phy = Physics::Instance();
-	phy.RaytestSingle(ray, distance, hit, FilterGroups::TERRAIN);
+	phy.RaytestSingle(ray, distance, hitTerrain, FilterGroups::TERRAIN);
+	phy.RaytestSingle(ray, distance, hitProps, FilterGroups::PROPS);
 	
 	bool result = false;
-	if (hit.object != nullptr)
+	if (hitTerrain.object != nullptr || (hitProps.object != nullptr && hitProps.object->GetName()== "houseBase"))
 	{
+
+		if (hitProps.object != nullptr && hitProps.object->GetName() == "houseBase")
+		{
+
+			dx::XMFLOAT3 housePos;
+			dx::XMStoreFloat3(&housePos, hitProps.object->GetTransform().GetPosition());
+			dx::XMFLOAT3 houseLastPos = hitProps.object->GetComponent<NodeWalkerComp>()->GetLastPos();
+
+			dx::XMFLOAT3 delta = { housePos.x-houseLastPos.x ,housePos.y-houseLastPos.y, housePos.z-houseLastPos.z};
+
+			GetOwner()->GetTransform().Translate(delta.x, delta.y, delta.z);
+			rbComp->SetPosition(GetOwner()->GetTransform().GetPosition());
+			//rbComp->SetLinearVelocity(delta);
+		}
+		
+			
+
 		result = true;
 		//std::cout << "picking: " << hit.object->GetName() << std::endl;
 		//DShape::DrawLine(ray.origin, ray.GetPoint(distance), { 0,0,1 });
@@ -27,7 +46,7 @@ bool ControllerComp::IsGrounded() const
 	return result;
 }
 
-ControllerComp::ControllerComp(Object* cameraObject)
+ControllerComp::ControllerComp(Object* cameraObject, Object* houseObject)
 {
 	this->fov = 60.f;
 	this->fovTimer = 0.f;
@@ -44,6 +63,7 @@ ControllerComp::ControllerComp(Object* cameraObject)
 
 	this->groundQuaterion = { 0.f,0.f,0.f,1.f };
 	this->cameraObject = cameraObject;
+	this->houseObject = houseObject;
 	this->rbComp = nullptr;
 	this->camComp = nullptr;
 	this->capsuleComp = nullptr;
@@ -70,6 +90,8 @@ void ControllerComp::Initialize()
 		this->rbComp->LockRotation(true);
 		this->rbComp->SetLinearDamping(0.1f);
 		this->rbComp->GetRigidBody()->getCollider(0)->getMaterial().setBounciness(0.f);
+		this->rbComp->GetRigidBody()->getCollider(0)->getMaterial().setRollingResistance(100.f);
+		//this->rbComp->GetRigidBody()->getCollider(0)->getMaterial().setFrictionCoefficient(100.f);
 		this->rbComp->EnableGravity(!this->freeCam);
 		this->rbComp->SetLinearVelocity({ 0.f, 0.f, 0.f });
 	}
