@@ -210,7 +210,6 @@ float4 main(PixelInputType input) : SV_TARGET
         clamp(length(r.x), 0.0, 1.0));
 
 
-
     //return float4(I, I, I, 1.0f);
     diffuseColor = screenTexture.Sample(defaultSampleType, input.uv);
    // return diffuseColor;

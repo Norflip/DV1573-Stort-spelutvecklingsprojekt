@@ -55,7 +55,7 @@ void SegmentGenerator::Construct(const SaveState& state, const SegmentDescriptio
 			CreateChunk(pair.first, root, description, pair.second);
 		}
 
-		spawner->Spawn(state, treePoints, chunkMap, chunks);
+		spawner->Spawn(state, treePoints, chunkMap, chunks, device);
 		constructed = true;
 	}
 }
@@ -379,7 +379,7 @@ void SegmentGenerator::AddTreesToChunk(Chunk* chunk, std::vector<ChunkPointInfor
 				colliderExtends.push_back(extends);
 			}
 
-			Object* tree = new Object("tree");
+			Object* tree = new Object("tree", ObjectFlag::DEFAULT);
 
 			Transform::SetParentChild(chunk->GetOwner()->GetTransform(), tree->GetTransform());
 			MeshComponent* meshComp = tree->AddComponent<MeshComponent>(stylizedTreeModel, stylizedTreeMaterial);

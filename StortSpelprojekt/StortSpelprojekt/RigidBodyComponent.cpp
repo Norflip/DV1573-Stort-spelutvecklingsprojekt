@@ -65,6 +65,7 @@ void RigidBodyComponent::SetPosition(dx::XMVECTOR position)
 	rp::Transform transform = body->getTransform();
 	transform.setPosition(rp::Vector3(pos.x, pos.y, pos.z));
 	body->setTransform(transform);
+	GetOwner()->GetTransform().MarkAsChanged();
 }
 
 dx::XMVECTOR RigidBodyComponent::GetPosition() const
@@ -82,6 +83,7 @@ void RigidBodyComponent::SetRotation(dx::XMVECTOR rotation)
 	rp::Transform transform = body->getTransform();
 	transform.setOrientation(rp::Quaternion(rot.x, rot.y, rot.z, rot.w));
 	body->setTransform(transform);
+	GetOwner()->GetTransform().MarkAsChanged();
 }
 
 dx::XMVECTOR RigidBodyComponent::GetRotation() const
