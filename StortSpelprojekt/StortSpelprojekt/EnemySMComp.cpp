@@ -71,18 +71,19 @@ void EnemySMComp::Animate()
 
 void EnemySMComp::Update(const float& deltaTime)
 {
-	//if (KEY_DOWN(K))
-	//{
-	//	SetState(switchState[currentState]);
-	//}
-	if (enemyAttackComp && enemyAttackComp->GetChasePlayer())
+	
+	if (enemyAttackComp != NULL)
 	{
-		SetState(EnemyState::ATTACK);
+		if (currentState != EnemyState::ATTACK && enemyAttackComp->GetChasePlayer())
+		{
+			SetState(EnemyState::ATTACK);
+		}
+		else if (currentState != EnemyState::IDLE)
+		{
+			SetState(EnemyState::IDLE);
+		}
 	}
-	else if(currentState != EnemyState::IDLE)
-	{
-		SetState(EnemyState::IDLE);
-	}
+	
 	if (GetOwner()->HasComponent<SkeletonMeshComponent>())
 	{
 		Animate();

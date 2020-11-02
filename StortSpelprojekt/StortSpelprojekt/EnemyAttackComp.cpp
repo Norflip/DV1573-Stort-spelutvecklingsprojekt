@@ -13,8 +13,8 @@ EnemyAttackComp::~EnemyAttackComp()
 
 void EnemyAttackComp::Initialize()
 {
+	this->enemyStatsComp = GetOwner()->GetComponent<EnemyStatsComp>();
 	this->rbComp = GetOwner()->GetComponent<RigidBodyComponent>();
-	this->enemyStatsComp = GetOwner()->GetComponent<EnemyStatsComp>();	
 	this->rbComp->GetRigidBody()->getCollider(0)->getMaterial().setBounciness(0.f);
 	this->rbComp->GetRigidBody()->getCollider(0)->getMaterial().setFrictionCoefficient(100.f);
 	this->rbComp->SetLinearDamping(0.9f);
@@ -36,12 +36,6 @@ bool EnemyAttackComp::ChasePlayer(const float& deltaTime)
 	chasePlayer = false;
 	attackPlayer = false;
 
-	//DirectX::XMFLOAT3 enemyPos;
-	//dx::XMStoreFloat3(&enemyPos, GetOwner()->GetTransform().GetPosition());
-	//DirectX::XMFLOAT3 playerPos;
-	//dx::XMStoreFloat3(&playerPos, player->GetOwner()->GetTransform().GetPosition());
-
-	//dx::XMFLOAT3 distanceF = { enemyPos.x - playerPos.x, enemyPos.y - playerPos.y, enemyPos.z - playerPos.z };
 	dx::XMFLOAT3 moveDir = { 0.0f, 0.0f, 0.0f };
 
 
@@ -62,31 +56,7 @@ bool EnemyAttackComp::ChasePlayer(const float& deltaTime)
 		moveDir.z = normDir.z;
 	}
 
-	//if(distanceF.x <= enemyStatsComp->GetRadius() && distanceF.z <= enemyStatsComp->GetRadius()
-	//	&& distanceF.x >= -enemyStatsComp->GetRadius() && distanceF.z >= -enemyStatsComp->GetRadius())
-	//{
-	//	chasePlayer = true;
-	//	if (distanceF.x > playerRadius)
-	//	{
-	//		moveDir.x = -1.0f;
-	//	}
-	//	else if (distanceF.x < -playerRadius)
-	//	{
-	//		moveDir.x = 1.0f;
-	//	}
-
-	//	if (distanceF.z > playerRadius)
-	//	{
-	//		moveDir.z = -1.0f;
-	//	}
-	//	else if (distanceF.z < -playerRadius)
-	//	{
-	//		moveDir.z = 1.0f;
-	//	}
-	//}
-
-	//float length = (distanceF.x * distanceF.x + distanceF.y * distanceF.y + distanceF.z * distanceF.z);
-	if (length < playerRadius)//playerRadius * playerRadius)
+	if (length < playerRadius)
 	{
 		attackPlayer = true;
 	}
@@ -118,7 +88,6 @@ void EnemyAttackComp::UpdateAttackPlayer(const float& deltaTime)
 {
 	if (ChasePlayer(deltaTime) && attackPlayer)
 	{
-		// byebye
 		if (timer.GetSeconds() >= enemyStatsComp->GetAttackSpeed())
 		{
 			timer.Restart();
