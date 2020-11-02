@@ -32,7 +32,6 @@
 #include "Input.h"
 #include "Message.h"
 #include "MessageBus.h"
-#include "Log.h"
 #include "GameClock.h"
 #include "ZWEBLoader.h"
 #include "DirectXHelpers.h"

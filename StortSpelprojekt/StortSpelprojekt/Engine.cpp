@@ -23,9 +23,7 @@ Engine::Engine(HINSTANCE hInstance) : window(hInstance), activeScene(nullptr)
 
 Engine::~Engine()
 {
-	delete renderer;
-	delete resourceManager;
-
+	
 	for (size_t i = 0; i < scenes.size(); i++)
 	{
 		if (scenes[i])
@@ -33,6 +31,9 @@ Engine::~Engine()
 			delete scenes[i];
 		}
 	}
+
+	delete renderer;
+	delete resourceManager;
 }
 
 void Engine::Run()

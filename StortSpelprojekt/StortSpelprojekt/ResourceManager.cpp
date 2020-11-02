@@ -21,11 +21,29 @@ ResourceManager::~ResourceManager()
 	shaderResources.clear();
 }
 
+void ResourceManager::AddResource(std::string key, Resource* resource)
+{
+	auto iterator = resources.find(key);
+	if (iterator == resources.end())
+		resources.insert({ key, resource });
+}
+
 void ResourceManager::AddShaderResource(std::string key, Shader* shader)
 {
 	auto iterator = shaderResources.find(key);
 	if (iterator == shaderResources.end())
 		shaderResources.insert({ key, shader });
+}
+
+Resource* ResourceManager::GetResource(std::string key)
+{
+	Resource* resource = nullptr;
+	auto iterator = resources.find(key);
+
+	if (iterator != resources.end())
+		resource = (*iterator).second;
+	
+	return resource;
 }
 
 Shader* ResourceManager::GetShaderResource(std::string key)
@@ -103,14 +121,12 @@ void ResourceManager::ReadObjects(ID3D11Device* device)
 
 			// Right now, it supports only 1 mesh and material for each path
 			// Will check if we need to load a whole vector with several meshes at the same time
-			Material* material = new Material; 
-			*material = ZWEBLoader::LoadMaterials(filepath, GetShaderResource(shader), device)[0];
+			Material* material = ZWEBLoader::LoadMaterials(filepath, GetShaderResource(shader), device)[0];
 
 			auto sampler = DXHelper::CreateSampler(D3D11_FILTER_MIN_MAG_MIP_LINEAR, D3D11_TEXTURE_ADDRESS_WRAP, device);
 			material->SetSampler(sampler, 0, ShaderBindFlag::PIXEL);
 
-			Mesh* mesh = new Mesh;
-			*mesh = ZWEBLoader::LoadMeshes(ZWEBLoadType::NoAnimation, filepath, device)[0];
+			Mesh* mesh = ZWEBLoader::LoadMeshes(ZWEBLoadType::NoAnimation, filepath, device)[0];
 
 			AddResource(name, mesh);
 			AddResource(name + "Material", material);
@@ -309,7 +325,7 @@ Object* ResourceManager::AssembleObject(std::string meshName, std::string materi
 {
 	Object* object = new Object(meshName);
 
-	object->AddComponent<MeshComponent>(*GetResource<Mesh>(meshName), *GetResource<Material>(materialName));
+	object->AddComponent<MeshComponent>(GetResource<Mesh>(meshName), GetResource<Material>(materialName));
 
 	return object;
 }

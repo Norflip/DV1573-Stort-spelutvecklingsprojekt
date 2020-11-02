@@ -5,7 +5,6 @@ enum NEXT_SCENE { INTRO = 0, LOSE = 1, GAME = 2, WIN = 3 };
 //THIS MESS NEEDS TO DIE A HORRIBLE DEATH
 #include "Object.h"
 #include "HeightMap.h"
-#include "ShittyOBJLoader.h"
 #include "MoveComponent.h"
 #include "ControllerComp.h"
 #include "SkeletonMeshComponent.h"

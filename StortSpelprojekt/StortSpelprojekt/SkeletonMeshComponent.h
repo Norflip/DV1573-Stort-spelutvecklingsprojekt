@@ -26,11 +26,11 @@ ALIGN16
 class SkeletonMeshComponent : public Component
 {
 public:
-	SkeletonMeshComponent(Mesh mesh, Material material);
+	SkeletonMeshComponent(Mesh* mesh, Material* material);
 	virtual ~SkeletonMeshComponent();
 
-	Mesh GetMesh() const { return this->mesh; }
-	Material GetMaterial() const { return this->material; }
+	Mesh* GetMesh() const { return this->mesh; }
+	Material* GetMaterial() const { return this->material; }
 
 	void Update(const float& deltaTime) override;
 	void Draw(Renderer* renderer, CameraComponent* camera) override;
@@ -50,8 +50,8 @@ public:
 	ALIGN16_ALLOC;
 
 private:
-	Mesh mesh;
-	Material material;
+	Mesh* mesh;
+	Material* material;
 	std::vector<SkeletonAni> skeletonAnimations;
 	float elapsedTime = 0.0f;
 	std::unordered_map<SkeletonStateMachine, unsigned int> trackMap;

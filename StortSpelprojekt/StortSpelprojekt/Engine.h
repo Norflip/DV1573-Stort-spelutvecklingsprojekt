@@ -13,7 +13,7 @@
 constexpr int FIXED_FPS = 60;
 constexpr float TARGET_FIXED_DELTA = 1.0f / FIXED_FPS;
 
-#define MULTITHREAD_PHYSICS 0
+#define MULTITHREAD_PHYSICS FALSE
 
 class Engine
 {

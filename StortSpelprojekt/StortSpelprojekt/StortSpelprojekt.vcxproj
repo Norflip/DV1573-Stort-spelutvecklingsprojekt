@@ -191,9 +191,9 @@
     <ClCompile Include="Input.cpp" />
     <ClCompile Include="IntroScene.cpp" />
     <ClCompile Include="LightManager.cpp" />
-    <ClCompile Include="InstancedMeshComponent.cpp" />
     <ClCompile Include="main.cpp" />
     <ClCompile Include="Material.cpp" />
+    <ClCompile Include="Mesh.cpp" />
     <ClCompile Include="MeshComponent.cpp" />
     <ClCompile Include="MoveComponent.cpp" />
     <ClCompile Include="NodeWalkerComp.cpp">
@@ -271,6 +271,7 @@
     <ClInclude Include="PointQuadTree.h" />
     <ClInclude Include="PossionDiscSampler.h" />
     <ClInclude Include="Random.h" />
+    <ClInclude Include="Resource.h" />
     <ClInclude Include="ResourceManager.h" />
     <ClInclude Include="SegmentDescription.h" />
     <ClInclude Include="SegmentGenerator.h" />
@@ -281,7 +282,6 @@
     <ClInclude Include="GUIManager.h" />
     <ClInclude Include="LightManager.h" />
     <ClInclude Include="GUISprite.h" />
-    <ClInclude Include="InstancedMeshComponent.h" />
     <ClInclude Include="Math.h" />
     <ClInclude Include="MoveComponent.h" />
     <ClInclude Include="Component.h" />
@@ -305,7 +305,6 @@
     <ClInclude Include="SaveState.h" />
     <ClInclude Include="Scene.h" />
     <ClInclude Include="Shader.h" />
-    <ClInclude Include="ShittyOBJLoader.h" />
     <ClInclude Include="Skybox.h" />
     <ClInclude Include="EnemySMComp.h" />
     <ClInclude Include="EnemyStatsComp.h" />

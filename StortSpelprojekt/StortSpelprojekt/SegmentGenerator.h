@@ -8,11 +8,11 @@
 #include "PossionDiscSampler.h"
 
 #include "GrassComponent.h"
-#include "InstancedMeshComponent.h"
 #include "PointQuadTree.h"
 #include "ObjectSpawner.h"
 
 #define CW_CHUNK_MESH 1
+
 
 class SegmentGenerator
 {
@@ -48,7 +48,7 @@ private:
 	std::vector<ChunkPointInformation> CreateChunkMap(const dx::XMINT2& index, const SegmentDescription& description, float*& heightMap, unsigned char*& buffer);
 
 	Chunk* CreateChunk(const dx::XMINT2& index, Object* root, const SegmentDescription& description, ChunkType type);
-	void CreateChunkMesh(Mesh& mesh, ID3D11Device* device);
+	Mesh* CreateChunkMesh(ID3D11Device* device);
 
 	void InitializeTrees(ResourceManager* resources);
 
@@ -67,10 +67,10 @@ private:
 	Shader* grassShader;
 	Shader* chunkShader;
 
-	std::vector<Mesh> stylizedTreeModel;
-	std::vector<Material> stylizedTreeMaterial;
+	std::vector<Mesh*> stylizedTreeModel;
+	std::vector<Material*> stylizedTreeMaterial;
 
-	Mesh chunkMesh;
+	Mesh* chunkMesh;
 	bool hasChunkMesh;
 	std::vector<dx::XMFLOAT2> itemSpawns;
 	std::vector<dx::XMFLOAT2> propSpawns;

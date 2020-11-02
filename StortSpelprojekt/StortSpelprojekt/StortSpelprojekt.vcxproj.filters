@@ -117,9 +117,6 @@
     <ClCompile Include="Input.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="InstancedMeshComponent.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="LightManager.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
@@ -261,6 +258,9 @@
     <ClCompile Include="WeaponComponent.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="Mesh.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="ObjectSpawner.h">
@@ -383,9 +383,6 @@
     <ClInclude Include="Input.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="InstancedMeshComponent.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
     <ClInclude Include="IntroScene.h">
       <Filter>Header Files</Filter>
     </ClInclude>
@@ -473,9 +470,6 @@
     <ClInclude Include="Shapes.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="ShittyOBJLoader.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
     <ClInclude Include="ThirdParty\SimplexNoise.h">
       <Filter>Header Files</Filter>
     </ClInclude>
@@ -517,6 +511,9 @@
     </ClInclude>
     <ClInclude Include="Defines.h">
       <Filter>Source Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Resource.h">
+      <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

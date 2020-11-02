@@ -47,9 +47,11 @@ public:
 	Chunk(dx::XMINT2 index, ChunkType type);
 	virtual ~Chunk();
 
-#if _DEBUG and DRAW_DEBUG
+//#if _DEBUG and DRAW_DEBUG
+//	void Update(const float& deltaTime) override;
+//#endif
+
 	void Update(const float& deltaTime) override;
-#endif // DEBUG
 
 	void SetupCollisionObject(float* heightMap);
 	float SampleHeight(float x, float z);

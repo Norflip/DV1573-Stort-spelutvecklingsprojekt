@@ -8,7 +8,8 @@
 #include "Window.h"
 #include "DXHelper.h"
 
-class Shader
+ALIGN16
+class Shader : public Resource
 {
 public:
 	D3D11_INPUT_ELEMENT_DESC DEFAULT_INPUT_LAYOUTd [6]
@@ -73,7 +74,7 @@ public:
 	void CompileGS(ID3D11Device*);
 	void CompileHS(ID3D11Device*);
 	void CompileDS(ID3D11Device*);
-
+	ALIGN16_ALLOC;
 
 private:
 	// Had to change from LPCWSTR to regular strings, since LPCWSTR wouldnt save the data when compiling the shaders
