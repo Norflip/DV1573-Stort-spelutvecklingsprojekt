@@ -338,14 +338,8 @@ void SegmentGenerator::AddTreesToChunk(Chunk* chunk, std::vector<ChunkPointInfor
 	Random::SetSeed(Random::GenerateSeed());
 	Points points = sampler.GeneratePoints(5.0f, { CHUNK_SIZE, CHUNK_SIZE }, false, 5);
 
-
-	//std::cout << "POINTS: " << points.size() << std::endl;
-
 	if (points.size() > 0)
 	{
-
-		std::cout << "CREATING TREEES " << std::to_string(points.size()) << std::endl;
-
 		std::vector<dx::XMFLOAT2> validPoints;
 
 		for (size_t i = 0; i < points.size(); i++)
