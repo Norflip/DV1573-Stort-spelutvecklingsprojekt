@@ -316,7 +316,7 @@ void ControllerComp::Update(const float& deltaTime)
 				}
 			}
 
-			std::cout << "vel: " << this->velocity << std::endl;
+			//std::cout << "vel: " << this->velocity << std::endl;
 			//float diffVel = RUN_VELOCITY - WALK_VELOCITY; //17-8 =7
 			float diffFOV = RUN_FOV - WALK_FOV; //103-90 //13
 

@@ -4,7 +4,7 @@
 #include "GUISprite.h"
 #include "GUIFont.h"
 
-GameOverScene::GameOverScene(ResourceManager* manager) : Scene(manager)
+GameOverScene::GameOverScene()
 {
 }
 
@@ -12,19 +12,15 @@ GameOverScene::~GameOverScene()
 {
 }
 
-void GameOverScene::Initialize(Renderer* renderer)
+void GameOverScene::Initialize()
 {
-	this->renderer = renderer;
 
-	// Should change values on resize event
-	this->window = renderer->GetOutputWindow();
-
-	Input::Instance().SetWindow(window->GetHWND(), window->GetHeight(), window->GetWidth());
 }
 
 void GameOverScene::InitializeObjects()
 {
-	
+	Object* cameraObject = new Object("camera", ObjectFlag::ENABLED);
+
 	camera = cameraObject->AddComponent<CameraComponent>(60.0f, true);
 	camera->Resize(window->GetWidth(), window->GetHeight());
 	this->player = cameraObject;
@@ -34,7 +30,7 @@ void GameOverScene::InitializeObjects()
 	ShowCursor(true);
 	Input::Instance().SetMouseMode(dx::Mouse::MODE_ABSOLUTE);
 
-	skyboxClass = new Skybox(renderer->GetDevice(), renderer->GetContext(), resourceManager->GetShaderResource("skyboxShader"));
+	skyboxClass = new Skybox(renderer->GetDevice(), renderer->GetContext(), resources->GetShaderResource("skyboxShader"));
 	skyboxClass->GetThisObject()->AddFlag(ObjectFlag::NO_CULL);
 }
 
@@ -59,7 +55,6 @@ void GameOverScene::InitializeGUI()
 
 void GameOverScene::OnActivate()
 {
-	root = new Object("sceneRoot", ObjectFlag::DEFAULT);
 	nextScene = LOSE;
 	InitializeGUI();
 	InitializeObjects();
@@ -69,8 +64,6 @@ void GameOverScene::OnActivate()
 void GameOverScene::OnDeactivate()
 {
 	renderer->RemoveRenderPass(guiManager);
-	delete root;
-	root = nullptr;
 }
 
 void GameOverScene::Update(const float& deltaTime)
@@ -96,13 +89,3 @@ void GameOverScene::FixedUpdate(const float& fixedDeltaTime)
 {
 	//Scene::FixedUpdate(fixedDeltaTime);
 }
-
-void GameOverScene::Render()
-{
-	skyboxClass->GetThisObject()->Draw(renderer, camera);
-
-	root->Draw(renderer, camera);
-
-	renderer->RenderFrame(camera, (float)clock.GetSeconds());
-}
-

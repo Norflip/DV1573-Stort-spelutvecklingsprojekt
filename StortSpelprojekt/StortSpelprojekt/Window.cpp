@@ -1,6 +1,11 @@
 #include "stdafx.h"
 #include "Window.h"
 #include "Input.h"
+
+#include <fcntl.h>
+#include <io.h>
+#include <iostream>
+
 Window::Window(HINSTANCE hInstance) : hInstance(hInstance)
 {
 
@@ -16,6 +21,12 @@ void Window::Open(size_t width, size_t height)
 {
 	this->width = width;
 	this->height = height;
+
+	AllocConsole();
+	HANDLE stdHandle = GetStdHandle(STD_OUTPUT_HANDLE);
+	int hConsole = _open_osfhandle((intptr_t)stdHandle, _O_TEXT);
+	FILE* fp = _fdopen(hConsole, "w");
+	freopen_s(&fp, "CONOUT$", "w", stdout);
 
 	WNDCLASS wndclass;
 	ZeroMemory(&wndclass, sizeof(WNDCLASS));

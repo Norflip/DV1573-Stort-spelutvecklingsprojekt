@@ -1,7 +1,7 @@
 #include "stdafx.h"
 #include "SkeletonMeshComponent.h"
 
-SkeletonMeshComponent::SkeletonMeshComponent(Mesh mesh, Material material) : mesh(mesh), material(material), boundingBoxes(mesh)
+SkeletonMeshComponent::SkeletonMeshComponent(Mesh* mesh, Material* material) : mesh(mesh), material(material), boundingBoxes(mesh)
 {
 	boundingBoxes.CalcAABB();
 	currentAni = SkeletonStateMachine::NONE;
@@ -35,7 +35,7 @@ void SkeletonMeshComponent::Draw(Renderer* renderer, CameraComponent* camera)
 	{
 		
 		
-		renderer->DrawSkeleton(mesh, material, GetOwner()->GetTransform().GetWorldMatrix(), *camera, finalTransforms);
+		renderer->DrawSkeleton(mesh, material, GetOwner()->GetTransform().GetWorldMatrix(), camera, finalTransforms);
 		if (playOnce)
 		{
 			PlayOnce();

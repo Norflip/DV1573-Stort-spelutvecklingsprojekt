@@ -4,7 +4,6 @@
 #include "GrassComponent.h"
 #include "MeshComponent.h"
 #include "SkeletonMeshComponent.h"
-#include "InstancedMeshComponent.h"
 //#include "Transform.h"
 //#include "Mesh.h"
 //#include "Material.h"

@@ -30,8 +30,8 @@ private:
 	Shader* skyboxShader;
 	Object* object;
 
-	Mesh skyboxMesh;
-	Material skyboxMaterial;
+	Mesh* skyboxMesh;
+	Material* skyboxMaterial;
 
 	Texture texture;
 	Texture texture2;

@@ -5,17 +5,11 @@
 #include <d3dcompiler.h>
 #include <assert.h>
 
-#include "Log.h"
 #include "Window.h"
 #include "DXHelper.h"
 
-#define ASSERT_SHADER(RESULT, eBLOB, wTEXT) if (FAILED(RESULT) && eBLOB) { \
-		MessageBox(NULL, wTEXT.c_str(), L"Error shader compile", MB_OK); \
-		OutputDebugStringA((char*)eBLOB->GetBufferPointer()); \
-		Log::Add(Log::LogLevel::Error, (char*)eBLOB->GetBufferPointer());\
-		eBLOB->Release(); } \
-
-class Shader
+ALIGN16
+class Shader : public Resource
 {
 public:
 	D3D11_INPUT_ELEMENT_DESC DEFAULT_INPUT_LAYOUTd [6]
@@ -80,7 +74,7 @@ public:
 	void CompileGS(ID3D11Device*);
 	void CompileHS(ID3D11Device*);
 	void CompileDS(ID3D11Device*);
-
+	ALIGN16_ALLOC;
 
 private:
 	// Had to change from LPCWSTR to regular strings, since LPCWSTR wouldnt save the data when compiling the shaders

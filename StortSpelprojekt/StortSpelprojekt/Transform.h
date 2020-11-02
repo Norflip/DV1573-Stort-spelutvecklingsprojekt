@@ -42,21 +42,32 @@ public:
 	bool ChangedThisFrame() const { return this->changedThisFrame; }
 	void MarkNotChanged() { this->changedThisFrame = false; }
 
-#pragma region SETTERS AND GETTERS
+	
+
+	//dx::XMVECTOR GetPosition() const { GetWorldPosition(); }
+	//void SetPosition(dx::XMVECTOR position) { SetWorldPosition(position); }
+
+	dx::XMVECTOR GetPosition() const { return this->GetWorldPosition(); }
+	dx::XMVECTOR GetLocalPosition();
 	dx::XMVECTOR GetWorldPosition() const;
-	dx::XMVECTOR GetPosition() const { return dx::XMLoadFloat3(&this->position); }
-	void SetPosition(dx::XMVECTOR position);
+	void SetPosition(dx::XMVECTOR position) { SetWorldPosition(position); }
+	void SetLocalPosition(dx::XMVECTOR position);
 	void SetWorldPosition(dx::XMVECTOR position);
+
+	dx::XMVECTOR GetRotation() const { return this->GetWorldRotation(); }
+	dx::XMVECTOR GetLocalRotation() const;
+	dx::XMVECTOR GetWorldRotation() const;
+	void SetRotation(dx::XMVECTOR rotation) { SetWorldRotation(rotation); }
+	void SetLocalRotation(dx::XMVECTOR rotation);
+	void SetWorldRotation(dx::XMVECTOR rotation);
+	
 
 	dx::XMVECTOR GetScale() const { return dx::XMLoadFloat3(&this->scale); }
 	void SetScale(dx::XMVECTOR scale);
 
-	dx::XMVECTOR GetRotation() const { return dx::XMLoadFloat4(&this->rotation); }
-	void SetRotation(dx::XMVECTOR rotation);
+
 	void SmoothRotation(dx::XMFLOAT3 endPos, float deltaTime, bool changeDir);
 	
-
-#pragma endregion
 
 private:
 	bool changedThisFrame;
@@ -64,7 +75,7 @@ private:
 	Transform* parent;
 	Object* owner;
 
-	dx::XMFLOAT3 position;
-	dx::XMFLOAT4 rotation;
+	dx::XMFLOAT3 localPosition;
+	dx::XMFLOAT4 localRotation;
 	dx::XMFLOAT3 scale;
 };

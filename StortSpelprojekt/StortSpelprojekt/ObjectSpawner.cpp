@@ -63,14 +63,16 @@ void ObjectSpawner::Spawn(const SaveState& state, PointQuadTree& tree, std::unor
 			dx::XMVECTOR position = dx::XMVectorSet(pos.x, y, pos.y, 0.0f);
 		//	dx::XMVECTOR pos = dx::XMVector3Transform(position, invWorld);
 
-		//	object->GetTransform().SetPosition(pos);
+			object->GetTransform().SetWorldPosition(position);
+			
+
 			object->GetComponent<RigidBodyComponent>()->SetPosition(position);
 			
 			// kör med chunk istället för root då dom ändå inte kan flyttas.
-			Transform::SetParentChild(root->GetTransform(), object->GetTransform());
+			//Transform::SetParentChild(root->GetTransform(), object->GetTransform());
 
 			// kräver inverse av parent world matrix
-			//Transform::SetParentChild(chunk->GetOwner()->GetTransform(), object->GetTransform());
+			Transform::SetParentChild(chunk->GetOwner()->GetTransform(), object->GetTransform());
 
 			items.push_back(object);
 			propIndex++;
