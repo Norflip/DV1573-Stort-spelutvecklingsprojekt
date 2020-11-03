@@ -56,16 +56,16 @@ void IntroScene::InitializeGUI()
 	GUISprite* soundEffectsSprite = new GUISprite(*renderer, "Textures/SoundeffectsButton.png", 160, 400, 0, DrawDirection::Default, ClickFunction::NotClickable, GuiGroup::Options);	
 	soundEffectsSprite->SetVisible(false);
 
-	GUISprite* lowerMusicSprite = new GUISprite(*renderer, "Textures/lowerVolumeButton.png", 800, 250, 0, DrawDirection::Default, ClickFunction::Clickable, GuiGroup::Options);
+	GUISprite* lowerMusicSprite = new GUISprite(*renderer, "Textures/lowerVolume.png", 800, 250, 0, DrawDirection::Default, ClickFunction::Clickable, GuiGroup::Options);
 	GUISprite* volumeMusicSprite = new GUISprite(*renderer, "Textures/volumeButton.png", 900, 250, 0, DrawDirection::Default, ClickFunction::NotClickable, GuiGroup::Options);
-	GUISprite* higherMusicSprite = new GUISprite(*renderer, "Textures/higherVolumeButton.png", 1150, 250, 0, DrawDirection::Default, ClickFunction::Clickable, GuiGroup::Options);
+	GUISprite* higherMusicSprite = new GUISprite(*renderer, "Textures/higherVolume.png", 1150, 250, 0, DrawDirection::Default, ClickFunction::Clickable, GuiGroup::Options);
 	lowerMusicSprite->SetVisible(false);
 	volumeMusicSprite->SetVisible(false);
 	higherMusicSprite->SetVisible(false);
 
-	GUISprite* lowerSoundEffectMusic = new GUISprite(*renderer, "Textures/lowerVolumeButton.png", 800, 400, 0, DrawDirection::Default, ClickFunction::Clickable, GuiGroup::Options);
+	GUISprite* lowerSoundEffectMusic = new GUISprite(*renderer, "Textures/lowerVolume.png", 800, 400, 0, DrawDirection::Default, ClickFunction::Clickable, GuiGroup::Options);
 	GUISprite* volumeSoundEffectMusic = new GUISprite(*renderer, "Textures/volumeButton.png", 900, 400, 0, DrawDirection::Default, ClickFunction::NotClickable, GuiGroup::Options);
-	GUISprite* higherSoundEffectMusic = new GUISprite(*renderer, "Textures/higherVolumeButton.png", 1150, 400, 0, DrawDirection::Default, ClickFunction::Clickable, GuiGroup::Options);
+	GUISprite* higherSoundEffectMusic = new GUISprite(*renderer, "Textures/higherVolume.png", 1150, 400, 0, DrawDirection::Default, ClickFunction::Clickable, GuiGroup::Options);
 	lowerSoundEffectMusic->SetVisible(false);
 	volumeSoundEffectMusic->SetVisible(false);
 	higherSoundEffectMusic->SetVisible(false);	
