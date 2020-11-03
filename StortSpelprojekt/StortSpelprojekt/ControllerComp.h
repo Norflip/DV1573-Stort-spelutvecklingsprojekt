@@ -1,5 +1,6 @@
 #pragma once
 #include "Component.h"
+#include "NodeWalkerComp.h"
 #include "Input.h"
 #include "Object.h"
 #include "math.h"
@@ -20,7 +21,7 @@ constexpr float VELOCITY_INC_RATE = 0.1f; //how often
 constexpr float VELOCITY_MULTIPLIER = 20.f;
 
 constexpr float CROUCH_OFFSET_PER = 0.2f;
-constexpr float CROUCH_LIMIT = -0.7f;
+constexpr float CROUCH_LIMIT = -0.5f;
 constexpr float CROUCH_INC_RATE = 0.01f; //how often changes occur
 constexpr float JUMP_VELOCITY = 5.f;
 
@@ -53,6 +54,7 @@ private:
 	dx::XMFLOAT4 groundQuaterion;
 
 	Object* cameraObject;
+	Object* houseObject;
 	RigidBodyComponent* rbComp;
 	CameraComponent* camComp;
 	CapsuleColliderComponent* capsuleComp;
@@ -60,7 +62,7 @@ private:
 	bool IsGrounded() const;
 public:
 	//ControllerComp();
-	ControllerComp(Object* cameraObject);
+	ControllerComp(Object* cameraObject, Object* houseObject);
 	virtual ~ControllerComp();
 
 	void Initialize();

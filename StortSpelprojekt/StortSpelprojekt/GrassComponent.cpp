@@ -31,7 +31,7 @@ GrassComponent::GrassComponent(size_t chunkTriangleCount, ID3D11Device* device, 
 
 
 
-	auto sampler = DXHelper::CreateSampler(D3D11_FILTER_MIN_MAG_MIP_LINEAR, D3D11_TEXTURE_ADDRESS_WRAP, device);
+	auto sampler = DXHelper::CreateSampler(D3D11_FILTER_MIN_MAG_MIP_POINT, D3D11_TEXTURE_ADDRESS_CLAMP, device);
 	grassMat->SetSampler(sampler, 0, ShaderBindFlag::HULL);
 	grassMat->SetSampler(sampler, 0, ShaderBindFlag::DOMAINS);
 	grassMat->SetSampler(sampler, 0, ShaderBindFlag::PIXEL);

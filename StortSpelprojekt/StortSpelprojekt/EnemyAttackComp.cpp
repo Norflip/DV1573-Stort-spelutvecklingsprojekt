@@ -13,7 +13,11 @@ EnemyAttackComp::~EnemyAttackComp()
 
 void EnemyAttackComp::Initialize()
 {
-	enemyStatsComp = GetOwner()->GetComponent<EnemyStatsComp>();
+	this->rbComp = GetOwner()->GetComponent<RigidBodyComponent>();
+	this->enemyStatsComp = GetOwner()->GetComponent<EnemyStatsComp>();	
+	this->rbComp->GetRigidBody()->getCollider(0)->getMaterial().setBounciness(0.f);
+	this->rbComp->GetRigidBody()->getCollider(0)->getMaterial().setFrictionCoefficient(100.f);
+	this->rbComp->SetLinearDamping(0.9f);
 }
 
 void EnemyAttackComp::Update(const float& deltaTime)
@@ -102,9 +106,10 @@ bool EnemyAttackComp::ChasePlayer(const float& deltaTime)
 	GetOwner()->GetTransform().SetRotation(eulerRotation);
 
 
-	dx::XMVECTOR a = GetOwner()->GetTransform().GetPosition(); //variable a??
-	GetOwner()->GetComponent<RigidBodyComponent>()->SetPosition(a);
+	dx::XMVECTOR pos = GetOwner()->GetTransform().GetPosition(); 
+	rbComp->SetPosition(pos); //make enemy velocity based later??
 
+	rbComp->SetRotation(eulerRotation);
 
 	return chasePlayer;
 }
