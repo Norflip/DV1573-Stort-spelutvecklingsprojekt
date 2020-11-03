@@ -261,6 +261,7 @@
     <ClCompile Include="Mesh.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="ParticleSystem.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="ObjectSpawner.h">
@@ -516,6 +517,9 @@
       <Filter>Source Files</Filter>
     </ClInclude>
     <ClInclude Include="Resource.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="ParticleSystem.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>
