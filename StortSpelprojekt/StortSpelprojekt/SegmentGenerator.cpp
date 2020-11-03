@@ -55,7 +55,7 @@ void SegmentGenerator::Construct(const SaveState& state, const SegmentDescriptio
 			CreateChunk(pair.first, root, description, pair.second);
 		}
 
-		spawner->Spawn(state, treePoints, chunkMap, chunks);
+		spawner->Spawn(state, treePoints, chunkMap, chunks, device);
 		constructed = true;
 	}
 }
@@ -354,6 +354,13 @@ void SegmentGenerator::AddTreesToChunk(Chunk* chunk, std::vector<ChunkPointInfor
 			std::vector<Mesh::InstanceData> treesInstanced(nrOfInstancedStyTrees);
 			dx::XMFLOAT2 posXZ = Chunk::IndexToWorldXZ(chunk->GetIndex());
 
+			BoundingBox bbInfo;
+			bbInfo.CalculateAABB(stylizedTreeModel[0]);
+			dx::XMFLOAT3 extends = bbInfo.GetExtends();
+
+			std::vector<dx::XMFLOAT3> colliderPositions;
+			std::vector<dx::XMFLOAT3> colliderExtends;
+
 			for (size_t i = 0; i < nrOfInstancedStyTrees; i++)
 			{
 				float y = chunk->SampleHeight(posXZ.x + validPoints[i].x, posXZ.y + validPoints[i].y) * TREE_HEIGHT_ADJUSTMENT_FACTOR;
@@ -366,9 +373,12 @@ void SegmentGenerator::AddTreesToChunk(Chunk* chunk, std::vector<ChunkPointInfor
 				dx::XMMATRIX rotation = dx::XMMatrixRotationQuaternion(dx::XMQuaternionRotationAxis({ 0,1,0 }, Random::RadAngle()));
 				dx::XMMATRIX translation = dx::XMMatrixScaling(scale, scale, scale) * rotation * dx::XMMatrixTranslation(position.x, position.y, position.z);
 				dx::XMStoreFloat4x4(&treesInstanced[i].instanceWorld, dx::XMMatrixTranspose(translation));
+
+				colliderPositions.push_back(position);
+				colliderExtends.push_back(extends);
 			}
 
-			Object* tree = new Object("tree");
+			Object* tree = new Object("tree", ObjectFlag::DEFAULT);
 
 			Transform::SetParentChild(chunk->GetOwner()->GetTransform(), tree->GetTransform());
 			MeshComponent* meshComp = tree->AddComponent<MeshComponent>(stylizedTreeModel, stylizedTreeMaterial);
@@ -377,16 +387,14 @@ void SegmentGenerator::AddTreesToChunk(Chunk* chunk, std::vector<ChunkPointInfor
 
 			stylizedTreeMaterial[1]->SetTransparent(true);
 
-			BoundingBoxes bbInfo(stylizedTreeModel[0]);
-			bbInfo.CalcAABB();
+			tree->AddComponent<BoxColliderComponent>(colliderExtends, colliderPositions);
 
-			dx::XMFLOAT3 extends(bbInfo.GetAABB().halfX, bbInfo.GetAABB().halfY, bbInfo.GetAABB().halfZ);
+			//std::cout << "COLLIDERS: " << std::to_string(colliderPositions.size()) << " / " << std::to_string(nrOfInstancedStyTrees) << std::endl;
 
-
-			for (size_t i = 0; i < nrOfInstancedStyTrees; i++)
-			{
-				BoxColliderComponent* collider = tree->AddComponent<BoxColliderComponent>(extends, treesInstanced[i].instancePosition);
-			}
+			//for (size_t i = 0; i < nrOfInstancedStyTrees; i++)
+			//{
+			//	BoxColliderComponent* collider = tree->AddComponent<BoxColliderComponent>(extends, treesInstanced[i].instancePosition);
+			//}
 
 			RigidBodyComponent* rbody = tree->AddComponent<RigidBodyComponent>(0.f, FilterGroups::PROPS, FilterGroups::EVERYTHING, BodyType::STATIC);
 

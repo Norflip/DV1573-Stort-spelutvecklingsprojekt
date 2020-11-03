@@ -87,26 +87,6 @@ void DXHelper::BindConstBuffer(ID3D11DeviceContext* context, ID3D11Buffer* buffe
 
 }
 
-D3D11_MAPPED_SUBRESOURCE DXHelper::BindInstanceBuffer(ID3D11DeviceContext* context, ID3D11Buffer* buffer)
-{
-	D3D11_MAPPED_SUBRESOURCE mappedData = {}; //zeroing out the memory like this.
-	
-
-	
-	context->Map(buffer, 0, D3D11_MAP_WRITE_DISCARD, 0, &mappedData);
-
-	return mappedData;
-
-	
-
-
-}
-
-void DXHelper::UnBindInstanceBuffer(ID3D11DeviceContext* context, ID3D11Buffer* buffer)
-{
-	context->Unmap(buffer, 0);
-}
-
 void DXHelper::CreateBlendState(ID3D11Device* device, ID3D11BlendState** blendOn, ID3D11BlendState** blendOff)
 {
 	HRESULT hr;

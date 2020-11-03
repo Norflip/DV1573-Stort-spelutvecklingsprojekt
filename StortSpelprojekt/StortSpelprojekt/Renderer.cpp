@@ -2,6 +2,7 @@
 #include "Renderer.h"
 #include "RenderPass.h"
 #include "FogRenderPass.h"
+#include "FXAARenderPass.h"
 #include "DShape.h"
 #include "Input.h"
 Renderer::Renderer() : device(nullptr), context(nullptr), swapchain(nullptr), skeleton_srvbuffer(nullptr), skeleton_srv(nullptr)
@@ -80,6 +81,7 @@ void Renderer::Initialize(Window* window)
 	//EXEMPEL
 	///AddRenderPass(new PSRenderPass(1, L"Shaders/TestPass.hlsl"));
 	AddRenderPass(new FogRenderPass(0));
+	AddRenderPass(new FXAARenderPass(1));
 }
 
 void Renderer::BeginManualRenderPass(RenderTexture& target)
@@ -176,6 +178,8 @@ void Renderer::RenderFrame(CameraComponent* camera, float time, RenderTexture& t
 	xPos += (float)Input::Instance().GetPrevMousePosRelative().y;
 	yPos += (float)Input::Instance().GetPrevMousePosRelative().x;
 	data.mousePos = { xPos,yPos };
+	data.screenSize = { (float)outputWindow->GetWidth(), (float)outputWindow->GetHeight() };
+	
 	//data.mousePos = { (float)Input::Instance().GetMousePos().x, (float)Input::Instance().GetMousePos().y };
 	// put in mouse pos delta here
 	dx::XMStoreFloat3(&data.cameraPosition, camera->GetOwner()->GetTransform().GetPosition());
@@ -189,7 +193,6 @@ void Renderer::RenderFrame(CameraComponent* camera, float time, RenderTexture& t
 
 
 	LightManager::Instance().UpdateBuffers(context);
-
 
 	//We need to clear Depth Stencil View as well.//Emil
 

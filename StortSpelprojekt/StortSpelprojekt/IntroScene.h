@@ -8,8 +8,7 @@ ALIGN16
 class IntroScene : public Scene
 {
 private:
-	SoundEvent menuTest;
-	SoundEvent test2, test3;
+	
 
 public:
 	IntroScene();

@@ -256,6 +256,7 @@
     <ClInclude Include="ControllerComp.h" />
     <ClInclude Include="DebugBoxShapeComponent.h" />
     <ClInclude Include="DShape.h" />
+    <ClInclude Include="FXAARenderPass.h" />
     <ClInclude Include="GameOverScene.h" />
     <ClInclude Include="GameScene.h" />
     <ClInclude Include="ChunkGrid.h" />

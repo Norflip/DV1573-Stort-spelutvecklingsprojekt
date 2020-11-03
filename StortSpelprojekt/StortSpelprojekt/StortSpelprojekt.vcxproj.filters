@@ -512,6 +512,9 @@
     <ClInclude Include="Defines.h">
       <Filter>Source Files</Filter>
     </ClInclude>
+    <ClInclude Include="FXAARenderPass.h">
+      <Filter>Source Files</Filter>
+    </ClInclude>
     <ClInclude Include="Resource.h">
       <Filter>Header Files</Filter>
     </ClInclude>

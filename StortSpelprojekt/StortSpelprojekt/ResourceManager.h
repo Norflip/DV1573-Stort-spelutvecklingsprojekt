@@ -13,7 +13,6 @@ public:
 	virtual ~ResourceManager();
 
 	void AddResource(std::string key, Resource* resource);
-	//template <typename T> void AddResource(std::string key, T* resource);
 	void AddShaderResource(std::string key, Shader* shader);
 
 	Resource* GetResource(std::string key);
@@ -24,12 +23,11 @@ public:
 	void InitializeResources(ID3D11Device* device);
 
 	void ReadObjects(ID3D11Device* device);
-	void ReadLights();
+	void ReadTextures(ID3D11Device* device);
 	void ReadShaders(ID3D11Device* device);
 
 	void CompileShaders(ID3D11Device* device);
 	Object* AssembleObject(std::string meshName, std::string materialName);
-
 };
 
 // Måste template funktioner ligga i .h filen?
