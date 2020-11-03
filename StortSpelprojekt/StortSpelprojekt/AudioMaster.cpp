@@ -8,6 +8,8 @@ AudioMaster::AudioMaster()
 		engine = new AudioEngine;
 	engine->Initialize();
 
+	//engine->Initialize3DAudio();
+
 	/* Create different soundchannels */
 	engine->GetAudioMaster()->CreateSubmixVoice(&soundsSubmix, 1, 44100, 0, 0, 0, 0);
 	engine->GetAudioMaster()->CreateSubmixVoice(&musicSubmix, 1, 44100, 0, 0, 0, 0);
@@ -20,19 +22,30 @@ AudioMaster::AudioMaster()
 	/* Volume for both channels */
 	soundsSubmix->SetVolume(soundEffectsVolume);
 	musicSubmix->SetVolume(musicVolume);
+
+	/* Load tracks */
+	LoadFile(L"Sounds/jakestuff.mp3", "menusound", menuTest, AudioTypes::Music, true);
+	LoadFile(L"Sounds/yay.wav", "pickupSound", pickupSound, AudioTypes::Sound, false);
+	LoadFile(L"Sounds/swinging_axe.mp3", "axeSwing", axeSwingSound, AudioTypes::Sound, false);
+	LoadFile(L"Sounds/Punch.wav", "punch", punchSound, AudioTypes::Sound, false);
+	SetVolume(AudioTypes::Music, 0.7f);
+	SetVolume(AudioTypes::Sound, 0.7f);
+
 }
 
 AudioMaster::~AudioMaster()
 {
 	if (engine)
 		delete engine;
+
+	soundTracks.clear();
 }
 
-void AudioMaster::LoadFile(const std::wstring fileName, SoundEvent& soundEvent, const AudioTypes& soundType)
+void AudioMaster::LoadFile(const std::wstring fileName, std::string name, SoundEvent& soundEvent, const AudioTypes& soundType, bool loop)
 {
 	//ZeroMemory(&soundEvent, sizeof(SoundEvent));
 
-	/* Load soundfile with engine into a wave and make it playable */
+	/* Load soundfile with engine into a wave and make it playable */	
 	engine->LoadFile(fileName, soundEvent.audioData, &waveFormatEx, soundEvent.waveLength);
 	soundEvent.waveFormat = *waveFormatEx;
 
@@ -49,11 +62,27 @@ void AudioMaster::LoadFile(const std::wstring fileName, SoundEvent& soundEvent, 
 	soundEvent.audioBuffer.AudioBytes = (UINT32)soundEvent.audioData.size();
 	soundEvent.audioBuffer.pAudioData = (BYTE* const)&soundEvent.audioData[0];
 	soundEvent.audioBuffer.pContext = nullptr;
-	soundEvent.audioBuffer.LoopCount = XAUDIO2_LOOP_INFINITE;
+	if(loop)
+		soundEvent.audioBuffer.LoopCount = XAUDIO2_LOOP_INFINITE;
+	else
+		soundEvent.audioBuffer.LoopCount = XAUDIO2_NO_LOOP_REGION;
+
+
+	soundTracks.insert({ name, soundEvent });
 }
 
-void AudioMaster::PlaySoundEvent(const SoundEvent& soundEvent)
+void AudioMaster::PlaySoundEvent(std::string soundName)
 {
+
+	SoundEvent soundEvent;
+	for (auto& i : soundTracks)
+	{
+		if (i.first == soundName)
+		{
+			soundEvent = i.second;
+		}
+	}
+
 	/* Submit the audio buffer from soundevent to the source voice and start it */
 	HRESULT playSound;
 	playSound = soundEvent.sourceVoice->SubmitSourceBuffer(&soundEvent.audioBuffer);
@@ -63,8 +92,14 @@ void AudioMaster::PlaySoundEvent(const SoundEvent& soundEvent)
 	soundEvent.sourceVoice->Start();
 }
 
-void AudioMaster::StopSoundEvent(const SoundEvent& soundEvent)
+void AudioMaster::StopSoundEvent(std::string name)
 {
+	SoundEvent soundEvent;
+	for (auto& i : soundTracks)
+	{
+		if (i.first == name)
+			soundEvent = i.second;
+	}
 	soundEvent.sourceVoice->Stop();
 }
 

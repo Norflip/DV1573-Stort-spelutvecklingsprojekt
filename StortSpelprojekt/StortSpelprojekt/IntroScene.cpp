@@ -21,12 +21,6 @@ void IntroScene::Initialize()
 
 void IntroScene::InitializeObjects()
 {
-	//audioComponent.LoadFile(L"Sounds/PopCulture.mp3", menuTest, AudioTypes::Music);
-	AudioMaster::Instance().LoadFile(L"Sounds/jakestuff.mp3", menuTest, AudioTypes::Music);
-	AudioMaster::Instance().LoadFile(L"Sounds/yay.wav", test2, AudioTypes::Sound);
-	AudioMaster::Instance().SetVolume(AudioTypes::Music, 0.7f);
-	AudioMaster::Instance().PlaySoundEvent(menuTest);
-
 	Object* cameraObject = new Object("camera", ObjectFlag::ENABLED);
 	camera = cameraObject->AddComponent<CameraComponent>(60.0f, true);
 	camera->Resize(window->GetWidth(), window->GetHeight());
@@ -38,6 +32,9 @@ void IntroScene::InitializeObjects()
 
 	skyboxClass = new Skybox(renderer->GetDevice(), renderer->GetContext(), resources->GetShaderResource("skyboxShader"));
 	skyboxClass->GetThisObject()->AddFlag(ObjectFlag::NO_CULL);
+
+
+	AudioMaster::Instance().PlaySoundEvent("menusound");
 }
 
 void IntroScene::InitializeGUI()
@@ -52,6 +49,34 @@ void IntroScene::InitializeGUI()
 	GUISprite* loreSprite = new GUISprite(*renderer, "Textures/Lore.png", 100, 550, 0, DrawDirection::Default, ClickFunction::Clickable);
 	GUISprite* quitSprite = new GUISprite(*renderer, "Textures/Exit.png", 100, 700, 0, DrawDirection::Default, ClickFunction::Clickable);
 	GUISprite* backSprite = new GUISprite(*renderer, "Textures/BackButton.png", 100, 100, 0, DrawDirection::Default, ClickFunction::Clickable,GuiGroup::HowToPlay);
+
+	GUISprite* musicSprite = new GUISprite(*renderer, "Textures/Music.png", 110, 250, 0, DrawDirection::Default, ClickFunction::NotClickable, GuiGroup::Options);
+	musicSprite->SetVisible(false);
+
+	GUISprite* soundEffectsSprite = new GUISprite(*renderer, "Textures/SoundeffectsButton.png", 160, 400, 0, DrawDirection::Default, ClickFunction::NotClickable, GuiGroup::Options);	
+	soundEffectsSprite->SetVisible(false);
+
+
+	GUISprite* volumeBarFillMusic = new GUISprite(*renderer, "Textures/volumeBarFill.png", 900, 250, 0, DrawDirection::Default, ClickFunction::NotClickable, GuiGroup::Options);
+	GUISprite* lowerMusicSprite = new GUISprite(*renderer, "Textures/lowerVolume.png", 800, 250, 0, DrawDirection::Default, ClickFunction::Clickable, GuiGroup::Options);
+	GUISprite* volumeMusicSprite = new GUISprite(*renderer, "Textures/volumeButton.png", 900, 250, 0, DrawDirection::Default, ClickFunction::NotClickable, GuiGroup::Options);
+	GUISprite* higherMusicSprite = new GUISprite(*renderer, "Textures/higherVolume.png", 1150, 250, 0, DrawDirection::Default, ClickFunction::Clickable, GuiGroup::Options);
+	lowerMusicSprite->SetVisible(false);
+	volumeMusicSprite->SetVisible(false);
+	higherMusicSprite->SetVisible(false);
+	volumeBarFillMusic->SetVisible(false);
+	volumeBarFillMusic->SetScale(AudioMaster::Instance().GetVolume(AudioTypes::Music), 1.0f);
+
+	GUISprite* volumeBarFillSoundeffects = new GUISprite(*renderer, "Textures/volumeBarFill.png", 900, 400, 0, DrawDirection::Default, ClickFunction::NotClickable, GuiGroup::Options);
+	GUISprite* lowerSoundEffectMusic = new GUISprite(*renderer, "Textures/lowerVolume.png", 800, 400, 0, DrawDirection::Default, ClickFunction::Clickable, GuiGroup::Options);
+	GUISprite* volumeSoundEffectMusic = new GUISprite(*renderer, "Textures/volumeButton.png", 900, 400, 0, DrawDirection::Default, ClickFunction::NotClickable, GuiGroup::Options);
+	GUISprite* higherSoundEffectMusic = new GUISprite(*renderer, "Textures/higherVolume.png", 1150, 400, 0, DrawDirection::Default, ClickFunction::Clickable, GuiGroup::Options);
+	lowerSoundEffectMusic->SetVisible(false);
+	volumeSoundEffectMusic->SetVisible(false);
+	higherSoundEffectMusic->SetVisible(false);	
+	volumeBarFillSoundeffects->SetVisible(false);
+	volumeBarFillSoundeffects->SetScale(AudioMaster::Instance().GetVolume(AudioTypes::Sound), 1.0f);
+
 	GUIFont* fpsDisplay = new GUIFont(*renderer, "fps", windowWidth / 2, 50);
 	fpsDisplay->AddGroup(GuiGroup::Font);
 	fpsDisplay->AddGroup(GuiGroup::Default);
@@ -84,7 +109,6 @@ void IntroScene::InitializeGUI()
 	loreText->AddGroup(GuiGroup::Lore);
 	loreText->AddGroup(GuiGroup::Font);
 
-
 	//
 
 	backSprite->SetVisible(false);
@@ -102,6 +126,23 @@ void IntroScene::InitializeGUI()
 	guiManager->AddGUIObject(fpsDisplay, "fps");
 	guiManager->AddGUIObject(howToPlayText, "howToPlayText");
 	guiManager->AddGUIObject(loreText, "loreText");
+
+	//
+
+	/* Soundseffects */
+	guiManager->AddGUIObject(soundEffectsSprite, "soundeffectText");
+	guiManager->AddGUIObject(volumeBarFillSoundeffects, "volumeBarFillSoundeffects");
+	guiManager->AddGUIObject(lowerSoundEffectMusic, "lowerSoundeffectSprite");
+	guiManager->AddGUIObject(volumeSoundEffectMusic, "volumeSoundeffectSprite");
+	guiManager->AddGUIObject(higherSoundEffectMusic, "higherSoundeffectSprite");
+
+	/* Music */
+	guiManager->AddGUIObject(musicSprite, "musicText");
+	guiManager->AddGUIObject(volumeBarFillMusic, "volumeBarFillMusic");
+	guiManager->AddGUIObject(lowerMusicSprite, "lowerMusicSprite");
+	guiManager->AddGUIObject(volumeMusicSprite, "volumeMusicSprite");
+	guiManager->AddGUIObject(higherMusicSprite, "higherMusicSprite");
+
 	renderer->AddRenderPass(guiManager);
 }
 
@@ -115,7 +156,7 @@ void IntroScene::OnActivate()
 
 void IntroScene::OnDeactivate()
 {
-	AudioMaster::Instance().StopSoundEvent(menuTest);
+	AudioMaster::Instance().StopSoundEvent("menusound");
 	renderer->RemoveRenderPass(guiManager);
 
 	delete guiManager;
@@ -131,12 +172,12 @@ void IntroScene::Update(const float& deltaTime)
 
 	if (static_cast<GUISprite*>(guiManager->GetGUIObject("startSprite"))->IsClicked())
 	{
-		AudioMaster::Instance().StopSoundEvent(menuTest);
+		AudioMaster::Instance().StopSoundEvent("menusound");
 		nextScene = GAME;
 	}
 	else if (static_cast<GUISprite*>(guiManager->GetGUIObject("quitSprite"))->IsClicked())
 	{
-		AudioMaster::Instance().StopSoundEvent(menuTest);
+		AudioMaster::Instance().StopSoundEvent("menusound");
 		quit = true;
 	}	
 
@@ -154,6 +195,58 @@ void IntroScene::Update(const float& deltaTime)
 
 	if (static_cast<GUISprite*>(guiManager->GetGUIObject("backSprite"))->IsClicked())	
 		guiManager->ChangeGuiGroup(GuiGroup::Default);
+
+
+	/* Volume stuff for music */
+	if (static_cast<GUISprite*>(guiManager->GetGUIObject("lowerMusicSprite"))->IsClicked())
+	{
+		float currentVol = AudioMaster::Instance().GetVolume(AudioTypes::Music);
+		if (currentVol > 0.0f)
+			currentVol -= 0.1f;
+		else
+			currentVol = 0.0f;
+
+		AudioMaster::Instance().SetVolume(AudioTypes::Music, currentVol);
+		static_cast<GUISprite*>(guiManager->GetGUIObject("volumeBarFillMusic"))->SetScale(currentVol, 1);
+	}
+
+	if (static_cast<GUISprite*>(guiManager->GetGUIObject("higherMusicSprite"))->IsClicked())
+	{
+		float currentVol = AudioMaster::Instance().GetVolume(AudioTypes::Music);
+		if (currentVol < 1.0f)
+			currentVol += 0.1f;
+		else
+			currentVol = 1.0f;
+
+		AudioMaster::Instance().SetVolume(AudioTypes::Music, currentVol);
+		static_cast<GUISprite*>(guiManager->GetGUIObject("volumeBarFillMusic"))->SetScale(currentVol, 1);
+	}
+	
+
+	/* Volume stuff for soundeffects */
+	if (static_cast<GUISprite*>(guiManager->GetGUIObject("lowerSoundeffectSprite"))->IsClicked())
+	{
+		float currentVol = AudioMaster::Instance().GetVolume(AudioTypes::Sound);
+		if (currentVol > 0.0f)
+			currentVol -= 0.1f;
+		else
+			currentVol = 0.0f;
+
+		AudioMaster::Instance().SetVolume(AudioTypes::Sound, currentVol);
+		static_cast<GUISprite*>(guiManager->GetGUIObject("volumeBarFillSoundeffects"))->SetScale(currentVol, 1);
+	}
+
+	if (static_cast<GUISprite*>(guiManager->GetGUIObject("higherSoundeffectSprite"))->IsClicked())
+	{
+		float currentVol = AudioMaster::Instance().GetVolume(AudioTypes::Sound);
+		if (currentVol < 1.0f)
+			currentVol += 0.1f;
+		else
+			currentVol = 1.0f;
+
+		AudioMaster::Instance().SetVolume(AudioTypes::Sound, currentVol);
+		static_cast<GUISprite*>(guiManager->GetGUIObject("volumeBarFillSoundeffects"))->SetScale(currentVol, 1);
+	}
 
 
 	guiManager->UpdateAll();
