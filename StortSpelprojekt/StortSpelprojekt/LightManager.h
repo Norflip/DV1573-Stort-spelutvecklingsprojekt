@@ -3,6 +3,7 @@
 #include <unordered_map>
 #include "DXHelper.h"
 #include "ConstantBuffer.h"
+#include "VirtualCamera.h"
 
 class PointLightComponent;
 
@@ -28,13 +29,18 @@ public:
 
 	PointLightComponent* GetPointLight(size_t index);
 	void RemovePointLight(size_t index);
-	void UpdateBuffers(ID3D11DeviceContext* context);
+	void UpdateBuffers(dx::XMFLOAT3 eye, ID3D11DeviceContext* context);
 	void Clear();
 
-private:
+	VirtualCamera* GetShadowCamera() const { return this->shadowCamera; }
+	dx::XMMATRIX GetShadowCameraTransform() const { return dx::XMLoadFloat4x4(&shadowCameraTransform); }
+	void UpdateShadowCameraTransform(dx::XMFLOAT3 eye);
 
+private:
 	//cb_Scene cb_scene;
 	ConstantBuffer<cb_Lights> lightBuffer;
+	VirtualCamera* shadowCamera;
+	dx::XMFLOAT4X4 shadowCameraTransform;
 
 	size_t index;
 	bool dirty;

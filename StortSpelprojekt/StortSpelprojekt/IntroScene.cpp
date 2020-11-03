@@ -28,8 +28,7 @@ void IntroScene::InitializeObjects()
 	AudioMaster::Instance().PlaySoundEvent(menuTest);
 
 	Object* cameraObject = new Object("camera", ObjectFlag::ENABLED);
-	camera = cameraObject->AddComponent<CameraComponent>(60.0f, true);
-	camera->Resize(window->GetWidth(), window->GetHeight());
+	camera = cameraObject->AddComponent<CameraComponent>(window->GetWidth(), window->GetHeight(), 60.0f, true);
 	//cameraObject2->AddComponent<ControllerComponent>();
 	this->player = cameraObject;
 	AddObject(cameraObject);

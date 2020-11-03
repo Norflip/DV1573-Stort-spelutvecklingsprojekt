@@ -136,7 +136,7 @@ void GrassComponent::Draw(Renderer* renderer, CameraComponent* camera)
 {
 
 
-	renderer->DrawGrass(grassMesh, grassMat, this->GetOwner()->GetTransform().GetWorldMatrix(), camera);
+	renderer->DrawGrass(grassMesh, grassMat, this->GetOwner()->GetTransform().GetWorldMatrix());
 
 }
 

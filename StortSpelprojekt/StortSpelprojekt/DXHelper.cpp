@@ -120,7 +120,7 @@ void DXHelper::CreateBlendState(ID3D11Device* device, ID3D11BlendState** blendOn
 
 }
 
-void DXHelper::CreateRSState(ID3D11Device* device, ID3D11RasterizerState** cullBack, ID3D11RasterizerState** cullNone, ID3D11RasterizerState** CCWO)
+void DXHelper::CreateRSState(ID3D11Device* device, ID3D11RasterizerState** cullBack, ID3D11RasterizerState** cullNone, ID3D11RasterizerState** CCWO, ID3D11RasterizerState** cullFront)
 {
 	// DEFAULT RASTERIZER STATE
 	D3D11_RASTERIZER_DESC rasterizerDescription;
@@ -129,21 +129,20 @@ void DXHelper::CreateRSState(ID3D11Device* device, ID3D11RasterizerState** cullB
 	rasterizerDescription.FillMode = D3D11_FILL_SOLID;
 	rasterizerDescription.DepthClipEnable = true;
 
-
-
-
 	HRESULT resultCreateRasterizer = device->CreateRasterizerState(&rasterizerDescription, cullBack);
 	assert(SUCCEEDED(resultCreateRasterizer));
 
-	rasterizerDescription.CullMode = D3D11_CULL_NONE;
+	rasterizerDescription.CullMode = D3D11_CULL_FRONT;
+	resultCreateRasterizer = device->CreateRasterizerState(&rasterizerDescription, cullFront);
+	assert(SUCCEEDED(resultCreateRasterizer));
 
+
+	rasterizerDescription.CullMode = D3D11_CULL_NONE;
 	resultCreateRasterizer = device->CreateRasterizerState(&rasterizerDescription, cullNone);
 	assert(SUCCEEDED(resultCreateRasterizer));
 
 	rasterizerDescription.CullMode = D3D11_CULL_BACK;
-
 	rasterizerDescription.FrontCounterClockwise = true;
-
 	resultCreateRasterizer = device->CreateRasterizerState(&rasterizerDescription, CCWO);
 	assert(SUCCEEDED(resultCreateRasterizer));
 }
@@ -204,7 +203,7 @@ RenderTexture DXHelper::CreateBackbuffer(size_t width, size_t height, ID3D11Devi
 	return rt;
 }
 
-RenderTexture DXHelper::CreateRenderTexture(size_t width, size_t height, ID3D11Device* device, ID3D11DeviceContext* context, ID3D11DepthStencilState** dss)
+RenderTexture DXHelper::CreateRenderTexture(size_t width, size_t height, ID3D11Device* device)
 {
 	RenderTexture rt;
 	rt.width = width;
@@ -285,10 +284,8 @@ RenderTexture DXHelper::CreateRenderTexture(size_t width, size_t height, ID3D11D
 	depthStencilStateDsc.BackFace.StencilFunc = D3D11_COMPARISON_ALWAYS;
 
 	//ID3D11DepthStencilState* dss;
-	HRESULT createDepthStencilResult = device->CreateDepthStencilState(&depthStencilStateDsc, dss);
+	HRESULT createDepthStencilResult = device->CreateDepthStencilState(&depthStencilStateDsc, &rt.dss);
 	assert(SUCCEEDED(createDepthStencilResult));
-
-	context->OMSetDepthStencilState(*dss, 1);
 
 
 	ID3D11Texture2D* depthTex;

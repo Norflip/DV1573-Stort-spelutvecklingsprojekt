@@ -31,7 +31,7 @@ void SkeletonMeshComponent::Draw(Renderer* renderer, CameraComponent* camera)
 {
 	if (GetOwner()->HasFlag(ObjectFlag::NO_CULL) || camera->InView(bounds, GetOwner()->GetTransform().GetWorldMatrix()))
 	{		
-		renderer->DrawSkeleton(mesh, material, GetOwner()->GetTransform().GetWorldMatrix(), camera, finalTransforms);
+		renderer->DrawSkeleton(mesh, material, GetOwner()->GetTransform().GetWorldMatrix(), finalTransforms);
 		if (playOnce)
 		{
 			PlayOnce();

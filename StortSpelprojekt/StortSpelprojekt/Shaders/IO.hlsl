@@ -16,6 +16,7 @@ struct VS_INPUT_SKELETON
 	float3 normal	: NORMAL;
 	float3 tangent	: TANGENT;
 	float3 binormal : BINORMAL;
+	
 	uint3 boneID    : BONEID;
 	float3 skinWeight: SKINWEIGHT;
 	uint id	: SV_InstanceID;
@@ -50,6 +51,7 @@ struct VS_INSTANCE_INPUT
 	float3 normal	: NORMAL;
 	float3 tangent	: TANGENT;
 	float3 binormal : BINORMAL;
+	
 	uint id	: SV_InstanceID;
     row_major matrix instanceWorld : INSTANCEWORLD;
 	float3 instancePos : INSTANCEPOS;

@@ -27,26 +27,25 @@ DEFINE_ENUM_FLAG_OPERATORS(ShaderBindFlag);
 struct RenderTexture
 {
 	size_t width, height;
+	
 	ID3D11RenderTargetView* rtv;
-	ID3D11ShaderResourceView* srv;
 	ID3D11DepthStencilView* dsv;
+	
+	ID3D11ShaderResourceView* srv;
 	ID3D11ShaderResourceView* depthSRV;
+	
+	ID3D11DepthStencilState* dss;
 	D3D11_VIEWPORT viewport;
 
 	RenderTexture() : rtv(nullptr), srv(nullptr), dsv(nullptr), width(-1), height(-1) {}
 	void Release () 
 	{
-		if (rtv) rtv->Release();
-		if (srv) srv->Release();
-		if (dsv) dsv->Release();
+		RELEASE(rtv);
+		RELEASE(dsv);
+		RELEASE(srv);
+		RELEASE(dss);
 	}
 };
-
-
-
-
-
-
 
 namespace DXHelper
 {
@@ -57,9 +56,9 @@ namespace DXHelper
 	void BindConstBuffer(ID3D11DeviceContext* context, ID3D11Buffer* buffer, void* data, size_t slot, ShaderBindFlag flag);
 
 	RenderTexture CreateBackbuffer(size_t width, size_t height, ID3D11Device* device, IDXGISwapChain* swapchain);
-	RenderTexture CreateRenderTexture(size_t width, size_t height, ID3D11Device* device, ID3D11DeviceContext* context, ID3D11DepthStencilState** dss);
+	RenderTexture CreateRenderTexture(size_t width, size_t height, ID3D11Device* device);
 	void CreateBlendState(ID3D11Device* device, ID3D11BlendState** blendOn, ID3D11BlendState** blendOff);
-	void CreateRSState(ID3D11Device* device, ID3D11RasterizerState** cullBack, ID3D11RasterizerState** cullNone, ID3D11RasterizerState** CCWO); //can add more in the future.
+	void CreateRSState(ID3D11Device* device, ID3D11RasterizerState** cullBack, ID3D11RasterizerState** cullNone, ID3D11RasterizerState** CCWO, ID3D11RasterizerState** cullFront); //can add more in the future.
 
 	//void CreateBackbuffer(size_t width, size_t height, ID3D11Device* device, IDXGISwapChain* swapchain, ID3D11RenderTargetView** backbuffer, ID3D11DepthStencilView** depthStencilView);
 

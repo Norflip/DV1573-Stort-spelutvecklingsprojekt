@@ -4,10 +4,12 @@
 
 LightManager::LightManager()
 {
+	shadowCamera = new VirtualCamera(VirtualCamera::CameraMode::ORTHOGRAPHIC, 64, 64, 0.01f, 1000.0f);
 }
 
 LightManager::~LightManager()
 {
+	delete shadowCamera;
 }
 
 void LightManager::Initialize(ID3D11Device* device)
@@ -37,12 +39,21 @@ void LightManager::RemovePointLight(size_t index)
 		pointLightMap.erase(temp);
 }
 
-void LightManager::UpdateBuffers(ID3D11DeviceContext* context)
+void LightManager::UpdateBuffers(dx::XMFLOAT3 eye, ID3D11DeviceContext* context)
 {
 	bool dirty = false;
 	cb_Lights& data = lightBuffer.GetData();
+	dx::XMVECTOR sunDirection = dx::XMVectorSet(0, -1, 1, 0);
+	UpdateShadowCameraTransform(eye);
 
-	dx::XMStoreFloat3(&data.sunDirection, dx::XMVector3Normalize(dx::XMVectorSet(0, -1, 1, 0)));
+	dx::XMMATRIX shadowView = shadowCamera->GetViewMatrix(dx::XMLoadFloat4x4(&shadowCameraTransform));
+	dx::XMMATRIX shadowProjection = shadowCamera->GetProjectionMatrix();
+
+	dx::XMStoreFloat3(&data.sunDirection, dx::XMVector3Normalize(sunDirection));
+	dx::XMStoreFloat4x4(&data.shadowProjection, DirectX::XMMatrixTranspose(shadowProjection));
+	dx::XMStoreFloat4x4(&data.shadowView, DirectX::XMMatrixTranspose(shadowView));
+	dx::XMStoreFloat4x4(&data.shadowVP, DirectX::XMMatrixTranspose(shadowView * shadowProjection));
+
 	data.sunIntensity = 0.4f;
 	data.nrOfPointLights = pointLightMap.size();
 
@@ -59,14 +70,36 @@ void LightManager::UpdateBuffers(ID3D11DeviceContext* context)
 		data.pointLights[i->first].attenuation = i->second->GetAttenuation();
 		data.pointLights[i->first].range = i->second->GetRange();
 	}
-	
-	
-		lightBuffer.SetData(data);
-		lightBuffer.UpdateBuffer(context);
-	
+
+
+	lightBuffer.SetData(data);
+	lightBuffer.UpdateBuffer(context);
+
 }
 
 void LightManager::Clear()
 {
 	pointLightMap.clear();
+}
+
+void LightManager::UpdateShadowCameraTransform(dx::XMFLOAT3 eye)
+{
+	const float cameraOffset = 30.0f;
+	dx::XMVECTOR sunDirection = dx::XMVectorSet(1, -1, 1, 0);
+	dx::XMVECTOR focus = dx::XMLoadFloat3(&eye);
+	
+	dx::XMVECTOR positionOffset = DirectX::XMVectorAdd(focus, DirectX::XMVectorScale(DirectX::XMVector3Normalize(sunDirection), cameraOffset * -1));
+
+	dx::XMFLOAT3 offset;
+	dx::XMStoreFloat3(&offset, DirectX::XMVectorSubtract(focus, positionOffset));
+
+	float yaw = atan2f(offset.x, offset.z);
+	float pitch = atan2f(sqrtf(offset.z * offset.z + offset.x * offset.x), offset.y);
+	dx::XMVECTOR rotation = dx::XMQuaternionRotationRollPitchYaw(pitch, yaw, 0.0f);
+
+	dx::XMFLOAT3 tmp;
+	dx::XMStoreFloat3(&tmp, positionOffset);
+	DShape::DrawSphere(tmp, 3.0f, { 0,1,1 });
+
+	dx::XMStoreFloat4x4(&shadowCameraTransform, dx::XMMatrixRotationQuaternion(rotation) * dx::XMMatrixTranslationFromVector(positionOffset));
 }

@@ -44,11 +44,17 @@ cbuffer cb_Scene : register(b2)
 
 cbuffer cb_Lights : register(b3)
 {
-	PointLight pointLights[POINT_LIGHT_COUNT];
+    float3 sunDirection;
+    float sunIntensity;
+	
+     matrix shadowView;
+     matrix shadowProjection;
+    row_major matrix shadowVP;
+	
 	int nrOfPointLights;
-	float3 sunDirection;
-	float sunIntensity;
 	float3 pad3;
+	
+    PointLight pointLights[POINT_LIGHT_COUNT];
 };
 
 StructuredBuffer<float4x4> bones : register(t2);

@@ -24,6 +24,7 @@
 #include <bitset>
 #include <array>
 #include <algorithm>
+#include <deque>
 
 //GLOBAL HEADERS
 #include "Random.h"

@@ -35,34 +35,35 @@ class Renderer
 		
 		std::vector<dx::XMFLOAT4X4>* bones;
 		dx::XMMATRIX world;
-		const CameraComponent* camera;
 		
 		ID3D11Buffer* instanceBuffer;
 		size_t instanceCount;
 	};
 
-	typedef std::unordered_map<size_t, std::queue<RenderItem>> RenderQueue;
+	typedef std::unordered_map<size_t, std::deque<RenderItem>> RenderQueue;
 
 public:
 	Renderer();
 	virtual ~Renderer();
 
 	void Initialize(Window* window);
-	
-	void BeginManualRenderPass(RenderTexture& target);
-	void EndManualRenderPass();
 
-	void DrawQueueToTarget(RenderQueue& queue);
+	void DrawQueue(VirtualCamera* camera, dx::XMMATRIX cameraTransform, RenderQueue& queue);
+	void DrawQueueForPass(VirtualCamera* camera, dx::XMMATRIX cameraTransform, RenderQueue& queue);
+
+	RenderQueue& GetOpaqueItemQueue() { return this->opaqueItemQueue; }
+	RenderQueue& GetTransparentItemQueue() { return this->transparentItemQueue; }
+
 	void RenderFrame(CameraComponent* camera, float time);
 	void RenderFrame(CameraComponent* camera, float time, RenderTexture& target, bool drawGUI = false, bool applyRenderPasses = true);
 
 	void AddRenderPass(RenderPass*);
-	void Draw(const Mesh* mesh, const Material* material, const dx::XMMATRIX& model, const CameraComponent* camera);
-	void DrawInstanced(const Mesh* mesh, const size_t& count, ID3D11Buffer* instanceBuffer, const Material* material, const CameraComponent* camera);
-	void DrawSkeleton(const Mesh* mesh, const Material* material, const dx::XMMATRIX& model, const CameraComponent* camera, std::vector<dx::XMFLOAT4X4>& bones);
-	void DrawGrass(const Mesh* mesh, const Material* material, const dx::XMMATRIX& model, const CameraComponent* camera);
+	void Draw(const Mesh* mesh, const Material* material, const dx::XMMATRIX& model);
+	void DrawInstanced(const Mesh* mesh, const size_t& count, ID3D11Buffer* instanceBuffer, const Material* material);
+	void DrawSkeleton(const Mesh* mesh, const Material* material, const dx::XMMATRIX& model, std::vector<dx::XMFLOAT4X4>& bones);
+	void DrawGrass(const Mesh* mesh, const Material* material, const dx::XMMATRIX& model);
 	
-	void SetCullBack(bool);
+	void SetCullMode(D3D11_CULL_MODE mode);
 
 	ID3D11Device* GetDevice() const { return this->device; }
 	ID3D11DeviceContext* GetContext() const { return this->context; }
@@ -72,6 +73,7 @@ public:
 
 	void ClearRenderTarget(const RenderTexture& target, bool clearDepth = true);
 	void SetRenderTarget(const RenderTexture& target, bool setDepth = true);
+	void RemoveRenderTarget();
 
 	bool IsDrawingShapes() const { return this->drawShapes; }
 	void DrawShapes(bool draw) { this->drawShapes = draw; }
@@ -80,16 +82,20 @@ public:
 
 	void RemoveRenderPass(RenderPass*);
 
+	void SaveShaderResourceView(std::string key, ID3D11ShaderResourceView* srv);
+	ID3D11ShaderResourceView* LoadShaderResourceView(std::string key);
+
+
 	ALIGN16_ALLOC;
 
 private:
 	void AddItem(const RenderItem& item, bool transparent);
-	void DrawRenderItem(const RenderItem& item);
-	void DrawRenderItemInstanced(const RenderItem& item);
-	void DrawRenderItemSkeleton(const RenderItem& item);
-	void DrawRenderItemGrass(const RenderItem& item);
+	void RenderDefault(const RenderItem& item, VirtualCamera* camera, dx::XMMATRIX cameraTransform);
+	void RenderInstanced(const RenderItem& item, VirtualCamera* camera, dx::XMMATRIX cameraTransform);
+	void RenderSkeleton(const RenderItem& item, VirtualCamera* camera, dx::XMMATRIX cameraTransform);
+	void RenderGrass(const RenderItem& item, VirtualCamera* camera, dx::XMMATRIX cameraTransform);
 	
-	void SetObjectBufferValues(const CameraComponent* camera, dx::XMMATRIX world, bool transpose);
+	void SetObjectBufferValues(const VirtualCamera* camera, dx::XMMATRIX cameraTransform, dx::XMMATRIX world, bool transpose);
 	Mesh* CreateScreenQuad();
 
 private:
@@ -112,6 +118,7 @@ private:
 	ID3D11Buffer* skeleton_srvbuffer;
 	ID3D11ShaderResourceView* skeleton_srv;
 
+	std::unordered_map<std::string, ID3D11ShaderResourceView*> registredShaderResourceViews;
 	Window* outputWindow;
 
 	RenderQueue opaqueItemQueue;
@@ -122,8 +129,6 @@ private:
 	ID3D11BlendState* blendStateOn;
 	ID3D11BlendState* blendStateOff;
 
-	ID3D11DepthStencilState* dss;
-
 	const float BLENDSTATEMASK[4] = { 0.0f };
 	
 	bool drawShapes = true;
@@ -131,6 +136,7 @@ private:
 	float xPos= 0;
 	float yPos =0;
 	//rasterizer
+	ID3D11RasterizerState* rasterizerStateCullFront;
 	ID3D11RasterizerState* rasterizerStateCullBack;
 	ID3D11RasterizerState* rasterizerStateCullNone;
 	ID3D11RasterizerState* rasterizerStateCCWO;

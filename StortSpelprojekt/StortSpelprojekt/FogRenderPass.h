@@ -5,7 +5,7 @@ ALIGN16
 class FogRenderPass : public RenderPass
 {
 public:
-	FogRenderPass(int priority) : RenderPass(priority, RenderPass::PassType::POST_PROCESSING)  {}
+	FogRenderPass(int priority) : RenderPass(priority, RenderPass::PassType::POST_PASS)  {}
 
 	void m_Initialize(ID3D11Device* device) override
 	{

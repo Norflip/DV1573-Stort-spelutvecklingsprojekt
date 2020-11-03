@@ -5,7 +5,7 @@
 
 
 
-GUIManager::GUIManager(Renderer* renderer, int priority) : RenderPass(priority, RenderPass::PassType::UI_OVERLAY), renderer(renderer)
+GUIManager::GUIManager(Renderer* renderer, int priority) : RenderPass(priority, RenderPass::PassType::OVERLAY), renderer(renderer)
 {
 	spriteBatch = new DirectX::SpriteBatch(this->renderer->GetContext());
 

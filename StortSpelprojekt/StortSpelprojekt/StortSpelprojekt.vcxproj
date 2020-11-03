@@ -231,6 +231,7 @@
     <ClCompile Include="SkeletonMeshComponent.cpp" />
     <ClCompile Include="ThirdParty\SimplexNoise.cpp" />
     <ClCompile Include="Transform.cpp" />
+    <ClCompile Include="VirtualCamera.cpp" />
     <ClCompile Include="WeaponComponent.cpp" />
     <ClCompile Include="Window.cpp" />
     <ClCompile Include="WinScene.cpp" />
@@ -276,6 +277,7 @@
     <ClInclude Include="ResourceManager.h" />
     <ClInclude Include="SegmentDescription.h" />
     <ClInclude Include="SegmentGenerator.h" />
+    <ClInclude Include="ShadowPass.h" />
     <ClInclude Include="Shapes.h" />
     <ClInclude Include="GameClock.h" />
     <ClInclude Include="GrassComponent.h" />
@@ -316,6 +318,7 @@
     <ClInclude Include="SkeletonMeshComponent.h" />
     <ClInclude Include="ThirdParty\SimplexNoise.h" />
     <ClInclude Include="Transform.h" />
+    <ClInclude Include="VirtualCamera.h" />
     <ClInclude Include="WeaponComponent.h" />
     <ClInclude Include="Window.h" />
     <ClInclude Include="WinScene.h" />
@@ -354,6 +357,18 @@
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">true</ExcludedFromBuild>
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">true</ExcludedFromBuild>
       <ShaderModel Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">4.0</ShaderModel>
+    </FxCompile>
+    <FxCompile Include="Shaders\DepthRender_ps.hlsl">
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|x64'">true</ExcludedFromBuild>
+    </FxCompile>
+    <FxCompile Include="Shaders\DepthRender_vs.hlsl">
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|x64'">true</ExcludedFromBuild>
     </FxCompile>
     <FxCompile Include="Shaders\FogTest_ps.hlsl">
       <ShaderType Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Compute</ShaderType>
@@ -414,6 +429,12 @@
       <ShaderModel Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">5.0</ShaderModel>
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">true</ExcludedFromBuild>
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|x64'">true</ExcludedFromBuild>
+    </FxCompile>
+    <FxCompile Include="Shaders\ShadowPass_ps.hlsl">
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">true</ExcludedFromBuild>
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|x64'">true</ExcludedFromBuild>
     </FxCompile>
     <FxCompile Include="Shaders\Skeleton_vs.hlsl">

@@ -5,7 +5,7 @@ ALIGN16
 class FXAARenderPass : public RenderPass
 {
 public:
-	FXAARenderPass(int priority) : RenderPass(priority, RenderPass::PassType::POST_PROCESSING) {}
+	FXAARenderPass(int priority) : RenderPass(priority, RenderPass::PassType::POST_PASS) {}
 	virtual ~FXAARenderPass() {}
 
 	void m_Initialize(ID3D11Device* device) override

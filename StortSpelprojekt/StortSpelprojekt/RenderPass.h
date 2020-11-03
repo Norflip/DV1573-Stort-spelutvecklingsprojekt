@@ -7,8 +7,9 @@ class RenderPass
 public:
 	enum class PassType
 	{
-		UI_OVERLAY,
-		POST_PROCESSING
+		PRE_PASS,
+		POST_PASS,
+		OVERLAY,
 	};
 
 public:
@@ -33,7 +34,7 @@ private:
 class PSRenderPass : public RenderPass
 {
 public:
-	PSRenderPass(int priority, std::string pixelShaderPath, LPCSTR pixelShaderEntry = "main") : RenderPass(priority, RenderPass::PassType::POST_PROCESSING), path(pixelShaderPath), entry(pixelShaderEntry) {}
+	PSRenderPass(int priority, std::string pixelShaderPath, LPCSTR pixelShaderEntry = "main") : RenderPass(priority, RenderPass::PassType::POST_PASS), path(pixelShaderPath), entry(pixelShaderEntry) {}
 
 	void m_Initialize(ID3D11Device* device) override 
 	{

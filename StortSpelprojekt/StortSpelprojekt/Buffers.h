@@ -46,11 +46,17 @@ struct s_PointLight
 ALIGN16
 struct cb_Lights
 {
-	s_PointLight pointLights[POINT_LIGHT_COUNT];
-	int nrOfPointLights;
 	dx::XMFLOAT3 sunDirection;
 	float sunIntensity;
+
+	dx::XMFLOAT4X4 shadowView;
+	dx::XMFLOAT4X4 shadowProjection;
+	dx::XMFLOAT4X4 shadowVP;
+
+	int nrOfPointLights;	
 	dx::XMFLOAT3 pad;
+
+	s_PointLight pointLights[POINT_LIGHT_COUNT];
 };
 
 ALIGN16
