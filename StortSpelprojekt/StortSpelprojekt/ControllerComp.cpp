@@ -39,6 +39,7 @@ bool ControllerComp::IsGrounded() const
 		result = true;
 		//std::cout << "picking: " << hit.object->GetName() << std::endl;
 		//DShape::DrawLine(ray.origin, ray.GetPoint(distance), { 0,0,1 });
+		
 	}
 	//else
 	//	DShape::DrawLine(ray.origin, ray.GetPoint(distance), { 1,0,0 });
@@ -54,14 +55,13 @@ ControllerComp::ControllerComp(Object* cameraObject, Object* houseObject)
 	this->velocity = 0.f;
 	this->velocityTimer = 0.f;
 	this->crouchTimer = 0.f;
-	this->cameraOffset = { 0.f,0.f,0.f };
 
-	this->xClamp = 0.f;
 	this->freeCam = false;
 	this->showCursor = false;
 	this->canRotate = true;
+	this->cameraOffset = { 0.f,0.f,0.f };
+	this->cameraEuler = { 0.f,0.f,0.f };
 
-	this->groundQuaterion = { 0.f,0.f,0.f,1.f };
 	this->cameraObject = cameraObject;
 	this->houseObject = houseObject;
 	this->rbComp = nullptr;
@@ -88,10 +88,10 @@ void ControllerComp::Initialize()
 	if (this->cameraObject && this->rbComp && this->capsuleComp && this->camComp)
 	{
 		this->rbComp->LockRotation(true);
-		this->rbComp->SetLinearDamping(0.1f);
-		this->rbComp->GetRigidBody()->getCollider(0)->getMaterial().setBounciness(0.f);
-		this->rbComp->GetRigidBody()->getCollider(0)->getMaterial().setRollingResistance(100.f);
-		//this->rbComp->GetRigidBody()->getCollider(0)->getMaterial().setFrictionCoefficient(100.f);
+		this->rbComp->SetLinearDamping(0.3f);
+		//this->rbComp->GetRigidBody()->getCollider(0)->getMaterial().setBounciness(0.f);
+		this->rbComp->GetRigidBody()->getCollider(0)->getMaterial().setRollingResistance(10.f);
+		this->rbComp->GetRigidBody()->getCollider(0)->getMaterial().setFrictionCoefficient(10.f);
 		this->rbComp->EnableGravity(!this->freeCam);
 		this->rbComp->SetLinearVelocity({ 0.f, 0.f, 0.f });
 	}
@@ -100,14 +100,14 @@ void ControllerComp::Initialize()
 		std::cout << "component missing" << std::endl;
 	}
 
-	this->xClamp = 0.f;
 	dx::XMVECTOR reset = dx::XMLoadFloat4(&RESET_ROT);
 	this->cameraObject->GetTransform().SetRotation(reset);
 }
 
 void ControllerComp::Update(const float& deltaTime)
 {
-	//
+	//WASD = move
+	//space = jump
 	//9 = reset 
 	//0 = reset position rotation and xClamp
 
@@ -116,27 +116,22 @@ void ControllerComp::Update(const float& deltaTime)
 	this->fovTimer += deltaTime;
 	this->velocityTimer += deltaTime; 
 	this->crouchTimer += deltaTime;
-	dx::XMVECTOR groundRotation;
+
 	phy.MutexLock();
 	if (KEY_DOWN(D0))
 	{
-		this->xClamp = 0.f;
-		dx::XMVECTOR resetRot = dx::XMLoadFloat4(&RESET_ROT);
-		this->cameraObject->GetTransform().SetRotation(resetRot);
-		this->groundQuaterion = RESET_ROT;
+		this->cameraObject->GetTransform().SetRotation(dx::XMLoadFloat4(&RESET_ROT));
 		this->cameraOffset = { 0.f,0.f,0.f };
-		dx::XMVECTOR resetPos = dx::XMLoadFloat3(&RESET_POS);
-		GetOwner()->GetTransform().SetPosition(resetPos);
-		rbComp->SetPosition(resetPos);
+		this->cameraEuler = { 0.f, 0.f, 0.f };
+
+		rbComp->SetPosition(dx::XMLoadFloat3(&RESET_POS));
 		rbComp->SetLinearVelocity({ 0.f, 0.f, 0.f });
 	}
-	if (KEY_DOWN(D9))
-	{
-		this->xClamp = 0.f;
-		dx::XMVECTOR resetRot = dx::XMLoadFloat4(&RESET_ROT);
-		this->cameraObject->GetTransform().SetRotation(resetRot);
-		this->groundQuaterion = RESET_ROT;
-	}
+	//if (KEY_DOWN(D9))
+	//{
+	//	this->cameraObject->GetTransform().SetRotation(dx::XMLoadFloat4(&RESET_ROT));
+	//	this->cameraEuler = { 0.f, 0.f, 0.f };
+	//}
 	if (KEY_DOWN(O))
 	{
 		this->showCursor = !this->showCursor;
@@ -164,32 +159,22 @@ void ControllerComp::Update(const float& deltaTime)
 	{
 		//Input::Instance().ConfineMouse();
 		//SetCursorPos(400, 400); //set this to coordinates middle of screen? get height/width from input?
-
+		
 		float xPos = Input::Instance().GetMousePosRelative().x * deltaTime;
 		float yPos = Input::Instance().GetMousePosRelative().y * deltaTime;
-		xClamp += xPos;
-		if (xClamp > CLAMP_X)
-		{
-			xClamp = CLAMP_X;
-			xPos = 0.f;
-		}
-		if (xClamp < -CLAMP_X)
-		{
-			xClamp = -CLAMP_X;
-			xPos = 0.f;
-		}
-		//std::cout << "clamp, x: " << xClamp << std::endl;
-		//rotate view
-		dx::XMVECTOR right = cameraObject->GetTransform().TransformDirection({ 1,0,0 });
-		dx::XMVECTOR eulerRotation = dx::XMQuaternionMultiply(dx::XMQuaternionRotationAxis(right, xPos), dx::XMQuaternionRotationAxis({ 0,1,0 }, yPos));
 
-		//rotate walking direction to allign to ground
-		groundRotation = dx::XMQuaternionMultiply(dx::XMQuaternionRotationAxis(right, 0), dx::XMQuaternionRotationAxis({ 0,1,0 }, yPos));
-		groundRotation = dx::XMQuaternionMultiply(dx::XMLoadFloat4(&this->groundQuaterion), groundRotation);
-		dx::XMStoreFloat4(&groundQuaterion, groundRotation); 
+		cameraEuler.x += xPos;
+		cameraEuler.y += yPos;
+		cameraEuler.x = Math::Clamp(cameraEuler.x, CLAMP_X, -CLAMP_X);
+		if (cameraEuler.y >= CLAMP_Y)
+			cameraEuler.y = 0.f;
+		else if (cameraEuler.y <= 0.f)
+			cameraEuler.y = CLAMP_Y;
+		//std::cout << "x: " << cameraEuler.x * Math::ToDegree << ", y: " << cameraEuler.y * Math::ToDegree << std::endl;
+		cameraObject->GetTransform().SetRotation(dx::XMQuaternionRotationRollPitchYaw(cameraEuler.x, cameraEuler.y, cameraEuler.z));
 
-		cameraObject->GetTransform().SetRotation(dx::XMQuaternionMultiply(cameraObject->GetTransform().GetRotation(), eulerRotation)); //rotate view
-		// need to push this data to renderer
+		dx::XMVECTOR groundRotation = dx::XMQuaternionRotationRollPitchYaw(0.f, cameraEuler.y, 0.f);
+		
 		Input::Instance().ResetRelative();
 		
 		if (KEY_PRESSED(W) || KEY_PRESSED(S) || KEY_PRESSED(A) || KEY_PRESSED(D))
@@ -262,11 +247,11 @@ void ControllerComp::Update(const float& deltaTime)
 
 			//phy.MutexLock();
 			direction = cameraObject->GetTransform().TransformDirection(direction);
-			direction = dx::XMVectorScale(direction, RUN_VELOCITY * deltaTime);
+			direction = dx::XMVectorScale(direction, RUN_VELOCITY);
 			dx::XMStoreFloat3(&dir, direction);
 			dx::XMFLOAT3 vel = rbComp->GetLinearVelocity();
 			cameraObject->GetTransform().SetPosition(rbComp->GetPosition());
-			rbComp->SetLinearVelocity({ dir.x * VELOCITY_MULTIPLIER, dir.y * VELOCITY_MULTIPLIER, dir.z * VELOCITY_MULTIPLIER });
+			rbComp->SetLinearVelocity({ dir.x , dir.y , dir.z });
 			dx::XMVECTOR capsule = dx::XMLoadFloat4(&RESET_ROT);
 			rbComp->SetRotation(capsule);
 			//phy.MutexUnlock();
@@ -334,22 +319,19 @@ void ControllerComp::Update(const float& deltaTime)
 
 			//phy.MutexLock();
 			direction = cameraObject->GetTransform().TransformDirectionCustomRotation(direction, groundRotation);
-			direction = dx::XMVectorScale(direction, this->velocity * deltaTime);
+			direction = dx::XMVectorScale(direction, this->velocity );
 			dx::XMStoreFloat3(&dir, direction);
 			dx::XMFLOAT3 vel = rbComp->GetLinearVelocity();
 			dx::XMVECTOR cameraPos = dx::XMLoadFloat3(&this->cameraOffset);
 			cameraPos = dx::XMVectorAdd(cameraPos, rbComp->GetPosition());
 			cameraObject->GetTransform().SetPosition(cameraPos); //add camera-offset
-			rbComp->SetLinearVelocity({ dir.x * VELOCITY_MULTIPLIER, vel.y + jumpVelocity, dir.z * VELOCITY_MULTIPLIER });
+			rbComp->SetLinearVelocity({ dir.x , vel.y + jumpVelocity, dir.z });
 			dx::XMVECTOR capsule = dx::XMLoadFloat4(&RESET_ROT);
 			//capsuleComp->SetRotation(capsule);
+			
 			rbComp->SetRotation(capsule);
 
-			//std::cout << "Cap, x: " << capsuleComp->GetTransform().getOrientation().x << ", y: " << capsuleComp->GetTransform().getOrientation().y << ", z: " << capsuleComp->GetTransform().getOrientation().z << ", w:" << capsuleComp->GetTransform().getOrientation().w << std::endl;
-			//dx::XMFLOAT4 rot;
-			//dx::XMStoreFloat4(&rot, rbComp->GetRotation());
-			//std::cout << "rb, x: " << rot.x << ", y:" << rot.y << ", z:" << rot.z << ", w:" << rot.w << std::endl;
-			//phy.MutexUnlock();
+	
 		}
 		//phy.MutexUnlock();
 	}
