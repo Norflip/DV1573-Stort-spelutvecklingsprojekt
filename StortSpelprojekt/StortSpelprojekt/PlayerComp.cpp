@@ -45,7 +45,7 @@ PlayerComp::PlayerComp(Renderer* renderer, CameraComponent* camComp, Physics& ph
 	this->fuel = 50.0f;
 	this->healthLossPerSecond = 0.5f;
 
-	this->health = 50.0f; // <------------------ DONT FORGET TO REMOVE THIS LATER!
+	//this->health = 50.0f; // <------------------ DONT FORGET TO REMOVE THIS LATER!
 
 	this->fuelDippingBar = static_cast<GUISprite*>(guiMan->GetGUIObject("fuelDippingBar"));
 	this->foodDippingBar = static_cast<GUISprite*>(guiMan->GetGUIObject("foodDippingBar"));
