@@ -132,12 +132,14 @@ void PlayerComp::Update(const float& deltaTime)
 				if (hit.object->GetComponent<EnemyStatsComp>()->IsEnabled())
 				{
 					if (hit.object->GetComponent<EnemyStatsComp>()->GetHealth() >= 0.0f)
-					{						
+					{				
+						AudioMaster::Instance().PlaySoundEvent("punch");
 						hit.object->GetComponent<EnemyStatsComp>()->LoseHealth(attack);
 						std::cout << "Hit hit hit" << std::endl;
 					}
 					else if (hit.object->GetComponent<EnemyStatsComp>()->GetHealth() <= 0.0f)
 					{
+						AudioMaster::Instance().PlaySoundEvent("punch");
 						//hit.object.s  ->GetComponent<PickupComponent>()->SetActive(false);
 						
 						RigidBodyComponent* rbComp = hit.object->GetComponent<RigidBodyComponent>();

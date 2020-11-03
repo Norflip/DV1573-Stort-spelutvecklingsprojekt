@@ -22,12 +22,23 @@ AudioMaster::AudioMaster()
 	/* Volume for both channels */
 	soundsSubmix->SetVolume(soundEffectsVolume);
 	musicSubmix->SetVolume(musicVolume);
+
+	/* Load tracks */
+	LoadFile(L"Sounds/jakestuff.mp3", "menusound", menuTest, AudioTypes::Music, true);
+	LoadFile(L"Sounds/yay.wav", "pickupSound", pickupSound, AudioTypes::Sound, false);
+	LoadFile(L"Sounds/swinging_axe.mp3", "axeSwing", axeSwingSound, AudioTypes::Sound, false);
+	LoadFile(L"Sounds/Punch.wav", "punch", punchSound, AudioTypes::Sound, false);
+	SetVolume(AudioTypes::Music, 0.7f);
+	SetVolume(AudioTypes::Sound, 0.7f);
+
 }
 
 AudioMaster::~AudioMaster()
 {
 	if (engine)
 		delete engine;
+
+	soundTracks.clear();
 }
 
 void AudioMaster::LoadFile(const std::wstring fileName, std::string name, SoundEvent& soundEvent, const AudioTypes& soundType, bool loop)

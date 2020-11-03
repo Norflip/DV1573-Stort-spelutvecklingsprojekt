@@ -21,14 +21,6 @@ void IntroScene::Initialize()
 
 void IntroScene::InitializeObjects()
 {
-	//audioComponent.LoadFile(L"Sounds/PopCulture.mp3", menuTest, AudioTypes::Music);
-	AudioMaster::Instance().LoadFile(L"Sounds/jakestuff.mp3", "menusound", menuTest, AudioTypes::Music, true);
-	AudioMaster::Instance().LoadFile(L"Sounds/yay.wav", "pickupSound", pickupSound, AudioTypes::Sound, false);
-	AudioMaster::Instance().LoadFile(L"Sounds/swinging_axe.mp3", "axeSwing", axeSwingSound, AudioTypes::Sound, false);
-	AudioMaster::Instance().SetVolume(AudioTypes::Music, 0.7f);
-	AudioMaster::Instance().SetVolume(AudioTypes::Sound, 0.7f);
-	AudioMaster::Instance().PlaySoundEvent("menusound");
-
 	Object* cameraObject = new Object("camera", ObjectFlag::ENABLED);
 	camera = cameraObject->AddComponent<CameraComponent>(60.0f, true);
 	camera->Resize(window->GetWidth(), window->GetHeight());
@@ -40,6 +32,9 @@ void IntroScene::InitializeObjects()
 
 	skyboxClass = new Skybox(renderer->GetDevice(), renderer->GetContext(), resources->GetShaderResource("skyboxShader"));
 	skyboxClass->GetThisObject()->AddFlag(ObjectFlag::NO_CULL);
+
+
+	AudioMaster::Instance().PlaySoundEvent("menusound");
 }
 
 void IntroScene::InitializeGUI()

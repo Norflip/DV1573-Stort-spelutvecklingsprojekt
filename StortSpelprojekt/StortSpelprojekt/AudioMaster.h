@@ -39,6 +39,9 @@ private:
 	float soundEffectsVolume = 1.0f;
 	float musicVolume = 1.0f;
 
+	SoundEvent menuTest;
+	SoundEvent pickupSound, axeSwingSound, punchSound;
+
 public:
 	AudioMaster();
 	virtual ~AudioMaster();
