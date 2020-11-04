@@ -244,9 +244,23 @@ void World::RegisterFuel(ObjectPooler* pooler, ObjectSpawner* spawner, const std
 		return object;
 	});
 
+	pooler->Register("Propane", 0, [](ResourceManager* resources)
+	{
+		Object* object = resources->AssembleObject("Propane", "PropaneMaterial");
+
+		object->AddComponent<BoxColliderComponent>(dx::XMFLOAT3(0.5f, 0.5f, 0.5f), dx::XMFLOAT3(0, 0, 0));
+		object->AddComponent<PickupComponent>(Type::Fuel, 35.0f);
+
+		RigidBodyComponent* rd = object->AddComponent<RigidBodyComponent>(10.0f, FilterGroups::PICKUPS, FilterGroups::EVERYTHING, BodyType::KINEMATIC);
+
+		Physics::Instance().RegisterRigidBody(rd);
+		return object;
+	});
+
 	spawner->RegisterItem("FuelGreen", 1.0f, 1.0f, 0.0f, TryGetQueueCount("FuelGreen", queueCountTable));
 	spawner->RegisterItem("FuelBlue", 1.0f, 1.0f, 0.0f, TryGetQueueCount("FuelBlue", queueCountTable));
 	spawner->RegisterItem("FuelRed", 1.0f, 1.0f, 0.0f, TryGetQueueCount("FuelRed", queueCountTable));
+	spawner->RegisterItem("Propane", 1.0f, 1.0f, 0.0f, TryGetQueueCount("Propane", queueCountTable));
 }
 
 void World::RegisterHealth(ObjectPooler* pooler, ObjectSpawner* spawner, const std::map<std::string, int>& queueCountTable) const
@@ -285,7 +299,7 @@ void World::RegisterHealth(ObjectPooler* pooler, ObjectSpawner* spawner, const s
 
 void World::RegisterWeapon(ObjectPooler* pooler, ObjectSpawner* spawner, const std::map<std::string, int>& queueCountTable) const
 {
-
+	// Hammer, Axe and Bat here?
 }
 
 void World::RegisterStatic(ObjectPooler* pooler, ObjectSpawner* spawner, const std::map<std::string, int>& queueCountTable) const
