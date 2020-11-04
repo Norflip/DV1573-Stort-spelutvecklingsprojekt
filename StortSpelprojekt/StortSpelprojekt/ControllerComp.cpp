@@ -59,6 +59,7 @@ ControllerComp::ControllerComp(Object* cameraObject, Object* houseObject)
 	this->freeCam = false;
 	this->showCursor = false;
 	this->canRotate = true;
+	this->jumpDir = { 0.f,0.f,0.f };
 	this->cameraOffset = { 0.f,0.f,0.f };
 	this->cameraEuler = { 0.f,0.f,0.f };
 
@@ -88,8 +89,8 @@ void ControllerComp::Initialize()
 	if (this->cameraObject && this->rbComp && this->capsuleComp && this->camComp)
 	{
 		this->rbComp->LockRotation(true);
-		this->rbComp->SetLinearDamping(0.3f);
-		//this->rbComp->GetRigidBody()->getCollider(0)->getMaterial().setBounciness(0.f);
+		//this->rbComp->SetLinearDamping(0.3f);
+		this->rbComp->GetRigidBody()->getCollider(0)->getMaterial().setBounciness(0.f);
 		this->rbComp->GetRigidBody()->getCollider(0)->getMaterial().setRollingResistance(10.f);
 		this->rbComp->GetRigidBody()->getCollider(0)->getMaterial().setFrictionCoefficient(10.f);
 		this->rbComp->EnableGravity(!this->freeCam);
@@ -179,36 +180,34 @@ void ControllerComp::Update(const float& deltaTime)
 		
 		if (KEY_PRESSED(W) || KEY_PRESSED(S) || KEY_PRESSED(A) || KEY_PRESSED(D))
 		{
-			//velocity-max
 			if (KEY_PRESSED(LeftShift)) //sprint
 			{
-				if (this->velocity < RUN_VELOCITY && this->velocityTimer >= VELOCITY_INC_RATE)
-				{
-					this->velocity += RUN_ACCELERATION;
-					this->velocityTimer = 0.f;
-				}
-
-
-
-				//if (this->fov < RUN_FOV && this->fovTimer >= FOV_INC_RATE)
+				//if (this->velocity < RUN_VELOCITY && this->velocityTimer >= VELOCITY_INC_RATE)
 				//{
-				//	this->fov += FOV_INC;
-				//	this->fovTimer = 0.f;
+				//	this->velocity += RUN_ACCELERATION;
+				this->velocity = RUN_VELOCITY;
+				//	this->velocityTimer = 0.f;
 				//}
 			}
 			else
 			{
-				if (this->velocity > WALK_VELOCITY && this->velocityTimer >= VELOCITY_INC_RATE)
-				{
-					this->velocity -= RUN_ACCELERATION;
-					this->velocityTimer = 0.f;
-				}
-				//if (this->fov > WALK_FOV && this->fovTimer >= FOV_INC_RATE)
+				//if (this->velocity < WALK_VELOCITY && velocityTimer >= VELOCITY_INC_RATE)
 				//{
-				//	this->fov -= FOV_INC;
-				//	this->fovTimer = 0.f;
+				//	this->velocity += WALK_ACCELERATION;
+				this->velocity = WALK_VELOCITY;
+				//	this->velocityTimer = 0.f;
 				//}
 			}
+
+			//else
+			//{
+			//	if (this->velocity > WALK_VELOCITY && this->velocityTimer >= VELOCITY_INC_RATE)
+			//	{
+			//		this->velocity -= RUN_ACCELERATION;
+			//		this->velocityTimer = 0.f;
+			//	}
+
+			//}
 
 			if (KEY_PRESSED(W))
 				dir.z += 1.f;
@@ -219,15 +218,11 @@ void ControllerComp::Update(const float& deltaTime)
 			if (KEY_PRESSED(D))
 				dir.x += 1.f;
 
-			if (this->velocity < WALK_VELOCITY && velocityTimer >= VELOCITY_INC_RATE)
-			{
-				this->velocity += WALK_ACCELERATION;
-				this->velocityTimer = 0.f;
-			}
+
 		}
 		else
 		{
-			this->velocity = 0;
+			//this->velocity = 0;
 			/*if (this->velocity > 0.f && velocityTimer >= VELOCITY_INC_RATE)
 			{
 				this->velocity -= WALK_ACCELERATION;
@@ -260,11 +255,13 @@ void ControllerComp::Update(const float& deltaTime)
 		{
 			float jumpVelocity = 0;
 			bool isCrouching = false;
-			camComp->SetFOV(60.0f); // dick move, fix this later
+			//camComp->SetFOV(60.0f); // dick move, fix this later
 			
 			if (IsGrounded() && KEY_DOWN(Space)) // FPcam //jump is  scuffed
 			{
 				jumpVelocity = JUMP_VELOCITY;
+				this->jumpDir.x = dir.x;
+				this->jumpDir.z = dir.z;
 				//dir.y = JUMP_VELOCITY;
 			}
 
@@ -276,56 +273,85 @@ void ControllerComp::Update(const float& deltaTime)
 			//std::cout << this->cameraOffset.y << std::endl;
 			if (isCrouching)
 			{
-				if (this->velocity > CROUCH_VELOCITY && velocityTimer >= VELOCITY_INC_RATE)
-				{
-					this->velocity -= CROUCH_ACCELERATION;
-					this->velocityTimer = 0.f;
-				}
+				//if (this->velocity > CROUCH_VELOCITY && velocityTimer >= VELOCITY_INC_RATE)
+				//{
+				//	this->velocity -= CROUCH_ACCELERATION;
+				this->velocity = CROUCH_VELOCITY;
+				//	this->velocityTimer = 0.f;
+				//}
 				if (this->cameraOffset.y > CROUCH_LIMIT && this->crouchTimer >= CROUCH_INC_RATE)
 				{
 					this->cameraOffset.y -= CROUCH_OFFSET_PER;
 					this->crouchTimer = 0.f;
 				}
 			}
-			else
-			{
-				if (this->velocity + CROUCH_ACCELERATION < WALK_VELOCITY && velocityTimer >= VELOCITY_INC_RATE)
-				{
-					this->velocity += CROUCH_ACCELERATION;
-					this->velocityTimer = 0.f;
-				}
-				if (this->cameraOffset.y + CROUCH_OFFSET_PER < 0.0f && this->crouchTimer >= CROUCH_INC_RATE)
-				{
-					this->cameraOffset.y += CROUCH_OFFSET_PER;
-					this->crouchTimer = 0.f;
-				}
-			}
+			//else
+			//{
+			//	if (this->velocity + CROUCH_ACCELERATION < WALK_VELOCITY && velocityTimer >= VELOCITY_INC_RATE)
+			//	{
+			//		this->velocity += CROUCH_ACCELERATION;
+			//		this->velocityTimer = 0.f;
+			//	}
+			//	if (this->cameraOffset.y + CROUCH_OFFSET_PER < 0.0f && this->crouchTimer >= CROUCH_INC_RATE)
+			//	{
+			//		this->cameraOffset.y += CROUCH_OFFSET_PER;
+			//		this->crouchTimer = 0.f;
+			//	}
+			//}
 
 			//std::cout << "vel: " << this->velocity << std::endl;
 			//float diffVel = RUN_VELOCITY - WALK_VELOCITY; //17-8 =7
-			float diffFOV = RUN_FOV - WALK_FOV; //103-90 //13
 
-			float deltaVel = RUN_VELOCITY - this->velocity;
+			
+			float diffFOV = RUN_FOV - WALK_FOV; //70-90=20
+			/*			
+			float deltaVel= WALK_VELOCITY;
+			if(this->velocity > WALK_VELOCITY)
+			{
+				deltaVel = RUN_VELOCITY - this->velocity;
+			}*/
 			//float deltaFOV = RUN_FOV - this->fov;
+				
+			float percentVel = 0.f;
+			if (this->velocity > WALK_VELOCITY)
+			{
 
-			float percentVel = deltaVel / RUN_VELOCITY;
+				percentVel = this->velocity / RUN_VELOCITY;
+			}
+
+			std::cout << "vel: " << this->velocity << ", fov: " << this->fov << std::endl;
 			//float percentDeltaFov = deltaFOV / RUN_FOV;
 
-			this->fov = WALK_FOV + (percentVel * (diffFOV));
-			camComp->SetFOV(60.0f);
-
+			this->fov = WALK_FOV + (percentVel * (diffFOV));// 70+()
+			camComp->SetFOV(this->fov);
+			
+			
 			dx::XMVECTOR direction = dx::XMLoadFloat3(&dir);
-			direction = dx::XMVector3Normalize(direction);
+			//direction = dx::XMVector3Normalize(direction);
 
 			//phy.MutexLock();
 			direction = cameraObject->GetTransform().TransformDirectionCustomRotation(direction, groundRotation);
+			direction = dx::XMVector3Normalize(direction);
 			direction = dx::XMVectorScale(direction, this->velocity );
 			dx::XMStoreFloat3(&dir, direction);
 			dx::XMFLOAT3 vel = rbComp->GetLinearVelocity();
 			dx::XMVECTOR cameraPos = dx::XMLoadFloat3(&this->cameraOffset);
 			cameraPos = dx::XMVectorAdd(cameraPos, rbComp->GetPosition());
 			cameraObject->GetTransform().SetPosition(cameraPos); //add camera-offset
-			rbComp->SetLinearVelocity({ dir.x , vel.y + jumpVelocity, dir.z });
+			if(IsGrounded())
+				rbComp->SetLinearVelocity({ dir.x, vel.y + jumpVelocity, dir.z});
+			else
+			{
+				dx::XMVECTOR jumpVec = dx::XMLoadFloat3(&jumpDir);
+				jumpVec = cameraObject->GetTransform().TransformDirectionCustomRotation(jumpVec, groundRotation);
+				jumpVec = dx::XMVector3Normalize(jumpVec);
+				jumpVec = dx::XMVectorScale(jumpVec, this->velocity);
+				dx::XMFLOAT3 newDir;
+				dx::XMStoreFloat3(&newDir, jumpVec);
+				newDir.x = (newDir.x + dir.x) * 0.5f;
+				newDir.z = (newDir.z + dir.z) * 0.5f;
+				rbComp->SetLinearVelocity({ newDir.x, vel.y + jumpVelocity, newDir.z});
+			}
 			dx::XMVECTOR capsule = dx::XMLoadFloat4(&RESET_ROT);
 			//capsuleComp->SetRotation(capsule);
 			

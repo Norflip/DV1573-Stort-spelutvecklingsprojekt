@@ -21,7 +21,6 @@ constexpr float WALK_ACCELERATION = 5.0f;
 constexpr float RUN_VELOCITY = 10.f;
 constexpr float RUN_ACCELERATION = 5.5f;
 constexpr float VELOCITY_INC_RATE = 0.1f; //how often
-//constexpr float VELOCITY_MULTIPLIER = 1.f;
 
 constexpr float CROUCH_OFFSET_PER = 0.2f;
 constexpr float CROUCH_LIMIT = -0.5f;
@@ -49,6 +48,7 @@ private:
 	bool freeCam;
 	bool showCursor;
 	bool canRotate;
+	dx::XMFLOAT3 jumpDir; 
 	dx::XMFLOAT3 cameraOffset;
 	dx::XMFLOAT3 cameraEuler;
 
