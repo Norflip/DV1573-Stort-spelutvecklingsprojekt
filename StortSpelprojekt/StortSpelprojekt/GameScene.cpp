@@ -101,8 +101,7 @@ void GameScene::InitializeObjects()
 	physics.RegisterRigidBody(houseRigidBody);
 
 	SkeletonMeshComponent* baseComponent = houseBaseObject->AddComponent<SkeletonMeshComponent>(meshHouse[0], matHouse[0], 0.1f);
-	SkeletonMeshComponent* legsComponent = housesLegsObject->AddComponent<SkeletonMeshComponent>(skeletonMeshHouseLegs[0], skeletonMatHouseLegs[0],
-		0.1f);
+	SkeletonMeshComponent* legsComponent = housesLegsObject->AddComponent<SkeletonMeshComponent>(skeletonMeshHouseLegs[0], skeletonMatHouseLegs[0], 0.1f);
 	
 	legsComponent->SetAnimationTrack(skeletonHouseLegsIdle, SkeletonStateMachine::IDLE);
 	legsComponent->SetAnimationTrack(skeletonHouseLegsWalk, SkeletonStateMachine::WALK);
@@ -135,10 +134,6 @@ void GameScene::InitializeObjects()
 	camera->Resize(window->GetWidth(), window->GetHeight());
 	cameraObject->GetTransform().SetPosition(playerSpawnVec);
 	playerObject->GetTransform().SetPosition(playerSpawnVec);
-
-	//Mesh* meshP = resourceManager->GetResource<Mesh>("Test");
-	//Material* materialP = resourceManager->GetResource<Material>("TestMaterial");
-	//playerObject->AddComponent<MeshComponent>(*meshP, *materialP);
 	playerObject->AddComponent<CapsuleColliderComponent>(0.5f, 1.8f, zero);
 
 	physics.MutexLock();
@@ -146,10 +141,8 @@ void GameScene::InitializeObjects()
 	physics.RegisterRigidBody(rb);
 	physics.MutexUnlock();
 
-	playerObject->AddComponent<ControllerComp>(cameraObject, houseBaseObject); /////////////////
-	//Transform::SetParentChild(playerObject->GetTransform(),cameraObject->GetTransform());
+	playerObject->AddComponent<ControllerComp>(cameraObject, houseBaseObject);
 	playerObject->AddComponent<PlayerComp>(renderer, camera, Physics::Instance(), guiManager, 100.f, 2.f, 3.f, 50.f, 3.f);
-	//playerStatsComp = playerObject->GetComponent<PlayerComp>(); //
 
 	AddObject(cameraObject, playerObject);
 	AddObject(playerObject);
@@ -193,7 +186,6 @@ void GameScene::InitializeObjects()
 	AddObject(enemy);
 
 	playerObject->AddComponent<PlayerAttackComp>(enemy);
-
 
 	std::vector<Mesh*> axeMesh = ZWEBLoader::LoadMeshes(ZWEBLoadType::NoAnimation, "Models/AXE.ZWEB", renderer->GetDevice());
 	std::vector<Material*> axeMat = ZWEBLoader::LoadMaterials("Models/AXE.ZWEB", defaultShader, renderer->GetDevice());
@@ -258,10 +250,8 @@ void GameScene::InitializeObjects()
 
 void GameScene::InitializeGUI()
 {
-
 	float windowWidth = FCAST(window->GetWidth());
 	float windowHeight = FCAST(window->GetHeight());
-	//GUISTUFF//
 
 	//INFO, WE ARE DRAWING BACK TO FRONT. IF YOU WANT SOMETHING TO BE IN FRONT. SET VALUE TO 0. IF YOU WANT IT IN BACK USE 0.1 -> 1
 
@@ -281,7 +271,6 @@ void GameScene::InitializeGUI()
 	GUISprite* fuelBar = new GUISprite(*renderer, "Textures/Health_Fuel_Food.png", 10, 10, 1, DrawDirection::BottomRight, ClickFunction::NotClickable);
 	GUISprite* foodBar = new GUISprite(*renderer, "Textures/Health_Fuel_Food.png", 90, 10, 1, DrawDirection::BottomRight, ClickFunction::NotClickable);
 	GUISprite* healthBar = new GUISprite(*renderer, "Textures/Health_Fuel_Food.png", 170, 10, 1, DrawDirection::BottomRight, ClickFunction::NotClickable);
-
 
 	//ICONS ON TOP OF ITEMS
 	GUISprite* equimpmentSpriteAxe = new GUISprite(*renderer, "Textures/AxeIcon2.png", 10, 10, 0, DrawDirection::BottomLeft, ClickFunction::NotClickable);
@@ -312,6 +301,7 @@ void GameScene::InitializeGUI()
 	guiManager->AddGUIObject(equimpmentSprite2, "equimpmentSprite2");
 	guiManager->AddGUIObject(equimpmentSprite3, "equimpmentSprite3");
 	guiManager->AddGUIObject(equimpmentSprite4, "equimpmentSprite4");
+
 	//BASE OF DIPPING BARS
 	foodScalingBar->SetScale(1.0f, 0.0f);
 	healthScalingBar->SetScale(1.0f, 0.0f);
@@ -320,7 +310,6 @@ void GameScene::InitializeGUI()
 	guiManager->AddGUIObject(foodScalingBar, "fuelDippingBar");
 	guiManager->AddGUIObject(healthScalingBar, "foodDippingBar");
 	guiManager->AddGUIObject(fuelScalingBar, "healthDippingBar");
-
 
 	//ICON OF EQUIPMENT
 	guiManager->AddGUIObject(equimpmentSpriteAxe, "equimpmentSpriteAxe");
@@ -376,7 +365,6 @@ void GameScene::OnActivate()
 void GameScene::OnDeactivate()
 {
 	renderer->RemoveRenderPass(guiManager);
-	//worldGenerator.Clear();
 	LightManager::Instance().Clear();
 
 	delete root;
@@ -385,14 +373,10 @@ void GameScene::OnDeactivate()
 
 void GameScene::Update(const float& deltaTime)
 {
-
-	
 	Scene::Update(deltaTime);
 	world.UpdateRelevantChunks();
 
 	static_cast<GUIFont*>(guiManager->GetGUIObject("fps"))->SetString(std::to_string((int)GameClock::Instance().GetFramesPerSecond()));
-	//static_cast<GUIFont*>(guiManager->GetGUIObject("playerHealth"))->SetString("Player health: " + std::to_string((int)playerStatsComp->GetHealth()));
-	//static_cast<GUIFont*>(guiManager->GetGUIObject("enemyHealth"))->SetString("Enemy health: " + std::to_string((int)enemyStatsComp->GetHealth()));
 	guiManager->UpdateAll();
 
 	if (KEY_DOWN(H))

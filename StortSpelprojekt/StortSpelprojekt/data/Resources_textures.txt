@@ -2,7 +2,7 @@ Textures: 3
 
 TestTexture: Textures/Sylvanas.jpg
 
-GroundGrass: Textures/groundGrass.png
+Grass: Textures/newGrass.png
 
-StoneFloor: Textures/Stone_Floor_003_COLOR.jpg
+Road: Textures/Stone_Floor_003_COLOR.jpg
 

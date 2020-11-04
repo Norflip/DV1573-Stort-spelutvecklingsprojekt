@@ -23,6 +23,9 @@ void SegmentGenerator::Initialize(Object* root, ResourceManager* resourceManager
 	this->grassShader = resourceManager->GetShaderResource("grassShader");
 	this->chunkShader = resourceManager->GetShaderResource("terrainShader");
 
+	grassTexture = *resourceManager->GetResource<Texture>("Grass");// .LoadTexture(device, L"Textures/newGrass.png");
+	roadTexture = *resourceManager->GetResource<Texture>("Road");// .LoadTexture(device, L"Textures/Stone_Floor_003_COLOR.jpg");
+
 	InitializeTrees(resourceManager);
 	Physics& physics = Physics::Instance();
 	physics.MutexLock();
@@ -211,13 +214,13 @@ Chunk* SegmentGenerator::CreateChunk(const dx::XMINT2& index, Object* root, cons
 
 	Texture texture(chunkDataSRV);
 
-	Texture grassTexture;
+	//Texture grassTexture;
 	//grassTexture.LoadTexture(device, L"Textures/Grass_001_COLOR.jpg");
 	//grassTexture.LoadTexture(device, L"Textures/ground.png");
-	grassTexture.LoadTexture(device, L"Textures/newGrass.png");
+	//grassTexture.LoadTexture(device, L"Textures/newGrass.png");
 
-	Texture roadTexture;
-	roadTexture.LoadTexture(device, L"Textures/Stone_Floor_003_COLOR.jpg");
+	//Texture roadTexture;
+	//roadTexture.LoadTexture(device, L"Textures/Stone_Floor_003_COLOR.jpg");
 
 	material->SetTexture(texture, 0, ShaderBindFlag::PIXEL | ShaderBindFlag::VERTEX);
 	material->SetTexture(grassTexture, 1, ShaderBindFlag::PIXEL);
@@ -313,21 +316,12 @@ Mesh* SegmentGenerator::CreateChunkMesh(ID3D11Device* device)
 
 void SegmentGenerator::InitializeTrees(ResourceManager* resources)
 {
-	auto sampler = DXHelper::CreateSampler(D3D11_FILTER_MIN_MAG_MIP_LINEAR, D3D11_TEXTURE_ADDRESS_WRAP, device);
-
-	Shader* instanceShader = resources->GetShaderResource("instanceShader");
-	Shader* alphaInstanceShader = resources->GetShaderResource("alphaInstanceShader");
-
 	//0 base 1 branch 2 leaves
-	stylizedTreeModel = ZWEBLoader::LoadMeshes(ZWEBLoadType::NoAnimation, "Models/tree.ZWEB", device);
+	stylizedTreeModel.push_back(resources->GetResource<Mesh>("Tree"));
+	stylizedTreeModel.push_back(resources->GetResource<Mesh>("leaves"));
 	//0 tree 1 leaves
-	stylizedTreeMaterial = ZWEBLoader::LoadMaterials("Models/tree.ZWEB", instanceShader, device);
-
-	stylizedTreeMaterial[0]->SetSampler(sampler, 0, ShaderBindFlag::PIXEL);
-	stylizedTreeMaterial[1]->SetSampler(sampler, 0, ShaderBindFlag::PIXEL);
-
-	stylizedTreeMaterial[0]->SetShader(instanceShader);
-	stylizedTreeMaterial[1]->SetShader(alphaInstanceShader);
+	stylizedTreeMaterial.push_back(resources->GetResource<Material>("TreeMaterial"));
+	stylizedTreeMaterial.push_back(resources->GetResource<Material>("leavesMaterial"));
 }
 
 void SegmentGenerator::AddTreesToChunk(Chunk* chunk, std::vector<ChunkPointInformation>& chunkInformation)
