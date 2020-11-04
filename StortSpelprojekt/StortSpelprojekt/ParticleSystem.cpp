@@ -64,7 +64,7 @@ ParticleSystem::~ParticleSystem()
 	Shutdown();
 }
 
-bool ParticleSystem::Initialize(ID3D11Device* device, LPCWSTR textureFilename)
+void ParticleSystem::InitializeParticles(ID3D11Device* device, LPCWSTR textureFilename)
 {
 	bool result;
 
@@ -92,9 +92,9 @@ bool ParticleSystem::Initialize(ID3D11Device* device, LPCWSTR textureFilename)
 
 	maxParticles = 50;
 	particleList = new Particles[maxParticles];
-	if (!particleList) {
+	/*if (!particleList) {
 		return false;
-	}
+	}*/
 
 	for (int i = 0; i < maxParticles; i++) {
 		particleList[i].active = false;
@@ -117,15 +117,12 @@ bool ParticleSystem::Initialize(ID3D11Device* device, LPCWSTR textureFilename)
 	*/
 
 	result = InitializeBuffers(device);
-	if (!result) {
+	/*if (!result) {
 		return false;
-	}
+	}*/
 
-	result = LoadTexture(device, textureFilename);
-	if (!result)
-		return false;
-
-	return true;
+	LoadTexture(device, textureFilename);
+	
 }
 
 void ParticleSystem::Shutdown()
@@ -149,15 +146,7 @@ void ParticleSystem::Shutdown()
 		delete[] particleList;
 		particleList = 0;
 	}
-
-	// Release the texture object.
-	if (texture)
-	{
-		texture->Shutdown();
-		delete texture;
-		texture = 0;
-	}
-
+	
 	if (vertices) {
 		delete vertices;
 		vertices = 0;
@@ -219,29 +208,21 @@ dx::XMMATRIX ParticleSystem::GetWorldMatrix()
 	return dx::XMMATRIX();
 }
 
-ID3D11ShaderResourceView* ParticleSystem::GetTexture()
-{
-	return texture->GetTexture();
-}
-
 int ParticleSystem::GetIndexCount()
 {
 	return indexCount;
 }
 
-bool ParticleSystem::LoadTexture(ID3D11Device* device, LPCWSTR textureFilename)
+void ParticleSystem::LoadTexture(ID3D11Device* device, LPCWSTR textureFilename)
 {
-	bool result;
+	hr = dx::CreateWICTextureFromFile(device, textureFilename, nullptr, &srv);
+	if (FAILED(hr))
+		MessageBox(0, L"Failed to 'Load DDS Texture' - (skymap.dds).", L"Graphics scene Initialization Message", MB_ICONERROR);
 
-	texture = new Texture;
-	if (!texture)
-		return false;
+	//srvs.push_back(srv);
 
-	result = texture->LoadTexture(device, textureFilename);
-	if (!result)
-		return false;
-
-	return true;
+	texture.SetShaderResourceView(srv);	
+	particlesMaterial->SetTexture(texture, TEXTURE_DIFFUSE_SLOT, ShaderBindFlag::PIXEL);
 }
 
 bool ParticleSystem::InitializeBuffers(ID3D11Device* device)

@@ -29,18 +29,21 @@ public:
 	ParticleSystem(const ParticleSystem& other);
 	virtual ~ParticleSystem();
 
-	bool Initialize(ID3D11Device* device, LPCWSTR textureFilename);
+	void InitializeParticles(ID3D11Device* device, LPCWSTR textureFilename);
+	Object* GetThisObject() { return this->object; }
+	Texture GetTexture() { return this->texture; }
+
 	void Shutdown();
 	bool Update(float frameTime, ID3D11DeviceContext* context);
 	void Render(ID3D11DeviceContext* context);
 
 	void SetWorldMatrix(dx::XMMATRIX worldmatrix);
 	dx::XMMATRIX GetWorldMatrix();
-	ID3D11ShaderResourceView* GetTexture();
-	int GetIndexCount();
+
+	int GetIndexCount();	
 
 private:
-	bool LoadTexture(ID3D11Device* device, LPCWSTR textureFilename);
+	void LoadTexture(ID3D11Device* device, LPCWSTR textureFilename);
 	bool InitializeBuffers(ID3D11Device* device);
 
 	void CreateParticle(float frameTime);
@@ -49,11 +52,15 @@ private:
 	bool UpdateBuffers(ID3D11DeviceContext* context);
 
 private:
+	HRESULT hr;
 	Object* object;
 	Material* particlesMaterial;
 	Shader* particlesShader;
 	Mesh* particleQuad;
+	ID3D11ShaderResourceView* srv;
+	std::vector<ID3D11ShaderResourceView*> srvs;
 
+	/* Particle stuffy stuff */
 	float differenceOnX, differenceOnY, differenceOnZ;
 	float particleVelocity, particleVelocityVariation;
 	float particleSize;
@@ -67,7 +74,7 @@ private:
 	ID3D11Buffer* vertexBuffer, * indexBuffer;
 
 	Particles* particleList;
-	Texture* texture;
+	Texture texture;
 
 	dx::XMMATRIX worldmatrix;
 };
