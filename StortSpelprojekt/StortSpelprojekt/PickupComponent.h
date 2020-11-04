@@ -15,7 +15,6 @@ private:
 	Type pickupType;
 	bool isActive;
 	bool canBeHeld = false;
-
 public:
 
 	PickupComponent(Type type, float amount = 25.f);

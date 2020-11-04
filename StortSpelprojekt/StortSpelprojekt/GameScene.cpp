@@ -211,9 +211,8 @@ void GameScene::InitializeObjects()
 	axeObject->AddComponent<WeaponComponent>(cameraObject);
 		
 	AddObject(axeObject);
+	playerObject->GetComponent<PlayerComp>()->InsertWeapon(axeObject->GetComponent<WeaponComponent>(), axeObject->GetName());
 
-	clock.Update();
-	clock.Update();
 	/* * * * * * * * ** * * * * */
 	//Log::Add("PRINTING SCENE HIERARCHY ----");
 	//PrintSceneHierarchy(root, 0);
@@ -263,7 +262,7 @@ void GameScene::InitializeObjects()
 	fuelCanObject->AddComponent<PickupComponent>(Type::Fuel, 20.0f);
 
 	RigidBodyComponent* fuelBody;
-	fuelBody = fuelCanObject->AddComponent<RigidBodyComponent>(0.f, FilterGroups::PICKUPS, FilterGroups::PLAYER, BodyType::DYNAMIC);
+	fuelBody = fuelCanObject->AddComponent<RigidBodyComponent>(0.f, FilterGroups::HOLDABLE, FilterGroups::PLAYER, BodyType::DYNAMIC);
 	physics.RegisterRigidBody(fuelBody);
 	AddObject(fuelCanObject);
 

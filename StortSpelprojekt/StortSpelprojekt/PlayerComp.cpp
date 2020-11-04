@@ -1,6 +1,6 @@
 #include "stdafx.h"
 #include "PlayerComp.h"
-
+#include "WeaponComponent.h"
 //PlayerComp::PlayerComp() 
 //{
 //	health = 100;
@@ -53,7 +53,7 @@ PlayerComp::PlayerComp(Renderer* renderer, CameraComponent* camComp, Physics& ph
 
 	foodEmpty = false;
 	gg = false;
-	
+
 	//this->GetOwner()->GetComponent<CameraComponent>()
 	p.x = renderer->GetOutputWindow()->GetWidth() / 2;
 	p.y = renderer->GetOutputWindow()->GetHeight() / 2;
@@ -72,19 +72,74 @@ PlayerComp::~PlayerComp()
 }
 
 void PlayerComp::Update(const float& deltaTime)
-{	
-	//attackTimer.Update();
+{
+	RayCast(deltaTime);
+
+
+
+
+	float frameTime = FCAST(GameClock::Instance().GetFrameTime() / 1000.0);
+
+	//temp fix for wierd clock start at 
+	if (frameTime < 5.f)
+	{
+		//loose fuel
+		fuel -= frameTime * fuelBurnPerMeter;
+		// loose food
+		food -= frameTime * foodLossPerSecond;
+#if !immortal
+		// make better later
+		if ((fuel < 0 || health <= 0))
+			swapScene = NEXT_SCENE::LOSE;
+#endif
+		if (food < 0)
+			foodEmpty = true;
+
+		if (foodEmpty)
+		{
+			health -= frameTime * healthLossPerSecond;
+		}
+	}
+
+	// Fuel drop
+	fuelDippingBar->SetScaleBars(ReverseAndClamp(fuel));
+
+	// Food drop
+	foodDippingBar->SetScaleBars(ReverseAndClamp(food));
+
+	// Health drop
+	healthDippingBar->SetScaleBars(ReverseAndClamp(health));
+}
+
+void PlayerComp::InsertWeapon(WeaponComponent* weapon, std::string name)
+{
+	this->weaponsList.insert(make_pair(name, weapon));
+	//SETS CURRENT WEAPON TO NEWLY INSERTED WEAPON
+	currentWeapon = weapon->GetOwner();
+}
+
+float PlayerComp::ReverseAndClamp(float inputValue)
+{
+	return 1.0f - (inputValue / 100.0f);
+}
+
+void PlayerComp::RayCast(const float& deltaTime)
+{
+
+
 	Ray ray = cam->MouseToRay(p.x, p.y);
 	Physics& phy = Physics::Instance();
+	//PICKUP OBJECTS
 	if (KEY_DOWN(E))
-	{				
-		if (phy.RaytestSingle(ray, rayDistance, hit, FilterGroups::PICKUPS))
-		{
-			if (hit.object != nullptr)
-			{				
+	{
+		
+			if (phy.RaytestSingle(ray, rayDistance, hit, FilterGroups::PICKUPS))
+			{
+				if (hit.object != nullptr)
+				{
 				Type pickupType = hit.object->GetComponent<PickupComponent>()->GetType();
 				float temp = hit.object->GetComponent<PickupComponent>()->GetAmount();
-				
+
 				if (pickupType == Type::Health)
 				{
 					if ((health + temp) <= 100.0f)
@@ -100,25 +155,25 @@ void PlayerComp::Update(const float& deltaTime)
 					if ((fuel + temp) <= 100.0f)
 						fuel += temp;
 				}
-				
+
 				hit.object->GetComponent<PickupComponent>()->SetActive(false);
 
 				RigidBodyComponent* rbComp = hit.object->GetComponent<RigidBodyComponent>();
 				rp::RigidBody* objectRb = rbComp->GetRigidBody();
 				rbComp->RemoveCollidersFromBody(objectRb);
-				
-				//phy.MutexLock();
-				//phy.UnregisterRigidBody(hit.object->GetComponent<RigidBodyComponent>());
-				//phy.MutexUnlock();
-				
 			}
-		}
-	}
-	else
-	{
-		//DShape::DrawSphere(ray.GetPoint(10.0f), 0.2f, { 1, 0, 1 });
-	}
+			}
+			if (phy.RaytestSingle(ray, rayDistance, hit, FilterGroups::HOLDABLE))
+			{
+				if (hit.object != nullptr)
+				{
+					hit.object->RemoveFlag(ObjectFlag::ENABLED);
+					currentWeapon->RemoveFlag(ObjectFlag::ENABLED);
+				}
+			}
 
+	}
+	//ATTACK ENEMIES
 	if (LMOUSE_DOWN)
 	{
 		if (phy.RaytestSingle(ray, 5.0f, hit, FilterGroups::ENEMIES))
@@ -145,52 +200,4 @@ void PlayerComp::Update(const float& deltaTime)
 		}
 	}
 
-	float frameTime = FCAST(GameClock::Instance().GetFrameTime() / 1000.0);
-
-	//temp fix for wierd clock start at 
-	if (frameTime < 5.f)
-	{
-		//loose fuel
-		//std::cout << GameClock::Instance().GetFrameTime() / 1000;
-		fuel -= frameTime * fuelBurnPerMeter;
-		//std::cout << fuel <<std::endl;
-
-		// loose food
-		food -= frameTime * foodLossPerSecond;
-		//std::cout << food<<std::endl;
-		
-		// make better later
-		if ((fuel < 0 || health <= 0) && !immortal)
-			swapScene = NEXT_SCENE::LOSE;
-
-		if (food < 0)
-			foodEmpty = true;
-
-		if (foodEmpty)
-		{
-			health -= frameTime * healthLossPerSecond;
-		}
-	}
-	
-	// Fuel drop
-	fuelDippingBar->SetScaleBars(ReverseAndClamp(fuel));
-
-	// Food drop
-	foodDippingBar->SetScaleBars(ReverseAndClamp(food));
-
-	// Health drop
-	healthDippingBar->SetScaleBars(ReverseAndClamp(health));
-
-	// Health dipping when hit by enemy
-	//healthDippingBar->SetScaleDipping(0);
-}
-
-void PlayerComp::InsertWeapon(WeaponComponent* weapon, std::string name)
-{
-	this->weaponsList.insert(make_pair(name, weapon) );
-}
-
-float PlayerComp::ReverseAndClamp(float inputValue)
-{
-	return 1.0f - (inputValue / 100.0f);
 }
