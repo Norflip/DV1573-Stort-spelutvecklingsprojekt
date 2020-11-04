@@ -3,6 +3,7 @@
 #include "RenderPass.h"
 #include "GUISprite.h"
 #include "GUIFont.h"
+#include "Engine.h"
 
 WinScene::WinScene() : Scene()
 {
@@ -15,7 +16,8 @@ WinScene::~WinScene()
 
 void WinScene::Initialize()
 {
-
+	InitializeGUI();
+	InitializeObjects();
 }
 
 void WinScene::InitializeObjects()
@@ -53,22 +55,16 @@ void WinScene::InitializeGUI()
 	guiManager->AddGUIObject(win, "win");
 	guiManager->AddGUIObject(restart, "restart");
 	guiManager->AddGUIObject(quit, "quit");
-	renderer->AddRenderPass(guiManager);
 }
 
 void WinScene::OnActivate()
 {
-	root = new Object("sceneRoot", ObjectFlag::DEFAULT);
-	nextScene = WIN;
-	InitializeGUI();
-	InitializeObjects();
+	renderer->AddRenderPass(guiManager);
 }
 
 void WinScene::OnDeactivate()
 {
 	renderer->RemoveRenderPass(guiManager);
-	delete root;
-	root = nullptr;
 }
 
 void WinScene::Update(const float& deltaTime)
@@ -78,12 +74,12 @@ void WinScene::Update(const float& deltaTime)
 
 	if (static_cast<GUISprite*>(guiManager->GetGUIObject("quit"))->IsClicked())
 	{
-		quit = true;
+		Engine::Instance->Exit();
 	}
 
 	if (static_cast<GUISprite*>(guiManager->GetGUIObject("restart"))->IsClicked())
 	{
-		nextScene = GAME;
+		Engine::Instance->SwitchScene(SceneIndex::GAME);
 	}
 
 	guiManager->UpdateAll();

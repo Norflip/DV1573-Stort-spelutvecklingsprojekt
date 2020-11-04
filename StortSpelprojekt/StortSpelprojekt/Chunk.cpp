@@ -2,7 +2,7 @@
 #include "Chunk.h"
 #include <iostream>
 #include "Physics.h"
-
+#include "Engine.h"
 
 Chunk::Chunk(dx::XMINT2 index, ChunkType type) : index(index), type(type), heightMap(nullptr)
 {
@@ -142,12 +142,12 @@ int Chunk::WorldToIndex1D(float x, float z)
 
 void Chunk::PhysicRelease()
 {
+	Physics* physics = Engine::Instance->GetPhysics();
 	rp::PhysicsWorld* world = physics->GetWorld();
 	body->removeCollider(collider);
 	world->destroyRigidBody(body);
 	physics->GetCommon().destroyHeightFieldShape(shape);
 
-	delete collider;
 }
 
 void Chunk::GetHeightFieldMinMax(float* heightMap, size_t size, float& minv, float& maxv)

@@ -70,7 +70,6 @@ private:
 	rp::Collider* collider;
 	rp::RigidBody* body;
 	rp::HeightFieldShape* shape;
-	Physics* physics;
 
 	dx::XMINT2 index;
 	ChunkType type;

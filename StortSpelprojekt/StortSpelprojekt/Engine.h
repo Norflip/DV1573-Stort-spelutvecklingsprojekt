@@ -14,6 +14,7 @@ constexpr int FIXED_FPS = 60;
 constexpr float TARGET_FIXED_DELTA = 1.0f / FIXED_FPS;
 
 #define MULTITHREAD_PHYSICS FALSE
+enum SceneIndex { INTRO = 0, GAME_OVER = 1, GAME = 2, WIN = 3 };
 
 class Engine
 {
@@ -37,7 +38,7 @@ public:
 	bool IsPaused() const { return pause; }
 
 	ALIGN16_ALLOC;
-	static Engine const* Instance;
+	static Engine* Instance;
 
 private:
 	static void FixedUpdateLoop(Engine* engine);
@@ -46,12 +47,11 @@ private:
 	bool running;
 	std::unordered_map<size_t, Scene*> scenes;
 	Scene* activeScene;
-	Scene* previousScene;
 	bool pause;
 
 	Window window;
 	Renderer* renderer;
 	Physics* physics;
 	ResourceManager* resourceManager;
-
+	size_t sceneSwitch;
 };

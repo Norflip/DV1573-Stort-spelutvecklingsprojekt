@@ -1,6 +1,5 @@
 #pragma once
 
-enum NEXT_SCENE { INTRO = 0, LOSE = 1, GAME = 2, WIN = 3 };
 
 //THIS MESS NEEDS TO DIE A HORRIBLE DEATH
 #include "Object.h"
@@ -31,7 +30,7 @@ class GUIFont;
 class SpriteRenderPass;
 class PlayerComp;
 
-constexpr auto immortal = 0;
+constexpr auto IMMORTAL = 0;
 
 ALIGN16
 class Scene
@@ -61,12 +60,7 @@ public:
 	Object* GetRoot() const { return this->root; }
 
 	void PrintSceneHierarchy(Object* object, size_t level) const;
-
-	bool Quit();
-	NEXT_SCENE nextScene;
 	
-private:
-
 protected:
 	Object* root;
 	Renderer* renderer;
@@ -83,8 +77,6 @@ protected:
 	Object* enemy;
 	Object* player;
 
-	//EnemyStatsComp* enemyStatsComp;
-	//PlayerComp* playerStatsComp;
 	dx::SpriteBatch* spriteBatch;
 	SpriteRenderPass* spritePass;	
 
@@ -92,7 +84,5 @@ protected:
 	GUIManager* guiManager;		
 	
 	Skybox* skyboxClass;		
-
-	bool quit;	
 
 };

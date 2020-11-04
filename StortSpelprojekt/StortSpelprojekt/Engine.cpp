@@ -2,9 +2,9 @@
 #include "Engine.h"
 
 
-Engine const * Engine::Instance = nullptr;
+Engine* Engine::Instance = nullptr;
 
-Engine::Engine(HINSTANCE hInstance) : window(hInstance), activeScene(nullptr)
+Engine::Engine(HINSTANCE hInstance) : window(hInstance), activeScene(nullptr), sceneSwitch(-1)
 {
 	this->Instance = this;
 	window.Open(1600, 900);
@@ -20,12 +20,14 @@ Engine::Engine(HINSTANCE hInstance) : window(hInstance), activeScene(nullptr)
 	physics = new Physics();
 	physics->Initialize();
 
-	RegisterScene(0, new IntroScene());
-	RegisterScene(1, new GameOverScene());
-	RegisterScene(2, new GameScene());
-	RegisterScene(3, new WinScene());
+	
 
-	SwitchScene(0);
+	RegisterScene(SceneIndex::INTRO,	new IntroScene());
+	RegisterScene(SceneIndex::GAME_OVER,new GameOverScene());
+	RegisterScene(SceneIndex::GAME,		new GameScene());
+	RegisterScene(SceneIndex::WIN,		new WinScene());
+
+	SwitchScene(SceneIndex::INTRO);
 }
 
 Engine::~Engine()
@@ -71,18 +73,28 @@ void Engine::Run()
 		}
 		else
 		{
+			if (sceneSwitch != -1)
+			{
+				auto sceneIt = this->scenes.find(sceneSwitch);
+				assert(sceneIt != scenes.end());
+
+				Scene* previous = activeScene;
+				if (previous != nullptr)
+				{
+					previous->OnDeactivate();
+				}
+
+				activeScene = (*sceneIt).second;
+				activeScene->OnActivate();
+				sceneSwitch = -1;
+			}
+
 			auto elapsed = std::chrono::duration<double, std::milli>(std::chrono::high_resolution_clock::now() - startTimePoint);
 			float currentTime = static_cast<float>(elapsed.count() / 1000.0f);
 			float deltaTime = currentTime - timeLastFrame;
 
-
 			if (activeScene != nullptr)
 			{
-				if (activeScene->Quit())
-				{
-					Exit();
-				}
-
 				float deltaTime = currentTime - timeLastFrame;
 				activeScene->Update(deltaTime);
 
@@ -98,7 +110,6 @@ void Engine::Run()
 #endif
 
 				activeScene->Render();
-				SwitchScene((int)activeScene->nextScene);
 			}
 
 			timeLastFrame = currentTime;
@@ -135,24 +146,7 @@ void Engine::UnregisterScene(size_t id)
 
 void Engine::SwitchScene(size_t id)
 {
-	auto sceneIt = this->scenes.find(id);
-	assert(sceneIt != scenes.end());
-
-	if (activeScene == nullptr)
-	{
-		activeScene = (*sceneIt).second;
-		activeScene->OnActivate();
-	}
-	else
-	{
-		if (activeScene != (*sceneIt).second)
-		{
-			previousScene = activeScene;
-			activeScene = (*sceneIt).second;
-			activeScene->OnActivate();
-			previousScene->OnDeactivate();
-		}
-	}
+	this->sceneSwitch = id;
 }
 
 void Engine::FixedUpdateLoop(Engine* engine)

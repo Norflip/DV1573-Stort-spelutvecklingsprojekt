@@ -12,7 +12,6 @@ Scene::Scene() : input(Input::Instance())
 	skyboxClass = nullptr;
 	renderer = nullptr;
 	camera = nullptr;
-	quit = false;
 }
 
 Scene::~Scene()
@@ -125,10 +124,5 @@ void Scene::PrintSceneHierarchy(Object* object, size_t level) const
 			PrintSceneHierarchy(children[i]->GetOwner(), level + 1);
 		}
 	}
-}
-
-bool Scene::Quit()
-{
-	return quit;
 }
 

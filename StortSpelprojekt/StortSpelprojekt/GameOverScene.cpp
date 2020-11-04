@@ -3,6 +3,7 @@
 #include "RenderPass.h"
 #include "GUISprite.h"
 #include "GUIFont.h"
+#include "Engine.h"
 
 GameOverScene::GameOverScene()
 {
@@ -14,7 +15,8 @@ GameOverScene::~GameOverScene()
 
 void GameOverScene::Initialize()
 {
-
+	InitializeGUI();
+	InitializeObjects();
 }
 
 void GameOverScene::InitializeObjects()
@@ -50,14 +52,11 @@ void GameOverScene::InitializeGUI()
 	guiManager->AddGUIObject(fpsDisplay, "fps");
 	guiManager->AddGUIObject(restart, "restart");
 	guiManager->AddGUIObject(quit, "quit");
-	renderer->AddRenderPass(guiManager);
 }
 
 void GameOverScene::OnActivate()
 {
-	nextScene = LOSE;
-	InitializeGUI();
-	InitializeObjects();
+	renderer->AddRenderPass(guiManager);
 	ShowCursor(true);
 }
 
@@ -74,12 +73,12 @@ void GameOverScene::Update(const float& deltaTime)
 
 	if(static_cast<GUISprite*>(guiManager->GetGUIObject("quit"))->IsClicked())
 	{
-		quit = true;
+		Engine::Instance->Exit();
 	}
 
 	if (static_cast<GUISprite*>(guiManager->GetGUIObject("restart"))->IsClicked())
 	{
-		nextScene = GAME;
+		Engine::Instance->SwitchScene(SceneIndex::GAME);
 	}
 
 	guiManager->UpdateAll();

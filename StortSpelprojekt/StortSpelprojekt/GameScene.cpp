@@ -12,7 +12,7 @@ void GameScene::RemoveEnemy()
 
 GameScene::GameScene()
 {
-	nextScene = GAME;
+	
 }
 
 GameScene::~GameScene()
@@ -33,6 +33,10 @@ void GameScene::Initialize()
 		object->AddComponent<RigidBodyComponent>(10.0f, FilterGroups::DEFAULT, FilterGroups::EVERYTHING, BodyType::DYNAMIC, true);
 		return object;
 	});
+
+	InitializeLights();
+	InitializeGUI();
+	InitializeObjects();
 }
 
 void GameScene::InitializeObjects()
@@ -42,13 +46,6 @@ void GameScene::InitializeObjects()
 		
 	/* For physics/ rigidbody pickup stuff */
 
-	SaveState state;
-	state.seed = 1337;
-	state.segment = 0;
-
-	SegmentDescription desc(0, 10, 2);
-	desc.directionalSteps = 5;
-	desc.maxSteps = 10;
 
 	//SKELETON ANIMATION MODELS
 	bool defaultAnimation = false;
@@ -88,7 +85,8 @@ void GameScene::InitializeObjects()
 	Object* houseBaseObject = new Object("houseBase");
 	Object* housesLegsObject = new Object("houseLegs");
 	houseBaseObject->GetTransform().Rotate(0, -90.0f, 0.0);
-	
+	house = houseBaseObject;
+
 	houseBaseObject->AddComponent<BoxColliderComponent>(dx::XMFLOAT3(2.5, 5, 2.5), dx::XMFLOAT3(0, 0, 0));
 	houseBaseObject->AddComponent<RigidBodyComponent>(0.0f, FilterGroups::PROPS, FilterGroups::EVERYTHING, BodyType::STATIC, true);
 
@@ -190,11 +188,7 @@ void GameScene::InitializeObjects()
 	clock.Update();
 
 	world.Initialize(root, resources, pooler, renderer);
-	world.ConstructSegment(state, desc);
-	world.SetPlayer(player);
-	world.SetHouse(houseBaseObject);
-	nodeWalker->InitializePath(world.GetPath());
-	world.MoveHouseAndPlayerToStart();
+	
 
 	dx::XMVECTOR asdf = dx::XMVectorSet(23, 3, 40 ,1); //???
 	enemy->GetTransform().SetPosition(asdf);
@@ -309,8 +303,6 @@ void GameScene::InitializeGUI()
 	//CROSSHAIR
 	guiManager->AddGUIObject(dot, "dot");
 	//guiManager->AddGUIObject(crosshair, "crosshair");
-
-	renderer->AddRenderPass(guiManager);
 }
 
 void GameScene::InitializeLights()
@@ -338,27 +330,32 @@ void GameScene::InitializeLights()
 
 void GameScene::OnActivate()
 {
-	root = new Object("sceneRoot", ObjectFlag::DEFAULT);
-	nextScene = GAME;
-	InitializeLights();
-	InitializeGUI();
-	InitializeObjects();
+	SaveState state;
+	state.seed = 1337;
+	state.segment = 0;
+
+	SegmentDescription desc(0, 10, 2);
+	desc.directionalSteps = 5;
+	desc.maxSteps = 10;
+
+	world.ConstructSegment(state, desc);
+	world.SetPlayer(player);
+	world.SetHouse(house);
+
+	house->GetComponent<NodeWalkerComp>()->InitializePath(world.GetPath());
+	world.MoveHouseAndPlayerToStart();
+
+	renderer->AddRenderPass(guiManager);
 }
 
 void GameScene::OnDeactivate()
 {
+	world.DeconstructSegment();
 	renderer->RemoveRenderPass(guiManager);
-	//worldGenerator.Clear();
-	LightManager::Instance().Clear();
-
-	delete root;
-	root = nullptr;
 }
 
 void GameScene::Update(const float& deltaTime)
 {
-
-	
 	Scene::Update(deltaTime);
 	world.UpdateRelevantChunks();
 
@@ -430,8 +427,7 @@ void GameScene::Update(const float& deltaTime)
 	//{
 	//	DShape::DrawSphere(ray.GetPoint(10.0f), 0.2f, { 1, 0, 1 });
 	//}
-	nextScene = NEXT_SCENE(player->GetComponent<PlayerComp>()->GetNextScene());
-
+	
 	skyboxClass->GetThisObject()->GetTransform().SetPosition(camera->GetOwner()->GetTransform().GetPosition());
 
 	//if (enemy->GetComponent<EnemyStatsComp>()->GetHealth() <= 0)

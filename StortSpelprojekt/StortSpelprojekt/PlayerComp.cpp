@@ -40,7 +40,6 @@ PlayerComp::PlayerComp(Renderer* renderer, CameraComponent* camComp, Physics* ph
 	//this->enemyStatsComp = enemyComp->GetComponent<EnemyStatsComp>();
 
 	// defaulting some shit
-	this->swapScene = NEXT_SCENE::GAME;
 	this->foodLossPerSecond = 0.3f;
 	this->food = 50.0f;
 	this->fuelBurnPerMeter = 0.7f;
@@ -192,9 +191,12 @@ void PlayerComp::Update(const float& deltaTime)
 		//std::cout << food<<std::endl;
 		
 		// make better later
-		if (fuel < 0 || health <= 0 && !immortal)
-			swapScene = NEXT_SCENE::LOSE;
-
+		if (fuel < 0 || health <= 0 && !IMMORTAL)
+		{
+			Engine::Instance->SwitchScene(SceneIndex::GAME_OVER);
+			return;
+		}
+			
 		if (food < 0)
 			foodEmpty = true;
 

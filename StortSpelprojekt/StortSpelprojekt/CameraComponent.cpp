@@ -84,7 +84,7 @@ std::vector<dx::XMFLOAT4>& CameraComponent::GetFrustumPlanes()
 bool CameraComponent::InView(const BoundingBox& bounds, const dx::XMMATRIX world)
 {
 	auto& planes = GetFrustumPlanes();
-	bool inViewResult = true;
+	bool inViewResult = false;
 
 	DirectX::XMFLOAT3 min, max, vmin, vmax;
 	dx::XMStoreFloat3(&min, dx::XMVector3Transform(dx::XMLoadFloat3(&bounds.GetMin()), world));
@@ -111,9 +111,10 @@ bool CameraComponent::InView(const BoundingBox& bounds, const dx::XMMATRIX world
 			return false;
 
 		// ON FRUSTUM BORDER
-		/*float d2 = plane.x * vmax.x + plane.y * vmax.y + plane.z * vmax.z;
+
+		float d2 = plane.x * vmax.x + plane.y * vmax.y + plane.z * vmax.z;
 		if (d2 + plane.w <= 0)
-			inViewResult = false;*/
+			inViewResult = true;
 	}
 
 	return inViewResult;
