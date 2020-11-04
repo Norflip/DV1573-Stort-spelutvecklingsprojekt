@@ -71,7 +71,6 @@ void GameScene::InitializeObjects()
 	SkeletonAni skeletonbaseMonsterAttack = ZWEBLoader::LoadSkeletonOnly("Models/baseMonsterAttack.ZWEB", skeletonMesh[0]->GetBoneIDS(), defaultAnimation);
 	SkeletonAni skeletonbaseMonsterDeath = ZWEBLoader::LoadSkeletonOnly("Models/baseMonsterDeath.ZWEB", skeletonMesh[0]->GetBoneIDS(), defaultAnimation);
 
-
 	//LOADING HOUSE AND LEGS AND ADDING SKELETONS TO THEM THE HOUSE ONLY HAS ONE JOINT CONNECTED TO IT
 	Shader* defaultShader = resources->GetShaderResource("defaultShader");
 	Shader* skeletonAlphaShader = resources->GetShaderResource("houseShader");
@@ -94,7 +93,6 @@ void GameScene::InitializeObjects()
 
 	Object* houseBaseObject = new Object("houseBase");
 	Object* housesLegsObject = new Object("houseLegs");
-
 
 	RigidBodyComponent* houseRigidBody = houseBaseObject->AddComponent<RigidBodyComponent>(0.0f, FilterGroups::PROPS, FilterGroups::EVERYTHING, BodyType::STATIC);
 	houseBaseObject->AddComponent<BoxColliderComponent>(dx::XMFLOAT3(2.5, 5, 2.5), dx::XMFLOAT3(0, 0, 0));
@@ -175,7 +173,7 @@ void GameScene::InitializeObjects()
 	dx::XMFLOAT3 enemyTranslation = dx::XMFLOAT3(23, 7, 46);
 	enemy->GetTransform().SetPosition(dx::XMLoadFloat3(&enemyTranslation));
 	enemy->GetTransform().SetScale({ 0.125f, 0.125f, 0.125f });
-	enemy->AddComponent<EnemyStatsComp>(100.f, 2.0f, 15.f, 5.f, 3.f, 3.f);
+	enemy->AddComponent<EnemyStatsComp>(100.f, 2.0f, 10.f, 5.f, 3.f, 3.f);
 	enemyStatsComp = enemy->GetComponent<EnemyStatsComp>();
 	enemy->AddComponent<BoxColliderComponent>(dx::XMFLOAT3{ 1, 2.45, 1 }, dx::XMFLOAT3{ 0, 0, 0 });
 
@@ -193,7 +191,6 @@ void GameScene::InitializeObjects()
 	AddObject(enemy);
 
 	playerObject->AddComponent<PlayerAttackComp>(enemy);
-
 
 	std::vector<Mesh*> axeMesh = ZWEBLoader::LoadMeshes(ZWEBLoadType::NoAnimation, "Models/AXE.ZWEB", renderer->GetDevice());
 	std::vector<Material*> axeMat = ZWEBLoader::LoadMaterials("Models/AXE.ZWEB", defaultShader, renderer->GetDevice());
@@ -222,7 +219,6 @@ void GameScene::InitializeObjects()
 
 	dx::XMVECTOR asdf = dx::XMVectorSet(23, 3, 40 ,1); //???
 	enemy->GetTransform().SetPosition(asdf);
-
 
 	/* PICKUP STUFF DONT DELETE THESEEE */
 	/* PICKUP STUFF DONT DELETE THESEEE */
@@ -279,7 +275,6 @@ void GameScene::InitializeObjects()
 
 void GameScene::InitializeGUI()
 {
-
 	float windowWidth = FCAST(window->GetWidth());
 	float windowHeight = FCAST(window->GetHeight());
 	//GUISTUFF//
@@ -406,8 +401,6 @@ void GameScene::OnDeactivate()
 
 void GameScene::Update(const float& deltaTime)
 {
-
-	
 	Scene::Update(deltaTime);
 	world.UpdateRelevantChunks();
 
