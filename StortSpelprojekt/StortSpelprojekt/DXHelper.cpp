@@ -42,50 +42,6 @@ void DXHelper::CreateSwapchain(const Window& window, _Out_ ID3D11Device** device
 
 }
 
-void DXHelper::CreateConstBuffer(ID3D11Device* device, ID3D11Buffer** buffer, void* initdata, unsigned int byteSize)
-{
-	D3D11_BUFFER_DESC bufferDescription;
-	ZeroMemory(&bufferDescription, sizeof(D3D11_BUFFER_DESC));
-	bufferDescription.Usage = D3D11_USAGE_DEFAULT;
-	bufferDescription.BindFlags = D3D11_BIND_CONSTANT_BUFFER;
-
-	D3D11_SUBRESOURCE_DATA subresourceData;
-	ZeroMemory(&subresourceData, sizeof(D3D11_SUBRESOURCE_DATA));
-	bufferDescription.ByteWidth = byteSize;
-	subresourceData.pSysMem = &initdata;
-
-	HRESULT createdBufferResult = device->CreateBuffer(&bufferDescription, &subresourceData, buffer);
-	assert(SUCCEEDED(createdBufferResult));
-}
-
-void DXHelper::BindConstBuffer(ID3D11DeviceContext* context, ID3D11Buffer* buffer, void* data, size_t slot, ShaderBindFlag flag)
-{
-	/*ID3D11Buffer* buff = NULL;
-	context->PSSetConstantBuffers(slot, 1, &buff);
-	context->VSSetConstantBuffers(slot, 1, &buff);
-	context->GSSetConstantBuffers(slot, 1, &buff);*/
-
-	context->UpdateSubresource(buffer, 0, 0, data, 0, 0);
-
-	int bflag = static_cast<int>(flag);
-
-	if ((bflag & (int)ShaderBindFlag::PIXEL) != 0)
-		context->PSSetConstantBuffers(slot, 1, &buffer);
-	
-	if ((bflag & (int)ShaderBindFlag::VERTEX) != 0)
-		context->VSSetConstantBuffers(slot, 1, &buffer);
-
-	if ((bflag & (int)ShaderBindFlag::GEOMETRY) != 0)
-		context->GSSetConstantBuffers(slot, 1, &buffer);
-
-	if ((bflag & (int)ShaderBindFlag::HULL) != 0)
-		context->HSSetConstantBuffers(slot, 1, &buffer);
-
-	if ((bflag & (int)ShaderBindFlag::DOMAINS) != 0)
-		context->DSSetConstantBuffers(slot, 1, &buffer);
-
-
-}
 
 void DXHelper::CreateBlendState(ID3D11Device* device, ID3D11BlendState** blendOn, ID3D11BlendState** blendOff)
 {
@@ -380,44 +336,6 @@ void DXHelper::CreateIndexBuffer(ID3D11Device* device, size_t indexCount, unsign
 	assert(SUCCEEDED(indexBufferResult));
 }
 
-ID3D11ShaderResourceView* DXHelper::CreateTexture(unsigned char* buffer, size_t width, size_t height, size_t channels, DXGI_FORMAT format, ID3D11Device* device)
-{
-	D3D11_TEXTURE2D_DESC textureDesc;
-	ZeroMemory(&textureDesc, sizeof(D3D11_TEXTURE2D_DESC));
-	textureDesc.Width = width;
-	textureDesc.Height = height;
-	textureDesc.MipLevels = 1;
-	textureDesc.ArraySize = 1;
-	textureDesc.Format = format;
-	textureDesc.SampleDesc.Count = 1;
-	textureDesc.SampleDesc.Quality = 0;
-	textureDesc.Usage = D3D11_USAGE_DEFAULT;
-	textureDesc.BindFlags = D3D11_BIND_SHADER_RESOURCE;
-
-	D3D11_SUBRESOURCE_DATA textureResourceData;
-	ZeroMemory(&textureResourceData, sizeof(D3D11_SUBRESOURCE_DATA));
-	textureResourceData.pSysMem = buffer;
-	textureResourceData.SysMemPitch = width * 4;
-
-
-	ID3D11Texture2D* texture;
-	ZeroMemory(&texture, sizeof(ID3D11Texture2D));
-	device->CreateTexture2D(&textureDesc, &textureResourceData, &texture);
-
-	ID3D11ShaderResourceView* srv = nullptr;
-
-	if (texture != nullptr)
-	{
-		ZeroMemory(&srv, sizeof(ID3D11ShaderResourceView));
-		device->CreateShaderResourceView(texture, nullptr, &srv);
-
-		texture->Release();
-		texture = nullptr;
-	}
-
-	return srv;
-}
-
 ID3D11SamplerState* DXHelper::CreateSampler(D3D11_FILTER filter, D3D11_TEXTURE_ADDRESS_MODE mode, ID3D11Device* device)
 {
 	int hash = static_cast<int>(mode) ^ static_cast<int>(filter);
@@ -448,6 +366,57 @@ ID3D11SamplerState* DXHelper::CreateSampler(D3D11_FILTER filter, D3D11_TEXTURE_A
 	}
 
 	return m_samplerCache[hash];
+}
+
+void DXHelper::CreateStructuredBuffer(ID3D11Device* device, ID3D11Buffer** buffer, void* data, unsigned int byteStride, unsigned int arraySize, ID3D11ShaderResourceView** srv)
+{
+	D3D11_BUFFER_DESC sBufferDesc = {};
+	D3D11_SUBRESOURCE_DATA sBufferSub = {};
+
+	sBufferDesc.Usage = D3D11_USAGE_DEFAULT;
+	sBufferDesc.ByteWidth = byteStride * arraySize; //sizeofStruct*nrOfElements
+	sBufferDesc.BindFlags = D3D11_BIND_SHADER_RESOURCE;
+	sBufferDesc.CPUAccessFlags = 0;// 0; //D3D11_CPU_ACCESS_WRITE
+	sBufferDesc.StructureByteStride = byteStride; //sizeofStruct
+	sBufferDesc.MiscFlags = D3D11_RESOURCE_MISC_BUFFER_STRUCTURED;
+	sBufferSub.pSysMem = data;
+
+	HRESULT hr = device->CreateBuffer(&sBufferDesc, &sBufferSub, buffer);
+	assert(SUCCEEDED(hr));
+
+	D3D11_SHADER_RESOURCE_VIEW_DESC srvDesc = {};
+	srvDesc.Format = DXGI_FORMAT_UNKNOWN;
+	srvDesc.ViewDimension = D3D11_SRV_DIMENSION_BUFFEREX;
+	srvDesc.BufferEx.FirstElement = 0;
+	srvDesc.BufferEx.Flags = 0;
+	srvDesc.BufferEx.NumElements = arraySize;
+	hr = device->CreateShaderResourceView(*buffer, &srvDesc, srv);
+
+	assert(SUCCEEDED(hr));
+}
+
+void DXHelper::BindStructuredBuffer(ID3D11DeviceContext* context, ID3D11Buffer* buffer, void* data, size_t slot, ShaderBindFlag flag, ID3D11ShaderResourceView** srv)
+{
+	assert(buffer != 0);
+
+	context->UpdateSubresource(buffer, 0, 0, data, 0, 0);
+
+	int bflag = static_cast<int>(flag);
+
+	if ((bflag & (int)ShaderBindFlag::PIXEL) != 0)
+		context->PSSetShaderResources(slot, 1, srv);
+
+	if ((bflag & (int)ShaderBindFlag::VERTEX) != 0)
+		context->VSSetShaderResources(slot, 1, srv);
+
+	if ((bflag & (int)ShaderBindFlag::HULL) != 0)
+		context->HSSetShaderResources(slot, 1, srv);
+
+	if ((bflag & (int)ShaderBindFlag::DOMAINS) != 0)
+		context->DSSetShaderResources(slot, 1, srv);
+
+	if ((bflag & (int)ShaderBindFlag::GEOMETRY) != 0)
+		context->GSSetShaderResources(slot, 1, srv);
 }
 
 

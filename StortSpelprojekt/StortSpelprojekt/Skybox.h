@@ -13,7 +13,7 @@ public:
 
 	void LoadAllTextures(ID3D11DeviceContext* context, ID3D11Device* device);
 	Object* GetThisObject() { return this->object; }
-	Texture GetTexture() { return this->texture; }
+	//Texture GetTexture() { return this->texture; }
 
 	/*void SetDiffuse(dx::XMFLOAT4);
 	void SetAmbient(dx::XMFLOAT4);
@@ -32,11 +32,6 @@ private:
 
 	Mesh* skyboxMesh;
 	Material* skyboxMaterial;
-
-	Texture texture;
-	Texture texture2;
-	Texture texture3;
-	Texture texture4;
 
 	/*dx::XMFLOAT4 diffuse;
 	dx::XMFLOAT4 ambient;
