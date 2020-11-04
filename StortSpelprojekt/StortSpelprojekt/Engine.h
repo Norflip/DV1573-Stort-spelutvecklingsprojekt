@@ -17,7 +17,6 @@ constexpr float TARGET_FIXED_DELTA = 1.0f / FIXED_FPS;
 
 class Engine
 {
-
 public:
 	Engine(HINSTANCE hInstance);
 	virtual ~Engine();
@@ -31,7 +30,14 @@ public:
 	void UnregisterScene(size_t id);
 	void SwitchScene(size_t id);
 
+	Physics* GetPhysics() const { return this->physics; }
+	ResourceManager* GetResources () const { return this->resourceManager; }
+
+	void Pause(bool pause) { this->pause = pause; }
+	bool IsPaused() const { return pause; }
+
 	ALIGN16_ALLOC;
+	static Engine const* Instance;
 
 private:
 	static void FixedUpdateLoop(Engine* engine);
@@ -41,9 +47,11 @@ private:
 	std::unordered_map<size_t, Scene*> scenes;
 	Scene* activeScene;
 	Scene* previousScene;
+	bool pause;
 
 	Window window;
 	Renderer* renderer;
-
+	Physics* physics;
 	ResourceManager* resourceManager;
+
 };

@@ -75,12 +75,19 @@ bool Object::HasFlag(ObjectFlag flag) const
 
 void Object::AddFlag(ObjectFlag flag)
 {
+	ObjectFlag old = flags;
 	flags = static_cast<ObjectFlag>((int)flags | (int)flag);
+
+	for (auto i = components.begin(); i < components.end(); i++)
+		(*i)->OnOwnerFlagChanged(old, flags);
 }
 
 void Object::RemoveFlag(ObjectFlag flag)
 {
+	ObjectFlag old = flags;
 	flags = static_cast<ObjectFlag>((int)flags & ~((int)flag));
+	for (auto i = components.begin(); i < components.end(); i++)
+		(*i)->OnOwnerFlagChanged(old, flags);
 }
 
 

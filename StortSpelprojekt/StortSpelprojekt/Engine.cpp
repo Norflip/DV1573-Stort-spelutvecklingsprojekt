@@ -1,8 +1,12 @@
 #include "stdafx.h"
 #include "Engine.h"
 
+
+Engine const * Engine::Instance = nullptr;
+
 Engine::Engine(HINSTANCE hInstance) : window(hInstance), activeScene(nullptr)
 {
+	this->Instance = this;
 	window.Open(1600, 900);
 	renderer = new Renderer();
 	renderer->Initialize(&window);
@@ -12,6 +16,9 @@ Engine::Engine(HINSTANCE hInstance) : window(hInstance), activeScene(nullptr)
 
 	resourceManager = new ResourceManager;
 	resourceManager->InitializeResources(renderer->GetDevice());
+
+	physics = new Physics();
+	physics->Initialize();
 
 	RegisterScene(0, new IntroScene());
 	RegisterScene(1, new GameOverScene());
@@ -34,6 +41,7 @@ Engine::~Engine()
 
 	delete renderer;
 	delete resourceManager;
+	delete physics;
 }
 
 void Engine::Run()
@@ -67,18 +75,6 @@ void Engine::Run()
 			float currentTime = static_cast<float>(elapsed.count() / 1000.0f);
 			float deltaTime = currentTime - timeLastFrame;
 
-#if !MULTITHREAD_PHYSICS
-			fixedTimeAccumulation += deltaTime;
-			
-			while (fixedTimeAccumulation >= TARGET_FIXED_DELTA)
-			{
-				// FIXED UPDATE
-				fixedTimeAccumulation -= TARGET_FIXED_DELTA;
-
-				if (activeScene != nullptr)
-					activeScene->FixedUpdate(TARGET_FIXED_DELTA);
-			}
-#endif
 
 			if (activeScene != nullptr)
 			{
@@ -86,13 +82,23 @@ void Engine::Run()
 				{
 					Exit();
 				}
+
 				float deltaTime = currentTime - timeLastFrame;
-
 				activeScene->Update(deltaTime);
+
+#if !MULTITHREAD_PHYSICS
+				fixedTimeAccumulation += deltaTime;
+
+				while (fixedTimeAccumulation >= TARGET_FIXED_DELTA)
+				{
+					// FIXED UPDATE
+					fixedTimeAccumulation -= TARGET_FIXED_DELTA;
+					activeScene->FixedUpdate(TARGET_FIXED_DELTA);
+				}
+#endif
+
 				activeScene->Render();
-
 				SwitchScene((int)activeScene->nextScene);
-
 			}
 
 			timeLastFrame = currentTime;
@@ -114,7 +120,7 @@ void Engine::RegisterScene(size_t id, Scene* scene)
 	auto sceneIt = this->scenes.find(id);
 	assert(sceneIt == scenes.end());
 
-	scene->SetDepedencies(resourceManager, renderer, renderer->GetOutputWindow());
+	scene->SetDepedencies(resourceManager, renderer, physics, renderer->GetOutputWindow());
 	scene->Initialize();
 	
 	this->scenes.insert({ id, scene });

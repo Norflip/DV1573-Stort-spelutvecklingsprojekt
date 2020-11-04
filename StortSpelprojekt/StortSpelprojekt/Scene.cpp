@@ -24,11 +24,13 @@ Scene::~Scene()
 	root = nullptr;	
 }
 
-void Scene::SetDepedencies(ResourceManager* resources, Renderer* renderer, Window* window)
+void Scene::SetDepedencies(ResourceManager* resources, Renderer* renderer, Physics* physics, Window* window)
 {
 	this->resources = resources;
 	this->renderer = renderer;
+	this->physics = physics;
 	this->window = window;
+
 	this->pooler = new ObjectPooler(resources);
 	this->root = new Object("root");
 	this->input.SetWindow(window->GetHWND(), window->GetHeight(), window->GetWidth());
@@ -36,6 +38,14 @@ void Scene::SetDepedencies(ResourceManager* resources, Renderer* renderer, Windo
 
 void Scene::Update(const float& deltaTime)
 {
+	while (!removeQueue.empty())
+	{
+		Object* obj = removeQueue.front();
+		removeQueue.pop();
+		Transform::ClearFromHierarchy(obj->GetTransform());
+		delete obj;
+	}
+
 	clock.Update();
 	input.UpdateInputs();
 	root->Update(deltaTime);
@@ -58,10 +68,8 @@ void Scene::Update(const float& deltaTime)
 
 void Scene::FixedUpdate(const float& fixedDeltaTime)
 {
-	Physics::Instance().FixedUpdate(fixedDeltaTime);
-
-	//Log::Add(std::to_string(fixedDeltaTime));
 	root->FixedUpdate(fixedDeltaTime);
+	physics->FixedUpdate(fixedDeltaTime);
 }
 
 void Scene::Render()
@@ -89,6 +97,9 @@ void Scene::AddObject(Object* object, Object* parent)
 void Scene::RemoveObject(Object* object)
 {
 	// remove the the connection and traverse downwards and remove / destroy all objects
+	removeQueue.push(object);
+	object->RemoveFlag(ObjectFlag::ENABLED);
+	object->AddFlag(ObjectFlag::REMOVED);
 }
 
 void Scene::PrintSceneHierarchy(Object* object, size_t level) const

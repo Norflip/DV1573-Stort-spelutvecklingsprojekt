@@ -15,9 +15,9 @@ BoxColliderComponent::BoxColliderComponent(dx::XMFLOAT3 extends, dx::XMFLOAT3 po
     this->extends.push_back(extends);
 }
 
-void BoxColliderComponent::Initialize()
+void BoxColliderComponent::InitializeCollider(Physics* physics)
 {
-    rp::PhysicsCommon& common = Physics::Instance().GetCommon();
+    rp::PhysicsCommon& common = physics->GetCommon();
 
     for (size_t i = 0; i < colliderInformations.size(); i++)
     {

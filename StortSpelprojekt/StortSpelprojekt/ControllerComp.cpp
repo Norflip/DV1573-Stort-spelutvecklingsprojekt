@@ -1,5 +1,6 @@
 #include "stdafx.h"
 #include "ControllerComp.h"
+#include "Engine.h"
 
 bool ControllerComp::IsGrounded() const
 {
@@ -12,9 +13,10 @@ bool ControllerComp::IsGrounded() const
 
 	//TERRAIN or default depending on if u can jump from on top of objects
 	float distance = 1.45f;
-	Physics& phy = Physics::Instance();
-	phy.RaytestSingle(ray, distance, hitTerrain, FilterGroups::TERRAIN);
-	phy.RaytestSingle(ray, distance, hitProps, FilterGroups::PROPS);
+	Physics* phy = Engine::Instance->GetPhysics();
+
+	phy->RaytestSingle(ray, distance, hitTerrain, FilterGroups::TERRAIN);
+	phy->RaytestSingle(ray, distance, hitProps, FilterGroups::PROPS);
 	
 	bool result = false;
 	if (hitTerrain.object != nullptr || (hitProps.object != nullptr && hitProps.object->GetName()== "houseBase"))
@@ -76,6 +78,8 @@ ControllerComp::~ControllerComp()
 void ControllerComp::Initialize()
 {
 	this->rbComp = GetOwner()->GetComponent<RigidBodyComponent>();
+	rbComp->m_InitializeBody(Engine::Instance->GetPhysics());
+
 	this->camComp = cameraObject->GetComponent<CameraComponent>();
 	this->capsuleComp = GetOwner()->GetComponent<CapsuleColliderComponent>();
 	ShowCursor(!this->canRotate);
@@ -111,13 +115,14 @@ void ControllerComp::Update(const float& deltaTime)
 	//9 = reset 
 	//0 = reset position rotation and xClamp
 
-	Physics& phy = Physics::Instance();
+	Physics* phy = Engine::Instance->GetPhysics();
+
 	DirectX::XMFLOAT3 dir = { 0.f,0.f,0.f };
 	this->fovTimer += deltaTime;
 	this->velocityTimer += deltaTime; 
 	this->crouchTimer += deltaTime;
 	dx::XMVECTOR groundRotation;
-	phy.MutexLock();
+
 	if (KEY_DOWN(D0))
 	{
 		this->xClamp = 0.f;
@@ -363,29 +368,7 @@ void ControllerComp::Update(const float& deltaTime)
 		rbComp->SetRotation(capsule);
 		//phy.MutexUnlock();
 	}
-	phy.MutexUnlock();
-#if NDEBUG 
 
-	// fixes a bug in release where the compiler removes the variables
-	// Later: fix these variables?
+	phy->MutexUnlock();
 
-	//fov = 60.f;
-	//fovTimer = 0.f;
-
-	//velocity = 0.f;
-	//velocityTimer = 0.f;
-	//crouchTimer = 0.f;
-
-	//xClamp = 0.f;
-	//freeCam = true;
-	//showCursor = true;
-	//canRotate = false;
-
-	//groundQuaterion = { 0.f,0.f,0.f,1.f };
-	//cameraObject = nullptr;
-	//rbComp = nullptr;
-	//camComp = nullptr;
-	//capsuleComp = nullptr;
-
-#endif // NDEBUG 
 }

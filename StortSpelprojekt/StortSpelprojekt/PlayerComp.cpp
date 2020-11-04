@@ -1,5 +1,6 @@
 #include "stdafx.h"
 #include "PlayerComp.h"
+#include "Engine.h"
 
 //PlayerComp::PlayerComp() 
 //{
@@ -16,7 +17,7 @@
 //	gg = false;
 //}
 
-PlayerComp::PlayerComp(Renderer* renderer, CameraComponent* camComp, Physics& phys, GUIManager* guimanager, float health, float movementSpeed, float radius, float attack, float attackSpeed) : phy(phys)
+PlayerComp::PlayerComp(Renderer* renderer, CameraComponent* camComp, Physics* physics, GUIManager* guimanager, float health, float movementSpeed, float radius, float attack, float attackSpeed)
 {
 	//attackTimer.Start();
 
@@ -34,6 +35,7 @@ PlayerComp::PlayerComp(Renderer* renderer, CameraComponent* camComp, Physics& ph
 	this->fuelBurnPerMeter = fuelBurnPerMeter;
 	this->radius = radius;
 	this->renderer = renderer;
+	this->physics = physics;
 
 	//this->enemyStatsComp = enemyComp->GetComponent<EnemyStatsComp>();
 
@@ -74,10 +76,10 @@ void PlayerComp::Update(const float& deltaTime)
 {	
 	//attackTimer.Update();
 	Ray ray = cam->MouseToRay(p.x, p.y);
-	Physics& phy = Physics::Instance();
+
 	if (KEY_DOWN(E))
 	{				
-		if (phy.RaytestSingle(ray, rayDistance, hit, FilterGroups::PICKUPS))
+		if (physics->RaytestSingle(ray, rayDistance, hit, FilterGroups::PICKUPS))
 		{
 			
 			if (hit.object != nullptr)
@@ -107,8 +109,7 @@ void PlayerComp::Update(const float& deltaTime)
 				hit.object->GetComponent<PickupComponent>()->SetActive(false);
 
 				RigidBodyComponent* rbComp = hit.object->GetComponent<RigidBodyComponent>();
-				rp::RigidBody* objectRb = rbComp->GetRigidBody();
-				rbComp->RemoveCollidersFromBody(objectRb);
+				rbComp->Release();
 				
 				//phy.MutexLock();
 				//phy.UnregisterRigidBody(hit.object->GetComponent<RigidBodyComponent>());
@@ -125,7 +126,7 @@ void PlayerComp::Update(const float& deltaTime)
 	if (LMOUSE_DOWN)
 	{
 		
-		if (phy.RaytestSingle(ray, 5.0f, hit, FilterGroups::ENEMIES))
+		if (physics->RaytestSingle(ray, 5.0f, hit, FilterGroups::ENEMIES))
 		{
 			if (hit.object != nullptr && hit.object->HasComponent<EnemyStatsComp>())
 			{				
@@ -143,8 +144,7 @@ void PlayerComp::Update(const float& deltaTime)
 						//hit.object.s  ->GetComponent<PickupComponent>()->SetActive(false);
 						
 						RigidBodyComponent* rbComp = hit.object->GetComponent<RigidBodyComponent>();
-						rp::RigidBody* objectRb = rbComp->GetRigidBody();
-						rbComp->RemoveCollidersFromBody(objectRb);
+						rbComp->Release();
 
 						////hit.object->GetComponent<EnemyStatsComp>()->SetEnabled(false);
 						////hit.object->GetComponent<EnemyStatsComp>()->SetEnabled(false);
@@ -154,9 +154,7 @@ void PlayerComp::Update(const float& deltaTime)
 						//rbComp->RemoveCollidersFromBody(objectRb);
 						//phy.UnregisterRigidBody(hit.object->GetComponent<RigidBodyComponent>());
 						//*/
-
-						hit.object->RemoveFlag(ObjectFlag::ENABLED);
-						hit.object->AddFlag(ObjectFlag::REMOVED);
+						Engine::Instance->GetActiveScene()->RemoveObject(hit.object);
 					}
 				}
 				else

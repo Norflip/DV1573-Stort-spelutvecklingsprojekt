@@ -40,7 +40,7 @@ public:
 	Scene();
 	virtual ~Scene();
 
-	virtual void SetDepedencies(ResourceManager* manager, Renderer* renderer, Window* window);
+	virtual void SetDepedencies(ResourceManager* manager, Renderer* renderer, Physics* physics, Window* window);
 
 	virtual void Initialize() = 0;
 	virtual void InitializeObjects() = 0;
@@ -71,8 +71,10 @@ protected:
 	Object* root;
 	Renderer* renderer;
 	ResourceManager* resources;
+	Physics* physics;
 	Window* window;
-
+	
+	std::queue<Object*> removeQueue;
 	CameraComponent* camera;
 	
 	GameClock clock;

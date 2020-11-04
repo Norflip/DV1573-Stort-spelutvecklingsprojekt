@@ -170,7 +170,7 @@ void ObjectSpawner::Despawn()
 	{
 		Object* obj = i;
 		Transform::ClearFromHierarchy(obj->GetTransform());
-		obj->GetComponent<RigidBodyComponent>()->PhysicRelease();
+		obj->GetComponent<RigidBodyComponent>()->Release();
 		delete obj;
 	}
 

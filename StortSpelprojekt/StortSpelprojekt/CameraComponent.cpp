@@ -111,9 +111,9 @@ bool CameraComponent::InView(const BoundingBox& bounds, const dx::XMMATRIX world
 			return false;
 
 		// ON FRUSTUM BORDER
-		float d2 = plane.x * vmax.x + plane.y * vmax.y + plane.z * vmax.z;
+		/*float d2 = plane.x * vmax.x + plane.y * vmax.y + plane.z * vmax.z;
 		if (d2 + plane.w <= 0)
-			return true;
+			inViewResult = false;*/
 	}
 
 	return inViewResult;

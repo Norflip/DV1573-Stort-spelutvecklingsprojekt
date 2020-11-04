@@ -1,14 +1,9 @@
 #pragma once
 #include <DirectXMath.h>
-namespace dx = DirectX;
 
 #include "Component.h"
 #include "Math.h"
-#include "Physics.h"
 #include "DShape.h"
-
-constexpr int CHUNK_SIZE = 32;
-constexpr float TERRAIN_SCALE = 10.0f;
 
 enum class ChunkType
 {
@@ -20,15 +15,13 @@ enum class ChunkType
 	TERRAIN
 };
 
-#define USE_RIGIDBODY 1
+namespace dx = DirectX;
+
+constexpr int CHUNK_SIZE = 32;
+constexpr float TERRAIN_SCALE = 10.0f;
 #define DRAW_DEBUG 0
 
-struct ChunkIndex
-{
-	int x;
-	int z;
-	ChunkType type;
-};
+class Physics;
 
 class Chunk : public Component
 {
@@ -53,7 +46,7 @@ public:
 
 	void Update(const float& deltaTime) override;
 
-	void SetupCollisionObject(float* heightMap);
+	void SetupCollisionObject(Physics* physics, float* heightMap);
 	float SampleHeight(float x, float z);
 
 	void SetHeightMap(float* heightMap) { this->heightMap = heightMap; }
@@ -75,14 +68,9 @@ private:
 private:
 	float min, max;
 	rp::Collider* collider;
-
-#if USE_RIGIDBODY
 	rp::RigidBody* body;
-#else
-	rp::CollisionBody* body;
-#endif 
-
 	rp::HeightFieldShape* shape;
+	Physics* physics;
 
 	dx::XMINT2 index;
 	ChunkType type;

@@ -20,6 +20,7 @@ DEFINE_ENUM_FLAG_OPERATORS(FilterGroups)
 #define LOG_REACT 0
 
 class RigidBodyComponent;
+constexpr dx::XMFLOAT3 DEFAULT_GRAVITY = { 0,-10.0f,0 };
 
 class Physics
 {
@@ -27,7 +28,7 @@ public:
 	Physics();
 	virtual ~Physics();
 
-	void Initialize(dx::XMFLOAT3 gravity);
+	void Initialize(dx::XMFLOAT3 gravity = DEFAULT_GRAVITY);
 	
 	// remove rigidbody on chunk and add shape?
 	//void ReigsterCollisionObject();
@@ -45,14 +46,14 @@ public:
 	bool RaytestSingle(const Ray& ray, float maxDistance, RayHit& hit, FilterGroups group = FilterGroups::EVERYTHING) const;
 
 
-	static Physics& Instance() // singleton
-	{
-		static Physics instance;
-		return instance;
-	}
+	//static Physics* Instance() // singleton
+	//{
+	//	static Physics* instance = new Physics();
+	//	return instance;
+	//}
 
-	Physics(Physics const&) = delete;
-	void operator=(Physics const&) = delete;
+	//Physics(Physics const&) = delete;
+	//void operator=(Physics const&) = delete;
 
 	//static dx::XMFLOAT3 ToXMFLOAT3(const btVector3& v3) { return dx::XMFLOAT3((float)v3.getX(), (float)v3.getY(), (float)v3.getZ()); }
 	//static btVector3 ToVector3(const dx::XMFLOAT3& xm3) { return btVector3(xm3.x, xm3.y, xm3.z); }

@@ -5,6 +5,7 @@ class Component;
 class Renderer;
 class CameraComponent;
 class Object;
+enum class ObjectFlag : unsigned int;
 
 inline size_t GetComponentID()
 {
@@ -19,7 +20,6 @@ inline size_t GetComponentTypeID() noexcept
 	return typeID;
 }
 
-
 ALIGN16
 class Component
 {
@@ -32,8 +32,10 @@ public:
 	virtual void FixedUpdate(const float& fixedDeltaTime) {};
 	virtual void Draw(Renderer* renderer, CameraComponent* camera) {};
 
+	virtual void OnOwnerFlagChanged(ObjectFlag oldFlag, ObjectFlag newFlag) {}
 	void SetOwner(Object* owner) { this->owner = owner; }
 	Object* GetOwner() const { return this->owner; }
+
 	bool IsEnabled() const {return enable;}
 	void SetEnabled(bool enable) { this->enable = enable; }
 	ALIGN16_ALLOC;

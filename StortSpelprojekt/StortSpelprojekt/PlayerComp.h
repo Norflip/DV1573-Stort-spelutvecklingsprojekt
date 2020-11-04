@@ -15,7 +15,7 @@ public:
 
 	
 	//PlayerComp();
-	PlayerComp(Renderer* renderer, CameraComponent* camComp, Physics& phys, GUIManager* guimanager, float health, float movementSpeed, float radius, float attack, float attackSpeed);
+	PlayerComp(Renderer* renderer, CameraComponent* camComp, Physics* physics, GUIManager* guimanager, float health, float movementSpeed, float radius, float attack, float attackSpeed);
 	virtual ~PlayerComp();
 	void Update(const float& deltaTime) override;
 	float GetHealth() const { return health; }
@@ -63,7 +63,7 @@ private:
 	float rayDistance;	
 
 	RayHit hit;
-	Physics& phy;
+	Physics* physics;
 	CameraComponent* cam;
 	//GameClock attackTimer;
 

@@ -84,17 +84,8 @@ void Renderer::Initialize(Window* window)
 	AddRenderPass(new FXAARenderPass(1));
 }
 
-void Renderer::BeginManualRenderPass(RenderTexture& target)
-{
-	SetRenderTarget(target);
-}
 
-void Renderer::EndManualRenderPass()
-{
-	DrawQueueToTarget(opaqueItemQueue);
-}
-
-void Renderer::DrawQueueToTarget(RenderQueue& queue)
+void Renderer::DrawQueueToTarget(RenderQueue& queue, CameraComponent* camera)
 {
 	for (auto i : queue)
 	{
@@ -114,18 +105,18 @@ void Renderer::DrawQueueToTarget(RenderQueue& queue)
 				switch (item.type)
 				{
 					case RenderItem::Type::Instanced:
-						DrawRenderItemInstanced(item); break;
+						DrawRenderItemInstanced(item, camera); break;
 
 					case RenderItem::Type::Grass:
-						DrawRenderItemGrass(item); break;
+						DrawRenderItemGrass(item, camera); break;
 
 					case RenderItem::Type::Skeleton:
-						DrawRenderItemSkeleton(item); break;
+						DrawRenderItemSkeleton(item, camera); break;
 
 					case RenderItem::Type::Default:
 					default:
 
-						DrawRenderItem(item);
+						DrawRenderItem(item, camera);
 						break;
 				}
 
@@ -205,11 +196,11 @@ void Renderer::RenderFrame(CameraComponent* camera, float time, RenderTexture& t
 	context->OMSetDepthStencilState(dss, 0);
 
 	SetCullBack(true);
-	DrawQueueToTarget(opaqueItemQueue);
+	DrawQueueToTarget(opaqueItemQueue, camera);
 	DShape::Instance().m_Draw(context);
 
 	SetCullBack(false);
-	DrawQueueToTarget(transparentItemQueue);
+	DrawQueueToTarget(transparentItemQueue, camera);
 
 	SetCullBack(true);
 	size_t passCount = 0;
@@ -266,24 +257,22 @@ void Renderer::AddRenderPass(RenderPass* pass)
 		std::sort(passes.begin(), passes.end(), [](const RenderPass* a, const RenderPass* b) -> bool { return a->GetPriority() < b->GetPriority(); });
 }
 
-void Renderer::Draw(const Mesh* mesh, const Material* material, const dx::XMMATRIX& model, const CameraComponent* camera)
+void Renderer::Draw(const Mesh* mesh, const Material* material, const dx::XMMATRIX& model)
 {
 	RenderItem item;
 	item.mesh = mesh;
 	item.material = material;
 	item.type = RenderItem::Type::Default;
 	item.world = model;
-	item.camera = camera;
 	AddItem(item, material->IsTransparent());
 }
 
-void Renderer::DrawInstanced(const Mesh* mesh, const size_t& count, ID3D11Buffer* instanceBuffer, const Material* material, const CameraComponent* camera)
+void Renderer::DrawInstanced(const Mesh* mesh, const size_t& count, ID3D11Buffer* instanceBuffer, const Material* material)
 {
 	RenderItem item;
 	item.mesh = mesh;
 	item.material = material;
 	item.type = RenderItem::Type::Instanced;
-	item.camera = camera;
 	item.world = dx::XMMatrixIdentity();
 	item.instanceBuffer = instanceBuffer;
 	item.instanceCount = count;
@@ -291,7 +280,7 @@ void Renderer::DrawInstanced(const Mesh* mesh, const size_t& count, ID3D11Buffer
 	AddItem(item, material->IsTransparent());
 }
 
-void Renderer::DrawSkeleton(const Mesh* mesh, const Material* material, const dx::XMMATRIX& model, const CameraComponent* camera, std::vector<dx::XMFLOAT4X4>& bones)
+void Renderer::DrawSkeleton(const Mesh* mesh, const Material* material, const dx::XMMATRIX& model, std::vector<dx::XMFLOAT4X4>& bones)
 {
 
 	RenderItem item;
@@ -300,16 +289,14 @@ void Renderer::DrawSkeleton(const Mesh* mesh, const Material* material, const dx
 	item.type = RenderItem::Type::Skeleton;
 	item.bones = &bones;
 	item.world = model;
-	item.camera = camera;
 	AddItem(item, false);
 
 }
 
-void Renderer::DrawGrass(const Mesh* mesh, const Material* material, const dx::XMMATRIX& model, const CameraComponent* camera)
+void Renderer::DrawGrass(const Mesh* mesh, const Material* material, const dx::XMMATRIX& model)
 {
 	RenderItem item;
 	item.type = RenderItem::Type::Grass;
-	item.camera = camera;
 	item.mesh = mesh;
 	item.material = material;
 	item.world = model;
@@ -379,9 +366,9 @@ void Renderer::AddItem(const RenderItem& item, bool transparent)
 	}
 }
 
-void Renderer::DrawRenderItem(const RenderItem& item)
+void Renderer::DrawRenderItem(const RenderItem& item, CameraComponent* camera)
 {
-	SetObjectBufferValues(item.camera, item.world, true);
+	SetObjectBufferValues(camera, item.world, true);
 	objectBuffer.UpdateBuffer(context);
 
 	UINT stride = sizeof(Mesh::Vertex);
@@ -395,9 +382,9 @@ void Renderer::DrawRenderItem(const RenderItem& item)
 	context->DrawIndexed(item.mesh->GetIndexCount(), 0, 0);
 }
 
-void Renderer::DrawRenderItemInstanced(const RenderItem& item)
+void Renderer::DrawRenderItemInstanced(const RenderItem& item, CameraComponent* camera)
 {
-	SetObjectBufferValues(item.camera, item.world, true);
+	SetObjectBufferValues(camera, item.world, true);
 	objectBuffer.UpdateBuffer(context);
 
 	UINT stride[2] = { sizeof(Mesh::Vertex), sizeof(Mesh::InstanceData) };
@@ -414,9 +401,9 @@ void Renderer::DrawRenderItemInstanced(const RenderItem& item)
 	context->DrawIndexedInstanced(item.mesh->GetIndexCount(), item.instanceCount, 0, 0, 0);
 }
 
-void Renderer::DrawRenderItemSkeleton(const RenderItem& item)
+void Renderer::DrawRenderItemSkeleton(const RenderItem& item, CameraComponent* camera)
 {
-	SetObjectBufferValues(item.camera, item.world, true);
+	SetObjectBufferValues(camera, item.world, true);
 	objectBuffer.UpdateBuffer(context);
 
 	srv_skeleton_data = *item.bones;
@@ -433,9 +420,9 @@ void Renderer::DrawRenderItemSkeleton(const RenderItem& item)
 	context->DrawIndexed(item.mesh->GetIndexCount(), 0, 0);
 }
 
-void Renderer::DrawRenderItemGrass(const RenderItem& item)
+void Renderer::DrawRenderItemGrass(const RenderItem& item, CameraComponent* camera)
 {
-	SetObjectBufferValues(item.camera,item.world, false);
+	SetObjectBufferValues(camera,item.world, false);
 	objectBuffer.UpdateBuffer(context);
 
 	ShaderBindFlag def = objectBuffer.GetFlag();
