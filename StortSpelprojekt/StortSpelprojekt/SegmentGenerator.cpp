@@ -199,25 +199,12 @@ Chunk* SegmentGenerator::CreateChunk(const dx::XMINT2& index, Object* root, cons
 
 	chunk->SetupCollisionObject(heightMap);
 
-	auto chunkDataSRV = DXHelper::CreateTexture(buffer, CHUNK_SIZE + 1, CHUNK_SIZE + 1, 4, DXGI_FORMAT_R8G8B8A8_UNORM, device);
-
 	Material* material = new Material(chunkShader);
-	//cb_Material mat = material.GetMaterialData();
-	//mat.ambient = dx::XMFLOAT4(0.1f, 0.1f, 0.1f, 1);
-	//mat.diffuse = dx::XMFLOAT4(0.1f, 0.1f, 0.1f, 1);
-	//mat.specular = dx::XMFLOAT4(0.1f, 0.1f, 0.1f, 0.1f);
-
 	material->SetMaterialData(materialData);
 
-	Texture texture(chunkDataSRV);
-
-	Texture grassTexture;
-	//grassTexture.LoadTexture(device, L"Textures/Grass_001_COLOR.jpg");
-	//grassTexture.LoadTexture(device, L"Textures/ground.png");
-	grassTexture.LoadTexture(device, L"Textures/newGrass.png");
-
-	Texture roadTexture;
-	roadTexture.LoadTexture(device, L"Textures/Stone_Floor_003_COLOR.jpg");
+	Texture* texture = Texture::CreateFromBuffer(buffer, CHUNK_SIZE + 1, CHUNK_SIZE + 1, 4, DXGI_FORMAT_R8G8B8A8_UNORM, device);
+	Texture* grassTexture = Texture::LoadTexture(device, L"Textures/newGrass.png");
+	Texture* roadTexture = Texture::LoadTexture(device, L"Textures/Stone_Floor_003_COLOR.jpg");
 
 	material->SetTexture(texture, 0, ShaderBindFlag::PIXEL | ShaderBindFlag::VERTEX);
 	material->SetTexture(grassTexture, 1, ShaderBindFlag::PIXEL);
@@ -405,7 +392,7 @@ void SegmentGenerator::AddTreesToChunk(Chunk* chunk, std::vector<ChunkPointInfor
 	}
 }
 
-void SegmentGenerator::AddGrassToChunk(Chunk* chunk, Texture& texture)
+void SegmentGenerator::AddGrassToChunk(Chunk* chunk, Texture* texture)
 {
 	size_t chunkTriangleCount = chunkMesh->GetTriangleCount();
 	GrassComponent* grassComponent = chunk->GetOwner()->AddComponent<GrassComponent>(chunkTriangleCount, device, grassShader);
