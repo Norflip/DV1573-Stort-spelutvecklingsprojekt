@@ -254,6 +254,12 @@ void GameScene::InitializeObjects()
 	beansBody = beansObject->AddComponent<RigidBodyComponent>(0.f, FilterGroups::PICKUPS, FilterGroups::PLAYER, BodyType::DYNAMIC);
 	physics.RegisterRigidBody(beansBody);
 	AddObject(beansObject);
+
+	particleShader = new Shader;
+	particles = new ParticleSystem(particleShader);
+	particles->Initialize(renderer->GetDevice(), L"Textures/stars.png");
+
+
 }
 
 void GameScene::InitializeGUI()
@@ -474,11 +480,10 @@ void GameScene::Update(const float& deltaTime)
 
 	skyboxClass->GetThisObject()->GetTransform().SetPosition(camera->GetOwner()->GetTransform().GetPosition());
 
-	//if (enemy->GetComponent<EnemyStatsComp>()->GetHealth() <= 0)
-	//	RemoveEnemy();
+	
 
-	/*POINT pa = input.GetMousePos();
-	Ray ray = camera->MouseToRay(p.x, p.y);*/
+
+	particles->Update(deltaTime, renderer->GetContext());
 
 }
 
@@ -495,6 +500,8 @@ void GameScene::Render()
 	//worldGenerator.DrawShapes();
 	//world.DrawDebug();
 
+	particles->Render(renderer->GetContext());
+	
 	renderer->RenderFrame(camera, (float)clock.GetSeconds());
 }
 

@@ -1,6 +1,7 @@
 #pragma once
 #include "Scene.h"
 #include "World.h"
+#include "ParticleSystem.h"
 
 class GUIFont;
 class SpriteRenderPass;
@@ -10,7 +11,8 @@ class GameScene : public Scene
 {
 private:
 	void RemoveEnemy();
-
+	Shader* particleShader;
+	ParticleSystem* particles;
 	Object* bananaObject;
 public:
 	GameScene();

@@ -11,8 +11,21 @@ private:
 		bool active;
 	};
 
+	struct Vertex
+	{
+		Vertex() : position(), texcoord(), color() {}
+		Vertex(float x, float y, float z,
+			float u, float v,
+			float r, float g, float b, float a)
+			: position(x, y, z), texcoord(u, v), color(r, g, b, a) {}
+
+		dx::XMFLOAT3 position;
+		dx::XMFLOAT2 texcoord;
+		dx::XMFLOAT4 color;
+	};
+
 public:
-	ParticleSystem();
+	ParticleSystem(Shader* shader);
 	ParticleSystem(const ParticleSystem& other);
 	virtual ~ParticleSystem();
 
@@ -36,6 +49,11 @@ private:
 	bool UpdateBuffers(ID3D11DeviceContext* context);
 
 private:
+	Object* object;
+	Material* particlesMaterial;
+	Shader* particlesShader;
+	Mesh* particleQuad;
+
 	float differenceOnX, differenceOnY, differenceOnZ;
 	float particleVelocity, particleVelocityVariation;
 	float particleSize;
@@ -44,7 +62,9 @@ private:
 	int currentParticleCount;
 	float accumulatedTime;
 
-	
+	int vertexCount, indexCount;
+	Vertex* vertices;
+	ID3D11Buffer* vertexBuffer, * indexBuffer;
 
 	Particles* particleList;
 	Texture* texture;
