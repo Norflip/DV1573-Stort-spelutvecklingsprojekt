@@ -1,6 +1,4 @@
-Textures: 3
-
-TestTexture: Textures/Sylvanas.jpg
+Textures: 2
 
 Grass: Textures/newGrass.png
 
