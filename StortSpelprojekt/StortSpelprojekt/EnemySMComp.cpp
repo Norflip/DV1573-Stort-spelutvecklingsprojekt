@@ -24,9 +24,7 @@ void EnemySMComp::SetState(EnemyState state)
 	{
 		stateMap[currentState]->SetEnabled(false);
 	}
-
 	currentState = state;
-
 	if (currentState != EnemyState::NONE)
 	{
 		stateMap[currentState]->SetEnabled(true);
@@ -71,7 +69,11 @@ void EnemySMComp::Animate()
 
 void EnemySMComp::Update(const float& deltaTime)
 {
-	
+	enemyAttackComp = GetOwner()->GetComponent<EnemyAttackComp>();
+	if (KEY_PRESSED(K))
+	{
+		SetState(EnemyState::ATTACK);
+	}
 	if (enemyAttackComp != NULL)
 	{
 		if (currentState != EnemyState::ATTACK && enemyAttackComp->GetChasePlayer())

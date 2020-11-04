@@ -185,10 +185,11 @@ void GameScene::InitializeObjects()
 	physics.MutexUnlock();
 
 	EnemySMComp* stateMachine = enemy->AddComponent<EnemySMComp>(EnemyState::IDLE);
-	enemy->AddComponent<EnemyAttackComp>(player->GetComponent<PlayerComp>());
+	//enemy->AddComponent<EnemyAttackComp>(player->GetComponent<PlayerComp>());
 	stateMachine->RegisterState(EnemyState::IDLE, enemy->AddComponent<EnemyIdleComp>());
-	stateMachine->RegisterState(EnemyState::PATROL, enemy->AddComponent<EnemyPatrolComp>());
+	//stateMachine->RegisterState(EnemyState::PATROL, enemy->AddComponent<EnemyPatrolComp>());
 	stateMachine->RegisterState(EnemyState::ATTACK, enemy->AddComponent<EnemyAttackComp>(player->GetComponent<PlayerComp>()));
+	//stateMachine->Initialize();
 	stateMachine->InitAnimation();
 	AddObject(enemy);
 

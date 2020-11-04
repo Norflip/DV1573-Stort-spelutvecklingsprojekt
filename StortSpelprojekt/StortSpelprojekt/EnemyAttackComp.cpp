@@ -26,6 +26,7 @@ void EnemyAttackComp::Update(const float& deltaTime)
 	timer.Update();
 	ChasePlayer(deltaTime);
 	UpdateAttackPlayer(deltaTime);
+	std::cout << "In attack state" << std::endl;
 }
 
 bool EnemyAttackComp::GetIsAttacking()
