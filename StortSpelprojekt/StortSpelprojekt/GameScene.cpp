@@ -148,7 +148,7 @@ void GameScene::InitializeObjects()
 	playerObject->AddComponent<ControllerComp>(cameraObject, houseBaseObject); /////////////////
 	//Transform::SetParentChild(playerObject->GetTransform(),cameraObject->GetTransform());
 	playerObject->AddComponent<PlayerComp>(renderer, camera, Physics::Instance(), guiManager, 100.f, 2.f, 3.f, 50.f, 3.f);
-	playerStatsComp = playerObject->GetComponent<PlayerComp>();
+	//playerStatsComp = playerObject->GetComponent<PlayerComp>();
 
 	AddObject(cameraObject, playerObject);
 	AddObject(playerObject);
@@ -176,7 +176,7 @@ void GameScene::InitializeObjects()
 	enemy->GetTransform().SetPosition(dx::XMLoadFloat3(&enemyTranslation));
 	enemy->GetTransform().SetScale({ 0.125f, 0.125f, 0.125f });
 	enemy->AddComponent<EnemyStatsComp>(100.f, 2.0f, 10.f, 5.f, 3.f, 3.f);
-	enemyStatsComp = enemy->GetComponent<EnemyStatsComp>();
+	//enemyStatsComp = enemy->GetComponent<EnemyStatsComp>();
 	enemy->AddComponent<BoxColliderComponent>(dx::XMFLOAT3{ 1, 2.45, 1 }, dx::XMFLOAT3{ 0, 0, 0 });
 
 	physics.MutexLock();
@@ -291,9 +291,8 @@ void GameScene::InitializeGUI()
 
 	//FONTS
 	GUIFont* fpsDisplay = new GUIFont(*renderer, "fps", windowWidth / 2, 50);
-
-	GUIFont* healthDisplay = new GUIFont(*renderer, "playerHealth", 50, 100);
-	GUIFont* enemyDisplay = new GUIFont(*renderer, "enemyHealth", 50, 150);
+	//GUIFont* healthDisplay = new GUIFont(*renderer, "playerHealth", 50, 100);
+	//GUIFont* enemyDisplay = new GUIFont(*renderer, "enemyHealth", 50, 150);
 
 	//CROSSHAIR
 	GUISprite* dot = new GUISprite(*renderer, "Textures/TestFix2.png", (windowWidth / 2) - 6, (windowHeight / 2) - 6, 0, DrawDirection::BottomLeft, ClickFunction::NotClickable);
@@ -302,8 +301,8 @@ void GameScene::InitializeGUI()
 	// INSERTIONS
 	guiManager = new GUIManager(renderer, 100);
 	guiManager->AddGUIObject(fpsDisplay, "fps");
-	guiManager->AddGUIObject(healthDisplay, "playerHealth");
-	guiManager->AddGUIObject(enemyDisplay, "enemyHealth");
+	//guiManager->AddGUIObject(healthDisplay, "playerHealth");
+	//guiManager->AddGUIObject(enemyDisplay, "enemyHealth");
 
 	//BASE OF EQUIPMENT
 	guiManager->AddGUIObject(equimpmentSprite1, "equimpmentSprite1");
@@ -387,8 +386,8 @@ void GameScene::Update(const float& deltaTime)
 	world.UpdateRelevantChunks();
 
 	static_cast<GUIFont*>(guiManager->GetGUIObject("fps"))->SetString(std::to_string((int)GameClock::Instance().GetFramesPerSecond()));
-	static_cast<GUIFont*>(guiManager->GetGUIObject("playerHealth"))->SetString("Player health: " + std::to_string((int)playerStatsComp->GetHealth()));
-	static_cast<GUIFont*>(guiManager->GetGUIObject("enemyHealth"))->SetString("Enemy health: " + std::to_string((int)enemyStatsComp->GetHealth()));
+	//static_cast<GUIFont*>(guiManager->GetGUIObject("playerHealth"))->SetString("Player health: " + std::to_string((int)playerStatsComp->GetHealth()));
+	//static_cast<GUIFont*>(guiManager->GetGUIObject("enemyHealth"))->SetString("Enemy health: " + std::to_string((int)enemyStatsComp->GetHealth()));
 	guiManager->UpdateAll();
 
 	if (KEY_DOWN(H))
