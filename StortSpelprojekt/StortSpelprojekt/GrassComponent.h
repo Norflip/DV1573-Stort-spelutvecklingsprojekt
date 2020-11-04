@@ -47,7 +47,9 @@ private:
 	ID3D11Buffer* grassBCBfr = nullptr;
 
 	ID3D11ShaderResourceView* grassBCSRV = nullptr;
-	ID3D11Buffer* grassCBuffer = nullptr;
+
+	ConstantBuffer<cb_grass> grassBuffer;
+
 	//ChunkType chunkType;
 };
 

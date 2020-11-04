@@ -5,6 +5,7 @@
 #include "DXHelper.h"
 #include "Mesh.h"
 #include "CameraComponent.h"
+#include "ConstantBuffer.h"
 
 namespace dx = DirectX;
 
@@ -23,7 +24,7 @@ class DShape
 	std::vector<dx::XMFLOAT3> cube_vertexes = { dx::XMFLOAT3(-0.500000f, -0.500000f, 0.500000f),dx::XMFLOAT3(0.500000f, -0.500000f, 0.500000f),dx::XMFLOAT3(-0.500000f, 0.500000f, 0.500000f),dx::XMFLOAT3(0.500000f, 0.500000f, 0.500000f),dx::XMFLOAT3(-0.500000f, 0.500000f, -0.500000f),dx::XMFLOAT3(0.500000f, 0.500000f, -0.500000f),dx::XMFLOAT3(-0.500000f, -0.500000f, -0.500000f),dx::XMFLOAT3(0.500000f, -0.500000f, -0.500000f),dx::XMFLOAT3(-0.500000f, -0.500000f, 0.500000f),dx::XMFLOAT3(0.500000f, -0.500000f, 0.500000f),dx::XMFLOAT3(-0.500000f, 0.500000f, 0.500000f),dx::XMFLOAT3(0.500000f, 0.500000f, 0.500000f),dx::XMFLOAT3(-0.500000f, 0.500000f, -0.500000f),dx::XMFLOAT3(0.500000f, 0.500000f, -0.500000f),dx::XMFLOAT3(-0.500000f, -0.500000f, -0.500000f),dx::XMFLOAT3(0.500000f, -0.500000f, -0.500000f) };
 
 	__declspec(align(16))
-	struct ShapeData
+		struct ShapeData
 	{
 		dx::XMFLOAT4X4 mvp;
 		dx::XMFLOAT4 color;
@@ -86,8 +87,9 @@ private:
 	ID3D11VertexShader* vertexShader;
 	ID3D11InputLayout* inputLayout;
 
+	ConstantBuffer<ShapeData> buffer;
+
 	ShapeData data;
-	ID3D11Buffer* buffer;
 	ID3D11Buffer* lineVBuffer;
 
 	size_t shapeCount;

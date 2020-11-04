@@ -6,7 +6,10 @@ size_t Material::idCounter = 0;
 Material::Material() : id(idCounter++) {  }
 
 Material::Material(Shader* shader) : shader(shader), id(idCounter++) {}
-Material::~Material() {}
+Material::~Material() 
+{
+
+}
 
 void Material::UnbindToContext(ID3D11DeviceContext* context) const
 {
@@ -22,7 +25,7 @@ void Material::BindToContext(ID3D11DeviceContext* context) const
 		for (auto j : i.second)
 		{
 			size_t slot = j.first;
-			auto srv = j.second.GetTexture();
+			auto srv = j.second->GetSRV();
 
 			if ((i.first & (int)ShaderBindFlag::PIXEL) != 0)
 				context->PSSetShaderResources(slot, 1, &srv);
@@ -99,13 +102,13 @@ const cb_Material& Material::GetMaterialData() const
 	return cb_material_data;
 }
 
-void Material::SetTexture(Texture texture, size_t slot, ShaderBindFlag flag)
+void Material::SetTexture(Texture* texture, size_t slot, ShaderBindFlag flag)
 {
 	int flagKey = static_cast<int>(flag);
 	if (textures.find(flagKey) == textures.end())
-		textures.insert({ flagKey, std::unordered_map<size_t, Texture>() });
+		textures.insert({ flagKey, std::unordered_map<size_t, Texture*>() });
 	
-	std::unordered_map<size_t, Texture>& flagMap = textures[flagKey];
+	std::unordered_map<size_t, Texture*>& flagMap = textures[flagKey];
 
 	if (flagMap.find(slot) == flagMap.end())
 		flagMap.insert({ slot, texture });
