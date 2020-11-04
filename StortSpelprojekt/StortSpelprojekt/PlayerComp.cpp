@@ -194,7 +194,7 @@ void PlayerComp::Update(const float& deltaTime)
 		//std::cout << food<<std::endl;
 		
 		// make better later
-		if (fuel < 0 || health <= 0 && !immortal)
+		if ((fuel < 0 || health <= 0) && !immortal)
 			swapScene = NEXT_SCENE::LOSE;
 
 		if (food < 0)

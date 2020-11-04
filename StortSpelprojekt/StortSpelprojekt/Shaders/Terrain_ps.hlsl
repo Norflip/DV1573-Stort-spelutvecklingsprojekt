@@ -45,5 +45,9 @@ float4 main(VS_OUTPUT input) : SV_TARGET
 		finalColor += CalculatePointLight(pointLights[i], normal, input.worldPosition, viewDirection);
 	}
 
-	return textureColor;//  saturate(textureColor * finalColor);
+
+	//return finalColor;
+	//return float4(normal, 1.0f);
+	return saturate(textureColor * finalColor);
+	//return textureColor;//  saturate(textureColor * finalColor);
 }

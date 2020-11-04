@@ -17,8 +17,8 @@ void SegmentGenerator::Initialize(Object* root, ResourceManager* resourceManager
 	this->spawner = spawner;
 	this->initialized = true;
 
-	Material* mat = resourceManager->GetResource<Material>("Test");
-	materialData = mat->GetMaterialData();
+	//Material* mat = resourceManager->GetResource<Material>("TestMaterial");
+	//materialData = mat->GetMaterialData();
 
 	this->grassShader = resourceManager->GetShaderResource("grassShader");
 	this->chunkShader = resourceManager->GetShaderResource("terrainShader");
@@ -205,12 +205,12 @@ Chunk* SegmentGenerator::CreateChunk(const dx::XMINT2& index, Object* root, cons
 	auto chunkDataSRV = DXHelper::CreateTexture(buffer, CHUNK_SIZE + 1, CHUNK_SIZE + 1, 4, DXGI_FORMAT_R8G8B8A8_UNORM, device);
 
 	Material* material = new Material(chunkShader);
-	//cb_Material mat = material.GetMaterialData();
-	//mat.ambient = dx::XMFLOAT4(0.1f, 0.1f, 0.1f, 1);
-	//mat.diffuse = dx::XMFLOAT4(0.1f, 0.1f, 0.1f, 1);
-	//mat.specular = dx::XMFLOAT4(0.1f, 0.1f, 0.1f, 0.1f);
+	cb_Material mat;
+	mat.ambient = dx::XMFLOAT4(0.5f, 0.5f, 0.5f, 1);
+	mat.diffuse = dx::XMFLOAT4(0.5f, 0.5f, 0.5f, 1);
+	mat.specular = dx::XMFLOAT4(0.1f, 0.1f, 0.1f, 0.1f);
 
-	material->SetMaterialData(materialData);
+	material->SetMaterialData(mat);
 
 	Texture texture(chunkDataSRV);
 

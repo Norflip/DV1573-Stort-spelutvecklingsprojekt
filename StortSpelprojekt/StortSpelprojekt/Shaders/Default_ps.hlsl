@@ -31,11 +31,11 @@ float4 main(VS_OUTPUT input) : SV_TARGET
 
     for (int i = 0; i < nrOfPointLights; i++)
     {
-    finalColor += CalculatePointLight(pointLights[i], normalized, input.worldPosition, viewDirection);
+		finalColor += CalculatePointLight(pointLights[i], normalized, input.worldPosition, viewDirection);
     }
 
 	finalColor = saturate(finalColor * textureColor);
-
+	finalColor.a = 1.0f;
 	//return float4(input.normal, 1.0f);
 	return finalColor; //  float4(finalColor.r, finalColor.g, finalColor.b * 5, finalColor.a);
 }
