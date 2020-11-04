@@ -257,7 +257,7 @@ void GameScene::InitializeObjects()
 
 	particleShader = new Shader;
 	particles = new ParticleSystem(particleShader);
-	particles->Initialize(renderer->GetDevice(), L"Textures/stars.png");
+	particles->InitializeParticles(renderer->GetDevice(), L"Textures/stars.png");
 
 
 }

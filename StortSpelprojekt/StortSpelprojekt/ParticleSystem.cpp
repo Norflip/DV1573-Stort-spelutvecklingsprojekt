@@ -217,9 +217,7 @@ void ParticleSystem::LoadTexture(ID3D11Device* device, LPCWSTR textureFilename)
 {
 	hr = dx::CreateWICTextureFromFile(device, textureFilename, nullptr, &srv);
 	if (FAILED(hr))
-		MessageBox(0, L"Failed to 'Load DDS Texture' - (skymap.dds).", L"Graphics scene Initialization Message", MB_ICONERROR);
-
-	//srvs.push_back(srv);
+		MessageBox(0, L"Failed to 'Load WIC Texture'", L"Graphics scene Initialization Message", MB_ICONERROR);
 
 	texture.SetShaderResourceView(srv);	
 	particlesMaterial->SetTexture(texture, TEXTURE_DIFFUSE_SLOT, ShaderBindFlag::PIXEL);
