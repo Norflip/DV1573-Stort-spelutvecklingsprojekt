@@ -7,7 +7,7 @@ ParticleSystem::ParticleSystem(Shader* shader)
 	this->particlesShader = shader;
 	this->particlesMaterial = new Material(particlesShader);
 	//this->particleQuad = 
-
+	
 	/* Default stuff about every particle */
 	this->differenceOnX = 0.0f;
 	this->differenceOnY = 0.0f;

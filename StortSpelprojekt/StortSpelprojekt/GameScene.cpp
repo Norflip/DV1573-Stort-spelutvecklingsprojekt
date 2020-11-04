@@ -255,7 +255,14 @@ void GameScene::InitializeObjects()
 	physics.RegisterRigidBody(beansBody);
 	AddObject(beansObject);
 
+
+	/* Particles */
 	particleShader = new Shader;
+	particleShader->SetVertexShader("Shaders/Particles_vs.hlsl");
+	particleShader->SetPixelShader("Shaders/Particles_ps.hlsl");
+	//particleShader->SetInputLayoutStructure()
+	//particleShader->Compile(renderer->GetDevice());
+
 	particles = new ParticleSystem(particleShader);
 	particles->InitializeParticles(renderer->GetDevice(), L"Textures/stars.png");
 
@@ -479,9 +486,10 @@ void GameScene::Update(const float& deltaTime)
 	nextScene = NEXT_SCENE(player->GetComponent<PlayerComp>()->GetNextScene());
 
 	skyboxClass->GetThisObject()->GetTransform().SetPosition(camera->GetOwner()->GetTransform().GetPosition());
-
 	
-
+	particles->GetThisObject()->GetTransform().SetPosition(dx::XMVECTOR{ 22.0f, 2.0f, 53, 1.0f });
+	
+	
 
 	particles->Update(deltaTime, renderer->GetContext());
 
@@ -500,8 +508,10 @@ void GameScene::Render()
 	//worldGenerator.DrawShapes();
 	//world.DrawDebug();
 
-	particles->Render(renderer->GetContext());
-	
+	//particles->Render(renderer->GetContext());
+
+	particles->GetThisObject()->Draw(renderer, camera);
+
 	renderer->RenderFrame(camera, (float)clock.GetSeconds());
 }
 
