@@ -104,7 +104,7 @@ float4 CalculateDirectionalLight(float3 lightDirection, float3 normal, float3 vi
 	if (diffuseFactor > 0.0f)
 	{
 		float3 reflection = reflect(lightDirection, normal);
-		float spec = pow(max(dot(viewDirection, reflection), 0.0f), 0.1f);
+		float spec = pow(max(dot(viewDirection, reflection), 0.0f), 1.0f);
 
 		diffuse = diffuseFactor * sunColor * matDiffuse;
 		specular = spec * sunColor * matSpecular;
