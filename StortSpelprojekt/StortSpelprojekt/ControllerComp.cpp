@@ -129,11 +129,7 @@ void ControllerComp::Update(const float& deltaTime)
 		rbComp->SetPosition(dx::XMLoadFloat3(&RESET_POS));
 		rbComp->SetLinearVelocity({ 0.f, 0.f, 0.f });
 	}
-	//if (KEY_DOWN(D9))
-	//{
-	//	this->cameraObject->GetTransform().SetRotation(dx::XMLoadFloat4(&RESET_ROT));
-	//	this->cameraEuler = { 0.f, 0.f, 0.f };
-	//}
+
 	if (KEY_DOWN(O))
 	{
 		this->showCursor = !this->showCursor;
@@ -275,7 +271,7 @@ void ControllerComp::Update(const float& deltaTime)
 			float percentVel = 0.f;
 			if (this->velocity > WALK_VELOCITY)
 				percentVel = this->velocity / RUN_VELOCITY;
-			std::cout << "vel: " << this->velocity << ", fov: " << this->fov << std::endl;
+			//std::cout << "vel: " << this->velocity << ", fov: " << this->fov << std::endl;
 			this->fov = WALK_FOV + (percentVel * (RUN_FOV - WALK_FOV));// 70+()
 			camComp->SetFOV(this->fov);
 			
