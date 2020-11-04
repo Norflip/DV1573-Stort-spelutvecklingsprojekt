@@ -93,14 +93,16 @@ void GameScene::InitializeObjects()
 
 	Object* houseBaseObject = new Object("houseBase");
 	Object* housesLegsObject = new Object("houseLegs");
-
+	houseBaseObject->GetTransform().Rotate(0, -90.0f, 0.0);
+	
 	RigidBodyComponent* houseRigidBody = houseBaseObject->AddComponent<RigidBodyComponent>(0.0f, FilterGroups::PROPS, FilterGroups::EVERYTHING, BodyType::STATIC);
 	houseBaseObject->AddComponent<BoxColliderComponent>(dx::XMFLOAT3(2.5, 5, 2.5), dx::XMFLOAT3(0, 0, 0));
 	physics.RegisterRigidBody(houseRigidBody);
 
-	SkeletonMeshComponent* baseComponent = houseBaseObject->AddComponent<SkeletonMeshComponent>(meshHouse[0], matHouse[0]);
-	SkeletonMeshComponent* legsComponent = housesLegsObject->AddComponent<SkeletonMeshComponent>(skeletonMeshHouseLegs[0], skeletonMatHouseLegs[0]);
-
+	SkeletonMeshComponent* baseComponent = houseBaseObject->AddComponent<SkeletonMeshComponent>(meshHouse[0], matHouse[0], 0.1f);
+	SkeletonMeshComponent* legsComponent = housesLegsObject->AddComponent<SkeletonMeshComponent>(skeletonMeshHouseLegs[0], skeletonMatHouseLegs[0],
+		0.1f);
+	
 	legsComponent->SetAnimationTrack(skeletonHouseLegsIdle, SkeletonStateMachine::IDLE);
 	legsComponent->SetAnimationTrack(skeletonHouseLegsWalk, SkeletonStateMachine::WALK);
 	legsComponent->SetAnimationTrack(skeletonHouseLegsUp, SkeletonStateMachine::UP);
@@ -194,7 +196,7 @@ void GameScene::InitializeObjects()
 
 	std::vector<Mesh*> axeMesh = ZWEBLoader::LoadMeshes(ZWEBLoadType::NoAnimation, "Models/AXE.ZWEB", renderer->GetDevice());
 	std::vector<Material*> axeMat = ZWEBLoader::LoadMaterials("Models/AXE.ZWEB", defaultShader, renderer->GetDevice());
-	Object* axeObject = new Object("Axe");
+	Object* axeObject = new Object("Axe", ObjectFlag::DEFAULT | ObjectFlag::NO_CULL);
 
 	axeObject->AddComponent<MeshComponent>(axeMesh[0], axeMat[0]);
 	axeObject->GetTransform().SetPosition({ 0,0,0 });
@@ -204,11 +206,6 @@ void GameScene::InitializeObjects()
 	AddObject(axeObject);
 
 	clock.Update();
-	clock.Update();
-	/* * * * * * * * ** * * * * */
-	//Log::Add("PRINTING SCENE HIERARCHY ----");
-	//PrintSceneHierarchy(root, 0);
-	/*Log::Add("----");*/
 
 	world.Initialize(root, resources, pooler, renderer);
 	world.ConstructSegment(state, desc);
@@ -224,15 +221,8 @@ void GameScene::InitializeObjects()
 	/* PICKUP STUFF DONT DELETE THESEEE */
 	/* PICKUP STUFF DONT DELETE THESEEE */
 	/* PICKUP STUFF DONT DELETE THESEEE */
-	
-	Shader* defShader = resources->GetShaderResource("defaultShader");
-
-	/* Health pickup stuff temporary */
-	//std::vector<Mesh> healthkit = ZWEBLoader::LoadMeshes(ZWEBLoadType::NoAnimation, "Models/Health_Kit.ZWEB", renderer->GetDevice());
-	//std::vector<Material> healthkitMaterial = ZWEBLoader::LoadMaterials("Models/Health_Kit.ZWEB", defaultShader, renderer->GetDevice());
 
 	Object* healthkitObject = resources->AssembleObject("HealthKit", "HealthKitMaterial");
-	//healthkitObject->AddComponent<MeshComponent>(healthkit[0], healthkitMaterial[0]);
 	healthkitObject->GetTransform().SetPosition({ 23,2,50 });
 	healthkitObject->AddComponent<BoxColliderComponent>(dx::XMFLOAT3{ 0.5f, 0.5f, 0.5f }, dx::XMFLOAT3{ 0, 0, 0 });
 	healthkitObject->AddComponent<PickupComponent>(Type::Health, 20.0f);
@@ -243,11 +233,7 @@ void GameScene::InitializeObjects()
 	AddObject(healthkitObject);
 
 	///* Fuel pickup stuff temporary */
-	//std::vector<Mesh> fuelCan = ZWEBLoader::LoadMeshes(ZWEBLoadType::NoAnimation, "Models/Fuel_Can_Red.ZWEB", renderer->GetDevice());
-	//std::vector<Material> fuelCanMaterail = ZWEBLoader::LoadMaterials("Models/Fuel_Can_Red.ZWEB", defaultShader, renderer->GetDevice());
-
-	Object* fuelCanObject = resources->AssembleObject("FuelCanGreen", "FuelCanGreenMaterial");// new Object("fuelObject");
-	//fuelCanObject->AddComponent<MeshComponent>(fuelCan[0], fuelCanMaterail[0]);
+	Object* fuelCanObject = resources->AssembleObject("FuelCanGreen", "FuelCanGreenMaterial");
 	fuelCanObject->GetTransform().SetPosition({ 22,2,52 });
 	fuelCanObject->AddComponent<BoxColliderComponent>(dx::XMFLOAT3{ 0.5f, 0.5f, 0.5f }, dx::XMFLOAT3{ 0, 0, 0 });
 	fuelCanObject->AddComponent<PickupComponent>(Type::Fuel, 20.0f);
@@ -258,11 +244,7 @@ void GameScene::InitializeObjects()
 	AddObject(fuelCanObject);
 
 	///* Banana pickup stuff temporary */
-	//std::vector<Mesh> beans = ZWEBLoader::LoadMeshes(ZWEBLoadType::NoAnimation, "Models/Soup_Can.ZWEB", renderer->GetDevice());
-	//std::vector<Material> beansMaterial = ZWEBLoader::LoadMaterials("Models/Soup_Can.ZWEB", defaultShader, renderer->GetDevice());
-
-	Object* beansObject = resources->AssembleObject("Soup", "SoupMaterial");// new Object("bakedBeans");
-	//beansObject->AddComponent<MeshComponent>(beans[0], beansMaterial[0]);
+	Object* beansObject = resources->AssembleObject("Soup", "SoupMaterial");
 	beansObject->GetTransform().SetPosition({22, 2.0f, 53 });
 	beansObject->AddComponent<BoxColliderComponent>(dx::XMFLOAT3{ 0.5f, 0.5f, 0.5f }, dx::XMFLOAT3{ 0, 0, 0 });
 	beansObject->AddComponent<PickupComponent>(Type::Food, 20.0f);
