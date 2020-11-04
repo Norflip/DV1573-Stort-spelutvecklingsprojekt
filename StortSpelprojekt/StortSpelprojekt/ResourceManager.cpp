@@ -218,7 +218,7 @@ void ResourceManager::ReadShaders(ID3D11Device* device)
 		int pos = line.find(delimiter);
 
 		// Amount of shaders in the file
-		int nrOfShaders = std::stoi(line.substr(pos + 2, 1), &sz);
+		int nrOfShaders = std::stoi(line.substr(pos + 2,2), &sz);
 
 		std::getline(file, line);
 
@@ -296,6 +296,10 @@ void ResourceManager::ReadShaders(ID3D11Device* device)
 					else if (input == "instance")
 					{
 						tempShader->SetInputLayoutStructure(10, tempShader->INSTANCE_INPUT_LAYOUTd);
+					}
+					else if (input == "color")
+					{
+						tempShader->SetInputLayoutStructure(3, tempShader->DEFAULT_INPUT_LAYOUTCOLOR);
 					}
 					
 					// Compile the shader

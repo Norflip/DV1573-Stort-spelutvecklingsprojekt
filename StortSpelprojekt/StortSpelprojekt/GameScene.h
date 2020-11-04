@@ -11,9 +11,9 @@ class GameScene : public Scene
 {
 private:
 	void RemoveEnemy();
-	Shader* particleShader;
 	ParticleSystem* particles;
 	Object* bananaObject;
+	
 public:
 	GameScene();
 	virtual ~GameScene();

@@ -257,15 +257,20 @@ void GameScene::InitializeObjects()
 
 
 	/* Particles */
-	particleShader = new Shader;
-	particleShader->SetVertexShader("Shaders/Particles_vs.hlsl");
-	particleShader->SetPixelShader("Shaders/Particles_ps.hlsl");
-	//particleShader->SetInputLayoutStructure()
+	//particleShader = resources->GetShaderResource("particleShader");
+
+	Shader* particleShader = resources->GetShaderResource("particleShader");
+	bool ashole = 0;
+	//particleShader->SetVertexShader("Shaders/Particles_vs.hlsl", "main");
+	//particleShader->SetPixelShader("Shaders/Particles_ps.hlsl", "main");
+	//particleShader->SetInputLayoutStructure(3, particleShader->DEFAULT_INPUT_LAYOUTCOLOR);
+	////particleShader->SetInputLayoutParticles();
 	//particleShader->Compile(renderer->GetDevice());
 
 	particles = new ParticleSystem(particleShader);
 	particles->InitializeParticles(renderer->GetDevice(), L"Textures/stars.png");
 
+	particles->GetThisObject()->GetTransform().SetPosition(dx::XMVECTOR{ 22.0f, 2.0f, 53, 1.0f });
 
 }
 
@@ -487,7 +492,6 @@ void GameScene::Update(const float& deltaTime)
 
 	skyboxClass->GetThisObject()->GetTransform().SetPosition(camera->GetOwner()->GetTransform().GetPosition());
 	
-	particles->GetThisObject()->GetTransform().SetPosition(dx::XMVECTOR{ 22.0f, 2.0f, 53, 1.0f });
 	
 	
 
@@ -508,8 +512,7 @@ void GameScene::Render()
 	//worldGenerator.DrawShapes();
 	//world.DrawDebug();
 
-	//particles->Render(renderer->GetContext());
-
+	particles->Render(renderer->GetContext());
 	particles->GetThisObject()->Draw(renderer, camera);
 
 	renderer->RenderFrame(camera, (float)clock.GetSeconds());

@@ -62,6 +62,13 @@ void Shader::SetInputLayoutStructure(size_t arraySize, D3D11_INPUT_ELEMENT_DESC*
 	this->ilArrayCount = arraySize;
 }
 
+void Shader::SetInputLayoutParticles()
+{	
+	D3D11_INPUT_ELEMENT_DESC* dickmove = DEFAULT_INPUT_LAYOUTCOLOR;
+	this->inputLayoutDescription = dickmove;
+	this->ilArrayCount = 3;
+}
+
 void Shader::Compile(ID3D11Device* device)
 {	
 	CompileVS(device);
@@ -193,7 +200,7 @@ void Shader::CompileVS(ID3D11Device* device)
 			&errorBlob
 		);
 
-		ASSERT_SHADER(VSCompileResult, errorBlob, wPath);
+		//ASSERT_SHADER(VSCompileResult, errorBlob, wPath);
 
 		HRESULT VSCreateResult = device->CreateVertexShader(VSBlob->GetBufferPointer(), VSBlob->GetBufferSize(), nullptr, &this->vertexShader);
 		assert(SUCCEEDED(VSCreateResult));
