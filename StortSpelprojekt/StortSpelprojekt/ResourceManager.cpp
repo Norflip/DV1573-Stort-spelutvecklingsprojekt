@@ -176,6 +176,7 @@ void ResourceManager::ReadTextures(ID3D11Device* device)
 
 		std::getline(file, line);
 
+		// Add each texture in the file
 		for (int i = 0; i < nrOfTextures; i++)
 		{
 			std::getline(file, line);
@@ -189,7 +190,9 @@ void ResourceManager::ReadTextures(ID3D11Device* device)
 			bool success = texture->LoadTexture(device, pathWSTR.c_str());
 			assert(success);
 
+			// Read empty line
 			std::getline(file, line);
+
 			AddResource(name, texture);
 		}
 	}

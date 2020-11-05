@@ -110,7 +110,7 @@ float4 CalculateDirectionalLight(float3 lightDirection, float3 normal, float3 vi
 		specular = spec * sunColor * matSpecular;
 	}
 
-	//diffuse = sunColor * matDiffuse;
+	diffuse = sunColor * matDiffuse;
 	ambient = sunColor * matAmbient;
 
 	finalColor = ambient + diffuse + specular;
