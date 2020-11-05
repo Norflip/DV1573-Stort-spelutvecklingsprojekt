@@ -9,8 +9,8 @@ namespace dx = DirectX;
 constexpr float CLAMP_X = 90.f * Math::ToRadians;
 constexpr float CLAMP_Y = 360.f * Math::ToRadians;
 
-constexpr float WALK_FOV = 70.f;
-constexpr float RUN_FOV = 90.f;
+constexpr float WALK_FOV = 50.f;
+constexpr float RUN_FOV = 60.f;
 
 constexpr float CROUCH_VELOCITY = 1.f;
 constexpr float CROUCH_ACCELERATION = 0.03f;
