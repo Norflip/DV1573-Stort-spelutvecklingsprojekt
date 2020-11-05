@@ -61,7 +61,6 @@ void GameScene::InitializeObjects()
 	SkeletonAni skeletonbaseMonsterAttack = ZWEBLoader::LoadSkeletonOnly("Models/baseMonsterAttack.ZWEB", skeletonMesh[0]->GetBoneIDS(), defaultAnimation);
 	SkeletonAni skeletonbaseMonsterDeath = ZWEBLoader::LoadSkeletonOnly("Models/baseMonsterDeath.ZWEB", skeletonMesh[0]->GetBoneIDS(), defaultAnimation);
 
-
 	//LOADING HOUSE AND LEGS AND ADDING SKELETONS TO THEM THE HOUSE ONLY HAS ONE JOINT CONNECTED TO IT
 	Shader* defaultShader = resources->GetShaderResource("defaultShader");
 	Shader* skeletonAlphaShader = resources->GetShaderResource("houseShader");
@@ -129,10 +128,10 @@ void GameScene::InitializeObjects()
 	playerObject->AddComponent<CapsuleColliderComponent>(0.5f, 1.8f, zero);
 	playerObject->AddComponent<RigidBodyComponent>(60.f, FilterGroups::PLAYER, FilterGroups::EVERYTHING, BodyType::DYNAMIC, true);
 
-	playerObject->AddComponent<ControllerComp>(cameraObject, houseBaseObject); /////////////////
 	//Transform::SetParentChild(playerObject->GetTransform(),cameraObject->GetTransform());
-	playerObject->AddComponent<PlayerComp>(renderer, camera, physics, guiManager, 100.f, 2.f, 3.f, 50.f, 3.f);
-	//playerStatsComp = playerObject->GetComponent<PlayerComp>(); //
+	playerObject->AddComponent<PlayerComp>(renderer, camera, Physics::Instance(), guiManager, 100.f, 2.f, 20.f, 50.f, 3.f);
+	playerObject->AddComponent<ControllerComp>(cameraObject, houseBaseObject); /////////////////
+
 
 	AddObject(cameraObject, playerObject);
 	AddObject(playerObject);
@@ -159,19 +158,29 @@ void GameScene::InitializeObjects()
 	dx::XMFLOAT3 enemyTranslation = dx::XMFLOAT3(23, 7, 46);
 	enemy->GetTransform().SetPosition(dx::XMLoadFloat3(&enemyTranslation));
 	enemy->GetTransform().SetScale({ 0.125f, 0.125f, 0.125f });
-	enemy->AddComponent<EnemyStatsComp>(100.f, 0.5f, 5.f, 5.f, 3.f);
-	enemy->AddComponent<BoxColliderComponent>(dx::XMFLOAT3{ 1, 1, 1 }, dx::XMFLOAT3{ 0, 0, 0 });
-	enemy->AddComponent<RigidBodyComponent>(20.0f, FilterGroups::ENEMIES, FilterGroups::EVERYTHING, BodyType::DYNAMIC, true);
-	enemy->AddComponent<BoxColliderComponent>(dx::XMFLOAT3{ 0.8, 1.8, 1 }, dx::XMFLOAT3{ 0, 0, 0 });
+	enemy->AddComponent<EnemyStatsComp>(100.f, 2.0f, 10.f, 5.f, 3.f, 3.f);
+	//enemyStatsComp = enemy->GetComponent<EnemyStatsComp>();
+	enemy->AddComponent<BoxColliderComponent>(dx::XMFLOAT3{ 1, 2.45, 1 }, dx::XMFLOAT3{ 0, 0, 0 });
 
-	enemy->AddComponent<EnemyAttackComp>(player->GetComponent<PlayerComp>());
+	physics.MutexLock();
+	RigidBodyComponent* rbEnemy = enemy->AddComponent<RigidBodyComponent>(10.f, FilterGroups::ENEMIES, FilterGroups::EVERYTHING, BodyType::KINEMATIC);
+	physics.RegisterRigidBody(rbEnemy);
+	physics.MutexUnlock();
+
 	EnemySMComp* stateMachine = enemy->AddComponent<EnemySMComp>(EnemyState::IDLE);
 	stateMachine->RegisterState(EnemyState::IDLE, enemy->AddComponent<EnemyIdleComp>());
-	stateMachine->RegisterState(EnemyState::PATROL, enemy->AddComponent<EnemyPatrolComp>());
-	stateMachine->RegisterState(EnemyState::ATTACK, enemy->AddComponent<EnemyAttackComp>(player->GetComponent<PlayerComp>() ));
+	//stateMachine->RegisterState(EnemyState::PATROL, enemy->AddComponent<EnemyPatrolComp>());
+	stateMachine->RegisterState(EnemyState::ATTACK, enemy->AddComponent<EnemyAttackComp>(player->GetComponent<PlayerComp>()));
+	stateMachine->Start();
 	stateMachine->InitAnimation();
 	AddObject(enemy);
 
+	//physics.MutexLock();
+	//RigidBodyComponent* rbEnemy = enemy->AddComponent<RigidBodyComponent>(0.f, FilterGroups::ENEMIES, FilterGroups::PLAYER, BodyType::STATIC);
+	////rbEnemy.
+	//physics.RegisterRigidBody(rbEnemy);
+	//physics.MutexUnlock();
+	playerObject->AddComponent<PlayerAttackComp>(enemy);
 
 	std::vector<Mesh*> axeMesh = ZWEBLoader::LoadMeshes(ZWEBLoadType::NoAnimation, "Models/AXE.ZWEB", renderer->GetDevice());
 	std::vector<Material*> axeMat = ZWEBLoader::LoadMaterials("Models/AXE.ZWEB", defaultShader, renderer->GetDevice());
@@ -183,8 +192,7 @@ void GameScene::InitializeObjects()
 	axeObject->AddComponent<WeaponComponent>(cameraObject);
 		
 	AddObject(axeObject);
-
-	clock.Update();
+	playerObject->GetComponent<PlayerComp>()->InsertWeapon(axeObject->GetComponent<WeaponComponent>(), axeObject->GetName());
 
 	world.Initialize(root, resources, pooler, renderer);
 	
@@ -207,7 +215,7 @@ void GameScene::InitializeObjects()
 	///* Fuel pickup stuff temporary */
 	Object* fuelCanObject = resources->AssembleObject("FuelCanGreen", "FuelCanGreenMaterial");
 	fuelCanObject->GetTransform().SetPosition({ 22,2,52 });
-	fuelCanObject->AddComponent<BoxColliderComponent>(dx::XMFLOAT3{ 0.5f, 0.5f, 0.5f }, dx::XMFLOAT3{ 0, 0, 0 });
+	fuelCanObject->AddComponent<BoxColliderComponent>(dx::XMFLOAT3{ 0.3f, 0.3f, 0.3f }, dx::XMFLOAT3{ 0, 0, 0 });
 	fuelCanObject->AddComponent<PickupComponent>(Type::Fuel, 20.0f);
 	fuelCanObject->AddComponent<RigidBodyComponent>(0.f, FilterGroups::PICKUPS, FilterGroups::PLAYER, BodyType::DYNAMIC, true);
 	AddObject(fuelCanObject);
@@ -223,7 +231,6 @@ void GameScene::InitializeObjects()
 
 void GameScene::InitializeGUI()
 {
-
 	float windowWidth = FCAST(window->GetWidth());
 	float windowHeight = FCAST(window->GetHeight());
 	//GUISTUFF//
@@ -258,9 +265,8 @@ void GameScene::InitializeGUI()
 
 	//FONTS
 	GUIFont* fpsDisplay = new GUIFont(*renderer, "fps", windowWidth / 2, 50);
-
-	/*GUIFont* healthDisplay = new GUIFont(*renderer, "playerHealth", 50, 100);
-	GUIFont* enemyDisplay = new GUIFont(*renderer, "enemyHealth", 50, 150);*/
+	//GUIFont* healthDisplay = new GUIFont(*renderer, "playerHealth", 50, 100);
+	//GUIFont* enemyDisplay = new GUIFont(*renderer, "enemyHealth", 50, 150);
 
 	//CROSSHAIR
 	GUISprite* dot = new GUISprite(*renderer, "Textures/TestFix2.png", (windowWidth / 2) - 6, (windowHeight / 2) - 6, 0, DrawDirection::BottomLeft, ClickFunction::NotClickable);
@@ -370,8 +376,6 @@ void GameScene::Update(const float& deltaTime)
 	world.UpdateRelevantChunks();
 
 	static_cast<GUIFont*>(guiManager->GetGUIObject("fps"))->SetString(std::to_string((int)GameClock::Instance().GetFramesPerSecond()));
-	//static_cast<GUIFont*>(guiManager->GetGUIObject("playerHealth"))->SetString("Player health: " + std::to_string((int)playerStatsComp->GetHealth()));
-	//static_cast<GUIFont*>(guiManager->GetGUIObject("enemyHealth"))->SetString("Enemy health: " + std::to_string((int)enemyStatsComp->GetHealth()));
 	guiManager->UpdateAll();
 
 	if (KEY_DOWN(H))

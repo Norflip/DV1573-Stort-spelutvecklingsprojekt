@@ -3,6 +3,7 @@
 #include "EnemyStatsComp.h"
 #include "GameClock.h"
 #include "PlayerComp.h"
+class PlayerComp;
 class PlayerAttackComp : public Component
 {
 	public:
