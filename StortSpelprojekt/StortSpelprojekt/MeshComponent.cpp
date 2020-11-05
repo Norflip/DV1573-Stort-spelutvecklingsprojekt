@@ -50,14 +50,14 @@ void MeshComponent::DrawNonInstanced(Renderer* renderer, CameraComponent* camera
 	if (GetOwner()->HasFlag(ObjectFlag::NO_CULL) || camera->InView(bounds, GetOwner()->GetTransform().GetWorldMatrix()))
 	{
 		for (size_t i = 0; i < meshes.size(); i++)
-			renderer->Draw(meshes[i], materials[i], GetOwner()->GetTransform().GetWorldMatrix(), camera);
+			renderer->Draw(meshes[i], materials[i], GetOwner()->GetTransform().GetWorldMatrix());
 	}
 }
 
 void MeshComponent::DrawInstanced(Renderer* renderer, CameraComponent* camera) const
 {
 	for (size_t i = 0; i < meshes.size(); i++)
-		renderer->DrawInstanced(meshes[i], instanceData.size(), instanceBuffer, materials[i], camera);
+		renderer->DrawInstanced(meshes[i], instanceData.size(), instanceBuffer, materials[i]);
 	return; // FIX
 
 	if (GetOwner()->HasFlag(ObjectFlag::NO_CULL))
@@ -89,7 +89,7 @@ void MeshComponent::DrawInstanced(Renderer* renderer, CameraComponent* camera) c
 
 			if (instanceCount > 0)
 			{
-				renderer->DrawInstanced(meshes[i], instanceCount, instanceBuffer, materials[i], camera);
+				renderer->DrawInstanced(meshes[i], instanceCount, instanceBuffer, materials[i]);
 			}
 		}
 	}

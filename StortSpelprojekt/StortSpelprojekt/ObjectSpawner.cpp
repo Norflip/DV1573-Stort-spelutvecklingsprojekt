@@ -1,6 +1,7 @@
 #include "stdafx.h"
 #include "ObjectSpawner.h"
 #include "ResourceManager.h"
+#include "Engine.h"
 
 ObjectSpawner::ObjectSpawner()
 {
@@ -23,7 +24,6 @@ void ObjectSpawner::Spawn(const SaveState& state, PointQuadTree& tree, std::unor
 
 	Random::SetSeed(state.GetSeed(1));
 	itemSpawnPositions = CreateSpawnPositions(tree, 20.0f, chunkMap);
-
 
 	/*for (size_t i = 0; i < staticItems.size(); i++)
 	{
@@ -135,26 +135,29 @@ void ObjectSpawner::Spawn(const SaveState& state, PointQuadTree& tree, std::unor
 #if SPAWN_ITEMS
 	int itemIndex = 0;
 
-	for (size_t i = 0; i < itemSpawnPositions.size(); i++)
+	if (items.size() > 0)
 	{
-		itemIndex %= items.size();
-		Item& item = items[itemIndex];
-
-		dx::XMFLOAT2 pos = itemSpawnPositions[i];
-		Chunk* chunk = GetChunk(pos.x, pos.y, chunkMap);
-
-		if (chunk != nullptr)
+		for (size_t i = 0; i < itemSpawnPositions.size(); i++)
 		{
-			float y = chunk->SampleHeight(pos.x, pos.y);
+			itemIndex %= items.size();
+			Item& item = items[itemIndex];
 
-			Object* object = pooler->GetItem(item.key);
-			dx::XMVECTOR position = dx::XMVectorSet(pos.x, y + SPAWN_HEIGHT, pos.y, 0.0f);
+			dx::XMFLOAT2 pos = itemSpawnPositions[i];
+			Chunk* chunk = GetChunk(pos.x, pos.y, chunkMap);
 
-			object->GetComponent<RigidBodyComponent>()->SetPosition(position);
-			Transform::SetParentChild(root->GetTransform(), object->GetTransform());
-			activeItems.push_back(object);
+			if (chunk != nullptr)
+			{
+				float y = chunk->SampleHeight(pos.x, pos.y);
 
-			itemIndex++;
+				Object* object = pooler->GetItem(item.key);
+				dx::XMVECTOR position = dx::XMVectorSet(pos.x, y + SPAWN_HEIGHT, pos.y, 0.0f);
+
+				object->GetComponent<RigidBodyComponent>()->SetPosition(position);
+				Transform::SetParentChild(root->GetTransform(), object->GetTransform());
+				activeItems.push_back(object);
+
+				itemIndex++;
+			}
 		}
 	}
 
@@ -166,15 +169,18 @@ void ObjectSpawner::Spawn(const SaveState& state, PointQuadTree& tree, std::unor
 
 void ObjectSpawner::Despawn()
 {
-	for (auto i : activeItems)
+	if (activeItems.size() > 0)
 	{
-		Object* obj = i;
-		Transform::ClearFromHierarchy(obj->GetTransform());
-		obj->GetComponent<RigidBodyComponent>()->PhysicRelease();
-		delete obj;
+		for (auto i : activeItems)
+		{
+			Object* obj = i;
+			obj->GetComponent<RigidBodyComponent>()->Release();			
+			Transform::ClearFromHierarchy(obj->GetTransform());
+			delete obj;
+		}
 	}
 
-	items.clear();
+	activeItems.clear();
 }
 
 void ObjectSpawner::RegisterItem(std::string key, float radius, float padding, float yOffset, size_t queueCount)

@@ -1,5 +1,6 @@
 #include "stdafx.h"
 #include "SegmentGenerator.h"
+#include "Engine.h"
 
 SegmentGenerator::SegmentGenerator() : constructed(false), treePoints(dx::XMFLOAT2(0, 0), dx::XMFLOAT2(0, 0))
 {
@@ -24,11 +25,6 @@ void SegmentGenerator::Initialize(Object* root, ResourceManager* resourceManager
 	this->chunkShader = resourceManager->GetShaderResource("terrainShader");
 
 	InitializeTrees(resourceManager);
-	Physics& physics = Physics::Instance();
-	physics.MutexLock();
-
-
-	physics.MutexUnlock();
 }
 
 void SegmentGenerator::Construct(const SaveState& state, const SegmentDescription& description)
@@ -75,6 +71,8 @@ void SegmentGenerator::Deconstruct()
 		constructed = false;
 		chunks.clear();
 		grid.Clear();
+		chunkMap.clear();
+
 	}
 }
 
@@ -197,7 +195,7 @@ Chunk* SegmentGenerator::CreateChunk(const dx::XMINT2& index, Object* root, cons
 	chunkObject->GetTransform().SetPosition(chunkPosition);
 	Transform::SetParentChild(root->GetTransform(), chunkObject->GetTransform());
 
-	chunk->SetupCollisionObject(heightMap);
+	chunk->SetupCollisionObject(Engine::Instance->GetPhysics(), heightMap);
 
 	Material* material = new Material(chunkShader);
 	material->SetMaterialData(materialData);
@@ -319,7 +317,6 @@ void SegmentGenerator::InitializeTrees(ResourceManager* resources)
 
 void SegmentGenerator::AddTreesToChunk(Chunk* chunk, std::vector<ChunkPointInformation>& chunkInformation)
 {
-	Physics& physics = Physics::Instance();
 	PossionDiscSampler sampler;
 
 	Random::SetSeed(Random::GenerateSeed());
@@ -375,19 +372,7 @@ void SegmentGenerator::AddTreesToChunk(Chunk* chunk, std::vector<ChunkPointInfor
 			stylizedTreeMaterial[1]->SetTransparent(true);
 
 			tree->AddComponent<BoxColliderComponent>(colliderExtends, colliderPositions);
-
-			//std::cout << "COLLIDERS: " << std::to_string(colliderPositions.size()) << " / " << std::to_string(nrOfInstancedStyTrees) << std::endl;
-
-			//for (size_t i = 0; i < nrOfInstancedStyTrees; i++)
-			//{
-			//	BoxColliderComponent* collider = tree->AddComponent<BoxColliderComponent>(extends, treesInstanced[i].instancePosition);
-			//}
-
-			RigidBodyComponent* rbody = tree->AddComponent<RigidBodyComponent>(0.f, FilterGroups::PROPS, FilterGroups::EVERYTHING, BodyType::STATIC);
-
-			physics.RegisterRigidBody(rbody);
-
-
+			tree->AddComponent<RigidBodyComponent>(0.f, FilterGroups::PROPS, FilterGroups::EVERYTHING, BodyType::STATIC, true);
 		}
 	}
 }

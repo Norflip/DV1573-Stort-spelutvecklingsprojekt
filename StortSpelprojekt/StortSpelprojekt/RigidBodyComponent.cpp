@@ -1,8 +1,10 @@
 #include "stdafx.h"
 #include "RigidBodyComponent.h"
 #include "Physics.h"
+#include "Engine.h"
 
-RigidBodyComponent::RigidBodyComponent(float mass, FilterGroups group, FilterGroups mask, BodyType type) : mass(mass), group(group), collisionMask(mask), type(type)
+RigidBodyComponent::RigidBodyComponent(float mass, FilterGroups group, FilterGroups mask, BodyType type, bool autoRegister)
+	: mass(mass), group(group), collisionMask(mask), type(type), autoRegister(autoRegister), body(nullptr), initialized(false)
 {
 }
 
@@ -93,9 +95,14 @@ dx::XMVECTOR RigidBodyComponent::GetRotation() const
 	return dx::XMLoadFloat4(&rot4);
 }
 
-void RigidBodyComponent::PhysicRelease()
+void RigidBodyComponent::Release()
 {
-	Physics::Instance().GetWorld()->destroyRigidBody(body);
+	for (auto i : collidersList)
+	{
+		body->removeCollider(i);
+	}
+
+	physics->GetWorld()->destroyRigidBody(body);
 }
 
 rp::Transform RigidBodyComponent::ConvertToBtTransform(const Transform& transform) const
@@ -117,6 +124,7 @@ void RigidBodyComponent::AddCollidersToBody(Object* obj, rp::RigidBody* body)
 	const std::vector<Collider*> colliders = obj->GetComponentsOfSubType<Collider>();
 	for (size_t i = 0; i < colliders.size(); i++)
 	{
+		colliders[i]->InitializeCollider(physics);
 		size_t shapeCount = colliders[i]->CountCollisionShapes();
 		for (size_t j = 0; j < shapeCount; j++)
 		{
@@ -127,7 +135,7 @@ void RigidBodyComponent::AddCollidersToBody(Object* obj, rp::RigidBody* body)
 		}
 	}
 
-	//assert(colliders.size() > 0);
+	assert(collidersList.size() > 0);
 	//std::cout << (GetOwner()->GetName() + " has " + std::to_string(colliders.size()) + " colliders\n");
 
 	//CHILDREN
@@ -138,32 +146,42 @@ void RigidBodyComponent::AddCollidersToBody(Object* obj, rp::RigidBody* body)
 	}
 }
 
-void RigidBodyComponent::RemoveCollidersFromBody(rp::RigidBody* body)
+void RigidBodyComponent::m_InitializeBody(Physics* physics)
 {
-	for (auto i : collidersList)
+	if (!initialized)
 	{
-		body->removeCollider(i);
+		this->physics = physics;
+		Transform& transform = GetOwner()->GetTransform();
+		currentTransform = ConvertToBtTransform(transform);
+		previousTransform = currentTransform;
+
+		rp::BodyType bodyType = static_cast<rp::BodyType>((int)type);
+		if (mass == 0.0f)
+			bodyType = rp::BodyType::STATIC;
+
+		body = physics->GetWorld()->createRigidBody(currentTransform);
+		body->setType(bodyType);
+		body->setMass(mass);
+		body->setUserData(static_cast<void*>(GetOwner()));
+
+		AddCollidersToBody(GetOwner(), body);
+		initialized = true;
 	}
 }
 
-void RigidBodyComponent::m_InitializeBody(rp::PhysicsWorld* world)
+void RigidBodyComponent::Initialize()
 {
-	Transform& transform = GetOwner()->GetTransform();
-	currentTransform = ConvertToBtTransform(transform);
-	previousTransform = currentTransform;
-
-	rp::BodyType bodyType = static_cast<rp::BodyType>((int)type);
-	if (mass == 0.0f)
-		bodyType = rp::BodyType::STATIC;
-
-	body = world->createRigidBody(currentTransform);
-	body->setType(bodyType);
-	body->setMass(mass);
-	body->setUserData(static_cast<void*>(GetOwner()));
-
-	AddCollidersToBody(GetOwner(), body);
+	//std::cout << GetOwner()->GetName() << ": RB initialize" << std::endl;
+	if (autoRegister)
+		m_InitializeBody(Engine::Instance->GetPhysics());
 }
 
+void RigidBodyComponent::OnOwnerFlagChanged(ObjectFlag old, ObjectFlag newFlag)
+{
+	bool enabled = ((int)(ObjectFlag::ENABLED & newFlag) != 0);
+	if (body != nullptr)
+		body->setIsActive(enabled);
+}
 
 void RigidBodyComponent::m_OnCollision(const CollisionInfo& collision)
 {

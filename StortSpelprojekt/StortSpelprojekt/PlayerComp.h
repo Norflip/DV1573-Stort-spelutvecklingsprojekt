@@ -16,7 +16,7 @@ public:
 
 	
 	//PlayerComp();
-	PlayerComp(Renderer* renderer, CameraComponent* camComp, Physics& phys, GUIManager* guimanager, float health, float movementSpeed, float radius, float attack, float attackSpeed);
+	PlayerComp(Renderer* renderer, CameraComponent* camComp, Physics* physics, GUIManager* guimanager, float health, float movementSpeed, float radius, float attack, float attackSpeed);
 	virtual ~PlayerComp();
 	void Update(const float& deltaTime) override;
 
@@ -32,6 +32,9 @@ public:
 	float GetMovementspeed()const { return movementSpeed; }
 
 	float GetRadius() const { return radius; }
+
+	void Reset();
+
 	void LoseHealth(float damage) { health -= damage; }	
 	void AddHealth(float health) { this->health += health; }	
 	void AddAttack(float attack) { this->attack += attack; }
@@ -48,7 +51,6 @@ public:
 	//void SetCurrentWeapon(int currentWeapon) { this->currentWeapon = currentWeapon; }// some ui stuff here?
 	void SetguiMan(GUIManager* guiMan) { this->guiMan = guiMan; }
 	void InsertWeapon(WeaponComponent* weapon, std::string name);
-	NEXT_SCENE GetNextScene() { return this->swapScene; }
 
 private:
 	void HoldObject();
@@ -60,7 +62,6 @@ private:
 	float radius;
 	GUIManager* guiMan;
 	GUISprite* fuelDippingBar, *foodDippingBar,* healthDippingBar;
-	NEXT_SCENE swapScene;
 	Renderer* renderer;
 	POINT p;
 	std::unordered_map<std::string, WeaponComponent*> weaponsList;
@@ -69,7 +70,7 @@ private:
 	Object* currentWeapon;
 	Object* holding;
 	RayHit hit;
-	Physics& phy;
+	Physics* physics;
 	CameraComponent* cam;
 	//GameClock attackTimer;
 
