@@ -97,12 +97,12 @@ dx::XMVECTOR RigidBodyComponent::GetRotation() const
 
 void RigidBodyComponent::Release()
 {
-	/*for (auto i : collidersList)
+	for (auto i : collidersList)
 	{
 		body->removeCollider(i);
-	}*/
+	}
 
-	//physics->GetWorld()->destroyRigidBody(body);
+	physics->GetWorld()->destroyRigidBody(body);
 }
 
 rp::Transform RigidBodyComponent::ConvertToBtTransform(const Transform& transform) const
