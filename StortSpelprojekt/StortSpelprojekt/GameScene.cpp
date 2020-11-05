@@ -259,18 +259,17 @@ void GameScene::InitializeObjects()
 	/* Particles */
 	//particleShader = resources->GetShaderResource("particleShader");
 
-	Shader* particleShader = resources->GetShaderResource("particleShader");
+	Shader* particleShader = new Shader; //  resources->GetShaderResource("particleShader");
 	bool ashole = 0;
-	//particleShader->SetVertexShader("Shaders/Particles_vs.hlsl", "main");
-	//particleShader->SetPixelShader("Shaders/Particles_ps.hlsl", "main");
-	//particleShader->SetInputLayoutStructure(3, particleShader->DEFAULT_INPUT_LAYOUTCOLOR);
-	////particleShader->SetInputLayoutParticles();
-	//particleShader->Compile(renderer->GetDevice());
+	particleShader->SetVertexShader("Shaders/Particles_vs.hlsl", "main");
+	particleShader->SetPixelShader("Shaders/Particles_ps.hlsl", "main");
+	particleShader->SetInputLayoutStructure(3, particleShader->DEFAULT_INPUT_LAYOUTCOLOR);
+	particleShader->Compile(renderer->GetDevice());
 
 	particles = new ParticleSystem(particleShader);
 	particles->InitializeParticles(renderer->GetDevice(), L"Textures/stars.png");
-
-	particles->GetThisObject()->GetTransform().SetPosition(dx::XMVECTOR{ 22.0f, 2.0f, 53, 1.0f });
+	particles->SetWorldMatrix(dx::XMMATRIX(dx::XMMatrixTranslation(22, 2.0f, 53)));
+	//particles->GetThisObject()->GetTransform().SetPosition(dx::XMVECTOR{ 22.0f, 2.0f, 53, 1.0f });
 
 }
 
@@ -512,9 +511,8 @@ void GameScene::Render()
 	//worldGenerator.DrawShapes();
 	//world.DrawDebug();
 
-	particles->Render(renderer->GetContext());
-	particles->GetThisObject()->Draw(renderer, camera);
-
+	particles->Render(renderer->GetContext(), camera);
+	
 	renderer->RenderFrame(camera, (float)clock.GetSeconds());
 }
 

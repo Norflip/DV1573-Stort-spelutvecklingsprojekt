@@ -6,8 +6,10 @@ ParticleSystem::ParticleSystem(Shader* shader)
 	this->object = new Object("particles");
 	this->particlesShader = shader;
 	this->particlesMaterial = new Material(particlesShader);
-	//this->particleQuad = 
-	
+	//this->object = new Object("fittkuk");
+	//this->object->AddComponent<MeshComponent>(nullptr, particlesMaterial);
+	//this->object->GetTransform().SetPosition(dx::XMVECTOR(dx::XMVectorSet(20, 2, 20, 1.0f)));
+
 	/* Default stuff about every particle */
 	this->differenceOnX = 0.0f;
 	this->differenceOnY = 0.0f;
@@ -61,7 +63,7 @@ ParticleSystem::ParticleSystem(const ParticleSystem& other)
 
 ParticleSystem::~ParticleSystem()
 {
-	Shutdown();
+	//Shutdown();
 }
 
 void ParticleSystem::InitializeParticles(ID3D11Device* device, LPCWSTR textureFilename)
@@ -74,11 +76,11 @@ void ParticleSystem::InitializeParticles(ID3D11Device* device, LPCWSTR textureFi
 		Particlesize is based on the created quad.
 	*/
 
-	differenceOnX = 2.0f;
+	differenceOnX = 5.0f;
 	differenceOnY = 0.2f;
-	differenceOnZ = 2.0f;
+	differenceOnZ = 5.0f;
 
-	particleVelocity = 10.0f;
+	particleVelocity = 1.0f;
 	particleVelocityVariation = 0.2f;
 
 	particleSize = 0.2f;
@@ -91,15 +93,11 @@ void ParticleSystem::InitializeParticles(ID3D11Device* device, LPCWSTR textureFi
 	*/
 
 	maxParticles = 50;
-	particleList = new Particles[maxParticles];
-	/*if (!particleList) {
-		return false;
-	}*/
+	particleList = new Particles[maxParticles];	
 
 	for (int i = 0; i < maxParticles; i++) {
 		particleList[i].active = false;
 	}
-
 
 	/*
 		Currentparticlecount is the current particles falling down in the scene at the moment. (0 at the beginning)
@@ -116,13 +114,8 @@ void ParticleSystem::InitializeParticles(ID3D11Device* device, LPCWSTR textureFi
 		on the scene dynamicly from the cpu and not from our shader.
 	*/
 
-	result = InitializeBuffers(device);
-	/*if (!result) {
-		return false;
-	}*/
-
-	LoadTexture(device, textureFilename);
-	
+	InitializeBuffers(device);
+	LoadTexture(device, textureFilename);	
 }
 
 void ParticleSystem::Shutdown()
@@ -153,10 +146,8 @@ void ParticleSystem::Shutdown()
 	}
 }
 
-bool ParticleSystem::Update(float frameTime, ID3D11DeviceContext* context)
-{
-	bool result;
-
+void ParticleSystem::Update(float frameTime, ID3D11DeviceContext* context)
+{	
 	/*
 		Delete old particles that reaches a height. 
 		Create new particles after some time.
@@ -170,32 +161,25 @@ bool ParticleSystem::Update(float frameTime, ID3D11DeviceContext* context)
 	UpdateParticles(frameTime);
 
 	// Update the dynamic vertex buffer with the new position of each particle.
-	result = UpdateBuffers(context);
-	if (!result)
-		return false;
-
-	return true;
+	UpdateBuffers(context);
 }
 
-void ParticleSystem::Render(ID3D11DeviceContext* context)
+void ParticleSystem::Render(ID3D11DeviceContext* context, CameraComponent* camera)
 {
 	unsigned int stride;
 	unsigned int offset;
 
-
-	// Set vertex buffer stride and offset.
 	stride = sizeof(Vertex);
 	offset = 0;
-
-	// Set the vertex buffer to active in the input assembler so it can be rendered.
+	
 	context->IASetVertexBuffers(0, 1, &vertexBuffer, &stride, &offset);
-
-	// Set the index buffer to active in the input assembler so it can be rendered.
 	context->IASetIndexBuffer(indexBuffer, DXGI_FORMAT_R32_UINT, 0);
-
-	// Set the type of primitive that should be rendered from this vertex buffer.
 	context->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
 
+
+	SetCBuffers(context, camera);
+	bool snusk = 0;
+	particlesShader->BindToContext(context);
 }
 
 void ParticleSystem::SetWorldMatrix(dx::XMMATRIX worldmatrix)
@@ -205,7 +189,7 @@ void ParticleSystem::SetWorldMatrix(dx::XMMATRIX worldmatrix)
 
 dx::XMMATRIX ParticleSystem::GetWorldMatrix()
 {
-	return dx::XMMATRIX();
+	return this->worldmatrix;
 }
 
 int ParticleSystem::GetIndexCount()
@@ -222,6 +206,7 @@ void ParticleSystem::LoadTexture(ID3D11Device* device, LPCWSTR textureFilename)
 	texture.SetShaderResourceView(srv);	
 	particlesMaterial->SetTexture(texture, TEXTURE_DIFFUSE_SLOT, ShaderBindFlag::PIXEL);
 	particlesMaterial->SetSampler(DXHelper::CreateSampler(D3D11_FILTER_MIN_MAG_MIP_LINEAR, D3D11_TEXTURE_ADDRESS_WRAP, device), 0, ShaderBindFlag::PIXEL);
+	kuksampler = DXHelper::CreateSampler(D3D11_FILTER_MIN_MAG_MIP_LINEAR, D3D11_TEXTURE_ADDRESS_WRAP, device);
 }
 
 bool ParticleSystem::InitializeBuffers(ID3D11Device* device)
@@ -295,11 +280,48 @@ bool ParticleSystem::InitializeBuffers(ID3D11Device* device)
 	delete[] indices;
 	indices = 0;
 
+
+
+
+	/* * * * * * * * CBuffer stuff * * * * * * * * */
+	D3D11_BUFFER_DESC cBufferDescription;
+
+	// Setup the description of the bufferPerObject constant buffer that is in the vertex shader.
+	ZeroMemory(&cBufferDescription, sizeof(D3D11_BUFFER_DESC));
+	cBufferDescription.Usage = D3D11_USAGE_DEFAULT;
+	cBufferDescription.ByteWidth = static_cast<uint32_t>(sizeof(cBufferPerObjectParticles) + (16 - (sizeof(cBufferPerObjectParticles) % 16)));
+	cBufferDescription.BindFlags = D3D11_BIND_CONSTANT_BUFFER;
+	cBufferDescription.CPUAccessFlags = 0;
+	cBufferDescription.MiscFlags = 0;
+	cBufferDescription.StructureByteStride = 0;
+
+	hr = device->CreateBuffer(&cBufferDescription, NULL, &bufferPerObjectParticles);
+	if (FAILED(hr))
+	{
+		return false;
+	}
+
 	return true;
 }
 
+void ParticleSystem::SetCBuffers(ID3D11DeviceContext* context, CameraComponent* camera)
+{
+	dx::XMMATRIX WVP = worldmatrix * camera->GetViewMatrix() * camera->GetProjectionMatrix();
+	cbPerObjectParticles.worldViewProj =  DirectX::XMMatrixTranspose(WVP);
+	cbPerObjectParticles.world = DirectX::XMMatrixTranspose(worldmatrix);
+
+	context->UpdateSubresource(bufferPerObjectParticles, 0, nullptr, &cbPerObjectParticles, 0, 0);
+	context->VSSetConstantBuffers(0, 1, &bufferPerObjectParticles);
+
+	// Set shader texture resource in the pixel shader.
+	context->PSSetShaderResources(0, 1, &srv);
+	context->PSSetSamplers(0, 1, &kuksampler);
+	bool fittahora = 0;
+}
+
 void ParticleSystem::CreateParticle(float frameTime)
-{// Increment the frame time.
+{
+	// Increment the frame time.
 	accumulatedTime += frameTime;
 
 	// Set emit particle to false for now.
@@ -322,9 +344,9 @@ void ParticleSystem::CreateParticle(float frameTime)
 			Red green and blue are set to 1,1,1 because we are using a texture as color.
 		*/
 
-		float positionX = (((float)rand() - (float)rand()) / RAND_MAX) * differenceOnX;
-		float positionY = (((float)rand() - (float)rand()) / RAND_MAX) * differenceOnY;
-		float positionZ = (((float)rand() - (float)rand()) / RAND_MAX) * differenceOnZ;
+		float positionX =  (((float)rand() - (float)rand()) / RAND_MAX)* differenceOnX;
+		float positionY =  (((float)rand() - (float)rand()) / RAND_MAX)* differenceOnY;
+		float positionZ =  (((float)rand() - (float)rand()) / RAND_MAX)* differenceOnZ;
 
 		float velocity = particleVelocity + (((float)rand() - (float)rand()) / RAND_MAX) * particleVelocityVariation;
 
@@ -394,7 +416,7 @@ void ParticleSystem::UpdateParticles(float frameTime)
 	// Each frame we update all the particles by making them move downwards using their position, velocity, and the frame time.
 	for (int i = 0; i < currentParticleCount; i++)
 	{
-		particleList[i].posy = particleList[i].posy - (particleList[i].velocity * ((float)frameTime * 0.6f));
+		particleList[i].posy = particleList[i].posy + (particleList[i].velocity * ((float)frameTime * 0.1f));
 	}
 }
 

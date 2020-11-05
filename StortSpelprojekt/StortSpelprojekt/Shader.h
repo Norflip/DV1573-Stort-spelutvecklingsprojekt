@@ -72,7 +72,6 @@ public:
 	void SetDomainShader(std::string path, LPCSTR entry = "main");
 
 	void SetInputLayoutStructure(size_t arraySize, D3D11_INPUT_ELEMENT_DESC* inputLayoutDesc);
-	void SetInputLayoutParticles();
 
 	void Compile(ID3D11Device*);
 	void BindToContext(ID3D11DeviceContext*) const;

@@ -1,5 +1,5 @@
-#include "CommonBuffers.hlsl"
-#include "IO.hlsl"
+//#include "CommonBuffers.hlsl"
+//#include "IO.hlsl"
 
 Texture2D shaderTexture : register(t0);
 SamplerState SampleType : register(s0);
@@ -7,7 +7,7 @@ SamplerState SampleType : register(s0);
 struct PixelInput
 {
     float4 position : SV_POSITION;
-    float3 worldPosition : WPOSITION;
+    float4 worldPosition : WPOSITION;
     float2 uv : TEXCOORD;
     float4 color : COLOR;
 };
