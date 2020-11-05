@@ -57,7 +57,8 @@ void NodeWalkerComp::InitAnimation()
 		this->base = nullptr;
 		this->legs = nullptr;
 	}
-	Start();
+	//Start();
+	//canWalk = true;
 }
 
 void NodeWalkerComp::Reset()
@@ -161,7 +162,7 @@ void NodeWalkerComp::Update(const float& deltaTime)
 			dx::XMStoreFloat(&this->length, dx::XMVector3Length(vdir));
 			if (this->length < nodeRadius)
 			{
-				//StopAnim();
+				StopAnim();
 				canWalk = false;
 				this->currentNode = this->nextChosen;
 			}
@@ -182,7 +183,7 @@ void NodeWalkerComp::Update(const float& deltaTime)
 			{
 
 				this->nextChosen = currentNode + skip; //skip is 10
-				//StartAnim();
+				StartAnim();
 				canWalk = true;
 
 			}
