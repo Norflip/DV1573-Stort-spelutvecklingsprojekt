@@ -188,13 +188,10 @@ namespace ZWEBLoader //TO BE ADDED: FUNCTION TO LOAD LIGHTS
 
 			if (diffuseTName != " ") //if a texture does not exist, this is it's name.
 			{
-				Texture texture;
 				std::string path = "Textures/" + diffuseTName; //Using a fixed path so that you don't need to export the texture in the right folder, just place it manually in here instead.
 				std::wstring pathWSTR(path.begin(), path.end());
 				
-				bool success = texture.LoadTexture(device, pathWSTR.c_str());
-				assert(success);
-
+				Texture* texture = Texture::LoadTexture(device, pathWSTR.c_str());
 				mat->SetTexture(texture, 0, ShaderBindFlag::PIXEL);
 				materialData.hasAlbedo = 1;
 			}
@@ -204,12 +201,10 @@ namespace ZWEBLoader //TO BE ADDED: FUNCTION TO LOAD LIGHTS
 			}
 			if (normalTName != " ")
 			{
-				Texture texture;
 				std::string path = "Textures/" + normalTName;
 				std::wstring pathWSTR(path.begin(), path.end());
-				bool success = texture.LoadTexture(device, pathWSTR.c_str());
-				assert(success);
-
+				
+				Texture* texture = Texture::LoadTexture(device, pathWSTR.c_str());
 				mat->SetTexture(texture, 1, ShaderBindFlag::PIXEL); //This is default but can be manually changed afterwards.
 				materialData.hasNormalMap = 1;
 			}
@@ -219,12 +214,10 @@ namespace ZWEBLoader //TO BE ADDED: FUNCTION TO LOAD LIGHTS
 			}
 			if (opacityName != " ")
 			{
-				Texture texture;
 				std::string path = "Textures/" + opacityName;
 				std::wstring pathWSTR(path.begin(), path.end());
-				bool success = texture.LoadTexture(device, pathWSTR.c_str());
-				assert(success);
-
+				
+				Texture* texture = Texture::LoadTexture(device, pathWSTR.c_str());
 				mat->SetTexture(texture, 3, ShaderBindFlag::PIXEL); //This is default but can be manually changed afterwards.
 			}
 
