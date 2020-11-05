@@ -33,8 +33,6 @@ bool ControllerComp::IsGrounded() const
 			rbComp->SetPosition(GetOwner()->GetTransform().GetPosition());
 			//rbComp->SetLinearVelocity(delta);
 		}
-		
-			
 
 		result = true;
 		//std::cout << "picking: " << hit.object->GetName() << std::endl;
@@ -49,8 +47,8 @@ bool ControllerComp::IsGrounded() const
 
 ControllerComp::ControllerComp(Object* cameraObject, Object* houseObject)
 {
-	this->fov = 60.f;
-	this->fovTimer = 0.f;
+	//this->fov = 60.f;
+	//this->fovTimer = 0.f;
 
 	this->velocity = 0.f;
 	this->velocityTimer = 0.f;
@@ -64,10 +62,12 @@ ControllerComp::ControllerComp(Object* cameraObject, Object* houseObject)
 	this->cameraEuler = { 0.f,0.f,0.f }; //TODO_: fix start angle (looks down or up at start)
 
 	this->cameraObject = cameraObject;
-	this->houseObject = houseObject;
+	this->houseWalkComp = houseObject->GetComponent<NodeWalkerComp>();
 	this->rbComp = nullptr;
 	this->camComp = nullptr;
 	this->capsuleComp = nullptr;
+	this->playerComp = nullptr;
+	
 }
 
 ControllerComp::~ControllerComp()
@@ -79,6 +79,7 @@ void ControllerComp::Initialize()
 	this->rbComp = GetOwner()->GetComponent<RigidBodyComponent>();
 	this->camComp = cameraObject->GetComponent<CameraComponent>();
 	this->capsuleComp = GetOwner()->GetComponent<CapsuleColliderComponent>();
+	this->playerComp = GetOwner()->GetComponent<PlayerComp>();
 	ShowCursor(!this->canRotate);
 
 	if (this->canRotate)
@@ -86,20 +87,15 @@ void ControllerComp::Initialize()
 	else
 		Input::Instance().SetMouseMode(dx::Mouse::MODE_ABSOLUTE);
 
-	if (this->cameraObject && this->rbComp && this->capsuleComp && this->camComp)
-	{
-		this->rbComp->LockRotation(true);
-		//this->rbComp->SetLinearDamping(0.3f);
-		this->rbComp->GetRigidBody()->getCollider(0)->getMaterial().setBounciness(0.f);
-		this->rbComp->GetRigidBody()->getCollider(0)->getMaterial().setRollingResistance(10.f);
-		this->rbComp->GetRigidBody()->getCollider(0)->getMaterial().setFrictionCoefficient(10.f);
-		this->rbComp->EnableGravity(!this->freeCam);
-		this->rbComp->SetLinearVelocity({ 0.f, 0.f, 0.f });
-	}
-	else 
-	{
-		std::cout << "component missing" << std::endl;
-	}
+	this->camComp->SetFOV(WALK_FOV);
+	this->rbComp->LockRotation(true);
+	//this->rbComp->SetLinearDamping(0.3f);
+	this->rbComp->GetRigidBody()->getCollider(0)->getMaterial().setBounciness(0.f);
+	this->rbComp->GetRigidBody()->getCollider(0)->getMaterial().setRollingResistance(10.f);
+	this->rbComp->GetRigidBody()->getCollider(0)->getMaterial().setFrictionCoefficient(10.f);
+	this->rbComp->EnableGravity(!this->freeCam);
+	this->rbComp->SetLinearVelocity({ 0.f, 0.f, 0.f });
+
 
 	dx::XMVECTOR reset = dx::XMLoadFloat4(&RESET_ROT);
 	this->cameraObject->GetTransform().SetRotation(reset);
@@ -108,13 +104,14 @@ void ControllerComp::Initialize()
 void ControllerComp::Update(const float& deltaTime)
 {
 	//WASD = move
-	//space = jump
-	//9 = reset 
+	//space = jump 
 	//0 = reset position rotation and xClamp
+	//fov decrease when standing still or snap, velcity snap when no wasd
+	//TODO: house radius and player length start/stop
 
 	Physics& phy = Physics::Instance();
 	DirectX::XMFLOAT3 dir = { 0.f,0.f,0.f };
-	this->fovTimer += deltaTime;
+	//this->fovTimer += deltaTime;
 	this->velocityTimer += deltaTime; 
 	this->crouchTimer += deltaTime;
 
@@ -152,6 +149,28 @@ void ControllerComp::Update(const float& deltaTime)
 		else
 			Input::Instance().SetMouseMode(dx::Mouse::MODE_ABSOLUTE);
 	}
+	
+	float length = 0.f;
+	dx::XMVECTOR lengthVec;
+	if (houseWalkComp->GetIsWalking())
+	{
+		length = 0.f;
+		lengthVec = dx::XMVector3Length(dx::XMVectorSubtract(houseWalkComp->GetOwner()->GetTransform().GetPosition(),GetOwner()->GetTransform().GetPosition()));
+		dx::XMStoreFloat(&length, lengthVec);
+		if (length > playerComp->GetRadius())
+			houseWalkComp->Stop();
+	}
+	else if (!houseWalkComp->GetIsWalking())
+	{
+		length = 0.f;
+		lengthVec = dx::XMVector3Length(dx::XMVectorSubtract(houseWalkComp->GetOwner()->GetTransform().GetPosition(), GetOwner()->GetTransform().GetPosition()));
+		dx::XMStoreFloat(&length, lengthVec);
+		if (length < playerComp->GetRadius())
+			houseWalkComp->Start();
+		
+	}
+
+
 
 	if (this->canRotate)
 	{
@@ -266,14 +285,23 @@ void ControllerComp::Update(const float& deltaTime)
 					this->crouchTimer = 0.f;
 				}
 			}
+			if(isMoving != CROUCHING)
+			{
+				if (this->cameraOffset.y < 0.f && this->crouchTimer >= CROUCH_INC_RATE)
+				{
+					this->cameraOffset.y += CROUCH_OFFSET_PER;
+					this->crouchTimer = 0.f;
+				}
+			}
+			//std::cout << "camera offset.y: " << cameraOffset.y << std::endl;
 			this->calcVelocity(acceleration);
 
-			float percentVel = 0.f;
-			if (this->velocity > WALK_VELOCITY)
-				percentVel = this->velocity / RUN_VELOCITY;
-			//std::cout << "vel: " << this->velocity << ", fov: " << this->fov << std::endl;
-			this->fov = WALK_FOV + (percentVel * (RUN_FOV - WALK_FOV));// 70+()
-			camComp->SetFOV(this->fov);
+			//float percentVel = 0.f;
+			//if (this->velocity > WALK_VELOCITY)
+			//	percentVel = this->velocity / RUN_VELOCITY;
+			////std::cout << "vel: " << this->velocity << ", fov: " << this->fov << std::endl;
+			//this->fov = WALK_FOV + (percentVel * (RUN_FOV - WALK_FOV));// 70+()
+			//camComp->SetFOV(this->fov);
 			
 			dx::XMVECTOR direction = dx::XMLoadFloat3(&dir);
 			//direction = dx::XMVector3Normalize(direction);
