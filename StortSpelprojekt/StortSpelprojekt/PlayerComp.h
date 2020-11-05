@@ -6,6 +6,8 @@
 #include "Scene.h"
 #include "AudioMaster.h"
 #include "WeaponComponent.h"
+class EnemyStatsComp;
+
 class PlayerComp :
     public Component
 {
@@ -47,6 +49,7 @@ public:
 	void SetguiMan(GUIManager* guiMan) { this->guiMan = guiMan; }
 	void InsertWeapon(WeaponComponent* weapon, std::string name);
 	NEXT_SCENE GetNextScene() { return this->swapScene; }
+
 private:
 	void HoldObject();
 	void DropObject();

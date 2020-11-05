@@ -35,7 +35,7 @@ void GameScene::Initialize()
 
 		//object->AddComponent<DebugBoxShapeComponent>();
 		//object->AddComponent<BoxColliderComponent>(dx::XMFLOAT3(0.5f, 0.5f, 0.5f), dx::XMFLOAT3(0, 0, 0));
-		RigidBodyComponent* rd = object->AddComponent<RigidBodyComponent>(10.0f, FilterGroups::DEFAULT, FilterGroups::EVERYTHING, BodyType::DYNAMIC);
+		RigidBodyComponent* rd = object->AddComponent<RigidBodyComponent>(10.0f, FilterGroups::DEFAULT, FilterGroups::EVERYTHING, BodyType::KINEMATIC);
 		Physics::Instance().RegisterRigidBody(rd);
 		return object;
 	});
@@ -140,8 +140,10 @@ void GameScene::InitializeObjects()
 	physics.RegisterRigidBody(rb);
 	physics.MutexUnlock();
 
-	playerObject->AddComponent<ControllerComp>(cameraObject, houseBaseObject);
-	playerObject->AddComponent<PlayerComp>(renderer, camera, Physics::Instance(), guiManager, 100.f, 2.f, 3.f, 50.f, 3.f);
+	//Transform::SetParentChild(playerObject->GetTransform(),cameraObject->GetTransform());
+	playerObject->AddComponent<PlayerComp>(renderer, camera, Physics::Instance(), guiManager, 100.f, 2.f, 20.f, 50.f, 3.f);
+	playerObject->AddComponent<ControllerComp>(cameraObject, houseBaseObject); /////////////////
+
 
 	AddObject(cameraObject, playerObject);
 	AddObject(playerObject);
