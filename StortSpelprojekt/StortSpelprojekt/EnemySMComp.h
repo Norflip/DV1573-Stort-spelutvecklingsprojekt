@@ -29,6 +29,7 @@ class EnemySMComp : public Component
 		EnemySMComp(EnemyState state);
 		virtual ~EnemySMComp();
 		void SetState(EnemyState state);
+		void Start();
 		void Initialize();
 		void InitAnimation();
 		

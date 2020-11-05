@@ -4,7 +4,6 @@
 EnemySMComp::EnemySMComp(EnemyState state) :
 	currentState(state)
 {
-	
 }
 
 EnemySMComp::~EnemySMComp()
@@ -31,9 +30,13 @@ void EnemySMComp::SetState(EnemyState state)
 	}
 }
 
-void EnemySMComp::Initialize()
+void EnemySMComp::Start()
 {
 	enemyAttackComp = GetOwner()->GetComponent<EnemyAttackComp>();
+}
+
+void EnemySMComp::Initialize()
+{
 }
 
 void EnemySMComp::Animate()
@@ -64,33 +67,23 @@ void EnemySMComp::Animate()
 		
 		skeletonComponent->SetTrack(SkeletonStateMachine::DEATH, true);
 	}
-
 }
 
 void EnemySMComp::Update(const float& deltaTime)
 {
-	enemyAttackComp = GetOwner()->GetComponent<EnemyAttackComp>();
-	if (KEY_PRESSED(K))
+	if (currentState != EnemyState::ATTACK && enemyAttackComp->ChasePlayer())
 	{
 		SetState(EnemyState::ATTACK);
 	}
-	if (enemyAttackComp != NULL)
+	else if (currentState != EnemyState::IDLE && !enemyAttackComp->ChasePlayer())
 	{
-		if (currentState != EnemyState::ATTACK && enemyAttackComp->GetChasePlayer())
-		{
-			SetState(EnemyState::ATTACK);
-		}
-		else if (currentState != EnemyState::IDLE)
-		{
-			SetState(EnemyState::IDLE);
-		}
+		SetState(EnemyState::IDLE);
 	}
-	
+
 	if (GetOwner()->HasComponent<SkeletonMeshComponent>())
 	{
 		Animate();
 	}
-	
 }
 
 void EnemySMComp::RegisterState(EnemyState state, Component* comp)

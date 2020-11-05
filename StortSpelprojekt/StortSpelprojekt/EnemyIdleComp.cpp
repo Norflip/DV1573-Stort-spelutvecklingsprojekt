@@ -11,5 +11,5 @@ EnemyIdleComp::~EnemyIdleComp()
 
 void EnemyIdleComp::Update(const float& deltaTime)
 {
-	std::cout << "In idle state" << std::endl;
+	//std::cout << "In idle state" << std::endl;
 }

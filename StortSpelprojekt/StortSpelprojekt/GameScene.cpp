@@ -180,16 +180,15 @@ void GameScene::InitializeObjects()
 	enemy->AddComponent<BoxColliderComponent>(dx::XMFLOAT3{ 1, 2.45, 1 }, dx::XMFLOAT3{ 0, 0, 0 });
 
 	physics.MutexLock();
-	RigidBodyComponent* rbEnemy = enemy->AddComponent<RigidBodyComponent>(10.f, FilterGroups::ENEMIES, FilterGroups::EVERYTHING, BodyType::DYNAMIC);
+	RigidBodyComponent* rbEnemy = enemy->AddComponent<RigidBodyComponent>(10.f, FilterGroups::ENEMIES, FilterGroups::EVERYTHING, BodyType::KINEMATIC);
 	physics.RegisterRigidBody(rbEnemy);
 	physics.MutexUnlock();
 
 	EnemySMComp* stateMachine = enemy->AddComponent<EnemySMComp>(EnemyState::IDLE);
-	//enemy->AddComponent<EnemyAttackComp>(player->GetComponent<PlayerComp>());
 	stateMachine->RegisterState(EnemyState::IDLE, enemy->AddComponent<EnemyIdleComp>());
 	//stateMachine->RegisterState(EnemyState::PATROL, enemy->AddComponent<EnemyPatrolComp>());
 	stateMachine->RegisterState(EnemyState::ATTACK, enemy->AddComponent<EnemyAttackComp>(player->GetComponent<PlayerComp>()));
-	//stateMachine->Initialize();
+	stateMachine->Start();
 	stateMachine->InitAnimation();
 	AddObject(enemy);
 

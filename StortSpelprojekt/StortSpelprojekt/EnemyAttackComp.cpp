@@ -24,9 +24,9 @@ void EnemyAttackComp::Initialize()
 void EnemyAttackComp::Update(const float& deltaTime)
 {
 	timer.Update();
-	ChasePlayer(deltaTime);
+	UpdateEnemyPos(deltaTime);
 	UpdateAttackPlayer(deltaTime);
-	std::cout << "In attack state" << std::endl;
+	//std::cout << "In attack state" << std::endl;
 }
 
 bool EnemyAttackComp::GetIsAttacking()
@@ -34,57 +34,69 @@ bool EnemyAttackComp::GetIsAttacking()
 	return attackPlayer;
 }
 
-bool EnemyAttackComp::ChasePlayer(const float& deltaTime)
+bool EnemyAttackComp::ChasePlayer()
 {
+	dx::XMFLOAT3 moveDir = { 0.0f, 0.0f, 0.0f };
 
+	dx::XMVECTOR moveVec = dx::XMVectorSubtract(player->GetOwner()->GetTransform().GetPosition(), GetOwner()->GetTransform().GetPosition());
+	dx::XMVECTOR normVec = dx::XMVector3Normalize(moveVec);
+	dx::XMFLOAT3 normDir;
+	dx::XMStoreFloat3(&normDir, normVec);
+	dx::XMVECTOR lenVec = dx::XMVector3Length(moveVec);
+	float length;
+	dx::XMStoreFloat(&length, lenVec);
+
+	if (length <= enemyStatsComp->GetChaseRadius())
+		return true;
+
+	return false;
+}
+
+void EnemyAttackComp::UpdateEnemyPos(const float& deltaTime)
+{
 	if (KEY_PRESSED(U))
 	{
 		dx::XMVECTOR plPos = player->GetOwner()->GetTransform().GetPosition();
 		dx::XMFLOAT3 pp;
 		dx::XMStoreFloat3(&pp, plPos);
 		pp.y += 50;
-
-		//GetOwner()->GetTransform().SetPosition(dx::XMLoadFloat3(&pp));
 		rbComp->SetPosition(dx::XMLoadFloat3(&pp));
 	}
 
-	chasePlayer = false;
-	attackPlayer = false;
-
-	dx::XMFLOAT3 moveDir = { 0.0f, 0.0f, 0.0f };
-
-	//testing better radius calculations
-	dx::XMVECTOR moveVec = dx::XMVectorSubtract(player->GetOwner()->GetTransform().GetPosition(), GetOwner()->GetTransform().GetPosition());
-	dx::XMVECTOR normVec = dx::XMVector3Normalize(moveVec); //now contains normalized vector from enemy to player
-	dx::XMFLOAT3 normDir;
-	dx::XMStoreFloat3(&normDir, normVec);
-
-	dx::XMVECTOR lenVec = dx::XMVector3Length(moveVec);//now contatins length
-	float length;
-	dx::XMStoreFloat(&length, lenVec);
-
-	if (length <= enemyStatsComp->GetChaseRadius() && length >= playerRadius)
+	if (ChasePlayer())
 	{
-		chasePlayer = true;
-		moveDir.x = normDir.x;
-		moveDir.z = normDir.z;
-	}
+		dx::XMFLOAT3 moveDir = { 0.0f, 0.0f, 0.0f };
 
-	if (length <= enemyStatsComp->GetAttackRadius())
-	{
-		attackPlayer = true;
-	}
-	if (chasePlayer)
-	{
+		//testing better radius calculations
+		dx::XMVECTOR moveVec = dx::XMVectorSubtract(player->GetOwner()->GetTransform().GetPosition(), GetOwner()->GetTransform().GetPosition());
+		dx::XMVECTOR normVec = dx::XMVector3Normalize(moveVec); //now contains normalized vector from enemy to player
+		dx::XMFLOAT3 normDir;
+		dx::XMStoreFloat3(&normDir, normVec);
+
+		dx::XMVECTOR lenVec = dx::XMVector3Length(moveVec);//now contatins length
+		float length;
+		dx::XMStoreFloat(&length, lenVec);
+
+		if (length >= playerRadius)
+		{
+			moveDir.x = normDir.x;
+			moveDir.z = normDir.z;
+		}
+
+		if (length <= enemyStatsComp->GetAttackRadius())
+		{
+			attackPlayer = true;
+		}
+
 		dx::XMFLOAT3 vel = rbComp->GetLinearVelocity();
-		
+
 		dx::XMFLOAT3 move = { moveDir.x * enemyStatsComp->GetSpeed(), vel.y, moveDir.z * enemyStatsComp->GetSpeed() };
 
 		rbComp->SetLinearVelocity(move);
 		dx::XMVECTOR enemyPos = GetOwner()->GetTransform().GetPosition();
 		dx::XMFLOAT3 eP;
 		dx::XMStoreFloat3(&eP, enemyPos);
-		std::cout << "x: " << eP.x << ", y: " << eP.y << ", z: " << eP.z << std::endl;
+		//std::cout << "x: " << eP.x << ", y: " << eP.y << ", z: " << eP.z << std::endl;
 
 		//Billboarding x & z axis for enemy Rotation
 		dx::XMVECTOR dirVec = dx::XMVector3Normalize(dx::XMVectorSubtract(GetOwner()->GetTransform().GetPosition(), player->GetOwner()->GetTransform().GetPosition()));
@@ -97,15 +109,13 @@ bool EnemyAttackComp::ChasePlayer(const float& deltaTime)
 		GetOwner()->GetTransform().SetRotation(eulerRotation);
 		rbComp->SetRotation(eulerRotation);
 	}
-	
+
 	//Draw colliderbox
 	//dx::XMFLOAT3 getBoxPos;
 	//dx::XMStoreFloat3(&getBoxPos, GetOwner()->GetTransform().GetPosition());
 	//dx::XMFLOAT3 boxSize = dx::XMFLOAT3(1, 2, 1);
 	//dx::XMFLOAT3 boxColor = dx::XMFLOAT3(1, 1, 1);
 	//DShape::DrawBox(dx::XMFLOAT3(getBoxPos.x, getBoxPos.y - 1.5f, getBoxPos.z), boxSize, boxColor);
-
-	return chasePlayer;
 }
 
 void EnemyAttackComp::UpdateAttackPlayer(const float& deltaTime)
