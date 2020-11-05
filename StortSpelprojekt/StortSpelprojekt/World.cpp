@@ -13,6 +13,7 @@ World::~World()
 
 void World::Initialize(Object* root, ResourceManager* resources, ObjectPooler* pooler, Renderer* renderer)
 {
+	this->resources = resources;
 	ObjectSpawner* spawner = new ObjectSpawner();
 	spawner->Initialize(root, pooler);
 	RegisterToPool(pooler, spawner, std::map<std::string, int>());
@@ -182,9 +183,10 @@ void World::RegisterToPool(ObjectPooler* pooler, ObjectSpawner* spawner, const s
 			return object;
 		});
 
-	spawner->RegisterItem("Health_kit", 1.0f, 1.0f, 0.0f, TryGetQueueCount("Health_kit", queueCountTable), ItemSpawnType::ITEM);
-	spawner->RegisterItem("Fuel_can", 1.0f, 1.0f, 0.0f, TryGetQueueCount("Fuel_can", queueCountTable), ItemSpawnType::ITEM);
-	spawner->RegisterItem("Baked_beans", 1.0f, 1.0f, 0.0f, TryGetQueueCount("Baked_beans", queueCountTable), ItemSpawnType::ITEM);
+	spawner->RegisterItem("Health_kit", 1.0f, 1.0f, 0.0f, TryGetQueueCount("Health_kit", queueCountTable));
+	spawner->RegisterItem("Fuel_can", 1.0f, 1.0f, 0.0f, TryGetQueueCount("Fuel_can", queueCountTable));
+	spawner->RegisterItem("Baked_beans", 1.0f, 1.0f, 0.0f, TryGetQueueCount("Baked_beans", queueCountTable));
 
-	spawner->RegisterItem("static_sphere", 1.0f, 1.0f, 0.0f, TryGetQueueCount("static_sphere", queueCountTable), ItemSpawnType::PROP);
+
+	spawner->RegisterInstancedItem(resources->GetResource<Mesh>("Test"), resources->GetResource<Material>("TestMaterial"), 1.0f, 1.0f, 0.0f, 1);
 }

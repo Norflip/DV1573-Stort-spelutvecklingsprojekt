@@ -10,7 +10,7 @@ Skybox::Skybox(ID3D11Device* device, ID3D11DeviceContext* context, Shader* shade
 	skyboxShader = shader;
 
 	skyboxMesh = ZWEBLoader::LoadMeshes(ZWEBLoadType::NoAnimation, "Models/Skybox.ZWEB", device)[0];
-	skyboxMaterial = Material(skyboxShader);
+	skyboxMaterial = new Material(skyboxShader);
 	
 	// Load all textures 
 	LoadAllTextures(context, device);
@@ -58,17 +58,10 @@ void Skybox::LoadAllTextures(ID3D11DeviceContext* context, ID3D11Device* device)
 	
 
 	// Set first texture
-	texture.SetTexture(srvs[0]);		
-	skyboxMaterial.SetTexture(texture, TEXTURE_DIFFUSE2_SLOT, ShaderBindFlag::PIXEL);
+	skyboxMaterial->SetTexture(new Texture(srvs[0]), TEXTURE_DIFFUSE2_SLOT, ShaderBindFlag::PIXEL);
+	skyboxMaterial->SetTexture(new Texture(srvs[1]), TEXTURE_DIFFUSE3_SLOT, ShaderBindFlag::PIXEL);
+	skyboxMaterial->SetTexture(new Texture(srvs[2]), TEXTURE_DIFFUSE4_SLOT, ShaderBindFlag::PIXEL);
+	skyboxMaterial->SetTexture(new Texture(srvs[3]), TEXTURE_DIFFUSE5_SLOT, ShaderBindFlag::PIXEL);
 
-	texture2.SetTexture(srvs[1]);
-	skyboxMaterial.SetTexture(texture2, TEXTURE_DIFFUSE3_SLOT, ShaderBindFlag::PIXEL);
-
-	texture3.SetTexture(srvs[2]);
-	skyboxMaterial.SetTexture(texture3, TEXTURE_DIFFUSE4_SLOT, ShaderBindFlag::PIXEL);
-
-	texture4.SetTexture(srvs[3]);
-	skyboxMaterial.SetTexture(texture4, TEXTURE_DIFFUSE5_SLOT, ShaderBindFlag::PIXEL);
-
-	skyboxMaterial.SetSampler(DXHelper::CreateSampler(D3D11_FILTER_MIN_MAG_MIP_LINEAR, D3D11_TEXTURE_ADDRESS_WRAP, device), 0, ShaderBindFlag::PIXEL);
+	skyboxMaterial->SetSampler(DXHelper::CreateSampler(D3D11_FILTER_MIN_MAG_MIP_LINEAR, D3D11_TEXTURE_ADDRESS_WRAP, device), 0, ShaderBindFlag::PIXEL);
 }

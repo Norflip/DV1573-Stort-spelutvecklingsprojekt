@@ -4,7 +4,7 @@
 #include "Object.h"
 #include "DXHelper.h"
 #include "Input.h"
-
+#include "AudioMaster.h"
 namespace dx = DirectX;
 
 ALIGN16 

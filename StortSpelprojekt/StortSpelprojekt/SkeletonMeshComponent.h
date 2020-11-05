@@ -8,7 +8,7 @@
 #include "Object.h"
 #include "GameClock.h"
 
-enum SkeletonStateMachine
+enum class SkeletonStateMachine
 {
 	IDLE,
 	WALK,
@@ -26,11 +26,11 @@ ALIGN16
 class SkeletonMeshComponent : public Component
 {
 public:
-	SkeletonMeshComponent(Mesh mesh, Material material);
+	SkeletonMeshComponent(Mesh* mesh, Material* material, float timeScale = 1.0f);
 	virtual ~SkeletonMeshComponent();
 
-	Mesh GetMesh() const { return this->mesh; }
-	Material GetMaterial() const { return this->material; }
+	Mesh* GetMesh() const { return this->mesh; }
+	Material* GetMaterial() const { return this->material; }
 
 	void Update(const float& deltaTime) override;
 	void Draw(Renderer* renderer, CameraComponent* camera) override;
@@ -40,24 +40,23 @@ public:
 	SkeletonAni& GetAnimationTrack(unsigned int trackNr);
 
 	void SetTrack(const SkeletonStateMachine& type, bool playOnce);
-	
 	void BlendAnimations();
 	bool GetIsDone();
 	void SetisDone(bool);
 	bool& SetAndGetDoneDown();
 	bool& SetAndGetDoneUp();
-
 	ALIGN16_ALLOC;
 
 private:
-	Mesh mesh;
-	Material material;
+	float timeScale = 1.0f;
+	Mesh* mesh;
+	Material* material;
 	std::vector<SkeletonAni> skeletonAnimations;
 	float elapsedTime = 0.0f;
 	std::unordered_map<SkeletonStateMachine, unsigned int> trackMap;
 	std::vector<dx::XMFLOAT4X4> finalTransforms;
 	SkeletonStateMachine currentAni = SkeletonStateMachine::NONE;
-	BoundingBoxes boundingBoxes;
+	BoundingBox bounds;
 	float componentDeltaTime = 0.0f;
 	GameClock timer;
 	bool playOnce = false;

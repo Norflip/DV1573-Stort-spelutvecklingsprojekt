@@ -32,7 +32,7 @@ private:
 
 private:
 	SegmentGenerator generator;
-
+	ResourceManager* resources;
 	std::vector<Chunk*> relevant;
 	std::unordered_map<int, Chunk*> relevantChunkMap;
 	std::unordered_map<int, Chunk*> chunkMap;

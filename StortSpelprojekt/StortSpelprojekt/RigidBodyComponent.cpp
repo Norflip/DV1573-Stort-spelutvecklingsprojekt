@@ -65,6 +65,7 @@ void RigidBodyComponent::SetPosition(dx::XMVECTOR position)
 	rp::Transform transform = body->getTransform();
 	transform.setPosition(rp::Vector3(pos.x, pos.y, pos.z));
 	body->setTransform(transform);
+	GetOwner()->GetTransform().MarkAsChanged();
 }
 
 dx::XMVECTOR RigidBodyComponent::GetPosition() const
@@ -82,12 +83,13 @@ void RigidBodyComponent::SetRotation(dx::XMVECTOR rotation)
 	rp::Transform transform = body->getTransform();
 	transform.setOrientation(rp::Quaternion(rot.x, rot.y, rot.z, rot.w));
 	body->setTransform(transform);
+	GetOwner()->GetTransform().MarkAsChanged();
 }
 
 dx::XMVECTOR RigidBodyComponent::GetRotation() const
 {
 	rp::Quaternion rotQ = this->body->getTransform().getOrientation();
-	dx::XMFLOAT4 rot4 = { rotQ.x, rotQ.y, rotQ.z, rotQ.w};
+	dx::XMFLOAT4 rot4 = { rotQ.x, rotQ.y, rotQ.z, rotQ.w };
 	return dx::XMLoadFloat4(&rot4);
 }
 
@@ -115,15 +117,18 @@ void RigidBodyComponent::AddCollidersToBody(Object* obj, rp::RigidBody* body)
 	const std::vector<Collider*> colliders = obj->GetComponentsOfSubType<Collider>();
 	for (size_t i = 0; i < colliders.size(); i++)
 	{
-		rp::Collider* collider = body->addCollider(colliders[i]->GetCollisionShape(), colliders[i]->GetTransform());
-		collider->setCollisionCategoryBits(static_cast<unsigned short>(group));
-		collider->setCollideWithMaskBits(static_cast<unsigned short>(collisionMask));		
-		collidersList.push_back(collider);
+		size_t shapeCount = colliders[i]->CountCollisionShapes();
+		for (size_t j = 0; j < shapeCount; j++)
+		{
+			rp::Collider* collider = body->addCollider(colliders[i]->GetCollisionShape(j), colliders[i]->GetTransform(j));
+			collider->setCollisionCategoryBits(static_cast<unsigned short>(group));
+			collider->setCollideWithMaskBits(static_cast<unsigned short>(collisionMask));
+			collidersList.push_back(collider);
+		}
 	}
-		
 
-	assert(colliders.size() > 0);
-	std::cout << (GetOwner()->GetName() + " has " + std::to_string(colliders.size()) + " colliders\n");
+	//assert(colliders.size() > 0);
+	//std::cout << (GetOwner()->GetName() + " has " + std::to_string(colliders.size()) + " colliders\n");
 
 	//CHILDREN
 	const std::vector<Transform*>& children = GetOwner()->GetTransform().GetChildren();

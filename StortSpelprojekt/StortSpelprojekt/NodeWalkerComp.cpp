@@ -8,7 +8,7 @@ NodeWalkerComp::NodeWalkerComp()
 	this->nodeRadius = 0.3f;
 	this->canWalk = false;
 	this->length = 0.f;
-
+	this->lastPos = { 0,0,0 };
 	//later generate this nodes 
 	//this->nodes.push_back(Node("start", 0, { 0.f,0.f,0.f }, 1, -1, -1));
 	//this->nodes.push_back(Node("1a", 1, { 5.f,0.f,5.f }, -1, 2, 3));
@@ -36,8 +36,11 @@ void NodeWalkerComp::InitializePath(Path thePath)
 	dx::XMVECTOR startPos = dx::XMLoadFloat3(&pos3);
 	this->GetOwner()->GetTransform().SetPosition(startPos);
 
-	if (GetOwner()->HasComponent<RigidBodyComponent>())
-		GetOwner()->GetComponent<RigidBodyComponent>()->SetPosition(startPos);
+	this->rbComp = GetOwner()->GetComponent<RigidBodyComponent>();
+	this->rbComp->GetRigidBody()->getCollider(0)->getMaterial().setBounciness(0.f);
+	//this->rbComp->GetRigidBody()->getCollider(0)->getMaterial().setFrictionCoefficient(100.f);
+	//this->rbComp->GetRigidBody()->getCollider(0)->getMaterial().setRollingResistance(100.f);
+	this->rbComp->SetPosition(startPos);
 }
 
 void NodeWalkerComp::InitAnimation()
@@ -63,8 +66,7 @@ void NodeWalkerComp::Reset()
 	dx::XMFLOAT3 pos3 = { thePath.GetPoint(this->currentNode).x + OFFSET,HEIGHT, thePath.GetPoint(this->currentNode).y + OFFSET };
 	dx::XMVECTOR startPos = dx::XMLoadFloat3(&pos3);
 	this->GetOwner()->GetTransform().SetPosition(startPos);
-	if (GetOwner()->HasComponent<RigidBodyComponent>())
-		GetOwner()->GetComponent<RigidBodyComponent>()->SetPosition(startPos);
+	this->rbComp->SetPosition(startPos);
 }
 
 void NodeWalkerComp::Start()
@@ -101,7 +103,7 @@ void NodeWalkerComp::Stop()
 
 void NodeWalkerComp::Update(const float& deltaTime)
 {
-
+	dx::XMStoreFloat3(&this->lastPos, GetOwner()->GetTransform().GetPosition());
 	if (base->SetAndGetDoneUp())
 	{
 		//canWalk = true;
@@ -169,10 +171,8 @@ void NodeWalkerComp::Update(const float& deltaTime)
 
 			GetOwner()->GetTransform().Translate(dir.x, dir.y, dir.z);
 
-			if (GetOwner()->HasComponent<RigidBodyComponent>())
-			{
-				GetOwner()->GetComponent<RigidBodyComponent>()->SetPosition(GetOwner()->GetTransform().GetWorldPosition());
-			}
+			this->rbComp->SetPosition(GetOwner()->GetTransform().GetWorldPosition());
+			
 		}
 	}
 	else
@@ -188,4 +188,9 @@ void NodeWalkerComp::Update(const float& deltaTime)
 		}
 
 	}
+}
+
+dx::XMFLOAT3 NodeWalkerComp::GetLastPos()
+{
+	return this->lastPos;
 }

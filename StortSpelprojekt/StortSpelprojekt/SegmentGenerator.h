@@ -8,11 +8,11 @@
 #include "PossionDiscSampler.h"
 
 #include "GrassComponent.h"
-#include "InstancedMeshComponent.h"
 #include "PointQuadTree.h"
 #include "ObjectSpawner.h"
 
 #define CW_CHUNK_MESH 1
+
 
 class SegmentGenerator
 {
@@ -23,10 +23,11 @@ class SegmentGenerator
 	};
 
 	const int CHUNK_PADDING = 2;
-	const float FRACKIG_TREE_ADJUSTMENT = 0.0f;// -3.5f;
 	const float TREE_SPAWN_FACTOR = 0.4f;
 	const float MIN_TERRAIN_HEIGHT = 0.1f;
 	const float TERRAIN_BASE_HEIGHT = 1.0f;
+
+	const float TREE_HEIGHT_ADJUSTMENT_FACTOR = 0.9f;
 
 public:
 	SegmentGenerator();
@@ -49,12 +50,12 @@ private:
 	std::vector<ChunkPointInformation> CreateChunkMap(const dx::XMINT2& index, const SegmentDescription& description, float*& heightMap, unsigned char*& buffer);
 
 	Chunk* CreateChunk(const dx::XMINT2& index, Object* root, const SegmentDescription& description, ChunkType type);
-	void CreateChunkMesh(Mesh& mesh, ID3D11Device* device);
+	Mesh* CreateChunkMesh(ID3D11Device* device);
 
 	void InitializeTrees(ResourceManager* resources);
 
 	void AddTreesToChunk(Chunk* chunk, std::vector<ChunkPointInformation>& chunkInformation);
-	void AddGrassToChunk(Chunk* chunk, Texture& texture);
+	void AddGrassToChunk(Chunk* chunk, Texture* texture);
 	bool ValidateTreePoint(const dx::XMFLOAT2& point, std::vector<ChunkPointInformation>& chunkInformation);
 
 private:
@@ -68,10 +69,10 @@ private:
 	Shader* grassShader;
 	Shader* chunkShader;
 
-	std::vector<Mesh> stylizedTreeModel;
-	std::vector<Material> stylizedTreeMaterial;
+	std::vector<Mesh*> stylizedTreeModel;
+	std::vector<Material*> stylizedTreeMaterial;
 
-	Mesh chunkMesh;
+	Mesh* chunkMesh;
 	bool hasChunkMesh;
 	std::vector<dx::XMFLOAT2> itemSpawns;
 	std::vector<dx::XMFLOAT2> propSpawns;

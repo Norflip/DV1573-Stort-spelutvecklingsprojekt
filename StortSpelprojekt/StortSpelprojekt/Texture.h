@@ -24,20 +24,22 @@
 #define TEXTURE_CUBE_SLOT 2
 
 
-class Texture {
+ALIGN16
+class Texture : public Resource
+{
 public:
 	Texture();
 	Texture(ID3D11ShaderResourceView* srv);
-	~Texture();
+	virtual ~Texture();
 
-	bool LoadTexture(ID3D11Device* device, LPCWSTR textureFilepath);
+	static Texture* CreateFromBuffer (unsigned char* buffer, size_t width, size_t height, size_t channels, DXGI_FORMAT format, ID3D11Device* device);
+	static Texture* LoadTexture (ID3D11Device* device, LPCWSTR textureFilepath);
 
-	void SetTexture(ID3D11ShaderResourceView* srv) { this->srv = srv; }
-	ID3D11ShaderResourceView* GetTexture() const { return this->srv; }
+	void SetSRV(ID3D11ShaderResourceView* srv) { this->srv = srv; }
+	ID3D11ShaderResourceView* GetSRV() const { return this->srv; }
 	
-	void Shutdown();
-	
+	ALIGN16_ALLOC;
+
 private:
-	HRESULT hr;
 	ID3D11ShaderResourceView* srv;	
 };

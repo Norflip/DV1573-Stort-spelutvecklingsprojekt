@@ -20,9 +20,10 @@ Chunk::~Chunk()
 	common.destroyHeightFieldShape(shape);
 }
 
-#if _DEBUG and DRAW_DEBUG
+
 void Chunk::Update(const float& deltaTime)
 {
+#if _DEBUG and DRAW_DEBUG
 	dx::XMFLOAT3 color = DSHAPE_CHUNK_COLORS[static_cast<int>(this->type)];
 
 	dx::XMFLOAT3 center;
@@ -49,9 +50,9 @@ void Chunk::Update(const float& deltaTime)
 			DShape::DrawWireSphere(pos, 0.1f, dx::XMFLOAT3(1.0f, 1.0f, 0.0f));
 		}
 	}
-
-}
 #endif
+}
+
 
 void Chunk::SetupCollisionObject(float* heightMap)
 {
@@ -97,6 +98,7 @@ void Chunk::SetupCollisionObject(float* heightMap)
 	collider->setCollisionCategoryBits(static_cast<unsigned short>(FilterGroups::TERRAIN));
 	collider->setCollideWithMaskBits(static_cast<unsigned short>(FilterGroups::EVERYTHING));
 	collider->getMaterial().setBounciness(0.f);
+	collider->getMaterial().setFrictionCoefficient(10.f);
 }
 
 float Chunk::SampleHeight(float x, float z)

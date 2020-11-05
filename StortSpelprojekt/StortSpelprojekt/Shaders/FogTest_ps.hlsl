@@ -210,10 +210,9 @@ float4 main(PixelInputType input) : SV_TARGET
         clamp(length(r.x), 0.0, 1.0));
 
 
-
     //return float4(I, I, I, 1.0f);
     diffuseColor = screenTexture.Sample(defaultSampleType, input.uv);
-  //  return diffuseColor;
+   // return diffuseColor;
     float4 background = skyTexture.Sample(defaultSampleType, input.uv);
 
    // float4 fogColor = float4(0.1f, 0.1f, 0.4f, 1.0f);

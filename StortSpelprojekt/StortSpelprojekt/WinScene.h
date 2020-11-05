@@ -10,10 +10,10 @@ class WinScene : public Scene
 private:
 
 public:
-	WinScene(ResourceManager* manager);
-	~WinScene();
+	WinScene();
+	virtual ~WinScene();
 
-	void Initialize(Renderer* renderer) override;
+	void Initialize() override;
 	void InitializeObjects() override;
 	void InitializeGUI() override;
 

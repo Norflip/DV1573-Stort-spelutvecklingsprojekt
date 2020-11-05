@@ -16,7 +16,7 @@ void ObjectSpawner::Initialize(Object* root, ObjectPooler* pooler)
 	this->root = root;
 }
 
-void ObjectSpawner::Spawn(const SaveState& state, PointQuadTree& tree, std::unordered_map<int, Chunk*>& chunkMap, std::vector<Chunk*>& chunks)
+void ObjectSpawner::Spawn(const SaveState& state, PointQuadTree& tree, std::unordered_map<int, Chunk*>& chunkMap, std::vector<Chunk*>& chunks, ID3D11Device* device)
 {
 	Random::SetSeed(state.GetSeed(0));
 	propSpawnPositions = CreateSpawnPositions(tree, 10.0f, chunkMap);
@@ -43,47 +43,102 @@ void ObjectSpawner::Spawn(const SaveState& state, PointQuadTree& tree, std::unor
 		}
 	}*/
 
-#if !_DEBUG
-	int propIndex = 0;
-	for (int i = propSpawnPositions.size() - 1; i >= 0; i--)
+	//int propIndex = 0;
+	//for (int i = propSpawnPositions.size() - 1; i >= 0; i--)
+	//{
+	//	propIndex %= staticItems.size();
+	//	Item& item = staticItems[propIndex];
+
+	//	dx::XMFLOAT2 pos = propSpawnPositions[i];
+	//	Chunk* chunk = GetChunk(pos.x, pos.y, chunkMap);
+
+	//	if (chunk != nullptr)
+	//	{
+	//		float y = chunk->SampleHeight(pos.x, pos.y) + item.yOffset;
+
+	//		//	dx::XMMATRIX invWorld = dx::XMMatrixInverse(nullptr, chunk->GetOwner()->GetTransform().GetWorldMatrix());
+
+	//		Object* object = pooler->GetItem(item.key);
+	//		dx::XMVECTOR position = dx::XMVectorSet(pos.x, y, pos.y, 0.0f);
+	//		//	dx::XMVECTOR pos = dx::XMVector3Transform(position, invWorld);
+
+	//		object->GetTransform().SetWorldPosition(position);
+
+
+	//		object->GetComponent<RigidBodyComponent>()->SetPosition(position);
+
+	//		// kör med chunk istället för root då dom ändå inte kan flyttas.
+	//		//Transform::SetParentChild(root->GetTransform(), object->GetTransform());
+
+	//		// kräver inverse av parent world matrix
+	//		Transform::SetParentChild(chunk->GetOwner()->GetTransform(), object->GetTransform());
+
+	//		items.push_back(object);
+	//		propIndex++;
+	//	}
+	//}
+
+	struct TempData
 	{
-		propIndex %= staticItems.size();
-		Item& item = staticItems[propIndex];
+		InstancedProp* prop;
+		Chunk* chunk;
+		std::vector<Mesh::InstanceData> instancedData;
+	};
 
-		dx::XMFLOAT2 pos = propSpawnPositions[i];
-		Chunk* chunk = GetChunk(pos.x, pos.y, chunkMap);
+	std::unordered_map<Chunk*, TempData> data;
 
-		if (chunk != nullptr)
+	size_t propIndex = 0;
+	for (size_t i = 0; i < propSpawnPositions.size(); i++)
+	{
+		InstancedProp& prop = instancedProps[propIndex];
+
+		for (size_t j = 0; j < prop.queueCount && i < propSpawnPositions.size(); j++)
 		{
-			float y = chunk->SampleHeight(pos.x, pos.y) + item.yOffset;
+			dx::XMFLOAT2 pos = propSpawnPositions[i];
 
-		//	dx::XMMATRIX invWorld = dx::XMMatrixInverse(nullptr, chunk->GetOwner()->GetTransform().GetWorldMatrix());
+			Chunk* chunk = GetChunk(pos.x, pos.y, chunkMap);
+			auto find = data.find(chunk);
+			if (find == data.end())
+				data.insert({ chunk, TempData() });
 
-			Object* object = pooler->GetItem(item.key);
-			dx::XMVECTOR position = dx::XMVectorSet(pos.x, y, pos.y, 0.0f);
-		//	dx::XMVECTOR pos = dx::XMVector3Transform(position, invWorld);
+			float y = chunk->SampleHeight(pos.x, pos.y) + prop.yOffset;
+			dx::XMFLOAT3 position = dx::XMFLOAT3(pos.x, y, pos.y);
 
-		//	object->GetTransform().SetPosition(pos);
-			object->GetComponent<RigidBodyComponent>()->SetPosition(position);
-			
-			// kör med chunk istället för root då dom ändå inte kan flyttas.
-			Transform::SetParentChild(root->GetTransform(), object->GetTransform());
+			Mesh::InstanceData singleInstancedData;
+			dx::XMMATRIX translation = dx::XMMatrixTranslation(position.x, position.y, position.z);
+			dx::XMStoreFloat4x4(&singleInstancedData.instanceWorld, dx::XMMatrixTranspose(translation));
+			singleInstancedData.instancePosition = position;
 
-			// kräver inverse av parent world matrix
-			//Transform::SetParentChild(chunk->GetOwner()->GetTransform(), object->GetTransform());
-
-			items.push_back(object);
-			propIndex++;
+			data[chunk].instancedData.push_back(singleInstancedData);
+			data[chunk].prop = &prop;
+			data[chunk].chunk = chunk;
 		}
+
+		i += (prop.queueCount - 1);
 	}
-#endif
+
+	size_t index = 0;
+	for (auto i : data)
+	{
+		Object* props = new Object("props_" + std::to_string(index), ObjectFlag::DEFAULT /* | ObjectFlag::NO_CULL */);
+		MeshComponent* mc = props->AddComponent<MeshComponent>(i.second.prop->mesh, i.second.prop->material);
+		mc->SetInstanceable(0, i.second.instancedData, i.second.instancedData.size(), device);
+
+		Transform::SetParentChild(i.second.chunk->GetOwner()->GetTransform(), props->GetTransform());
+
+	}
+
+
+
+
 
 #if SPAWN_ITEMS
 	int itemIndex = 0;
-	for (int i = itemSpawnPositions.size() - 1; i >= 0; i--)
+
+	for (size_t i = 0; i < itemSpawnPositions.size(); i++)
 	{
-		itemIndex %= dynamicItems.size();
-		Item& item = dynamicItems[itemIndex];
+		itemIndex %= items.size();
+		Item& item = items[itemIndex];
 
 		dx::XMFLOAT2 pos = itemSpawnPositions[i];
 		Chunk* chunk = GetChunk(pos.x, pos.y, chunkMap);
@@ -97,7 +152,7 @@ void ObjectSpawner::Spawn(const SaveState& state, PointQuadTree& tree, std::unor
 
 			object->GetComponent<RigidBodyComponent>()->SetPosition(position);
 			Transform::SetParentChild(root->GetTransform(), object->GetTransform());
-			items.push_back(object);
+			activeItems.push_back(object);
 
 			itemIndex++;
 		}
@@ -111,7 +166,7 @@ void ObjectSpawner::Spawn(const SaveState& state, PointQuadTree& tree, std::unor
 
 void ObjectSpawner::Despawn()
 {
-	for (auto i : items)
+	for (auto i : activeItems)
 	{
 		Object* obj = i;
 		Transform::ClearFromHierarchy(obj->GetTransform());
@@ -122,7 +177,7 @@ void ObjectSpawner::Despawn()
 	items.clear();
 }
 
-void ObjectSpawner::RegisterItem(std::string key, float radius, float padding, float yOffset, int queueCount, ItemSpawnType type)
+void ObjectSpawner::RegisterItem(std::string key, float radius, float padding, float yOffset, size_t queueCount)
 {
 	Item item;
 	item.key = key;
@@ -130,20 +185,26 @@ void ObjectSpawner::RegisterItem(std::string key, float radius, float padding, f
 	item.radius = radius;
 	item.padding = padding;
 
-	for (size_t i = 0; i < UICAST(queueCount); i++)
-	{
-		switch (type)
-		{
-			case ItemSpawnType::ITEM:
-				dynamicItems.push_back(item); break;
-
-			default:
-			case ItemSpawnType::PROP:
-				staticItems.push_back(item); break;
-		}
-	}
+	for (size_t i = 0; i < queueCount; i++)
+		items.push_back(item);
 }
 
+void ObjectSpawner::RegisterInstancedItem(Mesh* mesh, Material* material, float radius, float padding, float yOffset, size_t queueCount)
+{
+	assert(mesh != nullptr);
+	assert(material != nullptr);
+	assert(queueCount > 0);
+
+	InstancedProp prop;
+	prop.mesh = mesh;
+	prop.material = material;
+	prop.yOffset = yOffset;
+	prop.radius = radius;
+	prop.padding = padding;
+	prop.queueCount = queueCount;
+
+	instancedProps.push_back(prop);
+}
 
 void ObjectSpawner::DrawDebug()
 {

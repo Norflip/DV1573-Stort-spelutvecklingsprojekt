@@ -13,30 +13,12 @@ Shader::Shader() : pixelShader(nullptr), vertexShader(nullptr), inputLayout(null
 
 Shader::~Shader()
 {
-	//if (pixelShader)
-	//{
-	//	pixelShader->Release();
-	//}
-	//if (vertexShader)
-	//{
-	//	vertexShader->Release();
-	//}
-	//if (inputLayout)
-	//{
-	//	inputLayout->Release();
-	//}
-	//if (geometryShader)
-	//{
-	//	geometryShader->Release();
-	//}
-	//if (hullShader)
-	//{
-	//	hullShader->Release();
-	//}
-	//if (domainShader)
-	//{
-	//	domainShader->Release();
-	//}
+	RELEASE(pixelShader);
+	RELEASE(vertexShader);
+	RELEASE(inputLayout);
+	RELEASE(geometryShader);
+	RELEASE(hullShader);
+	RELEASE(domainShader);
 }
 
 void Shader::SetPixelShader(std::string path, LPCSTR entry)

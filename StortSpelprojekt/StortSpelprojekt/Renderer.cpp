@@ -2,6 +2,7 @@
 #include "Renderer.h"
 #include "RenderPass.h"
 #include "FogRenderPass.h"
+#include "FXAARenderPass.h"
 #include "DShape.h"
 #include "Input.h"
 Renderer::Renderer() : device(nullptr), context(nullptr), swapchain(nullptr), skeleton_srvbuffer(nullptr), skeleton_srv(nullptr)
@@ -59,8 +60,8 @@ void Renderer::Initialize(Window* window)
 	objectBuffer.Initialize(CB_OBJECT_SLOT, ShaderBindFlag::VERTEX, device);
 	materialBuffer.Initialize(CB_MATERIAL_SLOT, ShaderBindFlag::PIXEL, device);
 
-	DXHelper::CreateStructuredBuffer(device, &skeleton_srvbuffer, srv_skeleton_data, sizeof(dx::XMFLOAT4X4), srv_skeleton_data.size(), &skeleton_srv);
-	DXHelper::BindStructuredBuffer(context, skeleton_srvbuffer, srv_skeleton_data, BONES_SRV_SLOT, ShaderBindFlag::VERTEX, &skeleton_srv);
+	DXHelper::CreateStructuredBuffer(device, &skeleton_srvbuffer, srv_skeleton_data.data(), sizeof(dx::XMFLOAT4X4), srv_skeleton_data.size(), &skeleton_srv);
+	DXHelper::BindStructuredBuffer(context, skeleton_srvbuffer, srv_skeleton_data.data(), BONES_SRV_SLOT, ShaderBindFlag::VERTEX, &skeleton_srv);
 	DXHelper::CreateBlendState(device, &blendStateOn, &blendStateOff);
 
 
@@ -70,16 +71,17 @@ void Renderer::Initialize(Window* window)
 	screenQuadShader->SetVertexShader("Shaders/ScreenQuad_vs.hlsl");
 	screenQuadShader->Compile(device);
 
-	screenQuadMaterial = Material(screenQuadShader);
-	screenQuadMaterial.SetSampler(DXHelper::CreateSampler(D3D11_FILTER_MIN_MAG_MIP_LINEAR, D3D11_TEXTURE_ADDRESS_CLAMP, device), 0, ShaderBindFlag::VERTEX);
+	screenQuadMaterial = new Material(screenQuadShader);
+	screenQuadMaterial->SetSampler(DXHelper::CreateSampler(D3D11_FILTER_MIN_MAG_MIP_LINEAR, D3D11_TEXTURE_ADDRESS_CLAMP, device), 0, ShaderBindFlag::VERTEX);
 
 	/* Screenquad mesh */
-	screenQuadMesh = Mesh::CreateScreenQuad(device);
+	screenQuadMesh = CreateScreenQuad();
 	DShape::Instance().m_Initialize(device);
 
 	//EXEMPEL
 	///AddRenderPass(new PSRenderPass(1, L"Shaders/TestPass.hlsl"));
 	AddRenderPass(new FogRenderPass(0));
+	AddRenderPass(new FXAARenderPass(1));
 }
 
 void Renderer::BeginManualRenderPass(RenderTexture& target)
@@ -171,11 +173,13 @@ void Renderer::RenderFrame(CameraComponent* camera, float time, RenderTexture& t
 	data.id = ids;
 	data.factor = color;
 	data.time = time;
-	std::cout << xPos << std::endl;
-	std::cout << yPos << std::endl;
+	//std::cout << xPos << std::endl;
+	//std::cout << yPos << std::endl;
 	xPos += (float)Input::Instance().GetPrevMousePosRelative().y;
 	yPos += (float)Input::Instance().GetPrevMousePosRelative().x;
 	data.mousePos = { xPos,yPos };
+	data.screenSize = { (float)outputWindow->GetWidth(), (float)outputWindow->GetHeight() };
+	
 	//data.mousePos = { (float)Input::Instance().GetMousePos().x, (float)Input::Instance().GetMousePos().y };
 	// put in mouse pos delta here
 	dx::XMStoreFloat3(&data.cameraPosition, camera->GetOwner()->GetTransform().GetPosition());
@@ -189,7 +193,6 @@ void Renderer::RenderFrame(CameraComponent* camera, float time, RenderTexture& t
 
 
 	LightManager::Instance().UpdateBuffers(context);
-
 
 	//We need to clear Depth Stencil View as well.//Emil
 
@@ -263,49 +266,52 @@ void Renderer::AddRenderPass(RenderPass* pass)
 		std::sort(passes.begin(), passes.end(), [](const RenderPass* a, const RenderPass* b) -> bool { return a->GetPriority() < b->GetPriority(); });
 }
 
-void Renderer::Draw(const Mesh& mesh, const Material& material, const dx::XMMATRIX& model, const CameraComponent& camera)
+void Renderer::Draw(const Mesh* mesh, const Material* material, const dx::XMMATRIX& model, const CameraComponent* camera)
 {
 	RenderItem item;
-	item.mesh = &mesh;
-	item.material = &material;
+	item.mesh = mesh;
+	item.material = material;
 	item.type = RenderItem::Type::Default;
 	item.world = model;
-	item.camera = &camera;
-	AddItem(item, material.IsTransparent());
+	item.camera = camera;
+	AddItem(item, material->IsTransparent());
 }
 
-void Renderer::DrawInstanced(const Mesh& mesh, const size_t& count, const Material& material, const CameraComponent& camera)
+void Renderer::DrawInstanced(const Mesh* mesh, const size_t& count, ID3D11Buffer* instanceBuffer, const Material* material, const CameraComponent* camera)
 {
 	RenderItem item;
-	item.mesh = &mesh;
-	item.material = &material;
+	item.mesh = mesh;
+	item.material = material;
 	item.type = RenderItem::Type::Instanced;
+	item.camera = camera;
+	item.world = dx::XMMatrixIdentity();
+	item.instanceBuffer = instanceBuffer;
 	item.instanceCount = count;
-	item.camera = &camera;
-	AddItem(item, material.IsTransparent());
+
+	AddItem(item, material->IsTransparent());
 }
 
-void Renderer::DrawSkeleton(const Mesh& mesh, const Material& material, const dx::XMMATRIX& model, const CameraComponent& camera, std::vector<dx::XMFLOAT4X4>& bones)
+void Renderer::DrawSkeleton(const Mesh* mesh, const Material* material, const dx::XMMATRIX& model, const CameraComponent* camera, std::vector<dx::XMFLOAT4X4>& bones)
 {
 
 	RenderItem item;
-	item.mesh = &mesh;
-	item.material = &material;
+	item.mesh = mesh;
+	item.material = material;
 	item.type = RenderItem::Type::Skeleton;
 	item.bones = &bones;
 	item.world = model;
-	item.camera = &camera;
+	item.camera = camera;
 	AddItem(item, false);
 
 }
 
-void Renderer::DrawGrass(const CameraComponent& camera, const Mesh& mesh, const Material& material, const dx::XMMATRIX& model)
+void Renderer::DrawGrass(const Mesh* mesh, const Material* material, const dx::XMMATRIX& model, const CameraComponent* camera)
 {
 	RenderItem item;
 	item.type = RenderItem::Type::Grass;
-	item.camera = &camera;
-	item.mesh = &mesh;
-	item.material = &material;
+	item.camera = camera;
+	item.mesh = mesh;
+	item.material = material;
 	item.world = model;
 	AddItem(item, false);
 }
@@ -381,11 +387,12 @@ void Renderer::DrawRenderItem(const RenderItem& item)
 	UINT stride = sizeof(Mesh::Vertex);
 	UINT offset = 0;
 
-	context->IASetVertexBuffers(0, 1, &item.mesh->vertexBuffer, &stride, &offset);
-	context->IASetIndexBuffer(item.mesh->indexBuffer, DXGI_FORMAT_R32_UINT, 0);
-	context->IASetPrimitiveTopology(item.mesh->topology);
+	ID3D11Buffer* vertexBuffer = item.mesh->GetVertexBuffer();
+	context->IASetVertexBuffers(0, 1, &vertexBuffer, &stride, &offset);
+	context->IASetIndexBuffer(item.mesh->GetIndexBuffer(), DXGI_FORMAT_R32_UINT, 0);
+	context->IASetPrimitiveTopology(item.mesh->GetTopology());
 
-	context->DrawIndexed(item.mesh->indices.size(), 0, 0);
+	context->DrawIndexed(item.mesh->GetIndexCount(), 0, 0);
 }
 
 void Renderer::DrawRenderItemInstanced(const RenderItem& item)
@@ -396,10 +403,15 @@ void Renderer::DrawRenderItemInstanced(const RenderItem& item)
 	UINT stride[2] = { sizeof(Mesh::Vertex), sizeof(Mesh::InstanceData) };
 	UINT offset[2] = { 0 };
 
-	context->IASetVertexBuffers(0, 2, item.mesh->vertexAndInstance, stride, offset);
-	context->IASetIndexBuffer(item.mesh->indexBuffer, DXGI_FORMAT_R32_UINT, 0);
-	context->IASetPrimitiveTopology(item.mesh->topology);
-	context->DrawIndexedInstanced(item.mesh->indices.size(), item.instanceCount, 0, 0, 0);
+	ID3D11Buffer* buffers[2];
+	buffers[0] = item.mesh->GetVertexBuffer();
+	buffers[1] = item.instanceBuffer;
+
+	context->IASetVertexBuffers(0, 2, buffers, stride, offset);
+	context->IASetIndexBuffer(item.mesh->GetIndexBuffer(), DXGI_FORMAT_R32_UINT, 0);
+	context->IASetPrimitiveTopology(item.mesh->GetTopology());
+
+	context->DrawIndexedInstanced(item.mesh->GetIndexCount(), item.instanceCount, 0, 0, 0);
 }
 
 void Renderer::DrawRenderItemSkeleton(const RenderItem& item)
@@ -408,16 +420,17 @@ void Renderer::DrawRenderItemSkeleton(const RenderItem& item)
 	objectBuffer.UpdateBuffer(context);
 
 	srv_skeleton_data = *item.bones;
-	DXHelper::BindStructuredBuffer(context, skeleton_srvbuffer, srv_skeleton_data, BONES_SRV_SLOT, ShaderBindFlag::VERTEX, &skeleton_srv);
+	DXHelper::BindStructuredBuffer(context, skeleton_srvbuffer, srv_skeleton_data.data(), BONES_SRV_SLOT, ShaderBindFlag::VERTEX, &skeleton_srv);
 
 	UINT stride = sizeof(Mesh::Vertex);
 	UINT offset = 0;
 
-	context->IASetVertexBuffers(0, 1, &item.mesh->vertexBuffer, &stride, &offset);
-	context->IASetIndexBuffer(item.mesh->indexBuffer, DXGI_FORMAT_R32_UINT, 0);
-	context->IASetPrimitiveTopology(item.mesh->topology);
+	ID3D11Buffer* vertexBuffer = item.mesh->GetVertexBuffer();
+	context->IASetVertexBuffers(0, 1, &vertexBuffer, &stride, &offset);
+	context->IASetIndexBuffer(item.mesh->GetIndexBuffer(), DXGI_FORMAT_R32_UINT, 0);
+	context->IASetPrimitiveTopology(item.mesh->GetTopology());
 
-	context->DrawIndexed(item.mesh->indices.size(), 0, 0);
+	context->DrawIndexed(item.mesh->GetIndexCount(), 0, 0);
 }
 
 void Renderer::DrawRenderItemGrass(const RenderItem& item)
@@ -436,10 +449,11 @@ void Renderer::DrawRenderItemGrass(const RenderItem& item)
 	UINT stride = sizeof(Mesh::Vertex);
 	UINT offset = 0;
 
-	context->IASetVertexBuffers(0, 1, &item.mesh->vertexBuffer, &stride, &offset);
-	context->IASetIndexBuffer(item.mesh->indexBuffer, DXGI_FORMAT_R32_UINT, 0);
+	ID3D11Buffer* vertexBuffer = item.mesh->GetVertexBuffer();
+	context->IASetVertexBuffers(0, 1, &vertexBuffer, &stride, &offset);
+	context->IASetIndexBuffer(item.mesh->GetIndexBuffer(), DXGI_FORMAT_R32_UINT, 0);
 
-	context->DrawIndexed(item.mesh->indices.size(), 0, 0);
+	context->DrawIndexed(item.mesh->GetIndexCount(), 0, 0);
 	context->RSSetState(rasterizerStateCullBack);
 }
 
@@ -479,15 +493,33 @@ void Renderer::SetObjectBufferValues(const CameraComponent* camera, dx::XMMATRIX
 	}
 }
 
-void Renderer::DrawScreenQuad(const Material& material)
+Mesh* Renderer::CreateScreenQuad()
+{
+	const float size = 1.0f;
+	std::vector<Mesh::Vertex> vertices =
+	{
+		Mesh::Vertex{{-size, -size, 0} , {0 ,1 },  {0,0,0} , { 0,0,0 } },		// 0,0
+		Mesh::Vertex{{ size, -size, 0 }, { 1,1 }, { 0,0,0 }, { 0,0,0 }},		// 0, w
+		Mesh::Vertex{{ size, size, 0 }, { 1,0 }, { 0,0,0 }, { 0,0,0 }},		// h, w
+		Mesh::Vertex{{ -size, size, 0 }, { 0,0 }, { 0,0,0 }, { 0,0,0 }}		// h, 0
+	};
+
+	std::vector<unsigned int> indices = { 3,2,1, 3,1,0 };
+	
+	Mesh* quad = new Mesh(vertices, indices);
+	quad->Initialize(device);
+	return quad;
+}
+
+void Renderer::DrawScreenQuad(const Material* material)
 {
 
-	material.BindToContext(context);
+	material->BindToContext(context);
 	UINT stride = sizeof(Mesh::Vertex);
 	UINT offset = 0;
-
-	context->IASetVertexBuffers(0, 1, &screenQuadMesh.vertexBuffer, &stride, &offset);
-	context->IASetIndexBuffer(screenQuadMesh.indexBuffer, DXGI_FORMAT_R32_UINT, 0);
+	ID3D11Buffer* vertexBuffer = screenQuadMesh->GetVertexBuffer();
+	context->IASetVertexBuffers(0, 1, &vertexBuffer, &stride, &offset);
+	context->IASetIndexBuffer(screenQuadMesh->GetIndexBuffer(), DXGI_FORMAT_R32_UINT, 0);
 	context->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
-	context->DrawIndexed(screenQuadMesh.indices.size(), 0, 0);
+	context->DrawIndexed(screenQuadMesh->GetIndexCount(), 0, 0);
 }

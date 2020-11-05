@@ -21,6 +21,13 @@ ResourceManager::~ResourceManager()
 	shaderResources.clear();
 }
 
+void ResourceManager::AddResource(std::string key, Resource* resource)
+{
+	auto iterator = resources.find(key);
+	if (iterator == resources.end())
+		resources.insert({ key, resource });
+}
+
 void ResourceManager::AddShaderResource(std::string key, Shader* shader)
 {
 	auto iterator = shaderResources.find(key);
@@ -28,9 +35,19 @@ void ResourceManager::AddShaderResource(std::string key, Shader* shader)
 		shaderResources.insert({ key, shader });
 }
 
-Shader*& ResourceManager::GetShaderResource(std::string key)
+Resource* ResourceManager::GetResource(std::string key)
 {
-	Shader* crap = nullptr;
+	Resource* resource = nullptr;
+	auto iterator = resources.find(key);
+
+	if (iterator != resources.end())
+		resource = (*iterator).second;
+	
+	return resource;
+}
+
+Shader* ResourceManager::GetShaderResource(std::string key)
+{
 	auto iterator = shaderResources.find(key);
 
 	if (iterator != shaderResources.end())
@@ -41,7 +58,7 @@ Shader*& ResourceManager::GetShaderResource(std::string key)
 	{
 		// Wouldnt let me return nullptr directly
 		// But this nullptr varible is somehow fine
-		return crap;
+		return nullptr;
 	}
 }
 
@@ -64,6 +81,7 @@ void ResourceManager::RemoveResource(std::string key)
 
 void ResourceManager::InitializeResources(ID3D11Device* device)
 {
+	ReadTextures(device);
 	ReadShaders(device);
 	ReadObjects(device);
 }
@@ -104,14 +122,35 @@ void ResourceManager::ReadObjects(ID3D11Device* device)
 
 			// Right now, it supports only 1 mesh and material for each path
 			// Will check if we need to load a whole vector with several meshes at the same time
-			Material* material = new Material; 
-			*material = ZWEBLoader::LoadMaterials(filepath, GetShaderResource(shader), device)[0];
+			Material* material = ZWEBLoader::LoadMaterials(filepath, GetShaderResource(shader), device)[0];
 
 			auto sampler = DXHelper::CreateSampler(D3D11_FILTER_MIN_MAG_MIP_LINEAR, D3D11_TEXTURE_ADDRESS_WRAP, device);
+
+			/*if (meshes.size() > 1)
+			{
+				for (int i = 0; i < meshes.size(); i++)
+				{
+					materials[i]->SetSampler(sampler, 0, ShaderBindFlag::PIXEL);
+
+					AddResource(meshes[i]->GetMeshName(), meshes[i]);
+					AddResource(meshes[i]->GetMaterialName(), materials[i]);
+				}
+			}
+			else
+			{
+				materials[0]->SetSampler(sampler, 0, ShaderBindFlag::PIXEL);
+
+				AddResource(name, meshes[0]);
+				AddResource(name + "Material", materials[0]);
+			}*/
+			
+
+			//Material* material = new Material;
+			//*material = ZWEBLoader::LoadMaterials(filepath, GetShaderResource(shader), device)[0];
+
 			material->SetSampler(sampler, 0, ShaderBindFlag::PIXEL);
 
-			Mesh* mesh = new Mesh;
-			*mesh = ZWEBLoader::LoadMeshes(ZWEBLoadType::NoAnimation, filepath, device)[0];
+			Mesh* mesh = ZWEBLoader::LoadMeshes(ZWEBLoadType::NoAnimation, filepath, device)[0];
 
 			AddResource(name, mesh);
 			AddResource(name + "Material", material);
@@ -127,8 +166,41 @@ void ResourceManager::ReadObjects(ID3D11Device* device)
 	}
 }
 
-void ResourceManager::ReadLights()
+void ResourceManager::ReadTextures(ID3D11Device* device)
 {
+	std::ifstream file("data/Resources_textures.txt");
+	if (file.is_open())
+	{
+		// Delimiter is used to seperate content inside a string
+		std::string delimiter = ": ";
+		std::string line;
+		std::string::size_type sz;
+
+		std::getline(file, line);
+		int pos = line.find(delimiter);
+
+		// Amount of textures in the file
+		int nrOfTextures = std::stoi(line.substr(pos + 2, 1), &sz);
+
+		std::getline(file, line);
+
+		for (int i = 0; i < nrOfTextures; i++)
+		{
+			std::getline(file, line);
+			pos = line.find(delimiter);
+			std::string name = line.substr(0, pos);
+			std::string filepath = line.substr(pos + 2, line.length() - pos - 2);
+
+			Texture* texture = new Texture;
+			std::wstring pathWSTR(filepath.begin(), filepath.end());
+
+			bool success = texture->LoadTexture(device, pathWSTR.c_str());
+			assert(success);
+
+			std::getline(file, line);
+			AddResource(name, texture);
+		}
+	}
 }
 
 void ResourceManager::ReadShaders(ID3D11Device* device)
@@ -315,7 +387,7 @@ Object* ResourceManager::AssembleObject(std::string meshName, std::string materi
 {
 	Object* object = new Object(meshName);
 
-	object->AddComponent<MeshComponent>(*GetResource<Mesh>(meshName), *GetResource<Material>(materialName));
+	object->AddComponent<MeshComponent>(GetResource<Mesh>(meshName), GetResource<Material>(materialName));
 
 	return object;
 }

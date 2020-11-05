@@ -36,6 +36,7 @@ void WeaponComponent::SetPosition(float time)
 		attackTimer = 0;
 		attackCooldown = 0;
 		attacking = true;
+		AudioMaster::Instance().PlaySoundEvent("axeSwing");
 	}
 	else if (attackTimer > 0.2f)
 	{
@@ -43,6 +44,7 @@ void WeaponComponent::SetPosition(float time)
 	}
 	if (attacking)
 	{
+		
 		wepOffTrans = dx::XMMatrixTranslation(0.1f, -0.1f, 1.1f);
 		wepOffRot = dx::XMMatrixRotationAxis({ -1.0f,1.0f,0.5f }, dx::XMConvertToRadians(-60.0f));
 	}

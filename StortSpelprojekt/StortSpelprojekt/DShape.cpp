@@ -10,7 +10,6 @@ DShape::~DShape()
 	vertexShader->Release();
 	inputLayout->Release();
 
-	buffer->Release();
 	lineVBuffer->Release();
 }
 
@@ -43,10 +42,28 @@ void DShape::m_Initialize(ID3D11Device* device)
 {
 	wireOnRS = DXHelper::CreateRasterizerState(D3D11_CULL_BACK, D3D11_FILL_WIREFRAME, device);
 	wireOffRS = DXHelper::CreateRasterizerState(D3D11_CULL_BACK, D3D11_FILL_SOLID, device);
-	DXHelper::CreateConstBuffer(device, &buffer, &data, sizeof(ShapeData));
+	buffer.Initialize(0, ShaderBindFlag::VERTEX, device);
 
-	boxMesh = ShittyOBJLoader::Load("Models/cube.obj", device);
-	sphereMesh = ShittyOBJLoader::Load("Models/icosphere.obj", device);
+	std::vector<Mesh::Vertex> boxVertexes;
+	for (size_t i = 0; i < cube_vertexes.size(); i++)
+	{
+		Mesh::Vertex v;
+		v.position = cube_vertexes[i];
+		boxVertexes.push_back(v);
+	}
+
+	boxMesh = new Mesh(boxVertexes, cube_indices);
+	boxMesh->Initialize(device);
+
+	std::vector<Mesh::Vertex> sphereVertexes;
+	for (size_t i = 0; i < sphere_vertexes.size(); i++)
+	{
+		Mesh::Vertex v;
+		v.position = sphere_vertexes[i];
+		sphereVertexes.push_back(v);
+	}
+	sphereMesh = new Mesh(sphereVertexes, sphere_indices);
+	sphereMesh->Initialize(device);
 
 	D3D11_BUFFER_DESC desc;
 	ZeroMemory(&desc, sizeof(desc));
@@ -132,7 +149,6 @@ void DShape::CompileShaders(ID3D11Device* device)
 	if (FAILED(psResult0) && errorBlob)
 	{
 		OutputDebugStringA((char*)errorBlob->GetBufferPointer());
-		Log::Add(Log::LogLevel::Error, (char*)errorBlob->GetBufferPointer());
 		errorBlob->Release();
 	}
 #endif
@@ -162,7 +178,6 @@ void DShape::CompileShaders(ID3D11Device* device)
 	if (FAILED(psResult1) && errorBlob)
 	{
 		OutputDebugStringA((char*)errorBlob->GetBufferPointer());
-		Log::Add(Log::LogLevel::Error, (char*)errorBlob->GetBufferPointer());
 		errorBlob->Release();
 	}
 #endif
@@ -179,7 +194,7 @@ void DShape::CompileShaders(ID3D11Device* device)
 	assert(SUCCEEDED(createIAResult));
 }
 
-void DShape::RenderQueue(Type type, const Mesh& mesh, const CameraComponent* camera, ID3D11DeviceContext* context)
+void DShape::RenderQueue(Type type, const Mesh* mesh, const CameraComponent* camera, ID3D11DeviceContext* context)
 {
 	std::queue<Shape>& queue = queues[(int)type];
 	while (!queue.empty())
@@ -189,7 +204,7 @@ void DShape::RenderQueue(Type type, const Mesh& mesh, const CameraComponent* cam
 	}
 }
 
-void DShape::DrawMesh(const Mesh& mesh, const Shape& shape, const CameraComponent* camera, ID3D11DeviceContext* context)
+void DShape::DrawMesh(const Mesh* mesh, const Shape& shape, const CameraComponent* camera, ID3D11DeviceContext* context)
 {
 	dx::XMMATRIX model = dx::XMMatrixScalingFromVector(dx::XMLoadFloat3(&shape.t1)) * dx::XMMatrixTranslationFromVector(dx::XMLoadFloat3(&shape.t0));
 
@@ -198,16 +213,17 @@ void DShape::DrawMesh(const Mesh& mesh, const Shape& shape, const CameraComponen
 	data.color = dx::XMFLOAT4(shape.color.x, shape.color.y, shape.color.z, 1.0f);
 	data.isLine = FALSE;
 
-	DXHelper::BindConstBuffer(context, buffer, &data, 0, ShaderBindFlag::VERTEX);
+	buffer.SetData(data);
+	buffer.UpdateBuffer(context);
 
 	UINT stride = sizeof(Mesh::Vertex);
 	UINT offset = 0;
+	ID3D11Buffer* vertexBuffer = mesh->GetVertexBuffer();
+	context->IASetVertexBuffers(0, 1, &vertexBuffer, &stride, &offset);
+	context->IASetIndexBuffer(mesh->GetIndexBuffer(), DXGI_FORMAT_R32_UINT, 0);
+	context->IASetPrimitiveTopology(mesh->GetTopology());
 
-	context->IASetVertexBuffers(0, 1, &mesh.vertexBuffer, &stride, &offset);
-	context->IASetIndexBuffer(mesh.indexBuffer, DXGI_FORMAT_R32_UINT, 0);
-	context->IASetPrimitiveTopology(mesh.topology);
-
-	context->DrawIndexed(mesh.indices.size(), 0, 0);
+	context->DrawIndexed(mesh->GetIndexCount(), 0, 0);
 }
 
 void DShape::DrawLines(const CameraComponent* camera, ID3D11DeviceContext* context)
@@ -238,7 +254,8 @@ void DShape::DrawLines(const CameraComponent* camera, ID3D11DeviceContext* conte
 	data.isLine = TRUE;
 	data.color = { 1,0,0,1 };
 
-	DXHelper::BindConstBuffer(context, buffer, &data, 0, ShaderBindFlag::VERTEX);
+	buffer.SetData(data);
+	buffer.UpdateBuffer(context);
 
 	UINT stride = sizeof(LineVertex);
 	UINT offset = 0;

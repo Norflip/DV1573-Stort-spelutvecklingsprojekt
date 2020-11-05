@@ -9,14 +9,14 @@ constexpr std::size_t MAX_SHADER_SLOTS = 5;
 
 
 ALIGN16
-class Material
+class Material : public Resource
 {
 	static size_t idCounter;
 
 	struct Slot
 	{
 		ID3D11SamplerState* state;
-		Texture texture;
+		Texture* texture;
 		bool isSet;
 	};
 	
@@ -29,7 +29,7 @@ public:
 	void UnbindToContext(ID3D11DeviceContext* context) const;
 	void BindToContext(ID3D11DeviceContext*) const;
 	
-	void SetTexture(Texture texture, size_t slot, ShaderBindFlag flag);
+	void SetTexture(Texture* texture, size_t slot, ShaderBindFlag flag);
 	void SetSampler (ID3D11SamplerState* state, size_t slot, ShaderBindFlag flag);
 
 	void SetMaterialData(const cb_Material& materialData);
@@ -55,6 +55,6 @@ private:
 	bool transparent;
 
 	std::string name;
-	std::unordered_map<int, std::unordered_map<size_t, Texture>> textures;
+	std::unordered_map<int, std::unordered_map<size_t, Texture*>> textures;
 	std::unordered_map<int, std::unordered_map<size_t, ID3D11SamplerState*>> samplers;
 };

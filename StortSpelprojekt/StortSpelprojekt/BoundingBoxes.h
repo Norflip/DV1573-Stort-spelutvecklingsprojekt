@@ -1,40 +1,36 @@
 #pragma once
 #include "Mesh.h"
 #include <algorithm>
+
 struct AABB //OBB can be added too if someone knows how.
 {
 	dx::XMFLOAT3 min;
 	dx::XMFLOAT3 max;
-
-	dx::XMVECTOR c; 
-	dx::XMVECTOR h; 
-
-	float height;
-	float radius;
-	float halfX, halfY, halfZ;
-
 };
 
 
-class BoundingBoxes
+class BoundingBox
 {
-
 private:
 	AABB aabb; 
-	Mesh basicMesh;
-	
+	dx::XMFLOAT3 min, max;
+
 public:
-	BoundingBoxes(const Mesh& mesh);
-	virtual ~BoundingBoxes();
+	BoundingBox();
+	virtual ~BoundingBox();
+	
+	void CalculateAABB(const std::vector<Mesh*>& meshes);
+	void CalculateAABB(const Mesh* mesh);
 
-	void SetAABB(const AABB& aabb) { this->aabb=aabb; }
+	const AABB& GetAABB() const { return this->aabb; }	
 	
-	const AABB& GetAABB() { return this->aabb; }
+	dx::XMFLOAT3 GetMin() const { return this->min; }
+	dx::XMFLOAT3 GetMax() const { return this->max; }
+	void GetCorners(dx::XMFLOAT3 corners[8]);
 
-	
-	void CalcAABB(const Mesh& mesh); // can also be used to calc OBB if someone knows how.
-	void CalcAABB();
-	
+	dx::XMFLOAT3 GetCenter() const;
+	dx::XMFLOAT3 GetExtends() const;
+
 };
 
 //Right now the bb are static. Not dynamic.
