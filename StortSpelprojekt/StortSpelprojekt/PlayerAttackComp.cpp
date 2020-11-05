@@ -27,7 +27,6 @@ bool PlayerAttackComp::CheckAttack()
 {
 	bool attackEnemy = false;
 
-	
 	DirectX::XMFLOAT3 playerPos;
 	dx::XMStoreFloat3(&playerPos, GetOwner()->GetTransform().GetPosition());
 	DirectX::XMFLOAT3 enemyPos;

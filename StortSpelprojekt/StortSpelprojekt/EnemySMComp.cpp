@@ -52,7 +52,6 @@ void EnemySMComp::Animate()
 		{
 			skeletonComponent->SetTrack(SkeletonStateMachine::RUN, false);
 		}
-		
 	}
 	else if (currentState == EnemyState::IDLE && statsComponent->GetHealth() > 0)
 	{

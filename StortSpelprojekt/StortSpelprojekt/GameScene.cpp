@@ -205,8 +205,6 @@ void GameScene::InitializeObjects()
 		
 	AddObject(axeObject);
 
-	clock.Update();
-
 	world.Initialize(root, resources, pooler, renderer);
 	world.ConstructSegment(state, desc);
 	world.SetPlayer(player);
@@ -405,7 +403,7 @@ void GameScene::Update(const float& deltaTime)
 			{
 				dx::XMVECTOR position = dx::XMVectorAdd(cameraPosition, { (float)x * 1.5f, -1.0f, (float)y * 1.5f });
 
-				//	Object* object = pooler.GetItem("test_body_cube");
+				//Object* object = pooler.GetItem("test_body_cube");
 				Object* object = new Object("physics_cube");
 				object->GetTransform().SetPosition(position);
 
