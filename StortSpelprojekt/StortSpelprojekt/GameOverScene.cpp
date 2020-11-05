@@ -56,6 +56,7 @@ void GameOverScene::InitializeGUI()
 void GameOverScene::OnActivate()
 {
 	renderer->AddRenderPass(guiManager);
+	Input::Instance().FreeMouse();
 	ShowCursor(true);
 }
 

@@ -161,18 +161,16 @@ void GameScene::InitializeObjects()
 	enemy->GetTransform().SetScale({ 0.125f, 0.125f, 0.125f });
 	enemy->AddComponent<EnemyStatsComp>(100.f, 0.5f, 5.f, 5.f, 3.f);
 	enemy->AddComponent<BoxColliderComponent>(dx::XMFLOAT3{ 1, 1, 1 }, dx::XMFLOAT3{ 0, 0, 0 });
-	enemy->AddComponent<RigidBodyComponent>(20.f, FilterGroups::ENEMIES, FilterGroups::EVERYTHING, BodyType::DYNAMIC, true);
+	enemy->AddComponent<RigidBodyComponent>(20.0f, FilterGroups::ENEMIES, FilterGroups::EVERYTHING, BodyType::DYNAMIC, true);
 	enemy->AddComponent<BoxColliderComponent>(dx::XMFLOAT3{ 0.8, 1.8, 1 }, dx::XMFLOAT3{ 0, 0, 0 });
 
 	enemy->AddComponent<EnemyAttackComp>(player->GetComponent<PlayerComp>());
 	EnemySMComp* stateMachine = enemy->AddComponent<EnemySMComp>(EnemyState::IDLE);
 	stateMachine->RegisterState(EnemyState::IDLE, enemy->AddComponent<EnemyIdleComp>());
 	stateMachine->RegisterState(EnemyState::PATROL, enemy->AddComponent<EnemyPatrolComp>());
-	stateMachine->RegisterState(EnemyState::ATTACK, enemy->AddComponent<EnemyAttackComp>(player->GetComponent<PlayerComp>()));
+	stateMachine->RegisterState(EnemyState::ATTACK, enemy->AddComponent<EnemyAttackComp>(player->GetComponent<PlayerComp>() ));
 	stateMachine->InitAnimation();
 	AddObject(enemy);
-
-	playerObject->AddComponent<PlayerAttackComp>(enemy);
 
 
 	std::vector<Mesh*> axeMesh = ZWEBLoader::LoadMeshes(ZWEBLoadType::NoAnimation, "Models/AXE.ZWEB", renderer->GetDevice());
@@ -349,7 +347,11 @@ void GameScene::OnActivate()
 
 	renderer->AddRenderPass(guiManager);
 
-	this->PrintSceneHierarchy(root, 0);
+	
+	Input::Instance().ConfineMouse();
+	ShowCursor(false);
+
+	//this->PrintSceneHierarchy(root, 0);
 }
 
 void GameScene::OnDeactivate()
@@ -357,7 +359,8 @@ void GameScene::OnDeactivate()
 	world.DeconstructSegment();
 	renderer->RemoveRenderPass(guiManager);
 
-	this->PrintSceneHierarchy(root, 0);
+	ShowCursor(true);
+	//this->PrintSceneHierarchy(root, 0);
 }
 
 void GameScene::Update(const float& deltaTime)
@@ -451,6 +454,7 @@ void GameScene::FixedUpdate(const float& fixedDeltaTime)
 
 void GameScene::Render()
 {
+	camera->UpdateView();
 	skyboxClass->GetThisObject()->Draw(renderer, camera);
 
 	root->Draw(renderer, camera);

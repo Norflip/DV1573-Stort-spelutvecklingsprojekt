@@ -21,10 +21,14 @@ dx::XMMATRIX CameraComponent::GetViewMatrix() const
 	return VirtualCamera::GetViewMatrix(GetOwner()->GetTransform().GetWorldMatrix());
 }
 
-bool CameraComponent::InView(const BoundingBox& bounds, const dx::XMMATRIX world)
+void CameraComponent::UpdateView()
 {
 	dx::XMMATRIX transform = GetOwner()->GetTransform().GetWorldMatrix();
-	std::vector<dx::XMFLOAT4> planes = VirtualCamera::GetFrustumPlanes(transform);
+	planes = VirtualCamera::GetFrustumPlanes(transform);
+}
+
+bool CameraComponent::InView(const BoundingBox& bounds, const dx::XMMATRIX world)
+{
 	return VirtualCamera::InView(bounds, world, planes);
 }
 

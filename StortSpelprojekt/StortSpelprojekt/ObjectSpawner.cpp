@@ -1,6 +1,7 @@
 #include "stdafx.h"
 #include "ObjectSpawner.h"
 #include "ResourceManager.h"
+#include "Engine.h"
 
 ObjectSpawner::ObjectSpawner()
 {
@@ -23,7 +24,6 @@ void ObjectSpawner::Spawn(const SaveState& state, PointQuadTree& tree, std::unor
 
 	Random::SetSeed(state.GetSeed(1));
 	itemSpawnPositions = CreateSpawnPositions(tree, 20.0f, chunkMap);
-	return;
 
 	/*for (size_t i = 0; i < staticItems.size(); i++)
 	{
@@ -169,12 +169,16 @@ void ObjectSpawner::Spawn(const SaveState& state, PointQuadTree& tree, std::unor
 
 void ObjectSpawner::Despawn()
 {
-	for (auto i : activeItems)
+	if (activeItems.size() > 0)
 	{
-		Object* obj = i;
-		Transform::ClearFromHierarchy(obj->GetTransform());
-		obj->GetComponent<RigidBodyComponent>()->Release();
-		delete obj;
+		for (auto i : activeItems)
+		{
+			Object* obj = i;
+			obj->GetComponent<RigidBodyComponent>()->Release();			
+			Engine::Instance->GetActiveScene()->RemoveObject(obj);
+
+			delete obj;
+		}
 	}
 
 	activeItems.clear();

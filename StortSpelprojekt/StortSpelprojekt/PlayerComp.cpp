@@ -99,9 +99,6 @@ void PlayerComp::Update(const float& deltaTime)
 				
 				hit.object->GetComponent<PickupComponent>()->SetActive(false);
 
-				RigidBodyComponent* rbComp = hit.object->GetComponent<RigidBodyComponent>();
-				rbComp->Release();
-				
 				//phy.MutexLock();
 				//phy.UnregisterRigidBody(hit.object->GetComponent<RigidBodyComponent>());
 				//phy.MutexUnlock();

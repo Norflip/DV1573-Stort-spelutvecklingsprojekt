@@ -109,6 +109,7 @@ void ControllerComp::Initialize()
 	this->cameraObject->GetTransform().SetRotation(reset);
 }
 
+
 void ControllerComp::Update(const float& deltaTime)
 {
 	//WASD = move
