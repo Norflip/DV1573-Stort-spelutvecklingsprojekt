@@ -43,12 +43,14 @@ public:
 	void SetFuel(float fuel) { this->fuel = fuel; }
 	void SetFood(float food) { this->fuel = food; }
 
+	
 	//void SetCurrentWeapon(int currentWeapon) { this->currentWeapon = currentWeapon; }// some ui stuff here?
 	void SetguiMan(GUIManager* guiMan) { this->guiMan = guiMan; }
 	void InsertWeapon(WeaponComponent* weapon, std::string name);
 	NEXT_SCENE GetNextScene() { return this->swapScene; }
 private:
 	void HoldObject();
+	void DropObject();
 	float health, attack, attackSpeed, fuel, food;
 	//int currentWeapon;
 	float movementSpeed, crouchSpeed, SprintSpeed;
@@ -63,6 +65,7 @@ private:
 	EnemyStatsComp* enemyStatsComp;
 	float rayDistance;	
 	Object* currentWeapon;
+	Object* holding;
 	RayHit hit;
 	Physics& phy;
 	CameraComponent* cam;
@@ -71,7 +74,11 @@ private:
 	bool foodEmpty;
 	bool gg;
 	float ReverseAndClamp(float inputValue);
-
+	float test = 0;
 	void RayCast(const float& deltaTime);
+	dx::XMVECTOR toYAW;
+	dx::XMMATRIX inverseViewMatrix, wepOffTrans, wepOffRot, wepWorld;
+	dx::XMVECTOR	weaponScale, weaponRot, weaponPos, up;
+
 };
 

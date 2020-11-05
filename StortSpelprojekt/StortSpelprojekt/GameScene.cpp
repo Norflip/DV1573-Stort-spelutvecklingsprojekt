@@ -258,11 +258,11 @@ void GameScene::InitializeObjects()
 	Object* fuelCanObject = resourceManager->AssembleObject("FuelCanGreen", "FuelCanGreenMaterial");// new Object("fuelObject");
 	//fuelCanObject->AddComponent<MeshComponent>(fuelCan[0], fuelCanMaterail[0]);
 	fuelCanObject->GetTransform().SetPosition({ 22,2,52 });
-	fuelCanObject->AddComponent<BoxColliderComponent>(dx::XMFLOAT3{ 0.5f, 0.5f, 0.5f }, dx::XMFLOAT3{ 0, 0, 0 });
+	fuelCanObject->AddComponent<BoxColliderComponent>(dx::XMFLOAT3{ 0.3f, 0.3f, 0.3f }, dx::XMFLOAT3{ 0, 0, 0 });
 	fuelCanObject->AddComponent<PickupComponent>(Type::Fuel, 20.0f);
 
 	RigidBodyComponent* fuelBody;
-	fuelBody = fuelCanObject->AddComponent<RigidBodyComponent>(0.f, FilterGroups::HOLDABLE, FilterGroups::PLAYER, BodyType::DYNAMIC);
+	fuelBody =	fuelCanObject->AddComponent<RigidBodyComponent>(10.f, FilterGroups::HOLDABLE, FilterGroups::TERRAIN, BodyType::DYNAMIC);
 	physics.RegisterRigidBody(fuelBody);
 	AddObject(fuelCanObject);
 

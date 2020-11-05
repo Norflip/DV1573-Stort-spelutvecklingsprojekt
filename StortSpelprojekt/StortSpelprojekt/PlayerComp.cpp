@@ -64,6 +64,8 @@ PlayerComp::PlayerComp(Renderer* renderer, CameraComponent* camComp, Physics& ph
 	this->rayDistance = 2.0f;
 	//this->GetOwner()->GetComponen
 	//weaponsList.push_back()
+	up = { 0.0f, 1.0f, 1.0f };
+	holding = nullptr;
 }
 
 PlayerComp::~PlayerComp()
@@ -109,6 +111,52 @@ void PlayerComp::Update(const float& deltaTime)
 
 	// Health drop
 	healthDippingBar->SetScaleBars(ReverseAndClamp(health));
+
+	if (holding != nullptr)
+	{	
+		HoldObject();
+		DropObject();
+	}
+}
+
+void PlayerComp::HoldObject()
+{
+
+	inverseViewMatrix = dx::XMMatrixInverse(nullptr, cam->GetViewMatrix());
+	wepOffTrans = dx::XMMatrixTranslation(0.3f, -0.4f, 0.8f);
+	wepOffRot = dx::XMMatrixRotationAxis(up, dx::XMConvertToRadians(-40.0f));
+
+	wepWorld = wepOffRot * wepOffTrans * inverseViewMatrix;
+	dx::XMMatrixDecompose(&weaponScale, &weaponRot, &weaponPos, wepWorld);
+
+	holding->GetTransform().SetPosition(weaponPos);
+	holding->GetTransform().SetRotation(weaponRot);
+	holding->GetTransform().SetScale(weaponScale);
+
+}
+
+void PlayerComp::DropObject()
+{
+	if (KEY_DOWN(T))
+	{
+		dx::XMVECTOR camRot = cam->GetOwner()->GetTransform().GetRotation();
+		camRot = cam->GetOwner()->GetTransform().TransformDirectionCustomRotation({ 0,0,1 }, camRot);
+		
+		RigidBodyComponent* rbComp = holding->GetComponent<RigidBodyComponent>();
+		rp::RigidBody* objectRb = rbComp->GetRigidBody();
+
+		cam->GetOwner()->GetTransform().GetRotation();
+		wepWorld = wepOffRot * wepOffTrans * inverseViewMatrix;
+		dx::XMMatrixDecompose(&weaponScale, &weaponRot, &weaponPos, wepWorld);
+		rbComp->SetEnabled(true);
+		objectRb->setAngularVelocity({ 0,0,0 });
+		float forceAmount = 10;
+		rbComp->SetPosition(weaponPos);
+		rbComp->SetRotation(weaponRot);
+		objectRb->setLinearVelocity({ dx::XMVectorGetX(camRot)* forceAmount ,  dx::XMVectorGetY(camRot) * forceAmount,  dx::XMVectorGetZ(camRot) * forceAmount });
+
+		
+	}
 }
 
 void PlayerComp::InsertWeapon(WeaponComponent* weapon, std::string name)
@@ -163,11 +211,19 @@ void PlayerComp::RayCast(const float& deltaTime)
 				rbComp->RemoveCollidersFromBody(objectRb);
 			}
 			}
+			//HELVETE
 			if (phy.RaytestSingle(ray, rayDistance, hit, FilterGroups::HOLDABLE))
 			{
 				if (hit.object != nullptr)
 				{
-					hit.object->RemoveFlag(ObjectFlag::ENABLED);
+					holding = hit.object;
+					RigidBodyComponent* rbComp = hit.object->GetComponent<RigidBodyComponent>();
+					rp::RigidBody* objectRb = rbComp->GetRigidBody();
+					//rbComp->RemoveCollidersFromBody(objectRb);
+					rbComp->SetEnabled(false);
+					//hit.object->GetComponent<BoxColliderComponent>()->SetEnabled(false);
+					hit.object->GetComponent<BoxColliderComponent>()->SetRotation({ 5, 5, 5, 5 });
+					//hit.object->RemoveFlag(ObjectFlag::ENABLED);
 					currentWeapon->RemoveFlag(ObjectFlag::ENABLED);
 				}
 			}
