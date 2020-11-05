@@ -349,6 +349,7 @@ void GameScene::OnActivate()
 
 	
 	Input::Instance().ConfineMouse();
+	Input::Instance().SetMouseMode(dx::Mouse::Mode::MODE_RELATIVE);
 	ShowCursor(false);
 
 	//this->PrintSceneHierarchy(root, 0);

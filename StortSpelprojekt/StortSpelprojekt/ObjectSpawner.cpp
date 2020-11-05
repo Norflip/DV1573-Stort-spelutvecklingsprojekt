@@ -175,8 +175,7 @@ void ObjectSpawner::Despawn()
 		{
 			Object* obj = i;
 			obj->GetComponent<RigidBodyComponent>()->Release();			
-			Engine::Instance->GetActiveScene()->RemoveObject(obj);
-
+			Transform::ClearFromHierarchy(obj->GetTransform());
 			delete obj;
 		}
 	}

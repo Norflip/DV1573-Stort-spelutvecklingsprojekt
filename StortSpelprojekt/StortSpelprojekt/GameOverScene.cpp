@@ -28,9 +28,6 @@ void GameOverScene::InitializeObjects()
 	//cameraObject3->AddComponent<ControllerComponent>();
 	AddObject(cameraObject);
 
-	ShowCursor(true);
-	Input::Instance().SetMouseMode(dx::Mouse::MODE_ABSOLUTE);
-
 	skyboxClass = new Skybox(renderer->GetDevice(), renderer->GetContext(), resources->GetShaderResource("skyboxShader"));
 	skyboxClass->GetThisObject()->AddFlag(ObjectFlag::NO_CULL);
 }
@@ -58,6 +55,7 @@ void GameOverScene::OnActivate()
 	renderer->AddRenderPass(guiManager);
 	Input::Instance().FreeMouse();
 	ShowCursor(true);
+	Input::Instance().SetMouseMode(dx::Mouse::MODE_ABSOLUTE);
 }
 
 void GameOverScene::OnDeactivate()
