@@ -503,7 +503,10 @@ void GameScene::Update(const float& deltaTime)
 
 	/* Set angle for particles, "look at cameraposition all the time" */
 	/* Defines the angle in radians between two vectors * 1 degrees to give our xmatrixrotationy an degree value*/
-	double anglepart = atan2(particlesPosition.x - camera->GetOwner()->GetTransform().GetPosition().m128_f32[0], particlesPosition.z - camera->GetOwner()->GetTransform().GetPosition().m128_f32[3]) * (180.0 / dx::XM_PI);
+	dx::XMVECTOR v = camera->GetOwner()->GetTransform().GetPosition();
+	float xPos = v.m128_f32[0];
+	float zPos = v.m128_f32[2];
+	double anglepart = atan2(particlesPosition.x - xPos, particlesPosition.z - zPos) * (180.0 / dx::XM_PI);
 	float rotationPart = (float)anglepart * 0.0174532925f;
 
 	dx::XMMATRIX worldParticles = dx::XMMatrixIdentity();
