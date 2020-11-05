@@ -1,13 +1,10 @@
 #include "stdafx.h"
 #include "CameraComponent.h"
 
-CameraComponent* CameraComponent::mainCamera = nullptr;
-
-CameraComponent::CameraComponent(size_t width, size_t height, float fieldOfView, bool main)
+CameraComponent::CameraComponent(size_t width, size_t height, float fieldOfView)
 	:VirtualCamera(VirtualCamera::CameraMode::PERSPECTIVE, width, height, CAMERA_NEAR_Z, CAMERA_FAR_Z, fieldOfView)
 {
-	if (main)
-		mainCamera = this;
+
 }
 
 CameraComponent::~CameraComponent()

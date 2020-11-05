@@ -76,19 +76,10 @@ void DShape::m_Initialize(ID3D11Device* device)
 	CompileShaders(device);
 }
 
-void DShape::m_Draw(ID3D11DeviceContext* context)
+void DShape::m_Draw(dx::XMMATRIX cameraVP, ID3D11DeviceContext* context)
 {
 	if (shapeCount > 0)
 	{
-		CameraComponent* camera = CameraComponent::mainCamera;
-
-		if (camera == nullptr)
-		{
-#if _DEBUG
-			std::cout << "Missing main camera" << std::endl;
-#endif
-			return;
-		}
 
 		context->IASetInputLayout(inputLayout);
 		context->VSSetShader(vertexShader, 0, 0);
@@ -99,16 +90,16 @@ void DShape::m_Draw(ID3D11DeviceContext* context)
 
 		// SOLID
 		context->RSSetState(wireOffRS);
-		DrawLines(camera, context);
+		DrawLines(cameraVP, context);
 		lines.clear();
 
-		RenderQueue(Type::BOX, boxMesh, camera, context);
-		RenderQueue(Type::SPHERE, sphereMesh, camera, context);
+		RenderQueue(Type::BOX, boxMesh, cameraVP, context);
+		RenderQueue(Type::SPHERE, sphereMesh, cameraVP, context);
 
 		//WIRE
 		context->RSSetState(wireOnRS);
-		RenderQueue(Type::BOX_WIRE, boxMesh, camera, context);
-		RenderQueue(Type::SPHERE_WIRE, sphereMesh, camera, context);
+		RenderQueue(Type::BOX_WIRE, boxMesh, cameraVP, context);
+		RenderQueue(Type::SPHERE_WIRE, sphereMesh, cameraVP, context);
 
 		shapeCount = 0;
 		context->RSSetState(defaultRasterizerState);
@@ -194,21 +185,21 @@ void DShape::CompileShaders(ID3D11Device* device)
 	assert(SUCCEEDED(createIAResult));
 }
 
-void DShape::RenderQueue(Type type, const Mesh* mesh, const CameraComponent* camera, ID3D11DeviceContext* context)
+void DShape::RenderQueue(Type type, const Mesh* mesh, dx::XMMATRIX cameraVP, ID3D11DeviceContext* context)
 {
 	std::queue<Shape>& queue = queues[(int)type];
 	while (!queue.empty())
 	{
-		DrawMesh(mesh, queue.front(), camera, context);
+		DrawMesh(mesh, queue.front(), cameraVP, context);
 		queue.pop();
 	}
 }
 
-void DShape::DrawMesh(const Mesh* mesh, const Shape& shape, const CameraComponent* camera, ID3D11DeviceContext* context)
+void DShape::DrawMesh(const Mesh* mesh, const Shape& shape, dx::XMMATRIX cameraVP, ID3D11DeviceContext* context)
 {
 	dx::XMMATRIX model = dx::XMMatrixScalingFromVector(dx::XMLoadFloat3(&shape.t1)) * dx::XMMatrixTranslationFromVector(dx::XMLoadFloat3(&shape.t0));
 
-	dx::XMMATRIX mvp = dx::XMMatrixMultiply(model, camera->GetViewMatrix() * camera->GetProjectionMatrix());
+	dx::XMMATRIX mvp = dx::XMMatrixMultiply(model, cameraVP);
 	dx::XMStoreFloat4x4(&data.mvp, dx::XMMatrixTranspose(mvp));
 	data.color = dx::XMFLOAT4(shape.color.x, shape.color.y, shape.color.z, 1.0f);
 	data.isLine = FALSE;
@@ -226,7 +217,7 @@ void DShape::DrawMesh(const Mesh* mesh, const Shape& shape, const CameraComponen
 	context->DrawIndexed(mesh->GetIndexCount(), 0, 0);
 }
 
-void DShape::DrawLines(const CameraComponent* camera, ID3D11DeviceContext* context)
+void DShape::DrawLines(dx::XMMATRIX cameraVP, ID3D11DeviceContext* context)
 {
 	const size_t verts = lines.size() * 2;
 	LineVertex* vertices = new LineVertex[verts];
@@ -249,7 +240,7 @@ void DShape::DrawLines(const CameraComponent* camera, ID3D11DeviceContext* conte
 	context->Unmap(lineVBuffer, 0);
 	delete[] vertices;
 
-	dx::XMMATRIX mvp = dx::XMMatrixIdentity() * camera->GetViewMatrix() * camera->GetProjectionMatrix();
+	dx::XMMATRIX mvp = dx::XMMatrixIdentity() * cameraVP;
 	dx::XMStoreFloat4x4(&data.mvp, dx::XMMatrixTranspose(mvp));
 	data.isLine = TRUE;
 	data.color = { 1,0,0,1 };

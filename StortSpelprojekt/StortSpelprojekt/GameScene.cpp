@@ -121,8 +121,8 @@ void GameScene::InitializeObjects()
 	Object* playerObject = new Object("player", ObjectFlag::ENABLED);
 	Object* cameraObject = new Object("camera", ObjectFlag::ENABLED);
 	this->player = playerObject;
-	camera = cameraObject->AddComponent<CameraComponent>(60.0f, true);
-	camera->Resize(window->GetWidth(), window->GetHeight());
+	camera = cameraObject->AddComponent<CameraComponent>(window->GetWidth(), window->GetHeight(), 60.0f);
+	
 	cameraObject->GetTransform().SetPosition(playerSpawnVec);
 	playerObject->GetTransform().SetPosition(playerSpawnVec);
 
@@ -347,12 +347,16 @@ void GameScene::OnActivate()
 	world.MoveHouseAndPlayerToStart();
 
 	renderer->AddRenderPass(guiManager);
+
+	this->PrintSceneHierarchy(root, 0);
 }
 
 void GameScene::OnDeactivate()
 {
 	world.DeconstructSegment();
 	renderer->RemoveRenderPass(guiManager);
+
+	this->PrintSceneHierarchy(root, 0);
 }
 
 void GameScene::Update(const float& deltaTime)

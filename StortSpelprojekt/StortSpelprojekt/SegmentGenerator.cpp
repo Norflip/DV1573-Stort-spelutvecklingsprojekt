@@ -71,6 +71,8 @@ void SegmentGenerator::Deconstruct()
 		constructed = false;
 		chunks.clear();
 		grid.Clear();
+		chunkMap.clear();
+
 	}
 }
 

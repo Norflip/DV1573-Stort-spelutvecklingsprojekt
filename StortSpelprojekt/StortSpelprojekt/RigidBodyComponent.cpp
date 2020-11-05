@@ -171,7 +171,7 @@ void RigidBodyComponent::m_InitializeBody(Physics* physics)
 
 void RigidBodyComponent::Initialize()
 {
-	std::cout << GetOwner()->GetName() << ": RB initialize" << std::endl;
+	//std::cout << GetOwner()->GetName() << ": RB initialize" << std::endl;
 	if (autoRegister)
 		m_InitializeBody(Engine::Instance->GetPhysics());
 }

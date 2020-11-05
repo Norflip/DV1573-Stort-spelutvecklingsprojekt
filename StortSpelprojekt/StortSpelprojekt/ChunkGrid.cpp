@@ -45,6 +45,7 @@ void ChunkGrid::Generate(int maxSteps, int padding, int directionalSteps)
 void ChunkGrid::Clear()
 {
 	chunks.clear();
+	path.Clear();
 }
 
 void ChunkGrid::AddChunksFromPath(std::vector<dx::XMINT2>& points, std::vector<dx::XMINT2>& path, std::unordered_map<int, ChunkInfo>& chunks)

@@ -47,15 +47,16 @@ bool VirtualCamera::InView(const BoundingBox& bounds, const dx::XMMATRIX world, 
 		if (plane.z >= 0)
 			std::swap(vmin.z, vmax.z);
 
-		// INSIDE
+		// OUTSIDE
 		float d1 = plane.x * vmin.x + plane.y * vmin.y + plane.z * vmin.z;
 		if (d1 + plane.w < 0.0f)
 			return false;
 
-		// ON FRUSTUM BORDER
-		float d2 = plane.x * vmax.x + plane.y * vmax.y + plane.z * vmax.z;
-		if (d2 + plane.w <= 0)
-			return true;
+
+		//// ON FRUSTUM BORDER
+		//float d2 = plane.x * vmax.x + plane.y * vmax.y + plane.z * vmax.z;
+		//if (d2 + plane.w <= 0)
+		//	inViewResult = true;
 	}
 
 	return inViewResult;

@@ -23,7 +23,7 @@ void ObjectSpawner::Spawn(const SaveState& state, PointQuadTree& tree, std::unor
 
 	Random::SetSeed(state.GetSeed(1));
 	itemSpawnPositions = CreateSpawnPositions(tree, 20.0f, chunkMap);
-
+	return;
 
 	/*for (size_t i = 0; i < staticItems.size(); i++)
 	{

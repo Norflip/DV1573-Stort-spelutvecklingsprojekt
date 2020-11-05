@@ -170,7 +170,7 @@ void Renderer::RenderFrame(CameraComponent* camera, float time, RenderTexture& t
 	yPos += (float)Input::Instance().GetPrevMousePosRelative().x;
 	data.mousePos = { xPos,yPos };
 	data.screenSize = { (float)outputWindow->GetWidth(), (float)outputWindow->GetHeight() };
-	
+
 	//data.mousePos = { (float)Input::Instance().GetMousePos().x, (float)Input::Instance().GetMousePos().y };
 	// put in mouse pos delta here
 	dx::XMStoreFloat3(&data.cameraPosition, camera->GetOwner()->GetTransform().GetPosition());
@@ -197,7 +197,7 @@ void Renderer::RenderFrame(CameraComponent* camera, float time, RenderTexture& t
 
 	SetCullBack(true);
 	DrawQueueToTarget(opaqueItemQueue, camera);
-	DShape::Instance().m_Draw(context);
+	DShape::Instance().m_Draw(camera->GetViewMatrix() * camera->GetProjectionMatrix(), context);
 
 	SetCullBack(false);
 	DrawQueueToTarget(transparentItemQueue, camera);
@@ -422,7 +422,7 @@ void Renderer::DrawRenderItemSkeleton(const RenderItem& item, CameraComponent* c
 
 void Renderer::DrawRenderItemGrass(const RenderItem& item, CameraComponent* camera)
 {
-	SetObjectBufferValues(camera,item.world, false);
+	SetObjectBufferValues(camera, item.world, false);
 	objectBuffer.UpdateBuffer(context);
 
 	ShaderBindFlag def = objectBuffer.GetFlag();
@@ -492,7 +492,7 @@ Mesh* Renderer::CreateScreenQuad()
 	};
 
 	std::vector<unsigned int> indices = { 3,2,1, 3,1,0 };
-	
+
 	Mesh* quad = new Mesh(vertices, indices);
 	quad->Initialize(device);
 	return quad;

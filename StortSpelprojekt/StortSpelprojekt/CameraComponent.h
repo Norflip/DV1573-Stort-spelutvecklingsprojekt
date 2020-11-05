@@ -16,7 +16,7 @@ constexpr float CAMERA_FAR_Z = 400.0f;// 1000.0f; I changed this for the sake of
 class CameraComponent : public Component, public VirtualCamera
 {
 public:
-	CameraComponent(size_t width, size_t height, float fieldOfView, bool main = false);
+	CameraComponent(size_t width, size_t height, float fieldOfView);
 	virtual ~CameraComponent();
 
 	void SetFOV(float fov);
@@ -25,6 +25,5 @@ public:
 	bool InView(const BoundingBox& bounds, const dx::XMMATRIX world);
 	Ray MouseToRay(const unsigned int& x, const unsigned int& y) const;
 
-	static CameraComponent* mainCamera;
 };
 
