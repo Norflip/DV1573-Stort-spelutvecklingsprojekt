@@ -390,8 +390,6 @@ void GameScene::Update(const float& deltaTime)
 	world.UpdateRelevantChunks();
 
 	static_cast<GUIFont*>(guiManager->GetGUIObject("fps"))->SetString(std::to_string((int)GameClock::Instance().GetFramesPerSecond()));
-	//static_cast<GUIFont*>(guiManager->GetGUIObject("playerHealth"))->SetString("Player health: " + std::to_string((int)playerStatsComp->GetHealth()));
-	//static_cast<GUIFont*>(guiManager->GetGUIObject("enemyHealth"))->SetString("Enemy health: " + std::to_string((int)enemyStatsComp->GetHealth()));
 	guiManager->UpdateAll();
 
 	if (KEY_DOWN(H))
