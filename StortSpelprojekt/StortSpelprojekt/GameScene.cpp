@@ -156,12 +156,13 @@ void GameScene::InitializeObjects()
 	baseMonsterComp->BlendAnimations();
 
 	//Enemy object //comments
-	dx::XMFLOAT3 enemyTranslation = dx::XMFLOAT3(23, 5, 46);
+	dx::XMFLOAT3 enemyTranslation = dx::XMFLOAT3(23, 7, 46);
 	enemy->GetTransform().SetPosition(dx::XMLoadFloat3(&enemyTranslation));
 	enemy->GetTransform().SetScale({ 0.125f, 0.125f, 0.125f });
 	enemy->AddComponent<EnemyStatsComp>(100.f, 0.5f, 5.f, 5.f, 3.f);
 	enemy->AddComponent<BoxColliderComponent>(dx::XMFLOAT3{ 1, 1, 1 }, dx::XMFLOAT3{ 0, 0, 0 });
-	enemy->AddComponent<RigidBodyComponent>(10.f, FilterGroups::ENEMIES, FilterGroups::EVERYTHING, BodyType::DYNAMIC, true);
+	enemy->AddComponent<RigidBodyComponent>(20.f, FilterGroups::ENEMIES, FilterGroups::EVERYTHING, BodyType::DYNAMIC, true);
+	enemy->AddComponent<BoxColliderComponent>(dx::XMFLOAT3{ 0.8, 1.8, 1 }, dx::XMFLOAT3{ 0, 0, 0 });
 
 	enemy->AddComponent<EnemyAttackComp>(player->GetComponent<PlayerComp>());
 	EnemySMComp* stateMachine = enemy->AddComponent<EnemySMComp>(EnemyState::IDLE);

@@ -17,7 +17,8 @@ void EnemyAttackComp::Initialize()
 	this->enemyStatsComp = GetOwner()->GetComponent<EnemyStatsComp>();	
 	this->rbComp->GetRigidBody()->getCollider(0)->getMaterial().setBounciness(0.f);
 	this->rbComp->GetRigidBody()->getCollider(0)->getMaterial().setFrictionCoefficient(100.f);
-	this->rbComp->SetLinearDamping(0.9f);
+	this->rbComp->GetRigidBody()->getCollider(0)->getMaterial().setRollingResistance(100.f);
+	//this->rbComp->SetLinearDamping(0.9f);
 }
 
 void EnemyAttackComp::Update(const float& deltaTime)
@@ -33,15 +34,20 @@ bool EnemyAttackComp::GetIsAttacking()
 
 bool EnemyAttackComp::ChasePlayer(const float& deltaTime)
 {
+
+	
+	if (KEY_PRESSED(U))
+	{
+		dx::XMFLOAT3 playerPos;
+		dx::XMStoreFloat3(&playerPos, player->GetOwner()->GetTransform().GetPosition());
+		playerPos.y += 10;
+		
+		rbComp->SetPosition(dx::XMLoadFloat3(&playerPos));
+	}
+
 	chasePlayer = false;
 	attackPlayer = false;
 
-	//DirectX::XMFLOAT3 enemyPos;
-	//dx::XMStoreFloat3(&enemyPos, GetOwner()->GetTransform().GetPosition());
-	//DirectX::XMFLOAT3 playerPos;
-	//dx::XMStoreFloat3(&playerPos, player->GetOwner()->GetTransform().GetPosition());
-
-	//dx::XMFLOAT3 distanceF = { enemyPos.x - playerPos.x, enemyPos.y - playerPos.y, enemyPos.z - playerPos.z };
 	dx::XMFLOAT3 moveDir = { 0.0f, 0.0f, 0.0f };
 
 
@@ -55,45 +61,24 @@ bool EnemyAttackComp::ChasePlayer(const float& deltaTime)
 	float length;
 	dx::XMStoreFloat(&length, lenVec);
 
-	if (length <= enemyStatsComp->GetRadius())
+	if (length <= enemyStatsComp->GetRadius() && length >=playerRadius)
 	{
 		chasePlayer = true;
 		moveDir.x = normDir.x;
 		moveDir.z = normDir.z;
 	}
 
-	//if(distanceF.x <= enemyStatsComp->GetRadius() && distanceF.z <= enemyStatsComp->GetRadius()
-	//	&& distanceF.x >= -enemyStatsComp->GetRadius() && distanceF.z >= -enemyStatsComp->GetRadius())
-	//{
-	//	chasePlayer = true;
-	//	if (distanceF.x > playerRadius)
-	//	{
-	//		moveDir.x = -1.0f;
-	//	}
-	//	else if (distanceF.x < -playerRadius)
-	//	{
-	//		moveDir.x = 1.0f;
-	//	}
-
-	//	if (distanceF.z > playerRadius)
-	//	{
-	//		moveDir.z = -1.0f;
-	//	}
-	//	else if (distanceF.z < -playerRadius)
-	//	{
-	//		moveDir.z = 1.0f;
-	//	}
-	//}
-
-	//float length = (distanceF.x * distanceF.x + distanceF.y * distanceF.y + distanceF.z * distanceF.z);
 	if (length < playerRadius)//playerRadius * playerRadius)
 	{
 		attackPlayer = true;
 	}
 
-	GetOwner()->GetTransform().Translate(moveDir.x * enemyStatsComp->GetSpeed() * deltaTime, 0.0f,
-		moveDir.z * enemyStatsComp->GetSpeed() * deltaTime);
 
+	//float speed = 2.f;
+	dx::XMFLOAT3 vel = rbComp->GetLinearVelocity();
+	dx::XMFLOAT3 move = { moveDir.x  /* * speed*/, vel.y, moveDir.z/* * speed */};
+	
+	rbComp->SetLinearVelocity(move);
 
 	//Billboarding x & z axis for enemy Rotation
 	dx::XMVECTOR dirVec = dx::XMVector3Normalize(dx::XMVectorSubtract(GetOwner()->GetTransform().GetPosition(), player->GetOwner()->GetTransform().GetPosition()));
@@ -103,11 +88,8 @@ bool EnemyAttackComp::ChasePlayer(const float& deltaTime)
 	float rotation = angle * Math::ToRadians;
 	dx::XMVECTOR right = GetOwner()->GetTransform().TransformDirection({ 1,0,0 });
 	dx::XMVECTOR eulerRotation = dx::XMQuaternionMultiply(dx::XMQuaternionRotationAxis(right, 0), dx::XMQuaternionRotationAxis({ 0,1,0 }, rotation));
+	
 	GetOwner()->GetTransform().SetRotation(eulerRotation);
-
-
-	dx::XMVECTOR pos = GetOwner()->GetTransform().GetPosition(); 
-	rbComp->SetPosition(pos); //make enemy velocity based later??
 
 	rbComp->SetRotation(eulerRotation);
 
