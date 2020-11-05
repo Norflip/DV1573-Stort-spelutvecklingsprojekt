@@ -198,8 +198,6 @@ void GameScene::InitializeObjects()
 		
 	AddObject(axeObject);
 
-	clock.Update();
-
 	world.Initialize(root, resources, pooler, renderer);
 	world.ConstructSegment(state, desc);
 	world.SetPlayer(player);
