@@ -62,12 +62,6 @@ void Shader::SetInputLayoutStructure(size_t arraySize, D3D11_INPUT_ELEMENT_DESC*
 	this->ilArrayCount = arraySize;
 }
 
-void Shader::SetInputLayoutParticles()
-{	
-	D3D11_INPUT_ELEMENT_DESC* dickmove = DEFAULT_INPUT_LAYOUTCOLOR;
-	this->inputLayoutDescription = dickmove;
-	this->ilArrayCount = 3;
-}
 
 void Shader::Compile(ID3D11Device* device)
 {	
@@ -87,6 +81,7 @@ void Shader::BindToContext(ID3D11DeviceContext* context) const
 		// sets the vertex shader and layout
 		context->IASetInputLayout(inputLayout);
 		context->VSSetShader(vertexShader, 0, 0);
+		bool fitta = 0;
 	}
 
 	if ((flag & (int)ShaderBindFlag::PIXEL) != 0)

@@ -255,6 +255,13 @@ void Renderer::RenderFrame(CameraComponent* camera, float time, RenderTexture& t
 			}
 		}
 	}
+
+	//renderer->SetCullBack(false);
+	SetCullBack(true);
+	if(pSystem)
+		pSystem->Render(context, camera);
+	SetCullBack(false);
+
 }
 
 void Renderer::AddRenderPass(RenderPass* pass)

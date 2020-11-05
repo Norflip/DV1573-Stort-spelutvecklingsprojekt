@@ -267,9 +267,9 @@ void GameScene::InitializeObjects()
 	particleShader->Compile(renderer->GetDevice());
 
 	particles = new ParticleSystem(particleShader);
-	particles->InitializeParticles(renderer->GetDevice(), L"Textures/stars.png");
-	particles->SetWorldMatrix(dx::XMMATRIX(dx::XMMatrixTranslation(22, 2.0f, 53)));
+	particles->InitializeParticles(renderer->GetDevice(), L"Textures/particle.png");
 	//particles->GetThisObject()->GetTransform().SetPosition(dx::XMVECTOR{ 22.0f, 2.0f, 53, 1.0f });
+	renderer->GetPSystem(particles);
 
 }
 
@@ -493,6 +493,24 @@ void GameScene::Update(const float& deltaTime)
 	
 	
 	
+	/* Update particle-list dynamiclly */
+	dx::XMFLOAT3 particlesPosition;
+
+	/* Set billboardplane position */
+	particlesPosition.x = 22.0f;
+	particlesPosition.y = 2.0f;
+	particlesPosition.z = 53.0f;
+
+	/* Set angle for particles, "look at cameraposition all the time" */
+	/* Defines the angle in radians between two vectors * 1 degrees to give our xmatrixrotationy an degree value*/
+	double anglepart = atan2(particlesPosition.x - camera->GetOwner()->GetTransform().GetPosition().m128_f32[0], particlesPosition.z - camera->GetOwner()->GetTransform().GetPosition().m128_f32[3]) * (180.0 / dx::XM_PI);
+	float rotationPart = (float)anglepart * 0.0174532925f;
+
+	dx::XMMATRIX worldParticles = dx::XMMatrixIdentity();
+	dx::XMMATRIX particlesRotationY = dx::XMMatrixRotationY(rotationPart);
+	dx::XMMATRIX particlesTranslation = dx::XMMatrixTranslation(particlesPosition.x, particlesPosition.y, particlesPosition.z);
+	worldParticles = particlesRotationY * particlesTranslation;
+	particles->SetWorldMatrix(worldParticles);
 
 	particles->Update(deltaTime, renderer->GetContext());
 
@@ -511,8 +529,9 @@ void GameScene::Render()
 	//worldGenerator.DrawShapes();
 	//world.DrawDebug();
 
-	particles->Render(renderer->GetContext(), camera);
+	//particles->Render(renderer->GetContext(), camera);
 	
+
 	renderer->RenderFrame(camera, (float)clock.GetSeconds());
 }
 

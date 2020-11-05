@@ -22,7 +22,7 @@ struct VertexOutput
 	float4 color : COLOR;
 };
 
-VertexOutput main(VertexInput input)
+VertexOutput main (VertexInput input)
 {
 	VertexOutput output = (VertexOutput)0;
 

@@ -36,7 +36,7 @@ private:
 public:
 	ParticleSystem(Shader* shader);
 	ParticleSystem(const ParticleSystem& other);
-	virtual ~ParticleSystem();
+	~ParticleSystem();		// set virtual later
 
 	void InitializeParticles(ID3D11Device* device, LPCWSTR textureFilename);
 	Object* GetThisObject() { return this->object; }
@@ -53,7 +53,7 @@ public:
 
 private:
 	void LoadTexture(ID3D11Device* device, LPCWSTR textureFilename);
-	bool InitializeBuffers(ID3D11Device* device);
+	void InitializeBuffers(ID3D11Device* device);
 
 	void SetCBuffers(ID3D11DeviceContext* context, CameraComponent* camera);
 	void CreateParticle(float frameTime);
@@ -76,16 +76,17 @@ private:
 	float particleVelocity, particleVelocityVariation;
 	float particleSize;
 	int maxParticles;
-
 	int currentParticleCount;
 	float accumulatedTime;
 
+	/* Buffer stuffy stuff shitty shit */
 	int vertexCount, indexCount;
 	Vertex* vertices;
 	ID3D11Buffer* vertexBuffer, * indexBuffer;
 	ID3D11Buffer* bufferPerObjectParticles;	// Particles updated dynamiclly
 	cBufferPerObjectParticles cbPerObjectParticles;
 
+	/* For dynamicly update */
 	Particles* particleList;
 	Texture texture;
 

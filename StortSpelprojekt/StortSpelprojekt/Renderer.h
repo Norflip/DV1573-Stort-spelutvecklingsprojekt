@@ -11,6 +11,8 @@
 
 #include <time.h>
 
+#include "ParticleSystem.h"
+
 class RenderPass;
 
 ALIGN16
@@ -62,6 +64,8 @@ public:
 	void DrawSkeleton(const Mesh* mesh, const Material* material, const dx::XMMATRIX& model, const CameraComponent* camera, std::vector<dx::XMFLOAT4X4>& bones);
 	void DrawGrass(const Mesh* mesh, const Material* material, const dx::XMMATRIX& model, const CameraComponent* camera);
 	
+	void GetPSystem(ParticleSystem* pSys) { this->pSystem = pSys; }
+
 	void SetCullBack(bool);
 
 	ID3D11Device* GetDevice() const { return this->device; }
@@ -96,6 +100,8 @@ private:
 	IDXGISwapChain* swapchain;
 	ID3D11Device* device;
 	ID3D11DeviceContext* context;
+
+	ParticleSystem* pSystem;
 
 	RenderTexture backbuffer;
 	RenderTexture midbuffer;

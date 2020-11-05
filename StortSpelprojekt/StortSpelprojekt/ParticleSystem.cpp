@@ -6,6 +6,7 @@ ParticleSystem::ParticleSystem(Shader* shader)
 	this->object = new Object("particles");
 	this->particlesShader = shader;
 	this->particlesMaterial = new Material(particlesShader);
+
 	//this->object = new Object("fittkuk");
 	//this->object->AddComponent<MeshComponent>(nullptr, particlesMaterial);
 	//this->object->GetTransform().SetPosition(dx::XMVECTOR(dx::XMVectorSet(20, 2, 20, 1.0f)));
@@ -67,23 +68,21 @@ ParticleSystem::~ParticleSystem()
 }
 
 void ParticleSystem::InitializeParticles(ID3D11Device* device, LPCWSTR textureFilename)
-{
-	bool result;
-
+{	
 	/*
 		Deviation on each axis. (A random deviation). Is from the point on the scene each particle will be spawned and (random -2 to 2 in x-axis and z-axis).
 		Speed (Velocity) for each particle. + Variation makes it between 9.8f - 10.2f
 		Particlesize is based on the created quad.
 	*/
 
-	differenceOnX = 5.0f;
+	differenceOnX = 1.0f;
 	differenceOnY = 0.2f;
-	differenceOnZ = 5.0f;
+	differenceOnZ = 1.0f;
 
 	particleVelocity = 1.0f;
 	particleVelocityVariation = 0.2f;
 
-	particleSize = 0.2f;
+	particleSize = 0.05f;
 
 
 	/*
@@ -180,6 +179,7 @@ void ParticleSystem::Render(ID3D11DeviceContext* context, CameraComponent* camer
 	SetCBuffers(context, camera);
 	bool snusk = 0;
 	particlesShader->BindToContext(context);
+	context->DrawIndexed(indexCount, 0, 0);
 }
 
 void ParticleSystem::SetWorldMatrix(dx::XMMATRIX worldmatrix)
@@ -204,12 +204,14 @@ void ParticleSystem::LoadTexture(ID3D11Device* device, LPCWSTR textureFilename)
 		MessageBox(0, L"Failed to 'Load WIC Texture'", L"Graphics scene Initialization Message", MB_ICONERROR);
 
 	texture.SetShaderResourceView(srv);	
+
 	particlesMaterial->SetTexture(texture, TEXTURE_DIFFUSE_SLOT, ShaderBindFlag::PIXEL);
 	particlesMaterial->SetSampler(DXHelper::CreateSampler(D3D11_FILTER_MIN_MAG_MIP_LINEAR, D3D11_TEXTURE_ADDRESS_WRAP, device), 0, ShaderBindFlag::PIXEL);
+
 	kuksampler = DXHelper::CreateSampler(D3D11_FILTER_MIN_MAG_MIP_LINEAR, D3D11_TEXTURE_ADDRESS_WRAP, device);
 }
 
-bool ParticleSystem::InitializeBuffers(ID3D11Device* device)
+void ParticleSystem::InitializeBuffers(ID3D11Device* device)
 {
 	unsigned long* indices;
 	HRESULT result;
@@ -219,13 +221,9 @@ bool ParticleSystem::InitializeBuffers(ID3D11Device* device)
 
 	// Create the vertex array for the particles that will be rendered.
 	vertices = new Vertex[vertexCount];
-	if (!vertices)
-		return false;
-
+	
 	// Create the index array.
 	indices = new unsigned long[indexCount];
-	if (!indices)
-		return false;
 
 	for (int i = 0; i < indexCount; i++) {
 		indices[i] = i;
@@ -250,8 +248,7 @@ bool ParticleSystem::InitializeBuffers(ID3D11Device* device)
 
 	// Now finally create the vertex buffer.
 	result = device->CreateBuffer(&vertexBufferDesc, &vertexData, &vertexBuffer);
-	if (FAILED(result))
-		return false;
+	assert(SUCCEEDED(result));
 
 
 	// Set up the description of the static index buffer.
@@ -273,8 +270,7 @@ bool ParticleSystem::InitializeBuffers(ID3D11Device* device)
 
 	// Create the index buffer.
 	result = device->CreateBuffer(&indexBufferDesc, &indexData, &indexBuffer);
-	if (FAILED(result))
-		return false;
+	assert(SUCCEEDED(result));
 
 	// Release the index array since it is no longer needed.
 	delete[] indices;
@@ -283,25 +279,20 @@ bool ParticleSystem::InitializeBuffers(ID3D11Device* device)
 
 
 
-	/* * * * * * * * CBuffer stuff * * * * * * * * */
+	/* * * * * * * * CBuffer stuffy stuff * * * * * * * * */
 	D3D11_BUFFER_DESC cBufferDescription;
 
 	// Setup the description of the bufferPerObject constant buffer that is in the vertex shader.
 	ZeroMemory(&cBufferDescription, sizeof(D3D11_BUFFER_DESC));
 	cBufferDescription.Usage = D3D11_USAGE_DEFAULT;
-	cBufferDescription.ByteWidth = static_cast<uint32_t>(sizeof(cBufferPerObjectParticles) + (16 - (sizeof(cBufferPerObjectParticles) % 16)));
+	cBufferDescription.ByteWidth = sizeof(cBufferPerObjectParticles); //  static_cast<uint32_t>(sizeof(cBufferPerObjectParticles) + (16 - (sizeof(cBufferPerObjectParticles) % 16)));
 	cBufferDescription.BindFlags = D3D11_BIND_CONSTANT_BUFFER;
 	cBufferDescription.CPUAccessFlags = 0;
 	cBufferDescription.MiscFlags = 0;
 	cBufferDescription.StructureByteStride = 0;
 
-	hr = device->CreateBuffer(&cBufferDescription, NULL, &bufferPerObjectParticles);
-	if (FAILED(hr))
-	{
-		return false;
-	}
-
-	return true;
+	result = device->CreateBuffer(&cBufferDescription, NULL, &bufferPerObjectParticles);
+	assert(SUCCEEDED(result));
 }
 
 void ParticleSystem::SetCBuffers(ID3D11DeviceContext* context, CameraComponent* camera)
@@ -316,7 +307,6 @@ void ParticleSystem::SetCBuffers(ID3D11DeviceContext* context, CameraComponent* 
 	// Set shader texture resource in the pixel shader.
 	context->PSSetShaderResources(0, 1, &srv);
 	context->PSSetSamplers(0, 1, &kuksampler);
-	bool fittahora = 0;
 }
 
 void ParticleSystem::CreateParticle(float frameTime)
@@ -416,7 +406,7 @@ void ParticleSystem::UpdateParticles(float frameTime)
 	// Each frame we update all the particles by making them move downwards using their position, velocity, and the frame time.
 	for (int i = 0; i < currentParticleCount; i++)
 	{
-		particleList[i].posy = particleList[i].posy + (particleList[i].velocity * ((float)frameTime * 0.1f));
+		particleList[i].posy = particleList[i].posy + (particleList[i].velocity * ((float)frameTime * 0.6f));
 	}
 }
 
@@ -428,9 +418,9 @@ void ParticleSystem::DeleteParticles()
 	for (int i = 0; i < maxParticles; i++)
 	{
 		/*
-			If a particle is active and has reached -45 = set active to false and decrement currentParticlecount.
+			If a particle is active and has reached 45 = set active to false and decrement currentParticlecount.
 		*/
-		if ((particleList[i].active == true) && (particleList[i].posy < -45.0f))
+		if ((particleList[i].active == true) && (particleList[i].posy > 4.0f))
 		{
 			particleList[i].active = false;
 			currentParticleCount--;
