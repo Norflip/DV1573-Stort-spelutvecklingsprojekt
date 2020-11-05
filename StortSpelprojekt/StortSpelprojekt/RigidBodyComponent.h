@@ -30,14 +30,17 @@ enum class FilterGroups : unsigned short;
 class RigidBodyComponent : public Component
 {
 public:
-	RigidBodyComponent(float mass, FilterGroups group, FilterGroups collidesWith, BodyType type);
+	RigidBodyComponent(float mass, FilterGroups group, FilterGroups collidesWith, BodyType type, bool autoRegister);
 	virtual ~RigidBodyComponent();
 
-	void m_InitializeBody(rp::PhysicsWorld* world);
+	void m_InitializeBody(Physics* physics);
 	rp::RigidBody* GetRigidBody() const { return body; }
 
 	void SetMass(float mass) { this->mass = mass; }
 	float GetMass() const { return static_cast<float>(this->mass); }
+
+	void Initialize() override; // OVERRIDE
+	void OnOwnerFlagChanged(ObjectFlag old, ObjectFlag newFlag);
 
 	virtual void m_OnCollision(const CollisionInfo& collision);
 	virtual void AddCollisionCallback(std::function<void(CollisionInfo)> callback);
@@ -65,9 +68,7 @@ public:
 	bool IsRotationLocked() const { return this->lockRotation; }
 	void LockRotation(bool lock) { this->lockRotation = lock; }
 
-	void PhysicRelease();
-
-	void RemoveCollidersFromBody(rp::RigidBody* body);	// MAYBE HEAAAA? 
+	void Release();
 
 private:
 	rp::Transform ConvertToBtTransform(const Transform& transform) const;
@@ -81,11 +82,12 @@ private:
 	rp::Transform previousTransform;
 
 	rp::RigidBody* body;
-	
+	Physics* physics;
+
 	float mass;
 	bool lockRotation;
 	BodyType type;
-
+	bool autoRegister, initialized;
 	std::vector<std::function<void(CollisionInfo)>> callbacks;
 
 };

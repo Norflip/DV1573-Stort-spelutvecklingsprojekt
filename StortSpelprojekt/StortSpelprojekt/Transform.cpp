@@ -95,7 +95,7 @@ void Transform::RemoveParentChild(Transform& parent, Transform& child)
 
 void Transform::ClearFromHierarchy(Transform& transform)
 {
-	if (transform.parent != nullptr && transform.ContainsChild(&transform))
+	if (transform.parent != nullptr)
 	{
 		transform.parent->RemoveChild(&transform);
 		transform.parent = nullptr;

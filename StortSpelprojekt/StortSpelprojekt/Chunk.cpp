@@ -1,7 +1,8 @@
 #include "stdafx.h"
 #include "Chunk.h"
 #include <iostream>
-
+#include "Physics.h"
+#include "Engine.h"
 
 Chunk::Chunk(dx::XMINT2 index, ChunkType type) : index(index), type(type), heightMap(nullptr)
 {
@@ -15,11 +16,7 @@ Chunk::~Chunk()
 		delete heightMap;
 		heightMap = nullptr;
 	}
-
-	rp::PhysicsCommon& common = Physics::Instance().GetCommon();
-	common.destroyHeightFieldShape(shape);
 }
-
 
 void Chunk::Update(const float& deltaTime)
 {
@@ -54,7 +51,7 @@ void Chunk::Update(const float& deltaTime)
 }
 
 
-void Chunk::SetupCollisionObject(float* heightMap)
+void Chunk::SetupCollisionObject(Physics* physics, float* heightMap)
 {
 	this->heightMap = heightMap;
 	dx::XMFLOAT3 worldPosition;
@@ -65,7 +62,7 @@ void Chunk::SetupCollisionObject(float* heightMap)
 	min = 0.1f;// 0.1f;
 	max = TERRAIN_SCALE;
 
-	rp::PhysicsCommon& common = Physics::Instance().GetCommon();
+	rp::PhysicsCommon& common = physics->GetCommon();
 	shape = common.createHeightFieldShape(gridSize, gridSize, min, max, static_cast<void*>(heightMap), rp::HeightFieldShape::HeightDataType::HEIGHT_FLOAT_TYPE);
 
 	float origin =  (max - min) * 0.5f;
@@ -75,23 +72,13 @@ void Chunk::SetupCollisionObject(float* heightMap)
 	rp::Vector3 btPosition(worldPosition.x + offset, origin, worldPosition.z + offset);
 	transform.setPosition(btPosition);
 
-	rp::PhysicsWorld* world = Physics::Instance().GetWorld();
-
-#if  USE_RIGIDBODY
+	rp::PhysicsWorld* world = physics->GetWorld();
 
 	body = world->createRigidBody(transform);
 	body->setType(rp::BodyType::STATIC);
 	body->enableGravity(false);
 
 	collider = body->addCollider(shape, rp::Transform::identity());
-	//body->updateLocalCenterOfMassFromColliders();
-	//body->updateLocalInertiaTensorFromColliders();
-
-#else
-	body = world->createCollisionBody(transform);
-	collider = body->addCollider(shape, rp::Transform::identity());
-
-#endif //  USE_RIGIDBODY
 
 	body->setUserData(static_cast<void*>(GetOwner()));
 	body->setIsActive(true);
@@ -156,7 +143,12 @@ int Chunk::WorldToIndex1D(float x, float z)
 
 void Chunk::PhysicRelease()
 {
-	Physics::Instance().GetWorld()->destroyCollisionBody(body);
+	Physics* physics = Engine::Instance->GetPhysics();
+	rp::PhysicsWorld* world = physics->GetWorld();
+	body->removeCollider(collider);
+	world->destroyRigidBody(body);
+	physics->GetCommon().destroyHeightFieldShape(shape);
+
 }
 
 void Chunk::GetHeightFieldMinMax(float* heightMap, size_t size, float& minv, float& maxv)

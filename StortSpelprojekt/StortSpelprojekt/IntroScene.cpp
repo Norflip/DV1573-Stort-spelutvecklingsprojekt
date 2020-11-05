@@ -3,6 +3,7 @@
 #include "RenderPass.h"
 #include "GUISprite.h"
 #include "GUIFont.h"
+#include "Engine.h"
 
 IntroScene::IntroScene()
 {
@@ -16,14 +17,14 @@ IntroScene::~IntroScene()
 
 void IntroScene::Initialize()
 {
-
+	InitializeGUI();
+	InitializeObjects();
 }
 
 void IntroScene::InitializeObjects()
 {
 	Object* cameraObject = new Object("camera", ObjectFlag::ENABLED);
-	camera = cameraObject->AddComponent<CameraComponent>(60.0f, true);
-	camera->Resize(window->GetWidth(), window->GetHeight());
+	camera = cameraObject->AddComponent<CameraComponent>(window->GetWidth(), window->GetHeight(), 60.0f);
 	//cameraObject2->AddComponent<ControllerComponent>();
 	this->player = cameraObject;
 	AddObject(cameraObject);
@@ -143,24 +144,18 @@ void IntroScene::InitializeGUI()
 	guiManager->AddGUIObject(volumeMusicSprite, "volumeMusicSprite");
 	guiManager->AddGUIObject(higherMusicSprite, "higherMusicSprite");
 
-	renderer->AddRenderPass(guiManager);
 }
 
 void IntroScene::OnActivate()
 {
-	InitializeGUI();
-	InitializeObjects();
-	nextScene = INTRO;
 	input.SetMouseMode(dx::Mouse::MODE_ABSOLUTE);
+	renderer->AddRenderPass(guiManager);
 }
 
 void IntroScene::OnDeactivate()
 {
 	AudioMaster::Instance().StopSoundEvent("menusound");
 	renderer->RemoveRenderPass(guiManager);
-
-	delete guiManager;
-	guiManager = nullptr;
 }
 
 void IntroScene::Update(const float& deltaTime)
@@ -173,16 +168,16 @@ void IntroScene::Update(const float& deltaTime)
 	if (static_cast<GUISprite*>(guiManager->GetGUIObject("startSprite"))->IsClicked())
 	{
 		AudioMaster::Instance().StopSoundEvent("menusound");
-		nextScene = GAME;
+		Engine::Instance->SwitchScene(SceneIndex::GAME);
+		return;
 	}
-	else if (static_cast<GUISprite*>(guiManager->GetGUIObject("quitSprite"))->IsClicked())
-	{
-		AudioMaster::Instance().StopSoundEvent("menusound");
-		quit = true;
-	}	
 
 	if (static_cast<GUISprite*>(guiManager->GetGUIObject("quitSprite"))->IsClicked())
-		quit = true;
+	{
+		AudioMaster::Instance().StopSoundEvent("menusound");
+		Engine::Instance->Exit();
+		return;
+	}	
 
 	if (static_cast<GUISprite*>(guiManager->GetGUIObject("loreSprite"))->IsClicked())
 		guiManager->ChangeGuiGroup(GuiGroup::Lore);

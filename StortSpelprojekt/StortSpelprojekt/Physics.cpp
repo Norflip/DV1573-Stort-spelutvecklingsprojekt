@@ -55,7 +55,7 @@ void Physics::MutexUnlock()
 void Physics::RegisterRigidBody(RigidBodyComponent* rigidBodyComp)
 {
 	assert(world != nullptr);
-	rigidBodyComp->m_InitializeBody(world);
+	rigidBodyComp->m_InitializeBody(this);
 }
 
 void Physics::UnregisterRigidBody(Object* object)

@@ -125,10 +125,7 @@ void GrassComponent::InitializeGrass(Mesh* chunkMesh, ID3D11Device* device, ID3D
 
 void GrassComponent::Draw(Renderer* renderer, CameraComponent* camera)
 {
-
-
-	renderer->DrawGrass(grassMesh, grassMat, this->GetOwner()->GetTransform().GetWorldMatrix(), camera);
-
+	renderer->DrawGrass(grassMesh, grassMat, this->GetOwner()->GetTransform().GetWorldMatrix());
 }
 
 

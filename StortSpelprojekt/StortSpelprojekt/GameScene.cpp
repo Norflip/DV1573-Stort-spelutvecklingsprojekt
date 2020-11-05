@@ -2,6 +2,7 @@
 #include "GameScene.h"
 #include "GUISprite.h"
 #include "GUIFont.h"
+#include "Engine.h"
 
 void GameScene::RemoveEnemy()
 {
@@ -11,7 +12,7 @@ void GameScene::RemoveEnemy()
 
 GameScene::GameScene()
 {
-	nextScene = GAME;
+	
 }
 
 GameScene::~GameScene()
@@ -20,9 +21,6 @@ GameScene::~GameScene()
 
 void GameScene::Initialize()
 {
-	Physics& physics = Physics::Instance();
-	physics.Initialize({ 0, -10.0f, 0 });
-
 	pooler->Register("test_body_cube", 10, [](ResourceManager* resources) {
 
 		Object* object = new Object("physics_cube");
@@ -32,30 +30,22 @@ void GameScene::Initialize()
 
 		object->AddComponent<MeshComponent>(mesh1, material1);
 		object->AddComponent<BoxColliderComponent>(dx::XMFLOAT3(0.5f, 0.5f, 0.5f), dx::XMFLOAT3(0, 0, 0));
-
-		//object->AddComponent<DebugBoxShapeComponent>();
-		//object->AddComponent<BoxColliderComponent>(dx::XMFLOAT3(0.5f, 0.5f, 0.5f), dx::XMFLOAT3(0, 0, 0));
-		RigidBodyComponent* rd = object->AddComponent<RigidBodyComponent>(10.0f, FilterGroups::DEFAULT, FilterGroups::EVERYTHING, BodyType::KINEMATIC);
-		Physics::Instance().RegisterRigidBody(rd);
+		object->AddComponent<RigidBodyComponent>(10.0f, FilterGroups::DEFAULT, FilterGroups::EVERYTHING, BodyType::DYNAMIC, true);
 		return object;
 	});
+
+	InitializeLights();
+	InitializeGUI();
+	InitializeObjects();
 }
 
 void GameScene::InitializeObjects()
 {
 	skyboxClass = new Skybox(renderer->GetDevice(), renderer->GetContext(), resources->GetShaderResource("skyboxShader"));
 	skyboxClass->GetThisObject()->AddFlag(ObjectFlag::NO_CULL);
-	Physics& physics = Physics::Instance();
 		
 	/* For physics/ rigidbody pickup stuff */
 
-	SaveState state;
-	state.seed = 1337;
-	state.segment = 0;
-
-	SegmentDescription desc(0, 10, 2);
-	desc.directionalSteps = 5;
-	desc.maxSteps = 10;
 
 	//SKELETON ANIMATION MODELS
 	bool defaultAnimation = false;
@@ -94,10 +84,10 @@ void GameScene::InitializeObjects()
 	Object* houseBaseObject = new Object("houseBase");
 	Object* housesLegsObject = new Object("houseLegs");
 	houseBaseObject->GetTransform().Rotate(0, -90.0f, 0.0);
-	
-	RigidBodyComponent* houseRigidBody = houseBaseObject->AddComponent<RigidBodyComponent>(0.0f, FilterGroups::PROPS, FilterGroups::EVERYTHING, BodyType::STATIC);
+	house = houseBaseObject;
+
 	houseBaseObject->AddComponent<BoxColliderComponent>(dx::XMFLOAT3(2.5, 5, 2.5), dx::XMFLOAT3(0, 0, 0));
-	physics.RegisterRigidBody(houseRigidBody);
+	houseBaseObject->AddComponent<RigidBodyComponent>(0.0f, FilterGroups::PROPS, FilterGroups::EVERYTHING, BodyType::STATIC, true);
 
 	SkeletonMeshComponent* baseComponent = houseBaseObject->AddComponent<SkeletonMeshComponent>(meshHouse[0], matHouse[0], 0.1f);
 	SkeletonMeshComponent* legsComponent = housesLegsObject->AddComponent<SkeletonMeshComponent>(skeletonMeshHouseLegs[0], skeletonMatHouseLegs[0], 0.1f);
@@ -129,19 +119,15 @@ void GameScene::InitializeObjects()
 	Object* playerObject = new Object("player", ObjectFlag::ENABLED);
 	Object* cameraObject = new Object("camera", ObjectFlag::ENABLED);
 	this->player = playerObject;
-	camera = cameraObject->AddComponent<CameraComponent>(60.0f, true);
-	camera->Resize(window->GetWidth(), window->GetHeight());
+	camera = cameraObject->AddComponent<CameraComponent>(window->GetWidth(), window->GetHeight(), 60.0f);
+	
 	cameraObject->GetTransform().SetPosition(playerSpawnVec);
 	playerObject->GetTransform().SetPosition(playerSpawnVec);
 	playerObject->AddComponent<CapsuleColliderComponent>(0.5f, 1.8f, zero);
-
-	physics.MutexLock();
-	RigidBodyComponent* rb = playerObject->AddComponent<RigidBodyComponent>(60.f, FilterGroups::PLAYER, FilterGroups::EVERYTHING, BodyType::DYNAMIC);
-	physics.RegisterRigidBody(rb);
-	physics.MutexUnlock();
+	playerObject->AddComponent<RigidBodyComponent>(60.f, FilterGroups::PLAYER, FilterGroups::EVERYTHING, BodyType::DYNAMIC, true);
 
 	//Transform::SetParentChild(playerObject->GetTransform(),cameraObject->GetTransform());
-	playerObject->AddComponent<PlayerComp>(renderer, camera, Physics::Instance(), guiManager, 100.f, 2.f, 20.f, 50.f, 3.f);
+	playerObject->AddComponent<PlayerComp>(renderer, camera, Engine::Instance->GetPhysics(), guiManager, 100.f, 2.f, 20.f, 50.f, 3.f);
 	playerObject->AddComponent<ControllerComp>(cameraObject, houseBaseObject); /////////////////
 
 
@@ -174,11 +160,8 @@ void GameScene::InitializeObjects()
 	//enemyStatsComp = enemy->GetComponent<EnemyStatsComp>();
 	enemy->AddComponent<BoxColliderComponent>(dx::XMFLOAT3{ 1, 2.45, 1 }, dx::XMFLOAT3{ 0, 0, 0 });
 
-	physics.MutexLock();
-	RigidBodyComponent* rbEnemy = enemy->AddComponent<RigidBodyComponent>(10.f, FilterGroups::ENEMIES, FilterGroups::EVERYTHING, BodyType::KINEMATIC);
-	physics.RegisterRigidBody(rbEnemy);
-	physics.MutexUnlock();
-
+	enemy->AddComponent<RigidBodyComponent>(10.f, FilterGroups::ENEMIES, FilterGroups::EVERYTHING, BodyType::KINEMATIC, true);
+	
 	EnemySMComp* stateMachine = enemy->AddComponent<EnemySMComp>(EnemyState::IDLE);
 	stateMachine->RegisterState(EnemyState::IDLE, enemy->AddComponent<EnemyIdleComp>());
 	//stateMachine->RegisterState(EnemyState::PATROL, enemy->AddComponent<EnemyPatrolComp>());
@@ -207,11 +190,7 @@ void GameScene::InitializeObjects()
 	playerObject->GetComponent<PlayerComp>()->InsertWeapon(axeObject->GetComponent<WeaponComponent>(), axeObject->GetName());
 
 	world.Initialize(root, resources, pooler, renderer);
-	world.ConstructSegment(state, desc);
-	world.SetPlayer(player);
-	world.SetHouse(houseBaseObject);
-	nodeWalker->InitializePath(world.GetPath());
-	world.MoveHouseAndPlayerToStart();
+	
 
 	dx::XMVECTOR asdf = dx::XMVectorSet(23, 3, 40 ,1); //???
 	enemy->GetTransform().SetPosition(asdf);
@@ -225,10 +204,7 @@ void GameScene::InitializeObjects()
 	healthkitObject->GetTransform().SetPosition({ 23,2,50 });
 	healthkitObject->AddComponent<BoxColliderComponent>(dx::XMFLOAT3{ 0.5f, 0.5f, 0.5f }, dx::XMFLOAT3{ 0, 0, 0 });
 	healthkitObject->AddComponent<PickupComponent>(Type::Health, 20.0f);
-
-	RigidBodyComponent* healthBody;
-	healthBody = healthkitObject->AddComponent<RigidBodyComponent>(0.f, FilterGroups::PICKUPS, FilterGroups::PLAYER, BodyType::DYNAMIC);
-	physics.RegisterRigidBody(healthBody);
+	healthkitObject->AddComponent<RigidBodyComponent>(0.f, FilterGroups::PICKUPS, FilterGroups::TERRAIN, BodyType::DYNAMIC,true);
 	AddObject(healthkitObject);
 
 	///* Fuel pickup stuff temporary */
@@ -236,10 +212,7 @@ void GameScene::InitializeObjects()
 	fuelCanObject->GetTransform().SetPosition({ 22,2,52 });
 	fuelCanObject->AddComponent<BoxColliderComponent>(dx::XMFLOAT3{ 0.3f, 0.3f, 0.3f }, dx::XMFLOAT3{ 0, 0, 0 });
 	fuelCanObject->AddComponent<PickupComponent>(Type::Fuel, 20.0f);
-
-	RigidBodyComponent* fuelBody;
-	fuelBody =	fuelCanObject->AddComponent<RigidBodyComponent>(10.f, FilterGroups::HOLDABLE, FilterGroups::TERRAIN, BodyType::DYNAMIC);
-	physics.RegisterRigidBody(fuelBody);
+	fuelCanObject->AddComponent<RigidBodyComponent>(10.f, FilterGroups::HOLDABLE, FilterGroups::TERRAIN, BodyType::DYNAMIC, true);
 	AddObject(fuelCanObject);
 
 	///* Banana pickup stuff temporary */
@@ -247,10 +220,7 @@ void GameScene::InitializeObjects()
 	beansObject->GetTransform().SetPosition({22, 2.0f, 53 });
 	beansObject->AddComponent<BoxColliderComponent>(dx::XMFLOAT3{ 0.5f, 0.5f, 0.5f }, dx::XMFLOAT3{ 0, 0, 0 });
 	beansObject->AddComponent<PickupComponent>(Type::Food, 20.0f);
-
-	RigidBodyComponent* beansBody;
-	beansBody = beansObject->AddComponent<RigidBodyComponent>(0.f, FilterGroups::PICKUPS, FilterGroups::PLAYER, BodyType::DYNAMIC);
-	physics.RegisterRigidBody(beansBody);
+	beansObject->AddComponent<RigidBodyComponent>(0.f, FilterGroups::PICKUPS, FilterGroups::TERRAIN, BodyType::DYNAMIC, true);
 	AddObject(beansObject);
 }
 
@@ -331,8 +301,6 @@ void GameScene::InitializeGUI()
 	//CROSSHAIR
 	guiManager->AddGUIObject(dot, "dot");
 	//guiManager->AddGUIObject(crosshair, "crosshair");
-
-	renderer->AddRenderPass(guiManager);
 }
 
 void GameScene::InitializeLights()
@@ -360,20 +328,39 @@ void GameScene::InitializeLights()
 
 void GameScene::OnActivate()
 {
-	root = new Object("sceneRoot", ObjectFlag::DEFAULT);
-	nextScene = GAME;
-	InitializeLights();
-	InitializeGUI();
-	InitializeObjects();
+	SaveState state;
+	state.seed = 1337;
+	state.segment = 0;
+
+	SegmentDescription desc(0, 10, 2);
+	desc.directionalSteps = 5;
+	desc.maxSteps = 10;
+
+	player->GetComponent<PlayerComp>()->Reset();
+	world.ConstructSegment(state, desc);
+	world.SetPlayer(player);
+	world.SetHouse(house);
+
+	house->GetComponent<NodeWalkerComp>()->InitializePath(world.GetPath());
+	world.MoveHouseAndPlayerToStart();
+
+	renderer->AddRenderPass(guiManager);
+
+	
+	Input::Instance().ConfineMouse();
+	Input::Instance().SetMouseMode(dx::Mouse::Mode::MODE_RELATIVE);
+	ShowCursor(false);
+
+	//this->PrintSceneHierarchy(root, 0);
 }
 
 void GameScene::OnDeactivate()
 {
+	world.DeconstructSegment();
 	renderer->RemoveRenderPass(guiManager);
-	LightManager::Instance().Clear();
 
-	delete root;
-	root = nullptr;
+	ShowCursor(true);
+	//this->PrintSceneHierarchy(root, 0);
 }
 
 void GameScene::Update(const float& deltaTime)
@@ -388,10 +375,9 @@ void GameScene::Update(const float& deltaTime)
 	{
 		dx::XMVECTOR cameraPosition = camera->GetOwner()->GetTransform().GetPosition();
 
-		Physics& phy = Physics::Instance();
 		const int ra = 3;
 
-		phy.MutexLock();
+		physics->MutexLock();
 
 		for (int y = -ra; y <= ra; y++)
 		{
@@ -408,24 +394,13 @@ void GameScene::Update(const float& deltaTime)
 
 				object->AddComponent<MeshComponent>(mesh1, material1);
 				object->AddComponent<BoxColliderComponent>(dx::XMFLOAT3(0.5f, 0.5f, 0.5f), dx::XMFLOAT3(0, 0, 0));
-
-				//object->AddComponent<DebugBoxShapeComponent>();
-				//object->AddComponent<BoxColliderComponent>(dx::XMFLOAT3(0.5f, 0.5f, 0.5f), dx::XMFLOAT3(0, 0, 0));
-				RigidBodyComponent* rd = object->AddComponent<RigidBodyComponent>(10.0f, FilterGroups::DEFAULT, FilterGroups::EVERYTHING, BodyType::DYNAMIC);
-
-				Physics::Instance().RegisterRigidBody(rd);
-
-				//object->AddComponent<DebugBoxShapeComponent>();
-				//object->AddComponent<BoxColliderComponent>(dx::XMFLOAT3(0.5f, 0.5f, 0.5f), dx::XMFLOAT3(0, 0, 0));
-				//RigidBodyComponent* rd = object->AddComponent<RigidBodyComponent>(10.0f, FilterGroups::DEFAULT, FilterGroups::EVERYTHING, true);
-
-				//phy.RegisterRigidBody(rd);
+				object->AddComponent<RigidBodyComponent>(10.0f, FilterGroups::DEFAULT, FilterGroups::EVERYTHING, BodyType::DYNAMIC, true);
 
 				AddObject(object);
 			}
 		}
 
-		phy.MutexUnlock();
+		physics->MutexUnlock();
 
 		const int a = 100;
 	}
@@ -459,8 +434,7 @@ void GameScene::Update(const float& deltaTime)
 	//{
 	//	DShape::DrawSphere(ray.GetPoint(10.0f), 0.2f, { 1, 0, 1 });
 	//}
-	nextScene = NEXT_SCENE(player->GetComponent<PlayerComp>()->GetNextScene());
-
+	
 	skyboxClass->GetThisObject()->GetTransform().SetPosition(camera->GetOwner()->GetTransform().GetPosition());
 
 	//if (enemy->GetComponent<EnemyStatsComp>()->GetHealth() <= 0)
@@ -478,6 +452,7 @@ void GameScene::FixedUpdate(const float& fixedDeltaTime)
 
 void GameScene::Render()
 {
+	camera->UpdateView();
 	skyboxClass->GetThisObject()->Draw(renderer, camera);
 
 	root->Draw(renderer, camera);
