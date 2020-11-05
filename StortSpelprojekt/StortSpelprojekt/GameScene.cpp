@@ -71,7 +71,6 @@ void GameScene::InitializeObjects()
 	SkeletonAni skeletonbaseMonsterAttack = ZWEBLoader::LoadSkeletonOnly("Models/baseMonsterAttack.ZWEB", skeletonMesh[0]->GetBoneIDS(), defaultAnimation);
 	SkeletonAni skeletonbaseMonsterDeath = ZWEBLoader::LoadSkeletonOnly("Models/baseMonsterDeath.ZWEB", skeletonMesh[0]->GetBoneIDS(), defaultAnimation);
 
-
 	//LOADING HOUSE AND LEGS AND ADDING SKELETONS TO THEM THE HOUSE ONLY HAS ONE JOINT CONNECTED TO IT
 	Shader* defaultShader = resources->GetShaderResource("defaultShader");
 	Shader* skeletonAlphaShader = resources->GetShaderResource("houseShader");
@@ -166,25 +165,31 @@ void GameScene::InitializeObjects()
 	baseMonsterComp->BlendAnimations();
 
 	//Enemy object //comments
-	dx::XMFLOAT3 enemyTranslation = dx::XMFLOAT3(23, 5, 46);
+	dx::XMFLOAT3 enemyTranslation = dx::XMFLOAT3(23, 7, 46);
 	enemy->GetTransform().SetPosition(dx::XMLoadFloat3(&enemyTranslation));
 	enemy->GetTransform().SetScale({ 0.125f, 0.125f, 0.125f });
-	enemy->AddComponent<EnemyStatsComp>(100.f, 0.5f, 5.f, 5.f, 3.f);
-	enemy->AddComponent<BoxColliderComponent>(dx::XMFLOAT3{ 1, 1, 1 }, dx::XMFLOAT3{ 0, 0, 0 });
+	enemy->AddComponent<EnemyStatsComp>(100.f, 2.0f, 10.f, 5.f, 3.f, 3.f);
+	//enemyStatsComp = enemy->GetComponent<EnemyStatsComp>();
+	enemy->AddComponent<BoxColliderComponent>(dx::XMFLOAT3{ 1, 2.45, 1 }, dx::XMFLOAT3{ 0, 0, 0 });
 
 	physics.MutexLock();
-	RigidBodyComponent* rbEnemy = enemy->AddComponent<RigidBodyComponent>(10.f, FilterGroups::ENEMIES, FilterGroups::EVERYTHING, BodyType::DYNAMIC);
+	RigidBodyComponent* rbEnemy = enemy->AddComponent<RigidBodyComponent>(10.f, FilterGroups::ENEMIES, FilterGroups::EVERYTHING, BodyType::KINEMATIC);
 	physics.RegisterRigidBody(rbEnemy);
 	physics.MutexUnlock();
 
-	enemy->AddComponent<EnemyAttackComp>(player->GetComponent<PlayerComp>());
 	EnemySMComp* stateMachine = enemy->AddComponent<EnemySMComp>(EnemyState::IDLE);
 	stateMachine->RegisterState(EnemyState::IDLE, enemy->AddComponent<EnemyIdleComp>());
-	stateMachine->RegisterState(EnemyState::PATROL, enemy->AddComponent<EnemyPatrolComp>());
+	//stateMachine->RegisterState(EnemyState::PATROL, enemy->AddComponent<EnemyPatrolComp>());
 	stateMachine->RegisterState(EnemyState::ATTACK, enemy->AddComponent<EnemyAttackComp>(player->GetComponent<PlayerComp>()));
+	stateMachine->Start();
 	stateMachine->InitAnimation();
 	AddObject(enemy);
 
+	//physics.MutexLock();
+	//RigidBodyComponent* rbEnemy = enemy->AddComponent<RigidBodyComponent>(0.f, FilterGroups::ENEMIES, FilterGroups::PLAYER, BodyType::STATIC);
+	////rbEnemy.
+	//physics.RegisterRigidBody(rbEnemy);
+	//physics.MutexUnlock();
 	playerObject->AddComponent<PlayerAttackComp>(enemy);
 
 	std::vector<Mesh*> axeMesh = ZWEBLoader::LoadMeshes(ZWEBLoadType::NoAnimation, "Models/AXE.ZWEB", renderer->GetDevice());
@@ -197,6 +202,7 @@ void GameScene::InitializeObjects()
 	axeObject->AddComponent<WeaponComponent>(cameraObject);
 		
 	AddObject(axeObject);
+	playerObject->GetComponent<PlayerComp>()->InsertWeapon(axeObject->GetComponent<WeaponComponent>(), axeObject->GetName());
 
 	world.Initialize(root, resources, pooler, renderer);
 	world.ConstructSegment(state, desc);
@@ -226,11 +232,11 @@ void GameScene::InitializeObjects()
 	///* Fuel pickup stuff temporary */
 	Object* fuelCanObject = resources->AssembleObject("FuelCanGreen", "FuelCanGreenMaterial");
 	fuelCanObject->GetTransform().SetPosition({ 22,2,52 });
-	fuelCanObject->AddComponent<BoxColliderComponent>(dx::XMFLOAT3{ 0.5f, 0.5f, 0.5f }, dx::XMFLOAT3{ 0, 0, 0 });
+	fuelCanObject->AddComponent<BoxColliderComponent>(dx::XMFLOAT3{ 0.3f, 0.3f, 0.3f }, dx::XMFLOAT3{ 0, 0, 0 });
 	fuelCanObject->AddComponent<PickupComponent>(Type::Fuel, 20.0f);
 
 	RigidBodyComponent* fuelBody;
-	fuelBody = fuelCanObject->AddComponent<RigidBodyComponent>(0.f, FilterGroups::PICKUPS, FilterGroups::PLAYER, BodyType::DYNAMIC);
+	fuelBody =	fuelCanObject->AddComponent<RigidBodyComponent>(10.f, FilterGroups::HOLDABLE, FilterGroups::TERRAIN, BodyType::DYNAMIC);
 	physics.RegisterRigidBody(fuelBody);
 	AddObject(fuelCanObject);
 
@@ -280,9 +286,8 @@ void GameScene::InitializeGUI()
 
 	//FONTS
 	GUIFont* fpsDisplay = new GUIFont(*renderer, "fps", windowWidth / 2, 50);
-
-	/*GUIFont* healthDisplay = new GUIFont(*renderer, "playerHealth", 50, 100);
-	GUIFont* enemyDisplay = new GUIFont(*renderer, "enemyHealth", 50, 150);*/
+	//GUIFont* healthDisplay = new GUIFont(*renderer, "playerHealth", 50, 100);
+	//GUIFont* enemyDisplay = new GUIFont(*renderer, "enemyHealth", 50, 150);
 
 	//CROSSHAIR
 	GUISprite* dot = new GUISprite(*renderer, "Textures/TestFix2.png", (windowWidth / 2) - 6, (windowHeight / 2) - 6, 0, DrawDirection::BottomLeft, ClickFunction::NotClickable);

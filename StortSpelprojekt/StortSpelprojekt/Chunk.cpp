@@ -98,6 +98,7 @@ void Chunk::SetupCollisionObject(float* heightMap)
 	collider->setCollisionCategoryBits(static_cast<unsigned short>(FilterGroups::TERRAIN));
 	collider->setCollideWithMaskBits(static_cast<unsigned short>(FilterGroups::EVERYTHING));
 	collider->getMaterial().setBounciness(0.f);
+	collider->getMaterial().setFrictionCoefficient(10.f);
 }
 
 float Chunk::SampleHeight(float x, float z)

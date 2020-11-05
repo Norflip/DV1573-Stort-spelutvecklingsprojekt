@@ -62,7 +62,10 @@ namespace Math
 		float t = InverseLerp(imin, imax, v);
 		return Lerp(omin, omax, t);
 	}
-
+	inline double Clamp(double valueToClamp, double upper, double lower)
+	{
+		return std::fmin(upper, std::fmax(valueToClamp, lower));
+	}
 	//inline float Pack3DVector(float x, float y, float z)
 	//{
 	//	typedef unsigned char UC;

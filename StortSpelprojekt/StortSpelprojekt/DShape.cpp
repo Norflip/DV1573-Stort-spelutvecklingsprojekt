@@ -10,7 +10,6 @@ DShape::~DShape()
 	vertexShader->Release();
 	inputLayout->Release();
 
-	buffer->Release();
 	lineVBuffer->Release();
 }
 
@@ -43,7 +42,7 @@ void DShape::m_Initialize(ID3D11Device* device)
 {
 	wireOnRS = DXHelper::CreateRasterizerState(D3D11_CULL_BACK, D3D11_FILL_WIREFRAME, device);
 	wireOffRS = DXHelper::CreateRasterizerState(D3D11_CULL_BACK, D3D11_FILL_SOLID, device);
-	DXHelper::CreateConstBuffer(device, &buffer, &data, sizeof(ShapeData));
+	buffer.Initialize(0, ShaderBindFlag::VERTEX, device);
 
 	std::vector<Mesh::Vertex> boxVertexes;
 	for (size_t i = 0; i < cube_vertexes.size(); i++)
@@ -214,7 +213,8 @@ void DShape::DrawMesh(const Mesh* mesh, const Shape& shape, const CameraComponen
 	data.color = dx::XMFLOAT4(shape.color.x, shape.color.y, shape.color.z, 1.0f);
 	data.isLine = FALSE;
 
-	DXHelper::BindConstBuffer(context, buffer, &data, 0, ShaderBindFlag::VERTEX);
+	buffer.SetData(data);
+	buffer.UpdateBuffer(context);
 
 	UINT stride = sizeof(Mesh::Vertex);
 	UINT offset = 0;
@@ -254,7 +254,8 @@ void DShape::DrawLines(const CameraComponent* camera, ID3D11DeviceContext* conte
 	data.isLine = TRUE;
 	data.color = { 1,0,0,1 };
 
-	DXHelper::BindConstBuffer(context, buffer, &data, 0, ShaderBindFlag::VERTEX);
+	buffer.SetData(data);
+	buffer.UpdateBuffer(context);
 
 	UINT stride = sizeof(LineVertex);
 	UINT offset = 0;

@@ -202,8 +202,6 @@ Chunk* SegmentGenerator::CreateChunk(const dx::XMINT2& index, Object* root, cons
 
 	chunk->SetupCollisionObject(heightMap);
 
-	auto chunkDataSRV = DXHelper::CreateTexture(buffer, CHUNK_SIZE + 1, CHUNK_SIZE + 1, 4, DXGI_FORMAT_R8G8B8A8_UNORM, device);
-
 	Material* material = new Material(chunkShader);
 	cb_Material mat;
 	mat.ambient = dx::XMFLOAT4(0.5f, 0.5f, 0.5f, 1);
@@ -399,7 +397,7 @@ void SegmentGenerator::AddTreesToChunk(Chunk* chunk, std::vector<ChunkPointInfor
 	}
 }
 
-void SegmentGenerator::AddGrassToChunk(Chunk* chunk, Texture& texture)
+void SegmentGenerator::AddGrassToChunk(Chunk* chunk, Texture* texture)
 {
 	size_t chunkTriangleCount = chunkMesh->GetTriangleCount();
 	GrassComponent* grassComponent = chunk->GetOwner()->AddComponent<GrassComponent>(chunkTriangleCount, device, grassShader);

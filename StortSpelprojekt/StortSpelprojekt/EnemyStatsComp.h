@@ -5,13 +5,14 @@ class EnemyStatsComp : public Component
 {
 	public:
 		EnemyStatsComp();
-		EnemyStatsComp(float health, float movementSpeed, float radius, float attack, float attackSpeed);
+		EnemyStatsComp(float health, float movementSpeed, float chaseRadius, float attack, float attackSpeed, float attackRadius);
 		virtual ~EnemyStatsComp();
 		float GetHealth() const { return health; }
 		float GetSpeed() const { return movementSpeed; }
-		float GetRadius() const { return radius; }
+		float GetChaseRadius() const { return chaseRadius; }
 		float GetAttack() const { return attack; }
 		float GetAttackSpeed() const { return attackSpeed; }
+		float GetAttackRadius() const { return attackRadius; }
 		void LoseHealth(float damage) { health -= damage; }
 		void SetHealth(float health) { this->health = health; }
 		void AddHealth(float health) { this->health += health; }
@@ -21,7 +22,8 @@ class EnemyStatsComp : public Component
 	private:
 		float health;
 		float movementSpeed;
-		float radius;
+		float chaseRadius;
 		float attack;
 		float attackSpeed;
+		float attackRadius;
 };
