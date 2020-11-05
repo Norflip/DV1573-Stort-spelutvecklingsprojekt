@@ -150,9 +150,7 @@ void PlayerComp::DropObject()
 		float forceAmount = 10;
 		rbComp->SetPosition(weaponPos);
 		rbComp->SetRotation(weaponRot);
-		objectRb->setLinearVelocity({ dx::XMVectorGetX(camRot)* forceAmount ,  dx::XMVectorGetY(camRot) * forceAmount,  dx::XMVectorGetZ(camRot) * forceAmount });
-
-		
+		objectRb->setLinearVelocity({ dx::XMVectorGetX(camRot)* forceAmount ,  dx::XMVectorGetY(camRot) * forceAmount,  dx::XMVectorGetZ(camRot) * forceAmount });	
 	}
 }
 
@@ -178,8 +176,7 @@ void PlayerComp::RayCast(const float& deltaTime)
 	if (KEY_DOWN(E))
 	{				
 		if (phy.RaytestSingle(ray, rayDistance, hit, FilterGroups::PICKUPS))
-		{
-			
+		{			
 			if (hit.object != nullptr)
 			{	
 				AudioMaster::Instance().PlaySoundEvent("pickupSound");
@@ -189,8 +186,7 @@ void PlayerComp::RayCast(const float& deltaTime)
 				if (pickupType == Type::Health)
 				{
 					if ((health + temp) <= 100.0f)
-						health += temp;
-					
+						health += temp;					
 				}
 				else if (pickupType == Type::Food)
 				{
@@ -201,9 +197,7 @@ void PlayerComp::RayCast(const float& deltaTime)
 				{
 					if ((fuel + temp) <= 100.0f)
 						fuel += temp;
-
 				}
-
 				hit.object->GetComponent<PickupComponent>()->SetActive(false);
 
 				RigidBodyComponent* rbComp = hit.object->GetComponent<RigidBodyComponent>();
@@ -231,8 +225,7 @@ void PlayerComp::RayCast(const float& deltaTime)
 	}
 	//ATTACK ENEMIES
 	if (LMOUSE_DOWN)
-	{
-		
+	{		
 		if (phy.RaytestSingle(ray, 5.0f, hit, FilterGroups::ENEMIES))
 		{
 			if (hit.object != nullptr && hit.object->HasComponent<EnemyStatsComp>())

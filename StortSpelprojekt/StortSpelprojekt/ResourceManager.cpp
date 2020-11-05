@@ -369,11 +369,6 @@ void ResourceManager::ReadShaders(ID3D11Device* device)
 	}
 }
 
-void ResourceManager::ReadMaterials(ID3D11Device* device)
-{
-	//ZWEBLoader::LoadMaterials
-}
-
 void ResourceManager::CompileShaders(ID3D11Device* device)
 {
 	// Recompile every shader in the shaderResource map
