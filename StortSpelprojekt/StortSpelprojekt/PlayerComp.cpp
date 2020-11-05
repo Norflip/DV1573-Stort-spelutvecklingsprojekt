@@ -35,9 +35,9 @@ PlayerComp::PlayerComp(Renderer* renderer, CameraComponent* camComp, Physics& ph
 	this->radius = radius;
 	this->renderer = renderer;
 
-	//this->enemyStatsComp = enemyComp->GetComponent<EnemyStatsComp>();
 
-	// defaulting some shit
+
+	// defaulting values
 	this->swapScene = NEXT_SCENE::GAME;
 	this->foodLossPerSecond = 0.3f;
 	this->food = 50.0f;
@@ -54,16 +54,12 @@ PlayerComp::PlayerComp(Renderer* renderer, CameraComponent* camComp, Physics& ph
 	foodEmpty = false;
 	gg = false;
 
-	//this->GetOwner()->GetComponent<CameraComponent>()
 	p.x = renderer->GetOutputWindow()->GetWidth() / 2;
 	p.y = renderer->GetOutputWindow()->GetHeight() / 2;
 
-	//Object* temp = this->GetOwner();
 	cam = camComp;
 	// per frame shit
 	this->rayDistance = 2.0f;
-	//this->GetOwner()->GetComponen
-	//weaponsList.push_back()
 	up = { 0.0f, 1.0f, 1.0f };
 	holding = nullptr;
 }
@@ -116,6 +112,7 @@ void PlayerComp::Update(const float& deltaTime)
 	{	
 		HoldObject();
 		DropObject();
+		//todo. Regrab last weapon
 	}
 }
 
