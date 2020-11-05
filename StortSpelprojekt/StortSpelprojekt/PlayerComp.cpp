@@ -39,21 +39,13 @@ PlayerComp::PlayerComp(Renderer* renderer, CameraComponent* camComp, Physics* ph
 
 	//this->enemyStatsComp = enemyComp->GetComponent<EnemyStatsComp>();
 
-	// defaulting some shit
-	this->foodLossPerSecond = 0.3f;
-	this->food = 50.0f;
-	this->fuelBurnPerMeter = 0.7f;
-	this->fuel = 50.0f;
-	this->healthLossPerSecond = 0.5f;
-
-	this->health = 50.0f; // <------------------ DONT FORGET TO REMOVE THIS LATER!
+	Reset();
 
 	this->fuelDippingBar = static_cast<GUISprite*>(guiMan->GetGUIObject("fuelDippingBar"));
 	this->foodDippingBar = static_cast<GUISprite*>(guiMan->GetGUIObject("foodDippingBar"));
 	this->healthDippingBar = static_cast<GUISprite*>(guiMan->GetGUIObject("healthDippingBar"));
 
-	foodEmpty = false;
-	gg = false;
+	
 	
 	//this->GetOwner()->GetComponent<CameraComponent>()
 	p.x = renderer->GetOutputWindow()->GetWidth() / 2;
@@ -217,6 +209,20 @@ void PlayerComp::Update(const float& deltaTime)
 
 	// Health dipping when hit by enemy
 	//healthDippingBar->SetScaleDipping(0);
+}
+
+void PlayerComp::Reset()
+{
+	// defaulting some shit
+	this->foodLossPerSecond = 0.3f;
+	this->food = 50.0f;
+	this->fuelBurnPerMeter = 0.7f;
+	this->fuel = 50.0f;
+	this->healthLossPerSecond = 0.5f;
+
+	this->health = 50.0f; // <------------------ DONT FORGET TO REMOVE THIS LATER!
+	foodEmpty = false;
+	gg = false;
 }
 
 float PlayerComp::ReverseAndClamp(float inputValue)

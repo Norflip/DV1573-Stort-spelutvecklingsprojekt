@@ -338,6 +338,7 @@ void GameScene::OnActivate()
 	desc.directionalSteps = 5;
 	desc.maxSteps = 10;
 
+	player->GetComponent<PlayerComp>()->Reset();
 	world.ConstructSegment(state, desc);
 	world.SetPlayer(player);
 	world.SetHouse(house);

@@ -31,6 +31,8 @@ public:
 
 	float GetRadius() const { return radius; }
 
+	void Reset();
+
 	void LoseHealth(float damage) { health -= damage; }	
 	void AddHealth(float health) { this->health += health; }	
 	void AddAttack(float attack) { this->attack += attack; }
