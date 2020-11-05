@@ -24,8 +24,9 @@ void SegmentGenerator::Initialize(Object* root, ResourceManager* resourceManager
 	this->grassShader = resourceManager->GetShaderResource("grassShader");
 	this->chunkShader = resourceManager->GetShaderResource("terrainShader");
 
-	grassTexture = *resourceManager->GetResource<Texture>("Grass");// .LoadTexture(device, L"Textures/newGrass.png");
-	roadTexture = *resourceManager->GetResource<Texture>("Road");// .LoadTexture(device, L"Textures/Stone_Floor_003_COLOR.jpg");
+	// Något fel med resourceManagerns textures, får fixa det efter sprintmötet
+	//grassTexture = resourceManager->GetResource<Texture>("Grass");// .LoadTexture(device, L"Textures/newGrass.png");
+	//roadTexture = resourceManager->GetResource<Texture>("Road");// .LoadTexture(device, L"Textures/Stone_Floor_003_COLOR.jpg");
 
 	InitializeTrees(resourceManager);
 }
@@ -208,15 +209,12 @@ Chunk* SegmentGenerator::CreateChunk(const dx::XMINT2& index, Object* root, cons
 
 	material->SetMaterialData(mat);
 
-	Texture texture(chunkDataSRV);
+	//Texture texture(chunkDataSRV);
 
-	//Texture grassTexture;
-	//grassTexture.LoadTexture(device, L"Textures/Grass_001_COLOR.jpg");
-	//grassTexture.LoadTexture(device, L"Textures/ground.png");
-	//grassTexture.LoadTexture(device, L"Textures/newGrass.png");
+	Texture* texture = Texture::CreateFromBuffer(buffer, CHUNK_SIZE + 1, CHUNK_SIZE + 1, 4, DXGI_FORMAT_R8G8B8A8_UNORM, device);
+	Texture* grassTexture = Texture::LoadTexture(device, L"Textures/newGrass.png");
+	Texture* roadTexture = Texture::LoadTexture(device, L"Textures/Stone_Floor_003_COLOR.jpg");
 
-	//Texture roadTexture;
-	//roadTexture.LoadTexture(device, L"Textures/Stone_Floor_003_COLOR.jpg");
 
 	material->SetTexture(texture, 0, ShaderBindFlag::PIXEL | ShaderBindFlag::VERTEX);
 	material->SetTexture(grassTexture, 1, ShaderBindFlag::PIXEL);

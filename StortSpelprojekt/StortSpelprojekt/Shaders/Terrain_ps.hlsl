@@ -48,6 +48,7 @@ float4 main(VS_OUTPUT input) : SV_TARGET
 	finalColor = saturate(textureColor * finalColor);
 	finalColor.a = 1.0f;
 
+	//return textureColor;
 	//return float4(normal, 1.0f);
 	return finalColor;
 }

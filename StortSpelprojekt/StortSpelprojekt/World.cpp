@@ -122,7 +122,7 @@ void World::RegisterFood(ObjectPooler* pooler, ObjectSpawner* spawner, const std
 		object->AddComponent<PickupComponent>(Type::Food, 20.0f);
 		object->AddComponent<RigidBodyComponent>(10.0f, FilterGroups::PICKUPS, FilterGroups::EVERYTHING, BodyType::KINEMATIC, true);
 
-		Physics::Instance().RegisterRigidBody(rd);
+		//Physics::Instance().RegisterRigidBody(rd);
 		return object;
 	});
 
@@ -134,7 +134,7 @@ void World::RegisterFood(ObjectPooler* pooler, ObjectSpawner* spawner, const std
 		object->AddComponent<PickupComponent>(Type::Food, 10.0f);
 		object->AddComponent<RigidBodyComponent>(10.0f, FilterGroups::PICKUPS, FilterGroups::EVERYTHING, BodyType::KINEMATIC, true);
 
-		Physics::Instance().RegisterRigidBody(rd);
+		//Physics::Instance().RegisterRigidBody(rd);
 		return object;
 	});
 
@@ -146,7 +146,7 @@ void World::RegisterFood(ObjectPooler* pooler, ObjectSpawner* spawner, const std
 		object->AddComponent<PickupComponent>(Type::Food, 10.0f);
 		object->AddComponent<RigidBodyComponent>(10.0f, FilterGroups::PICKUPS, FilterGroups::EVERYTHING, BodyType::KINEMATIC, true);
 
-		Physics::Instance().RegisterRigidBody(rd);
+		//Physics::Instance().RegisterRigidBody(rd);
 		return object;
 	});
 
@@ -158,7 +158,7 @@ void World::RegisterFood(ObjectPooler* pooler, ObjectSpawner* spawner, const std
 		object->AddComponent<PickupComponent>(Type::Food, 35.0f);
 		object->AddComponent<RigidBodyComponent>(10.0f, FilterGroups::PICKUPS, FilterGroups::EVERYTHING, BodyType::KINEMATIC, true);
 
-		Physics::Instance().RegisterRigidBody(rd);
+		//Physics::Instance().RegisterRigidBody(rd);
 		return object;
 	});
 
@@ -170,7 +170,7 @@ void World::RegisterFood(ObjectPooler* pooler, ObjectSpawner* spawner, const std
 		object->AddComponent<PickupComponent>(Type::Food, 35.0f);
 		object->AddComponent<RigidBodyComponent>(10.0f, FilterGroups::PICKUPS, FilterGroups::EVERYTHING, BodyType::KINEMATIC, true);
 
-		Physics::Instance().RegisterRigidBody(rd);
+		//Physics::Instance().RegisterRigidBody(rd);
 		return object;
 	});
 
@@ -191,7 +191,7 @@ void World::RegisterFuel(ObjectPooler* pooler, ObjectSpawner* spawner, const std
 		object->AddComponent<PickupComponent>(Type::Fuel, 20.0f);
 		object->AddComponent<RigidBodyComponent>(10.0f, FilterGroups::PICKUPS, FilterGroups::EVERYTHING, BodyType::KINEMATIC, true);
 
-		Physics::Instance().RegisterRigidBody(rd);
+		//Physics::Instance().RegisterRigidBody(rd);
 		return object;
 	});
 
@@ -203,7 +203,7 @@ void World::RegisterFuel(ObjectPooler* pooler, ObjectSpawner* spawner, const std
 		object->AddComponent<PickupComponent>(Type::Fuel, 20.0f);
 		object->AddComponent<RigidBodyComponent>(10.0f, FilterGroups::PICKUPS, FilterGroups::EVERYTHING, BodyType::KINEMATIC, true);
 
-		Physics::Instance().RegisterRigidBody(rd);
+		//Physics::Instance().RegisterRigidBody(rd);
 		return object;
 	});
 
@@ -215,7 +215,7 @@ void World::RegisterFuel(ObjectPooler* pooler, ObjectSpawner* spawner, const std
 		object->AddComponent<PickupComponent>(Type::Fuel, 20.0f);
 		object->AddComponent<RigidBodyComponent>(10.0f, FilterGroups::PICKUPS, FilterGroups::EVERYTHING, BodyType::KINEMATIC, true);
 
-		Physics::Instance().RegisterRigidBody(rd);
+		//Physics::Instance().RegisterRigidBody(rd);
 		return object;
 	});
 
@@ -227,7 +227,7 @@ void World::RegisterFuel(ObjectPooler* pooler, ObjectSpawner* spawner, const std
 		object->AddComponent<PickupComponent>(Type::Fuel, 35.0f);
 		object->AddComponent<RigidBodyComponent>(10.0f, FilterGroups::PICKUPS, FilterGroups::EVERYTHING, BodyType::KINEMATIC, true);
 
-		Physics::Instance().RegisterRigidBody(rd);
+		//Physics::Instance().RegisterRigidBody(rd);
 		return object;
 	});
 
@@ -248,7 +248,7 @@ void World::RegisterHealth(ObjectPooler* pooler, ObjectSpawner* spawner, const s
 		object->AddComponent<PickupComponent>(Type::Health, 40.0f);
 		object->AddComponent<RigidBodyComponent>(10.0f, FilterGroups::PICKUPS, FilterGroups::EVERYTHING, BodyType::KINEMATIC, true);
 
-		Physics::Instance().RegisterRigidBody(rd);
+		//Physics::Instance().RegisterRigidBody(rd);
 
 		return object;
 	});
@@ -261,7 +261,7 @@ void World::RegisterHealth(ObjectPooler* pooler, ObjectSpawner* spawner, const s
 		object->AddComponent<PickupComponent>(Type::Health, 25.0f);
 		object->AddComponent<RigidBodyComponent>(10.0f, FilterGroups::PICKUPS, FilterGroups::EVERYTHING, BodyType::KINEMATIC, true);
 
-		Physics::Instance().RegisterRigidBody(rd);
+		//Physics::Instance().RegisterRigidBody(rd);
 
 		return object;
 	});

@@ -69,8 +69,8 @@ private:
 	Shader* grassShader;
 	Shader* chunkShader;
 
-	Texture grassTexture;
-	Texture roadTexture;
+	Texture* grassTexture;
+	Texture* roadTexture;
 
 	std::vector<Mesh*> stylizedTreeModel;
 	std::vector<Material*> stylizedTreeMaterial;
