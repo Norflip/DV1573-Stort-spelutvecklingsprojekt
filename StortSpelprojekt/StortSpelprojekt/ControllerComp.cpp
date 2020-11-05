@@ -122,7 +122,6 @@ void ControllerComp::Update(const float& deltaTime)
 	this->fovTimer += deltaTime;
 	this->velocityTimer += deltaTime; 
 	this->crouchTimer += deltaTime;
-	dx::XMVECTOR groundRotation;
 
 	if (KEY_DOWN(D0))
 	{
