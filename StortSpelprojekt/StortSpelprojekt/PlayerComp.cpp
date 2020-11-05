@@ -225,7 +225,7 @@ void PlayerComp::RayCast(const float& deltaTime)
 					//rbComp->RemoveCollidersFromBody(objectRb);
 					rbComp->SetEnabled(false);
 					//hit.object->GetComponent<BoxColliderComponent>()->SetEnabled(false);
-					hit.object->GetComponent<BoxColliderComponent>()->SetRotation({ 5, 5, 5, 5 });
+					hit.object->GetComponent<BoxColliderComponent>()->SetRotation(0,{ 5, 5, 5, 5 });
 					//hit.object->RemoveFlag(ObjectFlag::ENABLED);
 					currentWeapon->RemoveFlag(ObjectFlag::ENABLED);
 				}

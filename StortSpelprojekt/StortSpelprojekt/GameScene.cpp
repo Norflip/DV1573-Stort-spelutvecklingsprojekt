@@ -192,11 +192,11 @@ void GameScene::InitializeObjects()
 	stateMachine->InitAnimation();
 	AddObject(enemy);
 
-	physics.MutexLock();
-	RigidBodyComponent* rbEnemy = enemy->AddComponent<RigidBodyComponent>(0.f, FilterGroups::ENEMIES, FilterGroups::PLAYER, BodyType::STATIC);
-	//rbEnemy.
-	physics.RegisterRigidBody(rbEnemy);
-	physics.MutexUnlock();
+	//physics.MutexLock();
+	//RigidBodyComponent* rbEnemy = enemy->AddComponent<RigidBodyComponent>(0.f, FilterGroups::ENEMIES, FilterGroups::PLAYER, BodyType::STATIC);
+	////rbEnemy.
+	//physics.RegisterRigidBody(rbEnemy);
+	//physics.MutexUnlock();
 	playerObject->AddComponent<PlayerAttackComp>(enemy);
 
 

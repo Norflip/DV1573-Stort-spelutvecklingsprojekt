@@ -5,7 +5,7 @@
 #include "GUISprite.h"
 #include "Scene.h"
 #include "AudioMaster.h"
-
+#include "WeaponComponent.h"
 class PlayerComp :
     public Component
 {
