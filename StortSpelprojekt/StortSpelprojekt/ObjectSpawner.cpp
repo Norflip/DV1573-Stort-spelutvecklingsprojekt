@@ -2,6 +2,7 @@
 #include "ObjectSpawner.h"
 #include "ResourceManager.h"
 #include "Engine.h"
+#include <random>
 
 ObjectSpawner::ObjectSpawner()
 {
@@ -81,7 +82,7 @@ void ObjectSpawner::Spawn(const SaveState& state, PointQuadTree& tree, std::unor
 	struct TempData
 	{
 		InstancedProp* prop;
-		Chunk* chunk;
+	//	Chunk* chunk;
 		std::vector<Mesh::InstanceData> instancedData;
 	};
 
@@ -111,11 +112,16 @@ void ObjectSpawner::Spawn(const SaveState& state, PointQuadTree& tree, std::unor
 
 			data[chunk].instancedData.push_back(singleInstancedData);
 			data[chunk].prop = &prop;
-			data[chunk].chunk = chunk;
 		}
+
+		propIndex++;
+		propIndex %= instancedProps.size();
 
 		i += (prop.queueCount - 1);
 	}
+
+
+
 
 	size_t index = 0;
 	for (auto i : data)
@@ -124,7 +130,7 @@ void ObjectSpawner::Spawn(const SaveState& state, PointQuadTree& tree, std::unor
 		MeshComponent* mc = props->AddComponent<MeshComponent>(i.second.prop->mesh, i.second.prop->material);
 		mc->SetInstanceable(0, i.second.instancedData, i.second.instancedData.size(), device);
 
-		Transform::SetParentChild(i.second.chunk->GetOwner()->GetTransform(), props->GetTransform());
+		Transform::SetParentChild(i.first->GetOwner()->GetTransform(), props->GetTransform());
 
 	}
 
@@ -260,7 +266,7 @@ std::vector<dx::XMFLOAT2> ObjectSpawner::CreateSpawnPositions(PointQuadTree& tre
 		}
 	}
 
-	std::shuffle(std::begin(validPoints), std::end(validPoints), Random::m_rngEngine);
+	std::random_shuffle(std::begin(validPoints), std::end(validPoints));
 	return validPoints;
 }
 
