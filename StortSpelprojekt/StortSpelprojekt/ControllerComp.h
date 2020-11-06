@@ -54,6 +54,7 @@ private:
 	bool freeCam;
 	bool showCursor;
 	bool canRotate;
+	bool isGrounded;
 	dx::XMFLOAT3 jumpDir; 
 	dx::XMFLOAT3 cameraOffset;
 	dx::XMFLOAT3 cameraEuler;
@@ -65,7 +66,7 @@ private:
 	CapsuleColliderComponent* capsuleComp;
 	PlayerComp* playerComp;
 
-	bool IsGrounded() const;
+	void checkGrounded();
 
 	void calcVelocity(float acceleration)
 	{

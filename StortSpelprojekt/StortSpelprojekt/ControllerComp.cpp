@@ -2,7 +2,7 @@
 #include "ControllerComp.h"
 #include "Engine.h"
 
-bool ControllerComp::IsGrounded() const
+void ControllerComp::checkGrounded()
 {
 	dx::XMFLOAT3 origin;
 	dx::XMStoreFloat3(&origin, GetOwner()->GetTransform().GetPosition());
@@ -18,33 +18,34 @@ bool ControllerComp::IsGrounded() const
 	phy->RaytestSingle(ray, distance, hitTerrain, FilterGroups::TERRAIN);
 	phy->RaytestSingle(ray, distance, hitProps, FilterGroups::PROPS);
 	
-	bool result = false;
-	if (hitTerrain.object != nullptr || (hitProps.object != nullptr && hitProps.object->GetName()== "houseBase"))
+	this->isGrounded = false;
+	if (hitTerrain.object != nullptr || (hitProps.object != nullptr && hitProps.object->GetName() == "houseBase"))
 	{
 
 		if (hitProps.object != nullptr && hitProps.object->GetName() == "houseBase")
 		{
 
-			dx::XMFLOAT3 housePos;
-			dx::XMStoreFloat3(&housePos, hitProps.object->GetTransform().GetPosition());
-			dx::XMFLOAT3 houseLastPos = hitProps.object->GetComponent<NodeWalkerComp>()->GetLastPos();
-
-			dx::XMFLOAT3 delta = { housePos.x-houseLastPos.x ,housePos.y-houseLastPos.y, housePos.z-houseLastPos.z};
-
-			GetOwner()->GetTransform().Translate(delta.x, delta.y, delta.z);
+			//dx::XMFLOAT3 housePos;
+			//dx::XMStoreFloat3(&housePos, hitProps.object->GetTransform().GetPosition());
+			//dx::XMFLOAT3 houseLastPos = hitProps.object->GetComponent<NodeWalkerComp>()->GetLastPos();
+			dx::XMFLOAT3 move = hitProps.object->GetComponent<NodeWalkerComp>()->GetMoveVec();
+			//dx::XMFLOAT3 delta = { housePos.x-houseLastPos.x ,housePos.y-houseLastPos.y, housePos.z-houseLastPos.z};
+			//std::cout << "jump x: " << jumpDir.x << ", y: " << jumpDir.y << ", z: " << jumpDir.z << std::endl;
+			GetOwner()->GetTransform().Translate(move.x, move.y, move.z); //grounded runs multiple times
 			rbComp->SetPosition(GetOwner()->GetTransform().GetPosition());
 			//rbComp->SetLinearVelocity(delta);
 		}
 
-		result = true;
+		this->isGrounded = true;
 		//std::cout << "picking: " << hit.object->GetName() << std::endl;
 		//DShape::DrawLine(ray.origin, ray.GetPoint(distance), { 0,0,1 });
-		
+
 	}
+	
 	//else
 	//	DShape::DrawLine(ray.origin, ray.GetPoint(distance), { 1,0,0 });
 	
-	return result;
+	//return result;
 }
 
 ControllerComp::ControllerComp(Object* cameraObject, Object* houseObject)
@@ -59,6 +60,7 @@ ControllerComp::ControllerComp(Object* cameraObject, Object* houseObject)
 	this->freeCam = false;
 	this->showCursor = false;
 	this->canRotate = true;
+	this->isGrounded = false;
 	this->jumpDir = { 0.f,0.f,0.f };
 	this->cameraOffset = { 0.f,0.f,0.f };
 	this->cameraEuler = { 0.f,0.f,0.f }; //TODO_: fix start angle (looks down or up at start)
@@ -238,7 +240,8 @@ void ControllerComp::Update(const float& deltaTime)
 		else //First Person specific actions
 		{
 			float jumpVelocity = 0;
-			if (IsGrounded() && KEY_DOWN(Space)) // FPcam //jump is  scuffed
+			checkGrounded();
+			if (isGrounded && KEY_DOWN(Space)) // FPcam //jump is  scuffed
 			{
 				jumpVelocity = JUMP_VELOCITY;
 				this->jumpDir.x = dir.x;
@@ -320,7 +323,7 @@ void ControllerComp::Update(const float& deltaTime)
 			dx::XMVECTOR cameraPos = dx::XMLoadFloat3(&this->cameraOffset);
 			cameraPos = dx::XMVectorAdd(cameraPos, rbComp->GetPosition());
 			cameraObject->GetTransform().SetPosition(cameraPos); //add camera-offset
-			if(IsGrounded())
+			if(isGrounded)
 				rbComp->SetLinearVelocity({ dir.x, vel.y + jumpVelocity, dir.z});
 			else
 			{
