@@ -17,7 +17,7 @@ public:
 	virtual dx::XMMATRIX GetViewMatrix(const dx::XMMATRIX& transform) const;
 	virtual dx::XMMATRIX GetProjectionMatrix() const;
 
-	virtual bool InView(const BoundingBox& bounds, const dx::XMMATRIX world, std::vector<dx::XMFLOAT4>& planes) const;
+	virtual bool InView(const Bounds& bounds, const dx::XMMATRIX world, std::vector<dx::XMFLOAT4>& planes) const;
 	virtual std::vector<dx::XMFLOAT4> GetFrustumPlanes(const dx::XMMATRIX& transform) const;	
 	void UpdateProjectionMatrix(size_t width, size_t height, float value, float nearZ, float farZ);
 	

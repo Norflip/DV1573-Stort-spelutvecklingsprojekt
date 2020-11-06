@@ -228,7 +228,11 @@ Chunk* SegmentGenerator::CreateChunk(const dx::XMINT2& index, Object* root, cons
 	auto textureSampler = DXHelper::CreateSampler(D3D11_FILTER_MIN_MAG_MIP_LINEAR, D3D11_TEXTURE_ADDRESS_WRAP, device);
 	material->SetSampler(textureSampler, 1, ShaderBindFlag::PIXEL);
 
-	chunkObject->AddComponent<MeshComponent>(chunkMesh, material);
+	MeshComponent* meshComp = chunkObject->AddComponent<MeshComponent>(chunkMesh, material);
+	
+	Bounds& bounds = meshComp->GetBounds();
+	dx::XMFLOAT3 max = bounds.GetMax();
+	bounds.SetMinMax(bounds.GetMin(), dx::XMFLOAT3(max.x, TERRAIN_SCALE, max.z));
 
 	AddTreesToChunk(chunk, chunkInformation);
 	AddGrassToChunk(chunk, texture);
@@ -341,7 +345,7 @@ void SegmentGenerator::AddTreesToChunk(Chunk* chunk, std::vector<ChunkPointInfor
 			std::vector<Mesh::InstanceData> treesInstanced(nrOfInstancedStyTrees);
 			dx::XMFLOAT2 posXZ = Chunk::IndexToWorldXZ(chunk->GetIndex());
 
-			BoundingBox bbInfo;
+			Bounds bbInfo;
 			bbInfo.CalculateAABB(stylizedTreeModel[0]);
 			dx::XMFLOAT3 extends = bbInfo.GetExtends();
 

@@ -67,11 +67,9 @@
     <FxCompile Include="Shaders\FogTest_ps.hlsl">
       <Filter>Resource Files</Filter>
     </FxCompile>
+    <FxCompile Include="ForwardPlusRendering.hlsl" />
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="BoundingBoxes.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="BoxColliderComponent.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
@@ -264,6 +262,15 @@
     <ClCompile Include="VirtualCamera.cpp">
       <Filter>Header Files</Filter>
     </ClCompile>
+    <ClCompile Include="Bounds.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="MeshCollider.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="ThirdParty\quickhull\QuickHull.cpp">
+      <Filter>ThirdParty</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="ObjectSpawner.h">
@@ -294,9 +301,6 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="AudioMaster.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="BoundingBoxes.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="BoxColliderComponent.h">
@@ -524,6 +528,24 @@
     <ClInclude Include="VirtualCamera.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="Bounds.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="MeshCollider.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="ThirdParty\quickhull\ConvexHull.hpp">
+      <Filter>ThirdParty</Filter>
+    </ClInclude>
+    <ClInclude Include="ThirdParty\quickhull\HalfEdgeMesh.hpp">
+      <Filter>ThirdParty</Filter>
+    </ClInclude>
+    <ClInclude Include="ThirdParty\quickhull\MathUtils.hpp">
+      <Filter>ThirdParty</Filter>
+    </ClInclude>
+    <ClInclude Include="ThirdParty\quickhull\QuickHull.hpp">
+      <Filter>ThirdParty</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <Filter Include="Header Files">
@@ -537,6 +559,9 @@
     </Filter>
     <Filter Include="Source Files\SpawnSystems">
       <UniqueIdentifier>{5552950f-3623-49fb-b848-f9f6029a934a}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="ThirdParty">
+      <UniqueIdentifier>{3859562d-ae0e-4db7-ada7-9953f90c3049}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
   <ItemGroup>
