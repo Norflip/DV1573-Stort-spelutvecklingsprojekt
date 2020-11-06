@@ -158,7 +158,7 @@ void GameScene::InitializeObjects()
 	enemy->GetTransform().SetScale({ 0.125f, 0.125f, 0.125f });
 	enemy->AddComponent<EnemyStatsComp>(100.f, 2.0f, 10.f, 5.f, 3.f, 3.f);
 	//enemyStatsComp = enemy->GetComponent<EnemyStatsComp>();
-	enemy->AddComponent<BoxColliderComponent>(dx::XMFLOAT3{ 1, 2.45, 1 }, dx::XMFLOAT3{ 0, 0, 0 });
+	enemy->AddComponent<CapsuleColliderComponent>(1.6f, 1.8f, zero);
 
 	enemy->AddComponent<RigidBodyComponent>(10.f, FilterGroups::ENEMIES, FilterGroups::EVERYTHING, BodyType::KINEMATIC, true);
 	
@@ -175,7 +175,7 @@ void GameScene::InitializeObjects()
 	////rbEnemy.
 	//physics.RegisterRigidBody(rbEnemy);
 	//physics.MutexUnlock();
-	playerObject->AddComponent<PlayerAttackComp>(enemy);
+	//playerObject->AddComponent<PlayerAttackComp>(enemy);
 
 	std::vector<Mesh*> axeMesh = ZWEBLoader::LoadMeshes(ZWEBLoadType::NoAnimation, "Models/AXE.ZWEB", renderer->GetDevice());
 	std::vector<Material*> axeMat = ZWEBLoader::LoadMaterials("Models/AXE.ZWEB", defaultShader, renderer->GetDevice());
