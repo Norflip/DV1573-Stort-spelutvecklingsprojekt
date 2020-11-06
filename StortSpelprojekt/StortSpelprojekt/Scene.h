@@ -77,9 +77,6 @@ protected:
 	Object* enemy;
 	Object* player;
 
-	dx::SpriteBatch* spriteBatch;
-	SpriteRenderPass* spritePass;	
-
 	ObjectPooler* pooler;
 	GUIManager* guiManager;		
 	

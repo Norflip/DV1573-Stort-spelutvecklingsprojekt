@@ -3,7 +3,7 @@
 #include "Transform.h"
 #include <DirectXMath.h>
 #include "Object.h"
-#include "BoundingBoxes.h"
+#include "Bounds.h"
 #include "Ray.h"
 #include "VirtualCamera.h"
 
@@ -23,7 +23,7 @@ public:
 	dx::XMMATRIX GetViewMatrix() const;
 
 	void UpdateView();
-	bool InView(const BoundingBox& bounds, const dx::XMMATRIX world);
+	bool InView(const Bounds& bounds, const dx::XMMATRIX world);
 	Ray MouseToRay(const unsigned int& x, const unsigned int& y) const;
 
 

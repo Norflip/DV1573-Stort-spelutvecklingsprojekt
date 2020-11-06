@@ -24,7 +24,7 @@ dx::XMMATRIX VirtualCamera::GetProjectionMatrix() const
 	return dx::XMLoadFloat4x4(&projection);
 }
 
-bool VirtualCamera::InView(const BoundingBox& bounds, const dx::XMMATRIX world, std::vector<dx::XMFLOAT4>& planes) const
+bool VirtualCamera::InView(const Bounds& bounds, const dx::XMMATRIX world, std::vector<dx::XMFLOAT4>& planes) const
 {
 	bool inViewResult = true;
 
