@@ -1,4 +1,4 @@
-Shaders: 9
+Shaders: 10
 
 Name: default
 
@@ -44,3 +44,7 @@ PS: Shaders/Alpha_ps.hlsl
 Name: fogShader
 VS: Shaders/ScreenQuad_vs.hlsl
 PS: Shaders/FogTest_ps.hlsl
+
+Name: FXAAShader
+VS: Shaders/ScreenQuad_vs.hlsl
+PS: Shaders/FXAA_ps.hlsl

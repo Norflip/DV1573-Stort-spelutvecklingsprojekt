@@ -103,7 +103,7 @@ void ResourceManager::ReadObjects(ID3D11Device* device)
 		int pos = line.find(delimiter);
 		
 		// Number of objects in this file
-		int nrOfObjects = std::stoi(line.substr(pos + 2, 1), &sz);
+		int nrOfObjects = std::stoi(line.substr(pos + 2, line.length() - pos - 2), &sz);
 
 		std::getline(file, line);
 
@@ -119,22 +119,25 @@ void ResourceManager::ReadObjects(ID3D11Device* device)
 			pos = line.find(delimiter);
 
 			std::string shader = line.substr(pos + 2, line.length() - pos - 2);
-
-			// Right now, it supports only 1 mesh and material for each path
-			// Will check if we need to load a whole vector with several meshes at the same time
-			Material* material = ZWEBLoader::LoadMaterials(filepath, GetShaderResource(shader), device)[0];
-
+			
 			auto sampler = DXHelper::CreateSampler(D3D11_FILTER_MIN_MAG_MIP_LINEAR, D3D11_TEXTURE_ADDRESS_WRAP, device);
 
-			/*if (meshes.size() > 1)
-			{
-				for (int i = 0; i < meshes.size(); i++)
-				{
-					materials[i]->SetSampler(sampler, 0, ShaderBindFlag::PIXEL);
+			std::vector<Material*> materials = ZWEBLoader::LoadMaterials(filepath, GetShaderResource(shader), device);
+			std::vector<Mesh*> meshes = ZWEBLoader::LoadMeshes(ZWEBLoadType::NoAnimation, filepath, device);
 
-					AddResource(meshes[i]->GetMeshName(), meshes[i]);
-					AddResource(meshes[i]->GetMaterialName(), materials[i]);
-				}
+			// Ugly presumption that we load a Tree at some point
+			if (name == "Tree")
+			{
+				materials[0]->SetSampler(sampler, 0, ShaderBindFlag::PIXEL);
+				materials[1]->SetSampler(sampler, 0, ShaderBindFlag::PIXEL);
+
+				materials[1]->SetShader(GetShaderResource("alphaInstanceShader"));
+
+				AddResource(name, meshes[0]);
+				AddResource(meshes[1]->GetMeshName(), meshes[1]);
+
+				AddResource(name + "Material", materials[0]);
+				AddResource(meshes[1]->GetMeshName() + "Material", materials[1]);
 			}
 			else
 			{
@@ -142,18 +145,7 @@ void ResourceManager::ReadObjects(ID3D11Device* device)
 
 				AddResource(name, meshes[0]);
 				AddResource(name + "Material", materials[0]);
-			}*/
-			
-
-			//Material* material = new Material;
-			//*material = ZWEBLoader::LoadMaterials(filepath, GetShaderResource(shader), device)[0];
-
-			material->SetSampler(sampler, 0, ShaderBindFlag::PIXEL);
-
-			Mesh* mesh = ZWEBLoader::LoadMeshes(ZWEBLoadType::NoAnimation, filepath, device)[0];
-
-			AddResource(name, mesh);
-			AddResource(name + "Material", material);
+			}
 
 			std::getline(file, line);
 		}
@@ -184,6 +176,7 @@ void ResourceManager::ReadTextures(ID3D11Device* device)
 
 		std::getline(file, line);
 
+		// Add each texture in the file
 		for (int i = 0; i < nrOfTextures; i++)
 		{
 			std::getline(file, line);
@@ -197,7 +190,9 @@ void ResourceManager::ReadTextures(ID3D11Device* device)
 			bool success = texture->LoadTexture(device, pathWSTR.c_str());
 			assert(success);
 
+			// Read empty line
 			std::getline(file, line);
+
 			AddResource(name, texture);
 		}
 	}
@@ -218,7 +213,7 @@ void ResourceManager::ReadShaders(ID3D11Device* device)
 		int pos = line.find(delimiter);
 
 		// Amount of shaders in the file
-		int nrOfShaders = std::stoi(line.substr(pos + 2, 1), &sz);
+		int nrOfShaders = std::stoi(line.substr(pos + 2, line.length() - pos - 2), &sz);
 
 		std::getline(file, line);
 

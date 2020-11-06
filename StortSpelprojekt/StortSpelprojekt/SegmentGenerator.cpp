@@ -18,11 +18,15 @@ void SegmentGenerator::Initialize(Object* root, ResourceManager* resourceManager
 	this->spawner = spawner;
 	this->initialized = true;
 
-	Material* mat = resourceManager->GetResource<Material>("Test");
-	materialData = mat->GetMaterialData();
+	//Material* mat = resourceManager->GetResource<Material>("TestMaterial");
+	//materialData = mat->GetMaterialData();
 
 	this->grassShader = resourceManager->GetShaderResource("grassShader");
 	this->chunkShader = resourceManager->GetShaderResource("terrainShader");
+
+	// Något fel med resourceManagerns textures, får fixa det efter sprintmötet
+	//grassTexture = resourceManager->GetResource<Texture>("Grass");// .LoadTexture(device, L"Textures/newGrass.png");
+	//roadTexture = resourceManager->GetResource<Texture>("Road");// .LoadTexture(device, L"Textures/Stone_Floor_003_COLOR.jpg");
 
 	InitializeTrees(resourceManager);
 }
@@ -198,11 +202,19 @@ Chunk* SegmentGenerator::CreateChunk(const dx::XMINT2& index, Object* root, cons
 	chunk->SetupCollisionObject(Engine::Instance->GetPhysics(), heightMap);
 
 	Material* material = new Material(chunkShader);
-	material->SetMaterialData(materialData);
+	cb_Material mat;
+	mat.ambient = dx::XMFLOAT4(0.5f, 0.5f, 0.5f, 1);
+	mat.diffuse = dx::XMFLOAT4(0.5f, 0.5f, 0.5f, 1);
+	mat.specular = dx::XMFLOAT4(0.1f, 0.1f, 0.1f, 0.1f);
+
+	material->SetMaterialData(mat);
+
+	//Texture texture(chunkDataSRV);
 
 	Texture* texture = Texture::CreateFromBuffer(buffer, CHUNK_SIZE + 1, CHUNK_SIZE + 1, 4, DXGI_FORMAT_R8G8B8A8_UNORM, device);
 	Texture* grassTexture = Texture::LoadTexture(device, L"Textures/newGrass.png");
 	Texture* roadTexture = Texture::LoadTexture(device, L"Textures/Stone_Floor_003_COLOR.jpg");
+
 
 	material->SetTexture(texture, 0, ShaderBindFlag::PIXEL | ShaderBindFlag::VERTEX);
 	material->SetTexture(grassTexture, 1, ShaderBindFlag::PIXEL);
@@ -298,21 +310,12 @@ Mesh* SegmentGenerator::CreateChunkMesh(ID3D11Device* device)
 
 void SegmentGenerator::InitializeTrees(ResourceManager* resources)
 {
-	auto sampler = DXHelper::CreateSampler(D3D11_FILTER_MIN_MAG_MIP_LINEAR, D3D11_TEXTURE_ADDRESS_WRAP, device);
-
-	Shader* instanceShader = resources->GetShaderResource("instanceShader");
-	Shader* alphaInstanceShader = resources->GetShaderResource("alphaInstanceShader");
-
 	//0 base 1 branch 2 leaves
-	stylizedTreeModel = ZWEBLoader::LoadMeshes(ZWEBLoadType::NoAnimation, "Models/tree.ZWEB", device);
+	stylizedTreeModel.push_back(resources->GetResource<Mesh>("Tree"));
+	stylizedTreeModel.push_back(resources->GetResource<Mesh>("leaves"));
 	//0 tree 1 leaves
-	stylizedTreeMaterial = ZWEBLoader::LoadMaterials("Models/tree.ZWEB", instanceShader, device);
-
-	stylizedTreeMaterial[0]->SetSampler(sampler, 0, ShaderBindFlag::PIXEL);
-	stylizedTreeMaterial[1]->SetSampler(sampler, 0, ShaderBindFlag::PIXEL);
-
-	stylizedTreeMaterial[0]->SetShader(instanceShader);
-	stylizedTreeMaterial[1]->SetShader(alphaInstanceShader);
+	stylizedTreeMaterial.push_back(resources->GetResource<Material>("TreeMaterial"));
+	stylizedTreeMaterial.push_back(resources->GetResource<Material>("leavesMaterial"));
 }
 
 void SegmentGenerator::AddTreesToChunk(Chunk* chunk, std::vector<ChunkPointInformation>& chunkInformation)

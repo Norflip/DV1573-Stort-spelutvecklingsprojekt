@@ -22,13 +22,18 @@ float4 CalculatePointLight(PointLight pointLight, float3 normal, float3 objectPo
 	if (diffuseFactor > 0.0f)
 	{
 		float3 reflection = reflect(-light, normal);
-		float shine = pow(max(dot(reflection, viewDirection), 0.0f), 10.0f); //matSpecular.w);
+		float shine = pow(max(dot(reflection, viewDirection), 0.0f), 0.1f); //matSpecular.w);
 
 		diffuse = diffuseFactor * matDiffuse * pointLight.lightColor;
 		specular = shine * matSpecular * pointLight.lightColor;
 	}
 
-	float attenuationFactor = 1.0f / pointLight.attenuation.x + (pointLight.attenuation.y * distance) + (pointLight.attenuation.z * (distance * distance));
+	//float attenuationFactor = saturate(1.0f - distance / (pointLight.range * 5.0f));
+	//attenuationFactor *= attenuationFactor;
+
+	//float attenuationFactor = 1.0f / pointLight.attenuation.x + (pointLight.attenuation.y * distance) + (pointLight.attenuation.z * (distance * distance));
+
+	float attenuationFactor = clamp(1.0f - distance * distance / (pointLight.range * pointLight.range), 0.0f, 1.0f);
 
 	ambient = saturate(matAmbient * pointLight.lightColor * attenuationFactor);
 	diffuse = saturate(diffuse * attenuationFactor);
@@ -94,18 +99,18 @@ float4 CalculateDirectionalLight(float3 lightDirection, float3 normal, float3 vi
 
 	lightDirection = normalize(lightDirection - float3(0.0f, 0.0f, 0.0f));
 
-	float diffuseFactor = max(dot(normal, lightDirection), 0.0f);
+	float diffuseFactor = max(dot(normal, -lightDirection), 0.0f);
 
 	if (diffuseFactor > 0.0f)
 	{
-		float3 reflection = reflect(-lightDirection, normal);
-		float spec = pow(max(dot(viewDirection, reflection), 0.0f), matSpecular.w);
+		float3 reflection = reflect(lightDirection, normal);
+		float spec = pow(max(dot(viewDirection, reflection), 0.0f), 1.0f);
 
-		
 		diffuse = diffuseFactor * sunColor * matDiffuse;
 		specular = spec * sunColor * matSpecular;
 	}
 
+	diffuse = sunColor * matDiffuse;
 	ambient = sunColor * matAmbient;
 
 	finalColor = ambient + diffuse + specular;

@@ -1,4 +1,4 @@
-Objects: 8
+Objects: 24
 
 Test: Models/brickSphere.ZWEB
 Shader: instanceShader
@@ -9,7 +9,7 @@ Shader: defaultShader
 Test3: Models/cylinder.ZWEB
 Shader: defaultShader
 
-Banan: Models/Banana.ZWEB
+Banana: Models/Banana.ZWEB
 Shader: defaultShader
 
 HealthKit: Models/Health_Kit.ZWEB
@@ -23,3 +23,51 @@ Shader: defaultShader
 
 Soup: Models/Soup_Can.ZWEB
 Shader: defaultShader
+
+Tree: Models/tree.ZWEB
+Shader: instanceShader
+
+Apple: Models/Apple.ZWEB
+Shader: defaultShader
+
+Axe: Models/AXE.ZWEB
+Shader: defaultShader
+
+Basket: Models/Basket.ZWEB
+Shader: instanceShader
+
+Bat: Models/Bat.ZWEB
+Shader: defaultShader
+
+Fruits: Models/Fruit_Basket.ZWEB
+Shader: defaultShader
+
+FuelCanBlue: Models/Fuel_Can_Blue.ZWEB
+Shader: defaultShader
+
+FuelCanRed: Models/Fuel_Can_Red.ZWEWB
+Shader: defaultShader
+
+Hammer: Models/Hammer.ZWEB
+Shader: defaultShader
+
+HealthJar: Models/Health_Jar.ZWEB
+Shader: defaultShader
+
+Log: Models/Log.ZWEB
+Shader: instanceShader
+
+Pear: Models/Pear.ZWEB
+Shader: defaultShader
+
+Propane: Models/Propane.ZWEB
+Shader: defaultShader
+
+Rock1: Models/Rock_1.ZWEB
+Shader: instanceShader
+
+Rock2: Models/Rock_2.ZWEB
+Shader: instanceShader
+
+Rock3: Models/Rock_3.ZWEB
+Shader: instanceShader
