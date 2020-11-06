@@ -3,6 +3,7 @@
 #include "ResourceManager.h"
 #include "Engine.h"
 #include <random>
+#include "MeshCollider.h"
 
 ObjectSpawner::ObjectSpawner()
 {
@@ -84,6 +85,8 @@ void ObjectSpawner::Spawn(const SaveState& state, PointQuadTree& tree, std::unor
 		InstancedProp* prop;
 	//	Chunk* chunk;
 		std::vector<Mesh::InstanceData> instancedData;
+		std::vector<dx::XMFLOAT3> positions;
+		// ROTATIONS LATER
 	};
 
 	std::unordered_map<Chunk*, TempData> data;
@@ -110,6 +113,7 @@ void ObjectSpawner::Spawn(const SaveState& state, PointQuadTree& tree, std::unor
 			dx::XMStoreFloat4x4(&singleInstancedData.instanceWorld, dx::XMMatrixTranspose(translation));
 			singleInstancedData.instancePosition = position;
 
+			data[chunk].positions.push_back(position);
 			data[chunk].instancedData.push_back(singleInstancedData);
 			data[chunk].prop = &prop;
 		}
@@ -129,6 +133,9 @@ void ObjectSpawner::Spawn(const SaveState& state, PointQuadTree& tree, std::unor
 		Object* props = new Object("props_" + std::to_string(index), ObjectFlag::DEFAULT /* | ObjectFlag::NO_CULL */);
 		MeshComponent* mc = props->AddComponent<MeshComponent>(i.second.prop->mesh, i.second.prop->material);
 		mc->SetInstanceable(0, i.second.instancedData, i.second.instancedData.size(), device);
+
+		props->AddComponent<MeshCollider>(i.second.prop->mesh, i.second.positions);
+		props->AddComponent<RigidBodyComponent>(0.f, FilterGroups::PROPS, FilterGroups::EVERYTHING, BodyType::STATIC, true);
 
 		Transform::SetParentChild(i.first->GetOwner()->GetTransform(), props->GetTransform());
 

@@ -71,22 +71,22 @@
   <PropertyGroup Label="UserMacros" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <LinkIncremental>true</LinkIncremental>
-    <IncludePath>$(SolutionDir)\React;$(IncludePath)</IncludePath>
+    <IncludePath>$(SolutionDir)\ThirdParty\quickhull;$(SolutionDir)\React;$(IncludePath)</IncludePath>
     <LibraryPath>$(SolutionDir)\React\libs\Debug;$(LibraryPath)</LibraryPath>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
     <LinkIncremental>true</LinkIncremental>
-    <IncludePath>$(SolutionDir)\StortSpelprojekt\Bulletphysics;$(IncludePath)</IncludePath>
+    <IncludePath>D:\Programming\Repos\StortSpelprojekt\StortSpelprojekt\StortSpelprojekt\ThirdParty\quickhull;$(SolutionDir)\StortSpelprojekt\Bulletphysics;$(IncludePath)</IncludePath>
     <LibraryPath>$(SolutionDir)\StortSpelprojekt\Bulletphysics\LinearMath;$(SolutionDir)\StortSpelprojekt\Bulletphysics\Bullet3Collision;$(SolutionDir)\StortSpelprojekt\Bulletphysics\Bullet3Dynamics;$(LibraryPath)</LibraryPath>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
     <LinkIncremental>false</LinkIncremental>
-    <IncludePath>$(SolutionDir)\React;$(IncludePath)</IncludePath>
+    <IncludePath>$(SolutionDir)\ThirdParty\quickhull;$(SolutionDir)\React;$(IncludePath)</IncludePath>
     <LibraryPath>$(SolutionDir)\React\libs\Release;$(LibraryPath)</LibraryPath>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
     <LinkIncremental>false</LinkIncremental>
-    <IncludePath>$(SolutionDir)\StortSpelprojekt\Bulletphysics;$(IncludePath)</IncludePath>
+    <IncludePath>D:\Programming\Repos\StortSpelprojekt\StortSpelprojekt\StortSpelprojekt\ThirdParty\quickhull;$(SolutionDir)\StortSpelprojekt\Bulletphysics;$(IncludePath)</IncludePath>
     <LibraryPath>$(SolutionDir)\StortSpelprojekt\Bulletphysics\LinearMath;$(SolutionDir)\StortSpelprojekt\Bulletphysics\Bullet3Collision;$(SolutionDir)\StortSpelprojekt\Bulletphysics\Bullet3Dynamics;$(LibraryPath)</LibraryPath>
   </PropertyGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
@@ -194,6 +194,7 @@
     <ClCompile Include="main.cpp" />
     <ClCompile Include="Material.cpp" />
     <ClCompile Include="Mesh.cpp" />
+    <ClCompile Include="MeshCollider.cpp" />
     <ClCompile Include="MeshComponent.cpp" />
     <ClCompile Include="MoveComponent.cpp" />
     <ClCompile Include="NodeWalkerComp.cpp">
@@ -229,6 +230,7 @@
     <ClCompile Include="Texture.cpp" />
     <ClCompile Include="SkeletonAni.cpp" />
     <ClCompile Include="SkeletonMeshComponent.cpp" />
+    <ClCompile Include="ThirdParty\quickhull\QuickHull.cpp" />
     <ClCompile Include="ThirdParty\SimplexNoise.cpp" />
     <ClCompile Include="Transform.cpp" />
     <ClCompile Include="VirtualCamera.cpp" />
@@ -263,6 +265,7 @@
     <ClInclude Include="ChunkGrid.h" />
     <ClInclude Include="IntroScene.h" />
     <ClInclude Include="FogRenderPass.h" />
+    <ClInclude Include="MeshCollider.h" />
     <ClInclude Include="ObjectPooler.h" />
     <ClInclude Include="ObjectSpawner.h" />
     <ClInclude Include="Path.h" />
@@ -315,6 +318,10 @@
     <ClInclude Include="Texture.h" />
     <ClInclude Include="SkeletonAni.h" />
     <ClInclude Include="SkeletonMeshComponent.h" />
+    <ClInclude Include="ThirdParty\quickhull\ConvexHull.hpp" />
+    <ClInclude Include="ThirdParty\quickhull\HalfEdgeMesh.hpp" />
+    <ClInclude Include="ThirdParty\quickhull\MathUtils.hpp" />
+    <ClInclude Include="ThirdParty\quickhull\QuickHull.hpp" />
     <ClInclude Include="ThirdParty\SimplexNoise.h" />
     <ClInclude Include="Transform.h" />
     <ClInclude Include="VirtualCamera.h" />
