@@ -55,6 +55,7 @@ private:
 	bool showCursor;
 	bool canRotate;
 	bool isGrounded;
+	dx::XMFLOAT3 houseVelocity;
 	dx::XMFLOAT3 jumpDir; 
 	dx::XMFLOAT3 cameraOffset;
 	dx::XMFLOAT3 cameraEuler;

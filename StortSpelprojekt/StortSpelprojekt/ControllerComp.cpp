@@ -21,25 +21,20 @@ void ControllerComp::checkGrounded()
 	this->isGrounded = false;
 	if (hitTerrain.object != nullptr || (hitProps.object != nullptr && hitProps.object->GetName() == "houseBase"))
 	{
-
+		this->houseVelocity = { 0.f,0.f,0.f };
 		if (hitProps.object != nullptr && hitProps.object->GetName() == "houseBase")
 		{
-
-			//dx::XMFLOAT3 housePos;
-			//dx::XMStoreFloat3(&housePos, hitProps.object->GetTransform().GetPosition());
-			//dx::XMFLOAT3 houseLastPos = hitProps.object->GetComponent<NodeWalkerComp>()->GetLastPos();
 			dx::XMFLOAT3 move = hitProps.object->GetComponent<NodeWalkerComp>()->GetMoveVec();
-			//dx::XMFLOAT3 delta = { housePos.x-houseLastPos.x ,housePos.y-houseLastPos.y, housePos.z-houseLastPos.z};
-			//std::cout << "jump x: " << jumpDir.x << ", y: " << jumpDir.y << ", z: " << jumpDir.z << std::endl;
-			GetOwner()->GetTransform().Translate(move.x, move.y, move.z); //grounded runs multiple times
+			this->houseVelocity = move;
+			dx::XMVECTOR houseVec = dx::XMLoadFloat3(&this->houseVelocity);
+			houseVec = dx::XMVector3Normalize(houseVec);
+			dx::XMStoreFloat3(&this->houseVelocity, houseVec);
+			GetOwner()->GetTransform().Translate(move.x, move.y, move.z); 
 			rbComp->SetPosition(GetOwner()->GetTransform().GetPosition());
-			//rbComp->SetLinearVelocity(delta);
 		}
-
 		this->isGrounded = true;
 		//std::cout << "picking: " << hit.object->GetName() << std::endl;
 		//DShape::DrawLine(ray.origin, ray.GetPoint(distance), { 0,0,1 });
-
 	}
 	
 	//else
@@ -61,6 +56,7 @@ ControllerComp::ControllerComp(Object* cameraObject, Object* houseObject)
 	this->showCursor = false;
 	this->canRotate = true;
 	this->isGrounded = false;
+	this->houseVelocity = { 0.f,0.f,0.f };
 	this->jumpDir = { 0.f,0.f,0.f };
 	this->cameraOffset = { 0.f,0.f,0.f };
 	this->cameraEuler = { 0.f,0.f,0.f }; //TODO_: fix start angle (looks down or up at start)
@@ -335,7 +331,7 @@ void ControllerComp::Update(const float& deltaTime)
 				dx::XMStoreFloat3(&newDir, jumpVec);
 				newDir.x = (newDir.x + dir.x) * 0.5f;
 				newDir.z = (newDir.z + dir.z) * 0.5f;
-				rbComp->SetLinearVelocity({ newDir.x, vel.y + jumpVelocity, newDir.z});
+				rbComp->SetLinearVelocity({ newDir.x + houseVelocity.x, vel.y + jumpVelocity, newDir.z + houseVelocity.z});
 			}
 			dx::XMVECTOR capsule = dx::XMLoadFloat4(&RESET_ROT);
 			//capsuleComp->SetRotation(capsule);			
