@@ -76,14 +76,14 @@ void NodeWalkerComp::Reset()
 
 void NodeWalkerComp::Start()
 {
-	std::cout << "start <" << std::endl;
+	//std::cout << "start <" << std::endl;
 	isWalking = true;
 	StartAnim();
 }
 
 void NodeWalkerComp::Stop()
 {
-	std::cout << "stop <" << std::endl;
+	//std::cout << "stop <" << std::endl;
 	isWalking = false;
 	StopAnim();
 }
@@ -92,7 +92,7 @@ void NodeWalkerComp::StartAnim()
 {
 	//if (canWalk)
 	//{
-		std::cout << "start Animation<" << std::endl;
+		//std::cout << "start Animation<" << std::endl;
 		base->SetisDone(false);
 		legs->SetisDone(false);
 		base->SetAndGetDoneDown() = false;
@@ -108,7 +108,7 @@ void NodeWalkerComp::StopAnim()
 {
 	//if (canWalk)
 	//{
-		std::cout << "stop Animation<" << std::endl;
+		//std::cout << "stop Animation<" << std::endl;
 		base->SetisDone(false);
 		legs->SetisDone(false);
 		base->SetTrack(SkeletonStateMachine::DOWN, true);
