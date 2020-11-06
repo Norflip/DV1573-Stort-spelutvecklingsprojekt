@@ -4,7 +4,7 @@
 #include "Material.h"
 #include "Transform.h"
 #include "CameraComponent.h"
-#include "BoundingBoxes.h"
+#include "Bounds.h"
 #include "Object.h"
 #include "GameClock.h"
 
@@ -56,7 +56,7 @@ private:
 	std::unordered_map<SkeletonStateMachine, unsigned int> trackMap;
 	std::vector<dx::XMFLOAT4X4> finalTransforms;
 	SkeletonStateMachine currentAni = SkeletonStateMachine::NONE;
-	BoundingBox bounds;
+	Bounds bounds;
 	float componentDeltaTime = 0.0f;
 	GameClock timer;
 	bool playOnce = false;

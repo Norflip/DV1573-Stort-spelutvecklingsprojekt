@@ -3,7 +3,7 @@
 #include "Material.h"
 #include "Transform.h"
 #include "CameraComponent.h"
-#include "BoundingBoxes.h"
+#include "Bounds.h"
 #include "Object.h"
 
 ALIGN16
@@ -18,7 +18,7 @@ public:
 	std::vector<Material*> GetMaterials() const { return this->materials; }
 
 	void Draw(Renderer* renderer, CameraComponent* camera) override;
-	BoundingBox& GetBoundingBoxes() { return this->bounds; }
+	Bounds& GetBounds() { return this->bounds; }
 	
 	void SetInstanceable(size_t index, std::vector<Mesh::InstanceData> instanceData, size_t instanceCount, ID3D11Device* device);
 	ID3D11Buffer* GetInstanceBuffer() const { return this->instanceBuffer; }
@@ -39,7 +39,7 @@ private:
 private:
 	std::vector<Mesh*> meshes;
 	std::vector<Material*> materials;
-	BoundingBox bounds;
+	Bounds bounds;
 
 	std::vector<Mesh::InstanceData> instanceData;
 	ID3D11Buffer* instanceBuffer;

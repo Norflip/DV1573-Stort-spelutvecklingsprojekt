@@ -67,11 +67,9 @@
     <FxCompile Include="Shaders\FogTest_ps.hlsl">
       <Filter>Resource Files</Filter>
     </FxCompile>
+    <FxCompile Include="ForwardPlusRendering.hlsl" />
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="BoundingBoxes.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="BoxColliderComponent.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
@@ -264,6 +262,9 @@
     <ClCompile Include="VirtualCamera.cpp">
       <Filter>Header Files</Filter>
     </ClCompile>
+    <ClCompile Include="Bounds.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="ObjectSpawner.h">
@@ -294,9 +295,6 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="AudioMaster.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="BoundingBoxes.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="BoxColliderComponent.h">
@@ -522,6 +520,9 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="VirtualCamera.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Bounds.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>

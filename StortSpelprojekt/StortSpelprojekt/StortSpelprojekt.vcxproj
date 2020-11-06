@@ -171,7 +171,7 @@
     <ClCompile Include="EnemyAttackComp.cpp" />
     <ClCompile Include="EnemyIdleComp.cpp" />
     <ClCompile Include="EnemyPatrolComp.cpp" />
-    <ClCompile Include="BoundingBoxes.cpp" />
+    <ClCompile Include="Bounds.cpp" />
     <ClCompile Include="BoxColliderComponent.cpp" />
     <ClCompile Include="CameraComponent.cpp" />
     <ClCompile Include="CapsuleColliderComponent.cpp" />
@@ -244,7 +244,7 @@
     <ClInclude Include="EnemyAttackComp.h" />
     <ClInclude Include="EnemyIdleComp.h" />
     <ClInclude Include="EnemyPatrolComp.h" />
-    <ClInclude Include="BoundingBoxes.h" />
+    <ClInclude Include="Bounds.h" />
     <ClInclude Include="BoxColliderComponent.h" />
     <ClInclude Include="Buffers.h" />
     <ClInclude Include="BusNode.h" />
