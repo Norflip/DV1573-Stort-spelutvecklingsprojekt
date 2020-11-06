@@ -9,7 +9,8 @@ NodeWalkerComp::NodeWalkerComp()
 	this->canWalk = false;
 	this->isWalking = true;
 	this->length = 0.f;
-	this->lastPos = { 0,0,0 };
+	//this->lastPos = { 0,0,0 };
+	this->moveVec = { 0,0,0 };
 	//later generate this nodes 
 	//this->nodes.push_back(Node("start", 0, { 0.f,0.f,0.f }, 1, -1, -1));
 	//this->nodes.push_back(Node("1a", 1, { 5.f,0.f,5.f }, -1, 2, 3));
@@ -75,14 +76,14 @@ void NodeWalkerComp::Reset()
 
 void NodeWalkerComp::Start()
 {
-	std::cout << "start <" << std::endl;
+	//std::cout << "start <" << std::endl;
 	isWalking = true;
 	StartAnim();
 }
 
 void NodeWalkerComp::Stop()
 {
-	std::cout << "stop <" << std::endl;
+	//std::cout << "stop <" << std::endl;
 	isWalking = false;
 	StopAnim();
 }
@@ -91,7 +92,7 @@ void NodeWalkerComp::StartAnim()
 {
 	//if (canWalk)
 	//{
-		std::cout << "start Animation<" << std::endl;
+		//std::cout << "start Animation<" << std::endl;
 		base->SetisDone(false);
 		legs->SetisDone(false);
 		base->SetAndGetDoneDown() = false;
@@ -107,7 +108,7 @@ void NodeWalkerComp::StopAnim()
 {
 	//if (canWalk)
 	//{
-		std::cout << "stop Animation<" << std::endl;
+		//std::cout << "stop Animation<" << std::endl;
 		base->SetisDone(false);
 		legs->SetisDone(false);
 		base->SetTrack(SkeletonStateMachine::DOWN, true);
@@ -121,7 +122,7 @@ void NodeWalkerComp::StopAnim()
 
 void NodeWalkerComp::Update(const float& deltaTime)
 {
-	dx::XMStoreFloat3(&this->lastPos, GetOwner()->GetTransform().GetPosition());
+	//dx::XMStoreFloat3(&this->lastPos, GetOwner()->GetTransform().GetPosition());
 	if (base->SetAndGetDoneUp())
 	{
 		//canWalk = true;
@@ -156,7 +157,7 @@ void NodeWalkerComp::Update(const float& deltaTime)
 	{
 		if (canWalk)
 		{
-			DirectX::XMFLOAT3 dir = { 0.f,0.f,0.f };
+			//DirectX::XMFLOAT3 dir = { 0.f,0.f,0.f };
 			dx::XMFLOAT3 nextPoint = { thePath.GetPoint(this->currentNode).x + OFFSET,HEIGHT, thePath.GetPoint(this->currentNode).y + OFFSET };
 			dx::XMVECTOR vdir = dx::XMVectorSubtract(dx::XMLoadFloat3(&nextPoint), GetOwner()->GetTransform().GetPosition());
 			dx::XMStoreFloat(&this->length, dx::XMVector3Length(vdir));
@@ -170,9 +171,10 @@ void NodeWalkerComp::Update(const float& deltaTime)
 			{
 				vdir = dx::XMVector3Normalize(vdir);
 				vdir = dx::XMVectorScale(vdir, speed * deltaTime);
-				dx::XMStoreFloat3(&dir, vdir);
+				dx::XMStoreFloat3(&moveVec, vdir);
+				//this->moveVec = dir;
 
-				GetOwner()->GetTransform().Translate(dir.x, dir.y, dir.z);
+				GetOwner()->GetTransform().Translate(moveVec.x, moveVec.y, moveVec.z);
 				this->rbComp->SetPosition(GetOwner()->GetTransform().GetWorldPosition());
 			}
 		}
@@ -192,7 +194,12 @@ void NodeWalkerComp::Update(const float& deltaTime)
 	}
 }
 
-dx::XMFLOAT3 NodeWalkerComp::GetLastPos()
+dx::XMFLOAT3 NodeWalkerComp::GetMoveVec()
 {
-	return this->lastPos;
+	return this->moveVec;
 }
+
+//dx::XMFLOAT3 NodeWalkerComp::GetLastPos()
+//{
+//	return this->lastPos;
+//}

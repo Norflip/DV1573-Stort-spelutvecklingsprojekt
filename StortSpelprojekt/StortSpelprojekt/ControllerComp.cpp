@@ -2,7 +2,7 @@
 #include "ControllerComp.h"
 #include "Engine.h"
 
-bool ControllerComp::IsGrounded() const
+void ControllerComp::CheckGrounded()
 {
 	dx::XMFLOAT3 origin;
 	dx::XMStoreFloat3(&origin, GetOwner()->GetTransform().GetPosition());
@@ -18,33 +18,29 @@ bool ControllerComp::IsGrounded() const
 	phy->RaytestSingle(ray, distance, hitTerrain, FilterGroups::TERRAIN);
 	phy->RaytestSingle(ray, distance, hitProps, FilterGroups::PROPS);
 	
-	bool result = false;
-	if (hitTerrain.object != nullptr || (hitProps.object != nullptr && hitProps.object->GetName()== "houseBase"))
+	this->isGrounded = false;
+	if (hitTerrain.object != nullptr || (hitProps.object != nullptr && hitProps.object->GetName() == "houseBase"))
 	{
-
+		this->houseVelocity = { 0.f,0.f,0.f };
 		if (hitProps.object != nullptr && hitProps.object->GetName() == "houseBase")
 		{
-
-			dx::XMFLOAT3 housePos;
-			dx::XMStoreFloat3(&housePos, hitProps.object->GetTransform().GetPosition());
-			dx::XMFLOAT3 houseLastPos = hitProps.object->GetComponent<NodeWalkerComp>()->GetLastPos();
-
-			dx::XMFLOAT3 delta = { housePos.x-houseLastPos.x ,housePos.y-houseLastPos.y, housePos.z-houseLastPos.z};
-
-			GetOwner()->GetTransform().Translate(delta.x, delta.y, delta.z);
+			dx::XMFLOAT3 move = hitProps.object->GetComponent<NodeWalkerComp>()->GetMoveVec();
+			this->houseVelocity = move;
+			dx::XMVECTOR houseVec = dx::XMLoadFloat3(&this->houseVelocity);
+			houseVec = dx::XMVector3Normalize(houseVec);
+			dx::XMStoreFloat3(&this->houseVelocity, houseVec);
+			GetOwner()->GetTransform().Translate(move.x, move.y, move.z); 
 			rbComp->SetPosition(GetOwner()->GetTransform().GetPosition());
-			//rbComp->SetLinearVelocity(delta);
 		}
-
-		result = true;
+		this->isGrounded = true;
 		//std::cout << "picking: " << hit.object->GetName() << std::endl;
 		//DShape::DrawLine(ray.origin, ray.GetPoint(distance), { 0,0,1 });
-		
 	}
+	
 	//else
 	//	DShape::DrawLine(ray.origin, ray.GetPoint(distance), { 1,0,0 });
 	
-	return result;
+	//return result;
 }
 
 ControllerComp::ControllerComp(Object* cameraObject, Object* houseObject)
@@ -59,6 +55,8 @@ ControllerComp::ControllerComp(Object* cameraObject, Object* houseObject)
 	this->freeCam = false;
 	this->showCursor = false;
 	this->canRotate = true;
+	this->isGrounded = false;
+	this->houseVelocity = { 0.f,0.f,0.f };
 	this->jumpDir = { 0.f,0.f,0.f };
 	this->cameraOffset = { 0.f,0.f,0.f };
 	this->cameraEuler = { 0.f,0.f,0.f }; //TODO_: fix start angle (looks down or up at start)
@@ -238,7 +236,8 @@ void ControllerComp::Update(const float& deltaTime)
 		else //First Person specific actions
 		{
 			float jumpVelocity = 0;
-			if (IsGrounded() && KEY_DOWN(Space)) // FPcam //jump is  scuffed
+			CheckGrounded();
+			if (isGrounded && KEY_DOWN(Space)) // FPcam //jump is  scuffed
 			{
 				jumpVelocity = JUMP_VELOCITY;
 				this->jumpDir.x = dir.x;
@@ -299,7 +298,7 @@ void ControllerComp::Update(const float& deltaTime)
 				}
 			}
 			//std::cout << "camera offset.y: " << cameraOffset.y << std::endl;
-			this->calcVelocity(acceleration);
+			this->CalcVelocity(acceleration);
 
 			//float percentVel = 0.f;
 			//if (this->velocity > WALK_VELOCITY)
@@ -320,7 +319,7 @@ void ControllerComp::Update(const float& deltaTime)
 			dx::XMVECTOR cameraPos = dx::XMLoadFloat3(&this->cameraOffset);
 			cameraPos = dx::XMVectorAdd(cameraPos, rbComp->GetPosition());
 			cameraObject->GetTransform().SetPosition(cameraPos); //add camera-offset
-			if(IsGrounded())
+			if(isGrounded)
 				rbComp->SetLinearVelocity({ dir.x, vel.y + jumpVelocity, dir.z});
 			else
 			{
@@ -332,7 +331,7 @@ void ControllerComp::Update(const float& deltaTime)
 				dx::XMStoreFloat3(&newDir, jumpVec);
 				newDir.x = (newDir.x + dir.x) * 0.5f;
 				newDir.z = (newDir.z + dir.z) * 0.5f;
-				rbComp->SetLinearVelocity({ newDir.x, vel.y + jumpVelocity, newDir.z});
+				rbComp->SetLinearVelocity({ newDir.x + houseVelocity.x, vel.y + jumpVelocity, newDir.z + houseVelocity.z});
 			}
 			dx::XMVECTOR capsule = dx::XMLoadFloat4(&RESET_ROT);
 			//capsuleComp->SetRotation(capsule);			

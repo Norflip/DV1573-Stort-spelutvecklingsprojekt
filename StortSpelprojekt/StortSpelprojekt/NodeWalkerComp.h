@@ -19,7 +19,8 @@ private:
 	bool canWalk;
 	bool isWalking;
 	float length;
-	dx::XMFLOAT3 lastPos;
+	//dx::XMFLOAT3 lastPos;
+	dx::XMFLOAT3 moveVec;
 	SkeletonMeshComponent* base;
 	SkeletonMeshComponent* legs;
 	RigidBodyComponent* rbComp;
@@ -36,7 +37,8 @@ public:
 	void Stop();
 
 	void Update(const float& deltaTime);
-	dx::XMFLOAT3 GetLastPos();
+	//dx::XMFLOAT3 GetLastPos();
+	dx::XMFLOAT3 GetMoveVec();
 	bool GetIsWalking() const { return isWalking; };
 
 	//void SetPosition(dx::XMVECTOR pos);
