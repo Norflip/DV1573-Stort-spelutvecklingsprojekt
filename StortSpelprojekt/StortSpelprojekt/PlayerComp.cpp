@@ -170,7 +170,6 @@ void PlayerComp::RayCast(const float& deltaTime)
 	{
 		if (physics->RaytestSingle(ray, rayDistance, hit, FilterGroups::PICKUPS))
 		{
-
 			if (hit.object != nullptr)
 			{
 				AudioMaster::Instance().PlaySoundEvent("pickupSound");
@@ -193,7 +192,8 @@ void PlayerComp::RayCast(const float& deltaTime)
 						fuel += temp;
 				}
 				hit.object->GetComponent<PickupComponent>()->SetActive(false);
-
+				RigidBodyComponent* rbComp = hit.object->GetComponent<RigidBodyComponent>();
+				rbComp->Release();
 				//phy.MutexLock();
 				//phy.UnregisterRigidBody(hit.object->GetComponent<RigidBodyComponent>());
 				//phy.MutexUnlock();
@@ -248,7 +248,7 @@ void PlayerComp::RayCast(const float& deltaTime)
 						///*hit.object->GetComponent<EnemyStatsComp>()->SetEnabled(false);
 						//RigidBodyComponent* rbComp = hit.object->GetComponent<RigidBodyComponent>();
 						//rp::RigidBody* objectRb = rbComp->GetRigidBody();
-						//rbComp->RemoveCollidersFromBody(objectRb);
+
 						//phy.UnregisterRigidBody(hit.object->GetComponent<RigidBodyComponent>());
 						//*/
 						Engine::Instance->GetActiveScene()->RemoveObject(hit.object);
