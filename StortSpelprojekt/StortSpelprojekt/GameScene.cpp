@@ -90,8 +90,7 @@ void GameScene::InitializeObjects()
 	houseBaseObject->AddComponent<RigidBodyComponent>(0.0f, FilterGroups::PROPS, FilterGroups::EVERYTHING, BodyType::STATIC, true);
 
 	SkeletonMeshComponent* baseComponent = houseBaseObject->AddComponent<SkeletonMeshComponent>(meshHouse[0], matHouse[0], 0.1f);
-	SkeletonMeshComponent* legsComponent = housesLegsObject->AddComponent<SkeletonMeshComponent>(skeletonMeshHouseLegs[0], skeletonMatHouseLegs[0],
-		0.1f);
+	SkeletonMeshComponent* legsComponent = housesLegsObject->AddComponent<SkeletonMeshComponent>(skeletonMeshHouseLegs[0], skeletonMatHouseLegs[0], 0.1f);
 	
 	legsComponent->SetAnimationTrack(skeletonHouseLegsIdle, SkeletonStateMachine::IDLE);
 	legsComponent->SetAnimationTrack(skeletonHouseLegsWalk, SkeletonStateMachine::WALK);
@@ -124,7 +123,6 @@ void GameScene::InitializeObjects()
 	
 	cameraObject->GetTransform().SetPosition(playerSpawnVec);
 	playerObject->GetTransform().SetPosition(playerSpawnVec);
-
 	playerObject->AddComponent<CapsuleColliderComponent>(0.5f, 1.8f, zero);
 	playerObject->AddComponent<RigidBodyComponent>(60.f, FilterGroups::PLAYER, FilterGroups::EVERYTHING, BodyType::DYNAMIC, true);
 
@@ -138,9 +136,9 @@ void GameScene::InitializeObjects()
 
 	Object* testPointLight = new Object("body_pointLight");
 
-	dx::XMFLOAT3 lightTranslation = dx::XMFLOAT3(0.0f, 0.0f, -1.0f);
+	dx::XMFLOAT3 lightTranslation = dx::XMFLOAT3(0.0f, 0.0f, 0.0f);
 	testPointLight->GetTransform().SetPosition(dx::XMLoadFloat3(&lightTranslation));
-	testPointLight->AddComponent<PointLightComponent>(dx::XMFLOAT4(0.8f, 0.8f, 0.8f, 1.0f), 25.f);
+	testPointLight->AddComponent<PointLightComponent>(dx::XMFLOAT4(0.3f, 0.3f, 0.3f, 1.0f), 10.f);
 
 	AddObject(testPointLight, playerObject);
 
@@ -230,7 +228,6 @@ void GameScene::InitializeGUI()
 {
 	float windowWidth = FCAST(window->GetWidth());
 	float windowHeight = FCAST(window->GetHeight());
-	//GUISTUFF//
 
 	//INFO, WE ARE DRAWING BACK TO FRONT. IF YOU WANT SOMETHING TO BE IN FRONT. SET VALUE TO 0. IF YOU WANT IT IN BACK USE 0.1 -> 1
 
@@ -250,7 +247,6 @@ void GameScene::InitializeGUI()
 	GUISprite* fuelBar = new GUISprite(*renderer, "Textures/Health_Fuel_Food.png", 10, 10, 1, DrawDirection::BottomRight, ClickFunction::NotClickable);
 	GUISprite* foodBar = new GUISprite(*renderer, "Textures/Health_Fuel_Food.png", 90, 10, 1, DrawDirection::BottomRight, ClickFunction::NotClickable);
 	GUISprite* healthBar = new GUISprite(*renderer, "Textures/Health_Fuel_Food.png", 170, 10, 1, DrawDirection::BottomRight, ClickFunction::NotClickable);
-
 
 	//ICONS ON TOP OF ITEMS
 	GUISprite* equimpmentSpriteAxe = new GUISprite(*renderer, "Textures/AxeIcon2.png", 10, 10, 0, DrawDirection::BottomLeft, ClickFunction::NotClickable);
@@ -280,6 +276,7 @@ void GameScene::InitializeGUI()
 	guiManager->AddGUIObject(equimpmentSprite2, "equimpmentSprite2");
 	guiManager->AddGUIObject(equimpmentSprite3, "equimpmentSprite3");
 	guiManager->AddGUIObject(equimpmentSprite4, "equimpmentSprite4");
+
 	//BASE OF DIPPING BARS
 	foodScalingBar->SetScale(1.0f, 0.0f);
 	healthScalingBar->SetScale(1.0f, 0.0f);
@@ -288,7 +285,6 @@ void GameScene::InitializeGUI()
 	guiManager->AddGUIObject(foodScalingBar, "fuelDippingBar");
 	guiManager->AddGUIObject(healthScalingBar, "foodDippingBar");
 	guiManager->AddGUIObject(fuelScalingBar, "healthDippingBar");
-
 
 	//ICON OF EQUIPMENT
 	guiManager->AddGUIObject(equimpmentSpriteAxe, "equimpmentSpriteAxe");
