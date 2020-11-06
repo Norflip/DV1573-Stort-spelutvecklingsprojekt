@@ -11,9 +11,9 @@ SphereColliderComponent::SphereColliderComponent(float radius, dx::XMFLOAT3 posi
 SphereColliderComponent::SphereColliderComponent(std::vector<float> radius, std::vector<dx::XMFLOAT3> positions) 
 	: radius(radius), Collider(positions) {}
 
-void SphereColliderComponent::Initialize()
+void SphereColliderComponent::InitializeCollider(Physics* physics)
 {
-	rp::PhysicsCommon& common = Physics::Instance().GetCommon();
+	rp::PhysicsCommon& common = physics->GetCommon();
 	for (size_t i = 0; i < colliderInformations.size(); i++)
 		colliderInformations[i].shape = common.createSphereShape(radius[i]);
 }

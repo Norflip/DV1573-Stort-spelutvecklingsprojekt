@@ -14,8 +14,6 @@ private:
 	float value;
 	Type pickupType;
 	bool isActive;
-
-
 public:
 
 	PickupComponent(Type type, float amount = 25.f);
