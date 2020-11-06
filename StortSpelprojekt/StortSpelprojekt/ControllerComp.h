@@ -67,9 +67,9 @@ private:
 	CapsuleColliderComponent* capsuleComp;
 	PlayerComp* playerComp;
 
-	void checkGrounded();
+	void CheckGrounded();
 
-	void calcVelocity(float acceleration)
+	void CalcVelocity(float acceleration)
 	{
 		if (this->velocityTimer >= VELOCITY_INC_RATE)
 		{

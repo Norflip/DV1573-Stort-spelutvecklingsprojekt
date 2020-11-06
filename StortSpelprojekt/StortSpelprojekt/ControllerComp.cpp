@@ -2,7 +2,7 @@
 #include "ControllerComp.h"
 #include "Engine.h"
 
-void ControllerComp::checkGrounded()
+void ControllerComp::CheckGrounded()
 {
 	dx::XMFLOAT3 origin;
 	dx::XMStoreFloat3(&origin, GetOwner()->GetTransform().GetPosition());
@@ -236,7 +236,7 @@ void ControllerComp::Update(const float& deltaTime)
 		else //First Person specific actions
 		{
 			float jumpVelocity = 0;
-			checkGrounded();
+			CheckGrounded();
 			if (isGrounded && KEY_DOWN(Space)) // FPcam //jump is  scuffed
 			{
 				jumpVelocity = JUMP_VELOCITY;
@@ -298,7 +298,7 @@ void ControllerComp::Update(const float& deltaTime)
 				}
 			}
 			//std::cout << "camera offset.y: " << cameraOffset.y << std::endl;
-			this->calcVelocity(acceleration);
+			this->CalcVelocity(acceleration);
 
 			//float percentVel = 0.f;
 			//if (this->velocity > WALK_VELOCITY)
