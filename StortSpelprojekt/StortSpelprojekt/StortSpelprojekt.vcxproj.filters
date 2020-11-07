@@ -68,6 +68,9 @@
       <Filter>Resource Files</Filter>
     </FxCompile>
     <FxCompile Include="ForwardPlusRendering.hlsl" />
+    <FxCompile Include="Shaders\FractionalBrownianMotion.hlsl">
+      <Filter>Resource Files</Filter>
+    </FxCompile>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="BoxColliderComponent.cpp">
@@ -158,9 +161,6 @@
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="SkeletonMeshComponent.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="Skybox.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="SphereColliderComponent.cpp">
@@ -270,6 +270,9 @@
     </ClCompile>
     <ClCompile Include="ThirdParty\quickhull\QuickHull.cpp">
       <Filter>ThirdParty</Filter>
+    </ClCompile>
+    <ClCompile Include="SkyboxRenderPass.cpp">
+      <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -486,9 +489,6 @@
     <ClInclude Include="SkeletonMeshComponent.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="Skybox.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
     <ClInclude Include="SphereColliderComponent.h">
       <Filter>Header Files</Filter>
     </ClInclude>
@@ -545,6 +545,9 @@
     </ClInclude>
     <ClInclude Include="ThirdParty\quickhull\QuickHull.hpp">
       <Filter>ThirdParty</Filter>
+    </ClInclude>
+    <ClInclude Include="SkyboxRenderPass.h">
+      <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

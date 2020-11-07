@@ -41,9 +41,7 @@ void GameScene::Initialize()
 
 void GameScene::InitializeObjects()
 {
-	skyboxClass = new Skybox(renderer->GetDevice(), renderer->GetContext(), resources->GetShaderResource("skyboxShader"));
-	skyboxClass->GetThisObject()->AddFlag(ObjectFlag::NO_CULL);
-		
+
 	/* For physics/ rigidbody pickup stuff */
 
 
@@ -435,8 +433,6 @@ void GameScene::Update(const float& deltaTime)
 	//	DShape::DrawSphere(ray.GetPoint(10.0f), 0.2f, { 1, 0, 1 });
 	//}
 	
-	skyboxClass->GetThisObject()->GetTransform().SetPosition(camera->GetOwner()->GetTransform().GetPosition());
-
 	//if (enemy->GetComponent<EnemyStatsComp>()->GetHealth() <= 0)
 	//	RemoveEnemy();
 
@@ -453,7 +449,6 @@ void GameScene::FixedUpdate(const float& fixedDeltaTime)
 void GameScene::Render()
 {
 	camera->UpdateView();
-	skyboxClass->GetThisObject()->Draw(renderer, camera);
 
 	root->Draw(renderer, camera);
 	//worldGenerator.DrawShapes();
