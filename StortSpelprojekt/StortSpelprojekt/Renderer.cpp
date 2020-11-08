@@ -191,6 +191,7 @@ void Renderer::RenderFrame(CameraComponent* camera, float time, RenderTexture& t
 
 	// ----------
 
+	
 
 	LightManager::Instance().UpdateBuffers(context);
 
@@ -215,6 +216,14 @@ void Renderer::RenderFrame(CameraComponent* camera, float time, RenderTexture& t
 	size_t passCount = 0;
 	size_t bufferIndex = 0;
 
+
+	/* Particle stuffy */
+	SetCullBack(true);
+	for (int i = 0; i < particles.size(); i++)
+		particles[i]->Render(context, camera);	
+	SetCullBack(false);
+
+
 	if (applyRenderPasses)
 	{
 		for (auto i = passes.begin(); i < passes.end(); i++)
@@ -237,6 +246,9 @@ void Renderer::RenderFrame(CameraComponent* camera, float time, RenderTexture& t
 		}
 	}
 
+
+	
+
 	RenderTexture& lastBuffer = (passCount == 0) ? midbuffer : renderPassSwapBuffers[bufferIndex];
 	ClearRenderTarget(target);
 	SetRenderTarget(target, false);
@@ -256,12 +268,8 @@ void Renderer::RenderFrame(CameraComponent* camera, float time, RenderTexture& t
 		}
 	}
 
-	//renderer->SetCullBack(false);
-	SetCullBack(true);
-	if(pSystem)
-		pSystem->Render(context, camera);
-	SetCullBack(false);
-
+	
+	
 }
 
 void Renderer::AddRenderPass(RenderPass* pass)

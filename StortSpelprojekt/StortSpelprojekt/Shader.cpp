@@ -81,7 +81,6 @@ void Shader::BindToContext(ID3D11DeviceContext* context) const
 		// sets the vertex shader and layout
 		context->IASetInputLayout(inputLayout);
 		context->VSSetShader(vertexShader, 0, 0);
-		bool fitta = 0;
 	}
 
 	if ((flag & (int)ShaderBindFlag::PIXEL) != 0)

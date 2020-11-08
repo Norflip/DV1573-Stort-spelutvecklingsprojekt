@@ -65,6 +65,8 @@ public:
 	void DrawGrass(const Mesh* mesh, const Material* material, const dx::XMMATRIX& model, const CameraComponent* camera);
 	
 	void GetPSystem(ParticleSystem* pSys) { this->pSystem = pSys; }
+	void AddParticles(ParticleSystem* particles) { this->particles.push_back(particles); }
+	std::vector<ParticleSystem*> GetParticles() { return this->particles; };
 
 	void SetCullBack(bool);
 
@@ -113,6 +115,8 @@ private:
 	ConstantBuffer<cb_Object> objectBuffer;
 	ConstantBuffer<cb_Scene> sceneBuffer;
 	ConstantBuffer<cb_Material> materialBuffer;
+
+	std::vector<ParticleSystem*> particles;
 
 	std::vector<dx::XMFLOAT4X4> srv_skeleton_data;
 	ID3D11Buffer* skeleton_srvbuffer;

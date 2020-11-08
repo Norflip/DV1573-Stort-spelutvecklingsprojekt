@@ -11,8 +11,6 @@ class GameScene : public Scene
 {
 private:
 	void RemoveEnemy();
-	ParticleSystem* particles;
-	Object* bananaObject;
 	
 public:
 	GameScene();

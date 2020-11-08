@@ -1,15 +1,13 @@
 #include "stdafx.h"
 #include "ParticleSystem.h"
 
-ParticleSystem::ParticleSystem(Shader* shader)
+ParticleSystem::ParticleSystem(Object* object, CameraComponent* camera, Shader* shader)
 {
-	this->object = new Object("particles");
+	//this->object = new Object("particles");
 	this->particlesShader = shader;
-	this->particlesMaterial = new Material(particlesShader);
-
-	//this->object = new Object("fittkuk");
-	//this->object->AddComponent<MeshComponent>(nullptr, particlesMaterial);
-	//this->object->GetTransform().SetPosition(dx::XMVECTOR(dx::XMVectorSet(20, 2, 20, 1.0f)));
+	//this->particlesMaterial = new Material(particlesShader);
+	this->object = object;
+	this->camera = camera;
 
 	/* Default stuff about every particle */
 	this->differenceOnX = 0.0f;
@@ -75,9 +73,9 @@ void ParticleSystem::InitializeParticles(ID3D11Device* device, LPCWSTR textureFi
 		Particlesize is based on the created quad.
 	*/
 
-	differenceOnX = 1.0f;
+	differenceOnX = 0.2f;
 	differenceOnY = 0.2f;
-	differenceOnZ = 1.0f;
+	differenceOnZ = 0.2f;
 
 	particleVelocity = 1.0f;
 	particleVelocityVariation = 0.2f;
@@ -91,7 +89,7 @@ void ParticleSystem::InitializeParticles(ID3D11Device* device, LPCWSTR textureFi
 		Init all of them to false (not active on the scene.)
 	*/
 
-	maxParticles = 50;
+	maxParticles = 10;
 	particleList = new Particles[maxParticles];	
 
 	for (int i = 0; i < maxParticles; i++) {
@@ -147,6 +145,29 @@ void ParticleSystem::Shutdown()
 
 void ParticleSystem::Update(float frameTime, ID3D11DeviceContext* context)
 {	
+
+	/* Update particle-list dynamiclly */
+	dx::XMFLOAT3 particlesPosition;
+
+	/* Set billboardplane position */
+	particlesPosition.x = object->GetTransform().GetPosition().m128_f32[0];
+	particlesPosition.y = object->GetTransform().GetPosition().m128_f32[1] +0.5f;
+	particlesPosition.z = object->GetTransform().GetPosition().m128_f32[2];
+
+	/* Set angle for particles, "look at cameraposition all the time" */
+	/* Defines the angle in radians between two vectors * 1 degrees to give our xmatrixrotationy an degree value*/
+	dx::XMVECTOR v = camera->GetOwner()->GetTransform().GetPosition();
+	float xPos = v.m128_f32[0];
+	float zPos = v.m128_f32[2];
+	double anglepart = atan2(particlesPosition.x - xPos, particlesPosition.z - zPos) * (180.0 / dx::XM_PI);
+	float rotationPart = (float)anglepart * 0.0174532925f;
+
+	dx::XMMATRIX worldParticles = dx::XMMatrixIdentity();
+	dx::XMMATRIX particlesRotationY = dx::XMMatrixRotationY(rotationPart);
+	dx::XMMATRIX particlesTranslation = dx::XMMatrixTranslation(particlesPosition.x, particlesPosition.y, particlesPosition.z);
+	worldParticles = particlesRotationY * particlesTranslation;
+	SetWorldMatrix(worldParticles);
+
 	/*
 		Delete old particles that reaches a height. 
 		Create new particles after some time.
@@ -175,11 +196,16 @@ void ParticleSystem::Render(ID3D11DeviceContext* context, CameraComponent* camer
 	context->IASetIndexBuffer(indexBuffer, DXGI_FORMAT_R32_UINT, 0);
 	context->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
 
-
 	SetCBuffers(context, camera);
-	bool snusk = 0;
 	particlesShader->BindToContext(context);
 	context->DrawIndexed(indexCount, 0, 0);
+}
+
+void ParticleSystem::SetDaviation(float x, float y, float z)
+{
+	this->differenceOnX = x;
+	this->differenceOnY = y;
+	this->differenceOnZ = z;
 }
 
 void ParticleSystem::SetWorldMatrix(dx::XMMATRIX worldmatrix)
@@ -205,10 +231,10 @@ void ParticleSystem::LoadTexture(ID3D11Device* device, LPCWSTR textureFilename)
 
 	texture.SetShaderResourceView(srv);	
 
-	particlesMaterial->SetTexture(texture, TEXTURE_DIFFUSE_SLOT, ShaderBindFlag::PIXEL);
-	particlesMaterial->SetSampler(DXHelper::CreateSampler(D3D11_FILTER_MIN_MAG_MIP_LINEAR, D3D11_TEXTURE_ADDRESS_WRAP, device), 0, ShaderBindFlag::PIXEL);
+	//particlesMaterial->SetTexture(texture, TEXTURE_DIFFUSE_SLOT, ShaderBindFlag::PIXEL);
+	//particlesMaterial->SetSampler(DXHelper::CreateSampler(D3D11_FILTER_MIN_MAG_MIP_LINEAR, D3D11_TEXTURE_ADDRESS_WRAP, device), 0, ShaderBindFlag::PIXEL);
 
-	kuksampler = DXHelper::CreateSampler(D3D11_FILTER_MIN_MAG_MIP_LINEAR, D3D11_TEXTURE_ADDRESS_WRAP, device);
+	samplerState = DXHelper::CreateSampler(D3D11_FILTER_MIN_MAG_MIP_LINEAR, D3D11_TEXTURE_ADDRESS_WRAP, device);
 }
 
 void ParticleSystem::InitializeBuffers(ID3D11Device* device)
@@ -285,7 +311,7 @@ void ParticleSystem::InitializeBuffers(ID3D11Device* device)
 	// Setup the description of the bufferPerObject constant buffer that is in the vertex shader.
 	ZeroMemory(&cBufferDescription, sizeof(D3D11_BUFFER_DESC));
 	cBufferDescription.Usage = D3D11_USAGE_DEFAULT;
-	cBufferDescription.ByteWidth = sizeof(cBufferPerObjectParticles); //  static_cast<uint32_t>(sizeof(cBufferPerObjectParticles) + (16 - (sizeof(cBufferPerObjectParticles) % 16)));
+	cBufferDescription.ByteWidth = static_cast<uint32_t>(sizeof(cBufferPerObjectParticles) + (16 - (sizeof(cBufferPerObjectParticles) % 16)));
 	cBufferDescription.BindFlags = D3D11_BIND_CONSTANT_BUFFER;
 	cBufferDescription.CPUAccessFlags = 0;
 	cBufferDescription.MiscFlags = 0;
@@ -306,7 +332,7 @@ void ParticleSystem::SetCBuffers(ID3D11DeviceContext* context, CameraComponent* 
 
 	// Set shader texture resource in the pixel shader.
 	context->PSSetShaderResources(0, 1, &srv);
-	context->PSSetSamplers(0, 1, &kuksampler);
+	context->PSSetSamplers(0, 1, &samplerState);
 }
 
 void ParticleSystem::CreateParticle(float frameTime)
@@ -420,7 +446,7 @@ void ParticleSystem::DeleteParticles()
 		/*
 			If a particle is active and has reached 45 = set active to false and decrement currentParticlecount.
 		*/
-		if ((particleList[i].active == true) && (particleList[i].posy > 4.0f))
+		if ((particleList[i].active == true) && (particleList[i].posy > 0.5f))
 		{
 			particleList[i].active = false;
 			currentParticleCount--;

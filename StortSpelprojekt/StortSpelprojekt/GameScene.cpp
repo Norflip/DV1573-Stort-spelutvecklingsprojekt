@@ -256,21 +256,21 @@ void GameScene::InitializeObjects()
 	AddObject(beansObject);
 
 
-	/* Particles */
-	//particleShader = resources->GetShaderResource("particleShader");
-
-	Shader* particleShader = new Shader; //  resources->GetShaderResource("particleShader");
-	bool ashole = 0;
-	particleShader->SetVertexShader("Shaders/Particles_vs.hlsl", "main");
-	particleShader->SetPixelShader("Shaders/Particles_ps.hlsl", "main");
-	particleShader->SetInputLayoutStructure(3, particleShader->DEFAULT_INPUT_LAYOUTCOLOR);
-	particleShader->Compile(renderer->GetDevice());
-
-	particles = new ParticleSystem(particleShader);
+	/* Particles */	
+	Shader* particleShader = resources->GetShaderResource("particleShader");
+	ParticleSystem* particles = new ParticleSystem(beansObject, camera, particleShader);
 	particles->InitializeParticles(renderer->GetDevice(), L"Textures/particle.png");
-	//particles->GetThisObject()->GetTransform().SetPosition(dx::XMVECTOR{ 22.0f, 2.0f, 53, 1.0f });
-	renderer->GetPSystem(particles);
+	renderer->AddParticles(particles);		
 
+
+	ParticleSystem* particlesFuel = new ParticleSystem(fuelCanObject, camera, particleShader);
+	particlesFuel->InitializeParticles(renderer->GetDevice(), L"Textures/particle.png");
+	renderer->AddParticles(particlesFuel);
+
+
+	ParticleSystem* particlesHealth = new ParticleSystem(healthkitObject, camera, particleShader);
+	particlesHealth->InitializeParticles(renderer->GetDevice(), L"Textures/particle.png");
+	renderer->AddParticles(particlesHealth);
 }
 
 void GameScene::InitializeGUI()
@@ -488,35 +488,11 @@ void GameScene::Update(const float& deltaTime)
 	//	DShape::DrawSphere(ray.GetPoint(10.0f), 0.2f, { 1, 0, 1 });
 	//}
 	nextScene = NEXT_SCENE(player->GetComponent<PlayerComp>()->GetNextScene());
-
 	skyboxClass->GetThisObject()->GetTransform().SetPosition(camera->GetOwner()->GetTransform().GetPosition());
 	
-	
-	
-	/* Update particle-list dynamiclly */
-	dx::XMFLOAT3 particlesPosition;
 
-	/* Set billboardplane position */
-	particlesPosition.x = 22.0f;
-	particlesPosition.y = 2.0f;
-	particlesPosition.z = 53.0f;
-
-	/* Set angle for particles, "look at cameraposition all the time" */
-	/* Defines the angle in radians between two vectors * 1 degrees to give our xmatrixrotationy an degree value*/
-	dx::XMVECTOR v = camera->GetOwner()->GetTransform().GetPosition();
-	float xPos = v.m128_f32[0];
-	float zPos = v.m128_f32[2];
-	double anglepart = atan2(particlesPosition.x - xPos, particlesPosition.z - zPos) * (180.0 / dx::XM_PI);
-	float rotationPart = (float)anglepart * 0.0174532925f;
-
-	dx::XMMATRIX worldParticles = dx::XMMatrixIdentity();
-	dx::XMMATRIX particlesRotationY = dx::XMMatrixRotationY(rotationPart);
-	dx::XMMATRIX particlesTranslation = dx::XMMatrixTranslation(particlesPosition.x, particlesPosition.y, particlesPosition.z);
-	worldParticles = particlesRotationY * particlesTranslation;
-	particles->SetWorldMatrix(worldParticles);
-
-	particles->Update(deltaTime, renderer->GetContext());
-
+	for (int i = 0; i < renderer->GetParticles().size(); i++)
+		renderer->GetParticles()[i]->Update(deltaTime, renderer->GetContext());	
 }
 
 void GameScene::FixedUpdate(const float& fixedDeltaTime)

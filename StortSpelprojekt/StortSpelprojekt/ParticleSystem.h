@@ -1,5 +1,6 @@
 #pragma once
 #include "DXHelper.h"
+#include "ResourceManager.h"
 
 class ParticleSystem
 {
@@ -34,17 +35,21 @@ private:
 	};
 
 public:
-	ParticleSystem(Shader* shader);
+	ParticleSystem(Object* object, CameraComponent* camera, Shader* shader);
 	ParticleSystem(const ParticleSystem& other);
 	~ParticleSystem();		// set virtual later
 
 	void InitializeParticles(ID3D11Device* device, LPCWSTR textureFilename);
-	Object* GetThisObject() { return this->object; }
+	//Object* GetThisObject() { return this->object; }
 	Texture GetTexture() { return this->texture; }
 
 	void Shutdown();
 	void Update(float frameTime, ID3D11DeviceContext* context);
 	void Render(ID3D11DeviceContext* context, CameraComponent* camera);
+
+	void SetMaxParticles(int maxParticles) { this->maxParticles = maxParticles; }
+	void SetDaviation(float x, float y, float z);
+	void SetParticleSize(float size) { this->particleSize = size; }
 
 	void SetWorldMatrix(dx::XMMATRIX worldmatrix);
 	dx::XMMATRIX GetWorldMatrix();
@@ -63,12 +68,13 @@ private:
 
 private:
 	HRESULT hr;
-	Object* object;
-	Material* particlesMaterial;
+	//Material* particlesMaterial;
 	Shader* particlesShader;
-	Mesh* particleQuad;
+	Object* object;
+	CameraComponent* camera;
+
 	ID3D11ShaderResourceView* srv;
-	ID3D11SamplerState* kuksampler;
+	ID3D11SamplerState* samplerState;
 	std::vector<ID3D11ShaderResourceView*> srvs;
 	
 	/* Particle stuffy stuff */
