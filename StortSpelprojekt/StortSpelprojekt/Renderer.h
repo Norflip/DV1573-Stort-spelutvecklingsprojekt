@@ -37,7 +37,6 @@ class Renderer
 		
 		std::vector<dx::XMFLOAT4X4>* bones;
 		dx::XMMATRIX world;
-		const CameraComponent* camera;
 		
 		ID3D11Buffer* instanceBuffer;
 		size_t instanceCount;
@@ -50,23 +49,21 @@ public:
 	virtual ~Renderer();
 
 	void Initialize(Window* window);
-	
-	void BeginManualRenderPass(RenderTexture& target);
-	void EndManualRenderPass();
 
-	void DrawQueueToTarget(RenderQueue& queue);
+	void DrawQueueToTarget(RenderQueue& queue, CameraComponent* camera);
 	void RenderFrame(CameraComponent* camera, float time);
 	void RenderFrame(CameraComponent* camera, float time, RenderTexture& target, bool drawGUI = false, bool applyRenderPasses = true);
 
 	void AddRenderPass(RenderPass*);
-	void Draw(const Mesh* mesh, const Material* material, const dx::XMMATRIX& model, const CameraComponent* camera);
-	void DrawInstanced(const Mesh* mesh, const size_t& count, ID3D11Buffer* instanceBuffer, const Material* material, const CameraComponent* camera);
-	void DrawSkeleton(const Mesh* mesh, const Material* material, const dx::XMMATRIX& model, const CameraComponent* camera, std::vector<dx::XMFLOAT4X4>& bones);
-	void DrawGrass(const Mesh* mesh, const Material* material, const dx::XMMATRIX& model, const CameraComponent* camera);
 		
 	void AddParticles(ParticleSystem* particles) { this->particles.push_back(particles); }
 	std::vector<ParticleSystem*> GetParticles() { return this->particles; };
 
+	void Draw(const Mesh* mesh, const Material* material, const dx::XMMATRIX& model);
+	void DrawInstanced(const Mesh* mesh, const size_t& count, ID3D11Buffer* instanceBuffer, const Material* material);
+	void DrawSkeleton(const Mesh* mesh, const Material* material, const dx::XMMATRIX& model, std::vector<dx::XMFLOAT4X4>& bones);
+	void DrawGrass(const Mesh* mesh, const Material* material, const dx::XMMATRIX& model);
+	
 	void SetCullBack(bool);
 
 	ID3D11Device* GetDevice() const { return this->device; }
@@ -89,10 +86,10 @@ public:
 
 private:
 	void AddItem(const RenderItem& item, bool transparent);
-	void DrawRenderItem(const RenderItem& item);
-	void DrawRenderItemInstanced(const RenderItem& item);
-	void DrawRenderItemSkeleton(const RenderItem& item);
-	void DrawRenderItemGrass(const RenderItem& item);
+	void DrawRenderItem(const RenderItem& item, CameraComponent* camera);
+	void DrawRenderItemInstanced(const RenderItem& item, CameraComponent* camera);
+	void DrawRenderItemSkeleton(const RenderItem& item, CameraComponent* camera);
+	void DrawRenderItemGrass(const RenderItem& item, CameraComponent* camera);
 	
 	void SetObjectBufferValues(const CameraComponent* camera, dx::XMMATRIX world, bool transpose);
 	Mesh* CreateScreenQuad();

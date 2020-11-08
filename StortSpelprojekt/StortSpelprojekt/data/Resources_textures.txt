@@ -1,8 +1,6 @@
-Textures: 3
+Textures: 2
 
-TestTexture: Textures/Sylvanas.jpg
+Grass: Textures/newGrass.png
 
-GroundGrass: Textures/groundGrass.png
-
-StoneFloor: Textures/Stone_Floor_003_COLOR.jpg
+Road: Textures/Stone_Floor_003_COLOR.jpg
 

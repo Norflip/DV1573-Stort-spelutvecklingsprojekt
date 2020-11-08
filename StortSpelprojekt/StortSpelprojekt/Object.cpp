@@ -70,17 +70,26 @@ void Object::Draw(Renderer* renderer, CameraComponent* camera)
 
 bool Object::HasFlag(ObjectFlag flag) const
 {
-	return ((int)flag & (int)flags) != 0;
+	return (int)(flag & flags) != 0;
 }
 
 void Object::AddFlag(ObjectFlag flag)
 {
-	flags = static_cast<ObjectFlag>((int)flags | (int)flag);
+	ObjectFlag old = flags;
+	flags |= flag;
+
+	//for (auto i = components.begin(); i < components.end(); i++)
+	//	(*i)->OnOwnerFlagChanged(old, flags);
 }
 
 void Object::RemoveFlag(ObjectFlag flag)
 {
-	flags = static_cast<ObjectFlag>((int)flags & ~((int)flag));
+	ObjectFlag old = this->flags;
+	this->flags &=  ~flag;
+
+
+	//for (auto i = components.begin(); i < components.end(); i++)
+		//(*i)->OnOwnerFlagChanged(old, this->flags);
 }
 
 

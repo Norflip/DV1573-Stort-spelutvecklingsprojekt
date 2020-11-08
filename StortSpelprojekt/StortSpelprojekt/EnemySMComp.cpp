@@ -4,7 +4,6 @@
 EnemySMComp::EnemySMComp(EnemyState state) :
 	currentState(state)
 {
-	
 }
 
 EnemySMComp::~EnemySMComp()
@@ -24,70 +23,52 @@ void EnemySMComp::SetState(EnemyState state)
 	{
 		stateMap[currentState]->SetEnabled(false);
 	}
-
 	currentState = state;
-
 	if (currentState != EnemyState::NONE)
 	{
 		stateMap[currentState]->SetEnabled(true);
 	}
 }
 
-void EnemySMComp::Initialize()
+void EnemySMComp::Start()
 {
 	enemyAttackComp = GetOwner()->GetComponent<EnemyAttackComp>();
 }
 
+void EnemySMComp::Initialize()
+{
+}
+
 void EnemySMComp::Animate()
 {
-
-	if (currentState == EnemyState::ATTACK && statsComponent->GetHealth() > 0)
+	//OutputDebugStringA(std::to_string(statsComponent->GetHealth()).c_str());
+	if (currentState == EnemyState::ATTACK)
 	{
-		if (attackComponent->GetIsAttacking() && statsComponent->GetHealth() > 0)
-		{
-			skeletonComponent->SetTrack(SkeletonStateMachine::ATTACK, false);
-		}
-		else if(!attackComponent->GetIsAttacking() && statsComponent->GetHealth() > 0)
-		{
-			skeletonComponent->SetTrack(SkeletonStateMachine::RUN, false);
-		}
-		
+		skeletonComponent->SetTrack(SkeletonStateMachine::BLENDED, false);
+
 	}
-	else if (currentState == EnemyState::IDLE && statsComponent->GetHealth() > 0)
+	else
 	{
 		skeletonComponent->SetTrack(SkeletonStateMachine::IDLE,false);
 	}
-	else if (currentState == EnemyState::PATROL&& statsComponent->GetHealth()>0)
-	{
-		skeletonComponent->SetTrack(SkeletonStateMachine::WALK,false);
-	}
-	if (statsComponent->GetHealth()<=0)
-	{
-		
-		skeletonComponent->SetTrack(SkeletonStateMachine::DEATH, true);
-	}
-
+	
 }
 
 void EnemySMComp::Update(const float& deltaTime)
 {
-	//if (KEY_DOWN(K))
-	//{
-	//	SetState(switchState[currentState]);
-	//}
-	if (enemyAttackComp && enemyAttackComp->GetChasePlayer())
+	if (currentState != EnemyState::ATTACK && enemyAttackComp->ChasePlayer())
 	{
 		SetState(EnemyState::ATTACK);
 	}
-	else if(currentState != EnemyState::IDLE)
+	else if (currentState != EnemyState::IDLE && !enemyAttackComp->ChasePlayer())
 	{
 		SetState(EnemyState::IDLE);
 	}
+
 	if (GetOwner()->HasComponent<SkeletonMeshComponent>())
 	{
 		Animate();
 	}
-	
 }
 
 void EnemySMComp::RegisterState(EnemyState state, Component* comp)

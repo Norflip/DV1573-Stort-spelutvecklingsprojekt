@@ -14,9 +14,9 @@ CapsuleColliderComponent::CapsuleColliderComponent(std::vector<float> radius, st
 {
 }
 
-void CapsuleColliderComponent::Initialize()
+void CapsuleColliderComponent::InitializeCollider(Physics* physics)
 {
-	rp::PhysicsCommon& common = Physics::Instance().GetCommon();
+	rp::PhysicsCommon& common = physics->GetCommon();
 
 	for (size_t i = 0; i < colliderInformations.size(); i++)
 		colliderInformations[i].shape = common.createCapsuleShape(radius[i], heights[i]);

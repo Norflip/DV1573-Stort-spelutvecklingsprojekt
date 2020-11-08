@@ -1,67 +1,83 @@
 #pragma once
 #include "Component.h"
 #include "NodeWalkerComp.h"
+#include "PlayerComp.h"
 #include "Input.h"
 #include "Object.h"
 #include "math.h"
 namespace dx = DirectX;
-constexpr float CLAMP_X = 1.5f;
-constexpr float WALK_FOV = 90.f;
-constexpr float RUN_FOV = 103.f;
-//constexpr float FOV_INC = 0.5f; //how much fov increments each time
-//constexpr float FOV_INC_RATE = 0.01f; //rate of fov incrementation in seconds (so
+constexpr float CLAMP_X = 90.f * Math::ToRadians;
+constexpr float CLAMP_Y = 360.f * Math::ToRadians;
 
-constexpr float CROUCH_VELOCITY = 0.5f;
-constexpr float CROUCH_ACCELERATION = 1.f;
-constexpr float WALK_VELOCITY = 50.f;
-constexpr float WALK_ACCELERATION = 5.0f;
-constexpr float RUN_VELOCITY = 80.f;
-constexpr float RUN_ACCELERATION = 5.5f;
-constexpr float VELOCITY_INC_RATE = 0.1f; //how often
-constexpr float VELOCITY_MULTIPLIER = 20.f;
 
-constexpr float CROUCH_OFFSET_PER = 0.2f;
+constexpr float WALK_FOV = 50.f;
+//constexpr float RUN_FOV = 60.f;
+
+
+constexpr float CROUCH_VELOCITY = 0.6f;
+constexpr float CROUCH_ACCELERATION = 0.03f;
+constexpr float WALK_VELOCITY = 3.f;
+constexpr float WALK_ACCELERATION = 0.063f;
+constexpr float RUN_VELOCITY = 7.f;
+constexpr float RUN_ACCELERATION = 0.10f;
+constexpr float VELOCITY_INC_RATE = 0.001f; //how often
+
+constexpr float CROUCH_OFFSET_PER = 0.02f;
 constexpr float CROUCH_LIMIT = -0.5f;
-constexpr float CROUCH_INC_RATE = 0.01f; //how often changes occur
+constexpr float CROUCH_INC_RATE = 0.005f; //how often changes occur
 constexpr float JUMP_VELOCITY = 5.f;
 
 constexpr dx::XMFLOAT3 RESET_POS = {20.f,3.f,20.f};
 constexpr dx::XMFLOAT4 RESET_ROT = { 0.f,0.f,0.f,1.f };
 constexpr dx::XMFLOAT3 DOWN_VEC = { 0.f,-1.f,0.f };
 
+class PlayerComp;
+class NodeWalkerComp;
+class CameraComponent;
 class ControllerComp :public Component 
 {
 private:
-
-	//fixa fov based on speed
-	//fox wouldn't change when standing still
-	//addForce fix??
-	float fov;
-	float fovTimer; //use timer class??
+	enum MoveState
+	{
+		IDLE,
+		WALKING,
+		SPRINTING,
+		CROUCHING
+	};
+	//float fov;
+	//float fovTimer; //use timer class??
 	float velocity;
 	float velocityTimer; //use timer class??
 	
 	float crouchTimer;
-	//const dx::XMFLOAT3 CROUCH = { 0.f,2.f,0.f }; //eventually fix gradient crouch like how fov works
-	//
-	dx::XMFLOAT3 cameraOffset;
-	
 
-	float xClamp;
 	bool freeCam;
 	bool showCursor;
 	bool canRotate;
-	dx::XMFLOAT4 groundQuaterion;
+	bool isGrounded;
+	dx::XMFLOAT3 houseVelocity;
+	dx::XMFLOAT3 jumpDir; 
+	dx::XMFLOAT3 cameraOffset;
+	dx::XMFLOAT3 cameraEuler;
 
 	Object* cameraObject;
-	Object* houseObject;
+	NodeWalkerComp* houseWalkComp;
 	RigidBodyComponent* rbComp;
 	CameraComponent* camComp;
 	CapsuleColliderComponent* capsuleComp;
+	PlayerComp* playerComp;
 
-	bool IsGrounded() const;
+	void CheckGrounded();
+
+	void CalcVelocity(float acceleration)
+	{
+		if (this->velocityTimer >= VELOCITY_INC_RATE)
+		{
+			this->velocity += acceleration;
+			this->velocityTimer = 0.f;
+		}
+	};
 public:
-	//ControllerComp();
 	ControllerComp(Object* cameraObject, Object* houseObject);
 	virtual ~ControllerComp();
 

@@ -55,7 +55,7 @@ private:
 	void InitializeTrees(ResourceManager* resources);
 
 	void AddTreesToChunk(Chunk* chunk, std::vector<ChunkPointInformation>& chunkInformation);
-	void AddGrassToChunk(Chunk* chunk, Texture& texture);
+	void AddGrassToChunk(Chunk* chunk, Texture* texture);
 	bool ValidateTreePoint(const dx::XMFLOAT2& point, std::vector<ChunkPointInformation>& chunkInformation);
 
 private:
@@ -68,6 +68,9 @@ private:
 	cb_Material materialData;
 	Shader* grassShader;
 	Shader* chunkShader;
+
+	Texture* grassTexture;
+	Texture* roadTexture;
 
 	std::vector<Mesh*> stylizedTreeModel;
 	std::vector<Material*> stylizedTreeMaterial;

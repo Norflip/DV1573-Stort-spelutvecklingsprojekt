@@ -1,8 +1,6 @@
 #include "CommonBuffers.hlsl"
 #include "IO.hlsl"
 
-
-
 VS_OUTPUT main(VS_INSTANCE_INPUT input)
 {
 	VS_OUTPUT output;

@@ -20,8 +20,8 @@ class EnemySMComp : public Component
 	public:
 		std::map<EnemyState, EnemyState> switchState =
 		{
-			{EnemyState::IDLE, EnemyState::PATROL},
-			{EnemyState::PATROL, EnemyState::ATTACK},
+			//{EnemyState::IDLE, EnemyState::PATROL},
+			{EnemyState::IDLE, EnemyState::ATTACK},
 			{EnemyState::ATTACK, EnemyState::IDLE}
 		};
 
@@ -29,6 +29,7 @@ class EnemySMComp : public Component
 		EnemySMComp(EnemyState state);
 		virtual ~EnemySMComp();
 		void SetState(EnemyState state);
+		void Start();
 		void Initialize();
 		void InitAnimation();
 		

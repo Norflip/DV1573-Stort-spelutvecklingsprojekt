@@ -3,6 +3,7 @@
 #include <react3d.h>
 
 namespace dx = DirectX;
+class Physics;
 
 class Collider
 {
@@ -24,6 +25,8 @@ public:
 	void SetRotation(size_t index, dx::XMVECTOR quaternion);
 	size_t CountCollisionShapes() const { return this->colliderInformations.size(); }
 	bool IsMultiple() const { return this->CountCollisionShapes() > 1; }
+
+	virtual void InitializeCollider(Physics* physics) = 0;
 
 protected:
 	std::vector<ColliderInformation> colliderInformations;

@@ -1,6 +1,5 @@
 #pragma once
 
-enum NEXT_SCENE { INTRO = 0, LOSE = 1, GAME = 2, WIN = 3 };
 
 //THIS MESS NEEDS TO DIE A HORRIBLE DEATH
 #include "Object.h"
@@ -31,7 +30,7 @@ class GUIFont;
 class SpriteRenderPass;
 class PlayerComp;
 
-constexpr auto immortal = 0;
+constexpr auto IMMORTAL = 0;
 
 ALIGN16
 class Scene
@@ -40,7 +39,7 @@ public:
 	Scene();
 	virtual ~Scene();
 
-	virtual void SetDepedencies(ResourceManager* manager, Renderer* renderer, Window* window);
+	virtual void SetDepedencies(ResourceManager* manager, Renderer* renderer, Physics* physics, Window* window);
 
 	virtual void Initialize() = 0;
 	virtual void InitializeObjects() = 0;
@@ -61,18 +60,15 @@ public:
 	Object* GetRoot() const { return this->root; }
 
 	void PrintSceneHierarchy(Object* object, size_t level) const;
-
-	bool Quit();
-	NEXT_SCENE nextScene;
 	
-private:
-
 protected:
 	Object* root;
 	Renderer* renderer;
 	ResourceManager* resources;
+	Physics* physics;
 	Window* window;
-
+	
+	std::queue<Object*> removeQueue;
 	CameraComponent* camera;
 	
 	GameClock clock;
@@ -81,16 +77,9 @@ protected:
 	Object* enemy;
 	Object* player;
 
-	//EnemyStatsComp* enemyStatsComp;
-	//PlayerComp* playerStatsComp;
-	dx::SpriteBatch* spriteBatch;
-	SpriteRenderPass* spritePass;	
-
 	ObjectPooler* pooler;
 	GUIManager* guiManager;		
 	
 	Skybox* skyboxClass;		
-
-	bool quit;	
 
 };

@@ -32,5 +32,5 @@ public:
 
 private:
 	World world;
-	
+	Object* house;
 };

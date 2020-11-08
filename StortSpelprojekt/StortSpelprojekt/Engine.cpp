@@ -1,8 +1,12 @@
 #include "stdafx.h"
 #include "Engine.h"
 
-Engine::Engine(HINSTANCE hInstance) : window(hInstance), activeScene(nullptr)
+
+Engine* Engine::Instance = nullptr;
+
+Engine::Engine(HINSTANCE hInstance) : window(hInstance), activeScene(nullptr), sceneSwitch(-1)
 {
+	this->Instance = this;
 	window.Open(1600, 900);
 	renderer = new Renderer();
 	renderer->Initialize(&window);
@@ -13,12 +17,17 @@ Engine::Engine(HINSTANCE hInstance) : window(hInstance), activeScene(nullptr)
 	resourceManager = new ResourceManager;
 	resourceManager->InitializeResources(renderer->GetDevice());
 
-	RegisterScene(0, new IntroScene());
-	RegisterScene(1, new GameOverScene());
-	RegisterScene(2, new GameScene());
-	RegisterScene(3, new WinScene());
+	physics = new Physics();
+	physics->Initialize();
 
-	SwitchScene(0);
+	
+
+	RegisterScene(SceneIndex::INTRO,	new IntroScene());
+	RegisterScene(SceneIndex::GAME_OVER,new GameOverScene());
+	RegisterScene(SceneIndex::GAME,		new GameScene());
+	RegisterScene(SceneIndex::WIN,		new WinScene());
+
+	SwitchScene(SceneIndex::INTRO);
 }
 
 Engine::~Engine()
@@ -34,6 +43,7 @@ Engine::~Engine()
 
 	delete renderer;
 	delete resourceManager;
+	delete physics;
 }
 
 void Engine::Run()
@@ -63,36 +73,43 @@ void Engine::Run()
 		}
 		else
 		{
+			if (sceneSwitch != -1)
+			{
+				auto sceneIt = this->scenes.find(sceneSwitch);
+				assert(sceneIt != scenes.end());
+
+				Scene* previous = activeScene;
+				if (previous != nullptr)
+				{
+					previous->OnDeactivate();
+				}
+
+				activeScene = (*sceneIt).second;
+				activeScene->OnActivate();
+				sceneSwitch = -1;
+			}
+
 			auto elapsed = std::chrono::duration<double, std::milli>(std::chrono::high_resolution_clock::now() - startTimePoint);
 			float currentTime = static_cast<float>(elapsed.count() / 1000.0f);
 			float deltaTime = currentTime - timeLastFrame;
 
-#if !MULTITHREAD_PHYSICS
-			fixedTimeAccumulation += deltaTime;
-			
-			while (fixedTimeAccumulation >= TARGET_FIXED_DELTA)
-			{
-				// FIXED UPDATE
-				fixedTimeAccumulation -= TARGET_FIXED_DELTA;
-
-				if (activeScene != nullptr)
-					activeScene->FixedUpdate(TARGET_FIXED_DELTA);
-			}
-#endif
-
 			if (activeScene != nullptr)
 			{
-				if (activeScene->Quit())
-				{
-					Exit();
-				}
 				float deltaTime = currentTime - timeLastFrame;
-
 				activeScene->Update(deltaTime);
+
+#if !MULTITHREAD_PHYSICS
+				fixedTimeAccumulation += deltaTime;
+
+				while (fixedTimeAccumulation >= TARGET_FIXED_DELTA)
+				{
+					// FIXED UPDATE
+					fixedTimeAccumulation -= TARGET_FIXED_DELTA;
+					activeScene->FixedUpdate(TARGET_FIXED_DELTA);
+				}
+#endif
+
 				activeScene->Render();
-
-				SwitchScene((int)activeScene->nextScene);
-
 			}
 
 			timeLastFrame = currentTime;
@@ -114,7 +131,7 @@ void Engine::RegisterScene(size_t id, Scene* scene)
 	auto sceneIt = this->scenes.find(id);
 	assert(sceneIt == scenes.end());
 
-	scene->SetDepedencies(resourceManager, renderer, renderer->GetOutputWindow());
+	scene->SetDepedencies(resourceManager, renderer, physics, renderer->GetOutputWindow());
 	scene->Initialize();
 	
 	this->scenes.insert({ id, scene });
@@ -129,24 +146,7 @@ void Engine::UnregisterScene(size_t id)
 
 void Engine::SwitchScene(size_t id)
 {
-	auto sceneIt = this->scenes.find(id);
-	assert(sceneIt != scenes.end());
-
-	if (activeScene == nullptr)
-	{
-		activeScene = (*sceneIt).second;
-		activeScene->OnActivate();
-	}
-	else
-	{
-		if (activeScene != (*sceneIt).second)
-		{
-			previousScene = activeScene;
-			activeScene = (*sceneIt).second;
-			activeScene->OnActivate();
-			previousScene->OnDeactivate();
-		}
-	}
+	this->sceneSwitch = id;
 }
 
 void Engine::FixedUpdateLoop(Engine* engine)

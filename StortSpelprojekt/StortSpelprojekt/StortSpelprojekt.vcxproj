@@ -71,22 +71,22 @@
   <PropertyGroup Label="UserMacros" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <LinkIncremental>true</LinkIncremental>
-    <IncludePath>$(SolutionDir)\React;$(IncludePath)</IncludePath>
+    <IncludePath>$(SolutionDir)\ThirdParty\quickhull;$(SolutionDir)\React;$(IncludePath)</IncludePath>
     <LibraryPath>$(SolutionDir)\React\libs\Debug;$(LibraryPath)</LibraryPath>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
     <LinkIncremental>true</LinkIncremental>
-    <IncludePath>$(SolutionDir)\StortSpelprojekt\Bulletphysics;$(IncludePath)</IncludePath>
+    <IncludePath>D:\Programming\Repos\StortSpelprojekt\StortSpelprojekt\StortSpelprojekt\ThirdParty\quickhull;$(SolutionDir)\StortSpelprojekt\Bulletphysics;$(IncludePath)</IncludePath>
     <LibraryPath>$(SolutionDir)\StortSpelprojekt\Bulletphysics\LinearMath;$(SolutionDir)\StortSpelprojekt\Bulletphysics\Bullet3Collision;$(SolutionDir)\StortSpelprojekt\Bulletphysics\Bullet3Dynamics;$(LibraryPath)</LibraryPath>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
     <LinkIncremental>false</LinkIncremental>
-    <IncludePath>$(SolutionDir)\React;$(IncludePath)</IncludePath>
+    <IncludePath>$(SolutionDir)\ThirdParty\quickhull;$(SolutionDir)\React;$(IncludePath)</IncludePath>
     <LibraryPath>$(SolutionDir)\React\libs\Release;$(LibraryPath)</LibraryPath>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
     <LinkIncremental>false</LinkIncremental>
-    <IncludePath>$(SolutionDir)\StortSpelprojekt\Bulletphysics;$(IncludePath)</IncludePath>
+    <IncludePath>D:\Programming\Repos\StortSpelprojekt\StortSpelprojekt\StortSpelprojekt\ThirdParty\quickhull;$(SolutionDir)\StortSpelprojekt\Bulletphysics;$(IncludePath)</IncludePath>
     <LibraryPath>$(SolutionDir)\StortSpelprojekt\Bulletphysics\LinearMath;$(SolutionDir)\StortSpelprojekt\Bulletphysics\Bullet3Collision;$(SolutionDir)\StortSpelprojekt\Bulletphysics\Bullet3Dynamics;$(LibraryPath)</LibraryPath>
   </PropertyGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
@@ -171,7 +171,7 @@
     <ClCompile Include="EnemyAttackComp.cpp" />
     <ClCompile Include="EnemyIdleComp.cpp" />
     <ClCompile Include="EnemyPatrolComp.cpp" />
-    <ClCompile Include="BoundingBoxes.cpp" />
+    <ClCompile Include="Bounds.cpp" />
     <ClCompile Include="BoxColliderComponent.cpp" />
     <ClCompile Include="CameraComponent.cpp" />
     <ClCompile Include="CapsuleColliderComponent.cpp" />
@@ -194,6 +194,7 @@
     <ClCompile Include="main.cpp" />
     <ClCompile Include="Material.cpp" />
     <ClCompile Include="Mesh.cpp" />
+    <ClCompile Include="MeshCollider.cpp" />
     <ClCompile Include="MeshComponent.cpp" />
     <ClCompile Include="MoveComponent.cpp" />
     <ClCompile Include="NodeWalkerComp.cpp">
@@ -230,8 +231,10 @@
     <ClCompile Include="Texture.cpp" />
     <ClCompile Include="SkeletonAni.cpp" />
     <ClCompile Include="SkeletonMeshComponent.cpp" />
+    <ClCompile Include="ThirdParty\quickhull\QuickHull.cpp" />
     <ClCompile Include="ThirdParty\SimplexNoise.cpp" />
     <ClCompile Include="Transform.cpp" />
+    <ClCompile Include="VirtualCamera.cpp" />
     <ClCompile Include="WeaponComponent.cpp" />
     <ClCompile Include="Window.cpp" />
     <ClCompile Include="WinScene.cpp" />
@@ -244,7 +247,7 @@
     <ClInclude Include="EnemyAttackComp.h" />
     <ClInclude Include="EnemyIdleComp.h" />
     <ClInclude Include="EnemyPatrolComp.h" />
-    <ClInclude Include="BoundingBoxes.h" />
+    <ClInclude Include="Bounds.h" />
     <ClInclude Include="BoxColliderComponent.h" />
     <ClInclude Include="Buffers.h" />
     <ClInclude Include="BusNode.h" />
@@ -263,6 +266,7 @@
     <ClInclude Include="ChunkGrid.h" />
     <ClInclude Include="IntroScene.h" />
     <ClInclude Include="FogRenderPass.h" />
+    <ClInclude Include="MeshCollider.h" />
     <ClInclude Include="ObjectPooler.h" />
     <ClInclude Include="ObjectSpawner.h" />
     <ClInclude Include="ParticleSystem.h" />
@@ -316,8 +320,13 @@
     <ClInclude Include="Texture.h" />
     <ClInclude Include="SkeletonAni.h" />
     <ClInclude Include="SkeletonMeshComponent.h" />
+    <ClInclude Include="ThirdParty\quickhull\ConvexHull.hpp" />
+    <ClInclude Include="ThirdParty\quickhull\HalfEdgeMesh.hpp" />
+    <ClInclude Include="ThirdParty\quickhull\MathUtils.hpp" />
+    <ClInclude Include="ThirdParty\quickhull\QuickHull.hpp" />
     <ClInclude Include="ThirdParty\SimplexNoise.h" />
     <ClInclude Include="Transform.h" />
+    <ClInclude Include="VirtualCamera.h" />
     <ClInclude Include="WeaponComponent.h" />
     <ClInclude Include="Window.h" />
     <ClInclude Include="WinScene.h" />
@@ -326,6 +335,20 @@
     <ClInclude Include="ZWEBLoader.h" />
   </ItemGroup>
   <ItemGroup>
+    <FxCompile Include="ForwardPlusRendering.hlsl">
+      <ShaderType Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">Compute</ShaderType>
+      <ShaderModel Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">4.0</ShaderModel>
+      <ShaderType Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Compute</ShaderType>
+      <ShaderModel Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">4.0</ShaderModel>
+      <ShaderType Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Compute</ShaderType>
+      <ShaderModel Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">4.0</ShaderModel>
+      <ShaderType Condition="'$(Configuration)|$(Platform)'=='Release|x64'">Compute</ShaderType>
+      <ShaderModel Condition="'$(Configuration)|$(Platform)'=='Release|x64'">4.0</ShaderModel>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|x64'">true</ExcludedFromBuild>
+    </FxCompile>
     <FxCompile Include="Shaders\Alpha_ps.hlsl">
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">true</ExcludedFromBuild>
       <ShaderModel Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">4.0</ShaderModel>

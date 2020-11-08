@@ -51,7 +51,9 @@ VS_OUTPUT main(VS_INPUT input)
 
 	//float4 normal = chunkNormalTexture.SampleLevel(NormalSampler, input.uv, 0);
 
-	output.normal = normalize(mul(world, normal).xyz);
+	// Changed to input.normal since it offers the most accurate normal for the terrain
+	// The normals returned by the "GetNormal" function is all facing in the Z direction, which should be incorrect
+	output.normal = normalize(mul(world, input.normal).xyz);
 	output.tangent = normalize(mul(world, input.tangent).xyz);
 	return output;
 }

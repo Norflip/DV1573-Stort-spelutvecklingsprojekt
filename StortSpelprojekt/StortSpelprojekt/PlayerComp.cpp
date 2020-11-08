@@ -1,6 +1,8 @@
 #include "stdafx.h"
 #include "PlayerComp.h"
+#include "Engine.h"
 
+#include "WeaponComponent.h"
 //PlayerComp::PlayerComp() 
 //{
 //	health = 100;
@@ -16,7 +18,7 @@
 //	gg = false;
 //}
 
-PlayerComp::PlayerComp(Renderer* renderer, CameraComponent* camComp, Physics& phys, GUIManager* guimanager, float health, float movementSpeed, float radius, float attack, float attackSpeed) : phy(phys)
+PlayerComp::PlayerComp(Renderer* renderer, CameraComponent* camComp, Physics* physics, GUIManager* guimanager, float health, float movementSpeed, float radius, float attack, float attackSpeed)
 {
 	//attackTimer.Start();
 
@@ -34,35 +36,26 @@ PlayerComp::PlayerComp(Renderer* renderer, CameraComponent* camComp, Physics& ph
 	this->fuelBurnPerMeter = fuelBurnPerMeter;
 	this->radius = radius;
 	this->renderer = renderer;
+	this->physics = physics;
 
-	//this->enemyStatsComp = enemyComp->GetComponent<EnemyStatsComp>();
 
-	// defaulting some shit
-	this->swapScene = NEXT_SCENE::GAME;
-	this->foodLossPerSecond = 0.3f;
-	this->food = 50.0f;
-	this->fuelBurnPerMeter = 0.7f;
-	this->fuel = 50.0f;
-	this->healthLossPerSecond = 0.5f;
-
-	this->health = 50.0f; // <------------------ DONT FORGET TO REMOVE THIS LATER!
+	Reset();
 
 	this->fuelDippingBar = static_cast<GUISprite*>(guiMan->GetGUIObject("fuelDippingBar"));
 	this->foodDippingBar = static_cast<GUISprite*>(guiMan->GetGUIObject("foodDippingBar"));
 	this->healthDippingBar = static_cast<GUISprite*>(guiMan->GetGUIObject("healthDippingBar"));
 
-	foodEmpty = false;
-	gg = false;
-	
+
+
 	//this->GetOwner()->GetComponent<CameraComponent>()
 	p.x = renderer->GetOutputWindow()->GetWidth() / 2;
 	p.y = renderer->GetOutputWindow()->GetHeight() / 2;
 
-	//Object* temp = this->GetOwner();
 	cam = camComp;
 	// per frame shit
 	this->rayDistance = 2.0f;
-	
+	up = { 0.0f, 1.0f, 1.0f };
+	holding = nullptr;
 }
 
 PlayerComp::~PlayerComp()
@@ -71,26 +64,123 @@ PlayerComp::~PlayerComp()
 }
 
 void PlayerComp::Update(const float& deltaTime)
-{	
-	//attackTimer.Update();
-	Ray ray = cam->MouseToRay(p.x, p.y);
-	Physics& phy = Physics::Instance();
-	if (KEY_DOWN(E))
-	{				
-		if (phy.RaytestSingle(ray, rayDistance, hit, FilterGroups::PICKUPS))
+{
+	RayCast(deltaTime);
+
+
+
+
+	float frameTime = FCAST(GameClock::Instance().GetFrameTime() / 1000.0);
+
+	//temp fix for wierd clock start at 
+	if (frameTime < 5.f)
+	{
+		//loose fuel
+		fuel -= frameTime * fuelBurnPerMeter;
+		// loose food
+		food -= frameTime * foodLossPerSecond;
+#if !immortal
+		// make better later
+		if ((fuel < 0 || health <= 0))
+			Engine::Instance->SwitchScene(SceneIndex::GAME_OVER);
+#endif
+		if (food < 0)
+			foodEmpty = true;
+
+		if (foodEmpty)
 		{
-			
+			health -= frameTime * healthLossPerSecond;
+		}
+	}
+
+	// Fuel drop
+	fuelDippingBar->SetScaleBars(ReverseAndClamp(fuel));
+
+	// Food drop
+	foodDippingBar->SetScaleBars(ReverseAndClamp(food));
+
+	// Health drop
+	healthDippingBar->SetScaleBars(ReverseAndClamp(health));
+
+	if (holding != nullptr)
+	{
+		HoldObject();
+		DropObject();
+		//todo. Regrab last weapon
+	}
+}
+
+void PlayerComp::HoldObject()
+{
+
+	inverseViewMatrix = dx::XMMatrixInverse(nullptr, cam->GetViewMatrix());
+	wepOffTrans = dx::XMMatrixTranslation(0.3f, -0.4f, 0.8f);
+	wepOffRot = dx::XMMatrixRotationAxis(up, dx::XMConvertToRadians(-40.0f));
+
+	wepWorld = wepOffRot * wepOffTrans * inverseViewMatrix;
+	dx::XMMatrixDecompose(&weaponScale, &weaponRot, &weaponPos, wepWorld);
+
+	holding->GetTransform().SetPosition(weaponPos);
+	holding->GetTransform().SetRotation(weaponRot);
+	holding->GetTransform().SetScale(weaponScale);
+
+}
+
+void PlayerComp::DropObject()
+{
+	if (KEY_DOWN(T))
+	{
+		dx::XMVECTOR camRot = cam->GetOwner()->GetTransform().GetRotation();
+		camRot = cam->GetOwner()->GetTransform().TransformDirectionCustomRotation({ 0,0,1 }, camRot);
+
+		RigidBodyComponent* rbComp = holding->GetComponent<RigidBodyComponent>();
+		rp::RigidBody* objectRb = rbComp->GetRigidBody();
+
+		cam->GetOwner()->GetTransform().GetRotation();
+		wepWorld = wepOffRot * wepOffTrans * inverseViewMatrix;
+		dx::XMMatrixDecompose(&weaponScale, &weaponRot, &weaponPos, wepWorld);
+		rbComp->SetEnabled(true);
+		objectRb->setAngularVelocity({ 0,0,0 });
+		float forceAmount = 10;
+		rbComp->SetPosition(weaponPos);
+		rbComp->SetRotation(weaponRot);
+		objectRb->setLinearVelocity({ dx::XMVectorGetX(camRot) * forceAmount ,  dx::XMVectorGetY(camRot) * forceAmount,  dx::XMVectorGetZ(camRot) * forceAmount });
+	}
+}
+
+void PlayerComp::InsertWeapon(WeaponComponent* weapon, std::string name)
+{
+	this->weaponsList.insert(make_pair(name, weapon));
+	//SETS CURRENT WEAPON TO NEWLY INSERTED WEAPON
+	currentWeapon = weapon->GetOwner();
+}
+
+float PlayerComp::ReverseAndClamp(float inputValue)
+{
+	return 1.0f - (inputValue / 100.0f);
+}
+
+void PlayerComp::RayCast(const float& deltaTime)
+{
+
+
+	Ray ray = cam->MouseToRay(p.x, p.y);
+
+	if (KEY_DOWN(E))
+	{
+		if (physics->RaytestSingle(ray, rayDistance, hit, FilterGroups::PICKUPS))
+		{
+
 			if (hit.object != nullptr)
-			{	
+			{
 				AudioMaster::Instance().PlaySoundEvent("pickupSound");
 				Type pickupType = hit.object->GetComponent<PickupComponent>()->GetType();
 				float temp = hit.object->GetComponent<PickupComponent>()->GetAmount();
-				
+
 				if (pickupType == Type::Health)
 				{
 					if ((health + temp) <= 100.0f)
 						health += temp;
-					
 				}
 				else if (pickupType == Type::Food)
 				{
@@ -101,38 +191,46 @@ void PlayerComp::Update(const float& deltaTime)
 				{
 					if ((fuel + temp) <= 100.0f)
 						fuel += temp;
-
 				}
-				
 				hit.object->GetComponent<PickupComponent>()->SetActive(false);
 
-				RigidBodyComponent* rbComp = hit.object->GetComponent<RigidBodyComponent>();
-				rp::RigidBody* objectRb = rbComp->GetRigidBody();
-				rbComp->RemoveCollidersFromBody(objectRb);
-				
 				//phy.MutexLock();
 				//phy.UnregisterRigidBody(hit.object->GetComponent<RigidBodyComponent>());
 				//phy.MutexUnlock();
-				
+
 			}
 		}
-	}
-	else
-	{
-		//DShape::DrawSphere(ray.GetPoint(10.0f), 0.2f, { 1, 0, 1 });
-	}
 
+		//HELVETE
+		if (physics->RaytestSingle(ray, rayDistance, hit, FilterGroups::HOLDABLE))
+		{
+			if (hit.object != nullptr)
+			{
+				holding = hit.object;
+				RigidBodyComponent* rbComp = hit.object->GetComponent<RigidBodyComponent>();
+				rp::RigidBody* objectRb = rbComp->GetRigidBody();
+				//rbComp->RemoveCollidersFromBody(objectRb);
+				rbComp->SetEnabled(false);
+				//hit.object->GetComponent<BoxColliderComponent>()->SetEnabled(false);
+				hit.object->GetComponent<BoxColliderComponent>()->SetRotation(0, { 5, 5, 5, 5 });
+				//hit.object->RemoveFlag(ObjectFlag::ENABLED);
+				currentWeapon->RemoveFlag(ObjectFlag::ENABLED);
+			}
+		}
+
+	}
+	//ATTACK ENEMIES
 	if (LMOUSE_DOWN)
 	{
-		
-		if (phy.RaytestSingle(ray, 5.0f, hit, FilterGroups::ENEMIES))
+
+		if (physics->RaytestSingle(ray, 5.0f, hit, FilterGroups::ENEMIES))
 		{
 			if (hit.object != nullptr && hit.object->HasComponent<EnemyStatsComp>())
-			{				
+			{
 				if (hit.object->GetComponent<EnemyStatsComp>()->IsEnabled())
 				{
 					if (hit.object->GetComponent<EnemyStatsComp>()->GetHealth() >= 0.0f)
-					{				
+					{
 						AudioMaster::Instance().PlaySoundEvent("punch");
 						hit.object->GetComponent<EnemyStatsComp>()->LoseHealth(attack);
 						std::cout << "Hit hit hit" << std::endl;
@@ -141,10 +239,9 @@ void PlayerComp::Update(const float& deltaTime)
 					{
 						AudioMaster::Instance().PlaySoundEvent("punch");
 						//hit.object.s  ->GetComponent<PickupComponent>()->SetActive(false);
-						
+
 						RigidBodyComponent* rbComp = hit.object->GetComponent<RigidBodyComponent>();
-						rp::RigidBody* objectRb = rbComp->GetRigidBody();
-						rbComp->RemoveCollidersFromBody(objectRb);
+						rbComp->Release();
 
 						////hit.object->GetComponent<EnemyStatsComp>()->SetEnabled(false);
 						////hit.object->GetComponent<EnemyStatsComp>()->SetEnabled(false);
@@ -154,63 +251,12 @@ void PlayerComp::Update(const float& deltaTime)
 						//rbComp->RemoveCollidersFromBody(objectRb);
 						//phy.UnregisterRigidBody(hit.object->GetComponent<RigidBodyComponent>());
 						//*/
-
-						hit.object->RemoveFlag(ObjectFlag::ENABLED);
-						hit.object->AddFlag(ObjectFlag::REMOVED);
+						Engine::Instance->GetActiveScene()->RemoveObject(hit.object);
 					}
 				}
-				else
-				{
-					std::cout << "YADDA" << std::endl;
-				}
-			}
-			else
-			{
-				std::cout << " jadda hallå " << std::endl;
 			}
 		}
-		else
-		{
-
-		}
 	}
-	else
-	{
-
-	}
-
-	float frameTime = FCAST(GameClock::Instance().GetFrameTime() / 1000.0);
-
-	//temp fix for wierd clock start at 
-	if (frameTime < 5.f)
-	{
-		//loose fuel
-		//std::cout << GameClock::Instance().GetFrameTime() / 1000;
-		fuel -= frameTime * fuelBurnPerMeter;
-		//std::cout << fuel <<std::endl;
-
-		// loose food
-		food -= frameTime * foodLossPerSecond;
-		//std::cout << food<<std::endl;
-		
-		// make better later
-		if (fuel < 0 || health <= 0 && !immortal)
-			swapScene = NEXT_SCENE::LOSE;
-
-		if (food < 0)
-			foodEmpty = true;
-
-		if (foodEmpty)
-		{
-			health -= frameTime * healthLossPerSecond;
-		}
-	}
-	
-	// Fuel drop
-	fuelDippingBar->SetScaleBars(ReverseAndClamp(fuel));
-
-	// Food drop
-	foodDippingBar->SetScaleBars(ReverseAndClamp(food));
 
 	// Health drop
 	healthDippingBar->SetScaleBars(ReverseAndClamp(health));
@@ -219,7 +265,16 @@ void PlayerComp::Update(const float& deltaTime)
 	//healthDippingBar->SetScaleDipping(0);
 }
 
-float PlayerComp::ReverseAndClamp(float inputValue)
+void PlayerComp::Reset()
 {
-	return 1.0f - (inputValue / 100.0f);
+	// defaulting some shit
+	this->foodLossPerSecond = 0.3f;
+	this->food = 50.0f;
+	this->fuelBurnPerMeter = 0.7f;
+	this->fuel = 50.0f;
+	this->healthLossPerSecond = 0.5f;
+
+	this->health = 50.0f; // <------------------ DONT FORGET TO REMOVE THIS LATER!
+	foodEmpty = false;
+	gg = false;
 }
