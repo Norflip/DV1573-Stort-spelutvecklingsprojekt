@@ -13,10 +13,12 @@ ObjectSpawner::~ObjectSpawner()
 {
 }
 
-void ObjectSpawner::Initialize(Object* root, ObjectPooler* pooler)
+void ObjectSpawner::Initialize(Object* root, ObjectPooler* pooler, Renderer* renderer, ResourceManager* resource)
 {
 	this->pooler = pooler;
 	this->root = root;
+	this->renderer = renderer;
+	this->resources = resource;
 }
 
 void ObjectSpawner::Spawn(const SaveState& state, PointQuadTree& tree, std::unordered_map<int, Chunk*>& chunkMap, std::vector<Chunk*>& chunks, ID3D11Device* device)
@@ -136,8 +138,10 @@ void ObjectSpawner::Spawn(const SaveState& state, PointQuadTree& tree, std::unor
 
 		props->AddComponent<MeshCollider>(i.second.prop->mesh, i.second.positions);
 		props->AddComponent<RigidBodyComponent>(0.f, FilterGroups::PROPS, FilterGroups::EVERYTHING, BodyType::STATIC, true);
-
+		
 		Transform::SetParentChild(i.first->GetOwner()->GetTransform(), props->GetTransform());
+
+		
 
 	}
 
@@ -170,6 +174,12 @@ void ObjectSpawner::Spawn(const SaveState& state, PointQuadTree& tree, std::unor
 				activeItems.push_back(object);
 
 				itemIndex++;
+
+
+				/* Shitty stuff here maybe? */
+				ParticleSystem* particles = new ParticleSystem(object, resources->GetShaderResource("particleShader"));
+				particles->InitializeParticles(renderer->GetDevice(), L"Textures/particle.png");
+				renderer->AddParticles(particles);
 			}
 		}
 	}
@@ -192,7 +202,7 @@ void ObjectSpawner::Despawn()
 			delete obj;
 		}
 	}
-
+		
 	activeItems.clear();
 }
 

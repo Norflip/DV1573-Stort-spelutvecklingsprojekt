@@ -7,7 +7,6 @@ ParticleSystem::ParticleSystem(Object* object, Shader* shader)
 	this->particlesShader = shader;
 	//this->particlesMaterial = new Material(particlesShader);
 	this->object = object;
-	//this->camera = camera;
 
 	/* Default stuff about every particle */
 	this->differenceOnX = 0.0f;
@@ -32,6 +31,8 @@ ParticleSystem::ParticleSystem(Object* object, Shader* shader)
 	this->texture = 0;
 
 	this->worldmatrix = dx::XMMatrixIdentity();
+
+	this->active = true;
 }
 
 ParticleSystem::ParticleSystem(const ParticleSystem& other)
@@ -62,7 +63,7 @@ ParticleSystem::ParticleSystem(const ParticleSystem& other)
 
 ParticleSystem::~ParticleSystem()
 {
-	//Shutdown();
+	Shutdown();
 }
 
 void ParticleSystem::InitializeParticles(ID3D11Device* device, LPCWSTR textureFilename)
@@ -70,7 +71,7 @@ void ParticleSystem::InitializeParticles(ID3D11Device* device, LPCWSTR textureFi
 	/*
 		Deviation on each axis. (A random deviation). Is from the point on the scene each particle will be spawned and (random -2 to 2 in x-axis and z-axis).
 		Speed (Velocity) for each particle. + Variation makes it between 9.8f - 10.2f
-		Particlesize is based on the created quad.
+		Particlesize based on the created quad.
 	*/
 
 	differenceOnX = 0.2f;
@@ -229,11 +230,8 @@ void ParticleSystem::LoadTexture(ID3D11Device* device, LPCWSTR textureFilename)
 	if (FAILED(hr))
 		MessageBox(0, L"Failed to 'Load WIC Texture'", L"Graphics scene Initialization Message", MB_ICONERROR);
 
-	texture.SetShaderResourceView(srv);	
-
-	//particlesMaterial->SetTexture(texture, TEXTURE_DIFFUSE_SLOT, ShaderBindFlag::PIXEL);
-	//particlesMaterial->SetSampler(DXHelper::CreateSampler(D3D11_FILTER_MIN_MAG_MIP_LINEAR, D3D11_TEXTURE_ADDRESS_WRAP, device), 0, ShaderBindFlag::PIXEL);
-
+	texture.SetSRV(srv);
+		
 	samplerState = DXHelper::CreateSampler(D3D11_FILTER_MIN_MAG_MIP_LINEAR, D3D11_TEXTURE_ADDRESS_WRAP, device);
 }
 

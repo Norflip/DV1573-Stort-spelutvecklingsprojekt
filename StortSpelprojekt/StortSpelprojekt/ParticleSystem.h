@@ -40,8 +40,7 @@ public:
 	~ParticleSystem();		// set virtual later
 
 	void InitializeParticles(ID3D11Device* device, LPCWSTR textureFilename);
-	//Object* GetThisObject() { return this->object; }
-	Texture GetTexture() { return this->texture; }
+	Object* GetConnectedObject() { return this->object; }
 
 	void Shutdown();
 	void Update(float frameTime, CameraComponent* camera, ID3D11DeviceContext* context);
@@ -55,6 +54,8 @@ public:
 	dx::XMMATRIX GetWorldMatrix();
 
 	int GetIndexCount();	
+	bool GetActive() { return this->active; }
+	void SetActive(bool active) { this->active = active; }
 
 private:
 	void LoadTexture(ID3D11Device* device, LPCWSTR textureFilename);
@@ -97,4 +98,5 @@ private:
 	Texture texture;
 
 	dx::XMMATRIX worldmatrix;
+	bool active;
 };

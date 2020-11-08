@@ -16,7 +16,7 @@ void World::Initialize(Object* root, ResourceManager* resources, ObjectPooler* p
 {
 	this->resources = resources;
 	ObjectSpawner* spawner = new ObjectSpawner();
-	spawner->Initialize(root, pooler);
+	spawner->Initialize(root, pooler, renderer, resources);
 	RegisterToPool(pooler, spawner, std::map<std::string, int>());
 
 	generator.Initialize(root, resources, spawner, renderer->GetDevice(), renderer->GetContext());
@@ -117,7 +117,7 @@ void World::RegisterFood(ObjectPooler* pooler, ObjectSpawner* spawner, const std
 	pooler->Register("Baked_beans", 0, [](ResourceManager* resources)
 	{
 		Object* object = resources->AssembleObject("Soup", "SoupMaterial");
-
+				
 		object->AddComponent<BoxColliderComponent>(dx::XMFLOAT3(0.5f, 0.5f, 0.5f), dx::XMFLOAT3(0, 0, 0));
 		object->AddComponent<PickupComponent>(Type::Food, 20.0f);
 		object->AddComponent<RigidBodyComponent>(10.0f, FilterGroups::PICKUPS, FilterGroups::EVERYTHING, BodyType::KINEMATIC, true);

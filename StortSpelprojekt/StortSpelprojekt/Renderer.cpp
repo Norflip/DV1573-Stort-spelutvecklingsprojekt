@@ -211,7 +211,10 @@ void Renderer::RenderFrame(CameraComponent* camera, float time, RenderTexture& t
 	/* Particle stuffy */
 	SetCullBack(true);
 	for (int i = 0; i < particles.size(); i++)
-		particles[i]->Render(context, camera);	
+	{
+		if(particles[i]->GetActive())
+			particles[i]->Render(context, camera);
+	}
 	SetCullBack(false);
 
 
@@ -257,9 +260,7 @@ void Renderer::RenderFrame(CameraComponent* camera, float time, RenderTexture& t
 				pass->Pass(this, renderPassSwapBuffers[0], renderPassSwapBuffers[0]);
 			}
 		}
-	}
-
-	
+	}	
 	
 }
 
@@ -297,7 +298,6 @@ void Renderer::DrawInstanced(const Mesh* mesh, const size_t& count, ID3D11Buffer
 
 void Renderer::DrawSkeleton(const Mesh* mesh, const Material* material, const dx::XMMATRIX& model, std::vector<dx::XMFLOAT4X4>& bones)
 {
-
 	RenderItem item;
 	item.mesh = mesh;
 	item.material = material;
@@ -305,7 +305,6 @@ void Renderer::DrawSkeleton(const Mesh* mesh, const Material* material, const dx
 	item.bones = &bones;
 	item.world = model;
 	AddItem(item, false);
-
 }
 
 void Renderer::DrawGrass(const Mesh* mesh, const Material* material, const dx::XMMATRIX& model)

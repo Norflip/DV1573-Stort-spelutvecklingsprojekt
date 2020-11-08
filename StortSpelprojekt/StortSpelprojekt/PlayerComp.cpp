@@ -145,6 +145,12 @@ void PlayerComp::DropObject()
 		rbComp->SetPosition(weaponPos);
 		rbComp->SetRotation(weaponRot);
 		objectRb->setLinearVelocity({ dx::XMVectorGetX(camRot) * forceAmount ,  dx::XMVectorGetY(camRot) * forceAmount,  dx::XMVectorGetZ(camRot) * forceAmount });
+
+		for (int i = 0; i < renderer->GetParticles().size(); i++)
+		{
+			if (holding->GetName() == renderer->GetParticles()[i]->GetConnectedObject()->GetName())
+				renderer->GetParticles()[i]->SetActive(true);
+		}		
 	}
 }
 
@@ -193,7 +199,14 @@ void PlayerComp::RayCast(const float& deltaTime)
 						fuel += temp;
 				}
 				hit.object->GetComponent<PickupComponent>()->SetActive(false);
+				RigidBodyComponent* rbComp = hit.object->GetComponent<RigidBodyComponent>();
+				rbComp->Release();
 
+				for (int i = 0; i < renderer->GetParticles().size(); i++)
+				{
+					if (hit.object->GetName() == renderer->GetParticles()[i]->GetConnectedObject()->GetName())
+						renderer->GetParticles()[i]->SetActive(false);
+				}
 				//phy.MutexLock();
 				//phy.UnregisterRigidBody(hit.object->GetComponent<RigidBodyComponent>());
 				//phy.MutexUnlock();
@@ -215,6 +228,12 @@ void PlayerComp::RayCast(const float& deltaTime)
 				hit.object->GetComponent<BoxColliderComponent>()->SetRotation(0, { 5, 5, 5, 5 });
 				//hit.object->RemoveFlag(ObjectFlag::ENABLED);
 				currentWeapon->RemoveFlag(ObjectFlag::ENABLED);
+
+				for (int i = 0; i < renderer->GetParticles().size(); i++)
+				{
+					if (hit.object->GetName() == renderer->GetParticles()[i]->GetConnectedObject()->GetName())
+						renderer->GetParticles()[i]->SetActive(false);
+				}
 			}
 		}
 
