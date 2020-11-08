@@ -264,7 +264,6 @@
     <ClCompile Include="ParticleSystem.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="ParticleComponent.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="ObjectSpawner.h">
@@ -523,9 +522,6 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="ParticleSystem.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="ParticleComponent.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>

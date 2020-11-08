@@ -63,8 +63,7 @@ public:
 	void DrawInstanced(const Mesh* mesh, const size_t& count, ID3D11Buffer* instanceBuffer, const Material* material, const CameraComponent* camera);
 	void DrawSkeleton(const Mesh* mesh, const Material* material, const dx::XMMATRIX& model, const CameraComponent* camera, std::vector<dx::XMFLOAT4X4>& bones);
 	void DrawGrass(const Mesh* mesh, const Material* material, const dx::XMMATRIX& model, const CameraComponent* camera);
-	
-	void GetPSystem(ParticleSystem* pSys) { this->pSystem = pSys; }
+		
 	void AddParticles(ParticleSystem* particles) { this->particles.push_back(particles); }
 	std::vector<ParticleSystem*> GetParticles() { return this->particles; };
 

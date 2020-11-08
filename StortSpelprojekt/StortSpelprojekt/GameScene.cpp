@@ -258,17 +258,17 @@ void GameScene::InitializeObjects()
 
 	/* Particles */	
 	Shader* particleShader = resources->GetShaderResource("particleShader");
-	ParticleSystem* particles = new ParticleSystem(beansObject, camera, particleShader);
+	ParticleSystem* particles = new ParticleSystem(beansObject, particleShader);
 	particles->InitializeParticles(renderer->GetDevice(), L"Textures/particle.png");
 	renderer->AddParticles(particles);		
 
 
-	ParticleSystem* particlesFuel = new ParticleSystem(fuelCanObject, camera, particleShader);
+	ParticleSystem* particlesFuel = new ParticleSystem(fuelCanObject, particleShader);
 	particlesFuel->InitializeParticles(renderer->GetDevice(), L"Textures/particle.png");
 	renderer->AddParticles(particlesFuel);
 
 
-	ParticleSystem* particlesHealth = new ParticleSystem(healthkitObject, camera, particleShader);
+	ParticleSystem* particlesHealth = new ParticleSystem(healthkitObject, particleShader);
 	particlesHealth->InitializeParticles(renderer->GetDevice(), L"Textures/particle.png");
 	renderer->AddParticles(particlesHealth);
 }
@@ -492,7 +492,7 @@ void GameScene::Update(const float& deltaTime)
 	
 
 	for (int i = 0; i < renderer->GetParticles().size(); i++)
-		renderer->GetParticles()[i]->Update(deltaTime, renderer->GetContext());	
+		renderer->GetParticles()[i]->Update(deltaTime, camera, renderer->GetContext());	
 }
 
 void GameScene::FixedUpdate(const float& fixedDeltaTime)

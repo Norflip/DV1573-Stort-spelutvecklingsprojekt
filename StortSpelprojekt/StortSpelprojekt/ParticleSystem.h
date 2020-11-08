@@ -35,7 +35,7 @@ private:
 	};
 
 public:
-	ParticleSystem(Object* object, CameraComponent* camera, Shader* shader);
+	ParticleSystem(Object* object, Shader* shader);
 	ParticleSystem(const ParticleSystem& other);
 	~ParticleSystem();		// set virtual later
 
@@ -44,7 +44,7 @@ public:
 	Texture GetTexture() { return this->texture; }
 
 	void Shutdown();
-	void Update(float frameTime, ID3D11DeviceContext* context);
+	void Update(float frameTime, CameraComponent* camera, ID3D11DeviceContext* context);
 	void Render(ID3D11DeviceContext* context, CameraComponent* camera);
 
 	void SetMaxParticles(int maxParticles) { this->maxParticles = maxParticles; }

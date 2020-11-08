@@ -1,13 +1,13 @@
 #include "stdafx.h"
 #include "ParticleSystem.h"
 
-ParticleSystem::ParticleSystem(Object* object, CameraComponent* camera, Shader* shader)
+ParticleSystem::ParticleSystem(Object* object, Shader* shader)
 {
 	//this->object = new Object("particles");
 	this->particlesShader = shader;
 	//this->particlesMaterial = new Material(particlesShader);
 	this->object = object;
-	this->camera = camera;
+	//this->camera = camera;
 
 	/* Default stuff about every particle */
 	this->differenceOnX = 0.0f;
@@ -143,7 +143,7 @@ void ParticleSystem::Shutdown()
 	}
 }
 
-void ParticleSystem::Update(float frameTime, ID3D11DeviceContext* context)
+void ParticleSystem::Update(float frameTime, CameraComponent* camera, ID3D11DeviceContext* context)
 {	
 
 	/* Update particle-list dynamiclly */
