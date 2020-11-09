@@ -86,7 +86,9 @@ void GameScene::InitializeObjects()
 	houseBaseObject->GetTransform().Rotate(0, -90.0f, 0.0);
 	house = houseBaseObject;
 
-	houseBaseObject->AddComponent<BoxColliderComponent>(dx::XMFLOAT3(2.5, 5, 2.5), dx::XMFLOAT3(0, 0, 0));
+	//														Extence					pos
+	//houseBaseObject->AddComponent<BoxColliderComponent>(dx::XMFLOAT3(2.5, 5, 2.5), dx::XMFLOAT3(0, 0, 0));
+	houseBaseObject->AddComponent<BoxColliderComponent>(dx::XMFLOAT3(3.6, 3.5, 4.5), dx::XMFLOAT3(0, 4, -1.4));
 	houseBaseObject->AddComponent<RigidBodyComponent>(0.0f, FilterGroups::PROPS, FilterGroups::EVERYTHING, BodyType::STATIC, true);
 
 	SkeletonMeshComponent* baseComponent = houseBaseObject->AddComponent<SkeletonMeshComponent>(meshHouse[0], matHouse[0], 0.5f);
