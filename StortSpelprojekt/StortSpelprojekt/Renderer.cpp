@@ -210,11 +210,18 @@ void Renderer::RenderFrame(CameraComponent* camera, float time, RenderTexture& t
 
 	/* Particle stuffy */
 	SetCullBack(true);
-	for (int i = 0; i < particles.size(); i++)
+	for (auto i : particleList)
+	{
+		if(i.second->GetActive())
+			i.second->Render(context, camera);
+	}
+		
+
+	/*for (int i = 0; i < particles.size(); i++)
 	{
 		if(particles[i]->GetActive())
 			particles[i]->Render(context, camera);
-	}
+	}*/
 	SetCullBack(false);
 
 
@@ -271,6 +278,13 @@ void Renderer::AddRenderPass(RenderPass* pass)
 
 	if (passes.size() > 1)
 		std::sort(passes.begin(), passes.end(), [](const RenderPass* a, const RenderPass* b) -> bool { return a->GetPriority() < b->GetPriority(); });
+}
+
+void Renderer::RemoveParticles(ParticleSystem* particle)
+{
+	std::vector<ParticleSystem*>::iterator it = std::find(particles.begin(), particles.end(), particle);
+
+	particles.erase(it);
 }
 
 void Renderer::Draw(const Mesh* mesh, const Material* material, const dx::XMMATRIX& model)

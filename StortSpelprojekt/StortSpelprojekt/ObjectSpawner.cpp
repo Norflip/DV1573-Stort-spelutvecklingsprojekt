@@ -151,7 +151,7 @@ void ObjectSpawner::Spawn(const SaveState& state, PointQuadTree& tree, std::unor
 
 #if SPAWN_ITEMS
 	int itemIndex = 0;
-
+	ParticleSystem* particles = nullptr;
 	if (items.size() > 0)
 	{
 		for (size_t i = 0; i < itemSpawnPositions.size(); i++)
@@ -172,17 +172,19 @@ void ObjectSpawner::Spawn(const SaveState& state, PointQuadTree& tree, std::unor
 				object->GetComponent<RigidBodyComponent>()->SetPosition(position);
 				Transform::SetParentChild(root->GetTransform(), object->GetTransform());
 				activeItems.push_back(object);
-
+				
+				
 				itemIndex++;
 
-
 				/* Shitty stuff here maybe? */
-				ParticleSystem* particles = new ParticleSystem(object, resources->GetShaderResource("particleShader"));
-				particles->InitializeParticles(renderer->GetDevice(), L"Textures/particle.png");
-				renderer->AddParticles(particles);
+				particles = new ParticleSystem(object, resources->GetShaderResource("particleShader"));
+				particles->InitializeParticles(renderer->GetDevice(), L"Textures/starstar.png");
+				renderer->AddParticles(object->GetID(), particles);
+				
 			}
 		}
 	}
+		
 
 	std::cout << "ITEMS: " << itemSpawnPositions.size() << std::endl;
 #endif

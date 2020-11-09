@@ -5,11 +5,10 @@
 class ParticleSystem
 {
 private:
-
 	__declspec(align(16))
-		struct cBufferPerObjectParticles
+		struct cb_ObjectPerParticles
 	{
-		cBufferPerObjectParticles() { ZeroMemory(this, sizeof(this)); }
+		cb_ObjectPerParticles() { ZeroMemory(this, sizeof(this)); }
 		DirectX::XMMATRIX worldViewProj;
 		DirectX::XMMATRIX world;
 	};
@@ -37,23 +36,22 @@ private:
 public:
 	ParticleSystem(Object* object, Shader* shader);
 	ParticleSystem(const ParticleSystem& other);
-	~ParticleSystem();		// set virtual later
+	virtual ~ParticleSystem();
+	void Shutdown();
 
 	void InitializeParticles(ID3D11Device* device, LPCWSTR textureFilename);
-	Object* GetConnectedObject() { return this->object; }
-
-	void Shutdown();
 	void Update(float frameTime, CameraComponent* camera, ID3D11DeviceContext* context);
 	void Render(ID3D11DeviceContext* context, CameraComponent* camera);
+		
+	Object* GetConnectedObject() { return this->object; }	
 
 	void SetMaxParticles(int maxParticles) { this->maxParticles = maxParticles; }
-	void SetDaviation(float x, float y, float z);
+	void SetDifference(float x, float y, float z);
 	void SetParticleSize(float size) { this->particleSize = size; }
 
 	void SetWorldMatrix(dx::XMMATRIX worldmatrix);
 	dx::XMMATRIX GetWorldMatrix();
-
-	int GetIndexCount();	
+		
 	bool GetActive() { return this->active; }
 	void SetActive(bool active) { this->active = active; }
 
@@ -65,18 +63,15 @@ private:
 	void CreateParticle(float frameTime);
 	void UpdateParticles(float frameTime);
 	void DeleteParticles();
-	bool UpdateBuffers(ID3D11DeviceContext* context);
+	void UpdateBuffers(ID3D11DeviceContext* context);
 
-private:
-	HRESULT hr;
-	//Material* particlesMaterial;
+private:	
 	Shader* particlesShader;
 	Object* object;
 	CameraComponent* camera;
 
 	ID3D11ShaderResourceView* srv;
 	ID3D11SamplerState* samplerState;
-	std::vector<ID3D11ShaderResourceView*> srvs;
 	
 	/* Particle stuffy stuff */
 	float differenceOnX, differenceOnY, differenceOnZ;
@@ -90,12 +85,11 @@ private:
 	int vertexCount, indexCount;
 	Vertex* vertices;
 	ID3D11Buffer* vertexBuffer, * indexBuffer;
-	ID3D11Buffer* bufferPerObjectParticles;	// Particles updated dynamiclly
-	cBufferPerObjectParticles cbPerObjectParticles;
+	ID3D11Buffer* bufferPerObjectParticles;
+	cb_ObjectPerParticles cbPerObjectParticles;
 
 	/* For dynamicly update */
 	Particles* particleList;
-	Texture texture;
 
 	dx::XMMATRIX worldmatrix;
 	bool active;

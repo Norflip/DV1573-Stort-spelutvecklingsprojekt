@@ -198,15 +198,28 @@ void PlayerComp::RayCast(const float& deltaTime)
 					if ((fuel + temp) <= 100.0f)
 						fuel += temp;
 				}
+				
+
+
+				for (auto i : renderer->GetParticleList())
+				{
+					if (hit.object->GetID() == i.first)
+						i.second->SetActive(false);
+				}
+
 				hit.object->GetComponent<PickupComponent>()->SetActive(false);
 				RigidBodyComponent* rbComp = hit.object->GetComponent<RigidBodyComponent>();
 				rbComp->Release();
 
-				for (int i = 0; i < renderer->GetParticles().size(); i++)
+				/*for (int i = 0; i < renderer->GetParticles().size(); i++)
 				{
 					if (hit.object->GetName() == renderer->GetParticles()[i]->GetConnectedObject()->GetName())
+					{
 						renderer->GetParticles()[i]->SetActive(false);
-				}
+					}			
+						
+				}*/
+
 				//phy.MutexLock();
 				//phy.UnregisterRigidBody(hit.object->GetComponent<RigidBodyComponent>());
 				//phy.MutexUnlock();

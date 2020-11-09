@@ -196,9 +196,7 @@ void GameScene::InitializeObjects()
 	enemy->GetTransform().SetPosition(asdf);
 
 	/* PICKUP STUFF DONT DELETE THESEEE */
-	/* PICKUP STUFF DONT DELETE THESEEE */
-	/* PICKUP STUFF DONT DELETE THESEEE */
-	/* PICKUP STUFF DONT DELETE THESEEE */
+	
 
 	Object* healthkitObject = resources->AssembleObject("HealthKit", "HealthKitMaterial");
 	healthkitObject->GetTransform().SetPosition({ 23,2,50 });
@@ -227,18 +225,18 @@ void GameScene::InitializeObjects()
 	/* Particles */	
 	Shader* particleShader = resources->GetShaderResource("particleShader");
 	ParticleSystem* particles = new ParticleSystem(beansObject, particleShader);
-	particles->InitializeParticles(renderer->GetDevice(), L"Textures/particle.png");
-	renderer->AddParticles(particles);		
+	particles->InitializeParticles(renderer->GetDevice(), L"Textures/starstar.png");
+	renderer->AddParticles(beansObject->GetID(), particles);		
 
 
 	ParticleSystem* particlesFuel = new ParticleSystem(fuelCanObject, particleShader);
-	particlesFuel->InitializeParticles(renderer->GetDevice(), L"Textures/particle.png");
-	renderer->AddParticles(particlesFuel);
+	particlesFuel->InitializeParticles(renderer->GetDevice(), L"Textures/starstar.png");
+	renderer->AddParticles(fuelCanObject->GetID(), particlesFuel);
 
 
 	ParticleSystem* particlesHealth = new ParticleSystem(healthkitObject, particleShader);
-	particlesHealth->InitializeParticles(renderer->GetDevice(), L"Textures/particle.png");
-	renderer->AddParticles(particlesHealth);
+	particlesHealth->InitializeParticles(renderer->GetDevice(), L"Textures/starstar.png");
+	renderer->AddParticles(healthkitObject->GetID(), particlesHealth);
 }
 
 void GameScene::InitializeGUI()
@@ -454,9 +452,11 @@ void GameScene::Update(const float& deltaTime)
 	
 	skyboxClass->GetThisObject()->GetTransform().SetPosition(camera->GetOwner()->GetTransform().GetPosition());
 	
+	for(auto i : renderer->GetParticleList())
+		i.second->Update(deltaTime, camera, renderer->GetContext());
 
-	for (int i = 0; i < renderer->GetParticles().size(); i++)
-		renderer->GetParticles()[i]->Update(deltaTime, camera, renderer->GetContext());	
+	//for (int i = 0; i < renderer->GetParticles().size(); i++)
+	//	renderer->GetParticles()[i]->Update(deltaTime, camera, renderer->GetContext());	
 }
 
 void GameScene::FixedUpdate(const float& fixedDeltaTime)
