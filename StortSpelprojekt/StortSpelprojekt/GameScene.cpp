@@ -196,8 +196,6 @@ void GameScene::InitializeObjects()
 	enemy->GetTransform().SetPosition(asdf);
 
 	/* PICKUP STUFF DONT DELETE THESEEE */
-	
-
 	Object* healthkitObject = resources->AssembleObject("HealthKit", "HealthKitMaterial");
 	healthkitObject->GetTransform().SetPosition({ 23,2,50 });
 	healthkitObject->AddComponent<BoxColliderComponent>(dx::XMFLOAT3{ 0.5f, 0.5f, 0.5f }, dx::XMFLOAT3{ 0, 0, 0 });
@@ -222,21 +220,19 @@ void GameScene::InitializeObjects()
 	AddObject(beansObject);
 
 
-	/* Particles */	
-	Shader* particleShader = resources->GetShaderResource("particleShader");
-	ParticleSystem* particles = new ParticleSystem(beansObject, particleShader);
-	particles->InitializeParticles(renderer->GetDevice(), L"Textures/starstar.png");
-	renderer->AddParticles(beansObject->GetID(), particles);		
+	///* Particles */	
+	//Shader* particleShader = resources->GetShaderResource("particleShader");
+	//ParticleSystem* particles = new ParticleSystem(beansObject, particleShader);
+	//particles->InitializeParticles(renderer->GetDevice(), L"Textures/starstar.png");
+	//renderer->AddParticles(beansObject->GetID(), particles);	
 
+	//ParticleSystem* particlesFuel = new ParticleSystem(fuelCanObject, particleShader);
+	//particlesFuel->InitializeParticles(renderer->GetDevice(), L"Textures/starstar.png");
+	//renderer->AddParticles(fuelCanObject->GetID(), particlesFuel);
 
-	ParticleSystem* particlesFuel = new ParticleSystem(fuelCanObject, particleShader);
-	particlesFuel->InitializeParticles(renderer->GetDevice(), L"Textures/starstar.png");
-	renderer->AddParticles(fuelCanObject->GetID(), particlesFuel);
-
-
-	ParticleSystem* particlesHealth = new ParticleSystem(healthkitObject, particleShader);
-	particlesHealth->InitializeParticles(renderer->GetDevice(), L"Textures/starstar.png");
-	renderer->AddParticles(healthkitObject->GetID(), particlesHealth);
+	//ParticleSystem* particlesHealth = new ParticleSystem(healthkitObject, particleShader);
+	//particlesHealth->InitializeParticles(renderer->GetDevice(), L"Textures/starstar.png");
+	//renderer->AddParticles(healthkitObject->GetID(), particlesHealth);
 }
 
 void GameScene::InitializeGUI()
@@ -373,6 +369,8 @@ void GameScene::OnDeactivate()
 {
 	world.DeconstructSegment();
 	renderer->RemoveRenderPass(guiManager);
+	
+	renderer->ClearParticles();
 
 	ShowCursor(true);
 	//this->PrintSceneHierarchy(root, 0);
@@ -418,45 +416,12 @@ void GameScene::Update(const float& deltaTime)
 		physics->MutexUnlock();
 
 		const int a = 100;
-	}
-
-	POINT p;
-	p.x = renderer->GetOutputWindow()->GetWidth() / 2;
-	p.y = renderer->GetOutputWindow()->GetHeight() / 2;
-
-	Ray ray = camera->MouseToRay(UICAST(p.x), UICAST(p.y));
-	//std::cout << p.x << ", " << p.y << std::endl;
-
-	//if (LMOUSE_PRESSED)
-	//{
-	//	Physics& phy = Physics::Instance();
-	//	RayHit hit;
-
-	//	DShape::DrawLine(ray.origin, ray.GetPoint(1000.0f), { 1,1,0 });
-
-	//	if (phy.RaytestSingle(ray, 1000.0f, hit, FilterGroups::EVERYTHING))
-	//	{
-	//		DShape::DrawLine(ray.origin, hit.position, { 1,1,0 });
-	//		DShape::DrawSphere(hit.position, 1.0f, { 0, 0, 1 });
-
-	//		if (hit.object != nullptr)
-	//		{
-	//			std::cout << hit.object->GetName() << std::endl;
-	//		}
-	//	}	
-	//}
-	//else
-	//{
-	//	DShape::DrawSphere(ray.GetPoint(10.0f), 0.2f, { 1, 0, 1 });
-	//}
+	}	
 	
 	skyboxClass->GetThisObject()->GetTransform().SetPosition(camera->GetOwner()->GetTransform().GetPosition());
 	
 	for(auto i : renderer->GetParticleList())
 		i.second->Update(deltaTime, camera, renderer->GetContext());
-
-	//for (int i = 0; i < renderer->GetParticles().size(); i++)
-	//	renderer->GetParticles()[i]->Update(deltaTime, camera, renderer->GetContext());	
 }
 
 void GameScene::FixedUpdate(const float& fixedDeltaTime)
@@ -472,10 +437,7 @@ void GameScene::Render()
 	root->Draw(renderer, camera);
 	//worldGenerator.DrawShapes();
 	//world.DrawDebug();
-
-	//particles->Render(renderer->GetContext(), camera);
 	
-
 	renderer->RenderFrame(camera, (float)clock.GetSeconds());
 }
 

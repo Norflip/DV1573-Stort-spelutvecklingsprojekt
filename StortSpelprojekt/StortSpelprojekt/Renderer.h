@@ -56,12 +56,9 @@ public:
 
 	void AddRenderPass(RenderPass*);
 		
-	//void AddParticles(ParticleSystem* particles) { this->particles.push_back(particles); }
 	void AddParticles(size_t objID, ParticleSystem* particles) { this->particleList.insert({ objID, particles }); }
 	std::unordered_map<size_t, ParticleSystem*> GetParticleList() { return this->particleList; }
-
-	std::vector<ParticleSystem*> GetParticles() { return this->particles; };
-	void RemoveParticles(ParticleSystem* particle);
+	void ClearParticles();
 
 	void Draw(const Mesh* mesh, const Material* material, const dx::XMMATRIX& model);
 	void DrawInstanced(const Mesh* mesh, const size_t& count, ID3D11Buffer* instanceBuffer, const Material* material);
@@ -103,7 +100,6 @@ private:
 	ID3D11Device* device;
 	ID3D11DeviceContext* context;
 		
-
 	RenderTexture backbuffer;
 	RenderTexture midbuffer;
 	RenderTexture renderPassSwapBuffers [2];
@@ -115,7 +111,6 @@ private:
 	ConstantBuffer<cb_Scene> sceneBuffer;
 	ConstantBuffer<cb_Material> materialBuffer;
 
-	std::vector<ParticleSystem*> particles;
 	std::unordered_map<size_t, ParticleSystem*> particleList;
 
 	std::vector<dx::XMFLOAT4X4> srv_skeleton_data;

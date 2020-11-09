@@ -29,6 +29,10 @@ Renderer::~Renderer()
 	skeleton_srv->Release();
 	dss->Release();
 	rasterizerStateCCWO->Release();
+
+	for (auto i : particleList)
+		delete i.second;
+	particleList.clear();
 }
 
 void Renderer::Initialize(Window* window)
@@ -215,15 +219,7 @@ void Renderer::RenderFrame(CameraComponent* camera, float time, RenderTexture& t
 		if(i.second->GetActive())
 			i.second->Render(context, camera);
 	}
-		
-
-	/*for (int i = 0; i < particles.size(); i++)
-	{
-		if(particles[i]->GetActive())
-			particles[i]->Render(context, camera);
-	}*/
 	SetCullBack(false);
-
 
 	if (applyRenderPasses)
 	{
@@ -280,11 +276,11 @@ void Renderer::AddRenderPass(RenderPass* pass)
 		std::sort(passes.begin(), passes.end(), [](const RenderPass* a, const RenderPass* b) -> bool { return a->GetPriority() < b->GetPriority(); });
 }
 
-void Renderer::RemoveParticles(ParticleSystem* particle)
+void Renderer::ClearParticles()
 {
-	std::vector<ParticleSystem*>::iterator it = std::find(particles.begin(), particles.end(), particle);
-
-	particles.erase(it);
+	for (auto i : particleList)
+		delete i.second;
+	particleList.clear();
 }
 
 void Renderer::Draw(const Mesh* mesh, const Material* material, const dx::XMMATRIX& model)

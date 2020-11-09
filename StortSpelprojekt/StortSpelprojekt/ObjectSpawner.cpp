@@ -179,8 +179,7 @@ void ObjectSpawner::Spawn(const SaveState& state, PointQuadTree& tree, std::unor
 				/* Shitty stuff here maybe? */
 				particles = new ParticleSystem(object, resources->GetShaderResource("particleShader"));
 				particles->InitializeParticles(renderer->GetDevice(), L"Textures/starstar.png");
-				renderer->AddParticles(object->GetID(), particles);
-				
+				renderer->AddParticles(object->GetID(), particles);				
 			}
 		}
 	}

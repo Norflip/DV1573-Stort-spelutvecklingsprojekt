@@ -370,7 +370,7 @@ void ParticleSystem::UpdateParticles(float frameTime)
 {
 	for (int i = 0; i < currentParticleCount; i++)
 	{
-		particleList[i].posy = particleList[i].posy + (particleList[i].velocity * ((float)frameTime * 0.6f));
+		particleList[i].posy = particleList[i].posy + (particleList[i].velocity * ((float)frameTime * 0.2f));
 	}
 }
 
