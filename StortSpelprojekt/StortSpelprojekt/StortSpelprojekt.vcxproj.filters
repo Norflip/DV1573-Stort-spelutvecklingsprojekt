@@ -516,9 +516,6 @@
     <ClInclude Include="ZWEBLoader.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="Defines.h">
-      <Filter>Source Files</Filter>
-    </ClInclude>
     <ClInclude Include="FXAARenderPass.h">
       <Filter>Source Files</Filter>
     </ClInclude>
@@ -547,6 +544,9 @@
       <Filter>ThirdParty</Filter>
     </ClInclude>
     <ClInclude Include="SkyboxRenderPass.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Defines.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>
