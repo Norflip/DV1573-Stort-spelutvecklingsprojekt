@@ -27,7 +27,7 @@ void CameraComponent::UpdateView()
 	planes = VirtualCamera::GetFrustumPlanes(transform);
 }
 
-bool CameraComponent::InView(const BoundingBox& bounds, const dx::XMMATRIX world)
+bool CameraComponent::InView(const Bounds& bounds, const dx::XMMATRIX world)
 {
 	return VirtualCamera::InView(bounds, world, planes);
 }

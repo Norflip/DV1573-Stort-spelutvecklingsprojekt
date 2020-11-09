@@ -41,31 +41,17 @@ void EnemySMComp::Initialize()
 
 void EnemySMComp::Animate()
 {
-
-	if (currentState == EnemyState::ATTACK && statsComponent->GetHealth() > 0)
+	//OutputDebugStringA(std::to_string(statsComponent->GetHealth()).c_str());
+	if (currentState == EnemyState::ATTACK)
 	{
-		if (attackComponent->GetIsAttacking() && statsComponent->GetHealth() > 0)
-		{
-			skeletonComponent->SetTrack(SkeletonStateMachine::ATTACK, false);
-		}
-		else if(!attackComponent->GetIsAttacking() && statsComponent->GetHealth() > 0)
-		{
-			skeletonComponent->SetTrack(SkeletonStateMachine::RUN, false);
-		}
+		skeletonComponent->SetTrack(SkeletonStateMachine::BLENDED, false);
+
 	}
-	else if (currentState == EnemyState::IDLE && statsComponent->GetHealth() > 0)
+	else
 	{
 		skeletonComponent->SetTrack(SkeletonStateMachine::IDLE,false);
 	}
-	else if (currentState == EnemyState::PATROL&& statsComponent->GetHealth()>0)
-	{
-		skeletonComponent->SetTrack(SkeletonStateMachine::WALK,false);
-	}
-	if (statsComponent->GetHealth()<=0)
-	{
-		
-		skeletonComponent->SetTrack(SkeletonStateMachine::DEATH, true);
-	}
+	
 }
 
 void EnemySMComp::Update(const float& deltaTime)
