@@ -5,7 +5,7 @@
 
 namespace dx = DirectX;
 
-constexpr float MIN_INFLUENCE = 1.0f;
+constexpr float MIN_INFLUENCE = 4.0f;
 constexpr float MAX_INFLUENCE = 10.0f;
 constexpr float INFLUENCE_FADE_DISTANCE = 10.0f;
 
@@ -59,25 +59,22 @@ struct LineSegment
 		t = (lengthSqr != 0) ? dot / lengthSqr : -1;
 
 		float xx, yy;
-		if (t < 0)
-		{
-			xx = start.x;
-			yy = start.y;
-		}
-		else if (t > 1)
-		{
-			xx = end.x;
-			yy = end.y;
-		}
-		else {
-			xx = start.x + t * edge1ToEdge2X;
-			yy = end.y + t * edge1ToEdge2Y;
-		}
+		t = Math::Clamp01(t);
+		xx = start.x + t * edge1ToEdge2X;
+		yy = start.y + t * edge1ToEdge2Y;
 
 		float dx = x - xx;
 		float dy = y - yy;
 
-		t = Math::Clamp01(t); 
+		//
+
+
+	//	float distance1 = Math::DistanceToLineSqr(x, y, start.x, start.y, end.x, end.y, t);
+		/*	if (distance1 != distance2)
+			{
+				std::cout << "1: " << distance1 << "\t2: " << distance2 << std::endl;
+			}*/
+
 		return sqrtf(dx * dx + dy * dy);
 	}
 };
@@ -92,6 +89,7 @@ public:
 	void Clear();
 	float SampleInfluence(const dx::XMFLOAT2& position) const;
 
+	std::vector<LineSegment> GetLineSegments() const { return this->segments; }
 	std::vector<PathPoint> GetPoints() const { return this->points; }
 	PathPoint GetPoint(size_t index) { return this->points[index]; }
 	size_t CountPoints() const { return this->points.size(); }

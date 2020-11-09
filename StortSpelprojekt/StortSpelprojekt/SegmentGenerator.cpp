@@ -140,19 +140,30 @@ void SegmentGenerator::DrawDebug()
 	std::vector<PathPoint> points = grid.GetPath().GetPoints();
 
 	const int skip = 1;
-	const float height = 2.0f;
+	const float height = 1.0f;
 
-	for (size_t i = 0; i < points.size(); i += skip)
+	//for (size_t i = 0; i < points.size(); i += skip)
+	//{
+	//	PathPoint point0 = points[i];
+	//	dx::XMFLOAT3 worldPoint(point0.x, height, point0.y);
+	//	DShape::DrawSphere(worldPoint, 1.0f, { 1,0,1 });
+
+	//	if (i < points.size() - 1) // && (i + skip) < points.size() - 1)
+	//	{
+	//		PathPoint point1 = points[i + skip];
+	//		DShape::DrawLine({ point1.x, height, point1.y }, worldPoint, { 1,0,0 });
+	//	}
+	//}
+
+	auto segments = grid.GetPath().GetLineSegments();
+	for (size_t i = 0; i < segments.size(); i++)
 	{
-		PathPoint point0 = points[i];
-		dx::XMFLOAT3 worldPoint(point0.x, height, point0.y);
-		DShape::DrawSphere(worldPoint, 0.5f, { 1,0,1 });
+		dx::XMFLOAT3 worldPoint0 (segments[i].start.x, height, segments[i].start.y);
+		dx::XMFLOAT3 worldPoint1 (segments[i].end.x, height, segments[i].end.y);
 
-		if (i < points.size() - 1) // && (i + skip) < points.size() - 1)
-		{
-			PathPoint point1 = points[i + skip];
-			//DShape::DrawLine({ point1.x, height, point1.y }, worldPoint, { 1,0,0 });
-		}
+		DShape::DrawSphere(worldPoint0, 1.0f, { 1,0,1 });
+		DShape::DrawLine(worldPoint0, worldPoint1, { 1,0,0 });
+
 	}
 }
 

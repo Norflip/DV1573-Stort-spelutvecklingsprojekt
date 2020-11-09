@@ -162,10 +162,11 @@ namespace Math
 		return curvedPoints;
 	}
 
-	inline float DistanceToLineSqr(float px, float py, float line0x, float line0y, float line1x, float line1y)
+	inline float DistanceToLineSqr(float px, float py, float line0x, float line0y, float line1x, float line1y, float& t)
 	{
 		float dx = line1x - line0x;
 		float dy = line1y - line0y;
+		t = -1.0f;
 
 		if ((dx == 0) && (dy == 0))
 		{
@@ -177,7 +178,7 @@ namespace Math
 		else
 		{
 			// Calculate the t that minimizes the distance.
-			float t = ((px - line0x) * dx + (py - line0y) * dy) / (dx * dx + dy * dy);
+			t = ((px - line0x) * dx + (py - line0y) * dy) / (dx * dx + dy * dy);
 
 			// See if this represents one of the segment's
 			// end points or a point in the middle.
