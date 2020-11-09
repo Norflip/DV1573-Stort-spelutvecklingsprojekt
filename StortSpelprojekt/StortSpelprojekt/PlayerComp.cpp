@@ -37,7 +37,7 @@ PlayerComp::PlayerComp(Renderer* renderer, CameraComponent* camComp, Physics* ph
 	this->radius = radius;
 	this->renderer = renderer;
 	this->physics = physics;
-
+	this->playerStrength = 50;
 
 	Reset();
 
@@ -141,10 +141,10 @@ void PlayerComp::DropObject()
 		dx::XMMatrixDecompose(&weaponScale, &weaponRot, &weaponPos, wepWorld);
 		rbComp->SetEnabled(true);
 		objectRb->setAngularVelocity({ 0,0,0 });
-		float forceAmount = 10;
 		rbComp->SetPosition(weaponPos);
 		rbComp->SetRotation(weaponRot);
-		objectRb->setLinearVelocity({ dx::XMVectorGetX(camRot) * forceAmount ,  dx::XMVectorGetY(camRot) * forceAmount,  dx::XMVectorGetZ(camRot) * forceAmount });
+		float tossSpeed = playerStrength / rbComp->GetMass();
+		objectRb->setLinearVelocity({ dx::XMVectorGetX(camRot) * tossSpeed ,  dx::XMVectorGetY(camRot) * tossSpeed,  dx::XMVectorGetZ(camRot) * tossSpeed });
 		holding = nullptr;
 		currentWeapon->AddFlag(ObjectFlag::ENABLED);
 	}
