@@ -87,8 +87,8 @@ void GameScene::InitializeObjects()
 	houseBaseObject->AddComponent<BoxColliderComponent>(dx::XMFLOAT3(2.5, 5, 2.5), dx::XMFLOAT3(0, 0, 0));
 	houseBaseObject->AddComponent<RigidBodyComponent>(0.0f, FilterGroups::PROPS, FilterGroups::EVERYTHING, BodyType::STATIC, true);
 
-	SkeletonMeshComponent* baseComponent = houseBaseObject->AddComponent<SkeletonMeshComponent>(meshHouse[0], matHouse[0], 0.5f);
-	SkeletonMeshComponent* legsComponent = housesLegsObject->AddComponent<SkeletonMeshComponent>(skeletonMeshHouseLegs[0], skeletonMatHouseLegs[0], 0.5f);
+	SkeletonMeshComponent* baseComponent = houseBaseObject->AddComponent<SkeletonMeshComponent>(meshHouse[0], matHouse[0], 0.1f);
+	SkeletonMeshComponent* legsComponent = housesLegsObject->AddComponent<SkeletonMeshComponent>(skeletonMeshHouseLegs[0], skeletonMatHouseLegs[0], 0.1f);
 	
 	legsComponent->SetAnimationTrack(skeletonHouseLegsIdle, SkeletonStateMachine::IDLE);
 	legsComponent->SetAnimationTrack(skeletonHouseLegsWalk, SkeletonStateMachine::WALK);
@@ -122,7 +122,7 @@ void GameScene::InitializeObjects()
 	cameraObject->GetTransform().SetPosition(playerSpawnVec);
 	playerObject->GetTransform().SetPosition(playerSpawnVec);
 	playerObject->AddComponent<CapsuleColliderComponent>(0.5f, 1.8f, zero);
-	playerObject->AddComponent<RigidBodyComponent>(60.f, FilterGroups::PLAYER, FilterGroups::EVERYTHING, BodyType::DYNAMIC, true);
+	playerObject->AddComponent<RigidBodyComponent>(60.f, FilterGroups::PLAYER, (FilterGroups::EVERYTHING), BodyType::DYNAMIC, true);
 
 	//Transform::SetParentChild(playerObject->GetTransform(),cameraObject->GetTransform());
 	playerObject->AddComponent<PlayerComp>(renderer, camera, Engine::Instance->GetPhysics(), guiManager, 100.f, 2.f, 20.f, 50.f, 3.f);
@@ -158,7 +158,7 @@ void GameScene::InitializeObjects()
 	//enemyStatsComp = enemy->GetComponent<EnemyStatsComp>();
 	enemy->AddComponent<BoxColliderComponent>(dx::XMFLOAT3{ 1, 2.45, 1 }, dx::XMFLOAT3{ 0, 0, 0 });
 
-	enemy->AddComponent<RigidBodyComponent>(10.f, FilterGroups::ENEMIES, FilterGroups::EVERYTHING, BodyType::KINEMATIC, true);
+	enemy->AddComponent<RigidBodyComponent>(10.f, FilterGroups::ENEMIES, (FilterGroups::EVERYTHING & ~FilterGroups::PICKUPS) & ~FilterGroups::HOLDABLE, BodyType::KINEMATIC, true);
 	
 	EnemySMComp* stateMachine = enemy->AddComponent<EnemySMComp>(EnemyState::IDLE);
 	stateMachine->RegisterState(EnemyState::IDLE, enemy->AddComponent<EnemyIdleComp>());
@@ -202,7 +202,7 @@ void GameScene::InitializeObjects()
 	healthkitObject->GetTransform().SetPosition({ 23,2,50 });
 	healthkitObject->AddComponent<BoxColliderComponent>(dx::XMFLOAT3{ 0.5f, 0.5f, 0.5f }, dx::XMFLOAT3{ 0, 0, 0 });
 	healthkitObject->AddComponent<PickupComponent>(Type::Health, 20.0f);
-	healthkitObject->AddComponent<RigidBodyComponent>(0.f, FilterGroups::PICKUPS, FilterGroups::TERRAIN, BodyType::DYNAMIC,true);
+	healthkitObject->AddComponent<RigidBodyComponent>(0.f, FilterGroups::PICKUPS, (FilterGroups::EVERYTHING &~FilterGroups::PLAYER), BodyType::DYNAMIC,true);
 	AddObject(healthkitObject);
 
 	///* Fuel pickup stuff temporary */
@@ -210,7 +210,7 @@ void GameScene::InitializeObjects()
 	fuelCanObject->GetTransform().SetPosition({ 22,2,52 });
 	fuelCanObject->AddComponent<BoxColliderComponent>(dx::XMFLOAT3{ 0.3f, 0.3f, 0.3f }, dx::XMFLOAT3{ 0, 0, 0 });
 	fuelCanObject->AddComponent<PickupComponent>(Type::Fuel, 20.0f);
-	fuelCanObject->AddComponent<RigidBodyComponent>(10.f, FilterGroups::HOLDABLE, FilterGroups::TERRAIN, BodyType::DYNAMIC, true);
+	fuelCanObject->AddComponent<RigidBodyComponent>(10.f, FilterGroups::HOLDABLE, (FilterGroups::EVERYTHING &~FilterGroups::PLAYER), BodyType::DYNAMIC, true);
 	AddObject(fuelCanObject);
 
 	///* Banana pickup stuff temporary */
@@ -218,7 +218,7 @@ void GameScene::InitializeObjects()
 	beansObject->GetTransform().SetPosition({22, 2.0f, 53 });
 	beansObject->AddComponent<BoxColliderComponent>(dx::XMFLOAT3{ 0.5f, 0.5f, 0.5f }, dx::XMFLOAT3{ 0, 0, 0 });
 	beansObject->AddComponent<PickupComponent>(Type::Food, 20.0f);
-	beansObject->AddComponent<RigidBodyComponent>(0.f, FilterGroups::PICKUPS, FilterGroups::TERRAIN, BodyType::DYNAMIC, true);
+	beansObject->AddComponent<RigidBodyComponent>(0.f, FilterGroups::PICKUPS, (FilterGroups::EVERYTHING & ~FilterGroups::PLAYER), BodyType::DYNAMIC, true);
 	AddObject(beansObject);
 }
 
@@ -368,77 +368,6 @@ void GameScene::Update(const float& deltaTime)
 
 	static_cast<GUIFont*>(guiManager->GetGUIObject("fps"))->SetString(std::to_string((int)GameClock::Instance().GetFramesPerSecond()));
 	guiManager->UpdateAll();
-
-	if (KEY_DOWN(H))
-	{
-		dx::XMVECTOR cameraPosition = camera->GetOwner()->GetTransform().GetPosition();
-
-		const int ra = 3;
-
-		physics->MutexLock();
-
-		for (int y = -ra; y <= ra; y++)
-		{
-			for (int x = -ra; x <= ra; x++)
-			{
-				dx::XMVECTOR position = dx::XMVectorAdd(cameraPosition, { (float)x * 1.5f, -1.0f, (float)y * 1.5f });
-
-				//	Object* object = pooler.GetItem("test_body_cube");
-				Object* object = new Object("physics_cube");
-				object->GetTransform().SetPosition(position);
-
-				Mesh* mesh1 = resources->GetResource<Mesh>("Test");
-				Material* material1 = resources->GetResource<Material>("TestMaterial");
-
-				object->AddComponent<MeshComponent>(mesh1, material1);
-				object->AddComponent<BoxColliderComponent>(dx::XMFLOAT3(0.5f, 0.5f, 0.5f), dx::XMFLOAT3(0, 0, 0));
-				object->AddComponent<RigidBodyComponent>(10.0f, FilterGroups::DEFAULT, FilterGroups::EVERYTHING, BodyType::DYNAMIC, true);
-
-				AddObject(object);
-			}
-		}
-
-		physics->MutexUnlock();
-
-		const int a = 100;
-	}
-
-	POINT p;
-	p.x = renderer->GetOutputWindow()->GetWidth() / 2;
-	p.y = renderer->GetOutputWindow()->GetHeight() / 2;
-
-	Ray ray = camera->MouseToRay(UICAST(p.x), UICAST(p.y));
-	//std::cout << p.x << ", " << p.y << std::endl;
-
-	//if (LMOUSE_PRESSED)
-	//{
-	//	Physics& phy = Physics::Instance();
-	//	RayHit hit;
-
-	//	DShape::DrawLine(ray.origin, ray.GetPoint(1000.0f), { 1,1,0 });
-
-	//	if (phy.RaytestSingle(ray, 1000.0f, hit, FilterGroups::EVERYTHING))
-	//	{
-	//		DShape::DrawLine(ray.origin, hit.position, { 1,1,0 });
-	//		DShape::DrawSphere(hit.position, 1.0f, { 0, 0, 1 });
-
-	//		if (hit.object != nullptr)
-	//		{
-	//			std::cout << hit.object->GetName() << std::endl;
-	//		}
-	//	}	
-	//}
-	//else
-	//{
-	//	DShape::DrawSphere(ray.GetPoint(10.0f), 0.2f, { 1, 0, 1 });
-	//}
-	
-	//if (enemy->GetComponent<EnemyStatsComp>()->GetHealth() <= 0)
-	//	RemoveEnemy();
-
-	/*POINT pa = input.GetMousePos();
-	Ray ray = camera->MouseToRay(p.x, p.y);*/
-
 }
 
 void GameScene::FixedUpdate(const float& fixedDeltaTime)
