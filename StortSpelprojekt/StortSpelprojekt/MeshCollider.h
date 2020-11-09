@@ -15,8 +15,8 @@ public:
 	virtual~MeshCollider() {};
 
 	void InitializeCollider(Physics* physics) override;
-	//void Update(const float& deltaTime) const;
-
+	void Update(const float& deltaTime) override;
+	
 private:
 	Mesh* mesh;
 };

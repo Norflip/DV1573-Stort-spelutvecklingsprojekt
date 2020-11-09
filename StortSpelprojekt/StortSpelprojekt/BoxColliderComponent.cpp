@@ -31,7 +31,9 @@ void BoxColliderComponent::Update(const float& deltaTime)
 #if DRAW_COLLIDERS
     for (size_t i = 0; i < colliderInformations.size(); i++)
     {
-        DShape::DrawBox(colliderInformations[i].position, extends[i], dx::XMFLOAT3(1, 0, 0));
+        dx::XMFLOAT3 pos;
+        dx::XMStoreFloat3(&pos, dx::XMVectorAdd(dx::XMLoadFloat3(&colliderInformations[i].position), GetOwner()->GetTransform().GetWorldPosition()));
+        DShape::DrawWireBox(pos, extends[i], dx::XMFLOAT3(1, 0, 0));
     }
 #endif
 }
