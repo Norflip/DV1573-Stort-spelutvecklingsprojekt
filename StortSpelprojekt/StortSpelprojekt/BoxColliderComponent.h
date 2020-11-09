@@ -15,7 +15,8 @@ public:
 	void InitializeCollider (Physics* physics) override;
 	dx::XMFLOAT3 GetExtends(size_t index = 0) const { return this->extends[0]; }
 
+	void Update(const float& deltaTime) override;
+
 private:
 	std::vector<dx::XMFLOAT3> extends;
-	std::vector<dx::XMFLOAT3> positions;
 };

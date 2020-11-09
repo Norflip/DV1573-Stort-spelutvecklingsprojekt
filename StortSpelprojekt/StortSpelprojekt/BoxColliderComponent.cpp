@@ -25,3 +25,13 @@ void BoxColliderComponent::InitializeCollider(Physics* physics)
         colliderInformations[i].shape = common.createBoxShape(rp::Vector3(extend.x, extend.y, extend.z));
     }
 }
+
+void BoxColliderComponent::Update(const float& deltaTime)
+{
+#if DRAW_COLLIDERS
+    for (size_t i = 0; i < colliderInformations.size(); i++)
+    {
+        DShape::DrawBox(colliderInformations[i].position, extends[i], dx::XMFLOAT3(1, 0, 0));
+    }
+#endif
+}

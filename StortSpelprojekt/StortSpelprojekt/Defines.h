@@ -19,3 +19,5 @@
 				OutputDebugStringA((char*)eBLOB->GetBufferPointer()); \
 				eBLOB->Release(); \
 			}} \
+
+#define DRAW_COLLIDERS TRUE
