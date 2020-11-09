@@ -37,7 +37,7 @@ PlayerComp::PlayerComp(Renderer* renderer, CameraComponent* camComp, Physics* ph
 	this->radius = radius;
 	this->renderer = renderer;
 	this->physics = physics;
-	this->playerStrength = 50;
+	this->throwStrength = 50;
 
 	Reset();
 
