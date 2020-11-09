@@ -75,3 +75,32 @@ void MeshCollider::InitializeCollider(Physics* physics)
 		colliderInformations[i].shape = convexMeshShape;
 	}
 }
+
+//void MeshCollider::Update(const float& deltaTime) const
+//{
+//#if DRAW_COLLIDERS
+//	
+//	dx::XMFLOAT3 color = { 1,0,0 };
+//	dx::XMFLOAT3 p0, p1, p2;
+//	
+//	for (size_t i = 0; i < colliderInformations.size(); i++)
+//	{
+//		size_t triangles = mesh->GetTriangleCount();
+//		std::vector<Mesh::Vertex> vertices = mesh->GetVertices();
+//		std::vector<size_t> indices = mesh->GetIndices();
+//		dx::XMVECTOR p = dx::XMLoadFloat3(&colliderInformations[i].position);
+//
+//		for (size_t i = 0; i < triangles; i++)
+//		{
+//			dx::XMStoreFloat3(&p0, dx::XMVectorAdd(dx::XMLoadFloat3(&vertices[indices[i * 3 + 0]].position), p));
+//			dx::XMStoreFloat3(&p1, dx::XMVectorAdd(dx::XMLoadFloat3(&vertices[indices[i * 3 + 1]].position), p));
+//			dx::XMStoreFloat3(&p2, dx::XMVectorAdd(dx::XMLoadFloat3(&vertices[indices[i * 3 + 2]].position), p));
+//
+//			DShape::DrawLine(p0, p1, color);
+//			DShape::DrawLine(p1, p2, color);
+//			DShape::DrawLine(p2, p0, color);
+//		}
+//	}
+//
+//#endif
+}

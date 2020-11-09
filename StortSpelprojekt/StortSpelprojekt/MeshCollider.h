@@ -9,22 +9,16 @@ namespace qh = quickhull;
 
 class MeshCollider : public Component, public Collider
 {
-	struct ConvexMeshData
-	{
-		std::vector<dx::XMFLOAT3> vertices;
-		std::vector<unsigned int> indices;
-	};
-
 public:
 	MeshCollider(Mesh* mesh, dx::XMFLOAT3 position);
 	MeshCollider(Mesh* mesh, std::vector<dx::XMFLOAT3> positions);
 	virtual~MeshCollider() {};
 
 	void InitializeCollider(Physics* physics) override;
+	//void Update(const float& deltaTime) const;
 
 private:
 	Mesh* mesh;
-	std::vector<ConvexMeshData> persistenMeshData;
 };
 
 static std::unordered_map<Mesh*, qh::ConvexHull<float>> m_hullCache;
