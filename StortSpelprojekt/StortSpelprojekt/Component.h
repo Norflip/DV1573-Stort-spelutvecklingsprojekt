@@ -31,6 +31,7 @@ public:
 	virtual void Update(const float& deltaTime) {};
 	virtual void FixedUpdate(const float& fixedDeltaTime) {};
 	virtual void Draw(Renderer* renderer, CameraComponent* camera) {};
+	virtual void Reset() {};
 
 	virtual void OnOwnerFlagChanged(ObjectFlag oldFlag, ObjectFlag newFlag) {}
 	void SetOwner(Object* owner) { this->owner = owner; }
