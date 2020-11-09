@@ -43,7 +43,7 @@ void GameScene::InitializeObjects()
 {
 	skyboxClass = new Skybox(renderer->GetDevice(), renderer->GetContext(), resources->GetShaderResource("skyboxShader"));
 	skyboxClass->GetThisObject()->AddFlag(ObjectFlag::NO_CULL);
-		
+	
 	/* For physics/ rigidbody pickup stuff */
 
 
@@ -52,14 +52,14 @@ void GameScene::InitializeObjects()
 	bool parentAnimation = true;
 	Shader* skeletonShader = resources->GetShaderResource("skeletonShader");
 
-	std::vector<Mesh*> skeletonMesh = ZWEBLoader::LoadMeshes(ZWEBLoadType::SkeletonAnimation, "Models/baseMonster.ZWEB", renderer->GetDevice());
-	std::vector<Material*> skeletonMat = ZWEBLoader::LoadMaterials("Models/baseMonster.ZWEB", skeletonShader, renderer->GetDevice());
+	//std::vector<Mesh*> skeletonMesh = ZWEBLoader::LoadMeshes(ZWEBLoadType::SkeletonAnimation, "Models/baseMonster.ZWEB", renderer->GetDevice());
+	//std::vector<Material*> skeletonMat = ZWEBLoader::LoadMaterials("Models/baseMonster.ZWEB", skeletonShader, renderer->GetDevice());
 
-	SkeletonAni skeletonbaseMonsterIdle = ZWEBLoader::LoadSkeletonOnly("Models/baseMonsterIdle.ZWEB", skeletonMesh[0]->GetBoneIDS(), defaultAnimation);
-	SkeletonAni skeletonbaseMonsterWalk = ZWEBLoader::LoadSkeletonOnly("Models/baseMonsterWalk.ZWEB", skeletonMesh[0]->GetBoneIDS(), defaultAnimation);
-	SkeletonAni skeletonbaseMonsterRun = ZWEBLoader::LoadSkeletonOnly("Models/baseMonsterRun.ZWEB", skeletonMesh[0]->GetBoneIDS(), defaultAnimation);
-	SkeletonAni skeletonbaseMonsterAttack = ZWEBLoader::LoadSkeletonOnly("Models/baseMonsterAttack.ZWEB", skeletonMesh[0]->GetBoneIDS(), defaultAnimation);
-	SkeletonAni skeletonbaseMonsterDeath = ZWEBLoader::LoadSkeletonOnly("Models/baseMonsterDeath.ZWEB", skeletonMesh[0]->GetBoneIDS(), defaultAnimation);
+	//SkeletonAni skeletonbaseMonsterIdle = ZWEBLoader::LoadSkeletonOnly("Models/baseMonsterIdle.ZWEB", skeletonMesh[0]->GetBoneIDS(), defaultAnimation);
+	//SkeletonAni skeletonbaseMonsterWalk = ZWEBLoader::LoadSkeletonOnly("Models/baseMonsterWalk.ZWEB", skeletonMesh[0]->GetBoneIDS(), defaultAnimation);
+	//SkeletonAni skeletonbaseMonsterRun = ZWEBLoader::LoadSkeletonOnly("Models/baseMonsterRun.ZWEB", skeletonMesh[0]->GetBoneIDS(), defaultAnimation);
+	//SkeletonAni skeletonbaseMonsterAttack = ZWEBLoader::LoadSkeletonOnly("Models/baseMonsterAttack.ZWEB", skeletonMesh[0]->GetBoneIDS(), defaultAnimation);
+	//SkeletonAni skeletonbaseMonsterDeath = ZWEBLoader::LoadSkeletonOnly("Models/baseMonsterDeath.ZWEB", skeletonMesh[0]->GetBoneIDS(), defaultAnimation);
 
 	//LOADING HOUSE AND LEGS AND ADDING SKELETONS TO THEM THE HOUSE ONLY HAS ONE JOINT CONNECTED TO IT
 	Shader* defaultShader = resources->GetShaderResource("defaultShader");
@@ -143,32 +143,37 @@ void GameScene::InitializeObjects()
 	AddObject(testPointLight, playerObject);
 
 	//LOADING BASE MONSTER; ADDING SKELETONS TO IT
-	enemy = new Object("enemy", ObjectFlag::ENABLED);
+	/*enemy = new Object("enemy", ObjectFlag::ENABLED);
 	SkeletonMeshComponent* baseMonsterComp = enemy->AddComponent<SkeletonMeshComponent>(skeletonMesh[0], skeletonMat[0]);
 	baseMonsterComp->SetAnimationTrack(skeletonbaseMonsterIdle, SkeletonStateMachine::IDLE);
 	baseMonsterComp->SetAnimationTrack(skeletonbaseMonsterWalk, SkeletonStateMachine::WALK);
 	baseMonsterComp->SetAnimationTrack(skeletonbaseMonsterRun, SkeletonStateMachine::RUN);
 	baseMonsterComp->SetAnimationTrack(skeletonbaseMonsterAttack, SkeletonStateMachine::ATTACK);
 	baseMonsterComp->SetAnimationTrack(skeletonbaseMonsterDeath, SkeletonStateMachine::DEATH);
-	baseMonsterComp->BlendAnimations();
+	baseMonsterComp->BlendAnimations();*/
 
 	//Enemy object //comments
-	dx::XMFLOAT3 enemyTranslation = dx::XMFLOAT3(23, 7, 46);
-	enemy->GetTransform().SetPosition(dx::XMLoadFloat3(&enemyTranslation));
-	enemy->GetTransform().SetScale({ 0.125f, 0.125f, 0.125f });
-	enemy->AddComponent<EnemyStatsComp>(100.f, 2.0f, 10.f, 5.f, 3.f, 3.f);
-	//enemyStatsComp = enemy->GetComponent<EnemyStatsComp>();
-	enemy->AddComponent<CapsuleColliderComponent>(1.6f, 1.8f, zero);
+	//dx::XMFLOAT3 enemyTranslation = dx::XMFLOAT3(23, 7, 46);
+	//enemy->GetTransform().SetPosition(dx::XMLoadFloat3(&enemyTranslation));
+	//enemy->GetTransform().SetScale({ 0.125f, 0.125f, 0.125f });
+	//enemy->AddComponent<EnemyStatsComp>(100.f, 2.0f, 10.f, 5.f, 3.f, 3.f);
+	////enemyStatsComp = enemy->GetComponent<EnemyStatsComp>();
+	//enemy->AddComponent<CapsuleColliderComponent>(1.6f, 1.8f, zero);
 
-	enemy->AddComponent<RigidBodyComponent>(10.f, FilterGroups::ENEMIES, (FilterGroups::EVERYTHING & ~FilterGroups::PICKUPS) & ~FilterGroups::HOLDABLE, BodyType::KINEMATIC, true);
-	
-	EnemySMComp* stateMachine = enemy->AddComponent<EnemySMComp>(EnemyState::IDLE);
-	stateMachine->RegisterState(EnemyState::IDLE, enemy->AddComponent<EnemyIdleComp>());
-	//stateMachine->RegisterState(EnemyState::PATROL, enemy->AddComponent<EnemyPatrolComp>());
-	stateMachine->RegisterState(EnemyState::ATTACK, enemy->AddComponent<EnemyAttackComp>(player->GetComponent<PlayerComp>()));
-	stateMachine->Start();
-	stateMachine->InitAnimation();
-	AddObject(enemy);
+	//enemy->AddComponent<RigidBodyComponent>(10.f, FilterGroups::ENEMIES, (FilterGroups::EVERYTHING & ~FilterGroups::PICKUPS) & ~FilterGroups::HOLDABLE, BodyType::KINEMATIC, true);
+	//
+	//EnemySMComp* stateMachine = enemy->AddComponent<EnemySMComp>(EnemyState::IDLE);
+	//stateMachine->RegisterState(EnemyState::IDLE, enemy->AddComponent<EnemyIdleComp>());
+	////stateMachine->RegisterState(EnemyState::PATROL, enemy->AddComponent<EnemyPatrolComp>());
+	//stateMachine->RegisterState(EnemyState::ATTACK, enemy->AddComponent<EnemyAttackComp>(player->GetComponent<PlayerComp>()));
+	//stateMachine->Start();
+	//stateMachine->InitAnimation();
+	//AddObject(enemy);
+
+	enemyManager = new EnemyManager(resources, renderer, player->GetComponent<PlayerComp>());
+	enemyManager->InitBaseEnemy();
+	enemyManager->AddBaseEnemy({ 8, 25, 0 ,0 });
+	AddObject(enemyManager->GetBaseEnemy());
 
 	//physics.MutexLock();
 	//RigidBodyComponent* rbEnemy = enemy->AddComponent<RigidBodyComponent>(0.f, FilterGroups::ENEMIES, FilterGroups::PLAYER, BodyType::STATIC);
@@ -192,8 +197,8 @@ void GameScene::InitializeObjects()
 	world.Initialize(root, resources, pooler, renderer);
 	
 
-	dx::XMVECTOR asdf = dx::XMVectorSet(23, 3, 40 ,1); //???
-	enemy->GetTransform().SetPosition(asdf);
+	//dx::XMVECTOR asdf = dx::XMVectorSet(23, 3, 40 ,1); //???
+	//enemy->GetTransform().SetPosition(asdf);
 
 	/* PICKUP STUFF DONT DELETE THESEEE */
 	/* PICKUP STUFF DONT DELETE THESEEE */
