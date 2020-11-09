@@ -8,20 +8,31 @@ EnemyManager::EnemyManager(ResourceManager* resources, Renderer* renderer, Playe
 
 void EnemyManager::AddBaseEnemy(dx::XMVECTOR position)
 {
-	//baseEnemiesTest->Register("baseEnemy", 1, [](ResourceManager* resources) {
 
-	//	Object* object = new Object("baseEnemy", ObjectFlag::ENABLED);
 
-	//	Mesh* mesh1 = resources->GetResource<Mesh>("Test");
-	//	Material* material1 = resources->GetResource<Material>("TestMaterial");
+	/*baseEnemiesTest->Register("baseEnemy", 1, [](ResourceManager* resources) 
+	{
+		bool defaultAnimation = false;
+		Shader* skeletonShader = resources->GetShaderResource("skeletonShader");
+		std::vector<Mesh*> skeletonMesh = ZWEBLoader::LoadMeshes(ZWEBLoadType::SkeletonAnimation, "Models/baseMonster.ZWEB", renderer->GetDevice());
+		std::vector<Material*> skeletonMat = ZWEBLoader::LoadMaterials("Models/baseMonster.ZWEB", skeletonShader, renderer->GetDevice());
+		SkeletonAni skeletonbaseMonsterIdle = ZWEBLoader::LoadSkeletonOnly("Models/baseMonsterIdle.ZWEB", skeletonMesh[0]->GetBoneIDS(), defaultAnimation);
+		SkeletonAni skeletonbaseMonsterWalk = ZWEBLoader::LoadSkeletonOnly("Models/baseMonsterWalk.ZWEB", skeletonMesh[0]->GetBoneIDS(), defaultAnimation);
+		SkeletonAni skeletonbaseMonsterRun = ZWEBLoader::LoadSkeletonOnly("Models/baseMonsterRun.ZWEB", skeletonMesh[0]->GetBoneIDS(), defaultAnimation);
+		SkeletonAni skeletonbaseMonsterAttack = ZWEBLoader::LoadSkeletonOnly("Models/baseMonsterAttack.ZWEB", skeletonMesh[0]->GetBoneIDS(), defaultAnimation);
+		SkeletonAni skeletonbaseMonsterDeath = ZWEBLoader::LoadSkeletonOnly("Models/baseMonsterDeath.ZWEB", skeletonMesh[0]->GetBoneIDS(), defaultAnimation);
+		Object* object = new Object("baseEnemy", ObjectFlag::ENABLED);
+		SkeletonMeshComponent* baseMonsterComp = object->AddComponent<SkeletonMeshComponent>(skeletonMesh[0], skeletonMat[0]);
+		Mesh* mesh1 = resources->GetResource<Mesh>("Test");
+		Material* material1 = resources->GetResource<Material>("TestMaterial");
 
-	//	object->AddComponent<MeshComponent>(mesh1, material1);
-	//	object->AddComponent<BoxColliderComponent>(dx::XMFLOAT3(0.5f, 0.5f, 0.5f), dx::XMFLOAT3(0, 0, 0));
-	//	object->AddComponent<RigidBodyComponent>(10.0f, FilterGroups::DEFAULT, FilterGroups::EVERYTHING, BodyType::DYNAMIC, true);
-	//	return object;
-	//	});
+		object->AddComponent<MeshComponent>(mesh1, material1);
+		object->AddComponent<BoxColliderComponent>(dx::XMFLOAT3(0.5f, 0.5f, 0.5f), dx::XMFLOAT3(0, 0, 0));
+		object->AddComponent<RigidBodyComponent>(10.0f, FilterGroups::DEFAULT, FilterGroups::EVERYTHING, BodyType::DYNAMIC, true);
+		return object;
+	});*/
 
-	baseEnemy->GetTransform().SetPosition(position);
+	baseEnemy->GetComponent<RigidBodyComponent>()->SetPosition(position);
 	baseEnemies.push_back(baseEnemy);
 }
 

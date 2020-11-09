@@ -19,7 +19,7 @@ void EnemyAttackComp::Initialize()
 	//this->rbComp->GetRigidBody()->getCollider(0)->getMaterial().setFrictionCoefficient(100.f);
 	//this->rbComp->SetLinearDamping(0.9f);
 	this->rbComp->GetRigidBody()->getCollider(0)->getMaterial().setRollingResistance(100.0f);
-	rbComp->SetPosition({ 8, 15, 47 });
+	//rbComp->SetPosition({ 8, 15, 47 });
 }
 
 void EnemyAttackComp::Update(const float& deltaTime)
@@ -38,14 +38,6 @@ bool EnemyAttackComp::GetIsAttacking()
 bool EnemyAttackComp::ChasePlayer()
 {
 	dx::XMFLOAT3 moveDir = { 0.0f, 0.0f, 0.0f };
-
-	dx::XMFLOAT3 eP;
-	dx::XMStoreFloat3(&eP, GetOwner()->GetTransform().GetPosition());
-	std::cout << "EnemyPos " <<  "x: " << eP.x << ", y: " << eP.y << ", z: " << eP.z << std::endl;
-
-	dx::XMFLOAT3 pP;
-	dx::XMStoreFloat3(&pP, player->GetOwner()->GetTransform().GetPosition());
-	std::cout << "PlayerPos " << "x: " << pP.x << ", y: " << pP.y << ", z: " << pP.z << std::endl;
 	
 	dx::XMVECTOR moveVec = dx::XMVectorSubtract(player->GetOwner()->GetTransform().GetPosition(), GetOwner()->GetTransform().GetPosition());
 	dx::XMVECTOR normVec = dx::XMVector3Normalize(moveVec);

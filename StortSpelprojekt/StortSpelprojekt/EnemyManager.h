@@ -14,7 +14,7 @@ class EnemyManager
 		Object* GetBaseEnemy() const { return baseEnemy; }
 		void InitBaseEnemy();
 	private:
-		ObjectPooler* baseEnemiesTest;
+		//ObjectPooler* baseEnemies;
 		Object* baseEnemy;
 		std::vector<Object*> baseEnemies;
 		PlayerComp* playerComp;
