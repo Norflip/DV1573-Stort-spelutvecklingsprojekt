@@ -27,9 +27,6 @@ void GameOverScene::InitializeObjects()
 	this->player = cameraObject;
 	//cameraObject3->AddComponent<ControllerComponent>();
 	AddObject(cameraObject);
-
-	skyboxClass = new Skybox(renderer->GetDevice(), renderer->GetContext(), resources->GetShaderResource("skyboxShader"));
-	skyboxClass->GetThisObject()->AddFlag(ObjectFlag::NO_CULL);
 }
 
 void GameOverScene::InitializeGUI()

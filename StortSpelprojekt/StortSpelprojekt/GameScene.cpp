@@ -41,9 +41,7 @@ void GameScene::Initialize()
 
 void GameScene::InitializeObjects()
 {
-	skyboxClass = new Skybox(renderer->GetDevice(), renderer->GetContext(), resources->GetShaderResource("skyboxShader"));
-	skyboxClass->GetThisObject()->AddFlag(ObjectFlag::NO_CULL);
-		
+
 	/* For physics/ rigidbody pickup stuff */
 
 
@@ -370,8 +368,6 @@ void GameScene::Update(const float& deltaTime)
 
 	static_cast<GUIFont*>(guiManager->GetGUIObject("fps"))->SetString(std::to_string((int)GameClock::Instance().GetFramesPerSecond()));
 	guiManager->UpdateAll();
-
-	skyboxClass->GetThisObject()->GetTransform().SetPosition(camera->GetOwner()->GetTransform().GetPosition());
 }
 
 void GameScene::FixedUpdate(const float& fixedDeltaTime)
@@ -382,7 +378,6 @@ void GameScene::FixedUpdate(const float& fixedDeltaTime)
 void GameScene::Render()
 {
 	camera->UpdateView();
-	skyboxClass->GetThisObject()->Draw(renderer, camera);
 
 	root->Draw(renderer, camera);
 	//worldGenerator.DrawShapes();

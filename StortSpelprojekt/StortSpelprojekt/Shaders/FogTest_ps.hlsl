@@ -1,4 +1,5 @@
 #include "CommonBuffers.hlsl"
+#include "FractionalBrownianMotion.hlsl"
 
 Texture2D screenTexture : register (t0);
 Texture2D depthTexture : register (t1);
@@ -11,69 +12,6 @@ struct PixelInputType
     float2 uv : TEXCOORD0;
 };
 
-float random(float2 _st) {
-    return frac(sin(dot(_st.xy, float2(12.9898, 78.233))) * 43758.5453123);
-}
-
-// Based on Morgan McGuire @morgan3d
-// https://www.shadertoy.com/view/4dS3Wd
-float noise(in float2 _st) {
-    float2 i = floor(_st);
-    float2 f = frac(_st);
-
-    // Four corners in 2D of a tile
-    float a = random(i);
-    float b = random(i + float2(1.0, 0.0));
-    float c = random(i + float2(0.0, 1.0));
-    float d = random(i + float2(1.0, 1.0));
-
-    float2 u = f * f * (3.0 - 2.0 * f);
-
-    return lerp(a, b, u.x) +
-        (c - a) * u.y * (1.0 - u.x) +
-        (d - b) * u.x * u.y;
-}
-
-#define NUM_OCTAVES 5
-
-float fbm(float2 _st) {
-
-    float v = 0.0;
-    float a = 0.5;
-    float2 shift = float2(100.0, 0.0f);
-    float2 vv = _st;
-    
-    // Rotate to reduce axial bias
-    float2x2 rot = float2x2(cos(0.5), sin(0.5), -sin(0.5), cos(0.50));
-
-    [unroll]
-    for (int i = 0; i < NUM_OCTAVES; ++i) 
-    {
-        v += a * noise(vv);
-        vv = mul((vv * 2.0), rot) + shift;
-        a *= 0.5;
-    }
-    return v;
-}
-
-//float2 SphericalMapping (float2 uv)
-//{
-//
-//    uv -= 0.5;
-////    uv.x *= iResolution.x / iResolution.y;
-//
-//   // uv *= 2.2;
-//    
-//    //vec2 m = (iMouse.xy / iResolution.xy) - 0.5;
-//    
-//
-//    uv = lerp(uv, normalize(uv) * (2.0 * asin(length(uv)) / PI), 0.5);
-//    float3 n = float3(uv, sqrt(1.0 - uv.x * uv.x - uv.y * uv.y));
-//    uv = normalize(uv) * (2.0 * asin(length(uv)) / PI);
-//
-//    uv *= 2.0;
-//    return uv;
-//}
 
 float2 SphericalMapping(float3 direction)
 {
@@ -131,8 +69,12 @@ float4 main(PixelInputType input) : SV_TARGET
 {
    
     float4 diffuseColor = float4(1.0f, 1.0f, 1.0f, 1.0f);
-    float depth = depthTexture.Sample(defaultSampleType, input.uv).x;
+    diffuseColor = screenTexture.Sample(defaultSampleType, input.uv);
 
+    //return diffuseColor;
+    
+    float depth = depthTexture.Sample(defaultSampleType, input.uv).x;
+    
     const float start = 10; // FOG START
     const float end = 40; // FOG END
 
@@ -141,46 +83,6 @@ float4 main(PixelInputType input) : SV_TARGET
 
     float D = ((2.0f * near) / (far + near - depth * (far - near)));
     float fogFactor = saturate(((D * far) - start) / (end - start));
-
-//    
-//    float3 position = mul(world, WorldPosFromDepth(D, input.uv));
-//
-//    float3 o = cameraPosition;
-//    float3 d = normalize(position - cameraPosition);
-//    float3 center = float3(0, 0, 0);
-//    float radius = 10.0f;
-//
-//    float a = raySphereIntersect(o, d, center, radius);
-//
-//    float3 positionB = o + d * a;
-//    
-//    if (positionB.y < 5.0f)
-//    {
-//        return float4(0, 0, 0, 1);
-//    }
-//
-//    float3 normal = SphereNormal(positionB, center, radius);
-//    static const float PI = 3.14159265f;
-//
-//    float u = atan2(normal.x, normal.z) / (2 * PI) + 0.5;
-//    float v = normal.y * 0.5 + 0.5;
-//
-//    // - r0: ray origin
-//// - rd: normalized ray direction
-//// - s0: sphere center
-//// - sr: sphere radius
-//
-//
-//
-//
-//    float2 post = SphericalMapping(d);
-//    //return float4(post, 0.0f, 1.0f);
-//    
-    
-    
-    // BROWNIAN
-    // BROWNIAN
-    // BROWNIAN
 
     float2 st = input.uv.xy;// / float2(1600, 800) * 3.;
     
@@ -211,7 +113,6 @@ float4 main(PixelInputType input) : SV_TARGET
 
 
     //return float4(I, I, I, 1.0f);
-    diffuseColor = screenTexture.Sample(defaultSampleType, input.uv);
    // return diffuseColor;
     float4 background = skyTexture.Sample(defaultSampleType, input.uv);
 

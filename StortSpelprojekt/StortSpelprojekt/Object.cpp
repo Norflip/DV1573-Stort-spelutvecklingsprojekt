@@ -68,6 +68,16 @@ void Object::Draw(Renderer* renderer, CameraComponent* camera)
 	}
 }
 
+void Object::Reset()
+{
+	for (auto i = components.begin(); i < components.end(); i++)
+		(*i)->Reset();
+
+	auto children = transform.GetChildren();
+	for (auto i = children.begin(); i < children.end(); i++)
+		(*i)->GetOwner()->Reset();
+}
+
 bool Object::HasFlag(ObjectFlag flag) const
 {
 	return (int)(flag & flags) != 0;

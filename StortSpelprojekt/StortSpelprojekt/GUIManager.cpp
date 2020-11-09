@@ -5,7 +5,7 @@
 
 
 
-GUIManager::GUIManager(Renderer* renderer, int priority) : RenderPass(priority, RenderPass::PassType::UI_OVERLAY), renderer(renderer)
+GUIManager::GUIManager(Renderer* renderer, int priority) : RenderPass(priority, RenderPass::PassType::GUI), renderer(renderer)
 {
 	spriteBatch = new DirectX::SpriteBatch(this->renderer->GetContext());
 
@@ -102,7 +102,7 @@ void GUIManager::RemoveGUIObject(std::string name)
 		GUIObjects.erase(temp);
 }
 
-void GUIManager::Pass(Renderer* renderer, RenderTexture& inTexture, RenderTexture& outTexture)
+void GUIManager::Pass(Renderer* renderer, CameraComponent* camera, RenderTexture& inTexture, RenderTexture& outTexture)
 {
 
 	//SPRITES
