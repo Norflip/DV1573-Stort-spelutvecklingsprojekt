@@ -145,6 +145,8 @@ void PlayerComp::DropObject()
 		rbComp->SetPosition(weaponPos);
 		rbComp->SetRotation(weaponRot);
 		objectRb->setLinearVelocity({ dx::XMVectorGetX(camRot) * forceAmount ,  dx::XMVectorGetY(camRot) * forceAmount,  dx::XMVectorGetZ(camRot) * forceAmount });
+		holding = nullptr;
+		currentWeapon->AddFlag(ObjectFlag::ENABLED);
 	}
 }
 
@@ -220,7 +222,7 @@ void PlayerComp::RayCast(const float& deltaTime)
 
 	}
 	//ATTACK ENEMIES
-	if (LMOUSE_DOWN)
+	if (LMOUSE_DOWN && holding == nullptr)
 	{
 
 		if (physics->RaytestSingle(ray, 5.0f, hit, FilterGroups::ENEMIES))
