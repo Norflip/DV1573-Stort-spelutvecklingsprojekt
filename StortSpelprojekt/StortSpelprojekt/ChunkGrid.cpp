@@ -33,8 +33,8 @@ void ChunkGrid::Generate(int maxSteps, int padding, int directionalSteps)
 	AddPrePostChunks(points[0], dx::XMINT2(0, -1), NON_WALK_STEPS, points, index, chunks);
 	pathIndexes.insert(pathIndexes.begin(), index);
 
-	AddPrePostChunks(points[size - 1], dx::XMINT2(0,1), NON_WALK_STEPS, points, index, chunks);
-	pathIndexes.push_back(index);
+	//AddPrePostChunks(points[size - 1], dx::XMINT2(0,1), NON_WALK_STEPS, points, index, chunks);
+	//pathIndexes.push_back(index);
 
 	AddPadding(padding, points, chunks);
 

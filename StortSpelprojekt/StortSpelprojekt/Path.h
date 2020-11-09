@@ -96,7 +96,7 @@ public:
 
 	std::vector<dx::XMINT2> GetIndexes() const { return this->indexes; }
 
-	size_t GetFirstPointIndex() const { return 1; }
+	size_t GetFirstPointIndex() const { return 0; }
 	size_t GetLastPointIndex() const { return points.size() - 1; }
 
 private:
