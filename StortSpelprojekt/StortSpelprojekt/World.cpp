@@ -58,7 +58,7 @@ void World::UpdateRelevantChunks()
 				i->GetOwner()->RemoveFlag(ObjectFlag::ENABLED);
 
 			relevant.clear();
-			generator.GetChunksInRadius(playerIndex, chunkRelevancyRadius, relevant);
+			generator.GetChunksInRadius(playerIndex, RELEVANT_RADIUS, relevant);
 
 			for (auto i : relevant)
 				i->GetOwner()->AddFlag(ObjectFlag::ENABLED);
@@ -277,10 +277,10 @@ void World::RegisterWeapon(ObjectPooler* pooler, ObjectSpawner* spawner, const s
 
 void World::RegisterStatic(ObjectPooler* pooler, ObjectSpawner* spawner, const std::map<std::string, int>& queueCountTable) const
 {
-	spawner->RegisterInstancedItem(resources->GetResource<Mesh>("Rock1"), resources->GetResource<Material>("Rock1Material"), 1.0f, 1.0f, 0.0f, 5);
-	spawner->RegisterInstancedItem(resources->GetResource<Mesh>("Rock2"), resources->GetResource<Material>("Rock2Material"), 1.0f, 1.0f, -0.5f, 5);
-	spawner->RegisterInstancedItem(resources->GetResource<Mesh>("Rock3"), resources->GetResource<Material>("Rock3Material"), 1.0f, 1.0f, 0.0f, 5);
-	spawner->RegisterInstancedItem(resources->GetResource<Mesh>("Log"), resources->GetResource<Material>("LogMaterial"), 1.0f, 1.0f, 0.0f, 1);
+	spawner->RegisterInstancedItem(resources->GetResource<Mesh>("Rock1"), resources->GetResource<Material>("Rock1Material"), 1.0f, 1.0f, 0.0f, 5, dx::XMUINT3(1,1,1));
+	spawner->RegisterInstancedItem(resources->GetResource<Mesh>("Rock2"), resources->GetResource<Material>("Rock2Material"), 1.0f, 1.0f, -0.5f, 5, dx::XMUINT3(1, 1, 1));
+	spawner->RegisterInstancedItem(resources->GetResource<Mesh>("Rock3"), resources->GetResource<Material>("Rock3Material"), 1.0f, 1.0f, 0.0f, 5, dx::XMUINT3(1, 1, 1));
+	spawner->RegisterInstancedItem(resources->GetResource<Mesh>("Log"), resources->GetResource<Material>("LogMaterial"), 1.0f, 1.0f, 0.0f, 1, dx::XMUINT3(0, 1, 0));
 
 	// varför?
 	//spawner->RegisterInstancedItem(resources->GetResource<Mesh>("Basket"), resources->GetResource<Material>("BasketMaterial"), 1.0f, 1.0f, 0.0f, 1);

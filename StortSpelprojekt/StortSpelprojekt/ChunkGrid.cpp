@@ -48,24 +48,26 @@ void ChunkGrid::Clear()
 	path.Clear();
 }
 
-void ChunkGrid::AddChunksFromPath(std::vector<dx::XMINT2>& points, std::vector<dx::XMINT2>& path, std::unordered_map<int, ChunkInfo>& chunks)
+void ChunkGrid::AddChunksFromPath(std::vector<dx::XMINT2>& points, std::vector<dx::XMINT2>& path, std::unordered_map<int, ChunkIndexInfo>& chunks)
 {
 	size_t size = points.size();
 	for (size_t i = 0; i < size; i++)
 	{
 		int index = HASH2D_I(points[i].x, points[i].y);
-		ChunkInfo chunkInfo = std::make_pair(points[i], ChunkType::PATH);
-		
-		if (i == 0)
-			chunkInfo.second = ChunkType::START;
-		else if (i == size - 1)
-			chunkInfo.second = ChunkType::END;
+		ChunkIndexInfo info;
+		info.index = points[i];
+		info.type = ChunkType::PATH;
 
-		chunks.insert({ index, chunkInfo });
+		if (i == 0)
+			info.type = ChunkType::START;
+		else if (i == size - 1)
+			info.type = ChunkType::END;
+
+		chunks.insert({ index, info });
 	}
 }
 
-void ChunkGrid::AddPrePostChunks(const dx::XMINT2& start, const dx::XMINT2& direction, const int& steps, std::vector<dx::XMINT2>& points, dx::XMINT2& last, std::unordered_map<int, ChunkInfo>& chunks)
+void ChunkGrid::AddPrePostChunks(const dx::XMINT2& start, const dx::XMINT2& direction, const int& steps, std::vector<dx::XMINT2>& points, dx::XMINT2& last, std::unordered_map<int, ChunkIndexInfo>& chunks)
 {
 	dx::XMINT2 current = start;
 
@@ -78,15 +80,19 @@ void ChunkGrid::AddPrePostChunks(const dx::XMINT2& start, const dx::XMINT2& dire
 
 		if (find == chunks.end())
 		{
+			ChunkIndexInfo info;
+			info.index = current;
+			info.type = ChunkType::NON_PATH;
+
 			points.push_back(dx::XMINT2(current));
-			chunks.insert({ index, std::make_pair(current, ChunkType::NON_PATH) });
+			chunks.insert({ index, info });
 		}
 	}
 
 	last = dx::XMINT2(current);
 }
 
-void ChunkGrid::AddPadding(int radius, std::vector<dx::XMINT2>& points, std::unordered_map<int, ChunkInfo>& chunks)
+void ChunkGrid::AddPadding(int radius, std::vector<dx::XMINT2>& points, std::unordered_map<int, ChunkIndexInfo>& chunks)
 {
 	int currentX, currentY;
 	size_t size = points.size();
@@ -107,7 +113,11 @@ void ChunkGrid::AddPadding(int radius, std::vector<dx::XMINT2>& points, std::uno
 				auto find = chunks.find(index);
 				if (find == chunks.end())
 				{
-					chunks.insert({ index, std::make_pair(dx::XMINT2(currentX, currentY), ChunkType::TERRAIN) });
+					ChunkIndexInfo info;
+					info.index = dx::XMINT2(currentX, currentY);
+					info.type = ChunkType::TERRAIN;
+
+					chunks.insert({ index, info });
 				}
 			}
 		}
@@ -116,30 +126,43 @@ void ChunkGrid::AddPadding(int radius, std::vector<dx::XMINT2>& points, std::uno
 
 void ChunkGrid::UpdateDirection(dx::XMINT2& direction)
 {
-	float value = Random::Value();
 	if (direction.y == 0)
 	{
-		if (value < 0.65f)
+		float value = Random::Value();
+
+		// 50% att den går rakt vertikalt
+		if (value < 0.5f)
 		{
 			direction.x = 0;
+			direction.y = 1;
+		}
+		// 50% att den går helt åt sidan
+		else if (value >= 0.5f)
+		{
 			direction.y = 1;
 		}
 	}
 	else
 	{
-		direction.x = (value < 0.5f)? -1 : 1;
-		direction.y = 0;
+		// 50% om den byter riktning i x
+		direction.x = (Random::Value() < 0.5f)? -1 : 1;
+
+		// 50% om den börjar gå horizontal
+		if (Random::Value() < 0.5f)
+		{
+			direction.y = 0;
+		}
 	}
 }
 
-void ChunkGrid::FindMinMax(std::unordered_map<int, ChunkInfo>& chunks)
+void ChunkGrid::FindMinMax(std::unordered_map<int, ChunkIndexInfo>& chunks)
 {
 	bool first = true;
 	dx::XMINT2 index;
 
 	for (auto i : chunks)
 	{
-		index = i.second.first;
+		index = i.second.index;
 		if (first)
 		{
 			minIndex = maxIndex = index;

@@ -51,8 +51,8 @@ void SegmentGenerator::Construct(const SaveState& state, const SegmentDescriptio
 
 		for (auto i : chunkData)
 		{
-			std::pair<dx::XMINT2, ChunkType> pair = i.second;
-			CreateChunk(pair.first, root, description, pair.second);
+			ChunkGrid::ChunkIndexInfo indexInfo = i.second;
+			CreateChunk(indexInfo.index, root, description, indexInfo.type);
 		}
 
 		spawner->Spawn(state, treePoints, chunkMap, chunks, device);
@@ -97,7 +97,7 @@ void SegmentGenerator::GetChunksInRadius(const dx::XMINT2& index, int radius, st
 	}
 }
 
-Chunk* SegmentGenerator::GetChunk(float x, float z) const
+Chunk* SegmentGenerator::GetChunk(const float& x, const float& z) const
 {
 	dx::XMINT2 index = Chunk::WorldToIndex(x, z);
 	int hash = HASH2D_I(index.x, index.y);
@@ -111,27 +111,47 @@ Chunk* SegmentGenerator::GetChunk(float x, float z) const
 	return chunk;
 }
 
+float SegmentGenerator::SampleHeight(const float& x, const float& z) const
+{
+	Chunk* chunk = GetChunk(x, z);
+	return (chunk) ? chunk->SampleHeight(x, z) : -1;
+}
+
+void SegmentGenerator::SampleNormal(const float& x, const float& z, dx::XMFLOAT3& normal) const
+{
+	float hLeft = SampleHeight(x - 1, z);
+	float hRight = SampleHeight(x + 1, z);
+	float hDown = SampleHeight(x, z - 1);
+	float hUp = SampleHeight(x, z + 1);
+	
+	dx::XMVECTOR horizontal = dx::XMVector3Normalize({ 1.0f, 0.0f, hLeft - hRight });
+	dx::XMVECTOR vertical = dx::XMVector3Normalize({ 0.0f, 1.0f, hUp - hDown });
+	dx::XMStoreFloat3(&normal, dx::XMVector3Cross(horizontal, vertical));
+}
+
 void SegmentGenerator::DrawDebug()
 {
-	treePoints.Draw(dx::XMFLOAT3(0, 0, 0));
-	spawner->DrawDebug();
+	//treePoints.Draw(dx::XMFLOAT3(0, 0, 0));
+	//spawner->DrawDebug();
+
 
 	// PATH
 	const float offset = CHUNK_SIZE / 2.0f;
-	std::vector<dx::XMFLOAT2> points = grid.GetPath().GetPoints();
+	std::vector<PathPoint> points = grid.GetPath().GetPoints();
 
-	const int skip = 10;
+	const int skip = 1;
+	const float height = 2.0f;
 
 	for (size_t i = 0; i < points.size(); i += skip)
 	{
-		dx::XMFLOAT2 point0 = points[i];
-		dx::XMFLOAT3 worldPoint(point0.x + offset, 5, point0.y + offset);
+		PathPoint point0 = points[i];
+		dx::XMFLOAT3 worldPoint(point0.x, height, point0.y);
 		DShape::DrawSphere(worldPoint, 0.5f, { 1,0,1 });
 
-		if (i < points.size() - 1 && (i + skip) < points.size() - 1)
+		if (i < points.size() - 1) // && (i + skip) < points.size() - 1)
 		{
-			dx::XMFLOAT2 point1 = points[i + skip];
-			DShape::DrawLine({ point1.x + offset, 5, point1.y + offset }, worldPoint, { 1,0,0 });
+			PathPoint point1 = points[i + skip];
+			//DShape::DrawLine({ point1.x, height, point1.y }, worldPoint, { 1,0,0 });
 		}
 	}
 }
@@ -154,15 +174,12 @@ std::vector<SegmentGenerator::ChunkPointInformation> SegmentGenerator::CreateChu
 		{
 			dx::XMFLOAT2 tilePos = dx::XMFLOAT2(chunkPosXZ.x + static_cast<float>(x), chunkPosXZ.y + static_cast<float>(y));
 
-			float distance = path.ClosestDistance(tilePos);
-			distance = std::min(distance, MAX_DISTANCE) / MAX_DISTANCE;
+			float distance = path.SampleInfluence(tilePos);
+			//distance = std::min(distance, MAX_DISTANCE) / MAX_DISTANCE;
 
 			float sampledHeight = Noise::Sample(chunkPosXZ.x + x, chunkPosXZ.y + y, description.noiseSettings);
 			float worldHeight = sampledHeight * distance * TERRAIN_SCALE;
-
 			worldHeight = std::max(worldHeight, MIN_TERRAIN_HEIGHT * 4.0f);
-
-
 			float height = worldHeight / TERRAIN_SCALE;
 
 			heightMap[x + size * y] = worldHeight;

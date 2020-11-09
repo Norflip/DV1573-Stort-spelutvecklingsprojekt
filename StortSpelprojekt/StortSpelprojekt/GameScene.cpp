@@ -331,7 +331,7 @@ void GameScene::OnActivate()
 	state.segment = 0;
 
 	SegmentDescription desc(0, 10, 2);
-	desc.directionalSteps = 5;
+	desc.directionalSteps = 1;
 	desc.maxSteps = 10;
 
 	player->GetComponent<PlayerComp>()->Reset();
@@ -341,6 +341,9 @@ void GameScene::OnActivate()
 
 	house->GetComponent<NodeWalkerComp>()->InitializePath(world.GetPath());
 	world.MoveHouseAndPlayerToStart();
+
+
+
 
 	renderer->AddRenderPass(guiManager);
 
@@ -368,6 +371,7 @@ void GameScene::Update(const float& deltaTime)
 
 	static_cast<GUIFont*>(guiManager->GetGUIObject("fps"))->SetString(std::to_string((int)GameClock::Instance().GetFramesPerSecond()));
 	guiManager->UpdateAll();
+	world.DrawDebug();
 
 	if (KEY_DOWN(H))
 	{

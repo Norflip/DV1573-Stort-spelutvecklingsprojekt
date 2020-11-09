@@ -13,6 +13,7 @@
 
 #define CW_CHUNK_MESH 1
 
+#define CREF(T) const T&
 
 class SegmentGenerator
 {
@@ -40,7 +41,10 @@ public:
 	void GetChunksInRadius(const dx::XMINT2& index, int radius, std::vector<Chunk*>& chunks) const;
 	bool IsConstructed() const { return this->constructed; }
 
-	Chunk* GetChunk(float x, float z) const;
+	Chunk* GetChunk(const float& x, const float& z) const;
+	float SampleHeight(const float& x, const float& z) const;
+	void SampleNormal(const float& x, const float& z, dx::XMFLOAT3& normal) const;
+
 	void DrawDebug();
 	Path GetPath() const { return this->grid.GetPath(); }
 

@@ -5,7 +5,7 @@
 #include "Random.h"
 #include "SaveState.h"
 
-#define SPAWN_ITEMS TRUE
+#define SPAWN_ITEMS FALSE
 
 class ObjectSpawner
 {
@@ -16,7 +16,7 @@ class ObjectSpawner
 		float radius, padding;
 	};
 
-	struct InstancedProp
+	struct Prop
 	{
 		Mesh* mesh;
 		Material* material;
@@ -24,6 +24,7 @@ class ObjectSpawner
 		float yOffset;
 		float radius, padding;
 		size_t queueCount;
+		dx::XMUINT3 rotationAxis;
 	};
 
 	const float SPAWN_HEIGHT = 12.0f;
@@ -38,9 +39,12 @@ public:
 	void Despawn();
 
 	void RegisterItem(std::string key, float radius, float padding, float yOffset, size_t queueCount);
-	void RegisterInstancedItem(Mesh* mesh, Material* material, float radius, float padding, float yOffset, size_t queueCount);
+	void RegisterInstancedItem(Mesh* mesh, Material* material, float radius, float padding, float yOffset, size_t queueCount, dx::XMUINT3 rotationAxis);
 
 	void DrawDebug();
+
+private:
+	
 
 private:
 	std::vector<dx::XMFLOAT2> CreateSpawnPositions(PointQuadTree& tree, float radius, std::unordered_map<int, Chunk*>& chunkMap);
@@ -57,5 +61,5 @@ private:
 	std::vector<dx::XMFLOAT2> propSpawnPositions;
 
 	std::vector<Item> items;
-	std::vector<InstancedProp> instancedProps;
+	std::vector<Prop> instancedProps;
 };

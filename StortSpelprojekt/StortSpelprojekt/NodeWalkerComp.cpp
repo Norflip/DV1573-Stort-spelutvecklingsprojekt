@@ -3,7 +3,7 @@
 NodeWalkerComp::NodeWalkerComp()
 {
 	this->speed = 1.0f;// 16.2f;
-	this->currentNode = CHUNK_SIZE;
+	this->currentNode = 1;
 	this->nextChosen = -1;
 	this->nodeRadius = 0.3f;
 	this->canWalk = false;
@@ -32,6 +32,9 @@ void NodeWalkerComp::InitializePath(Path thePath)
 {
 
 	this->thePath = thePath;
+
+	this->currentNode = thePath.GetFirstPointIndex();
+
 	//std::cout <<"Nr of: "<< thePath.CountPoints() << std::endl;
 	//dx::XMFLOAT3 pos3 = { thePath.GetPoint(this->currentNode).x + offset,HEIGHT, thePath.GetPoint(this->currentNode).y + offset };
 	dx::XMFLOAT3 pos3 = { thePath.GetPoint(this->currentNode).x + OFFSET,HEIGHT, thePath.GetPoint(this->currentNode).y + OFFSET };
@@ -64,7 +67,7 @@ void NodeWalkerComp::InitAnimation()
 
 void NodeWalkerComp::Reset()
 {
-	this->currentNode = CHUNK_SIZE;
+	this->currentNode = thePath.GetFirstPointIndex();
 	this->nextChosen = -1;
 	this->canWalk = false;
 
@@ -180,10 +183,9 @@ void NodeWalkerComp::Update(const float& deltaTime)
 		}
 		else
 		{
-			const int skip = 10;
-			if (this->nextChosen < (int)this->thePath.CountPoints())
+			const int skip = 1;
+			if (this->nextChosen <= ICAST(this->thePath.GetLastPointIndex()))
 			{
-
 				this->nextChosen = currentNode + skip; //skip is 10
 				StartAnim();
 				canWalk = true;
