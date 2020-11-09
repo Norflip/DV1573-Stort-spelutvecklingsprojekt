@@ -41,23 +41,12 @@ void GameScene::Initialize()
 
 void GameScene::InitializeObjects()
 {
-
-	/* For physics/ rigidbody pickup stuff */
-
+	enemy = resources->GetResource<Object>("Enemy");
 
 	//SKELETON ANIMATION MODELS
 	bool defaultAnimation = false;
 	bool parentAnimation = true;
 	Shader* skeletonShader = resources->GetShaderResource("skeletonShader");
-
-	std::vector<Mesh*> skeletonMesh = ZWEBLoader::LoadMeshes(ZWEBLoadType::SkeletonAnimation, "Models/baseMonster.ZWEB", renderer->GetDevice());
-	std::vector<Material*> skeletonMat = ZWEBLoader::LoadMaterials("Models/baseMonster.ZWEB", skeletonShader, renderer->GetDevice());
-
-	SkeletonAni skeletonbaseMonsterIdle = ZWEBLoader::LoadSkeletonOnly("Models/baseMonsterIdle.ZWEB", skeletonMesh[0]->GetBoneIDS(), defaultAnimation);
-	SkeletonAni skeletonbaseMonsterWalk = ZWEBLoader::LoadSkeletonOnly("Models/baseMonsterWalk.ZWEB", skeletonMesh[0]->GetBoneIDS(), defaultAnimation);
-	SkeletonAni skeletonbaseMonsterRun = ZWEBLoader::LoadSkeletonOnly("Models/baseMonsterRun.ZWEB", skeletonMesh[0]->GetBoneIDS(), defaultAnimation);
-	SkeletonAni skeletonbaseMonsterAttack = ZWEBLoader::LoadSkeletonOnly("Models/baseMonsterAttack.ZWEB", skeletonMesh[0]->GetBoneIDS(), defaultAnimation);
-	SkeletonAni skeletonbaseMonsterDeath = ZWEBLoader::LoadSkeletonOnly("Models/baseMonsterDeath.ZWEB", skeletonMesh[0]->GetBoneIDS(), defaultAnimation);
 
 	//LOADING HOUSE AND LEGS AND ADDING SKELETONS TO THEM THE HOUSE ONLY HAS ONE JOINT CONNECTED TO IT
 	Shader* defaultShader = resources->GetShaderResource("defaultShader");
@@ -124,7 +113,6 @@ void GameScene::InitializeObjects()
 	playerObject->AddComponent<CapsuleColliderComponent>(0.5f, 1.8f, zero);
 	playerObject->AddComponent<RigidBodyComponent>(60.f, FilterGroups::PLAYER, (FilterGroups::EVERYTHING), BodyType::DYNAMIC, true);
 
-	//Transform::SetParentChild(playerObject->GetTransform(),cameraObject->GetTransform());
 	playerObject->AddComponent<PlayerComp>(renderer, camera, Engine::Instance->GetPhysics(), guiManager, 100.f, 2.f, 20.f, 50.f, 3.f);
 	playerObject->AddComponent<ControllerComp>(cameraObject, houseBaseObject); /////////////////
 
@@ -139,16 +127,6 @@ void GameScene::InitializeObjects()
 	testPointLight->AddComponent<PointLightComponent>(dx::XMFLOAT4(0.3f, 0.3f, 0.3f, 1.0f), 10.f);
 
 	AddObject(testPointLight, playerObject);
-
-	//LOADING BASE MONSTER; ADDING SKELETONS TO IT
-	enemy = new Object("enemy", ObjectFlag::ENABLED);
-	SkeletonMeshComponent* baseMonsterComp = enemy->AddComponent<SkeletonMeshComponent>(skeletonMesh[0], skeletonMat[0]);
-	baseMonsterComp->SetAnimationTrack(skeletonbaseMonsterIdle, SkeletonStateMachine::IDLE);
-	baseMonsterComp->SetAnimationTrack(skeletonbaseMonsterWalk, SkeletonStateMachine::WALK);
-	baseMonsterComp->SetAnimationTrack(skeletonbaseMonsterRun, SkeletonStateMachine::RUN);
-	baseMonsterComp->SetAnimationTrack(skeletonbaseMonsterAttack, SkeletonStateMachine::ATTACK);
-	baseMonsterComp->SetAnimationTrack(skeletonbaseMonsterDeath, SkeletonStateMachine::DEATH);
-	baseMonsterComp->BlendAnimations();
 
 	//Enemy object //comments
 	dx::XMFLOAT3 enemyTranslation = dx::XMFLOAT3(23, 7, 46);
@@ -168,18 +146,9 @@ void GameScene::InitializeObjects()
 	stateMachine->InitAnimation();
 	AddObject(enemy);
 
-	//physics.MutexLock();
-	//RigidBodyComponent* rbEnemy = enemy->AddComponent<RigidBodyComponent>(0.f, FilterGroups::ENEMIES, FilterGroups::PLAYER, BodyType::STATIC);
-	////rbEnemy.
-	//physics.RegisterRigidBody(rbEnemy);
-	//physics.MutexUnlock();
 	playerObject->AddComponent<PlayerAttackComp>(enemy);
 
-	std::vector<Mesh*> axeMesh = ZWEBLoader::LoadMeshes(ZWEBLoadType::NoAnimation, "Models/AXE.ZWEB", renderer->GetDevice());
-	std::vector<Material*> axeMat = ZWEBLoader::LoadMaterials("Models/AXE.ZWEB", defaultShader, renderer->GetDevice());
-	Object* axeObject = new Object("Axe", ObjectFlag::DEFAULT | ObjectFlag::NO_CULL);
-
-	axeObject->AddComponent<MeshComponent>(axeMesh[0], axeMat[0]);
+	Object* axeObject = resources->AssembleObject("Axe", "AxeMaterial");
 	axeObject->GetTransform().SetPosition({ 0,0,0 });
 	axeObject->GetTransform().SetScale({ 1, 1, 1 });
 	axeObject->AddComponent<WeaponComponent>(cameraObject);
@@ -189,7 +158,6 @@ void GameScene::InitializeObjects()
 
 	world.Initialize(root, resources, pooler, renderer);
 	
-
 	dx::XMVECTOR asdf = dx::XMVectorSet(23, 3, 40 ,1); //???
 	enemy->GetTransform().SetPosition(asdf);
 

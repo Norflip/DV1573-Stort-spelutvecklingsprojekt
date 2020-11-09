@@ -122,12 +122,42 @@ void ResourceManager::ReadObjects(ID3D11Device* device)
 			
 			auto sampler = DXHelper::CreateSampler(D3D11_FILTER_MIN_MAG_MIP_LINEAR, D3D11_TEXTURE_ADDRESS_WRAP, device);
 
-			std::vector<Material*> materials = ZWEBLoader::LoadMaterials(filepath, GetShaderResource(shader), device);
-			std::vector<Mesh*> meshes = ZWEBLoader::LoadMeshes(ZWEBLoadType::NoAnimation, filepath, device);
-
-			// Ugly presumption that we load a Tree at some point
-			if (name == "Tree")
+			if (shader == "skeletonShader")
 			{
+				std::vector<Material*> materials = ZWEBLoader::LoadMaterials(filepath, GetShaderResource(shader), device);
+				std::vector<Mesh*> meshes = ZWEBLoader::LoadMeshes(ZWEBLoadType::SkeletonAnimation, filepath, device);
+
+				std::getline(file, line);
+				pos = line.find(delimiter);
+
+				int nrOfAnimations = std::stoi(line.substr(pos + 2, line.length() - pos - 2), &sz);
+
+				Object* obj = new Object(name, ObjectFlag::ENABLED);
+				SkeletonMeshComponent* skeletonMesh = obj->AddComponent<SkeletonMeshComponent>(meshes[0], materials[0]);
+
+				for (int j = 0; j < nrOfAnimations; j++)
+				{
+					std::getline(file, line);
+					pos = line.find(delimiter);
+
+					int type = std::stoi(line.substr(0, pos));
+					std::string path = line.substr(pos + 2, line.length() - pos - 2);
+
+					SkeletonAni animation = ZWEBLoader::LoadSkeletonOnly(path, meshes[0]->GetBoneIDS(), false);
+
+					skeletonMesh->SetAnimationTrack(animation, (SkeletonStateMachine)type);
+				}
+
+				skeletonMesh->BlendAnimations();
+				AddResource(name, obj);
+
+			}
+			// Ugly presumption that we load a Tree at some point
+			else if (name == "Tree")
+			{
+				std::vector<Material*> materials = ZWEBLoader::LoadMaterials(filepath, GetShaderResource(shader), device);
+				std::vector<Mesh*> meshes = ZWEBLoader::LoadMeshes(ZWEBLoadType::NoAnimation, filepath, device);
+
 				materials[0]->SetSampler(sampler, 0, ShaderBindFlag::PIXEL);
 				materials[1]->SetSampler(sampler, 0, ShaderBindFlag::PIXEL);
 
@@ -141,6 +171,9 @@ void ResourceManager::ReadObjects(ID3D11Device* device)
 			}
 			else
 			{
+				std::vector<Material*> materials = ZWEBLoader::LoadMaterials(filepath, GetShaderResource(shader), device);
+				std::vector<Mesh*> meshes = ZWEBLoader::LoadMeshes(ZWEBLoadType::NoAnimation, filepath, device);
+
 				materials[0]->SetSampler(sampler, 0, ShaderBindFlag::PIXEL);
 
 				AddResource(name, meshes[0]);
@@ -364,6 +397,46 @@ void ResourceManager::ReadShaders(ID3D11Device* device)
 	}
 }
 
+void ResourceManager::ReadAnimations(ID3D11Device* device)
+{
+	std::ifstream file("data/Resources_animations.txt");
+	if (file.is_open())
+	{
+		// Delimiter is used to seperate content inside a string
+		std::string delimiter = ": ";
+		std::string line;
+		std::string::size_type sz;
+
+		std::getline(file, line);
+		int pos = line.find(delimiter);
+
+		// Amount of shaders in the file
+		int nrOfObjects = std::stoi(line.substr(pos + 2, line.length() - pos - 2), &sz);
+
+		std::getline(file, line);
+
+		for (int i = 0; i < nrOfObjects; i++)
+		{
+			std::getline(file, line);
+			pos = line.find(delimiter);
+
+			int nrOfAnimations = std::stoi(line.substr(pos + 2, line.length() - pos - 2), &sz);
+
+			for (int j = 0; j < nrOfAnimations; j++)
+			{
+				std::getline(file, line);
+
+				pos = line.find(delimiter);
+				
+				int type = std::stoi(line.substr(0, pos));
+				std::string filepath = line.substr(pos + 2, line.length() - pos - 2);
+
+				
+			}
+		}
+	}
+}
+
 void ResourceManager::CompileShaders(ID3D11Device* device)
 {
 	// Recompile every shader in the shaderResource map
@@ -375,7 +448,7 @@ void ResourceManager::CompileShaders(ID3D11Device* device)
 
 Object* ResourceManager::AssembleObject(std::string meshName, std::string materialName)
 {
-	Object* object = new Object(meshName);
+	Object* object = new Object(meshName, ObjectFlag::DEFAULT);
 
 	object->AddComponent<MeshComponent>(GetResource<Mesh>(meshName), GetResource<Material>(materialName));
 
