@@ -76,7 +76,7 @@ private:
 
 	bool foodEmpty;
 	bool gg;
-	float playerStrength;
+	float throwStrength;
 	float ReverseAndClamp(float inputValue);
 	float test = 0;
 	void RayCast(const float& deltaTime);
