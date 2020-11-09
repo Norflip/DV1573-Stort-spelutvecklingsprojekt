@@ -143,7 +143,7 @@ void PlayerComp::DropObject()
 		objectRb->setAngularVelocity({ 0,0,0 });
 		rbComp->SetPosition(weaponPos);
 		rbComp->SetRotation(weaponRot);
-		float tossSpeed = playerStrength / rbComp->GetMass();
+		float tossSpeed = throwStrength / rbComp->GetMass();
 		objectRb->setLinearVelocity({ dx::XMVectorGetX(camRot) * tossSpeed ,  dx::XMVectorGetY(camRot) * tossSpeed,  dx::XMVectorGetZ(camRot) * tossSpeed });
 		holding = nullptr;
 		currentWeapon->AddFlag(ObjectFlag::ENABLED);
