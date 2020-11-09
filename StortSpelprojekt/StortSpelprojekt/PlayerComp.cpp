@@ -37,7 +37,7 @@ PlayerComp::PlayerComp(Renderer* renderer, CameraComponent* camComp, Physics* ph
 	this->radius = radius;
 	this->renderer = renderer;
 	this->physics = physics;
-
+	this->throwStrength = 50;
 
 	Reset();
 
@@ -141,16 +141,20 @@ void PlayerComp::DropObject()
 		dx::XMMatrixDecompose(&weaponScale, &weaponRot, &weaponPos, wepWorld);
 		rbComp->SetEnabled(true);
 		objectRb->setAngularVelocity({ 0,0,0 });
-		float forceAmount = 10;
 		rbComp->SetPosition(weaponPos);
 		rbComp->SetRotation(weaponRot);
-		objectRb->setLinearVelocity({ dx::XMVectorGetX(camRot) * forceAmount ,  dx::XMVectorGetY(camRot) * forceAmount,  dx::XMVectorGetZ(camRot) * forceAmount });
+		//objectRb->setLinearVelocity({ dx::XMVectorGetX(camRot) * forceAmount ,  dx::XMVectorGetY(camRot) * forceAmount,  dx::XMVectorGetZ(camRot) * forceAmount });
 
 		for (auto i : renderer->GetParticleList())
 		{
 			if (hit.object->GetID() == i.first)
 				i.second->SetActive(true);
-		}				
+		}
+						
+		float tossSpeed = throwStrength / rbComp->GetMass();
+		objectRb->setLinearVelocity({ dx::XMVectorGetX(camRot) * tossSpeed ,  dx::XMVectorGetY(camRot) * tossSpeed,  dx::XMVectorGetZ(camRot) * tossSpeed });
+		holding = nullptr;
+		currentWeapon->AddFlag(ObjectFlag::ENABLED);
 	}
 }
 
@@ -176,7 +180,6 @@ void PlayerComp::RayCast(const float& deltaTime)
 	{
 		if (physics->RaytestSingle(ray, rayDistance, hit, FilterGroups::PICKUPS))
 		{
-
 			if (hit.object != nullptr)
 			{
 				AudioMaster::Instance().PlaySoundEvent("pickupSound");
@@ -208,10 +211,7 @@ void PlayerComp::RayCast(const float& deltaTime)
 				hit.object->GetComponent<PickupComponent>()->SetActive(false);
 				RigidBodyComponent* rbComp = hit.object->GetComponent<RigidBodyComponent>();
 				rbComp->Release();
-						
-				//phy.MutexLock();
-				//phy.UnregisterRigidBody(hit.object->GetComponent<RigidBodyComponent>());
-				//phy.MutexUnlock();
+				
 			}
 		}
 
@@ -242,7 +242,7 @@ void PlayerComp::RayCast(const float& deltaTime)
 
 	}
 	//ATTACK ENEMIES
-	if (LMOUSE_DOWN)
+	if (LMOUSE_DOWN && holding == nullptr)
 	{
 
 		if (physics->RaytestSingle(ray, 5.0f, hit, FilterGroups::ENEMIES))
@@ -270,7 +270,7 @@ void PlayerComp::RayCast(const float& deltaTime)
 						///*hit.object->GetComponent<EnemyStatsComp>()->SetEnabled(false);
 						//RigidBodyComponent* rbComp = hit.object->GetComponent<RigidBodyComponent>();
 						//rp::RigidBody* objectRb = rbComp->GetRigidBody();
-						//rbComp->RemoveCollidersFromBody(objectRb);
+
 						//phy.UnregisterRigidBody(hit.object->GetComponent<RigidBodyComponent>());
 						//*/
 						Engine::Instance->GetActiveScene()->RemoveObject(hit.object);
