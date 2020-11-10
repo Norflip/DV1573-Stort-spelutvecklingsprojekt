@@ -68,7 +68,7 @@ private:
 	PlayerComp* playerComp;
 
 	void CheckGrounded();
-
+	
 	void CalcVelocity(float acceleration)
 	{
 		if (this->velocityTimer >= VELOCITY_INC_RATE)
@@ -81,6 +81,8 @@ public:
 	ControllerComp(Object* cameraObject, Object* houseObject);
 	virtual ~ControllerComp();
 
+	RigidBodyComponent* GetrbComp() { return this->rbComp; }
 	void Initialize();
 	void Update(const float& deltaTime);
+	float GetVelocity() { return this->velocity; }
 };

@@ -30,25 +30,28 @@ void WeaponComponent::SetPosition(float time)
 	attackTimer += time;
 	attackCooldown += time;
 	
-	if (LMOUSE_DOWN && attackCooldown > 0.5)
-	{
-		time = 0;
-		attackTimer = 0;
-		attackCooldown = 0;
-		attacking = true;
-		AudioMaster::Instance().PlaySoundEvent("axeSwing");
-	}
-	else if (attackTimer > 0.2f)
-	{
-		attacking = false;
-	}
-	if (attacking)
-	{
-		
-		wepOffTrans = dx::XMMatrixTranslation(0.1f, -0.1f, 1.1f);
-		wepOffRot = dx::XMMatrixRotationAxis({ -1.0f,1.0f,0.5f }, dx::XMConvertToRadians(-60.0f));
-	}
-	///////////////////////////////////////////////////////////////////////
+	//if (LMOUSE_DOWN && attackCooldown > 0.5)
+	//{
+	//	time = 0;
+	//	attackTimer = 0;
+	//	attackCooldown = 0;
+	//	attacking = true;
+	//	AudioMaster::Instance().PlaySoundEvent("axeSwing");
+
+
+
+	//}
+	//else if (attackTimer > 0.2f)
+	//{
+	//	attacking = false;
+	//}
+	//if (attacking)
+	//{
+	//	
+	//	wepOffTrans = dx::XMMatrixTranslation(0.1f, -0.1f, 1.1f);
+	//	wepOffRot = dx::XMMatrixRotationAxis({ -1.0f,1.0f,0.5f }, dx::XMConvertToRadians(-60.0f));
+	//}
+	/////////////////////////////////////////////////////////////////////////
 
 
 	

@@ -271,6 +271,7 @@
     <ClCompile Include="ThirdParty\quickhull\QuickHull.cpp">
       <Filter>ThirdParty</Filter>
     </ClCompile>
+    <ClCompile Include="PlayerAnimHandlerComp.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="ObjectSpawner.h">
@@ -545,6 +546,9 @@
     </ClInclude>
     <ClInclude Include="ThirdParty\quickhull\QuickHull.hpp">
       <Filter>ThirdParty</Filter>
+    </ClInclude>
+    <ClInclude Include="PlayerAnimHandlerComp.h">
+      <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

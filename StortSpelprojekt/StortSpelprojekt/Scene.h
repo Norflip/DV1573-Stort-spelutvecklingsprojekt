@@ -25,6 +25,7 @@
 #include "ResourceManager.h"
 #include "ObjectPooler.h"
 #include "WeaponComponent.h"
+#include "PlayerAnimHandlerComp.h"
 
 class GUIFont;
 class SpriteRenderPass;

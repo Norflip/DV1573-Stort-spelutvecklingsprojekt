@@ -207,6 +207,7 @@
     <ClCompile Include="Path.cpp" />
     <ClCompile Include="Physics.cpp" />
     <ClCompile Include="PickupComponent.cpp" />
+    <ClCompile Include="PlayerAnimHandlerComp.cpp" />
     <ClCompile Include="PlayerComp.cpp" />
     <ClCompile Include="PlayerAttackComp.cpp" />
     <ClCompile Include="PointQuadTree.cpp" />
@@ -271,6 +272,7 @@
     <ClInclude Include="Path.h" />
     <ClInclude Include="PhysicCallbacks.h" />
     <ClInclude Include="PickupComponent.h" />
+    <ClInclude Include="PlayerAnimHandlerComp.h" />
     <ClInclude Include="PlayerComp.h" />
     <ClInclude Include="PlayerAttackComp.h" />
     <ClInclude Include="PointQuadTree.h" />

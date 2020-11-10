@@ -5,6 +5,7 @@
 #include "DXHelper.h"
 #include "Input.h"
 #include "AudioMaster.h"
+#include "SkeletonMeshComponent.h"
 namespace dx = DirectX;
 
 ALIGN16 
@@ -28,7 +29,6 @@ private:
 	dx::XMVECTOR up;
 	dx::XMMATRIX wepWorld, wepOffTrans, wepOffRot;
 	dx::XMMATRIX inverseViewMatrix;
-
 
 	/// SKA TAS BORT EFTER SPELTEST
 	bool attacking;

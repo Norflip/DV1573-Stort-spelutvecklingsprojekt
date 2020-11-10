@@ -222,6 +222,30 @@ void GameScene::InitializeObjects()
 	beansObject->AddComponent<PickupComponent>(Type::Food, 20.0f);
 	beansObject->AddComponent<RigidBodyComponent>(0.f, FilterGroups::PICKUPS, FilterGroups::TERRAIN, BodyType::DYNAMIC, true);
 	AddObject(beansObject);
+
+	//Player Arms
+	Object* playerArmsObject = new Object("playerArms");
+	std::vector<Mesh*> playerMesh = ZWEBLoader::LoadMeshes(ZWEBLoadType::SkeletonAnimation, "Models/Player_Arms.ZWEB", renderer->GetDevice());
+	std::vector<Material*> playerMat = ZWEBLoader::LoadMaterials("Models/Player_Arms.ZWEB", skeletonShader, renderer->GetDevice());
+	//playerArmsObject->AddComponent<MeshComponent>(playerMesh[0], playerMat[0]);
+
+	SkeletonAni skeletonPlayerIdle = ZWEBLoader::LoadSkeletonOnly("Models/Player_Idle.ZWEB", playerMesh[0]->GetBoneIDS(), defaultAnimation);
+	SkeletonAni skeletonPlayerWalk = ZWEBLoader::LoadSkeletonOnly("Models/Player_Walk_Cycle.ZWEB", playerMesh[0]->GetBoneIDS(), defaultAnimation);
+	SkeletonAni skeletonPlayerRun = ZWEBLoader::LoadSkeletonOnly("Models/Player_Run.ZWEB", playerMesh[0]->GetBoneIDS(), defaultAnimation);
+	SkeletonAni skeletonPlayerAttack = ZWEBLoader::LoadSkeletonOnly("Models/Player_Attack.ZWEB", playerMesh[0]->GetBoneIDS(), defaultAnimation);
+
+	SkeletonMeshComponent* playerComp = playerArmsObject->AddComponent<SkeletonMeshComponent>(playerMesh[0], playerMat[0]);
+	playerComp->SetAnimationTrack(skeletonPlayerIdle, SkeletonStateMachine::IDLE);
+	playerComp->SetAnimationTrack(skeletonPlayerWalk, SkeletonStateMachine::WALK);
+	playerComp->SetAnimationTrack(skeletonPlayerRun, SkeletonStateMachine::RUN);
+	playerComp->SetAnimationTrack(skeletonPlayerAttack, SkeletonStateMachine::ATTACK);
+	playerComp->BlendAnimations();
+
+	//playerArmsObject->GetTransform().SetPosition({ 22, 2.0f, 53 });
+
+	playerArmsObject->AddComponent<PlayerAnimHandlerComp>(playerComp, cameraObject, playerObject);
+
+	AddObject(playerArmsObject);
 }
 
 void GameScene::InitializeGUI()
