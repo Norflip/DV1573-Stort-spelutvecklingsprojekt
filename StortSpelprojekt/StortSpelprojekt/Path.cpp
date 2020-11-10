@@ -37,28 +37,29 @@ float Path::SampleInfluence(const dx::XMFLOAT2& position) const
 	{
 		for (int x = -1; x <= 1; x++)
 		{
-			for (size_t i = 0; i < segments.size(); i++)
-			{
-				float distance = segments[i].GetDistance(position.x + x * SAMPLE_DISTANCE, position.y + y * SAMPLE_DISTANCE, t);
-				if (distance < shortest)
-				{
-					shortest = distance;
-					influence = Math::Lerp(segments[i].start.influence, segments[i].end.influence, t);
-				}
-
-				float result = (shortest - influence) / (INFLUENCE_FADE_DISTANCE);
-				//result = Math::Clamp01(result);
-				totResult += result;
-				samples++;
-			}
+			
 		}
 	}
 
-	totResult /= FCAST(samples);
+	int x = 0;
+	int y = 0;
+
+	for (size_t i = 0; i < segments.size(); i++)
+	{
+		float distance = segments[i].GetDistance(position.x + x * SAMPLE_DISTANCE, position.y + y * SAMPLE_DISTANCE, t);
+		if (distance < shortest)
+		{
+			shortest = distance;
+			float result = Math::Lerp(segments[i].start.influence, segments[i].end.influence, t);
+			influence = (shortest - result) / (INFLUENCE_FADE_DISTANCE);
+		}
+	}
+
+	//totResult /= FCAST(samples);
 	//std::cout << "IN: " << totResult << std::endl;
 	//result = Math::Clamp(result, 0.0f, 1.0f);
 
-	return Math::Clamp01(totResult);
+	return Math::Clamp01(influence);
 }
 
 void Path::SetPointsFromIndexes(const std::vector<dx::XMINT2>& indexes)
@@ -70,7 +71,7 @@ void Path::SetPointsFromIndexes(const std::vector<dx::XMINT2>& indexes)
 	settings.scale = 2.0f;
 
 	this->indexes = indexes;
-	const size_t cuts = 5;
+	const size_t cuts = 2;
 
 	std::vector<PathPoint> newPoints;
 	newPoints.clear();
@@ -85,8 +86,8 @@ void Path::SetPointsFromIndexes(const std::vector<dx::XMINT2>& indexes)
 		basePoints.push_back(p);
 	}
 
-	newPoints.push_back(basePoints[0]);
-	for (size_t i = 1; i < basePoints.size() - 1; i++)
+	//newPoints.push_back(basePoints[0]);
+	for (size_t i = 0; i < basePoints.size() - 1; i++)
 	{
 		PathPoint pointA = basePoints[i];
 		PathPoint pointB = basePoints[i + 1];
@@ -115,33 +116,47 @@ void Path::SetPointsFromIndexes(const std::vector<dx::XMINT2>& indexes)
 
 	// add last
 	newPoints.push_back(basePoints[basePoints.size() - 1]);
-	points = SmoothPoints(newPoints);
+	points = SmoothPoints(SmoothPoints(SmoothPoints(newPoints)));
 }
 
 void Path::CreateLineSegments()
 {
 	segments.clear();
+
+
+
+
 	for (size_t i = 0; i < points.size() - 1; i++)
 	{
-		segments.push_back(LineSegment(points[i], points[i + 1]));
+		LineSegment segment(points[i], points[i + 1]);
+		if (i == 0)
+		{
+			dx::XMFLOAT2 direction = segment.Direction();
+			float x = points[i].x + (-direction.x) * 100.0f;
+			float y = points[i].y + (-direction.y) * 100.0f;
+			PathPoint offsetPoint(x, y, points[i].influence);
+			segments.push_back(LineSegment(offsetPoint, points[i]));
+		}
+
+		segments.push_back(segment);
 	}
 
-	//LineSegment& lastSegment = segments[segments.size() - 1];
-	//PathPoint& lastPoint = lastSegment.end;
+	LineSegment& lastSegment = segments[segments.size() - 1];
+	PathPoint& lastPoint = lastSegment.end;
 
-	//dx::XMFLOAT2 direction = lastSegment.Direction();
-	//dx::XMFLOAT2 right = dx::XMFLOAT2(-direction.y, direction.x);
+	dx::XMFLOAT2 direction = lastSegment.Direction();
+	dx::XMFLOAT2 right = dx::XMFLOAT2(-direction.y, direction.x);
 
-	//const float distanceOffset = 100.0f;
+	const float distanceOffset = 100.0f;
 
-	//dx::XMFLOAT2 leftDirection = Math::Lerp(direction, dx::XMFLOAT2(-right.x, -right.y), 0.5f);
-	//dx::XMFLOAT2 rightDirection = Math::Lerp(direction, right, 0.5f);
+	dx::XMFLOAT2 leftDirection = Math::Lerp(direction, dx::XMFLOAT2(-right.x, -right.y), 0.5f);
+	dx::XMFLOAT2 rightDirection = Math::Lerp(direction, right, 0.5f);
 
-	//PathPoint endLeft(lastPoint.x + leftDirection.x * distanceOffset, lastPoint.y + leftDirection.y * distanceOffset, lastPoint.influence);
-	//PathPoint endRight(lastPoint.x + (rightDirection.x) * distanceOffset, lastPoint.y + (rightDirection.y) * distanceOffset, lastPoint.influence);
+	PathPoint endLeft(lastPoint.x + leftDirection.x * distanceOffset, lastPoint.y + leftDirection.y * distanceOffset, lastPoint.influence);
+	PathPoint endRight(lastPoint.x + (rightDirection.x) * distanceOffset, lastPoint.y + (rightDirection.y) * distanceOffset, lastPoint.influence);
 
-	//segments.push_back(LineSegment(lastPoint, endLeft));
-	//segments.push_back(LineSegment(lastPoint, endRight));
+	segments.push_back(LineSegment(lastPoint, endLeft));
+	segments.push_back(LineSegment(lastPoint, endRight));
 
 }
 
@@ -153,8 +168,8 @@ PathPoint Path::Lerp(const PathPoint& a, const PathPoint& b, float t) const
 PathPoint Path::IndexToPoint(const dx::XMINT2& index) const
 {
 	dx::XMFLOAT2 position = Chunk::IndexToWorldXZ(index);
-	//position.x += FCAST(CHUNK_SIZE) / 2.0f;
-	//position.y += FCAST(CHUNK_SIZE) / 2.0f;
+	position.x += FCAST(CHUNK_SIZE) / 2.0f;
+	position.y += FCAST(CHUNK_SIZE) / 2.0f;
 	return PathPoint(position.x, position.y, MIN_INFLUENCE);
 }
 
@@ -177,64 +192,3 @@ std::vector<PathPoint> Path::SmoothPoints(std::vector<PathPoint> ppoints) const
 	smoothPoints.push_back(ppoints[ppoints.size() - 1]);
 	return smoothPoints;
 }
-//
-//std::vector<Path::Point> Path::SmoothPoints() const
-//{
-//	float smoothness = 1.0f;
-//
-//	std::vector<Path::Point> smoothedPoints;
-//	smoothedPoints.push_back(points[0]);
-//
-//	for (size_t i = 1; i < points.size() - 1; i++)
-//	{
-//		Point previous = Lerp(points[i], points[Math::Wrap(i - 1, points.size())], 0.2f);
-//		Point next = Lerp(points[i], points[Math::Wrap(i + 1, points.size())], 0.2f);
-//
-//		std::vector<Point> curve = SmoothCurve(previous, points[i], next, smoothness);
-//		smoothedPoints.insert(smoothedPoints.end(), curve.begin(), curve.end());
-//	}
-//
-//	smoothedPoints.push_back(points[points.size() - 1]);
-//	return smoothedPoints;
-//}
-//
-//std::vector<Path::Point> Path::SmoothCurve(Point previous, Point current, Point next, float smoothness) const
-//{
-//	const int pointsLength = 3;
-//	const int curvedLength = (pointsLength * (int)(roundf(smoothness))) - 1;
-//
-//	std::vector<Path::Point> points;
-//	std::vector<Path::Point> curvedPoints(curvedLength);
-//	smoothness = std::max(smoothness, 1.0f);
-//
-//	float t = 0.0f;
-//
-//	for (int pointInTimeOnCurve = 0; pointInTimeOnCurve < curvedLength + 1; pointInTimeOnCurve++)
-//	{
-//		t = Math::InverseLerp(0, static_cast<float>(curvedLength), static_cast<float>(pointInTimeOnCurve));
-//
-//		points.clear();
-//		points.resize(pointsLength);
-//		points.push_back(previous);
-//		points.push_back(current);
-//		points.push_back(next);
-//
-//		for (int j = pointsLength - 1; j > 0; j--)
-//		{
-//			for (int i = 0; i < j; i++)
-//			{
-//				float x = (1 - t) * points[i].x + t * points[i + 1].x;
-//				float y = (1 - t) * points[i].y + t * points[i + 1].y;
-//
-//				points[i] = Point();
-//				points[i].x = x;
-//				points[i].y = y;
-//				points[i].influence = current.influence;
-//			}
-//		}
-//
-//		curvedPoints.push_back(points[0]);
-//	}
-//
-//	return curvedPoints;
-//}

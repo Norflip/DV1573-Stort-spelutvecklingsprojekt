@@ -161,7 +161,10 @@ void SegmentGenerator::DrawDebug()
 		dx::XMFLOAT3 worldPoint0 (segments[i].start.x, height, segments[i].start.y);
 		dx::XMFLOAT3 worldPoint1 (segments[i].end.x, height, segments[i].end.y);
 
-		DShape::DrawSphere(worldPoint0, 1.0f, { 1,0,1 });
+		DShape::DrawSphere(worldPoint0, 0.4f, { 1,0,1 });
+		DShape::DrawWireSphere(worldPoint0, segments[i].start.influence, { 0,1,0.2f });
+		DShape::DrawWireSphere(worldPoint0, segments[i].start.influence + (INFLUENCE_FADE_DISTANCE / 2.0f), { 0,1,0.8f });
+
 		DShape::DrawLine(worldPoint0, worldPoint1, { 1,0,0 });
 
 	}

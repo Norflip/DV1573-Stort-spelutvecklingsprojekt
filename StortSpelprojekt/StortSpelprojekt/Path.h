@@ -5,8 +5,8 @@
 
 namespace dx = DirectX;
 
-constexpr float MIN_INFLUENCE = 4.0f;
-constexpr float MAX_INFLUENCE = 10.0f;
+constexpr float MIN_INFLUENCE = 1.0f;
+constexpr float MAX_INFLUENCE = 8.0f;
 constexpr float INFLUENCE_FADE_DISTANCE = 10.0f;
 
 struct PathPoint
@@ -56,25 +56,12 @@ struct LineSegment
 
 		float dot = edge1ToPointX * edge1ToEdge2X + edge1ToPointY * edge1ToEdge2Y;
 		float lengthSqr = edge1ToEdge2X * edge1ToEdge2X + edge1ToEdge2Y * edge1ToEdge2Y;
-		t = (lengthSqr != 0) ? dot / lengthSqr : -1;
-
-		float xx, yy;
+		
+		t = dot / lengthSqr;
 		t = Math::Clamp01(t);
-		xx = start.x + t * edge1ToEdge2X;
-		yy = start.y + t * edge1ToEdge2Y;
-
-		float dx = x - xx;
-		float dy = y - yy;
-
-		//
-
-
-	//	float distance1 = Math::DistanceToLineSqr(x, y, start.x, start.y, end.x, end.y, t);
-		/*	if (distance1 != distance2)
-			{
-				std::cout << "1: " << distance1 << "\t2: " << distance2 << std::endl;
-			}*/
-
+		
+		float dx = x - (start.x + t * edge1ToEdge2X);
+		float dy = y - (start.y + t * edge1ToEdge2Y);
 		return sqrtf(dx * dx + dy * dy);
 	}
 };

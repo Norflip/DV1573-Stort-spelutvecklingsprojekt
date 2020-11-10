@@ -23,4 +23,4 @@
 				eBLOB->Release(); \
 			}} \
 
-#define DRAW_COLLIDERS FALSE
+#define DRAW_COLLIDERS TRUE
