@@ -120,7 +120,7 @@ void GameScene::InitializeObjects()
 	axeObject->GetTransform().SetPosition({ 0,0,0 });
 	axeObject->GetTransform().SetScale({ 1, 1, 1 });
 	axeObject->AddComponent<WeaponComponent>(cameraObject);
-		
+	axeObject->AddFlag(ObjectFlag::NO_CULL);
 	AddObject(axeObject);
 	playerObject->GetComponent<PlayerComp>()->InsertWeapon(axeObject->GetComponent<WeaponComponent>(), axeObject->GetName());
 
@@ -139,6 +139,7 @@ void GameScene::InitializeObjects()
 
 	///* Fuel pickup stuff temporary */
 	Object* fuelCanObject = resources->AssembleObject("FuelCanGreen", "FuelCanGreenMaterial");
+
 	fuelCanObject->GetTransform().SetPosition({ 22,2,52 });
 	fuelCanObject->AddComponent<BoxColliderComponent>(dx::XMFLOAT3{ 0.3f, 0.3f, 0.3f }, dx::XMFLOAT3{ 0, 0, 0 });
 	fuelCanObject->AddComponent<PickupComponent>(Type::Fuel, 20.0f);

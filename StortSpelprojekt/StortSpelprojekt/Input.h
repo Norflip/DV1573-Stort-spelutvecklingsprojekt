@@ -23,25 +23,32 @@ public:
 	Input(HWND window, size_t width, size_t height);
 	virtual ~Input();
 
-	//Keyboard
+	//Gets key once per updateMsg (alot)
 	bool GetKey(DirectX::Keyboard::Keys key) const;
+	//Gets keyDown once per click
 	bool GetKeyDown(DirectX::Keyboard::Keys key) const;
+	//Gets keyUp once per click
 	bool GetKeyUp(DirectX::Keyboard::Keys key) const;
 
 
-	//Mouse
+	//Sets mousemode to relative or absolute
 	void SetMouseMode(DirectX::Mouse::Mode mode);
+	//Sets windowSize and HWND
 	void SetWindow(HWND hwnd, size_t height, size_t width);
 	void ConfineMouse();
 	void FreeMouse();
 
-
+	//Gets key once per updateMsg (alot)
 	bool GetLeftMouseKey() const;
+	//Gets keyDown once per click
 	bool GetLeftMouseKeyDown() const;
+	//Gets keyUp once per click
 	bool GetLeftMouseKeyUp() const;
-
+	//Gets key once per updateMsg (alot)
 	bool GetRightMouseKey() const;
+	//Gets keyDown once per click
 	bool GetRightMouseKeyDown() const;
+	//Gets keyUp once per click
 	bool GetRightMouseKeyUp() const;
 
 	POINT GetMousePos() const;
@@ -50,7 +57,7 @@ public:
 	void ResetRelative();
 	void UpdateInputs();
 	void UpdateMsg(UINT umsg, WPARAM wParam, LPARAM lParam);
-	
+	//Returns a reference to the singleton
 	static Input& Instance() // singleton
 	{
 		static Input instance;
