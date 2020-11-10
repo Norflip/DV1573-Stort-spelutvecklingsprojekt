@@ -108,7 +108,7 @@ void GrassComponent::InitializeGrass(Mesh* chunkMesh, ID3D11Device* device, ID3D
 
 	DXHelper::CreateStructuredBuffer(device, &grassBCBfr, bcData.data(), sizeof(dx::XMFLOAT4), MAX_STRANDS, &grassBCSRV);
 	DXHelper::BindStructuredBuffer(context, grassBCBfr, bcData.data(), GRASS_COORD_SRV_SLOT, ShaderBindFlag::DOMAINS, &grassBCSRV);
-
+	//Window sice needed here
 	float pixelScale = tanf(0.5f * (dx::XM_PI / 2.0f)) / (float)(900); //the height of the window.
 
 	cb_grass grassCBufferData;
