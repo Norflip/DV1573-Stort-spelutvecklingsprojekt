@@ -21,7 +21,6 @@ void PlayerAnimHandlerComp::Initialize()
 
 void PlayerAnimHandlerComp::Update(const float& deltaTime)
 {
-
 	Animate(deltaTime);
 	SetPosition();
 }
@@ -31,37 +30,21 @@ void PlayerAnimHandlerComp::Animate(float time)
 	attackTimer += time;
 	attackCooldown += time;
 
-
-	//if (LMOUSE_DOWN && attackCooldown > 0.5)
-	//{
-	//	time = 0;
-	//	attackTimer = 0;
-	//	attackCooldown = 0;
-	//	attacking = true;
-	//	AudioMaster::Instance().PlaySoundEvent("axeSwing");
-
-
-
-	//}
-
-	/////////////////////////////////////////////////////////////////////////
-
-	if (LMOUSE_DOWN && attackCooldown > 1.0f)
+	if (LMOUSE_PRESSED && attackCooldown > 1.0f)
 	{
 		time = 0;
 		attackTimer = 0;
 		attackCooldown = 0;
 		attacking = true;
-		
-
 	}
-	else if (attackTimer > 0.5f)
+	else if (attackTimer > 0.83f)
 	{
 		attacking = false;
 	}
+
 	if (attacking)
 	{
-		skeletonMeshComp->SetTrack(SkeletonStateMachine::ATTACK, false);
+		skeletonMeshComp->SetTrack(SkeletonStateMachine::ATTACK, false); //OFÄRDIGT: ATTACKEN BUGGAR >_>
 		//AudioMaster::Instance().PlaySoundEvent("axeSwing");
 	}
 
@@ -80,15 +63,11 @@ void PlayerAnimHandlerComp::Animate(float time)
 			}
 		}
 
-		else if ((controlComp->GetrbComp()->GetLinearVelocity().x == 0 && controlComp->GetrbComp()->GetLinearVelocity().z == 0)
-			|| controlComp->GetrbComp()->GetLinearVelocity().y > 0)
+		else if (controlComp->GetrbComp()->GetLinearVelocity().x == 0 && controlComp->GetrbComp()->GetLinearVelocity().z == 0)
 		{
 			skeletonMeshComp->SetTrack(SkeletonStateMachine::IDLE, false);
 		}
 	}
-
-
-	
 }
 
 void PlayerAnimHandlerComp::SetPosition()

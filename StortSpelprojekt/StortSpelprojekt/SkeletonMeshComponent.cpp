@@ -253,6 +253,7 @@ void SkeletonMeshComponent::PlayOnce()
 				timer.Stop();
 				done = true;
 				doneDown = true;
+				
 			}
 
 

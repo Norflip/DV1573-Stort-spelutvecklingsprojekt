@@ -4,6 +4,7 @@
 WeaponComponent::WeaponComponent(Object* object)
 	:camObj(object), weaponPos({ 0,0,0 }), weaponRot({ 0,0,0 }), weaponScale({ 0,0,0 }), up({ 0,0,0 }), attacking(false)
 {
+	//Joint nr 21 är den hand som yxan ska parentas till
 }
 
 void WeaponComponent::Initialize()

@@ -5,7 +5,6 @@
 #include "DXHelper.h"
 #include "Input.h"
 #include "AudioMaster.h"
-#include "SkeletonMeshComponent.h"
 namespace dx = DirectX;
 
 ALIGN16 
