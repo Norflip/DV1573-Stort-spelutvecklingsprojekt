@@ -116,9 +116,10 @@ void PlayerComp::HoldObject()
 	wepOffTrans.Translation(holdAngle);
 	wepOffRot = wepOffRot.CreateFromAxisAngle(up, dx::XMConvertToRadians(-40.0f));
 	wepWorld = wepOffRot * wepOffTrans * inverseViewMatrix;
-
+	holding->AddFlag(ObjectFlag::NO_CULL);
 
 	//something here doesn work properly
+	//GetOwner()->AddFlag(ObjectFlag::NO_CULL);
 	wepWorld.Decompose(weaponScale, weaponRot, weaponPos);
 	holding->GetTransform().SetPosition(weaponPos);
 	holding->GetTransform().SetRotation(weaponRot);
@@ -130,6 +131,7 @@ void PlayerComp::DropObject()
 {
 	if (KEY_DOWN(T))
 	{
+		holding->RemoveFlag(ObjectFlag::NO_CULL);
 		dx::XMVECTOR camRot = cam->GetOwner()->GetTransform().GetRotation();
 		camRot = cam->GetOwner()->GetTransform().TransformDirectionCustomRotation({ 0,0,1 }, camRot);
 
