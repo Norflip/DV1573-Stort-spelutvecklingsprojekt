@@ -194,7 +194,7 @@ void Shader::CompileVS(ID3D11Device* device)
 			&errorBlob
 		);
 
-		//ASSERT_SHADER(VSCompileResult, errorBlob, wPath);
+		ASSERT_SHADER(VSCompileResult, errorBlob, wPath);
 
 		HRESULT VSCreateResult = device->CreateVertexShader(VSBlob->GetBufferPointer(), VSBlob->GetBufferSize(), nullptr, &this->vertexShader);
 		assert(SUCCEEDED(VSCreateResult));
