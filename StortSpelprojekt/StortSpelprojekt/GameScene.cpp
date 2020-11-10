@@ -49,7 +49,6 @@ void GameScene::InitializeObjects()
 	house = houseBaseObject;
 
 	//														Extence					pos
-	//houseBaseObject->AddComponent<BoxColliderComponent>(dx::XMFLOAT3(2.5, 5, 2.5), dx::XMFLOAT3(0, 0, 0));
 	//WALLS
 	houseBaseObject->AddComponent<BoxColliderComponent>(dx::XMFLOAT3(1.5, 3.5, 2.1), dx::XMFLOAT3(0, 4, -1));
 	//PORCH
