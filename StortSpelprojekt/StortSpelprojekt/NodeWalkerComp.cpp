@@ -37,7 +37,7 @@ void NodeWalkerComp::InitializePath(Path thePath)
 
 	//std::cout <<"Nr of: "<< thePath.CountPoints() << std::endl;
 	//dx::XMFLOAT3 pos3 = { thePath.GetPoint(this->currentNode).x + offset,HEIGHT, thePath.GetPoint(this->currentNode).y + offset };
-	dx::XMFLOAT3 pos3 = { thePath.GetPoint(this->currentNode).x + OFFSET,HEIGHT, thePath.GetPoint(this->currentNode).y + OFFSET };
+	dx::XMFLOAT3 pos3 = { thePath.GetPoint(this->currentNode).x,HEIGHT, thePath.GetPoint(this->currentNode).z };
 	dx::XMVECTOR startPos = dx::XMLoadFloat3(&pos3);
 	this->GetOwner()->GetTransform().SetPosition(startPos);
 
@@ -71,7 +71,7 @@ void NodeWalkerComp::Reset()
 	this->nextChosen = -1;
 	this->canWalk = false;
 
-	dx::XMFLOAT3 pos3 = { thePath.GetPoint(this->currentNode).x + OFFSET,HEIGHT, thePath.GetPoint(this->currentNode).y + OFFSET };
+	dx::XMFLOAT3 pos3 = { thePath.GetPoint(this->currentNode).x,HEIGHT, thePath.GetPoint(this->currentNode).z };
 	dx::XMVECTOR startPos = dx::XMLoadFloat3(&pos3);
 	this->GetOwner()->GetTransform().SetPosition(startPos);
 	this->rbComp->SetPosition(startPos);
@@ -145,23 +145,12 @@ void NodeWalkerComp::Update(const float& deltaTime)
 	if (KEY_DOWN(R))
 		this->Reset();
 
-	if (KEY_DOWN(Up))
-	{
-		Start();
-	}
-	if (KEY_PRESSED(Down))
-	{
-		Stop();
-		
-	}
-
-
 	if (isWalking)
 	{
 		if (canWalk)
 		{
 			//DirectX::XMFLOAT3 dir = { 0.f,0.f,0.f };
-			dx::XMFLOAT3 nextPoint = { thePath.GetPoint(this->currentNode).x + OFFSET,HEIGHT, thePath.GetPoint(this->currentNode).y + OFFSET };
+			dx::XMFLOAT3 nextPoint = { thePath.GetPoint(this->currentNode).x,HEIGHT, thePath.GetPoint(this->currentNode).z  };
 			dx::XMVECTOR vdir = dx::XMVectorSubtract(dx::XMLoadFloat3(&nextPoint), GetOwner()->GetTransform().GetPosition());
 			dx::XMStoreFloat(&this->length, dx::XMVector3Length(vdir));
 			if (this->length < nodeRadius)

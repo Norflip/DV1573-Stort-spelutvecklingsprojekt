@@ -25,41 +25,41 @@ float Path::SampleInfluence(const dx::XMFLOAT2& position) const
 	if (points.size() == 0)
 		return 0.0f;
 
-	const float SAMPLE_DISTANCE = 1.0f;
-
-	float shortest = FLT_MAX;
-	float influence = FLT_MAX;
+	float shortest = 0.0f;
+	float influence = 0.0f;
 	float totResult = 0.0f;
-	int samples = 0;
-	float t;
-
-	for (int y = -1; y <= 1; y++)
-	{
-		for (int x = -1; x <= 1; x++)
-		{
-			
-		}
-	}
-
-	int x = 0;
-	int y = 0;
+	float t, result;
 
 	for (size_t i = 0; i < segments.size(); i++)
 	{
-		float distance = segments[i].GetDistance(position.x + x * SAMPLE_DISTANCE, position.y + y * SAMPLE_DISTANCE, t);
-		if (distance < shortest)
+		float distance = segments[i].GetDistance(position.x, position.y, t);
+		if (distance < shortest || i == 0)
 		{
 			shortest = distance;
-			float result = Math::Lerp(segments[i].start.influence, segments[i].end.influence, t);
+			result = Math::Lerp(segments[i].start.influence, segments[i].end.influence, t);
 			influence = (shortest - result) / (INFLUENCE_FADE_DISTANCE);
 		}
 	}
 
-	//totResult /= FCAST(samples);
-	//std::cout << "IN: " << totResult << std::endl;
-	//result = Math::Clamp(result, 0.0f, 1.0f);
-
 	return Math::Clamp01(influence);
+}
+
+void Path::DrawDebug()
+{
+	const float height = 1.0f;
+	auto segments =GetLineSegments();
+	for (size_t i = 0; i < segments.size(); i++)
+	{
+		dx::XMFLOAT3 worldPoint0(segments[i].start.x, height, segments[i].start.z);
+		dx::XMFLOAT3 worldPoint1(segments[i].end.x, height, segments[i].end.z);
+
+		DShape::DrawSphere(worldPoint0, 0.4f, { 1,0,1 });
+		DShape::DrawWireSphere(worldPoint0, segments[i].start.influence, { 0,1,0.2f });
+		DShape::DrawWireSphere(worldPoint0, segments[i].start.influence + (INFLUENCE_FADE_DISTANCE / 2.0f), { 0,1,0.8f });
+
+		DShape::DrawLine(worldPoint0, worldPoint1, { 1,0,0 });
+
+	}
 }
 
 void Path::SetPointsFromIndexes(const std::vector<dx::XMINT2>& indexes)
@@ -86,13 +86,12 @@ void Path::SetPointsFromIndexes(const std::vector<dx::XMINT2>& indexes)
 		basePoints.push_back(p);
 	}
 
-	//newPoints.push_back(basePoints[0]);
 	for (size_t i = 0; i < basePoints.size() - 1; i++)
 	{
 		PathPoint pointA = basePoints[i];
 		PathPoint pointB = basePoints[i + 1];
 
-		dx::XMFLOAT2 direction = dx::XMFLOAT2(pointB.x - pointA.x, pointB.y - pointA.y);
+		dx::XMFLOAT2 direction = dx::XMFLOAT2(pointB.x - pointA.x, pointB.z - pointA.z);
 		float length = sqrtf(direction.x * direction.x + direction.y + direction.y);
 		direction.x /= length;
 		direction.y /= length;
@@ -109,22 +108,19 @@ void Path::SetPointsFromIndexes(const std::vector<dx::XMINT2>& indexes)
 			noise *= curve;
 
 			point.x += right.x * noise * offset;
-			point.y += right.y * noise * offset;
+			point.z += right.y * noise * offset;
 			newPoints.push_back(point);
 		}
 	}
 
-	// add last
 	newPoints.push_back(basePoints[basePoints.size() - 1]);
-	points = SmoothPoints(SmoothPoints(SmoothPoints(newPoints)));
+	points = SmoothPoints(SmoothPoints(newPoints));
 }
 
 void Path::CreateLineSegments()
 {
 	segments.clear();
-
-
-
+	const float distanceOffset = 1000.0f;
 
 	for (size_t i = 0; i < points.size() - 1; i++)
 	{
@@ -132,8 +128,8 @@ void Path::CreateLineSegments()
 		if (i == 0)
 		{
 			dx::XMFLOAT2 direction = segment.Direction();
-			float x = points[i].x + (-direction.x) * 100.0f;
-			float y = points[i].y + (-direction.y) * 100.0f;
+			float x = points[i].x + (-direction.x) * distanceOffset;
+			float y = points[i].z + (-direction.y) * distanceOffset;
 			PathPoint offsetPoint(x, y, points[i].influence);
 			segments.push_back(LineSegment(offsetPoint, points[i]));
 		}
@@ -143,26 +139,24 @@ void Path::CreateLineSegments()
 
 	LineSegment& lastSegment = segments[segments.size() - 1];
 	PathPoint& lastPoint = lastSegment.end;
-
 	dx::XMFLOAT2 direction = lastSegment.Direction();
 	dx::XMFLOAT2 right = dx::XMFLOAT2(-direction.y, direction.x);
 
-	const float distanceOffset = 100.0f;
-
 	dx::XMFLOAT2 leftDirection = Math::Lerp(direction, dx::XMFLOAT2(-right.x, -right.y), 0.5f);
+	PathPoint endLeft(lastPoint.x + leftDirection.x * distanceOffset, lastPoint.z + leftDirection.y * distanceOffset, lastPoint.influence);
+	
 	dx::XMFLOAT2 rightDirection = Math::Lerp(direction, right, 0.5f);
-
-	PathPoint endLeft(lastPoint.x + leftDirection.x * distanceOffset, lastPoint.y + leftDirection.y * distanceOffset, lastPoint.influence);
-	PathPoint endRight(lastPoint.x + (rightDirection.x) * distanceOffset, lastPoint.y + (rightDirection.y) * distanceOffset, lastPoint.influence);
+	PathPoint endRight(lastPoint.x + (rightDirection.x) * distanceOffset, lastPoint.z + (rightDirection.y) * distanceOffset, lastPoint.influence);
 
 	segments.push_back(LineSegment(lastPoint, endLeft));
 	segments.push_back(LineSegment(lastPoint, endRight));
+	// add level select here
 
 }
 
 PathPoint Path::Lerp(const PathPoint& a, const PathPoint& b, float t) const
 {
-	return PathPoint(Math::Lerp(a.x, b.x, t), Math::Lerp(a.y, b.y, t), Math::Lerp(a.influence, b.influence, t));
+	return PathPoint(Math::Lerp(a.x, b.x, t), Math::Lerp(a.z, b.z, t), Math::Lerp(a.influence, b.influence, t));
 }
 
 PathPoint Path::IndexToPoint(const dx::XMINT2& index) const

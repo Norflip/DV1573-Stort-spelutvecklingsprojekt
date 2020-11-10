@@ -25,7 +25,7 @@ public:
 	void SetHouse(Object* object) { this->house = object; }
 	void DrawDebug();
 
-	Path GetPath() const { return this->generator.GetPath(); }
+	Path& GetPath() { return this->generator.GetPath(); }
 	void MoveHouseAndPlayerToStart();
 
 private:

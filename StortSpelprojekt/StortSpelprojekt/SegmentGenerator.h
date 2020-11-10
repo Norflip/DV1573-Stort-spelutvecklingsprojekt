@@ -46,7 +46,7 @@ public:
 	void SampleNormal(const float& x, const float& z, dx::XMFLOAT3& normal) const;
 
 	void DrawDebug();
-	Path GetPath() const { return this->grid.GetPath(); }
+	Path& GetPath() { return this->grid.GetPath(); }
 
 	std::vector<Chunk*> GetChunks() const { return this->chunks; }
 

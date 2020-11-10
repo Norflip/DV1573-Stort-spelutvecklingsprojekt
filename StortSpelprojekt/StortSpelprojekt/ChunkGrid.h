@@ -25,7 +25,7 @@ public:
 
 	std::unordered_map<int, ChunkIndexInfo>& GetChunks() { return this->chunks; }
 
-	Path GetPath() const { return this->path; }
+	Path& GetPath() { return this->path; }
 	dx::XMINT2 GetMinIndex() const { return this->minIndex; }
 	dx::XMINT2 GetMaxIndex() const { return this->maxIndex; }
 
