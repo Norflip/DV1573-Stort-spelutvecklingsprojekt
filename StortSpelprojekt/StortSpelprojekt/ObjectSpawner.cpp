@@ -152,7 +152,6 @@ void ObjectSpawner::Spawn(const SaveState& state, PointQuadTree& tree, std::unor
 
 #if SPAWN_ITEMS
 	int itemIndex = 0;
-	ParticleSystem* particles = nullptr;
 	if (items.size() > 0)
 	{
 		for (size_t i = 0; i < itemSpawnPositions.size(); i++)

@@ -11,7 +11,6 @@
 
 #include <time.h>
 
-#include "ParticleSystem.h"
 
 class RenderPass;
 

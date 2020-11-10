@@ -1,7 +1,6 @@
 #pragma once
 #include "Scene.h"
 #include "World.h"
-#include "ParticleSystem.h"
 
 class GUIFont;
 class SpriteRenderPass;
