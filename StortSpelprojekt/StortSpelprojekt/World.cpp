@@ -78,7 +78,7 @@ void World::MoveHouseAndPlayerToStart()
 		std::vector<dx::XMINT2> indexes = generator.GetPath().GetIndexes();
 		dx::XMINT2 spawnIndex = indexes[0];
 
-		dx::XMVECTOR position = dx::XMVectorAdd(Chunk::IndexToWorld(spawnIndex, 0.0f), dx::XMVectorSet(0, 0, 0, 0));
+		dx::XMVECTOR position = dx::XMVectorAdd(Chunk::IndexToWorld(spawnIndex, 0.0f), dx::XMVectorSet(CHUNK_SIZE / 2.0f, 0, CHUNK_SIZE / 2.0f, 0));
 		house->GetTransform().SetPosition(position);
 
 		if (house->HasComponent<RigidBodyComponent>())

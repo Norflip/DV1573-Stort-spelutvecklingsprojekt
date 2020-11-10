@@ -5,7 +5,7 @@
 #include "Random.h"
 #include "SaveState.h"
 
-#define SPAWN_ITEMS FALSE
+#define SPAWN_ITEMS TRUE
 
 class ObjectSpawner
 {
