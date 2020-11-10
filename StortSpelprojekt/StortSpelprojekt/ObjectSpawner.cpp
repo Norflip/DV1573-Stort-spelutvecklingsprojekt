@@ -172,8 +172,7 @@ void ObjectSpawner::Spawn(const SaveState& state, PointQuadTree& tree, std::unor
 				object->GetComponent<RigidBodyComponent>()->SetPosition(position);
 				Transform::SetParentChild(root->GetTransform(), object->GetTransform());
 				activeItems.push_back(object);
-				
-				
+								
 				itemIndex++;
 
 				/* Shitty stuff here maybe? */
@@ -249,7 +248,6 @@ void ObjectSpawner::DrawDebug()
 		dx::XMFLOAT3 worldPoint(propSpawnPositions[i].x, 5, propSpawnPositions[i].y);
 		DShape::DrawSphere(worldPoint, 0.5f, dx::XMFLOAT3(0, 0, 1));
 	}
-
 }
 
 std::vector<dx::XMFLOAT2> ObjectSpawner::CreateSpawnPositions(PointQuadTree& tree, float radius, std::unordered_map<int, Chunk*>& chunkMap)

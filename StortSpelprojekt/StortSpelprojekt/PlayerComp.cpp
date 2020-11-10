@@ -145,11 +145,11 @@ void PlayerComp::DropObject()
 		rbComp->SetRotation(weaponRot);
 		//objectRb->setLinearVelocity({ dx::XMVectorGetX(camRot) * forceAmount ,  dx::XMVectorGetY(camRot) * forceAmount,  dx::XMVectorGetZ(camRot) * forceAmount });
 
-		for (auto i : renderer->GetParticleList())
+		/*for (auto i : renderer->GetParticleList())
 		{
 			if (hit.object->GetID() == i.first)
 				i.second->SetActive(true);
-		}
+		}*/
 						
 		float tossSpeed = throwStrength / rbComp->GetMass();
 		objectRb->setLinearVelocity({ dx::XMVectorGetX(camRot) * tossSpeed ,  dx::XMVectorGetY(camRot) * tossSpeed,  dx::XMVectorGetZ(camRot) * tossSpeed });
@@ -202,11 +202,11 @@ void PlayerComp::RayCast(const float& deltaTime)
 						fuel += temp;
 				}
 				
-				for (auto i : renderer->GetParticleList())
+				/*for (auto i : renderer->GetParticleList())
 				{
 					if (hit.object->GetID() == i.first)
 						i.second->SetActive(false);
-				}
+				}*/
 
 				hit.object->GetComponent<PickupComponent>()->SetActive(false);
 				RigidBodyComponent* rbComp = hit.object->GetComponent<RigidBodyComponent>();
@@ -230,11 +230,11 @@ void PlayerComp::RayCast(const float& deltaTime)
 				//hit.object->RemoveFlag(ObjectFlag::ENABLED);
 				currentWeapon->RemoveFlag(ObjectFlag::ENABLED);
 
-				for (auto i : renderer->GetParticleList())
+				/*for (auto i : renderer->GetParticleList())
 				{
 					if (hit.object->GetID() == i.first)
 						i.second->SetActive(false);
-				}
+				}*/
 
 				
 			}

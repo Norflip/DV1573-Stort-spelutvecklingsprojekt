@@ -212,19 +212,23 @@ void GameScene::InitializeObjects()
 	AddObject(fuelCanObject);
 
 	///* Banana pickup stuff temporary */
+	Shader* particleShader = resources->GetShaderResource("particleShader");
 	Object* beansObject = resources->AssembleObject("Soup", "SoupMaterial");
 	beansObject->GetTransform().SetPosition({22, 2.0f, 53 });
 	beansObject->AddComponent<BoxColliderComponent>(dx::XMFLOAT3{ 0.5f, 0.5f, 0.5f }, dx::XMFLOAT3{ 0, 0, 0 });
 	beansObject->AddComponent<PickupComponent>(Type::Food, 20.0f);
 	beansObject->AddComponent<RigidBodyComponent>(0.f, FilterGroups::PICKUPS, (FilterGroups::EVERYTHING & ~FilterGroups::PLAYER), BodyType::DYNAMIC, true);
+
+	beansObject->AddComponent<ParticleSystemComponent>(renderer, camera, particleShader);
+	beansObject->GetComponent<ParticleSystemComponent>()->InitializeParticles(renderer->GetDevice(), L"Textures/starstar.png");
 	AddObject(beansObject);
 
 
 	///* Particles */	
-	//Shader* particleShader = resources->GetShaderResource("particleShader");
-	//ParticleSystem* particles = new ParticleSystem(beansObject, particleShader);
-	//particles->InitializeParticles(renderer->GetDevice(), L"Textures/starstar.png");
-	//renderer->AddParticles(beansObject->GetID(), particles);	
+	/*Shader* particleShader = resources->GetShaderResource("particleShader");
+	ParticleSystem* particles = new ParticleSystem(beansObject, particleShader);
+	particles->InitializeParticles(renderer->GetDevice(), L"Textures/starstar.png");
+	renderer->AddParticles(beansObject->GetID(), particles);	*/
 
 	//ParticleSystem* particlesFuel = new ParticleSystem(fuelCanObject, particleShader);
 	//particlesFuel->InitializeParticles(renderer->GetDevice(), L"Textures/starstar.png");
@@ -370,7 +374,7 @@ void GameScene::OnDeactivate()
 	world.DeconstructSegment();
 	renderer->RemoveRenderPass(guiManager);
 	
-	renderer->ClearParticles();
+	//renderer->ClearParticles();
 
 	ShowCursor(true);
 	//this->PrintSceneHierarchy(root, 0);
@@ -386,8 +390,8 @@ void GameScene::Update(const float& deltaTime)
 	
 	skyboxClass->GetThisObject()->GetTransform().SetPosition(camera->GetOwner()->GetTransform().GetPosition());
 	
-	for(auto i : renderer->GetParticleList())
-		i.second->Update(deltaTime, camera, renderer->GetContext());
+	/*for(auto i : renderer->GetParticleList())
+		i.second->Update(deltaTime, camera, renderer->GetContext());*/
 }
 
 void GameScene::FixedUpdate(const float& fixedDeltaTime)

@@ -21,6 +21,7 @@
 #include "CapsuleColliderComponent.h"
 #include "DebugBoxShapeComponent.h"
 #include "PickupComponent.h"
+#include "ParticlesystemComponent.h"
 //Might need to yeet
 #include "ResourceManager.h"
 #include "ObjectPooler.h"

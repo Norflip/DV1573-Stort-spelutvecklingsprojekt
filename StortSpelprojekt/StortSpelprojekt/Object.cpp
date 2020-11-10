@@ -57,14 +57,12 @@ void Object::Draw(Renderer* renderer, CameraComponent* camera)
 {
 	if (HasFlag(ObjectFlag::ENABLED))
 	{
-
 		for (auto i = components.begin(); i < components.end(); i++)
 			(*i)->Draw(renderer, camera);
 
 		auto children = transform.GetChildren();
 		for (auto i = children.begin(); i < children.end(); i++)
-			(*i)->GetOwner()->Draw(renderer, camera);	
-		
+			(*i)->GetOwner()->Draw(renderer, camera);			
 	}
 }
 

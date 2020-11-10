@@ -214,11 +214,11 @@ void Renderer::RenderFrame(CameraComponent* camera, float time, RenderTexture& t
 
 	/* Particle stuffy */
 	SetCullBack(true);
-	for (auto i : particleList)
+	/*for (auto i : particleList)
 	{
 		if(i.second->GetActive())
 			i.second->Render(context, camera);
-	}
+	}*/
 	SetCullBack(false);
 
 	if (applyRenderPasses)
@@ -276,12 +276,12 @@ void Renderer::AddRenderPass(RenderPass* pass)
 		std::sort(passes.begin(), passes.end(), [](const RenderPass* a, const RenderPass* b) -> bool { return a->GetPriority() < b->GetPriority(); });
 }
 
-void Renderer::ClearParticles()
-{
-	for (auto i : particleList)
-		delete i.second;
-	particleList.clear();
-}
+//void Renderer::ClearParticles()
+//{
+//	for (auto i : particleList)
+//		delete i.second;
+//	particleList.clear();
+//}
 
 void Renderer::Draw(const Mesh* mesh, const Material* material, const dx::XMMATRIX& model)
 {
@@ -326,6 +326,11 @@ void Renderer::DrawGrass(const Mesh* mesh, const Material* material, const dx::X
 	item.world = model;
 	AddItem(item, false);
 }
+
+//void Renderer::DrawParticles(ParticleSystem* particle)
+//{
+//	fittpartiklar.push_back(particle);
+//}
 
 void Renderer::SetCullBack(bool cullNone)
 {

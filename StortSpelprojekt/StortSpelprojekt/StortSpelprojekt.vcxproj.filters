@@ -274,6 +274,7 @@
     <ClCompile Include="ThirdParty\quickhull\QuickHull.cpp">
       <Filter>ThirdParty</Filter>
     </ClCompile>
+    <ClCompile Include="ParticlesystemComponent.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="ObjectSpawner.h">
@@ -551,6 +552,9 @@
     </ClInclude>
     <ClInclude Include="ThirdParty\quickhull\QuickHull.hpp">
       <Filter>ThirdParty</Filter>
+    </ClInclude>
+    <ClInclude Include="ParticlesystemComponent.h">
+      <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
