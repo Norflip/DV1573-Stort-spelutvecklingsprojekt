@@ -28,6 +28,9 @@ AudioMaster::AudioMaster()
 	LoadFile(L"Sounds/yay.wav", "pickupSound", pickupSound, AudioTypes::Sound, false);
 	LoadFile(L"Sounds/swinging_axe.mp3", "axeSwing", axeSwingSound, AudioTypes::Sound, false);
 	LoadFile(L"Sounds/Punch.wav", "punch", punchSound, AudioTypes::Sound, false);
+	LoadFile(L"Sounds/walking.wav", "walk", walkSound, AudioTypes::Sound, true);
+	LoadFile(L"Sounds/running.wav", "run", runSound, AudioTypes::Sound, true);
+
 	SetVolume(AudioTypes::Music, 0.7f);
 	SetVolume(AudioTypes::Sound, 0.7f);
 

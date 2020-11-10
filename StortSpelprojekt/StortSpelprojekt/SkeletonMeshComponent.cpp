@@ -14,7 +14,39 @@ timeScale(timeScale)
 	{
 		dx::XMStoreFloat4x4(&finalTransforms[bone], id);
 	}
+
 }
+
+SkeletonMeshComponent::SkeletonMeshComponent(SkeletonMeshComponent* other)
+{
+	this->mesh = other->GetMesh();
+	this->material = other->GetMaterial();
+	this->timeScale = other->GetTimeScale();
+
+	for (int i = 0; i < other->GetAnimations().size(); i++)
+	{
+		skeletonAnimations.push_back(other->GetAnimations()[i]);
+	}
+
+	this->bounds = other->GetBounds();
+
+	this->currentAni = other->GetCurrentAnimation();
+
+	this->doneDown = false;
+	this->doneUp = false;
+
+	for (int bone = 0; bone < other->GetAnimationTransforms().size(); bone++)
+	{
+		dx::XMFLOAT4X4 matrix = other->GetAnimationTransforms()[bone];
+
+		finalTransforms.push_back(matrix);
+	}
+
+	this->trackMap = other->GetTrackMap();
+
+	float stop = 0;
+}
+
 
 SkeletonMeshComponent::~SkeletonMeshComponent()
 {

@@ -14,7 +14,7 @@ public:
 	World();
 	virtual ~World();
 
-	void Initialize(Object* root, ResourceManager* resources, ObjectPooler* pooler, Renderer* renderer);
+	void Initialize(Object* root, ResourceManager* resources, ObjectPooler* pooler, Renderer* renderer, CameraComponent* camera);
 
 	void ConstructSegment(SaveState state, SegmentDescription description);
 	void DeconstructSegment();

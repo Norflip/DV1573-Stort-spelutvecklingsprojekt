@@ -4,6 +4,7 @@
 #include "PossionDiscSampler.h"
 #include "Random.h"
 #include "SaveState.h"
+#include "ResourceManager.h"
 
 #define SPAWN_ITEMS TRUE
 
@@ -33,7 +34,7 @@ public:
 	ObjectSpawner();
 	virtual ~ObjectSpawner();
 
-	void Initialize(Object* root, ObjectPooler* pooler);
+	void Initialize(Object* root, ObjectPooler* pooler, Renderer* renderer, ResourceManager* resource, CameraComponent* camera);
 
 	void Spawn(const SaveState& state, PointQuadTree& tree, std::unordered_map<int, Chunk*>& chunkMap, std::vector<Chunk*>& chunks, ID3D11Device* device);
 	void Despawn();

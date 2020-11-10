@@ -11,6 +11,7 @@
 
 #include <time.h>
 
+
 class RenderPass;
 
 ALIGN16
@@ -26,7 +27,8 @@ class Renderer
 			Default,
 			Instanced,
 			Skeleton,
-			Grass
+			Grass,
+			Particles
 		};
 
 		const Mesh* mesh;
@@ -54,10 +56,12 @@ public:
 	void RenderFrame(CameraComponent* camera, float time, RenderTexture& target, bool drawGUI = false, bool applyRenderPasses = true);
 
 	void AddRenderPass(RenderPass*);
+	
 	void Draw(const Mesh* mesh, const Material* material, const dx::XMMATRIX& model);
 	void DrawInstanced(const Mesh* mesh, const size_t& count, ID3D11Buffer* instanceBuffer, const Material* material);
 	void DrawSkeleton(const Mesh* mesh, const Material* material, const dx::XMMATRIX& model, std::vector<dx::XMFLOAT4X4>& bones);
 	void DrawGrass(const Mesh* mesh, const Material* material, const dx::XMMATRIX& model);
+	void DrawParticles(const Mesh* mesh, const Material* material, const dx::XMMATRIX& model);
 	void DrawImmediate(const Mesh* mesh, const Material* material, const CameraComponent* camera, const dx::XMMATRIX& model);
 	
 	void SetCullBack(bool);
@@ -86,7 +90,9 @@ private:
 	void DrawRenderItemInstanced(const RenderItem& item, CameraComponent* camera);
 	void DrawRenderItemSkeleton(const RenderItem& item, CameraComponent* camera);
 	void DrawRenderItemGrass(const RenderItem& item, CameraComponent* camera);
-	
+	void DrawRenderItemParticles(const RenderItem& item, CameraComponent* camera);
+
+
 	void SetObjectBufferValues(const CameraComponent* camera, dx::XMMATRIX world, bool transpose);
 	Mesh* CreateScreenQuad();
 
@@ -94,7 +100,7 @@ private:
 	IDXGISwapChain* swapchain;
 	ID3D11Device* device;
 	ID3D11DeviceContext* context;
-
+		
 	RenderTexture backbuffer;
 	RenderTexture midbuffer;
 	RenderTexture renderPassSwapBuffers [2];
@@ -105,7 +111,7 @@ private:
 	ConstantBuffer<cb_Object> objectBuffer;
 	ConstantBuffer<cb_Scene> sceneBuffer;
 	ConstantBuffer<cb_Material> materialBuffer;
-
+	
 	std::vector<dx::XMFLOAT4X4> srv_skeleton_data;
 	ID3D11Buffer* skeleton_srvbuffer;
 	ID3D11ShaderResourceView* skeleton_srv;
