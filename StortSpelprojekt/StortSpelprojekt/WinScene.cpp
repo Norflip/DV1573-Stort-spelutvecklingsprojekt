@@ -31,10 +31,6 @@ void WinScene::InitializeObjects()
 	ShowCursor(true);
 	Input::Instance().SetMouseMode(dx::Mouse::MODE_ABSOLUTE);
 
-
-
-	skyboxClass = new Skybox(renderer->GetDevice(), renderer->GetContext(), resources->GetShaderResource("skyboxShader"));
-	skyboxClass->GetThisObject()->AddFlag(ObjectFlag::NO_CULL);
 }
 
 void WinScene::InitializeGUI()
@@ -91,10 +87,7 @@ void WinScene::FixedUpdate(const float& fixedDeltaTime)
 
 void WinScene::Render()
 {
-	skyboxClass->GetThisObject()->Draw(renderer, camera);
-
 	root->Draw(renderer, camera);
-
 	renderer->RenderFrame(camera, (float)clock.GetSeconds());
 }
 

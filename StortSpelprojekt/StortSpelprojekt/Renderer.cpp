@@ -1,10 +1,10 @@
 #include "stdafx.h"
 #include "Renderer.h"
 #include "RenderPass.h"
-#include "FogRenderPass.h"
-#include "FXAARenderPass.h"
 #include "DShape.h"
 #include "Input.h"
+
+
 Renderer::Renderer() : device(nullptr), context(nullptr), swapchain(nullptr), skeleton_srvbuffer(nullptr), skeleton_srv(nullptr)
 {
 	srand(unsigned int(time(0)));
@@ -80,8 +80,6 @@ void Renderer::Initialize(Window* window)
 
 	//EXEMPEL
 	///AddRenderPass(new PSRenderPass(1, L"Shaders/TestPass.hlsl"));
-	AddRenderPass(new FogRenderPass(0));
-	AddRenderPass(new FXAARenderPass(1));
 }
 
 
@@ -193,6 +191,16 @@ void Renderer::RenderFrame(CameraComponent* camera, float time, RenderTexture& t
 	ClearRenderTarget(midbuffer);
 	SetRenderTarget(midbuffer);
 
+
+	for (auto i = passes.begin(); i < passes.end(); i++)
+	{
+		RenderPass* pass = *i;
+		if (pass->IsEnabled() && pass->GetType() == RenderPass::PassType::SKYBOX)
+		{
+			pass->Pass(this, camera, renderPassSwapBuffers[0], renderPassSwapBuffers[0]);
+		}
+	}
+
 	context->OMSetDepthStencilState(dss, 0);
 
 	SetCullBack(true);
@@ -217,7 +225,7 @@ void Renderer::RenderFrame(CameraComponent* camera, float time, RenderTexture& t
 				RenderTexture& passTarget = renderPassSwapBuffers[nextBufferIndex];
 				RenderTexture& previous = (passCount == 0) ? midbuffer : renderPassSwapBuffers[bufferIndex];
 
-				pass->Pass(this, previous, passTarget);
+				pass->Pass(this, camera, previous, passTarget);
 				if (pass->GetType() == RenderPass::PassType::POST_PROCESSING)
 					bufferIndex = nextBufferIndex;
 
@@ -240,9 +248,9 @@ void Renderer::RenderFrame(CameraComponent* camera, float time, RenderTexture& t
 		for (auto i = passes.begin(); i < passes.end(); i++)
 		{
 			RenderPass* pass = *i;
-			if (pass->IsEnabled() && pass->GetType() == RenderPass::PassType::UI_OVERLAY)
+			if (pass->IsEnabled() && pass->GetType() == RenderPass::PassType::GUI)
 			{
-				pass->Pass(this, renderPassSwapBuffers[0], renderPassSwapBuffers[0]);
+				pass->Pass(this, camera, renderPassSwapBuffers[0], renderPassSwapBuffers[0]);
 			}
 		}
 	}
@@ -301,6 +309,22 @@ void Renderer::DrawGrass(const Mesh* mesh, const Material* material, const dx::X
 	item.material = material;
 	item.world = model;
 	AddItem(item, false);
+}
+
+void Renderer::DrawImmediate(const Mesh* mesh, const Material* material, const CameraComponent* camera, const dx::XMMATRIX& model)
+{
+	SetObjectBufferValues(camera, model, true);
+	objectBuffer.UpdateBuffer(context);
+
+	UINT stride = sizeof(Mesh::Vertex);
+	UINT offset = 0;
+
+	ID3D11Buffer* vertexBuffer = mesh->GetVertexBuffer();
+	context->IASetVertexBuffers(0, 1, &vertexBuffer, &stride, &offset);
+	context->IASetIndexBuffer(mesh->GetIndexBuffer(), DXGI_FORMAT_R32_UINT, 0);
+	context->IASetPrimitiveTopology(mesh->GetTopology());
+
+	context->DrawIndexed(mesh->GetIndexCount(), 0, 0);
 }
 
 void Renderer::SetCullBack(bool cullNone)

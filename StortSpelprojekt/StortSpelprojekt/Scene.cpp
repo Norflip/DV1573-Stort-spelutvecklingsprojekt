@@ -9,16 +9,12 @@
 
 Scene::Scene() : input(Input::Instance())
 {
-	skyboxClass = nullptr;
 	renderer = nullptr;
 	camera = nullptr;
 }
 
 Scene::~Scene()
 {
-	delete skyboxClass;
-	skyboxClass = nullptr;
-
 	delete root;
 	root = nullptr;	
 }
@@ -75,7 +71,7 @@ void Scene::Render()
 {
 	// skybox draw object
 	//renderer->SetRSToCullNone(true);
-	skyboxClass->GetThisObject()->Draw(renderer, camera);
+	//skyboxClass->GetThisObject()->Draw(renderer, camera);
 
 	root->Draw(renderer, camera);
 	//worldGenerator.DrawShapes();

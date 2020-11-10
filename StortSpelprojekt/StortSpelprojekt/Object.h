@@ -42,6 +42,7 @@ public:
 	void Update(const float& deltaTime);
 	void FixedUpdate(const float& fixedDeltaTime);
 	void Draw(Renderer* renderer, CameraComponent* camera);
+	void Reset();
 
 	template <typename T>
 	bool HasComponent() const;

@@ -11,7 +11,7 @@ namespace dx = DirectX;
 
 #define SHAPES_DEFAULT_COLOR dx::XMFLOAT3(1.0f,1.0f,1.0f)
 #define TYPE_COUNT 5
-#define MAX_LINES 256
+#define MAX_LINES 65536
 #define CONVERT_COLOR(color,alpha) dx::XMFLOAT4(color.x, color.y, color.z, alpha)
 
 class DShape

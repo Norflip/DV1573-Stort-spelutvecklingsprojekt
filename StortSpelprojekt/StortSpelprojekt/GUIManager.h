@@ -58,7 +58,7 @@ public:
 	void AddGUIObject(std::string texture, std::string name, float x, float y);
 	GUIObject* GetGUIObject(std::string name);
 	void RemoveGUIObject(std::string name);
-	void Pass(Renderer* renderer, RenderTexture& inTexture, RenderTexture& outTexture) override;
+	void Pass(Renderer* renderer, CameraComponent* camera, RenderTexture& inTexture, RenderTexture& outTexture) override;
 	void ChangeGuiGroup(GuiGroup state);
 	void ClearGui();
 	void UpdateAll();
