@@ -6,7 +6,9 @@ class GUICompass : public GUISprite
 {
 public:
     GUICompass();
-private:
+    void Update() override;
 
+private:
+ 
 };
 

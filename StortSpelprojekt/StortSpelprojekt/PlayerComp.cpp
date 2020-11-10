@@ -38,7 +38,7 @@ PlayerComp::PlayerComp(Renderer* renderer, CameraComponent* camComp, Physics* ph
 	this->renderer = renderer;
 	this->physics = physics;
 	this->throwStrength = 50;
-
+	this->holdAngle = dx::SimpleMath::Vector3( 0.3f, -0.4f, 0.8f );
 	Reset();
 
 	this->fuelDippingBar = static_cast<GUISprite*>(guiMan->GetGUIObject("fuelDippingBar"));
@@ -106,7 +106,6 @@ void PlayerComp::Update(const float& deltaTime)
 	{
 		HoldObject();
 		DropObject();
-		//todo. Regrab last weapon
 	}
 }
 
@@ -114,12 +113,15 @@ void PlayerComp::HoldObject()
 {
 
 	inverseViewMatrix = dx::XMMatrixInverse(nullptr, cam->GetViewMatrix());
-	wepOffTrans = dx::XMMatrixTranslation(0.3f, -0.4f, 0.8f);
-	wepOffRot = dx::XMMatrixRotationAxis(up, dx::XMConvertToRadians(-40.0f));
-
+	wepOffTrans.Translation(holdAngle);
+	wepOffRot = wepOffRot.CreateFromAxisAngle(up, dx::XMConvertToRadians(-40.0f));
 	wepWorld = wepOffRot * wepOffTrans * inverseViewMatrix;
-	dx::XMMatrixDecompose(&weaponScale, &weaponRot, &weaponPos, wepWorld);
 
+	//wepOffTrans = dx::XMMatrixTranslation(holdAngle.x, holdAngle.y, holdAngle.z);
+	//wepOffRot = dx::XMMatrixRotationAxis(up, dx::XMConvertToRadians(-40.0f));
+
+
+	wepWorld.Decompose(weaponScale, weaponRot,weaponPos);
 	holding->GetTransform().SetPosition(weaponPos);
 	holding->GetTransform().SetRotation(weaponRot);
 	holding->GetTransform().SetScale(weaponScale);
@@ -138,7 +140,7 @@ void PlayerComp::DropObject()
 
 		cam->GetOwner()->GetTransform().GetRotation();
 		wepWorld = wepOffRot * wepOffTrans * inverseViewMatrix;
-		dx::XMMatrixDecompose(&weaponScale, &weaponRot, &weaponPos, wepWorld);
+		wepWorld.Decompose(weaponScale, weaponRot, weaponPos);
 		rbComp->SetEnabled(true);
 		objectRb->setAngularVelocity({ 0,0,0 });
 		rbComp->SetPosition(weaponPos);
