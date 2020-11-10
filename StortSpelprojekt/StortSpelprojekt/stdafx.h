@@ -37,4 +37,4 @@
 #include "DirectXHelpers.h"
 //GLOBAL NAMESPACES
 namespace dx = DirectX;
-
+namespace sm = DirectX::SimpleMath;

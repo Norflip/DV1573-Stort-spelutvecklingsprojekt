@@ -15,8 +15,10 @@ Input::Input(HWND window, size_t width, size_t height) : height(height), width(w
 {
 	mouse.SetMode(DirectX::Mouse::MODE_ABSOLUTE);
 };
-bool Input::GetKey(DirectX::Keyboard::Keys key) const
+
+bool Input::GetKey(DirectX::Keyboard::Keys key) const//Gets key once per updateMsg (alot)
 {
+
 	return keyboard.GetState().IsKeyDown(key);
 }
 

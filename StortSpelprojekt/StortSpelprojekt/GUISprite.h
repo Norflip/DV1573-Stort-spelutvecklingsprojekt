@@ -26,12 +26,11 @@ enum ClickFunction
 ALIGN16
 class GUISprite :public GUIObject
 {
-
 public:
 	GUISprite(Renderer& renderer, std::string, float xPos, float yPos , float layerDepth = 0, DrawDirection dir = DrawDirection::Default, ClickFunction clickFunc = ClickFunction::NotClickable, GuiGroup group = GuiGroup::Default);
 	~GUISprite();
-	void Draw(DirectX::SpriteBatch*) override;
-	void Draw();
+	virtual void Draw(DirectX::SpriteBatch*) override;
+	virtual void Draw();
 	void SetPosition(float xPos, float yPos);
 	void SetWICSprite(ID3D11Device* device, std::string spriteFile);
 	
@@ -43,8 +42,8 @@ public:
 
 	bool IsClicked();
 	bool IsMouseOver();
-	void Update();
-		bool HasFlag(ObjectFlag flag) const;
+	virtual void Update() override;
+	bool HasFlag(ObjectFlag flag) const;
 	void AddFlag(ObjectFlag flag);
 	void RemoveFlag(ObjectFlag flag);
 
