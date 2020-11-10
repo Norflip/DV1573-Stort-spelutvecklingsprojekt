@@ -31,7 +31,7 @@ using ComponentBitSet = std::bitset<maxComponents>;
 using ComponentArray = std::array<std::vector<Component*>, maxComponents>;
 
 ALIGN16
-class Object : public Resource
+class Object
 {
 	static size_t idCounter;
 

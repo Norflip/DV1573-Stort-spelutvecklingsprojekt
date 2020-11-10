@@ -7,10 +7,10 @@ ResourceManager::ResourceManager()
 
 ResourceManager::~ResourceManager()
 {
-	//for (auto i : resources)
-	//{
-	//	delete i.second;
-	//}
+	for (auto i : resources)
+	{
+		delete i.second;
+	}
 
 	for (auto i : shaderResources)
 	{
@@ -132,8 +132,7 @@ void ResourceManager::ReadObjects(ID3D11Device* device)
 
 				int nrOfAnimations = std::stoi(line.substr(pos + 2, line.length() - pos - 2), &sz);
 
-				Object* obj = new Object(name, ObjectFlag::ENABLED);
-				SkeletonMeshComponent* skeletonMesh = obj->AddComponent<SkeletonMeshComponent>(meshes[0], materials[0]);
+				SkeletonMeshComponent* skeletonMesh = new SkeletonMeshComponent(meshes[0], materials[0]);
 
 				for (int j = 0; j < nrOfAnimations; j++)
 				{
@@ -149,8 +148,7 @@ void ResourceManager::ReadObjects(ID3D11Device* device)
 				}
 
 				skeletonMesh->BlendAnimations();
-				AddResource(name, obj);
-
+				AddResource(name+"Skeleton", skeletonMesh);
 			}
 			// Ugly presumption that we load a Tree at some point
 			else if (name == "Tree")

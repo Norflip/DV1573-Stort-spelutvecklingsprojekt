@@ -41,7 +41,8 @@ void GameScene::Initialize()
 
 void GameScene::InitializeObjects()
 {
-	enemy = resources->GetResource<Object>("Enemy");
+	enemy = new Object("Enemy", ObjectFlag::DEFAULT);
+	enemy->AddComponent<SkeletonMeshComponent>(resources->GetResource<SkeletonMeshComponent>("EnemySkeleton"));
 
 	//SKELETON ANIMATION MODELS
 	bool defaultAnimation = false;
