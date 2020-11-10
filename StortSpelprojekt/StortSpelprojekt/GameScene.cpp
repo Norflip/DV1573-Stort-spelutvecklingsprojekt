@@ -81,12 +81,25 @@ void GameScene::InitializeObjects()
 
 	Object* houseBaseObject = new Object("houseBase");
 	Object* housesLegsObject = new Object("houseLegs");
-	houseBaseObject->GetTransform().Rotate(0, -90.0f, 0.0);
+	//houseBaseObject->GetTransform().Rotate(0, -90.0f, 0.0);
+	houseBaseObject->GetTransform().Rotate(0, -90.0f * Math::ToRadians, 0.0);
 	house = houseBaseObject;
 
 	//														Extence					pos
 	//houseBaseObject->AddComponent<BoxColliderComponent>(dx::XMFLOAT3(2.5, 5, 2.5), dx::XMFLOAT3(0, 0, 0));
-	houseBaseObject->AddComponent<BoxColliderComponent>(dx::XMFLOAT3(3.6, 3.5, 4.5), dx::XMFLOAT3(0, 4, -1.4));
+	//WALLS
+	houseBaseObject->AddComponent<BoxColliderComponent>(dx::XMFLOAT3(1.5, 3.5, 2.1), dx::XMFLOAT3(0, 4, -1));
+	//PORCH
+	houseBaseObject->AddComponent<BoxColliderComponent>(dx::XMFLOAT3(3.375, 0.325, 3), dx::XMFLOAT3(0, 1, 0.05));
+	//FENCE BACK
+	houseBaseObject->AddComponent<BoxColliderComponent>(dx::XMFLOAT3(0.125, 0.625, 3.375), dx::XMFLOAT3(-3.3, 2, 0.05));
+	//FENCE FRONT
+	houseBaseObject->AddComponent<BoxColliderComponent>(dx::XMFLOAT3(0.125, 0.625, 2.25), dx::XMFLOAT3(3.25, 3, 0.7));
+	//FENCE RIGHT
+	houseBaseObject->AddComponent<BoxColliderComponent>(dx::XMFLOAT3(5.375, 0.625, 0.15), dx::XMFLOAT3(0, 3, -2.75));
+	//FENCE LEFT
+	houseBaseObject->AddComponent<BoxColliderComponent>(dx::XMFLOAT3(5.375, 0.625, 0.15), dx::XMFLOAT3(0, 3, 2.75));
+
 	houseBaseObject->AddComponent<RigidBodyComponent>(0.0f, FilterGroups::PROPS, FilterGroups::EVERYTHING, BodyType::STATIC, true);
 
 	SkeletonMeshComponent* baseComponent = houseBaseObject->AddComponent<SkeletonMeshComponent>(meshHouse[0], matHouse[0], 0.1f);
