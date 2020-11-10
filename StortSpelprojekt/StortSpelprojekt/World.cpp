@@ -12,13 +12,13 @@ World::~World()
 {
 }
 
-void World::Initialize(Object* root, ResourceManager* resources, ObjectPooler* pooler, Renderer* renderer)
+void World::Initialize(Object* root, ResourceManager* resources, ObjectPooler* pooler, Renderer* renderer, CameraComponent* camera)
 {
 	this->resources = resources;
 	ObjectSpawner* spawner = new ObjectSpawner();
-	spawner->Initialize(root, pooler);
+	spawner->Initialize(root, pooler, renderer, resources, camera);
 	RegisterToPool(pooler, spawner, std::map<std::string, int>());
-
+	
 	generator.Initialize(root, resources, spawner, renderer->GetDevice(), renderer->GetContext());
 	playerIndex = dx::XMINT2(-5000, -5000);
 }
@@ -117,7 +117,7 @@ void World::RegisterFood(ObjectPooler* pooler, ObjectSpawner* spawner, const std
 	pooler->Register("Baked_beans", 0, [](ResourceManager* resources)
 	{
 		Object* object = resources->AssembleObject("Soup", "SoupMaterial");
-
+				
 		object->AddComponent<BoxColliderComponent>(dx::XMFLOAT3(0.5f, 0.5f, 0.5f), dx::XMFLOAT3(0, 0, 0));
 		object->AddComponent<PickupComponent>(Type::Food, 20.0f);
 		object->AddComponent<RigidBodyComponent>(10.0f, FilterGroups::PICKUPS, FilterGroups::EVERYTHING, BodyType::KINEMATIC, true);
@@ -189,7 +189,7 @@ void World::RegisterFuel(ObjectPooler* pooler, ObjectSpawner* spawner, const std
 
 		object->AddComponent<BoxColliderComponent>(dx::XMFLOAT3(0.5f, 0.5f, 0.5f), dx::XMFLOAT3(0, 0, 0));
 		object->AddComponent<PickupComponent>(Type::Fuel, 20.0f);
-		object->AddComponent<RigidBodyComponent>(10.0f, FilterGroups::PICKUPS, FilterGroups::EVERYTHING, BodyType::KINEMATIC, true);
+		object->AddComponent<RigidBodyComponent>(10.0f, FilterGroups::HOLDABLE, FilterGroups::EVERYTHING &~FilterGroups::PLAYER , BodyType::KINEMATIC, true);
 
 		//Physics::Instance().RegisterRigidBody(rd);
 		return object;
@@ -201,7 +201,7 @@ void World::RegisterFuel(ObjectPooler* pooler, ObjectSpawner* spawner, const std
 
 		object->AddComponent<BoxColliderComponent>(dx::XMFLOAT3(0.5f, 0.5f, 0.5f), dx::XMFLOAT3(0, 0, 0));
 		object->AddComponent<PickupComponent>(Type::Fuel, 20.0f);
-		object->AddComponent<RigidBodyComponent>(10.0f, FilterGroups::PICKUPS, FilterGroups::EVERYTHING, BodyType::KINEMATIC, true);
+		object->AddComponent<RigidBodyComponent>(10.0f, FilterGroups::HOLDABLE, FilterGroups::EVERYTHING & ~FilterGroups::PLAYER, BodyType::KINEMATIC, true);
 
 		//Physics::Instance().RegisterRigidBody(rd);
 		return object;
@@ -213,7 +213,7 @@ void World::RegisterFuel(ObjectPooler* pooler, ObjectSpawner* spawner, const std
 
 		object->AddComponent<BoxColliderComponent>(dx::XMFLOAT3(0.5f, 0.5f, 0.5f), dx::XMFLOAT3(0, 0, 0));
 		object->AddComponent<PickupComponent>(Type::Fuel, 20.0f);
-		object->AddComponent<RigidBodyComponent>(10.0f, FilterGroups::PICKUPS, FilterGroups::EVERYTHING, BodyType::KINEMATIC, true);
+		object->AddComponent<RigidBodyComponent>(10.0f, FilterGroups::HOLDABLE, FilterGroups::EVERYTHING & ~FilterGroups::PLAYER, BodyType::KINEMATIC, true);
 
 		//Physics::Instance().RegisterRigidBody(rd);
 		return object;
@@ -225,7 +225,7 @@ void World::RegisterFuel(ObjectPooler* pooler, ObjectSpawner* spawner, const std
 
 		object->AddComponent<BoxColliderComponent>(dx::XMFLOAT3(0.5f, 0.5f, 0.5f), dx::XMFLOAT3(0, 0, 0));
 		object->AddComponent<PickupComponent>(Type::Fuel, 35.0f);
-		object->AddComponent<RigidBodyComponent>(10.0f, FilterGroups::PICKUPS, FilterGroups::EVERYTHING, BodyType::KINEMATIC, true);
+		object->AddComponent<RigidBodyComponent>(10.0f, FilterGroups::HOLDABLE, FilterGroups::EVERYTHING & ~FilterGroups::PLAYER, BodyType::KINEMATIC, true);
 
 		//Physics::Instance().RegisterRigidBody(rd);
 		return object;

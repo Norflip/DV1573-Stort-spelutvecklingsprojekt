@@ -7,6 +7,7 @@
 #include "Bounds.h"
 #include "Object.h"
 #include "GameClock.h"
+#include "Resource.h"
 
 enum class SkeletonStateMachine
 {
@@ -23,10 +24,11 @@ enum class SkeletonStateMachine
 
 
 ALIGN16
-class SkeletonMeshComponent : public Component
+class SkeletonMeshComponent : public Component, public Resource
 {
 public:
 	SkeletonMeshComponent(Mesh* mesh, Material* material, float timeScale = 1.0f);
+	SkeletonMeshComponent(SkeletonMeshComponent* other);
 	virtual ~SkeletonMeshComponent();
 
 	Mesh* GetMesh() const { return this->mesh; }
@@ -45,6 +47,15 @@ public:
 	void SetisDone(bool);
 	bool& SetAndGetDoneDown();
 	bool& SetAndGetDoneUp();
+	float GetTimeScale() { return this->timeScale; }
+
+	std::vector<dx::XMFLOAT4X4> GetAnimationTransforms() { return this->finalTransforms; }
+	std::vector<SkeletonAni> GetAnimations() { return this->skeletonAnimations; }
+	std::unordered_map<SkeletonStateMachine, unsigned int> GetTrackMap() { return this->trackMap; }
+	SkeletonStateMachine GetCurrentAnimation() { return this->currentAni; }
+	Bounds GetBounds() { return this->bounds; }
+	void SetTimeScale(float time) { this->timeScale = time; }
+
 	ALIGN16_ALLOC;
 
 private:

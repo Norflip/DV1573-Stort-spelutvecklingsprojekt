@@ -271,6 +271,9 @@
     <ClCompile Include="ThirdParty\quickhull\QuickHull.cpp">
       <Filter>ThirdParty</Filter>
     </ClCompile>
+    <ClCompile Include="ParticlesystemComponent.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
     <ClCompile Include="SkyboxRenderPass.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
@@ -545,6 +548,9 @@
     </ClInclude>
     <ClInclude Include="ThirdParty\quickhull\QuickHull.hpp">
       <Filter>ThirdParty</Filter>
+    </ClInclude>
+    <ClInclude Include="ParticlesystemComponent.h">
+      <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="SkyboxRenderPass.h">
       <Filter>Header Files</Filter>

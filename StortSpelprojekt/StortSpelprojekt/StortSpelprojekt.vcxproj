@@ -207,6 +207,7 @@
     <ClCompile Include="Object.cpp" />
     <ClCompile Include="ObjectPooler.cpp" />
     <ClCompile Include="ObjectSpawner.cpp" />
+    <ClCompile Include="ParticlesystemComponent.cpp" />
     <ClCompile Include="Path.cpp" />
     <ClCompile Include="Physics.cpp" />
     <ClCompile Include="PickupComponent.cpp" />
@@ -274,6 +275,7 @@
     <ClInclude Include="MeshCollider.h" />
     <ClInclude Include="ObjectPooler.h" />
     <ClInclude Include="ObjectSpawner.h" />
+    <ClInclude Include="ParticlesystemComponent.h" />
     <ClInclude Include="Path.h" />
     <ClInclude Include="PhysicCallbacks.h" />
     <ClInclude Include="PickupComponent.h" />

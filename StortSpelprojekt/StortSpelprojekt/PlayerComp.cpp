@@ -145,6 +145,12 @@ void PlayerComp::DropObject()
 		objectRb->setAngularVelocity({ 0,0,0 });
 		rbComp->SetPosition(weaponPos);
 		rbComp->SetRotation(weaponRot);
+		//objectRb->setLinearVelocity({ dx::XMVectorGetX(camRot) * forceAmount ,  dx::XMVectorGetY(camRot) * forceAmount,  dx::XMVectorGetZ(camRot) * forceAmount });
+
+		if (holding->HasComponent<ParticleSystemComponent>())
+			if (!holding->GetComponent<ParticleSystemComponent>()->GetActive())
+				holding->GetComponent<ParticleSystemComponent>()->SetActive(true);
+						
 		float tossSpeed = throwStrength / rbComp->GetMass();
 		objectRb->setLinearVelocity({ dx::XMVectorGetX(camRot) * tossSpeed ,  dx::XMVectorGetY(camRot) * tossSpeed,  dx::XMVectorGetZ(camRot) * tossSpeed });
 		holding = nullptr;
@@ -195,13 +201,16 @@ void PlayerComp::RayCast(const float& deltaTime)
 					if ((fuel + temp) <= 100.0f)
 						fuel += temp;
 				}
+				
+				if (hit.object->HasComponent<ParticleSystemComponent>())
+					if(hit.object->GetComponent<ParticleSystemComponent>()->GetActive())
+						hit.object->GetComponent<ParticleSystemComponent>()->SetActive(false);
+				
+
 				hit.object->GetComponent<PickupComponent>()->SetActive(false);
 				RigidBodyComponent* rbComp = hit.object->GetComponent<RigidBodyComponent>();
 				rbComp->Release();
-				//phy.MutexLock();
-				//phy.UnregisterRigidBody(hit.object->GetComponent<RigidBodyComponent>());
-				//phy.MutexUnlock();
-
+				
 			}
 		}
 
@@ -219,6 +228,11 @@ void PlayerComp::RayCast(const float& deltaTime)
 				hit.object->GetComponent<BoxColliderComponent>()->SetRotation(0, { 5, 5, 5, 5 });
 				//hit.object->RemoveFlag(ObjectFlag::ENABLED);
 				currentWeapon->RemoveFlag(ObjectFlag::ENABLED);
+
+				if (holding->HasComponent<ParticleSystemComponent>())
+					if (holding->GetComponent<ParticleSystemComponent>()->GetActive())
+						holding->GetComponent<ParticleSystemComponent>()->SetActive(false);
+				
 			}
 		}
 
