@@ -1,6 +1,10 @@
 #include "stdafx.h"
 
 
+Mesh::Mesh(ID3D11Buffer* vertexBuffer, ID3D11Buffer* indexBuffer, D3D11_PRIMITIVE_TOPOLOGY topology) : vertexBuffer(vertexBuffer), indexBuffer(indexBuffer), topology(topology), initialized(false), vertices(vertices), indices(indices)
+{
+}
+
 Mesh::Mesh(std::vector<Vertex> vertices, std::vector<unsigned int> indices, D3D11_PRIMITIVE_TOPOLOGY topology)
 	: vertices(vertices), indices(indices), topology(topology), initialized(false), transform(dx::XMMatrixIdentity()), indexBuffer(nullptr), vertexBuffer(nullptr)
 {

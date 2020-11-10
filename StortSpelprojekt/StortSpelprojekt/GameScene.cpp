@@ -124,16 +124,12 @@ void GameScene::InitializeObjects()
 	AddObject(axeObject);
 	playerObject->GetComponent<PlayerComp>()->InsertWeapon(axeObject->GetComponent<WeaponComponent>(), axeObject->GetName());
 
-	world.Initialize(root, resources, pooler, renderer);
+	world.Initialize(root, resources, pooler, renderer, camera);
 	
 	dx::XMVECTOR asdf = dx::XMVectorSet(23, 3, 40 ,1); //???
 	enemy->GetTransform().SetPosition(asdf);
 
 	/* PICKUP STUFF DONT DELETE THESEEE */
-	/* PICKUP STUFF DONT DELETE THESEEE */
-	/* PICKUP STUFF DONT DELETE THESEEE */
-	/* PICKUP STUFF DONT DELETE THESEEE */
-
 	Object* healthkitObject = resources->AssembleObject("HealthKit", "HealthKitMaterial");
 	healthkitObject->GetTransform().SetPosition({ 23,2,50 });
 	healthkitObject->AddComponent<BoxColliderComponent>(dx::XMFLOAT3{ 0.5f, 0.5f, 0.5f }, dx::XMFLOAT3{ 0, 0, 0 });
@@ -150,12 +146,16 @@ void GameScene::InitializeObjects()
 	AddObject(fuelCanObject);
 
 	///* Banana pickup stuff temporary */
+	Shader* particleShader = resources->GetShaderResource("particleShader");
 	Object* beansObject = resources->AssembleObject("Soup", "SoupMaterial");
 	beansObject->GetTransform().SetPosition({22, 2.0f, 53 });
 	beansObject->AddComponent<BoxColliderComponent>(dx::XMFLOAT3{ 0.5f, 0.5f, 0.5f }, dx::XMFLOAT3{ 0, 0, 0 });
 	beansObject->AddComponent<PickupComponent>(Type::Food, 20.0f);
 	beansObject->AddComponent<RigidBodyComponent>(0.f, FilterGroups::PICKUPS, (FilterGroups::EVERYTHING & ~FilterGroups::PLAYER), BodyType::DYNAMIC, true);
-	AddObject(beansObject);
+
+	beansObject->AddComponent<ParticleSystemComponent>(renderer, camera, particleShader);
+	beansObject->GetComponent<ParticleSystemComponent>()->InitializeParticles(renderer->GetDevice(), L"Textures/starstar.png");
+	AddObject(beansObject);		
 }
 
 void GameScene::InitializeGUI()
@@ -285,6 +285,8 @@ void GameScene::OnActivate()
 	Input::Instance().SetMouseMode(dx::Mouse::Mode::MODE_RELATIVE);
 	ShowCursor(false);
 
+
+
 	//this->PrintSceneHierarchy(root, 0);
 }
 
@@ -292,6 +294,8 @@ void GameScene::OnDeactivate()
 {
 	world.DeconstructSegment();
 	renderer->RemoveRenderPass(guiManager);
+	
+	//renderer->ClearParticles();
 
 	ShowCursor(true);
 	//this->PrintSceneHierarchy(root, 0);
@@ -318,7 +322,7 @@ void GameScene::Render()
 	root->Draw(renderer, camera);
 	//worldGenerator.DrawShapes();
 	//world.DrawDebug();
-
+	
 	renderer->RenderFrame(camera, (float)clock.GetSeconds());
 }
 

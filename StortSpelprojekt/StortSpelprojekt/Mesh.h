@@ -16,6 +16,13 @@ public:
 		dx::XMFLOAT3 instancePosition;
 	};
 
+	struct VertexColor
+	{		
+		dx::XMFLOAT3 position;
+		dx::XMFLOAT2 texcoord;
+		dx::XMFLOAT4 color;
+	};
+
 	struct Vertex
 	{
 		DirectX::XMFLOAT3 position;
@@ -30,7 +37,7 @@ public:
 	};
 
 public:
-
+	Mesh(ID3D11Buffer* vertexBuffer, ID3D11Buffer* indexBuffer, D3D11_PRIMITIVE_TOPOLOGY = DEFAULT_TOPOLOGY);
 	Mesh(std::vector<Vertex> vertices, std::vector<unsigned int> indices, D3D11_PRIMITIVE_TOPOLOGY topology = DEFAULT_TOPOLOGY);
 	virtual ~Mesh();
 
@@ -38,7 +45,11 @@ public:
 
 	ID3D11Buffer* GetVertexBuffer() const { return this->vertexBuffer; }
 	ID3D11Buffer* GetIndexBuffer() const { return this->indexBuffer; }
-	
+	void SetVertexBuffer(ID3D11Buffer* vertexBuffer) { this->vertexBuffer = vertexBuffer; }
+	void SetIndexBuffer(ID3D11Buffer* indexBuffer) { this->indexBuffer = indexBuffer; }
+	void SetIndexCount(int indexCount) { this->indexCount = indexCount; }
+	void SetVertexCount(int vertexCount) { this->vertexCount = vertexCount; }
+	int GetIndexCountPart() const { return this->indexCount; }
 
 	size_t GetIndexCount() const { return this->indices.size(); }
 	dx::XMMATRIX GetTransformMatrix() const { return transform; }
@@ -73,6 +84,8 @@ private:
 	std::vector<unsigned int> indices;
 	ID3D11Buffer* vertexBuffer;
 	ID3D11Buffer* indexBuffer;
+	int indexCount;
+	int vertexCount;
 
 	D3D11_PRIMITIVE_TOPOLOGY topology;
 	dx::XMMATRIX transform;
