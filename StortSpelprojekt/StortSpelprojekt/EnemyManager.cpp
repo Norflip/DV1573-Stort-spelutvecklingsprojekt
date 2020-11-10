@@ -1,58 +1,44 @@
 #include "stdafx.h"
 #include "EnemyManager.h"
 
-EnemyManager::EnemyManager(ResourceManager* resources, Renderer* renderer, PlayerComp* playerComp)
-	: resources(resources), renderer(renderer), playerComp(playerComp)
+EnemyManager::EnemyManager(ResourceManager* resources, Renderer* renderer, PlayerComp* playerComp, Object* root)
+	: resources(resources), renderer(renderer), playerComp(playerComp), root(root)
 {
-	this->baseEnemies = new ObjectPooler(resources);
-}
-
-void EnemyManager::AddBaseEnemy(dx::XMVECTOR position)
-{
-	baseEnemies->Register("baseEnemy", 0, [](ResourceManager* resources) 
-	{
-		Object* object = new Object("baseEnemy", ObjectFlag::ENABLED);
-		//Object* object = resources->AssembleObject("Enemy", "EnemyMaterial");
-		object->AddComponent<SkeletonMeshComponent>(resources->GetResource<SkeletonMeshComponent>("EnemySkeleton"));
-		object->GetTransform().SetScale({ 0.125f, 0.125f, 0.125f });
-		object->AddComponent<EnemyStatsComp>(100.f, 2.0f, 10.f, 5.f, 3.f, 3.f);
-		//enemyStatsComp = enemy->GetComponent<EnemyStatsComp>();
-		dx::XMFLOAT3 zero = { 0.f, 0.f, 0.f };
-		object->AddComponent<CapsuleColliderComponent>(1.6f, 1.8f, zero);
-
-		object->AddComponent<RigidBodyComponent>(10.f, FilterGroups::ENEMIES, (FilterGroups::EVERYTHING & ~FilterGroups::PICKUPS) & ~FilterGroups::HOLDABLE, BodyType::KINEMATIC, true);
-		return object;
-	});
-
-	baseEnemy = baseEnemies->GetItem("baseEnemy");
-
-	EnemySMComp* stateMachine = baseEnemy->AddComponent<EnemySMComp>(EnemyState::IDLE);
-	stateMachine->RegisterState(EnemyState::IDLE, baseEnemy->AddComponent<EnemyIdleComp>());
-	//stateMachine->RegisterState(EnemyState::PATROL, enemy->AddComponent<EnemyPatrolComp>());
-	stateMachine->RegisterState(EnemyState::ATTACK, baseEnemy->AddComponent<EnemyAttackComp>(playerComp));
-	stateMachine->Start();
-	stateMachine->InitAnimation();
-
-	baseEnemy->GetComponent<RigidBodyComponent>()->SetPosition(position);
-	//baseEnemies.push_back(baseEnemy);
+	this->enemyPool = new ObjectPooler(resources);
 }
 
 void EnemyManager::InitBaseEnemy()
 {
-	baseEnemy = new Object("baseEnemy", ObjectFlag::ENABLED);
-	baseEnemy->AddComponent<SkeletonMeshComponent>(resources->GetResource<SkeletonMeshComponent>("EnemySkeleton"));
-	baseEnemy->GetTransform().SetScale({ 0.125f, 0.125f, 0.125f });
-	baseEnemy->AddComponent<EnemyStatsComp>(100.f, 2.0f, 10.f, 5.f, 3.f, 3.f);
-	//enemyStatsComp = enemy->GetComponent<EnemyStatsComp>();
-	dx::XMFLOAT3 zero = { 0.f, 0.f, 0.f };
-	baseEnemy->AddComponent<CapsuleColliderComponent>(1.6f, 1.8f, zero);
+	enemyPool->Register("baseEnemy", 2, [](ResourceManager* resources)
+		{
+			Object* object = new Object("baseEnemy", ObjectFlag::ENABLED);
+			object->AddComponent<SkeletonMeshComponent>(resources->GetResource<SkeletonMeshComponent>("EnemySkeleton"));
+			object->GetTransform().SetScale({ 0.125f, 0.125f, 0.125f });
+			object->AddComponent<EnemyStatsComp>(100.f, 2.0f, 10.f, 5.f, 3.f, 3.f);
+			dx::XMFLOAT3 zero = { 0.f, 0.f, 0.f };
+			object->AddComponent<CapsuleColliderComponent>(1.6f, 1.8f, zero);
 
-	baseEnemy->AddComponent<RigidBodyComponent>(10.f, FilterGroups::ENEMIES, (FilterGroups::EVERYTHING & ~FilterGroups::PICKUPS) & ~FilterGroups::HOLDABLE, BodyType::KINEMATIC, true);
+			object->AddComponent<RigidBodyComponent>(10.f, FilterGroups::ENEMIES, (FilterGroups::EVERYTHING & ~FilterGroups::PICKUPS) & ~FilterGroups::HOLDABLE, BodyType::KINEMATIC, true);
+			EnemySMComp* stateMachine = object->AddComponent<EnemySMComp>(EnemyState::IDLE);
+			stateMachine->RegisterState(EnemyState::IDLE, object->AddComponent<EnemyIdleComp>());
+			//stateMachine->RegisterState(EnemyState::PATROL, enemy->AddComponent<EnemyPatrolComp>());
+			stateMachine->RegisterState(EnemyState::ATTACK, object->AddComponent<EnemyAttackComp>(nullptr));
+			return object;
+		});
 
-	EnemySMComp* stateMachine = baseEnemy->AddComponent<EnemySMComp>(EnemyState::IDLE);
-	stateMachine->RegisterState(EnemyState::IDLE, baseEnemy->AddComponent<EnemyIdleComp>());
-	//stateMachine->RegisterState(EnemyState::PATROL, enemy->AddComponent<EnemyPatrolComp>());
-	stateMachine->RegisterState(EnemyState::ATTACK, baseEnemy->AddComponent<EnemyAttackComp>(playerComp));
+	for (int i = 0; i < 2; i++)
+	{
+		SpawnEnemy({ 8, 15, (float)(47 + i * 5 )});
+	}
+}
+
+void EnemyManager::SpawnEnemy(dx::XMVECTOR position)
+{
+	Object* enemy = enemyPool->GetItem("baseEnemy");
+	EnemySMComp* stateMachine = enemy->GetComponent<EnemySMComp>();
+	enemy->GetComponent<EnemyAttackComp>()->SetPlayer(playerComp);
 	stateMachine->Start();
 	stateMachine->InitAnimation();
+	enemy->GetComponent<RigidBodyComponent>()->SetPosition(position);
+	Transform::SetParentChild(root->GetTransform(), enemy->GetTransform());
 }

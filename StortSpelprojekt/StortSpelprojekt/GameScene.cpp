@@ -130,12 +130,9 @@ void GameScene::InitializeObjects()
 	AddObject(testPointLight, playerObject);
 
 	//LOADING BASE MONSTER; ADDING SKELETONS TO IT
-	enemyManager = new EnemyManager(resources, renderer, player->GetComponent<PlayerComp>());
-	//enemyManager->InitBaseEnemy();
-	enemyManager->AddBaseEnemy({ 8, 15, 47 });
-	AddObject(enemyManager->GetBaseEnemy());
-
-	playerObject->AddComponent<PlayerAttackComp>(enemyManager->GetBaseEnemy());
+	enemyManager = new EnemyManager(resources, renderer, player->GetComponent<PlayerComp>(), root);
+	enemyManager->InitBaseEnemy();
+	//playerObject->AddComponent<PlayerAttackComp>(enemyManager->GetBaseEnemy());
 
 	Object* axeObject = resources->AssembleObject("Axe", "AxeMaterial");
 	axeObject->GetTransform().SetPosition({ 0,0,0 });

@@ -37,6 +37,10 @@ bool EnemyAttackComp::GetIsAttacking()
 
 bool EnemyAttackComp::ChasePlayer()
 {
+	dx::XMFLOAT3 eP;
+	dx::XMStoreFloat3(&eP, GetOwner()->GetTransform().GetPosition());
+	std::cout << "x: " << eP.x << ", y: " << eP.y << ", z: " << eP.z << std::endl;
+
 	dx::XMFLOAT3 moveDir = { 0.0f, 0.0f, 0.0f };
 	
 	dx::XMVECTOR moveVec = dx::XMVectorSubtract(player->GetOwner()->GetTransform().GetPosition(), GetOwner()->GetTransform().GetPosition());

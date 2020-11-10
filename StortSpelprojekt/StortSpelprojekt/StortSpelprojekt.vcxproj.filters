@@ -271,7 +271,7 @@
     <ClCompile Include="ThirdParty\quickhull\QuickHull.cpp">
       <Filter>ThirdParty</Filter>
     </ClCompile>
-    <ClCompile Include="EnemyManager.cpp" />
+    <ClCompile Include="EnemyManager.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="SkyboxRenderPass.cpp">
@@ -548,7 +548,7 @@
     </ClInclude>
     <ClInclude Include="EnemyManager.h">
       <Filter>Header Files</Filter>
-    </ClCompile>
+    </ClInclude>
     <ClInclude Include="SkyboxRenderPass.h">
       <Filter>Header Files</Filter>
     </ClInclude>
