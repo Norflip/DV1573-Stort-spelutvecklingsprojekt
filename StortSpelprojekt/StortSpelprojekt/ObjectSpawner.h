@@ -33,7 +33,7 @@ public:
 	ObjectSpawner();
 	virtual ~ObjectSpawner();
 
-	void Initialize(Object* root, ObjectPooler* pooler, Renderer* renderer, ResourceManager* resource);
+	void Initialize(Object* root, ObjectPooler* pooler, Renderer* renderer, ResourceManager* resource, CameraComponent* camera);
 
 	void Spawn(const SaveState& state, PointQuadTree& tree, std::unordered_map<int, Chunk*>& chunkMap, std::vector<Chunk*>& chunks, ID3D11Device* device);
 	void Despawn();
@@ -62,4 +62,5 @@ private:
 
 	Renderer* renderer;
 	ResourceManager* resources;
+	CameraComponent* camera;
 };

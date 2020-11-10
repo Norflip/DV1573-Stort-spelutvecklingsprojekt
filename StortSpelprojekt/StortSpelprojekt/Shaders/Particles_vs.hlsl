@@ -1,11 +1,11 @@
-//#include "CommonBuffers.hlsl"
+#include "CommonBuffers.hlsl"
 //#include "IO.hlsl"
 
-cbuffer MatrixBuffer : register(b0)
-{
-	row_major matrix worldViewProjection;
-	row_major matrix worldspace;
-};
+//cbuffer MatrixBuffer : register(b0)
+//{
+//	row_major matrix worldViewProjection;
+//	row_major matrix worldspace;
+//};
 
 struct VertexInput
 {
@@ -27,8 +27,8 @@ VertexOutput main (VertexInput input)
 	VertexOutput output = (VertexOutput)0;
 
 	input.position.w = 1.0f;
-	output.position = mul(worldViewProjection, input.position);
-	output.worldPosition = mul(worldspace, input.position);
+	output.position = mul(mvp, input.position);
+	output.worldPosition = mul(world, input.position);
 	output.uv = input.uv;
 
 	// Store the particle color for the pixel shader. // We dont use it but we can if we want to.

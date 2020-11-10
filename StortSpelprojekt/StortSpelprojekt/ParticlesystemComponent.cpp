@@ -1,12 +1,12 @@
 #include "stdafx.h"
 #include "ParticlesystemComponent.h"
 
-ParticleSystemComponent::ParticleSystemComponent(Renderer* renderer, CameraComponent* camera, Shader* shader)
+ParticleSystemComponent::ParticleSystemComponent(Renderer* renderer, CameraComponent* camera, Shader* shader) : mesh(new Mesh(vertexBuffer, indexBuffer))
 {
 	this->renderer = renderer;
 	this->particlesShader = shader;
-	//this->object = object;
 	this->camera = camera;
+	this->mat = new Material(particlesShader);
 
 	/* Default stuff about every particle */
 	this->differenceOnX = 0.2f;
@@ -26,7 +26,6 @@ ParticleSystemComponent::ParticleSystemComponent(Renderer* renderer, CameraCompo
 	this->vertices = 0;
 	this->vertexBuffer = 0;
 	this->indexBuffer = 0;
-	this->bufferPerObjectParticles = 0;
 
 	this->particleList = 0;
 
@@ -45,25 +44,13 @@ void ParticleSystemComponent::Shutdown()
 	{
 		particlesShader = 0;
 	}
-
-	if (samplerState)
-	{
-		samplerState->Release();
-		samplerState = 0;
-	}
-
+	
 	if (srv)
 	{
 		srv->Release();
 		srv = 0;
 	}
-
-	if (bufferPerObjectParticles)
-	{
-		bufferPerObjectParticles->Release();
-		bufferPerObjectParticles = 0;
-	}
-
+		
 	if (indexBuffer)
 	{
 		indexBuffer->Release();
@@ -89,37 +76,21 @@ void ParticleSystemComponent::Shutdown()
 
 void ParticleSystemComponent::InitializeParticles(ID3D11Device* device, LPCWSTR textureFilename)
 {
-	maxParticles = 10;
+	//maxParticles = 10;
 	particleList = new Particles[maxParticles];
 
 	for (int i = 0; i < maxParticles; i++)
 		particleList[i].active = false;
 
-	/*
-		The particles are temporary on the scene.
-		Particles are temporary at the scene, so we use a dynamic buffer so we can update the amount of particles created and deleted
-		on the scene dynamicly from the cpu and not from our shader.
-	*/
-
+		
+	/* Init and pass it to mesh, can do a initializefunction in mesh later.. or something. */
 	InitializeBuffers(device);
+	mesh->SetVertexBuffer(vertexBuffer);
+	mesh->SetIndexBuffer(indexBuffer);
+	mesh->SetIndexCount(indexCount);
+	mesh->SetVertexCount(vertexCount);
+
 	LoadTexture(device, textureFilename);
-}
-
-void ParticleSystemComponent::Render(ID3D11DeviceContext* context, CameraComponent* camera)
-{
-	unsigned int stride;
-	unsigned int offset;
-
-	stride = sizeof(Vertex);
-	offset = 0;
-
-	context->IASetVertexBuffers(0, 1, &vertexBuffer, &stride, &offset);
-	context->IASetIndexBuffer(indexBuffer, DXGI_FORMAT_R32_UINT, 0);
-	context->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
-
-	SetCBuffers(context, camera);
-	particlesShader->BindToContext(context);
-	context->DrawIndexed(indexCount, 0, 0);
 }
 
 void ParticleSystemComponent::SetDifference(float x, float y, float z)
@@ -129,18 +100,15 @@ void ParticleSystemComponent::SetDifference(float x, float y, float z)
 	this->differenceOnZ = z;
 }
 
-void ParticleSystemComponent::SetWorldMatrix(dx::XMMATRIX worldmatrix)
-{
-	this->worldmatrix = worldmatrix;
-}
-
 void ParticleSystemComponent::LoadTexture(ID3D11Device* device, LPCWSTR textureFilename)
 {
 	HRESULT hr = dx::CreateWICTextureFromFile(device, textureFilename, nullptr, &srv);
 	if (FAILED(hr))
 		MessageBox(0, L"Failed to 'Load WIC Texture'", L"Graphics scene Initialization Message", MB_ICONERROR);
-
-	samplerState = DXHelper::CreateSampler(D3D11_FILTER_MIN_MAG_MIP_LINEAR, D3D11_TEXTURE_ADDRESS_WRAP, device);
+		
+	/* Mat info */
+	mat->SetTexture(new Texture(srv), TEXTURE_DIFFUSE_SLOT, ShaderBindFlag::PIXEL);	
+	mat->SetSampler(DXHelper::CreateSampler(D3D11_FILTER_MIN_MAG_MIP_LINEAR, D3D11_TEXTURE_ADDRESS_WRAP, device), 0, ShaderBindFlag::PIXEL);
 }
 
 void ParticleSystemComponent::InitializeBuffers(ID3D11Device* device)
@@ -151,7 +119,7 @@ void ParticleSystemComponent::InitializeBuffers(ID3D11Device* device)
 	vertexCount = maxParticles * 6;
 	indexCount = vertexCount;
 
-	vertices = new Vertex[vertexCount];
+	vertices = new Mesh::VertexColor[vertexCount];
 	indices = new unsigned long[indexCount];
 
 	for (int i = 0; i < indexCount; i++) {
@@ -162,7 +130,7 @@ void ParticleSystemComponent::InitializeBuffers(ID3D11Device* device)
 	D3D11_BUFFER_DESC vertexBufferDesc;
 	ZeroMemory(&vertexBufferDesc, sizeof(D3D11_BUFFER_DESC));
 	vertexBufferDesc.Usage = D3D11_USAGE_DYNAMIC;
-	vertexBufferDesc.ByteWidth = sizeof(Vertex) * vertexCount;
+	vertexBufferDesc.ByteWidth = sizeof(Mesh::VertexColor) * vertexCount;
 	vertexBufferDesc.BindFlags = D3D11_BIND_VERTEX_BUFFER;
 	vertexBufferDesc.CPUAccessFlags = D3D11_CPU_ACCESS_WRITE;
 	vertexBufferDesc.MiscFlags = 0;
@@ -199,34 +167,6 @@ void ParticleSystemComponent::InitializeBuffers(ID3D11Device* device)
 
 	delete[] indices;
 	indices = 0;
-
-
-
-	/* * * * * * * * CBuffer stuffy stuff * * * * * * * * */
-	D3D11_BUFFER_DESC cBufferDescription;
-	ZeroMemory(&cBufferDescription, sizeof(D3D11_BUFFER_DESC));
-	cBufferDescription.Usage = D3D11_USAGE_DEFAULT;
-	cBufferDescription.ByteWidth = static_cast<uint32_t>(sizeof(cb_ObjectPerParticles) + (16 - (sizeof(cb_ObjectPerParticles) % 16)));
-	cBufferDescription.BindFlags = D3D11_BIND_CONSTANT_BUFFER;
-	cBufferDescription.CPUAccessFlags = 0;
-	cBufferDescription.MiscFlags = 0;
-	cBufferDescription.StructureByteStride = 0;
-
-	result = device->CreateBuffer(&cBufferDescription, NULL, &bufferPerObjectParticles);
-	assert(SUCCEEDED(result));
-}
-
-void ParticleSystemComponent::SetCBuffers(ID3D11DeviceContext* context, CameraComponent* camera)
-{
-	dx::XMMATRIX WVP = worldmatrix * camera->GetViewMatrix() * camera->GetProjectionMatrix();
-	cbPerObjectParticles.worldViewProj = DirectX::XMMatrixTranspose(WVP);
-	cbPerObjectParticles.world = DirectX::XMMatrixTranspose(worldmatrix);
-
-	context->UpdateSubresource(bufferPerObjectParticles, 0, nullptr, &cbPerObjectParticles, 0, 0);
-	context->VSSetConstantBuffers(0, 1, &bufferPerObjectParticles);
-
-	context->PSSetShaderResources(0, 1, &srv);
-	context->PSSetSamplers(0, 1, &samplerState);
 }
 
 void ParticleSystemComponent::CreateParticle(float frameTime)
@@ -385,28 +325,25 @@ void ParticleSystemComponent::UpdateBuffers()
 	*/
 
 	D3D11_MAPPED_SUBRESOURCE mappedResource;
-	HRESULT result = renderer->GetContext()->Map(vertexBuffer, 0, D3D11_MAP_WRITE_DISCARD, 0, &mappedResource);	// maybe D3D11_MAP_WRITE_NO_OVERWRITE
+	HRESULT result = renderer->GetContext()->Map(vertexBuffer, 0, D3D11_MAP_WRITE_DISCARD, 0, &mappedResource);
 	assert(SUCCEEDED(result));
 
-	Vertex* verticesPtr = (Vertex*)mappedResource.pData;
-	memcpy(verticesPtr, (void*)vertices, (sizeof(Vertex) * vertexCount));
+	Mesh::VertexColor* verticesPtr = (Mesh::VertexColor*)mappedResource.pData;
+	memcpy(verticesPtr, (void*)vertices, (sizeof(Mesh::VertexColor) * vertexCount));
 
 	renderer->GetContext()->Unmap(vertexBuffer, 0);
 }
 
 void ParticleSystemComponent::Update(const float& deltaTime)
-{
-	/* Update particle-list dynamiclly */
+{	
 	dx::XMFLOAT3 particlesPosition;
 	particlesPosition.x = GetOwner()->GetTransform().GetPosition().m128_f32[0];
 	particlesPosition.y = GetOwner()->GetTransform().GetPosition().m128_f32[1] + 0.4f;
 	particlesPosition.z = GetOwner()->GetTransform().GetPosition().m128_f32[2];
-
-	/* Set angle for particles, "look at cameraposition all the time" */
-	/* Defines the angle in radians between two vectors * 1 degrees to give our xmatrixrotationy an degree value*/
-	dx::XMVECTOR v = camera->GetOwner()->GetTransform().GetPosition();
-	float xPos = v.m128_f32[0];
-	float zPos = v.m128_f32[2];
+		
+	dx::XMVECTOR cam = camera->GetOwner()->GetTransform().GetPosition();
+	float xPos = cam.m128_f32[0];
+	float zPos = cam.m128_f32[2];
 	double anglepart = atan2(particlesPosition.x - xPos, particlesPosition.z - zPos) * (180.0 / dx::XM_PI);
 	float rotationPart = (float)anglepart * 0.0174532925f;
 
@@ -414,7 +351,7 @@ void ParticleSystemComponent::Update(const float& deltaTime)
 	dx::XMMATRIX particlesRotationY = dx::XMMatrixRotationY(rotationPart);
 	dx::XMMATRIX particlesTranslation = dx::XMMatrixTranslation(particlesPosition.x, particlesPosition.y, particlesPosition.z);
 	worldParticles = particlesRotationY * particlesTranslation;
-	SetWorldMatrix(worldParticles);
+	worldmatrix = worldParticles;
 
 	/*
 		Delete old particles that reaches a height. Create new particles after some time.
@@ -430,7 +367,5 @@ void ParticleSystemComponent::Update(const float& deltaTime)
 
 void ParticleSystemComponent::Draw(Renderer* renderer, CameraComponent* camera)
 {
-	renderer->SetCullBack(true);
-	Render(renderer->GetContext(), camera);
-	renderer->SetCullBack(false);
+	renderer->DrawParticles(mesh, mat, worldmatrix);
 }

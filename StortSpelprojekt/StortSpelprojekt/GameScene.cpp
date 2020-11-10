@@ -189,7 +189,7 @@ void GameScene::InitializeObjects()
 	AddObject(axeObject);
 	playerObject->GetComponent<PlayerComp>()->InsertWeapon(axeObject->GetComponent<WeaponComponent>(), axeObject->GetName());
 
-	world.Initialize(root, resources, pooler, renderer);
+	world.Initialize(root, resources, pooler, renderer, camera);
 	
 
 	dx::XMVECTOR asdf = dx::XMVectorSet(23, 3, 40 ,1); //???
@@ -221,22 +221,7 @@ void GameScene::InitializeObjects()
 
 	beansObject->AddComponent<ParticleSystemComponent>(renderer, camera, particleShader);
 	beansObject->GetComponent<ParticleSystemComponent>()->InitializeParticles(renderer->GetDevice(), L"Textures/starstar.png");
-	AddObject(beansObject);
-
-
-	///* Particles */	
-	/*Shader* particleShader = resources->GetShaderResource("particleShader");
-	ParticleSystem* particles = new ParticleSystem(beansObject, particleShader);
-	particles->InitializeParticles(renderer->GetDevice(), L"Textures/starstar.png");
-	renderer->AddParticles(beansObject->GetID(), particles);	*/
-
-	//ParticleSystem* particlesFuel = new ParticleSystem(fuelCanObject, particleShader);
-	//particlesFuel->InitializeParticles(renderer->GetDevice(), L"Textures/starstar.png");
-	//renderer->AddParticles(fuelCanObject->GetID(), particlesFuel);
-
-	//ParticleSystem* particlesHealth = new ParticleSystem(healthkitObject, particleShader);
-	//particlesHealth->InitializeParticles(renderer->GetDevice(), L"Textures/starstar.png");
-	//renderer->AddParticles(healthkitObject->GetID(), particlesHealth);
+	AddObject(beansObject);		
 }
 
 void GameScene::InitializeGUI()
@@ -366,6 +351,8 @@ void GameScene::OnActivate()
 	Input::Instance().SetMouseMode(dx::Mouse::Mode::MODE_RELATIVE);
 	ShowCursor(false);
 
+
+
 	//this->PrintSceneHierarchy(root, 0);
 }
 
@@ -389,9 +376,7 @@ void GameScene::Update(const float& deltaTime)
 	guiManager->UpdateAll();	
 	
 	skyboxClass->GetThisObject()->GetTransform().SetPosition(camera->GetOwner()->GetTransform().GetPosition());
-	
-	/*for(auto i : renderer->GetParticleList())
-		i.second->Update(deltaTime, camera, renderer->GetContext());*/
+		
 }
 
 void GameScene::FixedUpdate(const float& fixedDeltaTime)

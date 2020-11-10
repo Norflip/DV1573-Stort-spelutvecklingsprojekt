@@ -27,7 +27,8 @@ class Renderer
 			Default,
 			Instanced,
 			Skeleton,
-			Grass
+			Grass,
+			Particles
 		};
 
 		const Mesh* mesh;
@@ -55,17 +56,12 @@ public:
 	void RenderFrame(CameraComponent* camera, float time, RenderTexture& target, bool drawGUI = false, bool applyRenderPasses = true);
 
 	void AddRenderPass(RenderPass*);
-		
-	void AddParticles(size_t objID, ParticleSystem* particles) { this->particleList.insert({ objID, particles }); }
-	std::unordered_map<size_t, ParticleSystem*> GetParticleList() { return this->particleList; }
-	void ClearParticles();
-
+	
 	void Draw(const Mesh* mesh, const Material* material, const dx::XMMATRIX& model);
 	void DrawInstanced(const Mesh* mesh, const size_t& count, ID3D11Buffer* instanceBuffer, const Material* material);
 	void DrawSkeleton(const Mesh* mesh, const Material* material, const dx::XMMATRIX& model, std::vector<dx::XMFLOAT4X4>& bones);
 	void DrawGrass(const Mesh* mesh, const Material* material, const dx::XMMATRIX& model);
-	//void DrawParticles(ParticleSystem* particle);
-
+	void DrawParticles(const Mesh* mesh, const Material* material, const dx::XMMATRIX& model);
 
 	void SetCullBack(bool);
 
@@ -93,7 +89,9 @@ private:
 	void DrawRenderItemInstanced(const RenderItem& item, CameraComponent* camera);
 	void DrawRenderItemSkeleton(const RenderItem& item, CameraComponent* camera);
 	void DrawRenderItemGrass(const RenderItem& item, CameraComponent* camera);
-	
+	void DrawRenderItemParticles(const RenderItem& item, CameraComponent* camera);
+
+
 	void SetObjectBufferValues(const CameraComponent* camera, dx::XMMATRIX world, bool transpose);
 	Mesh* CreateScreenQuad();
 
@@ -112,11 +110,7 @@ private:
 	ConstantBuffer<cb_Object> objectBuffer;
 	ConstantBuffer<cb_Scene> sceneBuffer;
 	ConstantBuffer<cb_Material> materialBuffer;
-
-	std::unordered_map<size_t, ParticleSystem*> particleList;
-	std::vector<ParticleSystem*> fittpartiklar;
-
-
+	
 	std::vector<dx::XMFLOAT4X4> srv_skeleton_data;
 	ID3D11Buffer* skeleton_srvbuffer;
 	ID3D11ShaderResourceView* skeleton_srv;

@@ -30,9 +30,6 @@ Renderer::~Renderer()
 	dss->Release();
 	rasterizerStateCCWO->Release();
 
-	for (auto i : particleList)
-		delete i.second;
-	particleList.clear();
 }
 
 void Renderer::Initialize(Window* window)
@@ -116,6 +113,9 @@ void Renderer::DrawQueueToTarget(RenderQueue& queue, CameraComponent* camera)
 
 					case RenderItem::Type::Skeleton:
 						DrawRenderItemSkeleton(item, camera); break;
+
+					case RenderItem::Type::Particles:
+						DrawRenderItemParticles(item, camera); break;
 
 					case RenderItem::Type::Default:
 					default:
@@ -276,12 +276,6 @@ void Renderer::AddRenderPass(RenderPass* pass)
 		std::sort(passes.begin(), passes.end(), [](const RenderPass* a, const RenderPass* b) -> bool { return a->GetPriority() < b->GetPriority(); });
 }
 
-//void Renderer::ClearParticles()
-//{
-//	for (auto i : particleList)
-//		delete i.second;
-//	particleList.clear();
-//}
 
 void Renderer::Draw(const Mesh* mesh, const Material* material, const dx::XMMATRIX& model)
 {
@@ -327,10 +321,15 @@ void Renderer::DrawGrass(const Mesh* mesh, const Material* material, const dx::X
 	AddItem(item, false);
 }
 
-//void Renderer::DrawParticles(ParticleSystem* particle)
-//{
-//	fittpartiklar.push_back(particle);
-//}
+void Renderer::DrawParticles(const Mesh* mesh, const Material* material, const dx::XMMATRIX& model)
+{
+	RenderItem part;
+	part.type = RenderItem::Type::Particles;
+	part.mesh = mesh;
+	part.material = material;
+	part.world = model;
+	AddItem(part, true);
+}
 
 void Renderer::SetCullBack(bool cullNone)
 {
@@ -471,6 +470,26 @@ void Renderer::DrawRenderItemGrass(const RenderItem& item, CameraComponent* came
 
 	context->DrawIndexed(item.mesh->GetIndexCount(), 0, 0);
 	context->RSSetState(rasterizerStateCullBack);
+}
+
+void Renderer::DrawRenderItemParticles(const RenderItem& item, CameraComponent* camera)
+{
+	SetObjectBufferValues(camera, item.world, true);
+	objectBuffer.UpdateBuffer(context);
+
+	UINT stride = sizeof(Mesh::VertexColor);
+	UINT offset = 0;
+
+	ID3D11Buffer* vertexBuffer = item.mesh->GetVertexBuffer();
+	context->IASetVertexBuffers(0, 1, &vertexBuffer, &stride, &offset);
+	context->IASetIndexBuffer(item.mesh->GetIndexBuffer(), DXGI_FORMAT_R32_UINT, 0);
+	context->IASetPrimitiveTopology(item.mesh->GetTopology());
+
+	//SetCBuffers(context, camera);
+	//particlesShader->BindToContext(context);
+	
+	context->DrawIndexed(item.mesh->GetIndexCountPart(), 0, 0);
+
 }
 
 void Renderer::SetObjectBufferValues(const CameraComponent* camera, dx::XMMATRIX world, bool transpose)

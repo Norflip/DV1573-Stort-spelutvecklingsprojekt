@@ -13,12 +13,13 @@ ObjectSpawner::~ObjectSpawner()
 {
 }
 
-void ObjectSpawner::Initialize(Object* root, ObjectPooler* pooler, Renderer* renderer, ResourceManager* resource)
+void ObjectSpawner::Initialize(Object* root, ObjectPooler* pooler, Renderer* renderer, ResourceManager* resource, CameraComponent* camera)
 {
 	this->pooler = pooler;
 	this->root = root;
 	this->renderer = renderer;
 	this->resources = resource;
+	this->camera = camera;
 }
 
 void ObjectSpawner::Spawn(const SaveState& state, PointQuadTree& tree, std::unordered_map<int, Chunk*>& chunkMap, std::vector<Chunk*>& chunks, ID3D11Device* device)
@@ -175,10 +176,9 @@ void ObjectSpawner::Spawn(const SaveState& state, PointQuadTree& tree, std::unor
 								
 				itemIndex++;
 
-				/* Shitty stuff here maybe? */
-				particles = new ParticleSystem(object, resources->GetShaderResource("particleShader"));
-				particles->InitializeParticles(renderer->GetDevice(), L"Textures/starstar.png");
-				renderer->AddParticles(object->GetID(), particles);				
+				/* Particles */
+				object->AddComponent<ParticleSystemComponent>(renderer, camera, resources->GetShaderResource("particleShader"));
+				object->GetComponent<ParticleSystemComponent>()->InitializeParticles(renderer->GetDevice(), L"Textures/starstar.png");									
 			}
 		}
 	}
