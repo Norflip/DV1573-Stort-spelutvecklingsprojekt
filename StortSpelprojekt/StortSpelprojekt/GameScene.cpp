@@ -72,9 +72,9 @@ void GameScene::InitializeObjects()
 	legsComponent->SetTrack(SkeletonStateMachine::IDLE, false);
 
 	houseBaseObject->AddComponent<SkeletonMeshComponent>(baseComponent);
-	houseLegsObject->AddComponent<SkeletonMeshComponent>(legsComponent);
+	housesLegsObject->AddComponent<SkeletonMeshComponent>(legsComponent);
 
-	Transform::SetParentChild(houseBaseObject->GetTransform(), houseLegsObject->GetTransform());
+	Transform::SetParentChild(houseBaseObject->GetTransform(), housesLegsObject->GetTransform());
 	houseBaseObject->GetTransform().SetScale({ 0.5f, 0.5f, 0.5f });
 
 	NodeWalkerComp* nodeWalker = houseBaseObject->AddComponent<NodeWalkerComp>();
