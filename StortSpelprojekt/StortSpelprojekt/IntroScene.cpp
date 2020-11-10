@@ -31,9 +31,6 @@ void IntroScene::InitializeObjects()
 
 	ShowCursor(true); 
 
-	skyboxClass = new Skybox(renderer->GetDevice(), renderer->GetContext(), resources->GetShaderResource("skyboxShader"));
-	skyboxClass->GetThisObject()->AddFlag(ObjectFlag::NO_CULL);
-
 
 	AudioMaster::Instance().PlaySoundEvent("menusound");
 }

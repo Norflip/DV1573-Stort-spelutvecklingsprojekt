@@ -41,10 +41,8 @@ void GameScene::Initialize()
 
 void GameScene::InitializeObjects()
 {
-	skyboxClass = new Skybox(renderer->GetDevice(), renderer->GetContext(), resources->GetShaderResource("skyboxShader"));
-	skyboxClass->GetThisObject()->AddFlag(ObjectFlag::NO_CULL);
-	
-	/* For physics/ rigidbody pickup stuff */
+	enemy = new Object("Enemy", ObjectFlag::DEFAULT);
+	enemy->AddComponent<SkeletonMeshComponent>(resources->GetResource<SkeletonMeshComponent>("EnemySkeleton"));
 
 	//SKELETON ANIMATION MODELS
 	bool defaultAnimation = false;
@@ -116,7 +114,6 @@ void GameScene::InitializeObjects()
 	playerObject->AddComponent<CapsuleColliderComponent>(0.5f, 1.8f, zero);
 	playerObject->AddComponent<RigidBodyComponent>(60.f, FilterGroups::PLAYER, (FilterGroups::EVERYTHING), BodyType::DYNAMIC, true);
 
-	//Transform::SetParentChild(playerObject->GetTransform(),cameraObject->GetTransform());
 	playerObject->AddComponent<PlayerComp>(renderer, camera, Engine::Instance->GetPhysics(), guiManager, 100.f, 2.f, 20.f, 50.f, 3.f);
 	playerObject->AddComponent<ControllerComp>(cameraObject, houseBaseObject); /////////////////
 
@@ -144,12 +141,27 @@ void GameScene::InitializeObjects()
 	//physics.RegisterRigidBody(rbEnemy);
 	//physics.MutexUnlock();
 	//playerObject->AddComponent<PlayerAttackComp>(enemy);
+	//Enemy object //comments
+	dx::XMFLOAT3 enemyTranslation = dx::XMFLOAT3(23, 7, 46);
+	enemy->GetTransform().SetPosition(dx::XMLoadFloat3(&enemyTranslation));
+	enemy->GetTransform().SetScale({ 0.125f, 0.125f, 0.125f });
+	enemy->AddComponent<EnemyStatsComp>(100.f, 2.0f, 10.f, 5.f, 3.f, 3.f);
+	//enemyStatsComp = enemy->GetComponent<EnemyStatsComp>();
+	enemy->AddComponent<BoxColliderComponent>(dx::XMFLOAT3{ 1, 2.45, 1 }, dx::XMFLOAT3{ 0, 0, 0 });
 
-	std::vector<Mesh*> axeMesh = ZWEBLoader::LoadMeshes(ZWEBLoadType::NoAnimation, "Models/AXE.ZWEB", renderer->GetDevice());
-	std::vector<Material*> axeMat = ZWEBLoader::LoadMaterials("Models/AXE.ZWEB", defaultShader, renderer->GetDevice());
-	Object* axeObject = new Object("Axe", ObjectFlag::DEFAULT | ObjectFlag::NO_CULL);
+	enemy->AddComponent<RigidBodyComponent>(10.f, FilterGroups::ENEMIES, (FilterGroups::EVERYTHING & ~FilterGroups::PICKUPS) & ~FilterGroups::HOLDABLE, BodyType::KINEMATIC, true);
+	
+	EnemySMComp* stateMachine = enemy->AddComponent<EnemySMComp>(EnemyState::IDLE);
+	stateMachine->RegisterState(EnemyState::IDLE, enemy->AddComponent<EnemyIdleComp>());
+	//stateMachine->RegisterState(EnemyState::PATROL, enemy->AddComponent<EnemyPatrolComp>());
+	stateMachine->RegisterState(EnemyState::ATTACK, enemy->AddComponent<EnemyAttackComp>(player->GetComponent<PlayerComp>()));
+	stateMachine->Start();
+	stateMachine->InitAnimation();
+	AddObject(enemy);
 
-	axeObject->AddComponent<MeshComponent>(axeMesh[0], axeMat[0]);
+	playerObject->AddComponent<PlayerAttackComp>(enemy);
+
+	Object* axeObject = resources->AssembleObject("Axe", "AxeMaterial");
 	axeObject->GetTransform().SetPosition({ 0,0,0 });
 	axeObject->GetTransform().SetScale({ 1, 1, 1 });
 	axeObject->AddComponent<WeaponComponent>(cameraObject);
@@ -338,8 +350,6 @@ void GameScene::Update(const float& deltaTime)
 
 	static_cast<GUIFont*>(guiManager->GetGUIObject("fps"))->SetString(std::to_string((int)GameClock::Instance().GetFramesPerSecond()));
 	guiManager->UpdateAll();
-
-	skyboxClass->GetThisObject()->GetTransform().SetPosition(camera->GetOwner()->GetTransform().GetPosition());
 }
 
 void GameScene::FixedUpdate(const float& fixedDeltaTime)
@@ -350,7 +360,6 @@ void GameScene::FixedUpdate(const float& fixedDeltaTime)
 void GameScene::Render()
 {
 	camera->UpdateView();
-	skyboxClass->GetThisObject()->Draw(renderer, camera);
 
 	root->Draw(renderer, camera);
 	//worldGenerator.DrawShapes();

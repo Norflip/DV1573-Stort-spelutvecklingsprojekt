@@ -1,0 +1,9 @@
+Objects: 1
+
+Enemy: 5
+0: Models/baseMonsterIdle.ZWEB
+1: Models/baseMonsterWalk.ZWEB
+2: Models/baseMonsterRun.ZWEB
+3: Models/baseMonsterAttack.ZWEB
+5: Models/baseMonsterDeath.ZWEB
+

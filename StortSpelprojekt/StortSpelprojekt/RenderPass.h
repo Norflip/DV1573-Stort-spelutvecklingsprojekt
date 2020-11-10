@@ -7,7 +7,8 @@ class RenderPass
 public:
 	enum class PassType
 	{
-		UI_OVERLAY,
+		SKYBOX,
+		GUI,
 		POST_PROCESSING
 	};
 
@@ -16,7 +17,7 @@ public:
 	virtual ~RenderPass() {}
 
 	virtual void m_Initialize(ID3D11Device*) {};
-	virtual void Pass(Renderer* renderer, RenderTexture& current, RenderTexture& target) = 0;
+	virtual void Pass(Renderer* renderer, CameraComponent* camera, RenderTexture& current, RenderTexture& target) = 0;
 
 	int GetPriority() const { return this->priority; }
 	bool IsEnabled() const { return this->enabled; }
@@ -44,7 +45,7 @@ public:
 		material = new Material(shader);
 	}
 
-	void Pass(Renderer* renderer, RenderTexture& inTexture, RenderTexture& outTexture) override
+	void Pass(Renderer* renderer, CameraComponent* camera, RenderTexture& inTexture, RenderTexture& outTexture) override
 	{
 		renderer->ClearRenderTarget(outTexture, false);
 		renderer->SetRenderTarget(outTexture, false);

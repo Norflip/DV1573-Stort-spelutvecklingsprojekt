@@ -1,4 +1,13 @@
-Objects: 24
+Objects: 25
+
+Enemy: Models/baseMonster.ZWEB
+Shader: skeletonShader
+Animations: 5
+0: Models/baseMonsterIdle.ZWEB
+1: Models/baseMonsterWalk.ZWEB
+2: Models/baseMonsterRun.ZWEB
+3: Models/baseMonsterAttack.ZWEB
+5: Models/baseMonsterDeath.ZWEB
 
 Test: Models/brickSphere.ZWEB
 Shader: instanceShader

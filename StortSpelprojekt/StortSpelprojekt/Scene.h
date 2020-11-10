@@ -10,7 +10,6 @@
 #include "PointLightComponent.h"
 #include "NodeWalkerComp.h"
 #include "PlayerAttackComp.h"
-#include "Skybox.h"
 #include "SaveState.h"
 #include "GUIManager.h"
 #include "Physics.h"
@@ -79,7 +78,4 @@ protected:
 
 	ObjectPooler* pooler;
 	GUIManager* guiManager;		
-	
-	Skybox* skyboxClass;		
-
 };
