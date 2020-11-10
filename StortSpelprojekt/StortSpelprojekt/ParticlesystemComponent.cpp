@@ -367,5 +367,6 @@ void ParticleSystemComponent::Update(const float& deltaTime)
 
 void ParticleSystemComponent::Draw(Renderer* renderer, CameraComponent* camera)
 {
-	renderer->DrawParticles(mesh, mat, worldmatrix);
+	if(active)
+		renderer->DrawParticles(mesh, mat, worldmatrix);
 }

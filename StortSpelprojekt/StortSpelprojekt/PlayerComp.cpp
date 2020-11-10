@@ -145,9 +145,9 @@ void PlayerComp::DropObject()
 		rbComp->SetRotation(weaponRot);
 		//objectRb->setLinearVelocity({ dx::XMVectorGetX(camRot) * forceAmount ,  dx::XMVectorGetY(camRot) * forceAmount,  dx::XMVectorGetZ(camRot) * forceAmount });
 
-		if (hit.object->HasComponent<ParticleSystemComponent>())
-			if (!hit.object->GetComponent<ParticleSystemComponent>()->GetActive())
-				hit.object->GetComponent<ParticleSystemComponent>()->SetActive(true);		
+		if (holding->HasComponent<ParticleSystemComponent>())
+			if (!holding->GetComponent<ParticleSystemComponent>()->GetActive())
+				holding->GetComponent<ParticleSystemComponent>()->SetActive(true);
 						
 		float tossSpeed = throwStrength / rbComp->GetMass();
 		objectRb->setLinearVelocity({ dx::XMVectorGetX(camRot) * tossSpeed ,  dx::XMVectorGetY(camRot) * tossSpeed,  dx::XMVectorGetZ(camRot) * tossSpeed });
@@ -227,9 +227,9 @@ void PlayerComp::RayCast(const float& deltaTime)
 				//hit.object->RemoveFlag(ObjectFlag::ENABLED);
 				currentWeapon->RemoveFlag(ObjectFlag::ENABLED);
 
-				if (hit.object->HasComponent<ParticleSystemComponent>())
-					if (hit.object->GetComponent<ParticleSystemComponent>()->GetActive())
-						hit.object->GetComponent<ParticleSystemComponent>()->SetActive(false);
+				if (holding->HasComponent<ParticleSystemComponent>())
+					if (holding->GetComponent<ParticleSystemComponent>()->GetActive())
+						holding->GetComponent<ParticleSystemComponent>()->SetActive(false);
 				
 			}
 		}

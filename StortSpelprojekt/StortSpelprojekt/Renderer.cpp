@@ -484,7 +484,6 @@ void Renderer::DrawRenderItemParticles(const RenderItem& item, CameraComponent* 
 	context->IASetVertexBuffers(0, 1, &vertexBuffer, &stride, &offset);
 	context->IASetIndexBuffer(item.mesh->GetIndexBuffer(), DXGI_FORMAT_R32_UINT, 0);
 	context->IASetPrimitiveTopology(item.mesh->GetTopology());
-
 	//SetCBuffers(context, camera);
 	//particlesShader->BindToContext(context);
 	
