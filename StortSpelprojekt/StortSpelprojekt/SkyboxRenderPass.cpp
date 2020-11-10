@@ -18,7 +18,7 @@ SkyboxRenderPass::~SkyboxRenderPass()
 
 void SkyboxRenderPass::m_Initialize(ID3D11Device* device)
 {
-	this->mesh = ZWEBLoader::LoadMeshes(ZWEBLoadType::NoAnimation, "Models/Skybox.ZWEB", device)[0];
+	this->mesh = ZWEBLoader::LoadMeshes(ZWEBLoadType::NoAnimation, "Models/Props/Skybox.ZWEB", device)[0];
 	Shader* shader = resources->GetShaderResource("skyboxShader");
 	this->material = new Material(shader);
 	LoadTextures(device);

@@ -1,82 +1,98 @@
-Objects: 25
+Objects: 27
 
-Enemy: Models/baseMonster.ZWEB
+Enemy: Models/Enemies/baseMonster.ZWEB
 Shader: skeletonShader
 Animations: 5
-0: Models/baseMonsterIdle.ZWEB
-1: Models/baseMonsterWalk.ZWEB
-2: Models/baseMonsterRun.ZWEB
-3: Models/baseMonsterAttack.ZWEB
-5: Models/baseMonsterDeath.ZWEB
+0: Animations/BaseEnemy/baseMonsterIdle.ZWEB
+1: Animations/BaseEnemy/baseMonsterWalk.ZWEB
+2: Animations/BaseEnemy/baseMonsterRun.ZWEB
+3: Animations/BaseEnemy/baseMonsterAttack.ZWEB
+5: Animations/BaseEnemy/baseMonsterDeath.ZWEB
 
-Test: Models/brickSphere.ZWEB
+House: Models/House/House_Base.ZWEB
+Shader: houseShader
+Animations: 4
+0: Animations/House/HouseBaseIdle.ZWEB
+1: Animations/House/HouseBaseWalk.ZWEB
+7: Animations/House/HouseBaseSitDown.ZWEB
+6: Animations/House/HouseBaseStandUp.ZWEB
+
+HouseLegs: Models/House/House_Legs.ZWEB
+Shader: skeletonShader
+Animations: 4
+0: Animations/House/HouseLegsIdle.ZWEB
+1: Animations/House/HouseLegsWalk.ZWEB
+7: Animations/House/HouseLegsSitDown.ZWEB
+6: Animations/House/HouseLegsStandUp.ZWEB
+
+Test: Models/Debug/brickSphere.ZWEB
 Shader: instanceShader
 
-Test2: Models/sylvanas.ZWEB
+Test2: Models/Debug/sylvanas.ZWEB
 Shader: defaultShader
 
-Test3: Models/cylinder.ZWEB
+Test3: Models/Debug/cylinder.ZWEB
 Shader: defaultShader
 
-Banana: Models/Banana.ZWEB
+Banana: Models/Pickups/Banana.ZWEB
 Shader: defaultShader
 
-HealthKit: Models/Health_Kit.ZWEB
+HealthKit: Models/Pickups/Health_Kit.ZWEB
 Shader: defaultShader
 
-CharRef: Models/char_ref.ZWEB
+CharRef: Models/Debug/char_ref.ZWEB
 Shader: defaultShader
 
-FuelCanGreen: Models/Fuel_Can_Green.ZWEB
+FuelCanGreen: Models/Pickups/Fuel_Can_Green.ZWEB
 Shader: defaultShader
 
-Soup: Models/Soup_Can.ZWEB
+Soup: Models/Pickups/Soup_Can.ZWEB
 Shader: defaultShader
 
-Tree: Models/tree.ZWEB
+Tree: Models/Props/tree.ZWEB
 Shader: instanceShader
 
-Apple: Models/Apple.ZWEB
+Apple: Models/Pickups/Apple.ZWEB
 Shader: defaultShader
 
-Axe: Models/AXE.ZWEB
+Axe: Models/Weapons/AXE.ZWEB
 Shader: defaultShader
 
-Basket: Models/Basket.ZWEB
+Basket: Models/Props/Basket.ZWEB
 Shader: instanceShader
 
-Bat: Models/Bat.ZWEB
+Bat: Models/Weapons/Bat.ZWEB
 Shader: defaultShader
 
-Fruits: Models/Fruit_Basket.ZWEB
+Fruits: Models/Pickups/Fruit_Basket.ZWEB
 Shader: defaultShader
 
-FuelCanBlue: Models/Fuel_Can_Blue.ZWEB
+FuelCanBlue: Models/Pickups/Fuel_Can_Blue.ZWEB
 Shader: defaultShader
 
-FuelCanRed: Models/Fuel_Can_Red.ZWEWB
+FuelCanRed: Models/Pickups/Fuel_Can_Red.ZWEWB
 Shader: defaultShader
 
-Hammer: Models/Hammer.ZWEB
+Hammer: Models/Weapons/Hammer.ZWEB
 Shader: defaultShader
 
-HealthJar: Models/Health_Jar.ZWEB
+HealthJar: Models/Pickups/Health_Jar.ZWEB
 Shader: defaultShader
 
-Log: Models/Log.ZWEB
+Log: Models/Props/Log.ZWEB
 Shader: instanceShader
 
-Pear: Models/Pear.ZWEB
+Pear: Models/Pickups/Pear.ZWEB
 Shader: defaultShader
 
-Propane: Models/Propane.ZWEB
+Propane: Models/Pickups/Propane.ZWEB
 Shader: defaultShader
 
-Rock1: Models/Rock_1.ZWEB
+Rock1: Models/Props/Rock_1.ZWEB
 Shader: instanceShader
 
-Rock2: Models/Rock_2.ZWEB
+Rock2: Models/Props/Rock_2.ZWEB
 Shader: instanceShader
 
-Rock3: Models/Rock_3.ZWEB
+Rock3: Models/Props/Rock_3.ZWEB
 Shader: instanceShader

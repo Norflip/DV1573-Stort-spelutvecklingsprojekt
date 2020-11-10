@@ -122,7 +122,7 @@ void ResourceManager::ReadObjects(ID3D11Device* device)
 			
 			auto sampler = DXHelper::CreateSampler(D3D11_FILTER_MIN_MAG_MIP_LINEAR, D3D11_TEXTURE_ADDRESS_WRAP, device);
 
-			if (shader == "skeletonShader")
+			if (shader == "skeletonShader" || shader == "houseShader")
 			{
 				std::vector<Material*> materials = ZWEBLoader::LoadMaterials(filepath, GetShaderResource(shader), device);
 				std::vector<Mesh*> meshes = ZWEBLoader::LoadMeshes(ZWEBLoadType::SkeletonAnimation, filepath, device);
@@ -142,9 +142,16 @@ void ResourceManager::ReadObjects(ID3D11Device* device)
 					int type = std::stoi(line.substr(0, pos));
 					std::string path = line.substr(pos + 2, line.length() - pos - 2);
 
-					SkeletonAni animation = ZWEBLoader::LoadSkeletonOnly(path, meshes[0]->GetBoneIDS(), false);
-
-					skeletonMesh->SetAnimationTrack(animation, (SkeletonStateMachine)type);
+					if (name == "House")
+					{
+						SkeletonAni animation = ZWEBLoader::LoadSkeletonOnly(path, meshes[0]->GetBoneIDS(), true);
+						skeletonMesh->SetAnimationTrack(animation, (SkeletonStateMachine)type);
+					}
+					else
+					{
+						SkeletonAni animation = ZWEBLoader::LoadSkeletonOnly(path, meshes[0]->GetBoneIDS(), false);
+						skeletonMesh->SetAnimationTrack(animation, (SkeletonStateMachine)type);
+					}
 				}
 
 				skeletonMesh->BlendAnimations();

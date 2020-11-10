@@ -54,6 +54,7 @@ public:
 	std::unordered_map<SkeletonStateMachine, unsigned int> GetTrackMap() { return this->trackMap; }
 	SkeletonStateMachine GetCurrentAnimation() { return this->currentAni; }
 	Bounds GetBounds() { return this->bounds; }
+	void SetTimeScale(float time) { this->timeScale = time; }
 
 	ALIGN16_ALLOC;
 
