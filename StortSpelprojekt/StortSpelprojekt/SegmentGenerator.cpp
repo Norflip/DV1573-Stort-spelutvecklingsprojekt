@@ -370,8 +370,11 @@ void SegmentGenerator::AddTreesToChunk(Chunk* chunk, std::vector<ChunkPointInfor
 			}
 
 			Object* tree = new Object("tree", ObjectFlag::DEFAULT);
-
 			Transform::SetParentChild(chunk->GetOwner()->GetTransform(), tree->GetTransform());
+			tree->GetTransform().SetPosition({ 0,0,0 });
+			tree->GetTransform().SetWorldPosition({ 0,0,0 });
+
+
 			MeshComponent* meshComp = tree->AddComponent<MeshComponent>(stylizedTreeModel, stylizedTreeMaterial);
 
 			meshComp->SetInstanceable(0, treesInstanced, nrOfInstancedStyTrees, device);
@@ -379,7 +382,7 @@ void SegmentGenerator::AddTreesToChunk(Chunk* chunk, std::vector<ChunkPointInfor
 			stylizedTreeMaterial[1]->SetTransparent(true);
 
 			tree->AddComponent<BoxColliderComponent>(colliderExtends, colliderPositions);
-			tree->AddComponent<RigidBodyComponent>(0.f, FilterGroups::PROPS, FilterGroups::EVERYTHING, BodyType::STATIC, true);
+			tree->AddComponent<RigidBodyComponent>(0.f, FilterGroups::DEFAULT, FilterGroups::EVERYTHING, BodyType::STATIC, true);
 		}
 	}
 }
