@@ -68,6 +68,9 @@
       <Filter>Resource Files</Filter>
     </FxCompile>
     <FxCompile Include="ForwardPlusRendering.hlsl" />
+    <FxCompile Include="Shaders\FractionalBrownianMotion.hlsl">
+      <Filter>Resource Files</Filter>
+    </FxCompile>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="BoxColliderComponent.cpp">
@@ -158,9 +161,6 @@
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="SkeletonMeshComponent.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="Skybox.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="SphereColliderComponent.cpp">
@@ -274,7 +274,12 @@
     <ClCompile Include="ThirdParty\quickhull\QuickHull.cpp">
       <Filter>ThirdParty</Filter>
     </ClCompile>
-    <ClCompile Include="ParticlesystemComponent.cpp" />
+    <ClCompile Include="ParticlesystemComponent.cpp">
+    <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="SkyboxRenderPass.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="ObjectSpawner.h">
@@ -490,9 +495,6 @@
     <ClInclude Include="SkeletonMeshComponent.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="Skybox.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
     <ClInclude Include="SphereColliderComponent.h">
       <Filter>Header Files</Filter>
     </ClInclude>
@@ -519,9 +521,6 @@
     </ClInclude>
     <ClInclude Include="ZWEBLoader.h">
       <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="Defines.h">
-      <Filter>Source Files</Filter>
     </ClInclude>
     <ClInclude Include="FXAARenderPass.h">
       <Filter>Source Files</Filter>
@@ -554,6 +553,12 @@
       <Filter>ThirdParty</Filter>
     </ClInclude>
     <ClInclude Include="ParticlesystemComponent.h">
+    <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="SkyboxRenderPass.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Defines.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>

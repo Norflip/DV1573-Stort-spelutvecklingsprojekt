@@ -20,7 +20,7 @@ float4 main(PixelInputType input) : SV_TARGET
 	float4 diff;
 	float4 diff2;
 	float4 final;
-
+	
 	// different id, different lerps between textures
 	if (id == 0)
 	{

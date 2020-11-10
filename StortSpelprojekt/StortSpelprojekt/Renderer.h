@@ -18,7 +18,8 @@ class RenderPass;
 ALIGN16
 class Renderer
 {
-	const FLOAT DEFAULT_BG_COLOR[4] = { 0.3f, 0.1f, 0.2f, 1.0f };
+	//const FLOAT DEFAULT_BG_COLOR[4] = { 0.3f, 0.1f, 0.2f, 1.0f };
+	const FLOAT DEFAULT_BG_COLOR[4] = { 0.2f, 0.2f, 0.2f, 1.0f };
 
 	struct RenderItem
 	{
@@ -62,7 +63,8 @@ public:
 	void DrawSkeleton(const Mesh* mesh, const Material* material, const dx::XMMATRIX& model, std::vector<dx::XMFLOAT4X4>& bones);
 	void DrawGrass(const Mesh* mesh, const Material* material, const dx::XMMATRIX& model);
 	void DrawParticles(const Mesh* mesh, const Material* material, const dx::XMMATRIX& model);
-
+	void DrawImmediate(const Mesh* mesh, const Material* material, const CameraComponent* camera, const dx::XMMATRIX& model);
+	
 	void SetCullBack(bool);
 
 	ID3D11Device* GetDevice() const { return this->device; }

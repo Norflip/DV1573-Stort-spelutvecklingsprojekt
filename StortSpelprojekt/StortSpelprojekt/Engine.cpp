@@ -1,26 +1,33 @@
 #include "stdafx.h"
 #include "Engine.h"
-
+#include "FogRenderPass.h"
+#include "FXAARenderPass.h"
+#include "SkyboxRenderPass.h"
 
 Engine* Engine::Instance = nullptr;
 
 Engine::Engine(HINSTANCE hInstance) : window(hInstance), activeScene(nullptr), sceneSwitch(-1)
 {
 	this->Instance = this;
+
+	HRESULT hr = CoInitializeEx(nullptr, COINIT_MULTITHREADED);
+	assert(SUCCEEDED(hr));
+
 	window.Open(1600, 900);
+
+
 	renderer = new Renderer();
 	renderer->Initialize(&window);
 
-	HRESULT hr = CoInitializeEx(nullptr, COINIT_MULTITHREADED);
-	assert(SUCCEEDED(hr));		
-
-	resourceManager = new ResourceManager;
+	resourceManager = new ResourceManager();
 	resourceManager->InitializeResources(renderer->GetDevice());
 
 	physics = new Physics();
 	physics->Initialize();
 
-	
+	renderer->AddRenderPass(new SkyboxRenderPass(-10, resourceManager));
+	renderer->AddRenderPass(new FogRenderPass(0));
+	renderer->AddRenderPass(new FXAARenderPass(1));
 
 	RegisterScene(SceneIndex::INTRO,	new IntroScene());
 	RegisterScene(SceneIndex::GAME_OVER,new GameOverScene());
@@ -119,6 +126,8 @@ void Engine::Run()
 #if MULTITHREAD_PHYSICS
 	fixedLoopThread.join();
 #endif
+
+	CoUninitialize();
 }
 
 void Engine::Exit()

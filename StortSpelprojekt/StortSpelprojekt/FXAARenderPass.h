@@ -17,7 +17,7 @@ public:
 		material = new Material(shader);
 	}
 
-	void Pass(Renderer* renderer, RenderTexture& inTexture, RenderTexture& outTexture) override
+	void Pass(Renderer* renderer, CameraComponent* camera, RenderTexture& inTexture, RenderTexture& outTexture) override
 	{
 		renderer->ClearRenderTarget(outTexture, false);
 		renderer->SetRenderTarget(outTexture, false);

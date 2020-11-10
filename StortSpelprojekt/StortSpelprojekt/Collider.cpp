@@ -12,8 +12,10 @@ Collider::Collider(std::vector<dx::XMFLOAT3> positions)
     for (size_t i = 0; i < positions.size(); i++)
     {
         colliderInformations[i].position = positions[i];
+
         dx::XMStoreFloat4(&colliderInformations[i].rotation, dx::XMQuaternionIdentity());
         rp::Vector3 rpPos(positions[i].x, positions[i].y, positions[i].z);
+
         colliderInformations[i].transform = rp::Transform(rpPos, rp::Quaternion::identity());
         colliderInformations[i].shape = nullptr;
     }
