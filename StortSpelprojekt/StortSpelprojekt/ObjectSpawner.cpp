@@ -13,10 +13,13 @@ ObjectSpawner::~ObjectSpawner()
 {
 }
 
-void ObjectSpawner::Initialize(Object* root, ObjectPooler* pooler)
+void ObjectSpawner::Initialize(Object* root, ObjectPooler* pooler, Renderer* renderer, ResourceManager* resource, CameraComponent* camera)
 {
 	this->pooler = pooler;
 	this->root = root;
+	this->renderer = renderer;
+	this->resources = resource;
+	this->camera = camera;
 }
 
 void ObjectSpawner::Spawn(const SaveState& state, PointQuadTree& tree, std::unordered_map<int, Chunk*>& chunkMap, std::vector<Chunk*>& chunks, ID3D11Device* device)
@@ -136,8 +139,10 @@ void ObjectSpawner::Spawn(const SaveState& state, PointQuadTree& tree, std::unor
 
 		props->AddComponent<MeshCollider>(i.second.prop->mesh, i.second.positions);
 		props->AddComponent<RigidBodyComponent>(0.f, FilterGroups::PROPS, FilterGroups::EVERYTHING, BodyType::STATIC, true);
-
+		
 		Transform::SetParentChild(i.first->GetOwner()->GetTransform(), props->GetTransform());
+
+		
 
 	}
 
@@ -147,7 +152,6 @@ void ObjectSpawner::Spawn(const SaveState& state, PointQuadTree& tree, std::unor
 
 #if SPAWN_ITEMS
 	int itemIndex = 0;
-
 	if (items.size() > 0)
 	{
 		for (size_t i = 0; i < itemSpawnPositions.size(); i++)
@@ -168,11 +172,16 @@ void ObjectSpawner::Spawn(const SaveState& state, PointQuadTree& tree, std::unor
 				object->GetComponent<RigidBodyComponent>()->SetPosition(position);
 				Transform::SetParentChild(root->GetTransform(), object->GetTransform());
 				activeItems.push_back(object);
-
+								
 				itemIndex++;
+
+				/* Particles */
+				object->AddComponent<ParticleSystemComponent>(renderer, camera, resources->GetShaderResource("particleShader"));
+				object->GetComponent<ParticleSystemComponent>()->InitializeParticles(renderer->GetDevice(), L"Textures/starstar.png");									
 			}
 		}
 	}
+		
 
 	std::cout << "ITEMS: " << itemSpawnPositions.size() << std::endl;
 #endif
@@ -192,7 +201,7 @@ void ObjectSpawner::Despawn()
 			delete obj;
 		}
 	}
-
+		
 	activeItems.clear();
 }
 
@@ -238,7 +247,6 @@ void ObjectSpawner::DrawDebug()
 		dx::XMFLOAT3 worldPoint(propSpawnPositions[i].x, 5, propSpawnPositions[i].y);
 		DShape::DrawSphere(worldPoint, 0.5f, dx::XMFLOAT3(0, 0, 1));
 	}
-
 }
 
 std::vector<dx::XMFLOAT2> ObjectSpawner::CreateSpawnPositions(PointQuadTree& tree, float radius, std::unordered_map<int, Chunk*>& chunkMap)

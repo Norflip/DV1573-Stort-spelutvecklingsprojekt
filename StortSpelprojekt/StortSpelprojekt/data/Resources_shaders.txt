@@ -1,4 +1,4 @@
-Shaders: 11
+Shaders: 12
 
 Name: default
 
@@ -16,6 +16,11 @@ Name: alphaInstanceShader
 Input: instance
 VS: Shaders/Instance_vs.hlsl
 PS: Shaders/Alpha_ps.hlsl
+
+Name: particleShader
+Input: color
+VS: Shaders/Particles_vs.hlsl
+PS: Shaders/Particles_ps.hlsl
 
 Name: terrainShader
 VS: Shaders/Terrain_vs.hlsl

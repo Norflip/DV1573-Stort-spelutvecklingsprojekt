@@ -195,9 +195,15 @@ void ControllerComp::Update(const float& deltaTime)
 		dx::XMVECTOR groundRotation = dx::XMQuaternionRotationRollPitchYaw(0.f, cameraEuler.y, 0.f);
 		
 		Input::Instance().ResetRelative();
+
 		MoveState isMoving = IDLE;
+
+		/*if (isMoving == MoveState::IDLE)
+			AudioMaster::Instance().StopSoundEvent("walk");*/
+
 		if (KEY_PRESSED(W) || KEY_PRESSED(S) || KEY_PRESSED(A) || KEY_PRESSED(D))
 		{
+
 			isMoving = WALKING;
 			if (KEY_PRESSED(LeftShift)) //sprint
 				isMoving = SPRINTING;
@@ -210,6 +216,11 @@ void ControllerComp::Update(const float& deltaTime)
 				dir.x -= 1.f;
 			if (KEY_PRESSED(D))
 				dir.x += 1.f;
+
+
+			/*if (isMoving == MoveState::WALKING)
+				AudioMaster::Instance().PlaySoundEvent("walk");*/
+
 		}
 		
 		if (freeCam) //flying camera
