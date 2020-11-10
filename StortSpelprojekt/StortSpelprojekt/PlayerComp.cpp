@@ -117,11 +117,9 @@ void PlayerComp::HoldObject()
 	wepOffRot = wepOffRot.CreateFromAxisAngle(up, dx::XMConvertToRadians(-40.0f));
 	wepWorld = wepOffRot * wepOffTrans * inverseViewMatrix;
 
-	//wepOffTrans = dx::XMMatrixTranslation(holdAngle.x, holdAngle.y, holdAngle.z);
-	//wepOffRot = dx::XMMatrixRotationAxis(up, dx::XMConvertToRadians(-40.0f));
 
-
-	wepWorld.Decompose(weaponScale, weaponRot,weaponPos);
+	//something here doesn work properly
+	wepWorld.Decompose(weaponScale, weaponRot, weaponPos);
 	holding->GetTransform().SetPosition(weaponPos);
 	holding->GetTransform().SetRotation(weaponRot);
 	holding->GetTransform().SetScale(weaponScale);
