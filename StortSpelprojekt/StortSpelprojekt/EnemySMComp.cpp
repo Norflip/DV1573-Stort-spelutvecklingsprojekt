@@ -41,10 +41,10 @@ void EnemySMComp::Initialize()
 
 void EnemySMComp::Animate()
 {
-	//OutputDebugStringA(std::to_string(statsComponent->GetHealth()).c_str());
+	
 	if (currentState == EnemyState::ATTACK)
 	{
-		skeletonComponent->SetTrack(SkeletonStateMachine::BLENDED, false);
+		skeletonComponent->SetTrack(SkeletonStateMachine::RUN, false);
 	}
 	else
 	{
