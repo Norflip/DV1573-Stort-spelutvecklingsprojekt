@@ -42,7 +42,7 @@ private:
 	float soundEffectsVolume = 1.0f;
 	float musicVolume = 1.0f;
 
-	SoundEvent menuTest, pickupSound, axeSwingSound, punchSound, walkSound, runSound, windSound;
+	SoundEvent menuTest, pickupSound, pickupFuel, axeSwingSound, punchSound, walkSound, runSound, windSound;
 
 public:
 	AudioMaster();

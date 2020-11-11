@@ -219,6 +219,8 @@ void PlayerComp::RayCast(const float& deltaTime)
 		{
 			if (hit.object != nullptr)
 			{
+
+				AudioMaster::Instance().PlaySoundEvent("pickupFuel");
 				holding = hit.object;
 				RigidBodyComponent* rbComp = hit.object->GetComponent<RigidBodyComponent>();
 				rp::RigidBody* objectRb = rbComp->GetRigidBody();
@@ -228,7 +230,7 @@ void PlayerComp::RayCast(const float& deltaTime)
 				hit.object->GetComponent<BoxColliderComponent>()->SetRotation(0, { 5, 5, 5, 5 });
 				//hit.object->RemoveFlag(ObjectFlag::ENABLED);
 				currentWeapon->RemoveFlag(ObjectFlag::ENABLED);
-
+				
 				if (holding->HasComponent<ParticleSystemComponent>())
 					if (holding->GetComponent<ParticleSystemComponent>()->GetActive())
 						holding->GetComponent<ParticleSystemComponent>()->SetActive(false);
