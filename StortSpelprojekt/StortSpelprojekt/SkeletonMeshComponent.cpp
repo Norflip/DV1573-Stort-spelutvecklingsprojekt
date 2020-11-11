@@ -137,14 +137,7 @@ void SkeletonMeshComponent::SetTrack(const SkeletonStateMachine& type, bool play
 
 void SkeletonMeshComponent::PlayOnce(float deltaTime)
 {
-
-	//elapsedTime += deltaTime;
-
-	//float time = elapsedTime;
-
 	float time = 0.0f;
-
-	//time *= timeScale;
 
 	if (currentAni == SkeletonStateMachine::IDLE)
 	{
@@ -220,16 +213,17 @@ void SkeletonMeshComponent::PlayOnce(float deltaTime)
 		//done = false;
 		if (!done)
 		{
-			//elapsedTime += deltaTime;
-			//time = elapsedTime;
+			elapsedTime -= time;
+			elapsedTime += deltaTime;
+			time = elapsedTime;
 			//time = 0.0f;
 			//time += deltaTime;
 
-			timer.Restart();
-			timer.Update();
-			time += timer.GetSeconds();
-			
-			time *= timeScale;
+			//timer.Restart();
+			//timer.Update();
+			//time += timer.GetSeconds();
+			//
+			//time *= timeScale;
 
 			float animLength = skeletonAnimations[3].GetAniLength() / skeletonAnimations[3].GetFPS(); // 0.83 seconds
 
@@ -238,9 +232,9 @@ void SkeletonMeshComponent::PlayOnce(float deltaTime)
 
 			float length = fmodf(skeletonAnimations[3].GetAniLength(), skeletonAnimations[3].GetFPS()); //Läs mer
 
-			if (time < length)
+			if (time <= animLength)
 			{
-				std::cout << length << std::endl;
+				std::cout << time << std::endl;
 				finalTransforms = skeletonAnimations[3].Makeglobal(time, dx::XMMatrixIdentity(), *skeletonAnimations[3].GetRootKeyJoints());
 				
 			}
