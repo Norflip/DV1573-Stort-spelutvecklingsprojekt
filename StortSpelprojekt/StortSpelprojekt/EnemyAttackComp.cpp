@@ -55,16 +55,6 @@ bool EnemyAttackComp::ChasePlayer()
 
 void EnemyAttackComp::UpdateEnemyPos(const float& deltaTime)
 {
-	if (KEY_PRESSED(U))
-	{
-		dx::XMVECTOR plPos = player->GetOwner()->GetTransform().GetPosition();
-		dx::XMFLOAT3 pp;
-		dx::XMStoreFloat3(&pp, plPos);
-		pp.x += 5;
-		pp.y += 5;
-		rbComp->SetPosition(dx::XMLoadFloat3(&pp));
-	}
-
 	if (ChasePlayer())
 	{
 		dx::XMFLOAT3 moveDir = { 0.0f, 0.0f, 0.0f };
