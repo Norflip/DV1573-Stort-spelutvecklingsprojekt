@@ -48,8 +48,8 @@ GUIManager::GUIManager(Renderer* renderer, int priority) : RenderPass(priority, 
 	//END Desc for blending png files with depth//
 	CD3D11_RASTERIZER_DESC rastDesc(D3D11_FILL_SOLID, D3D11_CULL_NONE, FALSE,
 		D3D11_DEFAULT_DEPTH_BIAS, D3D11_DEFAULT_DEPTH_BIAS_CLAMP,
-		D3D11_DEFAULT_SLOPE_SCALED_DEPTH_BIAS, TRUE, FALSE,
-		TRUE /*this is MSAA enable*/, TRUE);
+		D3D11_DEFAULT_SLOPE_SCALED_DEPTH_BIAS, FALSE, FALSE,
+		TRUE, TRUE);
 
 		HRESULT resultCreateRasterizer = renderer->GetDevice()->CreateRasterizerState(&rastDesc, &testState);
 	assert(SUCCEEDED(resultCreateRasterizer));
@@ -57,13 +57,14 @@ GUIManager::GUIManager(Renderer* renderer, int priority) : RenderPass(priority, 
 
 
 	D3D11_SAMPLER_DESC testDesc;
+	D3D11_FILTER_REDUCTION_TYPE  testFilter;
 	ZeroMemory(&testDesc, sizeof(D3D11_SAMPLER_DESC));
-	testDesc.Filter = D3D11_FILTER_MIN_MAG_MIP_LINEAR;
-	//testDesc.MaxAnisotropy = D3D11_FILTER_MIN_MAG_MIP_LINEAR;
+	testDesc.Filter = D3D11_FILTER_ANISOTROPIC;
+	testDesc.MaxAnisotropy = 16;
 	testDesc.ComparisonFunc = D3D11_COMPARISON_LESS_EQUAL;
-	testDesc.MinLOD = 0.0f;
-	testDesc.MaxLOD = D3D11_FLOAT32_MAX;
-	testDesc.MipLODBias = 4.0f;
+	testDesc.MinLOD = 0;
+	testDesc.MaxLOD = FLT_MAX;
+	testDesc.MipLODBias = 0.0f;
 	testDesc.AddressU = D3D11_TEXTURE_ADDRESS_CLAMP;
 	testDesc.AddressV = D3D11_TEXTURE_ADDRESS_CLAMP;
 	testDesc.AddressW = D3D11_TEXTURE_ADDRESS_CLAMP;
@@ -105,8 +106,8 @@ void GUIManager::Pass(Renderer* renderer, CameraComponent* camera, RenderTexture
 {
 
 	//SPRITES
-
 	spriteBatch->Begin(dx::SpriteSortMode::SpriteSortMode_BackToFront, blendOn, samplerState, depthStencilState, testState);
+	//spriteBatch->Begin(dx::SpriteSortMode::SpriteSortMode_BackToFront, blendOn, nullptr, depthStencilState, testState);
 	for (auto i : GUIObjects)
 	{
 		if(!i.second->HasGroup(GuiGroup::Font))

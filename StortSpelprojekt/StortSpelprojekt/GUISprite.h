@@ -3,6 +3,7 @@
 
 #include "DirectXHelpers.h"
 #include <WICTextureLoader.h>
+#include <DDSTextureLoader.h>
 #include <SpriteBatch.h>
 #include "Renderer.h"
 #include <wrl.h>
