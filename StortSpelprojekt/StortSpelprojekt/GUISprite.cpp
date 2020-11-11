@@ -3,7 +3,11 @@
 #include "GUISprite.h"
 
 
-GUISprite::GUISprite(Renderer& renderer , std::string filePath, float xPos, float yPos,float layerDepth, DrawDirection dir, ClickFunction clickFunc, GuiGroup group)
+GUISprite::GUISprite()
+{
+}
+
+GUISprite::GUISprite(Renderer& renderer , std::string path, float xPos, float yPos,float layerDepth, DrawDirection dir, ClickFunction clickFunc, GuiGroup group)
 {
 	this->renderer = &renderer;
 	// position
@@ -20,7 +24,7 @@ GUISprite::GUISprite(Renderer& renderer , std::string filePath, float xPos, floa
 	this->SRV = nullptr;
 	this->xPos = renderer.GetOutputWindow()->GetWidth()-xPos;
 	this->spriteBatch = nullptr;
-	this->filePath = filePath;
+	this->filePath = path;
 	this->layerDepth = layerDepth;
 	this->SetVisible(true);
 	this->scale = dx::XMVectorSet(this->xScale, this->yScale, 0, 0);

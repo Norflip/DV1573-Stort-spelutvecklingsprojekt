@@ -567,6 +567,9 @@
     <ClInclude Include="GUICompass.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="FXAARenderPass.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <Filter Include="Header Files">
