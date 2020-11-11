@@ -5,14 +5,11 @@ ALIGN16
 class FogRenderPass : public RenderPass
 {
 public:
-	FogRenderPass(int priority) : RenderPass(priority, RenderPass::PassType::POST_PROCESSING)  {}
+	FogRenderPass(int priority, ResourceManager* resources) : RenderPass(priority, RenderPass::PassType::POST_PROCESSING), resources(resources)  {}
 
 	void m_Initialize(ID3D11Device* device) override
 	{
-		Shader* shader = new Shader;
-		shader->SetPixelShader("Shaders/FogTest_ps.hlsl", "main");
-		shader->SetVertexShader("Shaders/ScreenQuad_vs.hlsl");
-		shader->Compile(device);
+		Shader* shader = resources->GetShaderResource("fogShader");
 		material = new Material(shader);
 	}
 
@@ -33,5 +30,5 @@ public:
 
 private:
 	Material* material;
-
+	ResourceManager* resources;
 };
