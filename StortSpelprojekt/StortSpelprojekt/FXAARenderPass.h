@@ -5,15 +5,12 @@ ALIGN16
 class FXAARenderPass : public RenderPass
 {
 public:
-	FXAARenderPass(int priority) : RenderPass(priority, RenderPass::PassType::POST_PROCESSING) {}
+	FXAARenderPass(int priority, ResourceManager* resources) : RenderPass(priority, RenderPass::PassType::POST_PROCESSING), resources(resources) {}
 	virtual ~FXAARenderPass() {}
 
 	void m_Initialize(ID3D11Device* device) override
 	{
-		Shader* shader = new Shader;
-		shader->SetPixelShader("Shaders/FXAA_ps.hlsl", "main");
-		shader->SetVertexShader("Shaders/ScreenQuad_vs.hlsl");
-		shader->Compile(device);
+		Shader* shader = resources->GetShaderResource("FXAAShader");
 		material = new Material(shader);
 	}
 
@@ -34,5 +31,5 @@ public:
 
 private:
 	Material* material;
-
+	ResourceManager* resources;
 };
