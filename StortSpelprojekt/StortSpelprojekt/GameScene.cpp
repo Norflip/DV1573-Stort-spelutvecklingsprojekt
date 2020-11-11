@@ -110,11 +110,6 @@ void GameScene::InitializeObjects()
 
 	AddObject(testPointLight, playerObject);
 
-	//LOADING BASE MONSTER; ADDING SKELETONS TO IT
-	enemyManager = new EnemyManager(resources, renderer, player->GetComponent<PlayerComp>(), root);
-	enemyManager->InitBaseEnemy();
-	//playerObject->AddComponent<PlayerAttackComp>(enemyManager->GetBaseEnemy());
-
 	Object* axeObject = resources->AssembleObject("Axe", "AxeMaterial");
 	axeObject->GetTransform().SetPosition({ 0,0,0 });
 	axeObject->GetTransform().SetScale({ 1, 1, 1 });
@@ -124,6 +119,10 @@ void GameScene::InitializeObjects()
 	playerObject->GetComponent<PlayerComp>()->InsertWeapon(axeObject->GetComponent<WeaponComponent>(), axeObject->GetName());
 
 	world.Initialize(root, resources, pooler, renderer, camera);
+
+	//LOADING BASE MONSTER; ADDING SKELETONS TO IT
+	enemyManager = new EnemyManager(resources, player, player->GetComponent<PlayerComp>(), root);
+	enemyManager->InitBaseEnemy();
 	
 	/* PICKUP STUFF DONT DELETE THESEEE */
 	Object* healthkitObject = resources->AssembleObject("HealthKit", "HealthKitMaterial");

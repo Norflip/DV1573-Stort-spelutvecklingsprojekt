@@ -6,7 +6,7 @@
 class EnemyManager
 {
 	public:
-		EnemyManager(ResourceManager* resources, Renderer* renderer, PlayerComp* playerComp, Object* root);
+		EnemyManager(ResourceManager* resources, Object* player, PlayerComp* playerComp, Object* root);
 		~EnemyManager() {}
 		std::vector<Object*> GetBaseEnemies() const { return baseEnemies; }
 		void InitBaseEnemy();
@@ -18,9 +18,9 @@ class EnemyManager
 		ObjectPooler* enemyPool;
 		std::vector<Object*> baseEnemies;
 		//std::vector<Object*> baseEnemies;
+		Object* player;
 		PlayerComp* playerComp;
 		ResourceManager* resources;
-		Renderer* renderer;
 		Object* root;
 		int nrOfEnemies;
 };
