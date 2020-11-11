@@ -92,6 +92,7 @@ void Scene::AddObject(Object* object, Object* parent)
 void Scene::RemoveObject(Object* object)
 {
 	// remove the the connection and traverse downwards and remove / destroy all objects
+	enemyManager->RemoveEnemy(object);
 	removeQueue.push(object);
 	object->RemoveFlag(ObjectFlag::ENABLED);
 	object->AddFlag(ObjectFlag::REMOVED);

@@ -37,6 +37,7 @@ class CameraComponent;
 class ControllerComp :public Component 
 {
 private:
+
 	enum MoveState
 	{
 		IDLE,
@@ -68,6 +69,8 @@ private:
 	PlayerComp* playerComp;
 
 	void CheckGrounded();
+
+	MoveState isMoving; 
 
 	void CalcVelocity(float acceleration)
 	{

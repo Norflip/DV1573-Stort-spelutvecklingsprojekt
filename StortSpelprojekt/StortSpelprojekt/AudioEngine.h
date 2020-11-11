@@ -10,7 +10,7 @@
 #pragma comment(lib, "XAudio2.lib")
 
 
-#include <x3daudio.h>
+//#include <x3daudio.h>
 #include <xaudio2.h>
 #include <string>
 #include <vector>
@@ -39,7 +39,7 @@ private:
 	BYTE* localAudioData;
 
 	
-	X3DAUDIO_LISTENER listener;	// when player is
-	X3DAUDIO_EMITTER emitter;	// where the sound comes from
-	X3DAUDIO_DSP_SETTINGS dspSettings;
+	//X3DAUDIO_LISTENER listener;	// when player is
+	//X3DAUDIO_EMITTER emitter;	// where the sound comes from
+	//X3DAUDIO_DSP_SETTINGS dspSettings;
 };

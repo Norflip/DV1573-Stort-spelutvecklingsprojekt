@@ -45,6 +45,10 @@ PlayerComp::PlayerComp(Renderer* renderer, CameraComponent* camComp, Physics* ph
 	this->foodDippingBar = static_cast<GUISprite*>(guiMan->GetGUIObject("foodDippingBar"));
 	this->healthDippingBar = static_cast<GUISprite*>(guiMan->GetGUIObject("healthDippingBar"));
 
+	this->fuelBar = static_cast<GUISprite*>(guiMan->GetGUIObject("fuelBar"));
+	this->foodBar = static_cast<GUISprite*>(guiMan->GetGUIObject("foodBar"));
+	this->healthBar = static_cast<GUISprite*>(guiMan->GetGUIObject("healthBar"));
+
 
 
 	//this->GetOwner()->GetComponent<CameraComponent>()
@@ -95,12 +99,15 @@ void PlayerComp::Update(const float& deltaTime)
 
 	// Fuel drop
 	fuelDippingBar->SetScaleBars(ReverseAndClamp(fuel));
+	fuelBar->SetScaleColor(ReverseAndClamp(fuel));
 
 	// Food drop
 	foodDippingBar->SetScaleBars(ReverseAndClamp(food));
+	foodBar->SetScaleColor(ReverseAndClamp(food));
 
 	// Health drop
 	healthDippingBar->SetScaleBars(ReverseAndClamp(health));
+	healthBar->SetScaleColor(ReverseAndClamp(health));
 
 	if (holding != nullptr)
 	{
@@ -117,7 +124,6 @@ void PlayerComp::HoldObject()
 	wepOffRot = wepOffRot.CreateFromAxisAngle(up, dx::XMConvertToRadians(-40.0f));
 	wepWorld = wepOffRot * wepOffTrans * inverseViewMatrix;
 	holding->AddFlag(ObjectFlag::NO_CULL);
-
 	//something here doesn work properly
 	//GetOwner()->AddFlag(ObjectFlag::NO_CULL);
 	wepWorld.Decompose(weaponScale, weaponRot, weaponPos);
@@ -219,6 +225,8 @@ void PlayerComp::RayCast(const float& deltaTime)
 		{
 			if (hit.object != nullptr)
 			{
+
+				AudioMaster::Instance().PlaySoundEvent("pickupFuel");
 				holding = hit.object;
 				RigidBodyComponent* rbComp = hit.object->GetComponent<RigidBodyComponent>();
 				rp::RigidBody* objectRb = rbComp->GetRigidBody();
@@ -228,7 +236,7 @@ void PlayerComp::RayCast(const float& deltaTime)
 				hit.object->GetComponent<BoxColliderComponent>()->SetRotation(0, { 5, 5, 5, 5 });
 				//hit.object->RemoveFlag(ObjectFlag::ENABLED);
 				currentWeapon->RemoveFlag(ObjectFlag::ENABLED);
-
+				
 				if (holding->HasComponent<ParticleSystemComponent>())
 					if (holding->GetComponent<ParticleSystemComponent>()->GetActive())
 						holding->GetComponent<ParticleSystemComponent>()->SetActive(false);

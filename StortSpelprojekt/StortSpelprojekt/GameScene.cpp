@@ -3,7 +3,7 @@
 #include "GUISprite.h"
 #include "GUIFont.h"
 #include "Engine.h"
-
+#include "GUICompass.h"
 void GameScene::RemoveEnemy()
 {
 	enemy->RemoveFlag(ObjectFlag::ENABLED);
@@ -37,6 +37,7 @@ void GameScene::Initialize()
 	InitializeLights();
 	InitializeGUI();
 	InitializeObjects();
+
 }
 
 void GameScene::InitializeObjects()
@@ -110,27 +111,6 @@ void GameScene::InitializeObjects()
 
 	//AddObject(testPointLight, playerObject);
 
-	//Enemy object //comments
-	enemy = new Object("Enemy", ObjectFlag::DEFAULT);
-	enemy->AddComponent<SkeletonMeshComponent>(resources->GetResource<SkeletonMeshComponent>("EnemySkeleton"));
-
-	dx::XMFLOAT3 enemyTranslation = dx::XMFLOAT3(23, 7, 46);
-	enemy->GetTransform().SetPosition(dx::XMLoadFloat3(&enemyTranslation));
-	enemy->GetTransform().SetScale({ 0.125f, 0.125f, 0.125f });
-	enemy->AddComponent<EnemyStatsComp>(100.f, 2.0f, 10.f, 5.f, 3.f, 3.f);
-	enemy->AddComponent<BoxColliderComponent>(dx::XMFLOAT3{ 1.f, 2.45f, 1.f }, dx::XMFLOAT3{ 0, 0, 0 });
-	enemy->AddComponent<RigidBodyComponent>(10.f, FilterGroups::ENEMIES, (FilterGroups::EVERYTHING & ~FilterGroups::PICKUPS) & ~FilterGroups::HOLDABLE, BodyType::KINEMATIC, true);
-	
-	EnemySMComp* stateMachine = enemy->AddComponent<EnemySMComp>(EnemyState::IDLE);
-	stateMachine->RegisterState(EnemyState::IDLE, enemy->AddComponent<EnemyIdleComp>());
-	//stateMachine->RegisterState(EnemyState::PATROL, enemy->AddComponent<EnemyPatrolComp>());
-	stateMachine->RegisterState(EnemyState::ATTACK, enemy->AddComponent<EnemyAttackComp>(player->GetComponent<PlayerComp>()));
-	stateMachine->Start();
-	stateMachine->InitAnimation();
-	AddObject(enemy);
-
-	playerObject->AddComponent<PlayerAttackComp>(enemy);
-
 	Object* axeObject = resources->AssembleObject("Axe", "AxeMaterial");
 	axeObject->GetTransform().SetPosition({ 0,0,0 });
 	axeObject->GetTransform().SetScale({ 1, 1, 1 });
@@ -141,9 +121,10 @@ void GameScene::InitializeObjects()
 
 	world.Initialize(root, resources, renderer);
 	
-	dx::XMVECTOR asdf = dx::XMVectorSet(23, 3, 40 ,1); //???
-	enemy->GetTransform().SetPosition(asdf);
-
+	//LOADING BASE MONSTER; ADDING SKELETONS TO IT
+	enemyManager = new EnemyManager(resources, player, player->GetComponent<PlayerComp>(), root);
+	enemyManager->InitBaseEnemy();
+	
 	/* PICKUP STUFF DONT DELETE THESEEE */
 	Object* healthkitObject = resources->AssembleObject("HealthKit", "HealthKitMaterial");
 	healthkitObject->GetTransform().SetPosition({ 23,2,50 });
@@ -172,13 +153,15 @@ void GameScene::InitializeObjects()
 	beansObject->AddComponent<ParticleSystemComponent>(renderer, particleShader);
 	beansObject->GetComponent<ParticleSystemComponent>()->InitializeParticles(renderer->GetDevice(), L"Textures/starstar.png");
 	AddObject(beansObject);		
+
+
 }
 
 void GameScene::InitializeGUI()
 {
 	float windowWidth = FCAST(window->GetWidth());
 	float windowHeight = FCAST(window->GetHeight());
-
+	
 	//INFO, WE ARE DRAWING BACK TO FRONT. IF YOU WANT SOMETHING TO BE IN FRONT. SET VALUE TO 0. IF YOU WANT IT IN BACK USE 0.1 -> 1
 
 	//BUTTONS AT LEFT SIDE
@@ -189,23 +172,24 @@ void GameScene::InitializeGUI()
 	GUISprite* equimpmentSprite4 = new GUISprite(*renderer, "Textures/EquipmentBox.png", 250, 10, 0, DrawDirection::BottomLeft, ClickFunction::NotClickable);
 
 	//BARS THAT SCALING 
-	GUISprite* foodScalingBar = new GUISprite(*renderer, "Textures/DippingBar.png", 10, 10, 0.5, DrawDirection::BottomRight, ClickFunction::NotClickable);
-	GUISprite* healthScalingBar = new GUISprite(*renderer, "Textures/DippingBar.png", 90, 10, 0.5, DrawDirection::BottomRight, ClickFunction::NotClickable);
 	GUISprite* fuelScalingBar = new GUISprite(*renderer, "Textures/DippingBar.png", 170, 10, 0.5, DrawDirection::BottomRight, ClickFunction::NotClickable);
+	GUISprite* foodScalingBar = new GUISprite(*renderer, "Textures/DippingBar.png", 90, 10, 0.5, DrawDirection::BottomRight, ClickFunction::NotClickable);
+	GUISprite* healthScalingBar = new GUISprite(*renderer, "Textures/DippingBar.png", 10, 10, 0.5, DrawDirection::BottomRight, ClickFunction::NotClickable);
 
 	//BARS AR RIGHT SIDE
-	GUISprite* fuelBar = new GUISprite(*renderer, "Textures/Health_Fuel_Food.png", 10, 10, 1, DrawDirection::BottomRight, ClickFunction::NotClickable);
+	GUISprite* fuelBar = new GUISprite(*renderer, "Textures/Health_Fuel_Food.png", 170, 10, 1, DrawDirection::BottomRight, ClickFunction::NotClickable);
 	GUISprite* foodBar = new GUISprite(*renderer, "Textures/Health_Fuel_Food.png", 90, 10, 1, DrawDirection::BottomRight, ClickFunction::NotClickable);
-	GUISprite* healthBar = new GUISprite(*renderer, "Textures/Health_Fuel_Food.png", 170, 10, 1, DrawDirection::BottomRight, ClickFunction::NotClickable);
+	GUISprite* healthBar = new GUISprite(*renderer, "Textures/Health_Fuel_Food.png", 10, 10, 1, DrawDirection::BottomRight, ClickFunction::NotClickable);
 
 	//ICONS ON TOP OF ITEMS
 	GUISprite* equimpmentSpriteAxe = new GUISprite(*renderer, "Textures/AxeIcon2.png", 10, 10, 0, DrawDirection::BottomLeft, ClickFunction::NotClickable);
-
 	//ICONS ON TOP OF BARS
-	GUISprite* fuelSprite = new GUISprite(*renderer, "Textures/FireIcon.png", 10, 10, 0, DrawDirection::BottomRight, ClickFunction::NotClickable);
+	GUISprite* fuelSprite = new GUISprite(*renderer, "Textures/FireIcon.png", 170, 10, 0, DrawDirection::BottomRight, ClickFunction::NotClickable);
 	GUISprite* foodSprite = new GUISprite(*renderer, "Textures/FoodIcon.png", 90, 10, 0, DrawDirection::BottomRight, ClickFunction::NotClickable);
-	GUISprite* healthSprite = new GUISprite(*renderer, "Textures/HealthIcon.png", 170, 10, 0, DrawDirection::BottomRight, ClickFunction::NotClickable);
+	GUISprite* healthSprite = new GUISprite(*renderer, "Textures/HealthIcon.png", 10, 10, 0, DrawDirection::BottomRight, ClickFunction::NotClickable);
 
+	//COMPASS
+	GUICompass* compass = new GUICompass(*renderer, window);
 	//FONTS
 	GUIFont* fpsDisplay = new GUIFont(*renderer, "fps", windowWidth / 2, 50);
 	//GUIFont* healthDisplay = new GUIFont(*renderer, "playerHealth", 50, 100);
@@ -231,10 +215,9 @@ void GameScene::InitializeGUI()
 	foodScalingBar->SetScale(1.0f, 0.0f);
 	healthScalingBar->SetScale(1.0f, 0.0f);
 	fuelScalingBar->SetScale(1.0f, 0.0f);
-
-	guiManager->AddGUIObject(foodScalingBar, "fuelDippingBar");
-	guiManager->AddGUIObject(healthScalingBar, "foodDippingBar");
-	guiManager->AddGUIObject(fuelScalingBar, "healthDippingBar");
+	guiManager->AddGUIObject(foodScalingBar, "foodDippingBar");
+	guiManager->AddGUIObject(healthScalingBar, "healthDippingBar");
+	guiManager->AddGUIObject(fuelScalingBar, "fuelDippingBar");
 
 	//ICON OF EQUIPMENT
 	guiManager->AddGUIObject(equimpmentSpriteAxe, "equimpmentSpriteAxe");
@@ -318,6 +301,7 @@ void GameScene::OnActivate()
 
 
 
+	AudioMaster::Instance().PlaySoundEvent("wind");
 	//this->PrintSceneHierarchy(root, 0);
 }
 
