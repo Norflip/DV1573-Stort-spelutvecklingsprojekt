@@ -3,6 +3,7 @@
 #include "World.h"
 
 class GUIFont;
+class GUICompass;
 class SpriteRenderPass;
 
 ALIGN16

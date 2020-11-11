@@ -522,9 +522,6 @@
     <ClInclude Include="ZWEBLoader.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="FXAARenderPass.h">
-      <Filter>Source Files</Filter>
-    </ClInclude>
     <ClInclude Include="Resource.h">
       <Filter>Header Files</Filter>
     </ClInclude>
@@ -559,6 +556,9 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="GUICompass.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="FXAARenderPass.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>

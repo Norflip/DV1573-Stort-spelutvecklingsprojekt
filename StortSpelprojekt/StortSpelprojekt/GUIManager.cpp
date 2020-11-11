@@ -1,8 +1,7 @@
 #include "stdafx.h"
 #include "GUIManager.h"
 
-
-
+#include "GUICompass.h"
 
 
 GUIManager::GUIManager(Renderer* renderer, int priority) : RenderPass(priority, RenderPass::PassType::GUI), renderer(renderer)
