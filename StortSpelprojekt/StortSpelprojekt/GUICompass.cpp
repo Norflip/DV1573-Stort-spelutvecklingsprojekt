@@ -14,7 +14,7 @@ GUICompass::GUICompass(Renderer& renderer, Window* window)
 
 void GUICompass::Update()
 {
-	backgroundBar->SetScale(.8f, .8f);
+	backgroundBar->SetScale(1.f, 1.f);
 	//logic here
 }
 
