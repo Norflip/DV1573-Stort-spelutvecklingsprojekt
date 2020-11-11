@@ -45,6 +45,10 @@ PlayerComp::PlayerComp(Renderer* renderer, CameraComponent* camComp, Physics* ph
 	this->foodDippingBar = static_cast<GUISprite*>(guiMan->GetGUIObject("foodDippingBar"));
 	this->healthDippingBar = static_cast<GUISprite*>(guiMan->GetGUIObject("healthDippingBar"));
 
+	this->fuelBar = static_cast<GUISprite*>(guiMan->GetGUIObject("fuelBar"));
+	this->foodBar = static_cast<GUISprite*>(guiMan->GetGUIObject("foodBar"));
+	this->healthBar = static_cast<GUISprite*>(guiMan->GetGUIObject("healthBar"));
+
 
 
 	//this->GetOwner()->GetComponent<CameraComponent>()
@@ -95,12 +99,15 @@ void PlayerComp::Update(const float& deltaTime)
 
 	// Fuel drop
 	fuelDippingBar->SetScaleBars(ReverseAndClamp(fuel));
+	fuelBar->SetScaleColor(ReverseAndClamp(fuel));
 
 	// Food drop
 	foodDippingBar->SetScaleBars(ReverseAndClamp(food));
+	foodBar->SetScaleColor(ReverseAndClamp(food));
 
 	// Health drop
 	healthDippingBar->SetScaleBars(ReverseAndClamp(health));
+	healthBar->SetScaleColor(ReverseAndClamp(health));
 
 	if (holding != nullptr)
 	{

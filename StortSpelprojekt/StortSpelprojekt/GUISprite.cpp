@@ -100,6 +100,11 @@ void GUISprite::SetActiveColor(dx::XMVECTOR vector)
 	this->activeColor = vector;
 }
 
+void GUISprite::SetScaleColor(float value)
+{
+	this->baseColor = { value, 1.0f -value, 0, 1.0f };
+}
+
 void GUISprite::SetDDSSprite(ID3D11Device* device,  std::string spriteFile)
 {
 	//if (this->SRV != nullptr)
