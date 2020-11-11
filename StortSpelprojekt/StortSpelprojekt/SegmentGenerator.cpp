@@ -145,7 +145,6 @@ std::vector<SegmentGenerator::ChunkPointInformation> SegmentGenerator::CreateChu
 	const float MAX_DISTANCE = 10.0f;
 	Path path = grid.GetPath();
 	std::vector<ChunkPointInformation> informations;
-
 	for (size_t y = 0; y < size; y++)
 	{
 		for (size_t x = 0; x < size; x++)

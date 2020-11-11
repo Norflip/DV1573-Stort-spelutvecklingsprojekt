@@ -306,6 +306,10 @@ void GameScene::Update(const float& deltaTime)
 	world.UpdateRelevantChunks();
 	//world.DrawDebug();
 
+	//dx::XMFLOAT3 playerPos;
+	//dx::XMStoreFloat3(&playerPos, player->GetTransform().GetPosition());
+	//std::cout << "x: " << playerPos.x << ", y: " << playerPos.y << ", z: " << playerPos.z << std::endl;
+
 	static_cast<GUIFont*>(guiManager->GetGUIObject("fps"))->SetString(std::to_string((int)GameClock::Instance().GetFramesPerSecond()));
 	guiManager->UpdateAll();
 }

@@ -84,8 +84,8 @@ void World::MoveHouseAndPlayerToStart()
 		if (house->HasComponent<RigidBodyComponent>())
 			house->GetComponent<RigidBodyComponent>()->SetPosition(position);
 
-		position = dx::XMVectorAdd(position, dx::XMVectorSet(5, 12, 0, 0));
-
+		//position = dx::XMVectorAdd(position, dx::XMVectorSet(5, 12, 0, 0));
+		position = {0,10,0};
 		player->GetTransform().SetPosition(position);
 		player->GetComponent<RigidBodyComponent>()->SetPosition(position);
 	}
