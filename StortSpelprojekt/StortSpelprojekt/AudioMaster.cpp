@@ -25,7 +25,7 @@ AudioMaster::AudioMaster()
 
 	/* Load tracks */
 	LoadFile(L"Sounds/jakestuff.mp3", "menusound", menuTest, AudioTypes::Music, true);
-	LoadFile(L"Sounds/yay.wav", "pickupSound", pickupSound, AudioTypes::Sound, false);
+	LoadFile(L"Sounds/pickup3.wav", "pickupSound", pickupSound, AudioTypes::Sound, false);
 	LoadFile(L"Sounds/swinging_axe.mp3", "axeSwing", axeSwingSound, AudioTypes::Sound, false);
 	LoadFile(L"Sounds/Punch.wav", "punch", punchSound, AudioTypes::Sound, false);
 	LoadFile(L"Sounds/walking.wav", "walk", walkSound, AudioTypes::Sound, true);

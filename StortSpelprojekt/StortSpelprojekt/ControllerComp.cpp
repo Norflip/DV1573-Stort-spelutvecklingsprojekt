@@ -235,6 +235,7 @@ void ControllerComp::Update(const float& deltaTime)
 			isMoving = MoveState::IDLE;			
 		}
 		
+
 		if (freeCam) //flying camera
 		{
 			if (KEY_PRESSED(Space)) //Free cam
@@ -265,12 +266,13 @@ void ControllerComp::Update(const float& deltaTime)
 				jumpVelocity = JUMP_VELOCITY;
 				this->jumpDir.x = dir.x;
 				this->jumpDir.z = dir.z;
+								
 			}
 
 			if (KEY_PRESSED(LeftControl)) //crouch is scuffed and outdated
 			{
-				isMoving = CROUCHING;
-			}
+				isMoving = CROUCHING;				
+			}			
 
 			//std::cout << this->cameraOffset.y << std::endl;
 			float acceleration = 0.f;
@@ -279,6 +281,7 @@ void ControllerComp::Update(const float& deltaTime)
 				if (this->velocity > 0.f) //is more decrease
 					acceleration = -WALK_ACCELERATION;		
 
+				
 				AudioMaster::Instance().StopSoundEvent("walk");
 				AudioMaster::Instance().StopSoundEvent("run");
 
@@ -290,9 +293,11 @@ void ControllerComp::Update(const float& deltaTime)
 				else if(this->velocity > WALK_VELOCITY) //is more decrease
 					acceleration = -WALK_ACCELERATION;		
 
-				AudioMaster::Instance().StopSoundEvent("run");
-				AudioMaster::Instance().PlaySoundEvent("walk");
-					
+				if (isGrounded)
+				{
+					AudioMaster::Instance().StopSoundEvent("run");
+					AudioMaster::Instance().PlaySoundEvent("walk");
+				}
 			}
 			else if (isMoving == SPRINTING)
 			{
@@ -301,9 +306,12 @@ void ControllerComp::Update(const float& deltaTime)
 				
 				else if (this->velocity > RUN_VELOCITY)//is more decrease
 					acceleration = -RUN_ACCELERATION;
-
-				AudioMaster::Instance().PlaySoundEvent("run");
-				AudioMaster::Instance().StopSoundEvent("walk");
+				
+				if (isGrounded)
+				{
+					AudioMaster::Instance().PlaySoundEvent("run");
+					AudioMaster::Instance().StopSoundEvent("walk");
+				}
 			}
 			else if (isMoving==CROUCHING)
 			{
