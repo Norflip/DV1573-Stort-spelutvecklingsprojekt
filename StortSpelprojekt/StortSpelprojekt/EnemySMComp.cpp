@@ -45,7 +45,6 @@ void EnemySMComp::Animate()
 	if (currentState == EnemyState::ATTACK)
 	{
 		skeletonComponent->SetTrack(SkeletonStateMachine::BLENDED, false);
-
 	}
 	else
 	{

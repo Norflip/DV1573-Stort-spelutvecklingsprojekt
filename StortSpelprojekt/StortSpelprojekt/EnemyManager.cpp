@@ -32,6 +32,11 @@ void EnemyManager::InitBaseEnemy()
 	}
 }
 
+void EnemyManager::RemoveEnemy(Object* enemy)
+{
+	enemyPool->ReturnItem("baseEnemy", enemy);
+}
+
 void EnemyManager::SpawnEnemy(dx::XMVECTOR position)
 {
 	Object* enemy = enemyPool->GetItem("baseEnemy");
