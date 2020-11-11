@@ -111,6 +111,7 @@ float Chunk::SampleHeight(float x, float z)
 	return height;
 }
 
+
 dx::XMVECTOR Chunk::IndexToWorld(const dx::XMINT2& index, float y)
 {
 	float x = static_cast<float>(index.x * (int)CHUNK_SIZE);// +((float)CHUNK_SIZE / 2.0f);

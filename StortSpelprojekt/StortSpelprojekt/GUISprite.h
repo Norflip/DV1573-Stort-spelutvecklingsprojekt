@@ -27,7 +27,8 @@ ALIGN16
 class GUISprite :public GUIObject
 {
 public:
-	GUISprite(Renderer& renderer, std::string, float xPos, float yPos , float layerDepth = 0, DrawDirection dir = DrawDirection::Default, ClickFunction clickFunc = ClickFunction::NotClickable, GuiGroup group = GuiGroup::Default);
+	GUISprite();
+	GUISprite(Renderer& renderer, std::string path, float xPos, float yPos , float layerDepth = 0, DrawDirection dir = DrawDirection::Default, ClickFunction clickFunc = ClickFunction::NotClickable, GuiGroup group = GuiGroup::Default);
 	~GUISprite();
 	virtual void Draw(DirectX::SpriteBatch*) override;
 	virtual void Draw();
@@ -50,7 +51,7 @@ public:
 
 	ALIGN16_ALLOC;
 
-private:
+protected:
 	std::string filePath;
 	float xPos, yPos;
 	float relativeXPos, relativeYPos;

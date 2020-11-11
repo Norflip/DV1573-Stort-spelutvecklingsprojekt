@@ -31,8 +31,10 @@ DS_OUTPUT_GRASS main(HS_CONSTANT_DATA_OUTPUT_GRASS input,
 
 	float2 uvPlane = BCC.x * uv1 + BCC.y * uv2 + BCC.z * uv3;
 
+    const float TERRAIN_HEIGHT = 7.0f;
+	
 	float h = chunkData.SampleLevel(LinearSampler, uvPlane, 0).r;
-	float y = h* 10.0f;
+    float y = h * TERRAIN_HEIGHT;
 
 	float3 position1 = grassStraws[v1].position.xyz;
 	float3 position2 = grassStraws[v2].position.xyz;

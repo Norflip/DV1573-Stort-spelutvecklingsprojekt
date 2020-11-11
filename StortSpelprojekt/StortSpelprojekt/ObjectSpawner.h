@@ -17,7 +17,7 @@ class ObjectSpawner
 		float radius, padding;
 	};
 
-	struct InstancedProp
+	struct Prop
 	{
 		Mesh* mesh;
 		Material* material;
@@ -25,6 +25,7 @@ class ObjectSpawner
 		float yOffset;
 		float radius, padding;
 		size_t queueCount;
+		dx::XMUINT3 rotationAxis;
 	};
 
 	const float SPAWN_HEIGHT = 12.0f;
@@ -33,15 +34,18 @@ public:
 	ObjectSpawner();
 	virtual ~ObjectSpawner();
 
-	void Initialize(Object* root, ObjectPooler* pooler, Renderer* renderer, ResourceManager* resource, CameraComponent* camera);
+	void Initialize(Object* root, ObjectPooler* pooler, Renderer* renderer, CameraComponent* camera);
 
 	void Spawn(const SaveState& state, PointQuadTree& tree, std::unordered_map<int, Chunk*>& chunkMap, std::vector<Chunk*>& chunks, ID3D11Device* device);
 	void Despawn();
 
 	void RegisterItem(std::string key, float radius, float padding, float yOffset, size_t queueCount);
-	void RegisterInstancedItem(Mesh* mesh, Material* material, float radius, float padding, float yOffset, size_t queueCount);
+	void RegisterInstancedItem(Mesh* mesh, Material* material, float radius, float padding, float yOffset, size_t queueCount, dx::XMUINT3 rotationAxis);
 
 	void DrawDebug();
+
+private:
+
 
 private:
 	std::vector<dx::XMFLOAT2> CreateSpawnPositions(PointQuadTree& tree, float radius, std::unordered_map<int, Chunk*>& chunkMap);
@@ -58,9 +62,8 @@ private:
 	std::vector<dx::XMFLOAT2> propSpawnPositions;
 
 	std::vector<Item> items;
-	std::vector<InstancedProp> instancedProps;
+	std::vector<Prop> instancedProps;
 
 	Renderer* renderer;
-	ResourceManager* resources;
 	CameraComponent* camera;
 };

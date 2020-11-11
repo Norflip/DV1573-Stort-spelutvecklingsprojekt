@@ -5,7 +5,7 @@
 #include "DirectXHelpers.h"
 #include "Renderer.h"
 #include "RenderPass.h"
-
+class GUICompass;
 
 enum class GuiGroup : unsigned int
 {
@@ -64,6 +64,7 @@ public:
 	void UpdateAll();
 
 private:
+	GUICompass* compass;
 	ID3D11RasterizerState* testState;
 	ID3D11SamplerState* samplerState;
 	bool active = false;
