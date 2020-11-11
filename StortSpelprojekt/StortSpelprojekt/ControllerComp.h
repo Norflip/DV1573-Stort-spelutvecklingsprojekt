@@ -37,6 +37,7 @@ class CameraComponent;
 class ControllerComp :public Component 
 {
 private:
+
 	enum MoveState
 	{
 		IDLE,
@@ -68,7 +69,9 @@ private:
 	PlayerComp* playerComp;
 
 	void CheckGrounded();
-
+	bool walkingSound;
+	bool runningSound;
+	MoveState isMoving; // = IDLE;
 	void CalcVelocity(float acceleration)
 	{
 		if (this->velocityTimer >= VELOCITY_INC_RATE)

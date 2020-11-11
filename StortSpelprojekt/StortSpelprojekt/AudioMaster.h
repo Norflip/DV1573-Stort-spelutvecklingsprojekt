@@ -1,5 +1,4 @@
 #pragma once
-#include "ControllerComp.h"
 #include "AudioEngine.h"
 
 enum AudioTypes { Music, Sound };
@@ -15,6 +14,9 @@ struct SoundEvent
 	float fallof;						/* Falloff distance */
 	unsigned int priority;				/* Music priority */
 	unsigned int index;					/* the index of the actual sound to play */
+
+	bool playing;
+	bool looping;
 
 	SoundEvent() {};
 	virtual ~SoundEvent() {};
@@ -42,7 +44,6 @@ private:
 
 	SoundEvent menuTest;
 	SoundEvent pickupSound, axeSwingSound, punchSound, walkSound, runSound, windSound;
-	//MoveState playerState;
 
 public:
 	AudioMaster();
@@ -57,7 +58,7 @@ public:
 	void SetVolume(const AudioTypes& audioType, const float volume);
 	float GetVolume(const AudioTypes& audioType) const;
 
-	void Update();
+	void Update(std::string file);
 
 	static AudioMaster& Instance()
 	{

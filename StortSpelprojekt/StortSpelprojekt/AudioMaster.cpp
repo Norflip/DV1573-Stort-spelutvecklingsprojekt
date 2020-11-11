@@ -29,7 +29,7 @@ AudioMaster::AudioMaster()
 	LoadFile(L"Sounds/swinging_axe.mp3", "axeSwing", axeSwingSound, AudioTypes::Sound, false);
 	LoadFile(L"Sounds/Punch.wav", "punch", punchSound, AudioTypes::Sound, false);
 	LoadFile(L"Sounds/walking.wav", "walk", walkSound, AudioTypes::Sound, true);
-	LoadFile(L"Sounds/running.wav", "run", runSound, AudioTypes::Sound, true);
+	LoadFile(L"Sounds/running.mp3", "run", runSound, AudioTypes::Sound, true);
 	LoadFile(L"Sounds/windy.mp3", "wind", windSound, AudioTypes::Sound, true);
 
 	SetVolume(AudioTypes::Music, 0.7f);
@@ -53,6 +53,7 @@ void AudioMaster::LoadFile(const std::wstring fileName, std::string name, SoundE
 	engine->LoadFile(fileName, soundEvent.audioData, &waveFormatEx, soundEvent.waveLength);
 	soundEvent.waveFormat = *waveFormatEx;
 
+
 	/* Create source voice */
 	HRESULT loadFile;
 	if (soundType == AudioTypes::Sound)
@@ -66,34 +67,73 @@ void AudioMaster::LoadFile(const std::wstring fileName, std::string name, SoundE
 	soundEvent.audioBuffer.AudioBytes = (UINT32)soundEvent.audioData.size();
 	soundEvent.audioBuffer.pAudioData = (BYTE* const)&soundEvent.audioData[0];
 	soundEvent.audioBuffer.pContext = nullptr;
-	if(loop)
+
+	if (loop)
+	{
 		soundEvent.audioBuffer.LoopCount = XAUDIO2_LOOP_INFINITE;
+		soundEvent.looping = true;
+	}
 	else
+	{
 		soundEvent.audioBuffer.LoopCount = XAUDIO2_NO_LOOP_REGION;
+		soundEvent.looping = false;
+	}
 
-
+	soundEvent.playing = false;
+	
 	soundTracks.insert({ name, soundEvent });
 }
 
 void AudioMaster::PlaySoundEvent(std::string soundName)
 {
-
 	SoundEvent soundEvent;
 	for (auto& i : soundTracks)
 	{
 		if (i.first == soundName)
 		{
+			//i.second.playing = true;
 			soundEvent = i.second;
 		}
 	}
 
 	/* Submit the audio buffer from soundevent to the source voice and start it */
-	HRESULT playSound;
-	playSound = soundEvent.sourceVoice->SubmitSourceBuffer(&soundEvent.audioBuffer);
-	if (FAILED(playSound))
-		OutputDebugStringW(L"Critical error: Unable to submit source buffer!");
-	
-	soundEvent.sourceVoice->Start();
+	if (soundEvent.looping)
+	{	
+		if (!soundEvent.playing)
+		{
+			HRESULT playSound;
+			playSound = soundEvent.sourceVoice->SubmitSourceBuffer(&soundEvent.audioBuffer);
+			if (FAILED(playSound))
+				OutputDebugStringW(L"Critical error: Unable to submit source buffer!");
+
+			soundEvent.sourceVoice->Start();
+
+			for (auto& i : soundTracks)
+			{
+				if (i.first == soundName)
+				{
+					i.second.playing = true;
+				}
+			}
+		}
+	}
+	else
+	{
+		HRESULT playSound;
+		playSound = soundEvent.sourceVoice->SubmitSourceBuffer(&soundEvent.audioBuffer);
+		if (FAILED(playSound))
+			OutputDebugStringW(L"Critical error: Unable to submit source buffer!");
+
+		soundEvent.sourceVoice->Start();
+
+		/*for (auto& i : soundTracks)
+		{
+			if (i.first == soundName)
+			{
+				i.second.playing = true;
+			}
+		}*/
+	}
 }
 
 void AudioMaster::StopSoundEvent(std::string name)
@@ -104,7 +144,25 @@ void AudioMaster::StopSoundEvent(std::string name)
 		if (i.first == name)
 			soundEvent = i.second;
 	}
-	soundEvent.sourceVoice->Stop();
+
+	if (soundEvent.looping)
+	{
+		if (soundEvent.playing)
+		{
+			soundEvent.sourceVoice->Stop();
+			for (auto& i : soundTracks)
+			{
+				if (i.first == name)
+				{
+					i.second.playing = false;
+				}
+			}
+		}
+	}
+	else
+	{
+		soundEvent.sourceVoice->Stop();
+	}
 }
 
 void AudioMaster::SetVolume(const AudioTypes& audioType, const float volume)
@@ -128,4 +186,10 @@ float AudioMaster::GetVolume(const AudioTypes& audioType) const
 	else if (audioType == AudioTypes::Sound)
 		return soundEffectsVolume;
 	return 1.0f;
+}
+
+void AudioMaster::Update(std::string file)
+{
+
+
 }
