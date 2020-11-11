@@ -274,7 +274,13 @@
     <ClCompile Include="EnemyManager.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="ParticlesystemComponent.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
     <ClCompile Include="SkyboxRenderPass.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="GUICompass.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>
@@ -549,10 +555,16 @@
     <ClInclude Include="EnemyManager.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="ParticlesystemComponent.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
     <ClInclude Include="SkyboxRenderPass.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="Defines.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="GUICompass.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>

@@ -80,9 +80,10 @@ private:
 	float ReverseAndClamp(float inputValue);
 	float test = 0;
 	void RayCast(const float& deltaTime);
-	dx::XMVECTOR toYAW;
-	dx::XMMATRIX inverseViewMatrix, wepOffTrans, wepOffRot, wepWorld;
-	dx::XMVECTOR	weaponScale, weaponRot, weaponPos, up;
-
+	sm::Vector3 holdAngle;
+	sm::Vector3 toYAW;
+	sm::Matrix inverseViewMatrix, wepOffTrans, wepOffRot, wepWorld;
+	sm::Vector3	weaponScale, weaponPos, up;
+	sm::Quaternion weaponRot;
 };
 

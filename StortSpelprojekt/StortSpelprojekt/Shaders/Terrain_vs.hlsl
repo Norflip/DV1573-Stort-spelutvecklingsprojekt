@@ -32,7 +32,7 @@ VS_OUTPUT main(VS_INPUT input)
 	output.uv = input.uv;	
 
 	// send in a constant buffer? 
-	const float TERRAIN_SCALE = 10.0f;
+	const float TERRAIN_SCALE = 7.5f;
 
 	/*
 		r channel: height [0-1]

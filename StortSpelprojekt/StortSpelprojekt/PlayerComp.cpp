@@ -38,7 +38,7 @@ PlayerComp::PlayerComp(Renderer* renderer, CameraComponent* camComp, Physics* ph
 	this->renderer = renderer;
 	this->physics = physics;
 	this->throwStrength = 50;
-
+	this->holdAngle = dx::SimpleMath::Vector3( 0.3f, -0.4f, 0.8f );
 	Reset();
 
 	this->fuelDippingBar = static_cast<GUISprite*>(guiMan->GetGUIObject("fuelDippingBar"));
@@ -106,7 +106,6 @@ void PlayerComp::Update(const float& deltaTime)
 	{
 		HoldObject();
 		DropObject();
-		//todo. Regrab last weapon
 	}
 }
 
@@ -114,12 +113,14 @@ void PlayerComp::HoldObject()
 {
 
 	inverseViewMatrix = dx::XMMatrixInverse(nullptr, cam->GetViewMatrix());
-	wepOffTrans = dx::XMMatrixTranslation(0.3f, -0.4f, 0.8f);
-	wepOffRot = dx::XMMatrixRotationAxis(up, dx::XMConvertToRadians(-40.0f));
-
+	wepOffTrans.Translation(holdAngle);
+	wepOffRot = wepOffRot.CreateFromAxisAngle(up, dx::XMConvertToRadians(-40.0f));
 	wepWorld = wepOffRot * wepOffTrans * inverseViewMatrix;
-	dx::XMMatrixDecompose(&weaponScale, &weaponRot, &weaponPos, wepWorld);
+	holding->AddFlag(ObjectFlag::NO_CULL);
 
+	//something here doesn work properly
+	//GetOwner()->AddFlag(ObjectFlag::NO_CULL);
+	wepWorld.Decompose(weaponScale, weaponRot, weaponPos);
 	holding->GetTransform().SetPosition(weaponPos);
 	holding->GetTransform().SetRotation(weaponRot);
 	holding->GetTransform().SetScale(weaponScale);
@@ -130,6 +131,7 @@ void PlayerComp::DropObject()
 {
 	if (KEY_DOWN(T))
 	{
+		holding->RemoveFlag(ObjectFlag::NO_CULL);
 		dx::XMVECTOR camRot = cam->GetOwner()->GetTransform().GetRotation();
 		camRot = cam->GetOwner()->GetTransform().TransformDirectionCustomRotation({ 0,0,1 }, camRot);
 
@@ -138,11 +140,17 @@ void PlayerComp::DropObject()
 
 		cam->GetOwner()->GetTransform().GetRotation();
 		wepWorld = wepOffRot * wepOffTrans * inverseViewMatrix;
-		dx::XMMatrixDecompose(&weaponScale, &weaponRot, &weaponPos, wepWorld);
+		wepWorld.Decompose(weaponScale, weaponRot, weaponPos);
 		rbComp->SetEnabled(true);
 		objectRb->setAngularVelocity({ 0,0,0 });
 		rbComp->SetPosition(weaponPos);
 		rbComp->SetRotation(weaponRot);
+		//objectRb->setLinearVelocity({ dx::XMVectorGetX(camRot) * forceAmount ,  dx::XMVectorGetY(camRot) * forceAmount,  dx::XMVectorGetZ(camRot) * forceAmount });
+
+		if (holding->HasComponent<ParticleSystemComponent>())
+			if (!holding->GetComponent<ParticleSystemComponent>()->GetActive())
+				holding->GetComponent<ParticleSystemComponent>()->SetActive(true);
+						
 		float tossSpeed = throwStrength / rbComp->GetMass();
 		objectRb->setLinearVelocity({ dx::XMVectorGetX(camRot) * tossSpeed ,  dx::XMVectorGetY(camRot) * tossSpeed,  dx::XMVectorGetZ(camRot) * tossSpeed });
 		holding = nullptr;
@@ -193,13 +201,16 @@ void PlayerComp::RayCast(const float& deltaTime)
 					if ((fuel + temp) <= 100.0f)
 						fuel += temp;
 				}
+				
+				if (hit.object->HasComponent<ParticleSystemComponent>())
+					if(hit.object->GetComponent<ParticleSystemComponent>()->GetActive())
+						hit.object->GetComponent<ParticleSystemComponent>()->SetActive(false);
+				
+
 				hit.object->GetComponent<PickupComponent>()->SetActive(false);
 				RigidBodyComponent* rbComp = hit.object->GetComponent<RigidBodyComponent>();
 				rbComp->Release();
-				//phy.MutexLock();
-				//phy.UnregisterRigidBody(hit.object->GetComponent<RigidBodyComponent>());
-				//phy.MutexUnlock();
-
+				
 			}
 		}
 
@@ -217,6 +228,11 @@ void PlayerComp::RayCast(const float& deltaTime)
 				hit.object->GetComponent<BoxColliderComponent>()->SetRotation(0, { 5, 5, 5, 5 });
 				//hit.object->RemoveFlag(ObjectFlag::ENABLED);
 				currentWeapon->RemoveFlag(ObjectFlag::ENABLED);
+
+				if (holding->HasComponent<ParticleSystemComponent>())
+					if (holding->GetComponent<ParticleSystemComponent>()->GetActive())
+						holding->GetComponent<ParticleSystemComponent>()->SetActive(false);
+				
 			}
 		}
 

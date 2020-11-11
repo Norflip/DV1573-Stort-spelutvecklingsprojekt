@@ -41,63 +41,45 @@ void GameScene::Initialize()
 
 void GameScene::InitializeObjects()
 {
-	enemy = new Object("Enemy", ObjectFlag::DEFAULT);
-	enemy->AddComponent<SkeletonMeshComponent>(resources->GetResource<SkeletonMeshComponent>("EnemySkeleton"));
-
-	//SKELETON ANIMATION MODELS
-	bool defaultAnimation = false;
-	bool parentAnimation = true;
-	Shader* skeletonShader = resources->GetShaderResource("skeletonShader");
-
-	//LOADING HOUSE AND LEGS AND ADDING SKELETONS TO THEM THE HOUSE ONLY HAS ONE JOINT CONNECTED TO IT
-	Shader* defaultShader = resources->GetShaderResource("defaultShader");
-	Shader* skeletonAlphaShader = resources->GetShaderResource("houseShader");
-
-	std::vector<Mesh*> meshHouse = ZWEBLoader::LoadMeshes(ZWEBLoadType::SkeletonAnimation, "Models/House_Base.ZWEB", renderer->GetDevice());
-	std::vector<Material*> matHouse = ZWEBLoader::LoadMaterials("Models/House_Base.ZWEB", skeletonAlphaShader, renderer->GetDevice());
-
-	std::vector<Mesh*> skeletonMeshHouseLegs = ZWEBLoader::LoadMeshes(ZWEBLoadType::SkeletonAnimation, "Models/House_Legs.ZWEB", renderer->GetDevice());
-	std::vector<Material*> skeletonMatHouseLegs = ZWEBLoader::LoadMaterials("Models/House_Legs.ZWEB", skeletonShader, renderer->GetDevice());
-
-	SkeletonAni skeletonHouseBaseIdle = ZWEBLoader::LoadSkeletonOnly("Models/House_Base - IDLE.ZWEB", meshHouse[0]->GetBoneIDS(), parentAnimation);
-	SkeletonAni skeletonHouseBaseWalk = ZWEBLoader::LoadSkeletonOnly("Models/House_Base - WALK_CYCLE.ZWEB", meshHouse[0]->GetBoneIDS(), parentAnimation);
-	SkeletonAni skeletonHouseBaseUp = ZWEBLoader::LoadSkeletonOnly("Models/House_Base - STAND_UP.ZWEB", meshHouse[0]->GetBoneIDS(), parentAnimation);
-	SkeletonAni skeletonHouseBaseDown = ZWEBLoader::LoadSkeletonOnly("Models/House_Base - SIT DOWN - IDLE.ZWEB", meshHouse[0]->GetBoneIDS(), parentAnimation);
-
-	SkeletonAni skeletonHouseLegsIdle = ZWEBLoader::LoadSkeletonOnly("Models/House_Legs - IDLE.ZWEB", skeletonMeshHouseLegs[0]->GetBoneIDS(), defaultAnimation);
-	SkeletonAni skeletonHouseLegsWalk = ZWEBLoader::LoadSkeletonOnly("Models/House_Legs - WALK_CYCLE.ZWEB", skeletonMeshHouseLegs[0]->GetBoneIDS(), defaultAnimation);
-	SkeletonAni skeletonHouseLegsUp = ZWEBLoader::LoadSkeletonOnly("Models/House_Legs - STAND_UP.ZWEB", skeletonMeshHouseLegs[0]->GetBoneIDS(), defaultAnimation);
-	SkeletonAni skeletonHouseLegsDown = ZWEBLoader::LoadSkeletonOnly("Models/House_Legs - SIT DOWN - IDLE.ZWEB", skeletonMeshHouseLegs[0]->GetBoneIDS(), defaultAnimation);
-
 	Object* houseBaseObject = new Object("houseBase");
 	Object* housesLegsObject = new Object("houseLegs");
-	houseBaseObject->GetTransform().Rotate(0, -90.0f, 0.0);
+	//houseBaseObject->GetTransform().Rotate(0, -90.0f, 0.0);
+	houseBaseObject->GetTransform().Rotate(0, -90.0f * Math::ToRadians, 0.0);
+
 	house = houseBaseObject;
 
-	houseBaseObject->AddComponent<BoxColliderComponent>(dx::XMFLOAT3(2.5, 5, 2.5), dx::XMFLOAT3(0, 0, 0));
+	//														Extence					pos
+	//WALLS
+	houseBaseObject->AddComponent<BoxColliderComponent>(dx::XMFLOAT3(1.5, 3.5, 2.1), dx::XMFLOAT3(0, 4, -1));
+	//PORCH
+	houseBaseObject->AddComponent<BoxColliderComponent>(dx::XMFLOAT3(3.375, 0.325, 3), dx::XMFLOAT3(0, 1, 0.05));
+	//FENCE BACK
+	houseBaseObject->AddComponent<BoxColliderComponent>(dx::XMFLOAT3(0.125, 0.625, 3.375), dx::XMFLOAT3(-3.3, 2, 0.05));
+	//FENCE FRONT
+	houseBaseObject->AddComponent<BoxColliderComponent>(dx::XMFLOAT3(0.125, 0.625, 2.25), dx::XMFLOAT3(3.25, 3, 0.7));
+	//FENCE RIGHT
+	houseBaseObject->AddComponent<BoxColliderComponent>(dx::XMFLOAT3(5.375, 0.625, 0.15), dx::XMFLOAT3(0, 3, -2.75));
+	//FENCE LEFT
+	houseBaseObject->AddComponent<BoxColliderComponent>(dx::XMFLOAT3(5.375, 0.625, 0.15), dx::XMFLOAT3(0, 3, 2.75));
+
 	houseBaseObject->AddComponent<RigidBodyComponent>(0.0f, FilterGroups::PROPS, FilterGroups::EVERYTHING, BodyType::STATIC, true);
 
-	SkeletonMeshComponent* baseComponent = houseBaseObject->AddComponent<SkeletonMeshComponent>(meshHouse[0], matHouse[0], 0.1f);
-	SkeletonMeshComponent* legsComponent = housesLegsObject->AddComponent<SkeletonMeshComponent>(skeletonMeshHouseLegs[0], skeletonMatHouseLegs[0], 0.1f);
-	
-	legsComponent->SetAnimationTrack(skeletonHouseLegsIdle, SkeletonStateMachine::IDLE);
-	legsComponent->SetAnimationTrack(skeletonHouseLegsWalk, SkeletonStateMachine::WALK);
-	legsComponent->SetAnimationTrack(skeletonHouseLegsUp, SkeletonStateMachine::UP);
-	legsComponent->SetAnimationTrack(skeletonHouseLegsDown, SkeletonStateMachine::DOWN);
+	SkeletonMeshComponent* baseComponent = resources->GetResource<SkeletonMeshComponent>("HouseSkeleton"); 
+	SkeletonMeshComponent* legsComponent = resources->GetResource<SkeletonMeshComponent>("HouseLegsSkeleton");
+	baseComponent->SetTimeScale(0.5f);
+	legsComponent->SetTimeScale(0.5f);
+	baseComponent->SetTrack(SkeletonStateMachine::IDLE, false);
+	legsComponent->SetTrack(SkeletonStateMachine::IDLE, false);
 
-	baseComponent->SetAnimationTrack(skeletonHouseBaseIdle, SkeletonStateMachine::IDLE);
-	baseComponent->SetAnimationTrack(skeletonHouseBaseWalk, SkeletonStateMachine::WALK);
-	baseComponent->SetAnimationTrack(skeletonHouseBaseUp, SkeletonStateMachine::UP);
-	baseComponent->SetAnimationTrack(skeletonHouseBaseDown, SkeletonStateMachine::DOWN);
+	houseBaseObject->AddComponent<SkeletonMeshComponent>(baseComponent);
+	housesLegsObject->AddComponent<SkeletonMeshComponent>(legsComponent);
 
-	Transform::SetParentChild(baseComponent->GetOwner()->GetTransform(), legsComponent->GetOwner()->GetTransform());
-	baseComponent->GetOwner()->GetTransform().SetScale({ 0.5f, 0.5f, 0.5f });
+	Transform::SetParentChild(houseBaseObject->GetTransform(), housesLegsObject->GetTransform());
+	houseBaseObject->GetTransform().SetScale({ 0.5f, 0.5f, 0.5f });
 
 	NodeWalkerComp* nodeWalker = houseBaseObject->AddComponent<NodeWalkerComp>();
 	nodeWalker->InitAnimation();
-
-	legsComponent->SetTrack(SkeletonStateMachine::IDLE, false);
-	baseComponent->SetTrack(SkeletonStateMachine::IDLE, false);
+	
 	AddObject(houseBaseObject);
 
 	//Player & Camera
@@ -116,7 +98,6 @@ void GameScene::InitializeObjects()
 
 	playerObject->AddComponent<PlayerComp>(renderer, camera, Engine::Instance->GetPhysics(), guiManager, 100.f, 2.f, 20.f, 50.f, 3.f);
 	playerObject->AddComponent<ControllerComp>(cameraObject, houseBaseObject); /////////////////
-
 
 	AddObject(cameraObject, playerObject);
 	AddObject(playerObject);
@@ -138,17 +119,13 @@ void GameScene::InitializeObjects()
 	axeObject->GetTransform().SetPosition({ 0,0,0 });
 	axeObject->GetTransform().SetScale({ 1, 1, 1 });
 	axeObject->AddComponent<WeaponComponent>(cameraObject);
-		
+	axeObject->AddFlag(ObjectFlag::NO_CULL);
 	AddObject(axeObject);
 	playerObject->GetComponent<PlayerComp>()->InsertWeapon(axeObject->GetComponent<WeaponComponent>(), axeObject->GetName());
 
-	world.Initialize(root, resources, pooler, renderer);
-
+	world.Initialize(root, resources, pooler, renderer, camera);
+	
 	/* PICKUP STUFF DONT DELETE THESEEE */
-	/* PICKUP STUFF DONT DELETE THESEEE */
-	/* PICKUP STUFF DONT DELETE THESEEE */
-	/* PICKUP STUFF DONT DELETE THESEEE */
-
 	Object* healthkitObject = resources->AssembleObject("HealthKit", "HealthKitMaterial");
 	healthkitObject->GetTransform().SetPosition({ 23,2,50 });
 	healthkitObject->AddComponent<BoxColliderComponent>(dx::XMFLOAT3{ 0.5f, 0.5f, 0.5f }, dx::XMFLOAT3{ 0, 0, 0 });
@@ -158,6 +135,7 @@ void GameScene::InitializeObjects()
 
 	///* Fuel pickup stuff temporary */
 	Object* fuelCanObject = resources->AssembleObject("FuelCanGreen", "FuelCanGreenMaterial");
+
 	fuelCanObject->GetTransform().SetPosition({ 22,2,52 });
 	fuelCanObject->AddComponent<BoxColliderComponent>(dx::XMFLOAT3{ 0.3f, 0.3f, 0.3f }, dx::XMFLOAT3{ 0, 0, 0 });
 	fuelCanObject->AddComponent<PickupComponent>(Type::Fuel, 20.0f);
@@ -165,12 +143,16 @@ void GameScene::InitializeObjects()
 	AddObject(fuelCanObject);
 
 	///* Banana pickup stuff temporary */
+	Shader* particleShader = resources->GetShaderResource("particleShader");
 	Object* beansObject = resources->AssembleObject("Soup", "SoupMaterial");
 	beansObject->GetTransform().SetPosition({22, 2.0f, 53 });
 	beansObject->AddComponent<BoxColliderComponent>(dx::XMFLOAT3{ 0.5f, 0.5f, 0.5f }, dx::XMFLOAT3{ 0, 0, 0 });
 	beansObject->AddComponent<PickupComponent>(Type::Food, 20.0f);
 	beansObject->AddComponent<RigidBodyComponent>(0.f, FilterGroups::PICKUPS, (FilterGroups::EVERYTHING & ~FilterGroups::PLAYER), BodyType::DYNAMIC, true);
-	AddObject(beansObject);
+
+	beansObject->AddComponent<ParticleSystemComponent>(renderer, camera, particleShader);
+	beansObject->GetComponent<ParticleSystemComponent>()->InitializeParticles(renderer->GetDevice(), L"Textures/starstar.png");
+	AddObject(beansObject);		
 }
 
 void GameScene::InitializeGUI()
@@ -282,7 +264,7 @@ void GameScene::OnActivate()
 	state.segment = 0;
 
 	SegmentDescription desc(0, 10, 2);
-	desc.directionalSteps = 5;
+	desc.directionalSteps = 1;
 	desc.maxSteps = 10;
 
 	player->GetComponent<PlayerComp>()->Reset();
@@ -293,12 +275,17 @@ void GameScene::OnActivate()
 	house->GetComponent<NodeWalkerComp>()->InitializePath(world.GetPath());
 	world.MoveHouseAndPlayerToStart();
 
+
+
+
 	renderer->AddRenderPass(guiManager);
 
 	
 	Input::Instance().ConfineMouse();
 	Input::Instance().SetMouseMode(dx::Mouse::Mode::MODE_RELATIVE);
 	ShowCursor(false);
+
+
 
 	//this->PrintSceneHierarchy(root, 0);
 }
@@ -307,6 +294,8 @@ void GameScene::OnDeactivate()
 {
 	world.DeconstructSegment();
 	renderer->RemoveRenderPass(guiManager);
+	
+	//renderer->ClearParticles();
 
 	ShowCursor(true);
 	//this->PrintSceneHierarchy(root, 0);
@@ -316,6 +305,7 @@ void GameScene::Update(const float& deltaTime)
 {
 	Scene::Update(deltaTime);
 	world.UpdateRelevantChunks();
+	//world.DrawDebug();
 
 	static_cast<GUIFont*>(guiManager->GetGUIObject("fps"))->SetString(std::to_string((int)GameClock::Instance().GetFramesPerSecond()));
 	guiManager->UpdateAll();
@@ -333,7 +323,7 @@ void GameScene::Render()
 	root->Draw(renderer, camera);
 	//worldGenerator.DrawShapes();
 	//world.DrawDebug();
-
+	
 	renderer->RenderFrame(camera, (float)clock.GetSeconds());
 }
 

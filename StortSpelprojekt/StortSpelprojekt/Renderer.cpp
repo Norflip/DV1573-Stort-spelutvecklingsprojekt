@@ -29,6 +29,7 @@ Renderer::~Renderer()
 	skeleton_srv->Release();
 	dss->Release();
 	rasterizerStateCCWO->Release();
+
 }
 
 void Renderer::Initialize(Window* window)
@@ -80,6 +81,25 @@ void Renderer::Initialize(Window* window)
 
 	//EXEMPEL
 	///AddRenderPass(new PSRenderPass(1, L"Shaders/TestPass.hlsl"));
+
+	IDXGIFactory1* pFactory = nullptr;
+	IDXGIAdapter* pAdapter = nullptr;
+	assert(SUCCEEDED(CreateDXGIFactory1(__uuidof(IDXGIFactory1), (void**)&pFactory)));
+
+	if (pFactory != nullptr)
+	{
+		for (UINT i = 0; pFactory->EnumAdapters(i, &pAdapter) != DXGI_ERROR_NOT_FOUND; ++i)
+		{
+			DXGI_ADAPTER_DESC adapterDescription;
+			pAdapter->GetDesc(&adapterDescription);
+
+			std::wstring ws(adapterDescription.Description);
+			std::cout << "GPU #" << std::to_string(i) << ": " << std::string(ws.begin(), ws.end()) << "\t" << adapterDescription.DeviceId << std::endl;
+		}
+
+		if (pFactory)
+			pFactory->Release();
+	}
 }
 
 
@@ -111,6 +131,9 @@ void Renderer::DrawQueueToTarget(RenderQueue& queue, CameraComponent* camera)
 					case RenderItem::Type::Skeleton:
 						DrawRenderItemSkeleton(item, camera); break;
 
+					case RenderItem::Type::Particles:
+						DrawRenderItemParticles(item, camera); break;
+
 					case RenderItem::Type::Default:
 					default:
 
@@ -139,6 +162,7 @@ void Renderer::RenderFrame(CameraComponent* camera, float time)
 
 void Renderer::RenderFrame(CameraComponent* camera, float time, RenderTexture& target, bool drawGUI, bool applyRenderPasses)
 {
+
 
 	// UPPDATERA SCENE
 	// ----------
@@ -180,6 +204,7 @@ void Renderer::RenderFrame(CameraComponent* camera, float time, RenderTexture& t
 
 	// ----------
 
+	
 
 	LightManager::Instance().UpdateBuffers(context);
 
@@ -214,6 +239,16 @@ void Renderer::RenderFrame(CameraComponent* camera, float time, RenderTexture& t
 	size_t passCount = 0;
 	size_t bufferIndex = 0;
 
+
+	/* Particle stuffy */
+	SetCullBack(true);
+	/*for (auto i : particleList)
+	{
+		if(i.second->GetActive())
+			i.second->Render(context, camera);
+	}*/
+	SetCullBack(false);
+
 	if (applyRenderPasses)
 	{
 		for (auto i = passes.begin(); i < passes.end(); i++)
@@ -236,6 +271,9 @@ void Renderer::RenderFrame(CameraComponent* camera, float time, RenderTexture& t
 		}
 	}
 
+
+	
+
 	RenderTexture& lastBuffer = (passCount == 0) ? midbuffer : renderPassSwapBuffers[bufferIndex];
 	ClearRenderTarget(target);
 	SetRenderTarget(target, false);
@@ -253,7 +291,8 @@ void Renderer::RenderFrame(CameraComponent* camera, float time, RenderTexture& t
 				pass->Pass(this, camera, renderPassSwapBuffers[0], renderPassSwapBuffers[0]);
 			}
 		}
-	}
+	}	
+	
 }
 
 void Renderer::AddRenderPass(RenderPass* pass)
@@ -264,6 +303,7 @@ void Renderer::AddRenderPass(RenderPass* pass)
 	if (passes.size() > 1)
 		std::sort(passes.begin(), passes.end(), [](const RenderPass* a, const RenderPass* b) -> bool { return a->GetPriority() < b->GetPriority(); });
 }
+
 
 void Renderer::Draw(const Mesh* mesh, const Material* material, const dx::XMMATRIX& model)
 {
@@ -290,7 +330,6 @@ void Renderer::DrawInstanced(const Mesh* mesh, const size_t& count, ID3D11Buffer
 
 void Renderer::DrawSkeleton(const Mesh* mesh, const Material* material, const dx::XMMATRIX& model, std::vector<dx::XMFLOAT4X4>& bones)
 {
-
 	RenderItem item;
 	item.mesh = mesh;
 	item.material = material;
@@ -298,7 +337,6 @@ void Renderer::DrawSkeleton(const Mesh* mesh, const Material* material, const dx
 	item.bones = &bones;
 	item.world = model;
 	AddItem(item, false);
-
 }
 
 void Renderer::DrawGrass(const Mesh* mesh, const Material* material, const dx::XMMATRIX& model)
@@ -309,6 +347,16 @@ void Renderer::DrawGrass(const Mesh* mesh, const Material* material, const dx::X
 	item.material = material;
 	item.world = model;
 	AddItem(item, false);
+}
+
+void Renderer::DrawParticles(const Mesh* mesh, const Material* material, const dx::XMMATRIX& model)
+{
+	RenderItem part;
+	part.type = RenderItem::Type::Particles;
+	part.mesh = mesh;
+	part.material = material;
+	part.world = model;
+	AddItem(part, true);
 }
 
 void Renderer::DrawImmediate(const Mesh* mesh, const Material* material, const CameraComponent* camera, const dx::XMMATRIX& model)
@@ -466,6 +514,25 @@ void Renderer::DrawRenderItemGrass(const RenderItem& item, CameraComponent* came
 
 	context->DrawIndexed(item.mesh->GetIndexCount(), 0, 0);
 	context->RSSetState(rasterizerStateCullBack);
+}
+
+void Renderer::DrawRenderItemParticles(const RenderItem& item, CameraComponent* camera)
+{
+	SetObjectBufferValues(camera, item.world, true);
+	objectBuffer.UpdateBuffer(context);
+
+	UINT stride = sizeof(Mesh::VertexColor);
+	UINT offset = 0;
+
+	ID3D11Buffer* vertexBuffer = item.mesh->GetVertexBuffer();
+	context->IASetVertexBuffers(0, 1, &vertexBuffer, &stride, &offset);
+	context->IASetIndexBuffer(item.mesh->GetIndexBuffer(), DXGI_FORMAT_R32_UINT, 0);
+	context->IASetPrimitiveTopology(item.mesh->GetTopology());
+	//SetCBuffers(context, camera);
+	//particlesShader->BindToContext(context);
+	
+	context->DrawIndexed(item.mesh->GetIndexCountPart(), 0, 0);
+
 }
 
 void Renderer::SetObjectBufferValues(const CameraComponent* camera, dx::XMMATRIX world, bool transpose)

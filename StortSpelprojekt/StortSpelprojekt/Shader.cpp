@@ -62,6 +62,7 @@ void Shader::SetInputLayoutStructure(size_t arraySize, D3D11_INPUT_ELEMENT_DESC*
 	this->ilArrayCount = arraySize;
 }
 
+
 void Shader::Compile(ID3D11Device* device)
 {	
 	CompileVS(device);
