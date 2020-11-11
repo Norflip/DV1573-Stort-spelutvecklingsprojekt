@@ -55,16 +55,6 @@ bool EnemyAttackComp::ChasePlayer()
 
 void EnemyAttackComp::UpdateEnemyPos(const float& deltaTime)
 {
-	if (KEY_PRESSED(U))
-	{
-		dx::XMVECTOR plPos = player->GetOwner()->GetTransform().GetPosition();
-		dx::XMFLOAT3 pp;
-		dx::XMStoreFloat3(&pp, plPos);
-		pp.x += 5;
-		pp.y += 5;
-		rbComp->SetPosition(dx::XMLoadFloat3(&pp));
-	}
-
 	if (ChasePlayer())
 	{
 		dx::XMFLOAT3 moveDir = { 0.0f, 0.0f, 0.0f };
@@ -96,8 +86,8 @@ void EnemyAttackComp::UpdateEnemyPos(const float& deltaTime)
 
 		rbComp->SetLinearVelocity(move);
 		dx::XMVECTOR enemyPos = GetOwner()->GetTransform().GetPosition();
-		dx::XMFLOAT3 eP;
-		dx::XMStoreFloat3(&eP, enemyPos);
+		//dx::XMFLOAT3 eP;
+		//dx::XMStoreFloat3(&eP, enemyPos);
 		//std::cout << "x: " << eP.x << ", y: " << eP.y << ", z: " << eP.z << std::endl;
 
 		//Billboarding x & z axis for enemy Rotation
