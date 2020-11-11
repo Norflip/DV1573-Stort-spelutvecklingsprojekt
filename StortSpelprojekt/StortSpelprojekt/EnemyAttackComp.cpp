@@ -86,8 +86,8 @@ void EnemyAttackComp::UpdateEnemyPos(const float& deltaTime)
 
 		rbComp->SetLinearVelocity(move);
 		dx::XMVECTOR enemyPos = GetOwner()->GetTransform().GetPosition();
-		dx::XMFLOAT3 eP;
-		dx::XMStoreFloat3(&eP, enemyPos);
+		//dx::XMFLOAT3 eP;
+		//dx::XMStoreFloat3(&eP, enemyPos);
 		//std::cout << "x: " << eP.x << ", y: " << eP.y << ", z: " << eP.z << std::endl;
 
 		//Billboarding x & z axis for enemy Rotation
