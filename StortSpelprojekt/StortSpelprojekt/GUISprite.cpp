@@ -36,10 +36,12 @@ GUISprite::GUISprite(Renderer& renderer , std::string path, float xPos, float yP
 	std::wstring wsConvert(filePath.begin(), filePath.end());
 	spriteBatch = std::make_unique<dx::SpriteBatch>(renderer.GetContext());
 	std::size_t found = path.find("Compass.png");
-	//if (found != std::string::npos)
+
 	//	result = DirectX::CreateDDSTextureFromFile(renderer.GetDevice(), wsConvert.c_str(), &res, &SRV);
 	//else
 		result = DirectX::CreateWICTextureFromFile(renderer.GetDevice(), wsConvert.c_str(), &res, &SRV);
+		if (found != std::string::npos)
+				DirectX::SaveWICTextureToFile(renderer.GetContext(),res.Get(),GUID_ContainerFormatPng, L"SCREENSHOT.png");
 
 	assert(SUCCEEDED(result));
 	result = res.As(&tex);

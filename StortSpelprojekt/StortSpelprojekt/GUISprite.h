@@ -1,12 +1,13 @@
 #pragma once
 
-
+#include <wincodec.h>
 #include "DirectXHelpers.h"
 #include <WICTextureLoader.h>
 #include <DDSTextureLoader.h>
 #include <SpriteBatch.h>
 #include "Renderer.h"
 #include <wrl.h>
+#include <ScreenGrab.h>
 class GUIManager;
 
 enum DrawDirection : uint32_t
