@@ -66,11 +66,7 @@ ControllerComp::ControllerComp(Object* cameraObject, Object* houseObject)
 	this->rbComp = nullptr;
 	this->camComp = nullptr;
 	this->capsuleComp = nullptr;
-	this->playerComp = nullptr;
-	
-
-	this->walkingSound = false;
-	this->runningSound = false;
+	this->playerComp = nullptr;		
 }
 
 ControllerComp::~ControllerComp()
@@ -225,9 +221,7 @@ void ControllerComp::Update(const float& deltaTime)
 			if (KEY_PRESSED(A))
 				dir.x -= 1.f;
 			if (KEY_PRESSED(D))
-				dir.x += 1.f;	
-				
-						
+				dir.x += 1.f;							
 
 		}
 		else
@@ -265,8 +259,7 @@ void ControllerComp::Update(const float& deltaTime)
 			{
 				jumpVelocity = JUMP_VELOCITY;
 				this->jumpDir.x = dir.x;
-				this->jumpDir.z = dir.z;
-								
+				this->jumpDir.z = dir.z;				
 			}
 
 			if (KEY_PRESSED(LeftControl)) //crouch is scuffed and outdated
@@ -280,11 +273,9 @@ void ControllerComp::Update(const float& deltaTime)
 			{
 				if (this->velocity > 0.f) //is more decrease
 					acceleration = -WALK_ACCELERATION;		
-
 				
 				AudioMaster::Instance().StopSoundEvent("walk");
 				AudioMaster::Instance().StopSoundEvent("run");
-
 			}
 			else if (isMoving == WALKING)
 			{

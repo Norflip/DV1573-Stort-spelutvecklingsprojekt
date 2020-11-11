@@ -69,9 +69,9 @@ private:
 	PlayerComp* playerComp;
 
 	void CheckGrounded();
-	bool walkingSound;
-	bool runningSound;
-	MoveState isMoving; // = IDLE;
+
+	MoveState isMoving; 
+
 	void CalcVelocity(float acceleration)
 	{
 		if (this->velocityTimer >= VELOCITY_INC_RATE)
