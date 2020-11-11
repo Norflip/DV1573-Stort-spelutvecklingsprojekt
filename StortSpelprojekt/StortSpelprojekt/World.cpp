@@ -16,7 +16,7 @@ void World::Initialize(Object* root, ResourceManager* resources, ObjectPooler* p
 {
 	this->resources = resources;
 	ObjectSpawner* spawner = new ObjectSpawner();
-	spawner->Initialize(root, pooler, renderer, resources, camera);
+	spawner->Initialize(root, pooler, renderer, camera);
 	RegisterToPool(pooler, spawner, std::map<std::string, int>());
 	
 	generator.Initialize(root, resources, spawner, renderer->GetDevice(), renderer->GetContext());

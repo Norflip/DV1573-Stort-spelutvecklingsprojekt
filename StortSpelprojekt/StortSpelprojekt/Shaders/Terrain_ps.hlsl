@@ -28,7 +28,7 @@ float4 main(VS_OUTPUT input) : SV_TARGET
 	float4 grass = grassTexture.Sample(m_textureSamplerState, input.uv * UV_SCALE);
 	float4 road = roadTexture.Sample(m_textureSamplerState, input.uv * UV_SCALE);
 
-	return float4(data.z, data.z, data.z, 1.0f);
+	//return float4(data.z, data.z, data.z, 1.0f);
 	
 	float t = smoothstep(0.2f, 0.8f, data.z);
 	float4 textureColor = lerp(road, grass, t);

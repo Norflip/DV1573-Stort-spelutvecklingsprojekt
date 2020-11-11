@@ -34,7 +34,7 @@ public:
 	ObjectSpawner();
 	virtual ~ObjectSpawner();
 
-	void Initialize(Object* root, ObjectPooler* pooler, Renderer* renderer, ResourceManager* resource, CameraComponent* camera);
+	void Initialize(Object* root, ObjectPooler* pooler, Renderer* renderer, CameraComponent* camera);
 
 	void Spawn(const SaveState& state, PointQuadTree& tree, std::unordered_map<int, Chunk*>& chunkMap, std::vector<Chunk*>& chunks, ID3D11Device* device);
 	void Despawn();
@@ -45,7 +45,7 @@ public:
 	void DrawDebug();
 
 private:
-	
+
 
 private:
 	std::vector<dx::XMFLOAT2> CreateSpawnPositions(PointQuadTree& tree, float radius, std::unordered_map<int, Chunk*>& chunkMap);
@@ -63,4 +63,7 @@ private:
 
 	std::vector<Item> items;
 	std::vector<Prop> instancedProps;
+
+	Renderer* renderer;
+	CameraComponent* camera;
 };

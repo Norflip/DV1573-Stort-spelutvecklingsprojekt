@@ -13,12 +13,11 @@ ObjectSpawner::~ObjectSpawner()
 {
 }
 
-void ObjectSpawner::Initialize(Object* root, ObjectPooler* pooler, Renderer* renderer, ResourceManager* resource, CameraComponent* camera)
+void ObjectSpawner::Initialize(Object* root, ObjectPooler* pooler, Renderer* renderer, CameraComponent* camera)
 {
 	this->pooler = pooler;
 	this->root = root;
 	this->renderer = renderer;
-	this->resources = resource;
 	this->camera = camera;
 }
 
@@ -117,8 +116,8 @@ void ObjectSpawner::Spawn(const SaveState& state, PointQuadTree& tree, std::unor
 				itemIndex++;
 
 				/* Particles */
-				object->AddComponent<ParticleSystemComponent>(renderer, camera, resources->GetShaderResource("particleShader"));
-				object->GetComponent<ParticleSystemComponent>()->InitializeParticles(renderer->GetDevice(), L"Textures/starstar.png");									
+				ParticleSystemComponent* particles = object->AddComponent<ParticleSystemComponent>(renderer, camera, Engine::Instance->GetResources()->GetShaderResource("particleShader"));
+				particles->InitializeParticles(renderer->GetDevice(), L"Textures/starstar.png");
 			}
 		}
 	}

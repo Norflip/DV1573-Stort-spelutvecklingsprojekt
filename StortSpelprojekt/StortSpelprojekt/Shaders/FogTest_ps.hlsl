@@ -67,16 +67,13 @@ float3 SphereNormal(float3 p, float3 center, float radius)
 
 float4 main(PixelInputType input) : SV_TARGET
 {
-   
     float4 diffuseColor = float4(1.0f, 1.0f, 1.0f, 1.0f);
     diffuseColor = screenTexture.Sample(defaultSampleType, input.uv);
-
-    return diffuseColor;
     
     float depth = depthTexture.Sample(defaultSampleType, input.uv).x;
     
-    const float start = 10; // FOG START
-    const float end = 40; // FOG END
+    const float start = 30; // FOG START
+    const float end = 60; // FOG END
 
     const float near = 0.01f; // NEAR PLANE
     const float far = 500.0f; // FAR PLANE
