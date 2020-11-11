@@ -10,7 +10,6 @@ float GetL(float3 color)
     float smallest = 9999999;
     float biggest = 0;
 
-
     for (int i = 0; i < 3; i++)
     {
         if (RedGreenBlue[i] < smallest)
@@ -22,9 +21,6 @@ float GetL(float3 color)
             biggest = RedGreenBlue[i];
         }
     }
-
-
-
 
     return (smallest + biggest) / 2.0f;
 }
@@ -72,7 +68,6 @@ float GetS(float3 color)
         {
             return 0.0f; //Added this so that it will always return something.
         }
-
     }
 }
 
@@ -107,8 +102,6 @@ float GetH(float3 color)
     }
     else
     {
-
-
         if (biggest == RedGreenBlue[0])
         {
             hue = (RedGreenBlue[1] - RedGreenBlue[2]) / (biggest - smallest);
@@ -122,7 +115,6 @@ float GetH(float3 color)
             hue = 4 + (RedGreenBlue[0] - RedGreenBlue[1]) / (biggest - smallest);
         }
 
-
         hue *= 60;
 
         if (hue < 0)
@@ -131,17 +123,12 @@ float GetH(float3 color)
         }
     }
 
-
-
     return hue;
-
 }
 
 
 float3 PSColorMode(float3 color, float h, float s, float lum, float opacity)
 {
-
-
     float3 resultRGB = float3(0, 0, 0);
 
     int counter = 0;
@@ -154,12 +141,9 @@ float3 PSColorMode(float3 color, float h, float s, float lum, float opacity)
     tempRGB.b = 0;
     if (s == 0.0)
     {
-
         resultRGB.r = lum;
         resultRGB.g = lum;
         resultRGB.b = lum;
-
-
     }
     else
     {
@@ -175,13 +159,11 @@ float3 PSColorMode(float3 color, float h, float s, float lum, float opacity)
 
         temp2 = (2 * lum) - temp1;
 
-
         h /= 360.0f;
 
         tempRGB.r = (float)(h + 0.333);
         tempRGB.g = h;
         tempRGB.b = (float)(h - 0.333);
-
 
         if (tempRGB.r < 0)
         {
@@ -208,15 +190,9 @@ float3 PSColorMode(float3 color, float h, float s, float lum, float opacity)
             tempRGB.b -= 1;
         }
 
-        //
         if (6 * tempRGB.r < 1)
         {
             resultF = (temp2 + (temp1 - temp2)) * 6 * tempRGB.r;
-
-
-
-
-
         }
         else if (2 * tempRGB.r < 1)
         {
@@ -235,11 +211,6 @@ float3 PSColorMode(float3 color, float h, float s, float lum, float opacity)
         if (6 * tempRGB.g < 1)
         {
             resultF = (temp2 + (temp1 - temp2)) * 6 * tempRGB.g;
-
-
-
-
-
         }
         else if (2 * tempRGB.g < 1)
         {
@@ -258,11 +229,6 @@ float3 PSColorMode(float3 color, float h, float s, float lum, float opacity)
         if (6 * tempRGB.b < 1)
         {
             resultF = (temp2 + (temp1 - temp2)) * 6 * tempRGB.b;
-
-
-
-
-
         }
         else if (2 * tempRGB.b < 1)
         {
@@ -277,30 +243,14 @@ float3 PSColorMode(float3 color, float h, float s, float lum, float opacity)
             resultF = temp2;
         }
 
-        //
-
-
-
-
         resultRGB.b = resultF;
     }
-
-
-    //lowerOpacity
 
     resultRGB.r = ((1 - opacity) * color.r + (opacity * resultRGB.r));
     resultRGB.g = ((1 - opacity) * color.g + (opacity * resultRGB.g));
     resultRGB.b = ((1 - opacity) * color.b + (opacity * resultRGB.b));
 
-
-
     return resultRGB;
-
-
-
-
-
-
 }
 
 
@@ -327,17 +277,13 @@ float3 Overlay(float3 a, float3 b)
 
 float3 Screen(float3 a, float3 b)
 {
-    
     float3 white = float3(1, 1, 1);
-
     return white - (white - a) * (white - b);
-
 }
 
 
 float3 LowerOpacity(float3 a, float3 b, float scalar)
 {
- 
     b.r = ((1 - scalar) * a.r + (scalar * b.r));
     b.g = ((1 - scalar) * a.g + (scalar * b.g));
     b.b = ((1 - scalar) * a.b + (scalar * b.b));
