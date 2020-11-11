@@ -61,7 +61,7 @@ private:
 	GameClock timer;
 	bool playOnce = false;
 	bool done = false;
-	void PlayOnce(float deltaTime);
+	void PlayOnce(const float& deltaTime);
 	void RunAnimation(const float& deltaTime);
 	void FindChildren(SkeletonAni& track, unsigned int& index, std::map<std::string, unsigned int>& map, std::string& name, std::string& secondName);
 	bool doneUp, doneDown;
