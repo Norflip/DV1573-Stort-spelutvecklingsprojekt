@@ -67,7 +67,7 @@ ControllerComp::ControllerComp(Object* cameraObject, Object* houseObject)
 	this->camComp = nullptr;
 	this->capsuleComp = nullptr;
 	this->playerComp = nullptr;
-	
+
 }
 
 ControllerComp::~ControllerComp()
@@ -184,11 +184,14 @@ void ControllerComp::Update(const float& deltaTime)
 		float yPos = Input::Instance().GetMousePosRelative().y * deltaTime;
 		cameraEuler.x += xPos;
 		cameraEuler.y += yPos;
-		cameraEuler.x = Math::Clamp(cameraEuler.x, CLAMP_X, -CLAMP_X);
+
+		cameraEuler.x = Math::Clamp(cameraEuler.x, -CLAMP_X, CLAMP_X);
+
 		if (cameraEuler.y >= CLAMP_Y)
 			cameraEuler.y = 0.f;
 		else if (cameraEuler.y <= 0.f)
 			cameraEuler.y = CLAMP_Y;
+
 		//std::cout << "x: " << cameraEuler.x * Math::ToDegree << ", y: " << cameraEuler.y * Math::ToDegree << std::endl;
 		cameraObject->GetTransform().SetRotation(dx::XMQuaternionRotationRollPitchYaw(cameraEuler.x, cameraEuler.y, cameraEuler.z));
 
