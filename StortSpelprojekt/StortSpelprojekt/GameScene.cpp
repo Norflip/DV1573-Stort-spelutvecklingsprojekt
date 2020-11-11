@@ -42,11 +42,26 @@ void GameScene::Initialize()
 void GameScene::InitializeObjects()
 {
 	Object* houseBaseObject = new Object("houseBase");
-	Object* houseLegsObject = new Object("houseLegs");
-	houseBaseObject->GetTransform().Rotate(0, -90.0f, 0.0);
+	Object* housesLegsObject = new Object("houseLegs");
+	//houseBaseObject->GetTransform().Rotate(0, -90.0f, 0.0);
+	houseBaseObject->GetTransform().Rotate(0, -90.0f * Math::ToRadians, 0.0);
+
 	house = houseBaseObject;
 
-	houseBaseObject->AddComponent<BoxColliderComponent>(dx::XMFLOAT3(2.5, 5, 2.5), dx::XMFLOAT3(0, 0, 0));
+	//														Extence					pos
+	//WALLS
+	houseBaseObject->AddComponent<BoxColliderComponent>(dx::XMFLOAT3(1.5, 3.5, 2.1), dx::XMFLOAT3(0, 4, -1));
+	//PORCH
+	houseBaseObject->AddComponent<BoxColliderComponent>(dx::XMFLOAT3(3.375, 0.325, 3), dx::XMFLOAT3(0, 1, 0.05));
+	//FENCE BACK
+	houseBaseObject->AddComponent<BoxColliderComponent>(dx::XMFLOAT3(0.125, 0.625, 3.375), dx::XMFLOAT3(-3.3, 2, 0.05));
+	//FENCE FRONT
+	houseBaseObject->AddComponent<BoxColliderComponent>(dx::XMFLOAT3(0.125, 0.625, 2.25), dx::XMFLOAT3(3.25, 3, 0.7));
+	//FENCE RIGHT
+	houseBaseObject->AddComponent<BoxColliderComponent>(dx::XMFLOAT3(5.375, 0.625, 0.15), dx::XMFLOAT3(0, 3, -2.75));
+	//FENCE LEFT
+	houseBaseObject->AddComponent<BoxColliderComponent>(dx::XMFLOAT3(5.375, 0.625, 0.15), dx::XMFLOAT3(0, 3, 2.75));
+
 	houseBaseObject->AddComponent<RigidBodyComponent>(0.0f, FilterGroups::PROPS, FilterGroups::EVERYTHING, BodyType::STATIC, true);
 
 	SkeletonMeshComponent* baseComponent = resources->GetResource<SkeletonMeshComponent>("HouseSkeleton"); 
@@ -57,9 +72,9 @@ void GameScene::InitializeObjects()
 	legsComponent->SetTrack(SkeletonStateMachine::IDLE, false);
 
 	houseBaseObject->AddComponent<SkeletonMeshComponent>(baseComponent);
-	houseLegsObject->AddComponent<SkeletonMeshComponent>(legsComponent);
+	housesLegsObject->AddComponent<SkeletonMeshComponent>(legsComponent);
 
-	Transform::SetParentChild(houseBaseObject->GetTransform(), houseLegsObject->GetTransform());
+	Transform::SetParentChild(houseBaseObject->GetTransform(), housesLegsObject->GetTransform());
 	houseBaseObject->GetTransform().SetScale({ 0.5f, 0.5f, 0.5f });
 
 	NodeWalkerComp* nodeWalker = houseBaseObject->AddComponent<NodeWalkerComp>();
@@ -95,27 +110,6 @@ void GameScene::InitializeObjects()
 
 	AddObject(testPointLight, playerObject);
 
-	//Enemy object //comments
-	enemy = new Object("Enemy", ObjectFlag::DEFAULT);
-	enemy->AddComponent<SkeletonMeshComponent>(resources->GetResource<SkeletonMeshComponent>("EnemySkeleton"));
-
-	dx::XMFLOAT3 enemyTranslation = dx::XMFLOAT3(23, 7, 46);
-	enemy->GetTransform().SetPosition(dx::XMLoadFloat3(&enemyTranslation));
-	enemy->GetTransform().SetScale({ 0.125f, 0.125f, 0.125f });
-	enemy->AddComponent<EnemyStatsComp>(100.f, 2.0f, 10.f, 5.f, 3.f, 3.f);
-	enemy->AddComponent<BoxColliderComponent>(dx::XMFLOAT3{ 1, 2.45, 1 }, dx::XMFLOAT3{ 0, 0, 0 });
-	enemy->AddComponent<RigidBodyComponent>(10.f, FilterGroups::ENEMIES, (FilterGroups::EVERYTHING & ~FilterGroups::PICKUPS) & ~FilterGroups::HOLDABLE, BodyType::KINEMATIC, true);
-	
-	EnemySMComp* stateMachine = enemy->AddComponent<EnemySMComp>(EnemyState::IDLE);
-	stateMachine->RegisterState(EnemyState::IDLE, enemy->AddComponent<EnemyIdleComp>());
-	//stateMachine->RegisterState(EnemyState::PATROL, enemy->AddComponent<EnemyPatrolComp>());
-	stateMachine->RegisterState(EnemyState::ATTACK, enemy->AddComponent<EnemyAttackComp>(player->GetComponent<PlayerComp>()));
-	stateMachine->Start();
-	stateMachine->InitAnimation();
-	AddObject(enemy);
-
-	playerObject->AddComponent<PlayerAttackComp>(enemy);
-
 	Object* axeObject = resources->AssembleObject("Axe", "AxeMaterial");
 	axeObject->GetTransform().SetPosition({ 0,0,0 });
 	axeObject->GetTransform().SetScale({ 1, 1, 1 });
@@ -125,10 +119,11 @@ void GameScene::InitializeObjects()
 	playerObject->GetComponent<PlayerComp>()->InsertWeapon(axeObject->GetComponent<WeaponComponent>(), axeObject->GetName());
 
 	world.Initialize(root, resources, pooler, renderer, camera);
-	
-	dx::XMVECTOR asdf = dx::XMVectorSet(23, 3, 40 ,1); //???
-	enemy->GetTransform().SetPosition(asdf);
 
+	//LOADING BASE MONSTER; ADDING SKELETONS TO IT
+	enemyManager = new EnemyManager(resources, player, player->GetComponent<PlayerComp>(), root);
+	enemyManager->InitBaseEnemy();
+	
 	/* PICKUP STUFF DONT DELETE THESEEE */
 	Object* healthkitObject = resources->AssembleObject("HealthKit", "HealthKitMaterial");
 	healthkitObject->GetTransform().SetPosition({ 23,2,50 });
@@ -268,7 +263,7 @@ void GameScene::OnActivate()
 	state.segment = 0;
 
 	SegmentDescription desc(0, 10, 2);
-	desc.directionalSteps = 5;
+	desc.directionalSteps = 1;
 	desc.maxSteps = 10;
 
 	player->GetComponent<PlayerComp>()->Reset();
@@ -278,6 +273,9 @@ void GameScene::OnActivate()
 
 	house->GetComponent<NodeWalkerComp>()->InitializePath(world.GetPath());
 	world.MoveHouseAndPlayerToStart();
+
+
+
 
 	renderer->AddRenderPass(guiManager);
 
@@ -306,6 +304,7 @@ void GameScene::Update(const float& deltaTime)
 {
 	Scene::Update(deltaTime);
 	world.UpdateRelevantChunks();
+	//world.DrawDebug();
 
 	static_cast<GUIFont*>(guiManager->GetGUIObject("fps"))->SetString(std::to_string((int)GameClock::Instance().GetFramesPerSecond()));
 	guiManager->UpdateAll();

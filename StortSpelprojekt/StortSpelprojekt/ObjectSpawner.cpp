@@ -13,12 +13,11 @@ ObjectSpawner::~ObjectSpawner()
 {
 }
 
-void ObjectSpawner::Initialize(Object* root, ObjectPooler* pooler, Renderer* renderer, ResourceManager* resource, CameraComponent* camera)
+void ObjectSpawner::Initialize(Object* root, ObjectPooler* pooler, Renderer* renderer, CameraComponent* camera)
 {
 	this->pooler = pooler;
 	this->root = root;
 	this->renderer = renderer;
-	this->resources = resource;
 	this->camera = camera;
 }
 
@@ -30,65 +29,12 @@ void ObjectSpawner::Spawn(const SaveState& state, PointQuadTree& tree, std::unor
 	Random::SetSeed(state.GetSeed(1));
 	itemSpawnPositions = CreateSpawnPositions(tree, 20.0f, chunkMap);
 
-	/*for (size_t i = 0; i < staticItems.size(); i++)
-	{
-		dx::XMFLOAT2 pos = itemSpawnPositions[0];
-		Chunk* chunk = GetChunk(pos.x, pos.y, chunkMap);
-
-		if (chunk != nullptr)
-		{
-			float y = chunk->SampleHeight(pos.x, pos.y);
-
-			Object* object = pooler->GetItem("dynamic_stone");
-			dx::XMVECTOR position = dx::XMVectorSet(pos.x, y + SPAWN_HEIGHT, pos.y, 0.0f);
-
-			object->GetComponent<RigidBodyComponent>()->SetPosition(position);
-			Transform::SetParentChild(root->GetTransform(), object->GetTransform());
-			items.push_back(object);
-		}
-	}*/
-
-	//int propIndex = 0;
-	//for (int i = propSpawnPositions.size() - 1; i >= 0; i--)
-	//{
-	//	propIndex %= staticItems.size();
-	//	Item& item = staticItems[propIndex];
-
-	//	dx::XMFLOAT2 pos = propSpawnPositions[i];
-	//	Chunk* chunk = GetChunk(pos.x, pos.y, chunkMap);
-
-	//	if (chunk != nullptr)
-	//	{
-	//		float y = chunk->SampleHeight(pos.x, pos.y) + item.yOffset;
-
-	//		//	dx::XMMATRIX invWorld = dx::XMMatrixInverse(nullptr, chunk->GetOwner()->GetTransform().GetWorldMatrix());
-
-	//		Object* object = pooler->GetItem(item.key);
-	//		dx::XMVECTOR position = dx::XMVectorSet(pos.x, y, pos.y, 0.0f);
-	//		//	dx::XMVECTOR pos = dx::XMVector3Transform(position, invWorld);
-
-	//		object->GetTransform().SetWorldPosition(position);
-
-
-	//		object->GetComponent<RigidBodyComponent>()->SetPosition(position);
-
-	//		// kör med chunk istället för root då dom ändå inte kan flyttas.
-	//		//Transform::SetParentChild(root->GetTransform(), object->GetTransform());
-
-	//		// kräver inverse av parent world matrix
-	//		Transform::SetParentChild(chunk->GetOwner()->GetTransform(), object->GetTransform());
-
-	//		items.push_back(object);
-	//		propIndex++;
-	//	}
-	//}
-
 	struct TempData
 	{
-		InstancedProp* prop;
-	//	Chunk* chunk;
+		Prop* prop;
 		std::vector<Mesh::InstanceData> instancedData;
 		std::vector<dx::XMFLOAT3> positions;
+		
 		// ROTATIONS LATER
 	};
 
@@ -97,7 +43,7 @@ void ObjectSpawner::Spawn(const SaveState& state, PointQuadTree& tree, std::unor
 	size_t propIndex = 0;
 	for (size_t i = 0; i < propSpawnPositions.size(); i++)
 	{
-		InstancedProp& prop = instancedProps[propIndex];
+		Prop& prop = instancedProps[propIndex];
 
 		for (size_t j = 0; j < prop.queueCount && i < propSpawnPositions.size(); j++)
 		{
@@ -123,12 +69,8 @@ void ObjectSpawner::Spawn(const SaveState& state, PointQuadTree& tree, std::unor
 
 		propIndex++;
 		propIndex %= instancedProps.size();
-
 		i += (prop.queueCount - 1);
 	}
-
-
-
 
 	size_t index = 0;
 	for (auto i : data)
@@ -145,8 +87,6 @@ void ObjectSpawner::Spawn(const SaveState& state, PointQuadTree& tree, std::unor
 		
 
 	}
-
-
 
 
 
@@ -176,8 +116,8 @@ void ObjectSpawner::Spawn(const SaveState& state, PointQuadTree& tree, std::unor
 				itemIndex++;
 
 				/* Particles */
-				object->AddComponent<ParticleSystemComponent>(renderer, camera, resources->GetShaderResource("particleShader"));
-				object->GetComponent<ParticleSystemComponent>()->InitializeParticles(renderer->GetDevice(), L"Textures/starstar.png");									
+				ParticleSystemComponent* particles = object->AddComponent<ParticleSystemComponent>(renderer, camera, Engine::Instance->GetResources()->GetShaderResource("particleShader"));
+				particles->InitializeParticles(renderer->GetDevice(), L"Textures/starstar.png");
 			}
 		}
 	}
@@ -217,20 +157,23 @@ void ObjectSpawner::RegisterItem(std::string key, float radius, float padding, f
 		items.push_back(item);
 }
 
-void ObjectSpawner::RegisterInstancedItem(Mesh* mesh, Material* material, float radius, float padding, float yOffset, size_t queueCount)
+void ObjectSpawner::RegisterInstancedItem(Mesh* mesh, Material* material, float radius, float padding, float yOffset, size_t queueCount, dx::XMUINT3 rotationAxis)
 {
+	assert(rotationAxis.x == 0 || rotationAxis.x == 1);
+	assert(rotationAxis.y == 0 || rotationAxis.y == 1);
+	assert(rotationAxis.z == 0 || rotationAxis.z == 1);
 	assert(mesh != nullptr);
 	assert(material != nullptr);
 	assert(queueCount > 0);
 
-	InstancedProp prop;
+	Prop prop;
 	prop.mesh = mesh;
 	prop.material = material;
 	prop.yOffset = yOffset;
 	prop.radius = radius;
 	prop.padding = padding;
 	prop.queueCount = queueCount;
-
+	prop.rotationAxis = rotationAxis;
 	instancedProps.push_back(prop);
 }
 

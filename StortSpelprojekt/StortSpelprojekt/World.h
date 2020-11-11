@@ -7,6 +7,9 @@
 
 class World
 {
+	typedef std::unordered_map<int, Chunk*> ChunkMap;
+	const int RELEVANT_RADIUS = 2;
+
 public:
 	World();
 	virtual ~World();
@@ -22,13 +25,14 @@ public:
 	void SetHouse(Object* object) { this->house = object; }
 	void DrawDebug();
 
-	Path GetPath() const { return this->generator.GetPath(); }
+	Path& GetPath() { return this->generator.GetPath(); }
 	void MoveHouseAndPlayerToStart();
 
 private:
 	dx::XMINT2 GetChunkIndex(Object* object) const;
 	void RegisterToPool(ObjectPooler* pooler, ObjectSpawner* spawner, const std::map<std::string, int>& queueCountTable) const;
 	int TryGetQueueCount(std::string key,  const std::map<std::string, int>& queueCountTable, int defaultCount = 1) const;
+	
 	void RegisterFood(ObjectPooler* pooler, ObjectSpawner* spawner, const std::map<std::string, int>& queueCountTable) const;
 	void RegisterFuel(ObjectPooler* pooler, ObjectSpawner* spawner, const std::map<std::string, int>& queueCountTable) const;
 	void RegisterHealth(ObjectPooler* pooler, ObjectSpawner* spawner, const std::map<std::string, int>& queueCountTable) const;
@@ -39,10 +43,10 @@ private:
 	SegmentGenerator generator;
 	ResourceManager* resources;
 	std::vector<Chunk*> relevant;
-	std::unordered_map<int, Chunk*> relevantChunkMap;
-	std::unordered_map<int, Chunk*> chunkMap;
-	int chunkRelevancyRadius = 1;
 
+	ChunkMap relevantChunkMap;
+	ChunkMap chunkMap;
+	
 	dx::XMINT2 playerIndex;
 	Object* player;
 	Object* house;
