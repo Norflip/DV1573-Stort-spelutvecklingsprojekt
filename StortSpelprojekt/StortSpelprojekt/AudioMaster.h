@@ -15,6 +15,9 @@ struct SoundEvent
 	unsigned int priority;				/* Music priority */
 	unsigned int index;					/* the index of the actual sound to play */
 
+	bool playing;
+	bool looping;
+
 	SoundEvent() {};
 	virtual ~SoundEvent() {};
 };
@@ -39,8 +42,7 @@ private:
 	float soundEffectsVolume = 1.0f;
 	float musicVolume = 1.0f;
 
-	SoundEvent menuTest;
-	SoundEvent pickupSound, axeSwingSound, punchSound, walkSound, runSound;
+	SoundEvent menuTest, pickupSound, pickupFuel, axeSwingSound, punchSound, walkSound, runSound, windSound;
 
 public:
 	AudioMaster();
@@ -54,6 +56,8 @@ public:
 
 	void SetVolume(const AudioTypes& audioType, const float volume);
 	float GetVolume(const AudioTypes& audioType) const;
+
+	void Update(std::string file);
 
 	static AudioMaster& Instance()
 	{

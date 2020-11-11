@@ -41,7 +41,9 @@ void WeaponComponent::SetPosition(float time)
 	else if (attackTimer > 0.2f)
 	{
 		attacking = false;
+		
 	}
+	
 	if (attacking)
 	{
 		
