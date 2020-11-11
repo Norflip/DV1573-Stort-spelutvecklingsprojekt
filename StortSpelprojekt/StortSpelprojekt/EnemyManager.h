@@ -22,5 +22,5 @@ class EnemyManager
 		ResourceManager* resources;
 		Renderer* renderer;
 		Object* root;
-
+		int nrOfEnemies;
 };

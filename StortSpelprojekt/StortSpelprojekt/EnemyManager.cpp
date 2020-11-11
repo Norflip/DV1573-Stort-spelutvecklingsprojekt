@@ -2,7 +2,7 @@
 #include "EnemyManager.h"
 
 EnemyManager::EnemyManager(ResourceManager* resources, Renderer* renderer, PlayerComp* playerComp, Object* root)
-	: resources(resources), renderer(renderer), playerComp(playerComp), root(root)
+	: resources(resources), renderer(renderer), playerComp(playerComp), root(root), nrOfEnemies(2)
 {
 	this->enemyPool = new ObjectPooler(resources);
 }
@@ -26,7 +26,7 @@ void EnemyManager::InitBaseEnemy()
 			return object;
 		});
 
-	for (int i = 0; i < 2; i++)
+	for (int i = 0; i < nrOfEnemies; i++)
 	{
 		SpawnEnemy({ 8, 15, (float)(47 + i * 5 )});
 	}
