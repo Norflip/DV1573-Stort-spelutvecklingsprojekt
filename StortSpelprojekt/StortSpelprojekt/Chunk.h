@@ -18,7 +18,7 @@ enum class ChunkType
 namespace dx = DirectX;
 
 constexpr int CHUNK_SIZE = 32;
-constexpr float TERRAIN_SCALE = 10.0f;
+constexpr float TERRAIN_SCALE = 7.5f;
 #define DRAW_DEBUG 0
 
 class Physics;
@@ -40,13 +40,10 @@ public:
 	Chunk(dx::XMINT2 index, ChunkType type);
 	virtual ~Chunk();
 
-//#if _DEBUG and DRAW_DEBUG
-//	void Update(const float& deltaTime) override;
-//#endif
-
 	void Update(const float& deltaTime) override;
 
 	void SetupCollisionObject(Physics* physics, float* heightMap);
+
 	float SampleHeight(float x, float z);
 
 	void SetHeightMap(float* heightMap) { this->heightMap = heightMap; }

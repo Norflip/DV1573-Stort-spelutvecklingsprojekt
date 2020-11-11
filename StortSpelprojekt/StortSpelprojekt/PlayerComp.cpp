@@ -117,7 +117,6 @@ void PlayerComp::HoldObject()
 	wepOffRot = wepOffRot.CreateFromAxisAngle(up, dx::XMConvertToRadians(-40.0f));
 	wepWorld = wepOffRot * wepOffTrans * inverseViewMatrix;
 	holding->AddFlag(ObjectFlag::NO_CULL);
-
 	//something here doesn work properly
 	//GetOwner()->AddFlag(ObjectFlag::NO_CULL);
 	wepWorld.Decompose(weaponScale, weaponRot, weaponPos);

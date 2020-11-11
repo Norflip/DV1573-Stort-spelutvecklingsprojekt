@@ -170,6 +170,7 @@
     <ClCompile Include="AudioEngine.cpp" />
     <ClCompile Include="EnemyAttackComp.cpp" />
     <ClCompile Include="EnemyIdleComp.cpp" />
+    <ClCompile Include="EnemyManager.cpp" />
     <ClCompile Include="EnemyPatrolComp.cpp" />
     <ClCompile Include="Bounds.cpp" />
     <ClCompile Include="BoxColliderComponent.cpp" />
@@ -249,6 +250,7 @@
     <ClInclude Include="Defines.h" />
     <ClInclude Include="EnemyAttackComp.h" />
     <ClInclude Include="EnemyIdleComp.h" />
+    <ClInclude Include="EnemyManager.h" />
     <ClInclude Include="EnemyPatrolComp.h" />
     <ClInclude Include="Bounds.h" />
     <ClInclude Include="BoxColliderComponent.h" />

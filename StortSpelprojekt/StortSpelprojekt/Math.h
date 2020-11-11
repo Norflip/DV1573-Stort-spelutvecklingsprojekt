@@ -9,6 +9,11 @@ namespace Math
 	constexpr float ToDegree = 57.295779f;
 	constexpr float PI = 3.14159265359f;
 
+	inline int Wrap(int index, int length)
+	{
+		return ((index % length) + length) % length;
+	}
+
 	inline float InverseLerp(float a, float b, float t)
 	{
 		return (t - a) / (b - a);
@@ -43,18 +48,23 @@ namespace Math
 		return a + sign * delta;
 	}
 
-	inline dx::XMFLOAT2 Move (dx::XMFLOAT2 a, dx::XMFLOAT2 b, float delta)
+	inline void Move(const float& x0, const float& y0, const float& x1, const float& y1, float delta, float& resultX, float& resultY)
 	{
-		float x = b.x - a.x;
-		float y = b.y - a.y;
+		float x = x1 - x0;
+		float y = y1 - y0;
 
 		float distanceSqr = x * x + y * y;
 
 		if (distanceSqr == 0 || (delta >= 0 && distanceSqr <= delta * delta))
-			return b;
+		{
+			resultX = x1;
+			resultY = y1;
+			return;
+		}
 
 		float dist = sqrtf(distanceSqr);
-		return dx::XMFLOAT2(a.x + x / dist * delta, a.y + y / dist * delta);
+		resultX = x0 + x / dist * delta;
+		resultY = y0 + y / dist * delta;
 	}
 
 	inline float Remap(float imin, float imax, float omin, float omax, float v)
@@ -62,10 +72,35 @@ namespace Math
 		float t = InverseLerp(imin, imax, v);
 		return Lerp(omin, omax, t);
 	}
-	inline double Clamp(double valueToClamp, double upper, double lower)
+	
+	inline float Clamp(float value, float min, float max)
 	{
-		return std::fmin(upper, std::fmax(valueToClamp, lower));
+		if (value < min)
+			value = min;
+		else if (value > max)
+			value = max;
+		return value;
 	}
+
+	inline int Clamp(int value, int min, int max)
+	{
+		if (value < min)
+			value = min;
+		else if (value > max)
+			value = max;
+		return value;
+	}
+
+	inline float Clamp01(float value)
+	{
+		if (value < 0.0f)
+			return 0.0f;
+		else if (value > 1.0f)
+			return 1.0f;
+		else
+			return value;
+	}
+
 	//inline float Pack3DVector(float x, float y, float z)
 	//{
 	//	typedef unsigned char UC;
@@ -127,10 +162,11 @@ namespace Math
 		return curvedPoints;
 	}
 
-	inline float DistanceToLineSqr(float px, float py, float line0x, float line0y, float line1x, float line1y)
+	inline float DistanceToLineSqr(float px, float py, float line0x, float line0y, float line1x, float line1y, float& t)
 	{
 		float dx = line1x - line0x;
 		float dy = line1y - line0y;
+		t = -1.0f;
 
 		if ((dx == 0) && (dy == 0))
 		{
@@ -142,7 +178,7 @@ namespace Math
 		else
 		{
 			// Calculate the t that minimizes the distance.
-			float t = ((px - line0x) * dx + (py - line0y) * dy) / (dx * dx + dy * dy);
+			t = ((px - line0x) * dx + (py - line0y) * dy) / (dx * dx + dy * dy);
 
 			// See if this represents one of the segment's
 			// end points or a point in the middle.
