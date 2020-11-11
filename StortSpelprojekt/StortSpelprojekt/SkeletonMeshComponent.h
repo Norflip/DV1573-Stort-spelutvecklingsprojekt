@@ -38,7 +38,6 @@ public:
 	void SetAnimationTrack(const SkeletonAni& skeletonAni, const SkeletonStateMachine& type);
 	
 	SkeletonAni& GetAnimationTrack(unsigned int trackNr);
-	void ResetTimer() { this->timer.Restart(); }
 
 	void SetTrack(const SkeletonStateMachine& type, bool playOnce);
 	void BlendAnimations();
