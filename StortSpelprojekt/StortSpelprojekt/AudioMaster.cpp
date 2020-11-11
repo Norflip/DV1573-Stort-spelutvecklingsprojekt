@@ -30,6 +30,7 @@ AudioMaster::AudioMaster()
 	LoadFile(L"Sounds/Punch.wav", "punch", punchSound, AudioTypes::Sound, false);
 	LoadFile(L"Sounds/walking.wav", "walk", walkSound, AudioTypes::Sound, true);
 	LoadFile(L"Sounds/running.wav", "run", runSound, AudioTypes::Sound, true);
+	LoadFile(L"Sounds/windy.mp3", "wind", windSound, AudioTypes::Sound, true);
 
 	SetVolume(AudioTypes::Music, 0.7f);
 	SetVolume(AudioTypes::Sound, 0.7f);

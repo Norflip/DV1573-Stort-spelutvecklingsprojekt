@@ -1,4 +1,5 @@
 #pragma once
+#include "ControllerComp.h"
 #include "AudioEngine.h"
 
 enum AudioTypes { Music, Sound };
@@ -40,7 +41,8 @@ private:
 	float musicVolume = 1.0f;
 
 	SoundEvent menuTest;
-	SoundEvent pickupSound, axeSwingSound, punchSound, walkSound, runSound;
+	SoundEvent pickupSound, axeSwingSound, punchSound, walkSound, runSound, windSound;
+	//MoveState playerState;
 
 public:
 	AudioMaster();
@@ -54,6 +56,8 @@ public:
 
 	void SetVolume(const AudioTypes& audioType, const float volume);
 	float GetVolume(const AudioTypes& audioType) const;
+
+	void Update();
 
 	static AudioMaster& Instance()
 	{

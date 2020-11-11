@@ -37,6 +37,7 @@ void GameScene::Initialize()
 	InitializeLights();
 	InitializeGUI();
 	InitializeObjects();
+
 }
 
 void GameScene::InitializeObjects()
@@ -172,6 +173,8 @@ void GameScene::InitializeObjects()
 	beansObject->AddComponent<ParticleSystemComponent>(renderer, camera, particleShader);
 	beansObject->GetComponent<ParticleSystemComponent>()->InitializeParticles(renderer->GetDevice(), L"Textures/starstar.png");
 	AddObject(beansObject);		
+
+
 }
 
 void GameScene::InitializeGUI()
@@ -303,6 +306,7 @@ void GameScene::OnActivate()
 
 
 
+	AudioMaster::Instance().PlaySoundEvent("wind");
 	//this->PrintSceneHierarchy(root, 0);
 }
 
