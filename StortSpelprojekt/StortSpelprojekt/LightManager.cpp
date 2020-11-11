@@ -50,8 +50,9 @@ void LightManager::UpdateBuffers(dx::XMFLOAT3 eye, ID3D11DeviceContext* context)
 	dx::XMMATRIX shadowProjection = shadowCamera->GetProjectionMatrix();
 
 	dx::XMStoreFloat3(&data.sunDirection, dx::XMVector3Normalize(sunDirection));
-	dx::XMStoreFloat4x4(&data.shadowProjection, DirectX::XMMatrixTranspose(shadowProjection));
+
 	dx::XMStoreFloat4x4(&data.shadowView, DirectX::XMMatrixTranspose(shadowView));
+	dx::XMStoreFloat4x4(&data.shadowProjection, DirectX::XMMatrixTranspose(shadowProjection));
 	dx::XMStoreFloat4x4(&data.shadowVP, DirectX::XMMatrixTranspose(shadowView * shadowProjection));
 
 	data.sunIntensity = 0.4f;

@@ -28,12 +28,20 @@ static float2 poissonDiskSamples[16] =
 
 float3 WorldPosFromDepth(float depth, float2 uv)
 {
-    float z = depth * 2.0 - 1.0;
+    
+    
+    float z = depth;// * 2.0 - 1.0;
 
-    float4 clipSpacePosition = float4(uv * 2.0 - 1.0, 0.0f, z);
+    
+    float x = uv.x * 2 - 1;
+    float y = (1 - uv.y) * 2 - 1;
+        
+    float4 clipSpacePosition = float4(x, y, 0.0f, z);
     float4 viewSpacePosition = mul(invProjection, clipSpacePosition);
     viewSpacePosition /= viewSpacePosition.w; // Perspective division
      
+    //return viewSpacePosition.xyz;
+    
     float4 worldSpacePosition = mul(invView, viewSpacePosition);
     return worldSpacePosition.xyz;
 }
@@ -52,28 +60,29 @@ struct PixelInputType
 
 float4 main(PixelInputType input) : SV_TARGET
 {
-    const float near = 0.01f; // NEAR PLANE
-    const float far = 400.0f; // FAR PLANE
+    const float near = 0.001f; // NEAR PLANE
+    const float far = 1000.0f; // FAR PLANE
+    
     float depth = sceneDepth.Sample(defaultSampleType, input.uv).x;
     float D = ((2.0f * near) / (far + near - depth * (far - near)));
         
     float4 position = float4(WorldPosFromDepth(D, input.uv), 1.0f);
-    
-    float3 dir = normalize(position.xyz - cameraPosition);
-  //  return float4(dir, 1.0f);
-    
+  
     const int POSSION_DISK_SAMPLE_COUNT = 4;
-    const float bias = 0.00001f;
-    const float PCFSpread = 1.0f / 2028; //texel size av shadow mapp
+    const float bias = 0.001f;
+    const float PCFSpread = 1.0f / 1028; //texel size av shadow mapp
     
     //float4 relativeViewPos = mul(shadowVP, position);
+    //float4 relativeViewPos = mul(shadowVP, position);
+    
+    //float4 relativeViewPos = mul(mul(position, shadowView), shadowProjection);
     float4 relativeViewPos = mul(shadowVP, position);
-
+    
     float2 projectTexCoord;
     projectTexCoord.x = 0.5f + (relativeViewPos.x / relativeViewPos.w) / 2.0f;
-    projectTexCoord.y = 0.5f - relativeViewPos.y / relativeViewPos.w / 2.0f;
+    projectTexCoord.y = (0.5f - relativeViewPos.y / relativeViewPos.w / 2.0f);
 
-   // return float4(projectTexCoord, 0.0f, 1.0f);
+    //return float4(projectTexCoord, 0.0f, 1.0f);
     
     float visibility = 1.0f;
 
@@ -111,7 +120,7 @@ float4 main(PixelInputType input) : SV_TARGET
     }
     
 
-    return float4(D * visibility, D, visibility, 1.0f);
+  //  return float4(D * visibility, D, visibility, 1.0f);
      
     //if (input.uv.x < 0.5f)
     //    return float4(0, 1, 0, 1);

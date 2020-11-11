@@ -47,8 +47,8 @@ cbuffer cb_Lights : register(b3)
     float3 sunDirection;
     float sunIntensity;
 	
-     matrix shadowView;
-     matrix shadowProjection;
+    matrix shadowView;
+    matrix shadowProjection;
     row_major matrix shadowVP;
 	
 	int nrOfPointLights;
