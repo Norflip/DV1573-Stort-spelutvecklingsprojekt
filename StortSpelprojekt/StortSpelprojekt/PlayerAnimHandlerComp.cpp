@@ -32,6 +32,7 @@ void PlayerAnimHandlerComp::Animate(float time)
 
 	if (LMOUSE_PRESSED && attackCooldown > 1.0f)
 	{
+		skeletonMeshComp->SetTrack(SkeletonStateMachine::ATTACK, true); //OFÄRDIGT: ATTACKEN BUGGAR >_>
 		time = 0;
 		attackTimer = 0;
 		attackCooldown = 0;
@@ -44,7 +45,7 @@ void PlayerAnimHandlerComp::Animate(float time)
 
 	if (attacking)
 	{
-		skeletonMeshComp->SetTrack(SkeletonStateMachine::ATTACK, false); //OFÄRDIGT: ATTACKEN BUGGAR >_>
+		//skeletonMeshComp->SetTrack(SkeletonStateMachine::ATTACK, true); //OFÄRDIGT: ATTACKEN BUGGAR >_>
 		//AudioMaster::Instance().PlaySoundEvent("axeSwing");
 	}
 
