@@ -50,17 +50,17 @@ void GameScene::InitializeObjects()
 
 	//														Extence					pos
 	//WALLS
-	houseBaseObject->AddComponent<BoxColliderComponent>(dx::XMFLOAT3(1.5, 3.5, 2.1), dx::XMFLOAT3(0, 4, -1));
+	houseBaseObject->AddComponent<BoxColliderComponent>(dx::XMFLOAT3(1.5f, 3.5f, 2.1f), dx::XMFLOAT3(0.f, 4.f, -1.f));
 	//PORCH
-	houseBaseObject->AddComponent<BoxColliderComponent>(dx::XMFLOAT3(3.375, 0.325, 3), dx::XMFLOAT3(0, 1, 0.05));
+	houseBaseObject->AddComponent<BoxColliderComponent>(dx::XMFLOAT3(3.375f, 0.325f, 3.f), dx::XMFLOAT3(0.f, 1.f, 0.05f));
 	//FENCE BACK
-	houseBaseObject->AddComponent<BoxColliderComponent>(dx::XMFLOAT3(0.125, 0.625, 3.375), dx::XMFLOAT3(-3.3, 2, 0.05));
+	houseBaseObject->AddComponent<BoxColliderComponent>(dx::XMFLOAT3(0.125f, 0.625f, 3.375f), dx::XMFLOAT3(-3.3f, 2.f, 0.05f));
 	//FENCE FRONT
-	houseBaseObject->AddComponent<BoxColliderComponent>(dx::XMFLOAT3(0.125, 0.625, 2.25), dx::XMFLOAT3(3.25, 3, 0.7));
+	houseBaseObject->AddComponent<BoxColliderComponent>(dx::XMFLOAT3(0.125f, 0.625f, 2.25f), dx::XMFLOAT3(3.25f, 3.f, 0.7f));
 	//FENCE RIGHT
-	houseBaseObject->AddComponent<BoxColliderComponent>(dx::XMFLOAT3(5.375, 0.625, 0.15), dx::XMFLOAT3(0, 3, -2.75));
+	houseBaseObject->AddComponent<BoxColliderComponent>(dx::XMFLOAT3(5.375f, 0.625f, 0.15f), dx::XMFLOAT3(0.f, 3.f, -2.75f));
 	//FENCE LEFT
-	houseBaseObject->AddComponent<BoxColliderComponent>(dx::XMFLOAT3(5.375, 0.625, 0.15), dx::XMFLOAT3(0, 3, 2.75));
+	houseBaseObject->AddComponent<BoxColliderComponent>(dx::XMFLOAT3(5.375f, 0.625f, 0.15f), dx::XMFLOAT3(0.f, 3.f, 2.75f));
 
 	houseBaseObject->AddComponent<RigidBodyComponent>(0.0f, FilterGroups::PROPS, FilterGroups::EVERYTHING, BodyType::STATIC, true);
 
@@ -102,13 +102,13 @@ void GameScene::InitializeObjects()
 	AddObject(cameraObject, playerObject);
 	AddObject(playerObject);
 
-	Object* testPointLight = new Object("body_pointLight");
+	//Object* testPointLight = new Object("body_pointLight");
 
-	dx::XMFLOAT3 lightTranslation = dx::XMFLOAT3(0.0f, 0.0f, 0.0f);
-	testPointLight->GetTransform().SetPosition(dx::XMLoadFloat3(&lightTranslation));
-	testPointLight->AddComponent<PointLightComponent>(dx::XMFLOAT4(0.3f, 0.3f, 0.3f, 1.0f), 10.f);
+	//dx::XMFLOAT3 lightTranslation = dx::XMFLOAT3(0.0f, 0.0f, 0.0f);
+	//testPointLight->GetTransform().SetPosition(dx::XMLoadFloat3(&lightTranslation));
+	//testPointLight->AddComponent<PointLightComponent>(dx::XMFLOAT4(0.3f, 0.3f, 0.3f, 1.0f), 10.f);
 
-	AddObject(testPointLight, playerObject);
+	//AddObject(testPointLight, playerObject);
 
 	//Enemy object //comments
 	enemy = new Object("Enemy", ObjectFlag::DEFAULT);
@@ -118,7 +118,7 @@ void GameScene::InitializeObjects()
 	enemy->GetTransform().SetPosition(dx::XMLoadFloat3(&enemyTranslation));
 	enemy->GetTransform().SetScale({ 0.125f, 0.125f, 0.125f });
 	enemy->AddComponent<EnemyStatsComp>(100.f, 2.0f, 10.f, 5.f, 3.f, 3.f);
-	enemy->AddComponent<BoxColliderComponent>(dx::XMFLOAT3{ 1, 2.45, 1 }, dx::XMFLOAT3{ 0, 0, 0 });
+	enemy->AddComponent<BoxColliderComponent>(dx::XMFLOAT3{ 1.f, 2.45f, 1.f }, dx::XMFLOAT3{ 0, 0, 0 });
 	enemy->AddComponent<RigidBodyComponent>(10.f, FilterGroups::ENEMIES, (FilterGroups::EVERYTHING & ~FilterGroups::PICKUPS) & ~FilterGroups::HOLDABLE, BodyType::KINEMATIC, true);
 	
 	EnemySMComp* stateMachine = enemy->AddComponent<EnemySMComp>(EnemyState::IDLE);
@@ -139,7 +139,7 @@ void GameScene::InitializeObjects()
 	AddObject(axeObject);
 	playerObject->GetComponent<PlayerComp>()->InsertWeapon(axeObject->GetComponent<WeaponComponent>(), axeObject->GetName());
 
-	world.Initialize(root, resources, pooler, renderer, camera);
+	world.Initialize(root, resources, renderer);
 	
 	dx::XMVECTOR asdf = dx::XMVectorSet(23, 3, 40 ,1); //???
 	enemy->GetTransform().SetPosition(asdf);
@@ -169,7 +169,7 @@ void GameScene::InitializeObjects()
 	beansObject->AddComponent<PickupComponent>(Type::Food, 20.0f);
 	beansObject->AddComponent<RigidBodyComponent>(0.f, FilterGroups::PICKUPS, (FilterGroups::EVERYTHING & ~FilterGroups::PLAYER), BodyType::DYNAMIC, true);
 
-	beansObject->AddComponent<ParticleSystemComponent>(renderer, camera, particleShader);
+	beansObject->AddComponent<ParticleSystemComponent>(renderer, particleShader);
 	beansObject->GetComponent<ParticleSystemComponent>()->InitializeParticles(renderer->GetDevice(), L"Textures/starstar.png");
 	AddObject(beansObject);		
 }
@@ -282,18 +282,30 @@ void GameScene::OnActivate()
 	state.seed = 1337;
 	state.segment = 0;
 
-	SegmentDescription desc(0, 10, 2);
-	desc.directionalSteps = 1;
-	desc.maxSteps = 10;
-
 	player->GetComponent<PlayerComp>()->Reset();
-	world.ConstructSegment(state, desc);
-	world.SetPlayer(player);
-	world.SetHouse(house);
+	world.ConstructSegment(state);
+
+	PrintSceneHierarchy(root, 0);
+
 
 	house->GetComponent<NodeWalkerComp>()->InitializePath(world.GetPath());
-	world.MoveHouseAndPlayerToStart();
+	
+	if (house != nullptr && player != nullptr)
+	{
+		std::vector<dx::XMINT2> indexes = world.GetPath().GetIndexes();
+		dx::XMINT2 spawnIndex = indexes[0];
 
+		dx::XMVECTOR position = dx::XMVectorAdd(Chunk::IndexToWorld(spawnIndex, 0.0f), dx::XMVectorSet(CHUNK_SIZE / 2.0f, 0, CHUNK_SIZE / 2.0f, 0));
+		house->GetTransform().SetPosition(position);
+
+		if (house->HasComponent<RigidBodyComponent>())
+			house->GetComponent<RigidBodyComponent>()->SetPosition(position);
+
+		position = dx::XMVectorAdd(position, dx::XMVectorSet(5, 12, 0, 0));
+
+		player->GetTransform().SetPosition(position);
+		player->GetComponent<RigidBodyComponent>()->SetPosition(position);
+	}
 
 
 
@@ -323,8 +335,8 @@ void GameScene::OnDeactivate()
 void GameScene::Update(const float& deltaTime)
 {
 	Scene::Update(deltaTime);
-	world.UpdateRelevantChunks();
-	//world.DrawDebug();
+	world.UpdateRelevantChunks(player->GetTransform());
+	world.DrawDebug();
 
 	static_cast<GUIFont*>(guiManager->GetGUIObject("fps"))->SetString(std::to_string((int)GameClock::Instance().GetFramesPerSecond()));
 	guiManager->UpdateAll();

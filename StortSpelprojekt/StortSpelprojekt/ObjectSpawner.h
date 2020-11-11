@@ -34,10 +34,12 @@ public:
 	ObjectSpawner();
 	virtual ~ObjectSpawner();
 
-	void Initialize(Object* root, ObjectPooler* pooler, Renderer* renderer, CameraComponent* camera);
+	void Initialize(Object* root, ObjectPooler* pooler, Renderer* renderer);
 
-	void Spawn(const SaveState& state, PointQuadTree& tree, std::unordered_map<int, Chunk*>& chunkMap, std::vector<Chunk*>& chunks, ID3D11Device* device);
+	void Spawn(const SaveState& state, PointQuadTree& tree, std::unordered_map<int, Chunk*>& chunkMap, ID3D11Device* device);
 	void Despawn();
+
+	void SpawnSpecific(std::vector<dx::XMFLOAT2> positions, dx::XMVECTOR axis, std::vector<float> angles, std::string modelName, std::unordered_map<int, Chunk*>& chunkMap, std::function<void(Object*)> modifier);
 
 	void RegisterItem(std::string key, float radius, float padding, float yOffset, size_t queueCount);
 	void RegisterInstancedItem(Mesh* mesh, Material* material, float radius, float padding, float yOffset, size_t queueCount, dx::XMUINT3 rotationAxis);
@@ -65,5 +67,4 @@ private:
 	std::vector<Prop> instancedProps;
 
 	Renderer* renderer;
-	CameraComponent* camera;
 };

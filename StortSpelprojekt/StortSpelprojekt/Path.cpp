@@ -8,6 +8,7 @@ Path::Path(const std::vector<dx::XMINT2>& indexes)
 {
 	SetPointsFromIndexes(indexes);
 	CreateLineSegments();
+	CreateLanternPoints();
 }
 
 Path::~Path()
@@ -44,6 +45,12 @@ float Path::SampleInfluence(const dx::XMFLOAT2& position) const
 	return Math::Clamp01(influence);
 }
 
+void Path::GetLanternInformation(std::vector<dx::XMFLOAT2>& positions, std::vector<float>& axisAngle) const
+{
+	positions = this->lanternPoints;
+	axisAngle = this->lanternAxisAngle;
+}
+
 void Path::DrawDebug()
 {
 	const float height = 1.0f;
@@ -58,6 +65,17 @@ void Path::DrawDebug()
 		//DShape::DrawWireSphere(worldPoint0, segments[i].start.influence + (INFLUENCE_FADE_DISTANCE / 2.0f), { 0,1,0.8f });
 
 		DShape::DrawLine(worldPoint0, worldPoint1, { 1,0,0 });
+
+	}
+
+
+	for (size_t i = 0; i < lanternPoints.size(); i++)
+	{
+		dx::XMFLOAT3 worldPoint(lanternPoints[i].x, height, lanternPoints[i].y);
+		dx::XMFLOAT3 worldPoint0(lanternPoints[i].x, height + 10.0f, lanternPoints[i].y);
+
+		DShape::DrawSphere(worldPoint, 0.4f, { 0.1f,0.2f,1 });
+		DShape::DrawLine(worldPoint0, worldPoint, { 1,0,0 });
 
 	}
 }
@@ -152,6 +170,53 @@ void Path::CreateLineSegments()
 	segments.push_back(LineSegment(lastPoint, endRight));
 	// add level select here
 
+}
+
+void Path::CreateLanternPoints()
+{
+	int sign = 1;
+	const float lanternOffset = 20.0f;
+
+	float offset = lanternOffset;
+	float tmpDistance, rightX, rightY;
+	dx::XMFLOAT2 tmpDirection;
+
+	for (size_t i = 0; i < points.size() - 1; i++)
+	{
+		GetDistanceDirection(points[i], points[i + 1], tmpDistance, tmpDirection);
+		offset -= tmpDistance;
+		
+		if (offset < 0.0f)
+		{
+			offset = lanternOffset;
+			rightX = -tmpDirection.y;
+			rightY = tmpDirection.x;
+
+			float offsetX = points[i].x + rightX * (points[i].influence + INFLUENCE_FADE_DISTANCE * 0.3f) * sign;
+			float offsetZ = points[i].z + rightY * (points[i].influence + INFLUENCE_FADE_DISTANCE * 0.3f) * sign;
+
+			float dirX = (points[i].x - offsetX);
+			float dirY = (points[i].z - offsetX);
+
+			float angle = Math::NormalizeAngle(atan2(rightY, rightX) + (Math::PI * 0.5f * -1.0f * sign));
+
+			lanternAxisAngle.push_back(angle);
+			lanternPoints.push_back(dx::XMFLOAT2(offsetX, offsetZ));
+			sign *= (Random::Value() > 0.5f ? 1 : -1);
+		}
+	}
+
+	std::cout << "LANTERNS: " << lanternPoints.size() << std::endl;
+}
+
+void Path::GetDistanceDirection (const PathPoint& point0, const PathPoint& point1, float& distance, dx::XMFLOAT2& direction) const
+{
+	float dx = point1.x - point0.x;
+	float dz = point1.z - point0.z;
+	distance = sqrtf(dx * dx + dz * dz);
+
+	direction.x = dx / distance;
+	direction.y = dz / distance;
 }
 
 PathPoint Path::Lerp(const PathPoint& a, const PathPoint& b, float t) const

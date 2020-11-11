@@ -17,10 +17,9 @@
 
 class SegmentGenerator
 {
-	struct ChunkPointInformation
+	struct Data
 	{
-		float height;
-		float distance;
+		
 	};
 
 	const int CHUNK_PADDING = 2;
@@ -38,37 +37,32 @@ public:
 	void Construct(const SaveState& state, const SegmentDescription& description);
 	void Deconstruct();
 
-	void GetChunksInRadius(const dx::XMINT2& index, int radius, std::vector<Chunk*>& chunks) const;
 	bool IsConstructed() const { return this->constructed; }
 
-	Chunk* GetChunk(const float& x, const float& z) const;
-	float SampleHeight(const float& x, const float& z) const;
-	void SampleNormal(const float& x, const float& z, dx::XMFLOAT3& normal) const;
-
 	void DrawDebug();
-	Path& GetPath() { return this->grid.GetPath(); }
 
-	std::vector<Chunk*> GetChunks() const { return this->chunks; }
+	Path& GetPath() { return this->path; }
+	const Path& GetPath() const { return this->path; }
+
+	std::unordered_map<int, Chunk*>& GetChunkMap() { return this->chunkMap; }
+	const std::unordered_map<int, Chunk*>& GetChunkMap() const { return this->chunkMap; }
 
 private:
-	std::vector<ChunkPointInformation> CreateChunkMap(const dx::XMINT2& index, const SegmentDescription& description, float*& heightMap, unsigned char*& buffer);
+	void CreateChunkMap(const dx::XMINT2& index, const SegmentDescription& description, Chunk::Data& data);
 
 	Chunk* CreateChunk(const dx::XMINT2& index, Object* root, const SegmentDescription& description, ChunkType type);
 	Mesh* CreateChunkMesh(ID3D11Device* device);
 
-	void InitializeTrees(ResourceManager* resources);
-
-	void AddTreesToChunk(Chunk* chunk, std::vector<ChunkPointInformation>& chunkInformation);
+	void AddTreesToChunk(Chunk* chunk, const Chunk::Data& data);
 	void AddGrassToChunk(Chunk* chunk, Texture* texture);
-	bool ValidateTreePoint(const dx::XMFLOAT2& point, std::vector<ChunkPointInformation>& chunkInformation);
+	bool ValidateTreePoint(const dx::XMFLOAT2& point, const Chunk::Data& data);
+
 
 private:
 	bool constructed, initialized;
 	ChunkGrid grid;
 	ObjectSpawner* spawner;
-	std::vector<Chunk*> chunks;
-	std::unordered_map<int, Chunk*> chunkMap;
-
+	
 	cb_Material materialData;
 	Shader* grassShader;
 	Shader* chunkShader;
@@ -76,17 +70,19 @@ private:
 	Texture* grassTexture;
 	Texture* roadTexture;
 
+	Path path;
+	std::unordered_map<int, Chunk*> chunkMap;
+
 	std::vector<Mesh*> stylizedTreeModel;
 	std::vector<Material*> stylizedTreeMaterial;
 
 	Mesh* chunkMesh;
 	bool hasChunkMesh;
-	std::vector<dx::XMFLOAT2> itemSpawns;
-	std::vector<dx::XMFLOAT2> propSpawns;
 
 	PointQuadTree treePoints;
 	Object* root;
 
-	ID3D11DeviceContext* context;
 	ID3D11Device* device;
+	ID3D11DeviceContext* context;
+
 };

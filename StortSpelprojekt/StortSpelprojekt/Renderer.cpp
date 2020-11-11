@@ -79,27 +79,6 @@ void Renderer::Initialize(Window* window)
 	screenQuadMesh = CreateScreenQuad();
 	DShape::Instance().m_Initialize(device);
 
-	//EXEMPEL
-	///AddRenderPass(new PSRenderPass(1, L"Shaders/TestPass.hlsl"));
-
-	IDXGIFactory1* pFactory = nullptr;
-	IDXGIAdapter* pAdapter = nullptr;
-	assert(SUCCEEDED(CreateDXGIFactory1(__uuidof(IDXGIFactory1), (void**)&pFactory)));
-
-	if (pFactory != nullptr)
-	{
-		for (UINT i = 0; pFactory->EnumAdapters(i, &pAdapter) != DXGI_ERROR_NOT_FOUND; ++i)
-		{
-			DXGI_ADAPTER_DESC adapterDescription;
-			pAdapter->GetDesc(&adapterDescription);
-
-			std::wstring ws(adapterDescription.Description);
-			std::cout << "GPU #" << std::to_string(i) << ": " << std::string(ws.begin(), ws.end()) << "\t" << adapterDescription.DeviceId << std::endl;
-		}
-
-		if (pFactory)
-			pFactory->Release();
-	}
 }
 
 

@@ -13,23 +13,6 @@ struct PixelInputType
 };
 
 
-float2 SphericalMapping(float3 direction)
-{
-    static const float PI = 3.14159265f;
-
-    float r = length(direction);
-    direction *= 1.f / r;
-    float theta = acos(direction.z);
-    float phi = atan2(direction.y, direction.x);
-    //phi += (phi < 0) ? 2 * PI : 0; // only if you want [0,2pi)
-    return float2(phi, theta);
-
-
-    //float tu = asin(direction.x) / PI + 0.5f;
-    //float tv = asin(direction.y) / PI + 0.5f;
-    //return float2(tu, tv);
-}
-
 // this is supposed to get the world position from the depth buffer
 float3 WorldPosFromDepth(float depth, float2 uv) {
     float z = depth;// *2.0 - 1.0;
@@ -42,28 +25,6 @@ float3 WorldPosFromDepth(float depth, float2 uv) {
     return worldSpacePosition.xyz;
 }
 
-float raySphereIntersect(float3 r0, float3 rd, float3 s0, float sr) {
-    // - r0: ray origin
-    // - rd: normalized ray direction
-    // - s0: sphere center
-    // - sr: sphere radius
-    // - Returns distance from r0 to first intersecion with sphere,
-    //   or -1.0 if no intersection.
-    float a = dot(rd, rd);
-    float3 s0_r0 = r0 - s0;
-    float b = 2.0 * dot(rd, s0_r0);
-    float c = dot(s0_r0, s0_r0) - (sr * sr);
-    if (b * b - 4.0 * a * c < 0.0) {
-        return -1.0;
-    }
-    return (-b - sqrt((b * b) - 4.0 * a * c)) / (2.0 * a);
-}
-
-float3 SphereNormal(float3 p, float3 center, float radius)
-{
-    float3 normal = float3((p.x - center.x) / radius, (p.y - center.x) / radius, (p.z - center.x) / radius);
-    return normalize(normal);
-}
 
 float4 main(PixelInputType input) : SV_TARGET
 {
@@ -80,7 +41,7 @@ float4 main(PixelInputType input) : SV_TARGET
 
     float D = ((2.0f * near) / (far + near - depth * (far - near)));
     float fogFactor = saturate(((D * far) - start) / (end - start));
-
+        
     float2 st = input.uv.xy;// / float2(1600, 800) * 3.;
     
     //st += st * abs(sin(time * 0.1)*3.0);
