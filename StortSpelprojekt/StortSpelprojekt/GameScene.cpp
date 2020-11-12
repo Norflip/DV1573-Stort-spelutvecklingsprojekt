@@ -47,10 +47,14 @@ void GameScene::InitializeObjects()
 	/* For physics/ rigidbody pickup stuff */
 
 
+
+
 	//SKELETON ANIMATION MODELS
 	bool defaultAnimation = false;
 	bool parentAnimation = true;
 	Shader* skeletonShader = resources->GetShaderResource("skeletonShader");
+
+
 
 	std::vector<Mesh*> skeletonMesh = ZWEBLoader::LoadMeshes(ZWEBLoadType::SkeletonAnimation, "Models/baseMonster.ZWEB", renderer->GetDevice());
 	std::vector<Material*> skeletonMat = ZWEBLoader::LoadMaterials("Models/baseMonster.ZWEB", skeletonShader, renderer->GetDevice());
@@ -130,7 +134,6 @@ void GameScene::InitializeObjects()
 	playerObject->AddComponent<PlayerComp>(renderer, camera, Engine::Instance->GetPhysics(), guiManager, 100.f, 2.f, 20.f, 50.f, 3.f);
 	playerObject->AddComponent<ControllerComp>(cameraObject, houseBaseObject); /////////////////
 
-
 	AddObject(cameraObject, playerObject);
 	AddObject(playerObject);
 
@@ -176,10 +179,8 @@ void GameScene::InitializeObjects()
 	//physics.RegisterRigidBody(rbEnemy);
 	//physics.MutexUnlock();
 	playerObject->AddComponent<PlayerAttackComp>(enemy);
-
 	
 	world.Initialize(root, resources, pooler, renderer);
-	
 
 	dx::XMVECTOR asdf = dx::XMVectorSet(23, 3, 40 ,1); //???
 	enemy->GetTransform().SetPosition(asdf);
@@ -218,16 +219,17 @@ void GameScene::InitializeObjects()
 	std::vector<Material*> playerMat = ZWEBLoader::LoadMaterials("Models/Player_Arms.ZWEB", skeletonShader, renderer->GetDevice());
 	//playerArmsObject->AddComponent<MeshComponent>(playerMesh[0], playerMat[0]);
 
-	SkeletonAni skeletonPlayerIdle = ZWEBLoader::LoadSkeletonOnly("Models/Player_Idle.ZWEB", playerMesh[0]->GetBoneIDS(), defaultAnimation);
-	SkeletonAni skeletonPlayerWalk = ZWEBLoader::LoadSkeletonOnly("Models/Player_Walk_Cycle.ZWEB", playerMesh[0]->GetBoneIDS(), defaultAnimation);
-	SkeletonAni skeletonPlayerRun = ZWEBLoader::LoadSkeletonOnly("Models/Player_Run.ZWEB", playerMesh[0]->GetBoneIDS(), defaultAnimation);
-	SkeletonAni skeletonPlayerAttack = ZWEBLoader::LoadSkeletonOnly("Models/Player_Attack.ZWEB", playerMesh[0]->GetBoneIDS(), defaultAnimation);
+	SkeletonAni skeletonPlayer[4];
+	skeletonPlayer[0] = ZWEBLoader::LoadSkeletonOnly("Models/Player_Idle.ZWEB", playerMesh[0]->GetBoneIDS(), defaultAnimation);
+	skeletonPlayer[1] = ZWEBLoader::LoadSkeletonOnly("Models/Player_Walk_Cycle.ZWEB", playerMesh[0]->GetBoneIDS(), defaultAnimation);
+	skeletonPlayer[2] = ZWEBLoader::LoadSkeletonOnly("Models/Player_Run.ZWEB", playerMesh[0]->GetBoneIDS(), defaultAnimation);
+	skeletonPlayer[3] = ZWEBLoader::LoadSkeletonOnly("Models/Player_Attack.ZWEB", playerMesh[0]->GetBoneIDS(), defaultAnimation);
 
 	SkeletonMeshComponent* playerComp = playerArmsObject->AddComponent<SkeletonMeshComponent>(playerMesh[0], playerMat[0]);
-	playerComp->SetAnimationTrack(skeletonPlayerIdle, SkeletonStateMachine::IDLE);
-	playerComp->SetAnimationTrack(skeletonPlayerWalk, SkeletonStateMachine::WALK);
-	playerComp->SetAnimationTrack(skeletonPlayerRun, SkeletonStateMachine::RUN);
-	playerComp->SetAnimationTrack(skeletonPlayerAttack, SkeletonStateMachine::ATTACK);
+	playerComp->SetAnimationTrack(skeletonPlayer[0], SkeletonStateMachine::IDLE);
+	playerComp->SetAnimationTrack(skeletonPlayer[1], SkeletonStateMachine::WALK);
+	playerComp->SetAnimationTrack(skeletonPlayer[2], SkeletonStateMachine::RUN);
+	playerComp->SetAnimationTrack(skeletonPlayer[3], SkeletonStateMachine::ATTACK);
 	playerComp->BlendAnimations();
 
 	//playerArmsObject->GetTransform().SetPosition({ 22, 2.0f, 53 });
@@ -243,11 +245,13 @@ void GameScene::InitializeObjects()
 	Object* axeObject = new Object("Axe", ObjectFlag::DEFAULT | ObjectFlag::NO_CULL);
 
 	axeObject->AddComponent<MeshComponent>(axeMesh[0], axeMat[0]);
-	axeObject->GetTransform().SetPosition({ 0,0,0 });
+	axeObject->GetTransform().SetPosition({ 22, 2.0f, 53 });
 	axeObject->GetTransform().SetScale({ 1, 1, 1 });
-	axeObject->AddComponent<WeaponComponent>(cameraObject, playerComp);
+
+	axeObject->AddComponent<WeaponComponent>(playerComp);
 
 	AddObject(axeObject);
+
 	playerObject->GetComponent<PlayerComp>()->InsertWeapon(axeObject->GetComponent<WeaponComponent>(), axeObject->GetName());
 
 }

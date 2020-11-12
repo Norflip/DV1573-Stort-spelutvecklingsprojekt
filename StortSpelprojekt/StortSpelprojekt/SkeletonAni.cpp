@@ -72,7 +72,7 @@ std::vector<dx::XMFLOAT4X4>& SkeletonAni::Makeglobal(float elapsedTime, const Di
     DirectX::SimpleMath::Matrix toRoot = Lerp(elapsedTime, keys) * globalParent; //These matrices are local, need to make them global recursively.
 
  
-
+    //VIKTOR
 
     unsigned int ftIndex = keys[0].index; //all of these indices have the same index number.
 

@@ -13,7 +13,7 @@ ALIGN16
 class WeaponComponent : public Component
 {
 public:
-	WeaponComponent(Object* object, SkeletonMeshComponent* skeletonMeshComp);
+	WeaponComponent(SkeletonMeshComponent* meshComp);
 
 	virtual void Initialize() override;
 	virtual void Update(const float& deltaTime) override;
@@ -23,7 +23,7 @@ public:
 private:
 	Object* camObj;
 	CameraComponent* camComp;
-	Bone* bones;
+	SkeletonMeshComponent* skeleton;
 
 	dx::XMVECTOR weaponPos;
 	dx::XMVECTOR weaponRot;
@@ -31,6 +31,9 @@ private:
 	dx::XMVECTOR up;
 	dx::XMMATRIX wepWorld, wepOffTrans, wepOffRot;
 	dx::XMMATRIX inverseViewMatrix;
+	dx::XMMATRIX skeletonMatrix;
+	dx::XMMATRIX playerWorldMatrix;
+
 
 	void SetPosition(float time);
 };

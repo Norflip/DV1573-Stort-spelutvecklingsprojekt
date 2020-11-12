@@ -2,15 +2,15 @@
 #include "WeaponComponent.h"
 #include "SkeletonAni.h"
 
-WeaponComponent::WeaponComponent(Object* object, SkeletonMeshComponent* skeletonMeshComp)
-	:camObj(object), weaponPos({ 0,0,0 }), weaponRot({ 0,0,0 }), weaponScale({ 0,0,0 }), up({ 0,0,0 })
+WeaponComponent::WeaponComponent(SkeletonMeshComponent* meshComp)
+	:weaponPos({ 0,0,0 }), weaponRot({ 0,0,0 }), weaponScale({ 0,0,0 }), up({ 0,0,0 }), skeleton(meshComp)
 {
 	//Joint nr 21 är den hand som yxan ska parentas till
 }
 
 void WeaponComponent::Initialize()
 {
-	camComp = camObj->GetComponent<CameraComponent>();
+	
 	up = { 0.0f, 1.0f, 1.0f };
 }
 
@@ -21,12 +21,24 @@ void WeaponComponent::Update(const float& deltaTime)
 
 void WeaponComponent::SetPosition(float time)
 {
-
-	inverseViewMatrix = dx::XMMatrixInverse(nullptr, camComp->GetViewMatrix());
-	wepOffTrans = dx::XMMatrixTranslation(0.3f, -0.4f, 0.8f);
-	wepOffRot = dx::XMMatrixRotationAxis(up, dx::XMConvertToRadians(-40.0f));
+	//VIKTOR
 	
-	wepWorld = wepOffRot * wepOffTrans * inverseViewMatrix;
+	//inverseViewMatrix = dx::XMMatrixInverse(nullptr, camComp->GetViewMatrix());
+	//wepOffTrans = dx::XMMatrixTranslation(3.0f, -2.0f, -5.0f);
+	//wepOffRot = dx::XMMatrixRotationAxis(up, dx::XMConvertToRadians(0.0f));
+
+	skeleton->GetMesh();
+
+	playerWorldMatrix = skeleton->GetOwner()->GetTransform().GetWorldMatrix();
+	
+	skeletonMatrix = dx::XMLoadFloat4x4(&skeleton->GetFinalTransforms()[21]);
+	skeletonMatrix = dx::XMMatrixTranspose(skeletonMatrix);
+
+
+	wepOffTrans = dx::XMMatrixTranslationFromVector(skeleton->GetMesh()->GetT());
+	wepOffRot = dx::XMMatrixTranslationFromVector(skeleton->GetMesh()->GetR());
+	
+	wepWorld = wepOffRot * wepOffTrans * skeletonMatrix * playerWorldMatrix;
 	dx::XMMatrixDecompose(&weaponScale, &weaponRot, &weaponPos, wepWorld);
 
 	GetOwner()->GetTransform().SetPosition(weaponPos);
