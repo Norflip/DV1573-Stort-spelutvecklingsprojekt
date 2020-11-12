@@ -283,7 +283,13 @@ void PlayerComp::RayCast(const float& deltaTime)
 			}
 		}
 	}
+	if (KEY_DOWN(Q))
+	{
+		if (physics->RaytestSingle(ray, rayDistance, hit, FilterGroups::PROPS))
+		{
 
+		}
+	}
 	// Health drop
 	healthDippingBar->SetScaleBars(ReverseAndClamp(health));
 
