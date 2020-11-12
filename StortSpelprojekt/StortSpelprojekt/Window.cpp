@@ -39,13 +39,17 @@ void Window::Open(size_t width, size_t height)
 
 	// Resizes window rect
 	RECT windowRect = { 0, 0, (LONG)width, (LONG)height };
-	AdjustWindowRectEx(&windowRect, WS_EX_OVERLAPPEDWINDOW, FALSE, WS_EX_OVERLAPPEDWINDOW);
-
+	//AdjustWindowRectEx(&windowRect, WS_EX_OVERLAPPEDWINDOW, FALSE, WS_EX_OVERLAPPEDWINDOW);
+	AdjustWindowRect(&windowRect, WS_OVERLAPPEDWINDOW, FALSE);
 	int wWidth = windowRect.right - windowRect.left;
 	int wHeight = windowRect.bottom - windowRect.top;
+	//int wWidth = windowRect.right - windowRect.left;
+	//int wHeight = windowRect.bottom - windowRect.top;
 	//this->hwnd = CreateWindowExW(0, CLASS_NAME, projectTitel, WS_OVERLAPPEDWINDOW, windowRect.left, windowRect.top, wWidth, wHeight, nullptr, nullptr, hInstance, nullptr);
-	this->hwnd = CreateWindowExW(0, CLASS_NAME, projectTitel, WS_OVERLAPPEDWINDOW, CW_USEDEFAULT, CW_USEDEFAULT, CW_USEDEFAULT, CW_USEDEFAULT, nullptr, nullptr, hInstance, nullptr);
+	this->hwnd = CreateWindowEx(0, CLASS_NAME, projectTitel, WS_OVERLAPPEDWINDOW, windowRect.left, windowRect.top, wWidth, wHeight, nullptr, nullptr, hInstance, nullptr);
 	//this->hwnd = CreateWindowExW()
+	SetWindowPos(hwnd, nullptr, 100, 100, 0, 0, SWP_NOSIZE | SWP_NOZORDER);
+	//(AdjustWindowRect(&windowRect, WS_EX_OVERLAPPEDWINDOW, FALSE);
 	ShowWindow(hwnd, SW_SHOW);
 	int i = wWidth;
 }
