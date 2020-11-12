@@ -187,6 +187,7 @@
     <ClCompile Include="GameScene.cpp" />
     <ClCompile Include="GrassComponent.cpp" />
     <ClCompile Include="ChunkGrid.cpp" />
+    <ClCompile Include="GridMap.cpp" />
     <ClCompile Include="GUICompass.cpp">
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">false</ExcludedFromBuild>
     </ClCompile>
@@ -269,6 +270,7 @@
     <ClInclude Include="GameOverScene.h" />
     <ClInclude Include="GameScene.h" />
     <ClInclude Include="ChunkGrid.h" />
+    <ClInclude Include="GridMap.h" />
     <ClInclude Include="GUICompass.h">
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">false</ExcludedFromBuild>
     </ClInclude>

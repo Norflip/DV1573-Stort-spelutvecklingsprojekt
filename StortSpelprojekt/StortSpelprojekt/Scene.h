@@ -24,12 +24,13 @@
 #include "ObjectPooler.h"
 #include "WeaponComponent.h"
 #include "EnemyManager.h"
+#include "GridMap.h"
 
 class GUIFont;
 class SpriteRenderPass;
 class PlayerComp;
 
-constexpr auto IMMORTAL = 0;
+constexpr auto IMMORTAL = 1;
 
 ALIGN16
 class Scene
@@ -76,6 +77,7 @@ protected:
 	Object* enemy;
 	Object* player;
 	EnemyManager* enemyManager;
+	GridMap* gridMap;
 
 	ObjectPooler* pooler;
 	GUIManager* guiManager;		

@@ -123,6 +123,8 @@ void GameScene::InitializeObjects()
 	//LOADING BASE MONSTER; ADDING SKELETONS TO IT
 	enemyManager = new EnemyManager(resources, player, player->GetComponent<PlayerComp>(), root);
 	enemyManager->InitBaseEnemy();
+
+	gridMap = new GridMap(player);
 	
 	/* PICKUP STUFF DONT DELETE THESEEE */
 	Object* healthkitObject = resources->AssembleObject("HealthKit", "HealthKitMaterial");
@@ -306,9 +308,7 @@ void GameScene::Update(const float& deltaTime)
 	world.UpdateRelevantChunks();
 	//world.DrawDebug();
 
-	//dx::XMFLOAT3 playerPos;
-	//dx::XMStoreFloat3(&playerPos, player->GetTransform().GetPosition());
-	//std::cout << "x: " << playerPos.x << ", y: " << playerPos.y << ", z: " << playerPos.z << std::endl;
+	gridMap->CheckInGrid();
 
 	static_cast<GUIFont*>(guiManager->GetGUIObject("fps"))->SetString(std::to_string((int)GameClock::Instance().GetFramesPerSecond()));
 	guiManager->UpdateAll();

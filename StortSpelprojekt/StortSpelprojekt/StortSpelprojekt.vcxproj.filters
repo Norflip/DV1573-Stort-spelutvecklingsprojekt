@@ -283,6 +283,7 @@
     <ClCompile Include="GUICompass.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="GridMap.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="ObjectSpawner.h">
@@ -568,6 +569,9 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="FXAARenderPass.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="GridMap.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>
