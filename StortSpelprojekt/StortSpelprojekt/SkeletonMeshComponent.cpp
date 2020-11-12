@@ -142,49 +142,48 @@ void SkeletonMeshComponent::PlayOnce(const float& deltaTime)
 
 	if (currentAni == SkeletonStateMachine::IDLE)
 	{
-		if (!done)
+		if (!doneOnce)
 		{
-			timer.Restart();
-			timer.Update();
-			time = (float)timer.GetSeconds();
-			time *= timeScale;
+			elapsedTime += deltaTime;
+			time = elapsedTime;
 
-			float animationTime = time * skeletonAnimations[0].GetFPS();
+			float animLength = skeletonAnimations[0].GetAniLength() / skeletonAnimations[0].GetFPS();
 
-			if (animationTime < skeletonAnimations[0].GetAniLength())
+			if (time <= animLength)
 			{
-
+				std::cout << time << std::endl;
 				finalTransforms = skeletonAnimations[0].Makeglobal(time, dx::XMMatrixIdentity(), *skeletonAnimations[0].GetRootKeyJoints());
 			}
 			else
 			{
-				done = true;
-
+				elapsedTime = 0.0f;
+				doneOnce = true;
 			}
 		}
 	}
+
 	else if (currentAni == SkeletonStateMachine::WALK)
 	{
-		if (!done)
+		if (!doneOnce)
 		{
-			timer.Restart();
-			timer.Update();
-			time = (float)timer.GetSeconds();
-			time *= timeScale;
+			elapsedTime += deltaTime;
+			time = elapsedTime;
 
-			float animationTime = time * skeletonAnimations[1].GetFPS();
+			float animLength = skeletonAnimations[1].GetAniLength() / skeletonAnimations[1].GetFPS();
 
-			if (animationTime < skeletonAnimations[1].GetAniLength())
+			if (time <= animLength)
 			{
+				std::cout << time << std::endl;
 				finalTransforms = skeletonAnimations[1].Makeglobal(time, dx::XMMatrixIdentity(), *skeletonAnimations[1].GetRootKeyJoints());
 			}
 			else
 			{
-				done = true;
-
+				elapsedTime = 0.0f;
+				doneOnce = true;
 			}
 		}
 	}
+
 	else if (currentAni == SkeletonStateMachine::RUN)
 	{
 		if (!doneOnce)
@@ -192,7 +191,7 @@ void SkeletonMeshComponent::PlayOnce(const float& deltaTime)
 			elapsedTime += deltaTime;
 			time = elapsedTime;
 
-			float animLength = skeletonAnimations[2].GetAniLength() / skeletonAnimations[2].GetFPS(); // 0.83 seconds
+			float animLength = skeletonAnimations[2].GetAniLength() / skeletonAnimations[2].GetFPS();
 
 			if (time <= animLength)
 			{
@@ -206,6 +205,7 @@ void SkeletonMeshComponent::PlayOnce(const float& deltaTime)
 			}
 		}
 	}
+
 	else if (currentAni == SkeletonStateMachine::UP)
 	{
 		if (!doneOnce)
@@ -230,6 +230,7 @@ void SkeletonMeshComponent::PlayOnce(const float& deltaTime)
 			}
 		}
 	}
+
 	else if (currentAni == SkeletonStateMachine::ATTACK)
 	{
 		if (!doneOnce)
@@ -237,7 +238,8 @@ void SkeletonMeshComponent::PlayOnce(const float& deltaTime)
 			elapsedTime += deltaTime;
 			time = elapsedTime;
 
-			float animLength = skeletonAnimations[3].GetAniLength() / skeletonAnimations[3].GetFPS(); // 0.83 seconds
+			//Get the playtime for the animation in seconds.
+			float animLength = skeletonAnimations[3].GetAniLength() / skeletonAnimations[3].GetFPS(); 
 
 			if (time <= animLength)
 			{
@@ -250,7 +252,6 @@ void SkeletonMeshComponent::PlayOnce(const float& deltaTime)
 				doneOnce = true;
 			}
 		}
-
 	}
 
 	else if (currentAni == SkeletonStateMachine::DOWN)
@@ -280,26 +281,24 @@ void SkeletonMeshComponent::PlayOnce(const float& deltaTime)
 
 	else if (currentAni == SkeletonStateMachine::DEATH)
 	{
-		if (!done)
+	if (!doneOnce)
+	{
+		elapsedTime += deltaTime;
+		time = elapsedTime;
+
+		float animLength = skeletonAnimations[4].GetAniLength() / skeletonAnimations[4].GetFPS();
+
+		if (time <= animLength)
 		{
-
-			timer.Start();
-			timer.Update();
-			time = (float)timer.GetSeconds();
-			time *= timeScale;
-			float animationTime = time * skeletonAnimations[4].GetFPS();
-
-			if (animationTime < skeletonAnimations[4].GetAniLength())
-			{
-
-				finalTransforms = skeletonAnimations[4].Makeglobal(time, dx::XMMatrixIdentity(), *skeletonAnimations[4].GetRootKeyJoints());
-			}
-			else
-			{
-				done = true;
-				timer.Stop();
-			}
+			std::cout << time << std::endl;
+			finalTransforms = skeletonAnimations[4].Makeglobal(time, dx::XMMatrixIdentity(), *skeletonAnimations[4].GetRootKeyJoints());
 		}
+		else
+		{
+			elapsedTime = 0.0f;
+			doneOnce = true;
+		}
+	}
 	}
 }
 

@@ -16,7 +16,7 @@ public:
 	void Initialize();
 	void Update(const float& deltaTime);
 
-	void Animate(float time);
+	void Animate(const float& time);
 	void SetPosition();
 private:
 	CameraComponent* camComp;

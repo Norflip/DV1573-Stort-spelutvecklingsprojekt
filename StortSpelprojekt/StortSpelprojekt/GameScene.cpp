@@ -177,18 +177,7 @@ void GameScene::InitializeObjects()
 	//physics.MutexUnlock();
 	playerObject->AddComponent<PlayerAttackComp>(enemy);
 
-	std::vector<Mesh*> axeMesh = ZWEBLoader::LoadMeshes(ZWEBLoadType::NoAnimation, "Models/AXE.ZWEB", renderer->GetDevice());
-	std::vector<Material*> axeMat = ZWEBLoader::LoadMaterials("Models/AXE.ZWEB", defaultShader, renderer->GetDevice());
-	Object* axeObject = new Object("Axe", ObjectFlag::DEFAULT | ObjectFlag::NO_CULL);
-
-	axeObject->AddComponent<MeshComponent>(axeMesh[0], axeMat[0]);
-	axeObject->GetTransform().SetPosition({ 0,0,0 });
-	axeObject->GetTransform().SetScale({ 1, 1, 1 });
-	axeObject->AddComponent<WeaponComponent>(cameraObject);
-		
-	AddObject(axeObject);
-	playerObject->GetComponent<PlayerComp>()->InsertWeapon(axeObject->GetComponent<WeaponComponent>(), axeObject->GetName());
-
+	
 	world.Initialize(root, resources, pooler, renderer);
 	
 
@@ -246,6 +235,21 @@ void GameScene::InitializeObjects()
 	playerArmsObject->AddComponent<PlayerAnimHandlerComp>(playerComp, cameraObject, playerObject);
 
 	AddObject(playerArmsObject);
+
+	//AXE
+
+	std::vector<Mesh*> axeMesh = ZWEBLoader::LoadMeshes(ZWEBLoadType::NoAnimation, "Models/AXE.ZWEB", renderer->GetDevice());
+	std::vector<Material*> axeMat = ZWEBLoader::LoadMaterials("Models/AXE.ZWEB", defaultShader, renderer->GetDevice());
+	Object* axeObject = new Object("Axe", ObjectFlag::DEFAULT | ObjectFlag::NO_CULL);
+
+	axeObject->AddComponent<MeshComponent>(axeMesh[0], axeMat[0]);
+	axeObject->GetTransform().SetPosition({ 0,0,0 });
+	axeObject->GetTransform().SetScale({ 1, 1, 1 });
+	axeObject->AddComponent<WeaponComponent>(cameraObject, playerComp);
+
+	AddObject(axeObject);
+	playerObject->GetComponent<PlayerComp>()->InsertWeapon(axeObject->GetComponent<WeaponComponent>(), axeObject->GetName());
+
 }
 
 void GameScene::InitializeGUI()

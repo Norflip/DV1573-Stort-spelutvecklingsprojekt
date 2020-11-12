@@ -5,13 +5,15 @@
 #include "DXHelper.h"
 #include "Input.h"
 #include "AudioMaster.h"
+class SkeletonAni;
+
 namespace dx = DirectX;
 
 ALIGN16 
 class WeaponComponent : public Component
 {
 public:
-	WeaponComponent(Object* object);
+	WeaponComponent(Object* object, SkeletonMeshComponent* skeletonMeshComp);
 
 	virtual void Initialize() override;
 	virtual void Update(const float& deltaTime) override;
@@ -21,6 +23,7 @@ public:
 private:
 	Object* camObj;
 	CameraComponent* camComp;
+	Bone* bones;
 
 	dx::XMVECTOR weaponPos;
 	dx::XMVECTOR weaponRot;
@@ -28,12 +31,6 @@ private:
 	dx::XMVECTOR up;
 	dx::XMMATRIX wepWorld, wepOffTrans, wepOffRot;
 	dx::XMMATRIX inverseViewMatrix;
-
-	/// SKA TAS BORT EFTER SPELTEST
-	bool attacking;
-	float attackTimer = 0;
-	float attackCooldown = 0;
-	// // // //
 
 	void SetPosition(float time);
 };

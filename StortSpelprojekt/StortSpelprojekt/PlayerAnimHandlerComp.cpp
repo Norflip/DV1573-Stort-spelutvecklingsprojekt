@@ -25,28 +25,21 @@ void PlayerAnimHandlerComp::Update(const float& deltaTime)
 	SetPosition();
 }
 
-void PlayerAnimHandlerComp::Animate(float time)
+void PlayerAnimHandlerComp::Animate(const float& time)
 {
 	attackTimer += time;
 	attackCooldown += time;
 
 	if (LMOUSE_PRESSED && attackCooldown > 1.0f)
 	{
-		skeletonMeshComp->SetTrack(SkeletonStateMachine::ATTACK, true); //OFÄRDIGT: ATTACKEN BUGGAR >_>
-		time = 0;
+		skeletonMeshComp->SetTrack(SkeletonStateMachine::ATTACK, true);
 		attackTimer = 0;
 		attackCooldown = 0;
 		attacking = true;
 	}
-	else if (attackTimer > 0.83f)
+	else if (attacking && attackTimer > 0.83f)
 	{
 		attacking = false;
-	}
-
-	if (attacking)
-	{
-		//skeletonMeshComp->SetTrack(SkeletonStateMachine::ATTACK, true); //OFÄRDIGT: ATTACKEN BUGGAR >_>
-		//AudioMaster::Instance().PlaySoundEvent("axeSwing");
 	}
 
 	else if(!attacking)

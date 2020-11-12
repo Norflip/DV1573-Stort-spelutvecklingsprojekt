@@ -163,6 +163,8 @@ float PlayerComp::ReverseAndClamp(float inputValue)
 void PlayerComp::RayCast(const float& deltaTime)
 {
 
+	attackTimer += deltaTime;
+	attackCooldown += deltaTime;
 
 	Ray ray = cam->MouseToRay(p.x, p.y);
 
@@ -220,9 +222,8 @@ void PlayerComp::RayCast(const float& deltaTime)
 
 	}
 	//ATTACK ENEMIES
-	if (LMOUSE_DOWN)
+	if (LMOUSE_PRESSED && attackCooldown > 1.0f)
 	{
-
 		if (physics->RaytestSingle(ray, 5.0f, hit, FilterGroups::ENEMIES))
 		{
 			if (hit.object != nullptr && hit.object->HasComponent<EnemyStatsComp>())
@@ -234,6 +235,7 @@ void PlayerComp::RayCast(const float& deltaTime)
 						AudioMaster::Instance().PlaySoundEvent("punch");
 						hit.object->GetComponent<EnemyStatsComp>()->LoseHealth(attack);
 						std::cout << "Hit hit hit" << std::endl;
+						
 					}
 					else if (hit.object->GetComponent<EnemyStatsComp>()->GetHealth() <= 0.0f)
 					{
@@ -256,6 +258,14 @@ void PlayerComp::RayCast(const float& deltaTime)
 				}
 			}
 		}
+		attacking = true;
+		attackTimer = 0;
+		attackCooldown = 0;
+	}
+
+	else if (attacking && attackTimer == 0.83f)
+	{
+		attacking = false;
 	}
 
 	// Health drop
