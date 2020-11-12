@@ -8,6 +8,9 @@
 #define ICAST(T) static_cast<int>(T)
 #define UICAST(T) static_cast<unsigned int>(T)
 
+#define BEFORE_MERGE(msg) std::cout << "BEFORE_MERGE: \"" << msg << "\" @" << __LINE__ << " in " << __FILE__ << "\n";
+
+
 #define MM_MALLOC_OPERATOR void* operator new(size_t i) { return _mm_malloc(i, 16); }
 #define MM_FREE_OPERATOR void operator delete(void* p){ _mm_free(p); }
 #define ALIGN16_ALLOC MM_MALLOC_OPERATOR MM_FREE_OPERATOR

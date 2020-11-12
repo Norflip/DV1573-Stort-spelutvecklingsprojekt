@@ -57,9 +57,9 @@ void AudioEngine::Initialize()
 
 void AudioEngine::Initialize3DAudio()
 {
-	DWORD dwChannel;
+	/*DWORD dwChannel;
 	masterVoice->GetChannelMask(&dwChannel);
-	bool fucki1 = 0;
+	bool fucki1 = 0;*/
 	/*X3DAUDIO_HANDLE X3DInstance;
 	HRESULT hr = X3DAudioInitialize(dwChannel, X3DAUDIO_SPEED_OF_SOUND, X3DInstance);
 	if (FAILED(hr))

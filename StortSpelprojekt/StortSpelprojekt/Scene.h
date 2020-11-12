@@ -9,8 +9,6 @@
 #include "SkeletonMeshComponent.h"
 #include "PointLightComponent.h"
 #include "NodeWalkerComp.h"
-#include "EnemyStatsComp.h"
-#include "EnemySMComp.h"
 #include "PlayerAttackComp.h"
 #include "SaveState.h"
 #include "GUIManager.h"
@@ -25,6 +23,7 @@
 #include "ResourceManager.h"
 #include "ObjectPooler.h"
 #include "WeaponComponent.h"
+#include "EnemyManager.h"
 
 class GUIFont;
 class SpriteRenderPass;
@@ -78,6 +77,7 @@ protected:
 	Input& input;
 	Object* enemy;
 	Object* player;
+	EnemyManager* enemyManager;
 
 	ObjectPooler* pooler;
 	GUIManager* guiManager;		

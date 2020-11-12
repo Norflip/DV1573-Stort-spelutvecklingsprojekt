@@ -26,7 +26,6 @@ public:
 	float GetAttackSpeed() const { return attackSpeed; }
 	float GetFuel()const { return fuel; }
 	float GetFood()const { return food; }
-	//int GetCurrentWeapon()const { return currentWeapon; }
 	float GetSprintSpeed()const { return SprintSpeed; }
 	float GetCrouchSpeed()const { return crouchSpeed; }
 	float GetMovementspeed()const { return movementSpeed; }
@@ -48,11 +47,11 @@ public:
 	void SetFood(float food) { this->fuel = food; }
 
 	
-	//void SetCurrentWeapon(int currentWeapon) { this->currentWeapon = currentWeapon; }// some ui stuff here?
 	void SetguiMan(GUIManager* guiMan) { this->guiMan = guiMan; }
 	void InsertWeapon(WeaponComponent* weapon, std::string name);
 
 private:
+	//det här skriver en kommentar till hold objekt
 	void HoldObject();
 	void DropObject();
 	float health, attack, attackSpeed, fuel, food;
@@ -61,7 +60,7 @@ private:
 	float foodLossPerSecond, fuelBurnPerMeter, healthLossPerSecond;
 	float radius;
 	GUIManager* guiMan;
-	GUISprite* fuelDippingBar, *foodDippingBar,* healthDippingBar;
+	GUISprite* fuelDippingBar, * foodDippingBar, * healthDippingBar, * fuelBar, * foodBar, * healthBar;
 	Renderer* renderer;
 	POINT p;
 	std::unordered_map<std::string, WeaponComponent*> weaponsList;
