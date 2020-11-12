@@ -233,21 +233,12 @@ Mesh* SegmentGenerator::CreateChunkMesh(ID3D11Device* device)
 
 				if (z < CHUNK_SIZE && x < CHUNK_SIZE)
 				{
-#if CW_CHUNK_MESH
 					indicies.push_back((indexCount + CHUNK_SIZE + 1));	//TL
 					indicies.push_back((indexCount + CHUNK_SIZE) + 2);	//TR
 					indicies.push_back(indexCount + 1);					//BR
 					indicies.push_back(indexCount + CHUNK_SIZE + 1);	//TL
 					indicies.push_back(indexCount + 1);					//BR
 					indicies.push_back(indexCount);						//BL
-#else
-					indicies.push_back((indexCount + CHUNK_SIZE) + 2);	//TR
-					indicies.push_back((indexCount + CHUNK_SIZE + 1));	//TL
-					indicies.push_back(indexCount + 1);					//BR
-					indicies.push_back(indexCount + 1);					//BR
-					indicies.push_back(indexCount + CHUNK_SIZE + 1);	//TL
-					indicies.push_back(indexCount);						//BL
-#endif
 				}
 
 				indexCount++;
@@ -302,7 +293,6 @@ void SegmentGenerator::AddTreesToChunk(Chunk* chunk, const Chunk::Data& data)
 				treePoints.Insert(dx::XMFLOAT2(posXZ.x + validPoints[i].x, posXZ.y + validPoints[i].y));
 
 				dx::XMFLOAT3 position(posXZ.x + validPoints[i].x, y, posXZ.y + validPoints[i].y);
-				treesInstanced[i].instancePosition = position;
 
 				float scale = Random::Range(1.4f, 2.0f);
 				dx::XMMATRIX rotation = dx::XMMatrixRotationQuaternion(dx::XMQuaternionRotationAxis({ 0,1,0 }, Random::RadAngle()));

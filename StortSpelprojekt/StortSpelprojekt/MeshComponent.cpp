@@ -81,7 +81,7 @@ void MeshComponent::DrawInstanced(Renderer* renderer, CameraComponent* camera) c
 
 			for (size_t i = 0; i < instanceData.size(); i++) //cull all the instances
 			{
-				if (camera->InView(bounds, dx::XMLoadFloat4x4(&instanceData[i].instanceWorld))) //the bounding box is in local space so it's same for every instance.
+				if (camera->InView(bounds, dx::XMMatrixTranspose(dx::XMLoadFloat4x4(&instanceData[i].instanceWorld)))) //the bounding box is in local space so it's same for every instance.
 				{
 					dataView[instanceCount] = instanceData[i];
 					instanceCount++;

@@ -1,6 +1,6 @@
 #pragma once
 #include "ObjectPooler.h"
-#include "PointQuadTree.h"
+#include "QuadTree.h"
 #include "PossionDiscSampler.h"
 #include "Random.h"
 #include "SaveState.h"
@@ -25,7 +25,7 @@ class ObjectSpawner
 		float yOffset;
 		float radius, padding;
 		size_t queueCount;
-		dx::XMUINT3 rotationAxis;
+		dx::XMUINT3 randomRotationAxis;
 	};
 
 	const float SPAWN_HEIGHT = 12.0f;
@@ -36,7 +36,7 @@ public:
 
 	void Initialize(Object* root, ObjectPooler* pooler, Renderer* renderer);
 
-	void Spawn(const SaveState& state, PointQuadTree& tree, std::unordered_map<int, Chunk*>& chunkMap, ID3D11Device* device);
+	void Spawn(const SaveState& state, QuadTree& tree, std::unordered_map<int, Chunk*>& chunkMap, ID3D11Device* device);
 	void Despawn();
 
 	void SpawnSpecific(std::vector<dx::XMFLOAT2> positions, dx::XMVECTOR axis, std::vector<float> angles, std::string modelName, std::unordered_map<int, Chunk*>& chunkMap, std::function<void(Object*)> modifier);
@@ -50,7 +50,7 @@ private:
 
 
 private:
-	std::vector<dx::XMFLOAT2> CreateSpawnPositions(PointQuadTree& tree, float radius, std::unordered_map<int, Chunk*>& chunkMap);
+	std::vector<dx::XMFLOAT2> CreateSpawnPositions(QuadTree& tree, float radius, std::unordered_map<int, Chunk*>& chunkMap);
 	Chunk* GetChunk(float x, float z, std::unordered_map<int, Chunk*>& chunkMap) const;
 
 private:

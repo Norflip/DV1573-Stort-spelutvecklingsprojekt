@@ -13,7 +13,6 @@ public:
 	struct InstanceData
 	{
 		dx::XMFLOAT4X4 instanceWorld;
-		dx::XMFLOAT3 instancePosition;
 	};
 
 	struct VertexColor
