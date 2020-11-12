@@ -48,7 +48,7 @@ GUIManager::GUIManager(Renderer* renderer, int priority) : RenderPass(priority, 
 	CD3D11_RASTERIZER_DESC rastDesc(D3D11_FILL_SOLID, D3D11_CULL_NONE, FALSE,
 		D3D11_DEFAULT_DEPTH_BIAS, D3D11_DEFAULT_DEPTH_BIAS_CLAMP,
 		D3D11_DEFAULT_SLOPE_SCALED_DEPTH_BIAS, FALSE, FALSE,
-		TRUE, TRUE);
+		FALSE, TRUE);
 
 		HRESULT resultCreateRasterizer = renderer->GetDevice()->CreateRasterizerState(&rastDesc, &testState);
 	assert(SUCCEEDED(resultCreateRasterizer));
@@ -59,7 +59,7 @@ GUIManager::GUIManager(Renderer* renderer, int priority) : RenderPass(priority, 
 	D3D11_FILTER_REDUCTION_TYPE  testFilter;
 	ZeroMemory(&testDesc, sizeof(D3D11_SAMPLER_DESC));
 	testDesc.Filter = D3D11_FILTER_ANISOTROPIC;
-	testDesc.MaxAnisotropy = 16;
+	testDesc.MaxAnisotropy = 4;
 	testDesc.ComparisonFunc = D3D11_COMPARISON_LESS_EQUAL;
 	testDesc.MinLOD = 0;
 	testDesc.MaxLOD = FLT_MAX;
@@ -105,8 +105,8 @@ void GUIManager::Pass(Renderer* renderer, CameraComponent* camera, RenderTexture
 {
 
 	//SPRITES
-	spriteBatch->Begin(dx::SpriteSortMode::SpriteSortMode_BackToFront, m_states->NonPremultiplied(), samplerState, depthStencilState, testState);
-	//spriteBatch->Begin(dx::SpriteSortMode::SpriteSortMode_BackToFront, blendOn, nullptr, depthStencilState, testState);
+	//spriteBatch->Begin(dx::SpriteSortMode::SpriteSortMode_BackToFront, m_states->NonPremultiplied(), samplerState, depthStencilState, testState);
+	spriteBatch->Begin(dx::SpriteSortMode::SpriteSortMode_BackToFront, blendOn, nullptr, depthStencilState, testState);
 	for (auto i : GUIObjects)
 	{
 		if(!i.second->HasGroup(GuiGroup::Font))
