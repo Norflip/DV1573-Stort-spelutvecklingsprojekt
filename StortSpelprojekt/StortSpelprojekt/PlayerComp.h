@@ -60,7 +60,7 @@ private:
 	float foodLossPerSecond, fuelBurnPerMeter, healthLossPerSecond;
 	float radius;
 	GUIManager* guiMan;
-	GUISprite* fuelDippingBar, *foodDippingBar,* healthDippingBar;
+	GUISprite* fuelDippingBar, * foodDippingBar, * healthDippingBar, * fuelBar, * foodBar, * healthBar;
 	Renderer* renderer;
 	POINT p;
 	std::unordered_map<std::string, WeaponComponent*> weaponsList;
