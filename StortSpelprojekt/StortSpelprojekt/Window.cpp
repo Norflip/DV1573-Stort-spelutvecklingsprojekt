@@ -37,6 +37,8 @@ void Window::Open(size_t width, size_t height)
 	wndclass.hIcon = LoadIcon(NULL, IDI_WINLOGO);
 	RegisterClass(&wndclass);
 
+
+	//Almost done fixing this shit
 	// Resizes window rect
 	RECT windowRect = { 0, 0, (LONG)width, (LONG)height };
 	//AdjustWindowRectEx(&windowRect, WS_EX_OVERLAPPEDWINDOW, FALSE, WS_EX_OVERLAPPEDWINDOW);
