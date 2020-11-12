@@ -1,6 +1,5 @@
 #include "stdafx.h"
 #include "GUIManager.h"
-
 #include "GUICompass.h"
 
 
@@ -8,7 +7,7 @@ GUIManager::GUIManager(Renderer* renderer, int priority) : RenderPass(priority, 
 {
 	spriteBatch = new DirectX::SpriteBatch(this->renderer->GetContext());
 
-
+	m_states = std::make_unique<DirectX::CommonStates>(renderer->GetDevice());
 	//Desc for blending png files with depth//
 
 	D3D11_DEPTH_STENCIL_DESC dsDesc;
@@ -106,7 +105,7 @@ void GUIManager::Pass(Renderer* renderer, CameraComponent* camera, RenderTexture
 {
 
 	//SPRITES
-	spriteBatch->Begin(dx::SpriteSortMode::SpriteSortMode_BackToFront, blendOn, samplerState, depthStencilState, testState);
+	spriteBatch->Begin(dx::SpriteSortMode::SpriteSortMode_BackToFront, m_states->NonPremultiplied(), samplerState, depthStencilState, testState);
 	//spriteBatch->Begin(dx::SpriteSortMode::SpriteSortMode_BackToFront, blendOn, nullptr, depthStencilState, testState);
 	for (auto i : GUIObjects)
 	{

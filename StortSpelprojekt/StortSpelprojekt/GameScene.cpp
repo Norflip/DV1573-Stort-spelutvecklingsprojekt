@@ -152,6 +152,9 @@ void GameScene::InitializeObjects()
 	beansObject->AddComponent<ParticleSystemComponent>(renderer, camera, particleShader);
 	beansObject->GetComponent<ParticleSystemComponent>()->InitializeParticles(renderer->GetDevice(), L"Textures/starstar.png");
 	AddObject(beansObject);		
+	//Has to be made in end of objects in order to use them
+	GUICompass* compass = new GUICompass(*renderer, window, house, player);
+	guiManager->AddGUIObject(compass, "compass");
 }
 
 void GameScene::InitializeGUI()
@@ -186,7 +189,7 @@ void GameScene::InitializeGUI()
 	GUISprite* healthSprite = new GUISprite(*renderer, "Textures/HealthIcon.png", 10, 10, 0, DrawDirection::BottomRight, ClickFunction::NotClickable);
 
 	//COMPASS
-	GUICompass* compass = new GUICompass(*renderer, window);
+
 	//FONTS
 	GUIFont* fpsDisplay = new GUIFont(*renderer, "fps", windowWidth / 2, 50);
 	//GUIFont* healthDisplay = new GUIFont(*renderer, "playerHealth", 50, 100);
@@ -202,7 +205,7 @@ void GameScene::InitializeGUI()
 	//guiManager->AddGUIObject(healthDisplay, "playerHealth");
 	//guiManager->AddGUIObject(enemyDisplay, "enemyHealth");
 	//COMPASS
-	guiManager->AddGUIObject(compass, "compass");
+
 
 	//BASE OF EQUIPMENT
 	guiManager->AddGUIObject(equimpmentSprite1, "equimpmentSprite1");

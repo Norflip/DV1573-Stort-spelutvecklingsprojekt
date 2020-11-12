@@ -35,13 +35,15 @@ GUISprite::GUISprite(Renderer& renderer , std::string path, float xPos, float yP
 	HRESULT result;
 	std::wstring wsConvert(filePath.begin(), filePath.end());
 	spriteBatch = std::make_unique<dx::SpriteBatch>(renderer.GetContext());
-	std::size_t found = path.find("Compass.png");
 
-	//	result = DirectX::CreateDDSTextureFromFile(renderer.GetDevice(), wsConvert.c_str(), &res, &SRV);
-	//else
+	// for testing purposes
+	std::size_t found = path.find("Compass.dds");
+	if (found != std::string::npos)
+		result = DirectX::CreateDDSTextureFromFile(renderer.GetDevice(), wsConvert.c_str(), &res, &SRV);
+	else
 		result = DirectX::CreateWICTextureFromFile(renderer.GetDevice(), wsConvert.c_str(), &res, &SRV);
-		if (found != std::string::npos)
-				DirectX::SaveWICTextureToFile(renderer.GetContext(),res.Get(),GUID_ContainerFormatPng, L"SCREENSHOT.png");
+		
+				//DirectX::SaveWICTextureToFile(renderer.GetContext(),res.Get(),GUID_ContainerFormatPng, L"SCREENSHOT.png");
 
 	assert(SUCCEEDED(result));
 	result = res.As(&tex);
@@ -141,7 +143,7 @@ void GUISprite::SetScaleBars(float yValue)
 void GUISprite::Move(POINTFLOAT moveDir)
 {
 	//Fix this after meeting
-	this->position. = xPos + moveDir.x;
+	this->position= dx::XMVectorSet(this->xPos+moveDir.x, this->yPos + moveDir.y, 0, 0);
 	this->yPos = yPos + moveDir.y;
 }
 
