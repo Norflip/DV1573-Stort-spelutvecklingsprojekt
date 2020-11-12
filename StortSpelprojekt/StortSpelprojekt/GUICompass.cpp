@@ -8,8 +8,9 @@ GUICompass::GUICompass(Renderer& renderer, Window* window)
 {
 	this->renderer = &renderer;
 	this->window = window;
-	backgroundBar = new GUISprite(renderer, "Textures/Compass.png", window->GetWidth()/2, 10, 0.2f, DrawDirection::Default, ClickFunction::NotClickable);
-	house = new GUISprite(renderer, "Textures/House.png", window->GetWidth() / 2, 10, 0.0f, DrawDirection::Default, ClickFunction::NotClickable);
+	backgroundBar = new GUISprite(renderer, "Textures/Compass.png", 0, 10, 0.2f, DrawDirection::Center, ClickFunction::NotClickable);
+	house = new GUISprite(renderer, "Textures/House.png", 0, 10, 0.0f, DrawDirection::Center, ClickFunction::NotClickable);
+	backgroundBar->Move({ 0.f, 30.f });
 }
 
 void GUICompass::Update()

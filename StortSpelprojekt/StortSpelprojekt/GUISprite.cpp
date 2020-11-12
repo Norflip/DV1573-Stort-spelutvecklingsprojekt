@@ -138,6 +138,13 @@ void GUISprite::SetScaleBars(float yValue)
 	this->scale = dx::XMVectorSet(this->xScale, this->yScale, 0, 0);
 }
 
+void GUISprite::Move(POINTFLOAT moveDir)
+{
+	//Fix this after meeting
+	this->position. = xPos + moveDir.x;
+	this->yPos = yPos + moveDir.y;
+}
+
 bool GUISprite::IsClicked()
 {
 	if(this->GetVisible())
@@ -200,6 +207,12 @@ void GUISprite::SetPos(float xPos, float yPos, DrawDirection dir)
 		this->yPos = renderer->GetOutputWindow()->GetHeight() - height * 2 - yPos;
 		this->relativeXPos = renderer->GetOutputWindow()->GetWidth() - xPos - width;
 		this->relativeYPos = renderer->GetOutputWindow()->GetHeight() - yPos - height;
+		break;
+	case Center:
+		this->xPos = renderer->GetOutputWindow()->GetWidth() / 2 - width /2 - xPos;
+		this->yPos = yPos;
+		this->relativeXPos = renderer->GetOutputWindow()->GetWidth() / 2 - xPos - width/2;
+		this->relativeYPos = yPos;	
 		break;
 	default:
 		this->xPos = xPos;
