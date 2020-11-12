@@ -19,7 +19,7 @@ public:
 	void ConstructSegment(const SaveState& state);
 	void DeconstructSegment();
 	
-	void UpdateRelevantChunks (const Transform& transform);
+	void UpdateRelevantChunks (const Transform& transform, CameraComponent* camera);
 	void DrawDebug();
 
 	Chunk* GetChunk(const float& x, const float& z) const;

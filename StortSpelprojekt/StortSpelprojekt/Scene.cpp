@@ -63,7 +63,7 @@ void Scene::Update(const float& deltaTime)
 
 void Scene::FixedUpdate(const float& fixedDeltaTime)
 {
-	root->FixedUpdate(fixedDeltaTime);
+	//root->FixedUpdate(fixedDeltaTime);
 	physics->FixedUpdate(fixedDeltaTime);
 }
 

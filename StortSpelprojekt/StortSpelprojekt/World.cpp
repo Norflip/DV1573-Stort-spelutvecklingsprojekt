@@ -43,7 +43,7 @@ void World::DeconstructSegment()
 	generator.Deconstruct();
 }
 
-void World::UpdateRelevantChunks(const Transform& transform)
+void World::UpdateRelevantChunks(const Transform& transform, CameraComponent* camera)
 {
 	const float offset = 0.1f;
 
@@ -66,8 +66,26 @@ void World::UpdateRelevantChunks(const Transform& transform)
 			GetChunksInRadius(lastRelevantIndex, RELEVANT_RADIUS, relevant);
 
 			for (auto i : relevant)
+			{
 				i->GetOwner()->AddFlag(ObjectFlag::ENABLED);
+			}		
 		}
+
+		/*for (auto i : relevant)
+		{
+			Object* obj = i->GetOwner();
+			Bounds bounds = obj->GetComponent<MeshComponent>()->GetBounds();
+			bool inView = camera->InView(bounds, obj->GetTransform().GetWorldMatrix());
+
+			if (inView)
+			{
+				obj->RemoveFlag(ObjectFlag::ENABLED);
+			}
+			else
+			{
+				obj->AddFlag(ObjectFlag::ENABLED);
+			}
+		}*/
 	}
 }
 

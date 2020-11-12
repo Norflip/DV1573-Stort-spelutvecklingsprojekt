@@ -181,11 +181,11 @@ Chunk* SegmentGenerator::CreateChunk(const dx::XMINT2& index, Object* root, cons
 	auto textureSampler = DXHelper::CreateSampler(D3D11_FILTER_MIN_MAG_MIP_LINEAR, D3D11_TEXTURE_ADDRESS_WRAP, device);
 	material->SetSampler(textureSampler, 1, ShaderBindFlag::PIXEL);
 
-	MeshComponent* meshComp = chunkObject->AddComponent<MeshComponent>(chunkMesh, material);
 
-	Bounds& bounds = meshComp->GetBounds();
-	dx::XMFLOAT3 max = bounds.GetMax();
-	bounds.SetMinMax(bounds.GetMin(), dx::XMFLOAT3(max.x, TERRAIN_SCALE, max.z));
+	Bounds bounds;
+	bounds.SetMinMax(dx::XMFLOAT3(0, 0, 0), dx::XMFLOAT3(CHUNK_SIZE, TERRAIN_SCALE + 1.0f, CHUNK_SIZE));
+
+	MeshComponent* meshComp = chunkObject->AddComponent<MeshComponent>(chunkMesh, material, bounds);
 
 	AddTreesToChunk(chunk, data);
 	AddGrassToChunk(chunk, data.dataTexture);
@@ -313,7 +313,7 @@ void SegmentGenerator::AddTreesToChunk(Chunk* chunk, const Chunk::Data& data)
 				colliderExtends.push_back(extends);
 			}
 
-			Object* tree = new Object("tree", ObjectFlag::DEFAULT);
+			Object* tree = new Object("tree", ObjectFlag::DEFAULT | ObjectFlag::NO_CULL);
 			Transform::SetParentChild(chunk->GetOwner()->GetTransform(), tree->GetTransform());
 			tree->GetTransform().SetPosition({ 0,0,0 });
 			tree->GetTransform().SetWorldPosition({ 0,0,0 });
@@ -334,7 +334,11 @@ void SegmentGenerator::AddTreesToChunk(Chunk* chunk, const Chunk::Data& data)
 void SegmentGenerator::AddGrassToChunk(Chunk* chunk, Texture* texture)
 {
 	size_t chunkTriangleCount = chunkMesh->GetTriangleCount();
-	GrassComponent* grassComponent = chunk->GetOwner()->AddComponent<GrassComponent>(chunkTriangleCount, device, grassShader);
+
+	Bounds bounds;
+	bounds.SetMinMax(dx::XMFLOAT3(0, 0, 0), dx::XMFLOAT3(CHUNK_SIZE, TERRAIN_SCALE + 1.0f, CHUNK_SIZE));
+
+	GrassComponent* grassComponent = chunk->GetOwner()->AddComponent<GrassComponent>(chunkTriangleCount, device, grassShader, bounds);
 	grassComponent->GetMaterial()->SetTexture(texture, 6, ShaderBindFlag::HULL);
 	grassComponent->GetMaterial()->SetTexture(texture, 6, ShaderBindFlag::DOMAINS);
 
