@@ -156,53 +156,16 @@ void GameScene::InitializeObjects()
 	SkeletonMeshComponent* armsSkeleton = resources->GetResource<SkeletonMeshComponent>("PlayerArmsSkeleton");
 	playerArms->AddComponent<SkeletonMeshComponent>(armsSkeleton);
 	playerArms->AddComponent<PlayerAnimHandlerComp>(playerArms->GetComponent<SkeletonMeshComponent>(), cameraObject, player);
-	//playerArms->GetTransform().SetPosition({ 22, 0.5f, -16 });
 
 	AddObject(playerArms);
 
 	Object* axeObject = resources->AssembleObject("Axe", "AxeMaterial", ObjectFlag::DEFAULT | ObjectFlag::NO_CULL);
 	axeObject->GetTransform().SetPosition({ 21.0f, 1.0f, -16.0f });
 	axeObject->GetTransform().SetScale({ 1.0f, 1.0f, 1.0f });
-	//axeObject->AddComponent<WeaponComponent>(playerComp);
-	//playerObject->GetComponent<PlayerComp>()->InsertWeapon(axeObject->GetComponent<WeaponComponent>(), axeObject->GetName());
+	axeObject->AddComponent<WeaponComponent>(playerArms->GetComponent<SkeletonMeshComponent>());
+	playerObject->GetComponent<PlayerComp>()->InsertWeapon(axeObject->GetComponent<WeaponComponent>(), axeObject->GetName());
 	AddObject(axeObject);
 	
-
-	//std::vector<Mesh*> playerMesh = ZWEBLoader::LoadMeshes(ZWEBLoadType::SkeletonAnimation, "Models/Player_Arms.ZWEB", renderer->GetDevice());
-	//std::vector<Material*> playerMat = ZWEBLoader::LoadMaterials("Models/Player_Arms.ZWEB", skeletonShader, renderer->GetDevice());
-	////playerArmsObject->AddComponent<MeshComponent>(playerMesh[0], playerMat[0]);
-
-	//SkeletonAni skeletonPlayer[4];
-	//skeletonPlayer[0] = ZWEBLoader::LoadSkeletonOnly("Models/Player_Idle.ZWEB", playerMesh[0]->GetBoneIDS(), defaultAnimation);
-	//skeletonPlayer[1] = ZWEBLoader::LoadSkeletonOnly("Models/Player_Walk_Cycle.ZWEB", playerMesh[0]->GetBoneIDS(), defaultAnimation);
-	//skeletonPlayer[2] = ZWEBLoader::LoadSkeletonOnly("Models/Player_Run.ZWEB", playerMesh[0]->GetBoneIDS(), defaultAnimation);
-	//skeletonPlayer[3] = ZWEBLoader::LoadSkeletonOnly("Models/Player_Attack.ZWEB", playerMesh[0]->GetBoneIDS(), defaultAnimation);
-
-	//SkeletonMeshComponent* playerComp = playerArmsObject->AddComponent<SkeletonMeshComponent>(playerMesh[0], playerMat[0]);
-	//playerComp->SetAnimationTrack(skeletonPlayer[0], SkeletonStateMachine::IDLE);
-	//playerComp->SetAnimationTrack(skeletonPlayer[1], SkeletonStateMachine::WALK);
-	//playerComp->SetAnimationTrack(skeletonPlayer[2], SkeletonStateMachine::RUN);
-	//playerComp->SetAnimationTrack(skeletonPlayer[3], SkeletonStateMachine::ATTACK);
-	//playerComp->BlendAnimations();
-
-	//playerArmsObject->GetTransform().SetPosition({ 22, 2.0f, 53 });
-
-	//AXE
-
-	/*std::vector<Mesh*> axeMesh = ZWEBLoader::LoadMeshes(ZWEBLoadType::NoAnimation, "Models/AXE.ZWEB", renderer->GetDevice());
-	std::vector<Material*> axeMat = ZWEBLoader::LoadMaterials("Models/AXE.ZWEB", defaultShader, renderer->GetDevice());
-	Object* axeObject = new Object("Axe", ObjectFlag::DEFAULT | ObjectFlag::NO_CULL);
-
-	axeObject->AddComponent<MeshComponent>(axeMesh[0], axeMat[0]);
-	axeObject->GetTransform().SetPosition({ 22, 2.0f, 53 });
-	axeObject->GetTransform().SetScale({ 1, 1, 1 });
-
-	axeObject->AddComponent<WeaponComponent>(playerComp);*/
-
-	//AddObject(axeObject);
-
-	//playerObject->GetComponent<PlayerComp>()->InsertWeapon(axeObject->GetComponent<WeaponComponent>(), axeObject->GetName());
-
 }
 
 void GameScene::InitializeGUI()
@@ -355,8 +318,6 @@ void GameScene::Update(const float& deltaTime)
 	static_cast<GUIFont*>(guiManager->GetGUIObject("fps"))->SetString(std::to_string((int)GameClock::Instance().GetFramesPerSecond()));
 	guiManager->UpdateAll();
 
-	std::cout << "PlayerPos: " << player->GetTransform().GetPosition().m128_f32[0] << " " << player->GetTransform().GetPosition().m128_f32[1] << " " << player->GetTransform().GetPosition().m128_f32[2] << std::endl;
-	//std::cout << "AxePos: " << player->GetTransform().GetPosition().m128_f32[0] << " " << player->GetTransform().GetPosition().m128_f32[1] << " " << player->GetTransform().GetPosition().m128_f32[2] << std::endl;
 }
 
 void GameScene::FixedUpdate(const float& fixedDeltaTime)
