@@ -25,10 +25,12 @@ void ObjectSpawner::Spawn(const SaveState& state, PointQuadTree& tree, std::unor
 	propSpawnPositions = CreateSpawnPositions(tree, 10.0f, chunkMap);
 	itemSpawnPositions = CreateSpawnPositions(tree, 20.0f, chunkMap);
 
+	return;
+
 	struct TempData
 	{
 		Prop* prop;
-		std::vector<Mesh::InstanceData> instancedData;
+		std::vector<dx::XMFLOAT4X4> instancedData;
 		std::vector<dx::XMFLOAT3> positions;
 
 		// ROTATIONS LATER
@@ -53,13 +55,13 @@ void ObjectSpawner::Spawn(const SaveState& state, PointQuadTree& tree, std::unor
 			float y = chunk->SampleHeight(pos.x, pos.y) + prop.yOffset;
 			dx::XMFLOAT3 position = dx::XMFLOAT3(pos.x, y, pos.y);
 
-			Mesh::InstanceData singleInstancedData;
-			dx::XMMATRIX translation = dx::XMMatrixTranslation(position.x, position.y, position.z);
-			dx::XMStoreFloat4x4(&singleInstancedData.instanceWorld, dx::XMMatrixTranspose(translation));
-			singleInstancedData.instancePosition = position;
 
+			dx::XMFLOAT4X4 instancedData;
+			dx::XMMATRIX translation = dx::XMMatrixTranslation(position.x, position.y, position.z);
+			dx::XMStoreFloat4x4(&instancedData, dx::XMMatrixTranspose(translation));
+		
 			data[chunk].positions.push_back(position);
-			data[chunk].instancedData.push_back(singleInstancedData);
+			data[chunk].instancedData.push_back(instancedData);
 			data[chunk].prop = &prop;
 		}
 
@@ -104,6 +106,7 @@ void ObjectSpawner::Spawn(const SaveState& state, PointQuadTree& tree, std::unor
 
 				Object* object = pooler->GetItem(item.key);
 				dx::XMVECTOR position = dx::XMVectorSet(pos.x, y + SPAWN_HEIGHT, pos.y, 0.0f);
+				object->GetComponent<MeshComponent>()->SetBatchable(true);
 
 				object->GetComponent<RigidBodyComponent>()->SetPosition(position);
 				Transform::SetParentChild(root->GetTransform(), object->GetTransform());

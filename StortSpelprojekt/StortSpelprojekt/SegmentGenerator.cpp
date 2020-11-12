@@ -70,12 +70,10 @@ void SegmentGenerator::Construct(const SaveState& state, const SegmentDescriptio
 		{
 			obj->GetTransform().SetScale({ 1.2f, 1.2f, 1.2f });
 
-
-
-		//	Object* light = new Object("lantern_pointLight");
-		//	light->GetTransform().SetPosition({ 0,2,0 });
-		//	light->AddComponent<PointLightComponent>(dx::XMFLOAT4(0.3f, 0.3f, 0.3f, 1.0f), 20.f);
-		//	Transform::SetParentChild(obj->GetTransform(), light->GetTransform());
+			/*Object* light = new Object("lantern_pointLight");
+			light->GetTransform().SetPosition({ 0,2,0 });
+			light->AddComponent<PointLightComponent>(dx::XMFLOAT4(0.3f, 0.3f, 0.3f, 1.0f), 6.f);
+			Transform::SetParentChild(obj->GetTransform(), light->GetTransform());*/
 
 		});
 
@@ -286,7 +284,7 @@ void SegmentGenerator::AddTreesToChunk(Chunk* chunk, const Chunk::Data& data)
 		size_t nrOfInstancedStyTrees = validPoints.size();
 		if (nrOfInstancedStyTrees > 0)
 		{
-			std::vector<Mesh::InstanceData> treesInstanced(nrOfInstancedStyTrees);
+			std::vector<dx::XMFLOAT4X4> treesInstanced(nrOfInstancedStyTrees);
 			dx::XMFLOAT2 posXZ = Chunk::IndexToWorldXZ(chunk->GetIndex());
 
 			Bounds bbInfo;
@@ -302,12 +300,14 @@ void SegmentGenerator::AddTreesToChunk(Chunk* chunk, const Chunk::Data& data)
 				treePoints.Insert(dx::XMFLOAT2(posXZ.x + validPoints[i].x, posXZ.y + validPoints[i].y));
 
 				dx::XMFLOAT3 position(posXZ.x + validPoints[i].x, y, posXZ.y + validPoints[i].y);
-				treesInstanced[i].instancePosition = position;
 
 				float scale = Random::Range(1.4f, 2.0f);
 				dx::XMMATRIX rotation = dx::XMMatrixRotationQuaternion(dx::XMQuaternionRotationAxis({ 0,1,0 }, Random::RadAngle()));
 				dx::XMMATRIX translation = dx::XMMatrixScaling(scale, scale, scale) * rotation * dx::XMMatrixTranslation(position.x, position.y, position.z);
-				dx::XMStoreFloat4x4(&treesInstanced[i].instanceWorld, dx::XMMatrixTranspose(translation));
+				
+				//dx::XMFLOAT4X4 transf;
+				dx::XMStoreFloat4x4(&treesInstanced[i], dx::XMMatrixTranspose(translation));
+				//treesInstanced.push_back(transf);
 
 				colliderPositions.push_back(position);
 				colliderExtends.push_back(extends);

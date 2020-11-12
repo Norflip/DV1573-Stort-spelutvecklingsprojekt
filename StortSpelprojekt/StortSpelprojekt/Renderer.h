@@ -12,6 +12,20 @@
 #include <time.h>
 
 
+inline int GetBatchID(const Material* material, const Mesh* mesh)
+{
+	return std::hash<int>()(material->GetID()) * 10000 + std::hash<int>()((int)mesh);
+}
+
+constexpr int MAX_BATCH_COUNT = 1024;
+
+struct Batch
+{
+	const Material* material;
+	const Mesh* mesh;
+	std::vector<dx::XMFLOAT4X4> transformations;
+};
+
 class RenderPass;
 
 ALIGN16
@@ -57,7 +71,7 @@ public:
 
 	void AddRenderPass(RenderPass*);
 	
-	void Draw(const Mesh* mesh, const Material* material, const dx::XMMATRIX& model);
+	void Draw(const Mesh* mesh, const Material* material, const dx::XMMATRIX& model, bool batchable);
 	void DrawInstanced(const Mesh* mesh, const size_t& count, ID3D11Buffer* instanceBuffer, const Material* material);
 	void DrawSkeleton(const Mesh* mesh, const Material* material, const dx::XMMATRIX& model, std::vector<dx::XMFLOAT4X4>& bones);
 	void DrawGrass(const Mesh* mesh, const Material* material, const dx::XMMATRIX& model);
@@ -91,7 +105,7 @@ private:
 	void DrawRenderItemSkeleton(const RenderItem& item, CameraComponent* camera);
 	void DrawRenderItemGrass(const RenderItem& item, CameraComponent* camera);
 	void DrawRenderItemParticles(const RenderItem& item, CameraComponent* camera);
-
+	void DrawBatch(const Batch& batch, CameraComponent* camera);
 
 	void SetObjectBufferValues(const CameraComponent* camera, dx::XMMATRIX world, bool transpose);
 	Mesh* CreateScreenQuad();
@@ -117,6 +131,10 @@ private:
 	ID3D11ShaderResourceView* skeleton_srv;
 
 	Window* outputWindow;
+
+	std::unordered_map<int, Batch> opaqueBatches;
+	std::unordered_map<int, Batch> transparentBatches;
+	ID3D11Buffer* batchBuffer;
 
 	RenderQueue opaqueItemQueue;
 	RenderQueue transparentItemQueue;

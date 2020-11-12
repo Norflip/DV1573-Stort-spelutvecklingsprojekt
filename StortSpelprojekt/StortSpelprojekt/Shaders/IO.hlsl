@@ -52,7 +52,6 @@ struct VS_INSTANCE_INPUT
 	float3 binormal : BINORMAL;
 	uint id	: SV_InstanceID;
     row_major matrix instanceWorld : INSTANCEWORLD;
-	float3 instancePos : INSTANCEPOS;
 };
 
 struct VS_OUTPUT_GRASS

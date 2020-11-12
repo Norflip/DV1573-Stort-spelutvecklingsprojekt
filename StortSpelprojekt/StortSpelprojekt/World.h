@@ -8,7 +8,7 @@
 class World
 {
 	typedef std::unordered_map<int, Chunk*> ChunkMap;
-	const int RELEVANT_RADIUS = 2;
+	const int RELEVANT_RADIUS = 1;
 
 public:
 	World();

@@ -52,7 +52,6 @@ bool VirtualCamera::InView(const Bounds& bounds, const dx::XMMATRIX world, std::
 		if (d1 + plane.w < 0.0f)
 			return false;
 
-
 		//// ON FRUSTUM BORDER
 		//float d2 = plane.x * vmax.x + plane.y * vmax.y + plane.z * vmax.z;
 		//if (d2 + plane.w <= 0)
