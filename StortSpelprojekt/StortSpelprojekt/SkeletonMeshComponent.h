@@ -41,6 +41,8 @@ public:
 	
 	SkeletonAni& GetAnimationTrack(unsigned int trackNr);
 
+	std::vector<dx::XMFLOAT4X4>& GetFinalTransforms() { return this->finalTransforms; }
+
 	void SetTrack(const SkeletonStateMachine& type, bool playOnce);
 	void BlendAnimations();
 	bool GetIsDone();
@@ -72,9 +74,11 @@ private:
 	GameClock timer;
 	bool playOnce = false;
 	bool done = false;
-	void PlayOnce();
+	void PlayOnce(const float& deltaTime);
 	void RunAnimation(const float& deltaTime);
 	void FindChildren(SkeletonAni& track, unsigned int& index, std::map<std::string, unsigned int>& map, std::string& name, std::string& secondName);
 	bool doneUp, doneDown;
+
+	
 };
 

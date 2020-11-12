@@ -1,14 +1,16 @@
 #include "stdafx.h"
 #include "WeaponComponent.h"
+#include "SkeletonAni.h"
 
-WeaponComponent::WeaponComponent(Object* object)
-	:camObj(object), weaponPos({ 0,0,0 }), weaponRot({ 0,0,0 }), weaponScale({ 0,0,0 }), up({ 0,0,0 }), attacking(false)
+WeaponComponent::WeaponComponent(SkeletonMeshComponent* meshComp)
+	:weaponPos({ 0,0,0 }), weaponRot({ 0,0,0 }), weaponScale({ 0,0,0 }), up({ 0,0,0 }), skeleton(meshComp)
 {
+	//Joint nr 21 �r den hand som yxan ska parentas till
 }
 
 void WeaponComponent::Initialize()
 {
-	camComp = camObj->GetComponent<CameraComponent>();
+	
 	up = { 0.0f, 1.0f, 1.0f };
 }
 
@@ -19,42 +21,24 @@ void WeaponComponent::Update(const float& deltaTime)
 
 void WeaponComponent::SetPosition(float time)
 {
-
-	inverseViewMatrix = dx::XMMatrixInverse(nullptr, camComp->GetViewMatrix());
-	wepOffTrans = dx::XMMatrixTranslation(0.3f, -0.4f, 0.8f);
-	wepOffRot = dx::XMMatrixRotationAxis(up, dx::XMConvertToRadians(-40.0f));
-
-
-	//TA BORT SEN EFTER SPELTEST/////////////////////
-	// ATTACK LOGIC - PLACEHOLDER AS FUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUU
-	attackTimer += time;
-	attackCooldown += time;
+	//VIKTOR
 	
-	if (LMOUSE_DOWN && attackCooldown > 0.5)
-	{
-		time = 0;
-		attackTimer = 0;
-		attackCooldown = 0;
-		attacking = true;
-		AudioMaster::Instance().PlaySoundEvent("axeSwing");
-	}
-	else if (attackTimer > 0.2f)
-	{
-		attacking = false;
-		
-	}
+	//inverseViewMatrix = dx::XMMatrixInverse(nullptr, camComp->GetViewMatrix());
+	//wepOffTrans = dx::XMMatrixTranslation(3.0f, -2.0f, -5.0f);
+	//wepOffRot = dx::XMMatrixRotationAxis(up, dx::XMConvertToRadians(0.0f));
+
+	skeleton->GetMesh();
+
+	playerWorldMatrix = skeleton->GetOwner()->GetTransform().GetWorldMatrix();
 	
-	if (attacking)
-	{
-		
-		wepOffTrans = dx::XMMatrixTranslation(0.1f, -0.1f, 1.1f);
-		wepOffRot = dx::XMMatrixRotationAxis({ -1.0f,1.0f,0.5f }, dx::XMConvertToRadians(-60.0f));
-	}
-	///////////////////////////////////////////////////////////////////////
+	skeletonMatrix = dx::XMLoadFloat4x4(&skeleton->GetFinalTransforms()[21]);
+	skeletonMatrix = dx::XMMatrixTranspose(skeletonMatrix);
 
 
+	wepOffTrans = dx::XMMatrixTranslationFromVector(skeleton->GetMesh()->GetT());
+	wepOffRot = dx::XMMatrixTranslationFromVector(skeleton->GetMesh()->GetR());
 	
-	wepWorld = wepOffRot * wepOffTrans * inverseViewMatrix;
+	wepWorld = wepOffRot * wepOffTrans * skeletonMatrix * playerWorldMatrix;
 	dx::XMMatrixDecompose(&weaponScale, &weaponRot, &weaponPos, wepWorld);
 
 	GetOwner()->GetTransform().SetPosition(weaponPos);

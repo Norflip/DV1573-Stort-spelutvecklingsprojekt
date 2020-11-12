@@ -73,6 +73,10 @@ private:
 	CameraComponent* cam;
 	//GameClock attackTimer;
 
+	bool attacking = false;
+	float attackTimer = 0;
+	float attackCooldown = 0;
+
 	bool foodEmpty;
 	bool gg;
 	float throwStrength;

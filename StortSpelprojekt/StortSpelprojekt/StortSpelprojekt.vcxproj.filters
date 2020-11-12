@@ -283,6 +283,7 @@
     <ClCompile Include="GUICompass.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="PlayerAnimHandlerComp.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="ObjectSpawner.h">
@@ -568,6 +569,7 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="FXAARenderPass.h">
+    <ClInclude Include="PlayerAnimHandlerComp.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>

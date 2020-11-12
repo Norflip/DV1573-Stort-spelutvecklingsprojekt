@@ -84,6 +84,8 @@ public:
 	ControllerComp(Object* cameraObject, Object* houseObject);
 	virtual ~ControllerComp();
 
+	RigidBodyComponent* GetrbComp() { return this->rbComp; }
 	void Initialize();
 	void Update(const float& deltaTime);
+	float GetVelocity() { return this->velocity; }
 };
