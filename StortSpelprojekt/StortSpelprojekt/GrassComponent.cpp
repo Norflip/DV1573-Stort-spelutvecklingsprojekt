@@ -2,8 +2,8 @@
 #include "GrassComponent.h"
 
 
-GrassComponent::GrassComponent(size_t chunkTriangleCount, ID3D11Device* device, Shader* shader)
-	: grassMat(new Material(shader))
+GrassComponent::GrassComponent(size_t chunkTriangleCount, ID3D11Device* device, Shader* shader, Bounds bounds)
+	: grassMat(new Material(shader)), bounds(bounds)
 {
 	std::vector<Mesh::Vertex> grassV;
 	std::vector<unsigned int> grassI;
@@ -26,7 +26,7 @@ GrassComponent::GrassComponent(size_t chunkTriangleCount, ID3D11Device* device, 
 	grassMat->SetTexture(diffuse, TEXTURE_DIFFUSE_SLOT, ShaderBindFlag::DOMAINS);
 	grassMat->SetTexture(noise, TEXTURE_NOISE_SLOT, ShaderBindFlag::DOMAINS);
 	grassMat->SetTexture(height, TEXTURE_HEIGHT_SLOT, ShaderBindFlag::HULL | ShaderBindFlag::DOMAINS);
-	
+
 	auto sampler = DXHelper::CreateSampler(D3D11_FILTER_MIN_MAG_MIP_POINT, D3D11_TEXTURE_ADDRESS_CLAMP, device);
 	grassMat->SetSampler(sampler, 0, ShaderBindFlag::HULL);
 	grassMat->SetSampler(sampler, 0, ShaderBindFlag::DOMAINS);
@@ -125,7 +125,9 @@ void GrassComponent::InitializeGrass(Mesh* chunkMesh, ID3D11Device* device, ID3D
 
 void GrassComponent::Draw(Renderer* renderer, CameraComponent* camera)
 {
-	renderer->DrawGrass(grassMesh, grassMat, this->GetOwner()->GetTransform().GetWorldMatrix());
+	dx::XMMATRIX world = this->GetOwner()->GetTransform().GetWorldMatrix();
+	if (camera->InView(bounds, world))
+		renderer->DrawGrass(grassMesh, grassMat, world);
 }
 
 

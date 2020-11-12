@@ -319,7 +319,7 @@ void GameScene::OnDeactivate()
 void GameScene::Update(const float& deltaTime)
 {
 	Scene::Update(deltaTime);
-	world.UpdateRelevantChunks(player->GetTransform());
+	world.UpdateRelevantChunks(player->GetTransform(), camera);
 //	world.DrawDebug();
 
 	static_cast<GUIFont*>(guiManager->GetGUIObject("fps"))->SetString(std::to_string((int)GameClock::Instance().GetFramesPerSecond()));

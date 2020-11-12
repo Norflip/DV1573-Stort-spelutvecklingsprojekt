@@ -6,7 +6,7 @@
 #include "Material.h"
 #include "Renderer.h"
 
-
+#include "Bounds.h"
 
 struct GrassStraw
 {
@@ -22,7 +22,7 @@ class GrassComponent : public Component
 
 
 public:
-	GrassComponent(size_t chunkTriangleCount, ID3D11Device* device, Shader* shader);
+	GrassComponent(size_t chunkTriangleCount, ID3D11Device* device, Shader* shader, Bounds bounds);
 	virtual ~GrassComponent();
 
 	void InitializeGrass(Mesh* chunkMesh, ID3D11Device* device, ID3D11DeviceContext* context);
@@ -50,6 +50,7 @@ private:
 
 	ConstantBuffer<cb_grass> grassBuffer;
 
+	Bounds bounds;
 	//ChunkType chunkType;
 };
 

@@ -195,7 +195,6 @@ void Renderer::RenderFrame(CameraComponent* camera, float time, RenderTexture& t
 	ClearRenderTarget(midbuffer);
 	SetRenderTarget(midbuffer);
 
-
 	for (auto i = passes.begin(); i < passes.end(); i++)
 	{
 		RenderPass* pass = *i;
@@ -217,16 +216,6 @@ void Renderer::RenderFrame(CameraComponent* camera, float time, RenderTexture& t
 	SetCullBack(true);
 	size_t passCount = 0;
 	size_t bufferIndex = 0;
-
-
-	/* Particle stuffy */
-	SetCullBack(true);
-	/*for (auto i : particleList)
-	{
-		if(i.second->GetActive())
-			i.second->Render(context, camera);
-	}*/
-	SetCullBack(false);
 
 	if (applyRenderPasses)
 	{

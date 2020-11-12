@@ -79,9 +79,6 @@ void ObjectSpawner::Spawn(const SaveState& state, PointQuadTree& tree, std::unor
 		props->AddComponent<RigidBodyComponent>(0.f, FilterGroups::PROPS, FilterGroups::EVERYTHING, BodyType::STATIC, true);
 
 		Transform::SetParentChild(i.first->GetOwner()->GetTransform(), props->GetTransform());
-
-
-
 	}
 
 
@@ -112,8 +109,8 @@ void ObjectSpawner::Spawn(const SaveState& state, PointQuadTree& tree, std::unor
 				itemIndex++;
 
 				/* Particles */
-				ParticleSystemComponent* particles = object->AddComponent<ParticleSystemComponent>(renderer, Engine::Instance->GetResources()->GetShaderResource("particleShader"));
-				particles->InitializeParticles(renderer->GetDevice(), L"Textures/starstar.png");
+			//	ParticleSystemComponent* particles = object->AddComponent<ParticleSystemComponent>(renderer, Engine::Instance->GetResources()->GetShaderResource("particleShader"));
+			//	particles->InitializeParticles(renderer->GetDevice(), L"Textures/starstar.png");
 			}
 		}
 	}
@@ -143,7 +140,6 @@ void ObjectSpawner::Despawn()
 
 void ObjectSpawner::SpawnSpecific(std::vector<dx::XMFLOAT2> positions, dx::XMVECTOR axis, std::vector<float> angles, std::string modelName, std::unordered_map<int, Chunk*>& chunkMap, std::function<void(Object*)> modifier)
 {
-	
 	for (size_t i = 0; i < positions.size(); i++)
 	{
 		Chunk* chunk = GetChunk(positions[i].x, positions[i].y, chunkMap);

@@ -39,7 +39,6 @@ Engine::Engine(HINSTANCE hInstance) : window(hInstance), activeScene(nullptr), s
 
 Engine::~Engine()
 {
-	
 	for (size_t i = 0; i < scenes.size(); i++)
 	{
 		if (scenes[i])
@@ -94,6 +93,7 @@ void Engine::Run()
 				activeScene = (*sceneIt).second;
 				activeScene->OnActivate();
 				sceneSwitch = -1;
+				std::cout << "switching scene" << std::endl;
 			}
 
 			auto elapsed = std::chrono::duration<double, std::milli>(std::chrono::high_resolution_clock::now() - startTimePoint);
