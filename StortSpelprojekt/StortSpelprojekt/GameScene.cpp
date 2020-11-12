@@ -150,24 +150,23 @@ void GameScene::InitializeObjects()
 	beansObject->AddComponent<RigidBodyComponent>(0.f, FilterGroups::PICKUPS, FilterGroups::TERRAIN, BodyType::DYNAMIC, true);
 	AddObject(beansObject);
 
+
 	//Player Arms
-	Object* playerArmsObject = new Object("PlayerArms");
-	SkeletonMeshComponent* playerAmrsComp = resources->GetResource<SkeletonMeshComponent>("PlayerArmsSkeleton");
-	playerArmsObject->AddComponent<SkeletonMeshComponent>(playerAmrsComp);
-	playerArmsObject->AddComponent<PlayerAnimHandlerComp>(playerAmrsComp, cameraObject, playerObject);
-	//playerArmsObject->GetTransform().SetPosition({ 22, 2.0f, 53 });
+	Object* playerArms = new Object("PlayerArms", ObjectFlag::DEFAULT | ObjectFlag::NO_CULL);
+	SkeletonMeshComponent* armsSkeleton = resources->GetResource<SkeletonMeshComponent>("PlayerArmsSkeleton");
+	playerArms->AddComponent<SkeletonMeshComponent>(armsSkeleton);
+	playerArms->AddComponent<PlayerAnimHandlerComp>(playerArms->GetComponent<SkeletonMeshComponent>(), cameraObject, player);
+	//playerArms->GetTransform().SetPosition({ 22, 0.5f, -16 });
 
-	AddObject(playerArmsObject);
+	AddObject(playerArms);
 
-	//Object* axeObject = resources->AssembleObject("Axe", "AxeMaterial");
-	//axeObject->GetTransform().SetPosition({ 0,0,0 });
-	//axeObject->GetTransform().SetScale({ 1, 1, 1 });
-	//axeObject->AddComponent<WeaponComponent>(playerAmrsComp);
-	//axeObject->AddFlag(ObjectFlag::NO_CULL);
-	//AddObject(axeObject);
+	Object* axeObject = resources->AssembleObject("Axe", "AxeMaterial", ObjectFlag::DEFAULT | ObjectFlag::NO_CULL);
+	axeObject->GetTransform().SetPosition({ 21.0f, 1.0f, -16.0f });
+	axeObject->GetTransform().SetScale({ 1.0f, 1.0f, 1.0f });
+	//axeObject->AddComponent<WeaponComponent>(playerComp);
 	//playerObject->GetComponent<PlayerComp>()->InsertWeapon(axeObject->GetComponent<WeaponComponent>(), axeObject->GetName());
-
-
+	AddObject(axeObject);
+	
 
 	//std::vector<Mesh*> playerMesh = ZWEBLoader::LoadMeshes(ZWEBLoadType::SkeletonAnimation, "Models/Player_Arms.ZWEB", renderer->GetDevice());
 	//std::vector<Material*> playerMat = ZWEBLoader::LoadMaterials("Models/Player_Arms.ZWEB", skeletonShader, renderer->GetDevice());
@@ -187,10 +186,6 @@ void GameScene::InitializeObjects()
 	//playerComp->BlendAnimations();
 
 	//playerArmsObject->GetTransform().SetPosition({ 22, 2.0f, 53 });
-
-	
-
-	
 
 	//AXE
 
@@ -330,17 +325,11 @@ void GameScene::OnActivate()
 	house->GetComponent<NodeWalkerComp>()->InitializePath(world.GetPath());
 	world.MoveHouseAndPlayerToStart();
 
-
-
-
 	renderer->AddRenderPass(guiManager);
 
-	
 	Input::Instance().ConfineMouse();
 	Input::Instance().SetMouseMode(dx::Mouse::Mode::MODE_RELATIVE);
 	ShowCursor(false);
-
-
 
 	AudioMaster::Instance().PlaySoundEvent("wind");
 	//this->PrintSceneHierarchy(root, 0);
@@ -365,6 +354,9 @@ void GameScene::Update(const float& deltaTime)
 
 	static_cast<GUIFont*>(guiManager->GetGUIObject("fps"))->SetString(std::to_string((int)GameClock::Instance().GetFramesPerSecond()));
 	guiManager->UpdateAll();
+
+	std::cout << "PlayerPos: " << player->GetTransform().GetPosition().m128_f32[0] << " " << player->GetTransform().GetPosition().m128_f32[1] << " " << player->GetTransform().GetPosition().m128_f32[2] << std::endl;
+	//std::cout << "AxePos: " << player->GetTransform().GetPosition().m128_f32[0] << " " << player->GetTransform().GetPosition().m128_f32[1] << " " << player->GetTransform().GetPosition().m128_f32[2] << std::endl;
 }
 
 void GameScene::FixedUpdate(const float& fixedDeltaTime)

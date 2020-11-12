@@ -5,6 +5,11 @@
 PlayerAnimHandlerComp::PlayerAnimHandlerComp(SkeletonMeshComponent* skeletonMeshComp, Object* object, Object* playerObject)
 	:skeletonMeshComp(skeletonMeshComp), camObject(object), playerObject(playerObject)
 {
+
+	this->skeletonMeshComp = skeletonMeshComp;
+	this->camObject = object;
+	this->playerObject = playerObject;
+
 }
 
 PlayerAnimHandlerComp::~PlayerAnimHandlerComp()
@@ -21,7 +26,7 @@ void PlayerAnimHandlerComp::Initialize()
 
 void PlayerAnimHandlerComp::Update(const float& deltaTime)
 {
-	//Animate(deltaTime);
+	Animate(deltaTime);
 	SetPosition();
 }
 
