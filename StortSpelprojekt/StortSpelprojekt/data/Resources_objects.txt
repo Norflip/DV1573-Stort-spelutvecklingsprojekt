@@ -1,4 +1,4 @@
-Objects: 27
+Objects: 28
 
 Enemy: Models/Enemies/baseMonster.ZWEB
 Shader: skeletonShader
@@ -8,6 +8,14 @@ Animations: 5
 2: Animations/BaseEnemy/baseMonsterRun.ZWEB
 3: Animations/BaseEnemy/baseMonsterAttack.ZWEB
 5: Animations/BaseEnemy/baseMonsterDeath.ZWEB
+
+PlayerArms: Models/Player/Player_Arms.ZWEB
+Shader: skeletonShader
+Animations: 4
+0: Animations/PlayerArms/Player_Idle.ZWEB
+1: Animations/PlayerArms/Player_Walk_Cycle.ZWEB
+2: Animations/PlayerArms/Player_Run.ZWEB
+3: Animations/PlayerArms/Player_Attack.ZWEB
 
 House: Models/House/House_Base.ZWEB
 Shader: houseShader

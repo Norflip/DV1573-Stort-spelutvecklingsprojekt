@@ -27,13 +27,12 @@ void WeaponComponent::SetPosition(float time)
 	//wepOffTrans = dx::XMMatrixTranslation(3.0f, -2.0f, -5.0f);
 	//wepOffRot = dx::XMMatrixRotationAxis(up, dx::XMConvertToRadians(0.0f));
 
-	skeleton->GetMesh();
+	//skeleton->GetMesh();
 
 	playerWorldMatrix = skeleton->GetOwner()->GetTransform().GetWorldMatrix();
 	
 	skeletonMatrix = dx::XMLoadFloat4x4(&skeleton->GetFinalTransforms()[21]);
 	skeletonMatrix = dx::XMMatrixTranspose(skeletonMatrix);
-
 
 	wepOffTrans = dx::XMMatrixTranslationFromVector(skeleton->GetMesh()->GetT());
 	wepOffRot = dx::XMMatrixTranslationFromVector(skeleton->GetMesh()->GetR());

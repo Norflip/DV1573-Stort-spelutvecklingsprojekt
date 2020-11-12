@@ -21,7 +21,7 @@ void PlayerAnimHandlerComp::Initialize()
 
 void PlayerAnimHandlerComp::Update(const float& deltaTime)
 {
-	Animate(deltaTime);
+	//Animate(deltaTime);
 	SetPosition();
 }
 
