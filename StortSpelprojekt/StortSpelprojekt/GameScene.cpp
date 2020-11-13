@@ -150,15 +150,14 @@ void GameScene::InitializeObjects()
 	beansObject->AddComponent<RigidBodyComponent>(0.f, FilterGroups::PICKUPS, FilterGroups::TERRAIN, BodyType::DYNAMIC, true);
 	AddObject(beansObject);
 
-
 	//Player Arms
 	Object* playerArms = new Object("PlayerArms", ObjectFlag::DEFAULT | ObjectFlag::NO_CULL);
 	SkeletonMeshComponent* armsSkeleton = resources->GetResource<SkeletonMeshComponent>("PlayerArmsSkeleton");
 	playerArms->AddComponent<SkeletonMeshComponent>(armsSkeleton);
 	playerArms->AddComponent<PlayerAnimHandlerComp>(playerArms->GetComponent<SkeletonMeshComponent>(), cameraObject, player);
-
 	AddObject(playerArms);
 
+	//Axe
 	Object* axeObject = resources->AssembleObject("Axe", "AxeMaterial", ObjectFlag::DEFAULT | ObjectFlag::NO_CULL);
 	axeObject->GetTransform().SetPosition({ 21.0f, 1.0f, -16.0f });
 	axeObject->GetTransform().SetScale({ 1.0f, 1.0f, 1.0f });
