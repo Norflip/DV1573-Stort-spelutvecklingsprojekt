@@ -184,9 +184,13 @@ void ControllerComp::Update(const float& deltaTime)
 		float yPos = Input::Instance().GetMousePosRelative().y * deltaTime;
 		cameraEuler.x += xPos;
 		cameraEuler.y += yPos;
+		cameraEuler2.x += xPos;
+		cameraEuler2.y += yPos;
 
+		groundRotation2 = dx::XMQuaternionRotationRollPitchYaw(0.f, cameraEuler2.y*10, 0.f);
+
+		dx::XMVectorSetY(groundRotation2,Math::PI * 2);
 		cameraEuler.x = Math::Clamp(cameraEuler.x, -CLAMP_X, CLAMP_X);
-
 		if (cameraEuler.y >= CLAMP_Y)
 			cameraEuler.y = 0.f;
 		else if (cameraEuler.y <= 0.f)
@@ -195,7 +199,7 @@ void ControllerComp::Update(const float& deltaTime)
 		//std::cout << "x: " << cameraEuler.x * Math::ToDegree << ", y: " << cameraEuler.y * Math::ToDegree << std::endl;
 		cameraObject->GetTransform().SetRotation(dx::XMQuaternionRotationRollPitchYaw(cameraEuler.x, cameraEuler.y, cameraEuler.z));
 
-		dx::XMVECTOR groundRotation = dx::XMQuaternionRotationRollPitchYaw(0.f, cameraEuler.y, 0.f);
+		groundRotation = dx::XMQuaternionRotationRollPitchYaw(0.f, cameraEuler.y, 0.f);
 		
 		Input::Instance().ResetRelative();
 

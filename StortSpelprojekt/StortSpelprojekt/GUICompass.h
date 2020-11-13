@@ -1,7 +1,10 @@
 #pragma once
 #include "GUIManager.h"
 #include "GUISprite.h"
+#include "PlayerComp.h"
+#include "ControllerComp.h"
 #include <math.h> 
+#include <cmath>
 class GUIManager;
 
 class GUICompass : public GUIObject

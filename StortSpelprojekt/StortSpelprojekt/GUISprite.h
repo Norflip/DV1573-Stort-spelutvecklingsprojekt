@@ -43,7 +43,8 @@ public:
 	float GetYpos() { return yPos; };
 	float GetHeight() { return width; };
 	void SetWICSprite(ID3D11Device* device, std::string spriteFile);
-	
+	void SetColor(sm::Vector4 color);
+	sm::Vector4 GetColor() { return baseColor; };
 	void SetActiveColor(dx::XMVECTOR vector = dx::XMVectorSet(0.6f, 0.6f, 1.3f, 1.0f));
 
 	void SetDDSSprite(ID3D11Device* device, std::string spriteFile); // no dds yet

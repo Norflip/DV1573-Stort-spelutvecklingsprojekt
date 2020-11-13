@@ -105,6 +105,11 @@ void GUISprite::SetWICSprite(ID3D11Device* device,std::string spriteFile)
 	assert(SUCCEEDED(result));
 }
 
+void GUISprite::SetColor(sm::Vector4 color)
+{
+	this->baseColor = color;
+}
+
 
 void GUISprite::SetActiveColor(dx::XMVECTOR vector)
 {

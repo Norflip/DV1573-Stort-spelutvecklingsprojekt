@@ -6,6 +6,7 @@
 #include "Scene.h"
 #include "AudioMaster.h"
 #include "WeaponComponent.h"
+
 class EnemyStatsComp;
 
 class PlayerComp :
@@ -45,7 +46,7 @@ public:
 	void SetSprintSpeed(float SprintSpeed) { this->crouchSpeed = SprintSpeed; }
 	void SetFuel(float fuel) { this->fuel = fuel; }
 	void SetFood(float food) { this->fuel = food; }
-
+	CameraComponent* GetCamera(){ return cam; };
 	
 	void SetguiMan(GUIManager* guiMan) { this->guiMan = guiMan; }
 	void InsertWeapon(WeaponComponent* weapon, std::string name);

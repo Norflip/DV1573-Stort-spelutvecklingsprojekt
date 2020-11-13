@@ -59,7 +59,7 @@ private:
 	dx::XMFLOAT3 jumpDir; 
 	dx::XMFLOAT3 cameraOffset;
 	dx::XMFLOAT3 cameraEuler;
-
+	dx::XMFLOAT3 cameraEuler2;
 	Object* cameraObject;
 	NodeWalkerComp* houseWalkComp;
 	RigidBodyComponent* rbComp;
@@ -77,10 +77,13 @@ private:
 			this->velocityTimer = 0.f;
 		}
 	};
+protected:
+	dx::XMVECTOR groundRotation2;
+	dx::XMVECTOR groundRotation;
 public:
 	ControllerComp(Object* cameraObject, Object* houseObject);
 	virtual ~ControllerComp();
-
+	dx::XMVECTOR GetGroundRot() { return groundRotation2; };
 	void Initialize();
 	void Update(const float& deltaTime);
 };
