@@ -301,10 +301,8 @@ void GameScene::OnActivate()
 	Input::Instance().SetMouseMode(dx::Mouse::Mode::MODE_RELATIVE);
 	ShowCursor(false);
 
-
-
 	AudioMaster::Instance().PlaySoundEvent("wind");
-	//this->PrintSceneHierarchy(root, 0);
+	LightManager::Instance().ForceUpdateBuffers(renderer->GetContext());
 }
 
 void GameScene::OnDeactivate()

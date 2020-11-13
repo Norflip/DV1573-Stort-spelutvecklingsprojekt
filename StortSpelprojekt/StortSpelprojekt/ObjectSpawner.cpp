@@ -102,7 +102,7 @@ void ObjectSpawner::Spawn(const SaveState& state, QuadTree& tree, std::unordered
 
 				Object* object = pooler->GetItem(item.key);
 				dx::XMVECTOR position = dx::XMVectorSet(pos.x, y + SPAWN_HEIGHT, pos.y, 0.0f);
-				object->GetComponent<MeshComponent>()->SetBatchable(true);
+				//object->GetComponent<MeshComponent>()->SetBatchable(true);
 
 				object->GetComponent<RigidBodyComponent>()->SetPosition(position);
 				Transform::SetParentChild(root->GetTransform(), object->GetTransform());

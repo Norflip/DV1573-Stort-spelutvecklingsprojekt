@@ -1,7 +1,7 @@
 #include "CommonBuffers.hlsl"
 #include "IO.hlsl"
 
-#define INSTANCED
+//#define INSTANCED
 
 #ifdef INSTANCED
 #define INPUT VS_INSTANCE_INPUT

@@ -4,7 +4,7 @@
 
 Transform::Transform(Object* owner) : Transform(owner,dx::XMVectorZero(), dx::XMQuaternionIdentity(), dx::XMVectorSplatOne())
 {
-	changedThisFrame = true;
+	changedThisFrame = false;
 }
 
 Transform::Transform(Object* owner, dx::XMVECTOR position, dx::XMVECTOR rotation, dx::XMVECTOR scale) : owner(owner), parent(nullptr)
@@ -12,7 +12,7 @@ Transform::Transform(Object* owner, dx::XMVECTOR position, dx::XMVECTOR rotation
 	dx::XMStoreFloat3(&this->localPosition, position);
 	dx::XMStoreFloat4(&this->localRotation, rotation);
 	dx::XMStoreFloat3(&this->scale, scale);
-	changedThisFrame = true;
+	MarkAsChanged();
 }
 
 Transform::~Transform()
@@ -25,11 +25,10 @@ void Transform::Translate(float x, float y, float z)
 
 	if (x != 0.0f || y != 0.0f || z != 0.0f)
 	{
-		changedThisFrame = true;
-
 		localPosition.x += x;
 		localPosition.y += y;
 		localPosition.z += z;
+		MarkAsChanged();
 	}
 }
 
@@ -39,15 +38,13 @@ void Transform::Rotate(float pitch, float yaw, float roll)
 
 	if (pitch != 0.0f || yaw != 0.0f || roll != 0.0f)
 	{
-		changedThisFrame = true;
-
 		dx::XMVECTOR right = TransformDirection({ 1,0,0 });
 		dx::XMVECTOR eulerRotation = dx::XMQuaternionMultiply(dx::XMQuaternionRotationAxis(right, pitch), dx::XMQuaternionRotationAxis({ 0,1,0 }, yaw));
 
 		//dx::XMVECTOR eulerRotation = dx::XMQuaternionRotationRollPitchYaw(pitch, yaw, roll);
 		dx::XMVECTOR newRotation = dx::XMQuaternionMultiply(dx::XMLoadFloat4(&localRotation), eulerRotation);
 		dx::XMStoreFloat4(&localRotation, newRotation);
-
+		MarkAsChanged();
 	}
 }
 
@@ -102,6 +99,20 @@ void Transform::ClearFromHierarchy(Transform& transform)
 	}
 }
 
+void Transform::ResetChanged()
+{
+	this->changedThisFrame = false;
+	for (size_t i = 0; i < children.size(); i++)
+		children[i]->ResetChanged();
+}
+
+void Transform::MarkAsChanged()
+{
+	this->changedThisFrame = true;
+	for (size_t i = 0; i < children.size(); i++)
+		children[i]->MarkAsChanged();
+}
+
 
 
 
@@ -121,7 +132,7 @@ void Transform::SetLocalPosition(dx::XMVECTOR position)
 {
 	ASSERT_STATIC_OBJECT;
 	dx::XMStoreFloat3(&this->localPosition, position);
-	changedThisFrame = true;
+	MarkAsChanged();
 }
 
 void Transform::SetWorldPosition(dx::XMVECTOR position)
@@ -154,7 +165,7 @@ void Transform::SetLocalRotation(dx::XMVECTOR rotation)
 {
 	ASSERT_STATIC_OBJECT;
 	dx::XMStoreFloat4(&this->localRotation, rotation);
-	changedThisFrame = true;
+	MarkAsChanged();
 }
 
 void Transform::SetWorldRotation(dx::XMVECTOR rotation)
@@ -175,7 +186,7 @@ void Transform::SetScale(dx::XMVECTOR scale)
 {
 	ASSERT_STATIC_OBJECT;
 	dx::XMStoreFloat3(&this->scale, scale);
-	changedThisFrame = true;
+	MarkAsChanged();
 }
 
 void Transform::SmoothRotation(dx::XMFLOAT3 endPos, float deltaTime, bool changeDir)

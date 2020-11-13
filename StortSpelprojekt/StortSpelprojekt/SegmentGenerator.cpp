@@ -150,7 +150,7 @@ Chunk* SegmentGenerator::CreateChunk(const dx::XMINT2& index, Object* root, cons
 	CreateChunkMap(index, description, data);
 
 	std::string name = "chunk " + std::to_string(index.x) + ", " + std::to_string(index.y);
-	Object* chunkObject = new Object(name, ObjectFlag::RENDER | ObjectFlag::ENABLED);
+	Object* chunkObject = new Object(name, ObjectFlag::RENDER);
 	Chunk* chunk = chunkObject->AddComponent<Chunk>(index, type, data);
 
 	chunkObject->GetTransform().SetPosition(Chunk::IndexToWorld(index, 0.0f));

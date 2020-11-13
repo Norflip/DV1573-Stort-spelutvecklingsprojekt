@@ -17,15 +17,6 @@ inline int GetBatchID(const Material* material, const Mesh* mesh)
 	return std::hash<int>()(material->GetID()) * 10000 + std::hash<int>()((int)mesh);
 }
 
-constexpr int MAX_BATCH_COUNT = 1024;
-
-struct Batch
-{
-	const Material* material;
-	const Mesh* mesh;
-	std::vector<dx::XMFLOAT4X4> transformations;
-};
-
 class RenderPass;
 
 ALIGN16
@@ -33,6 +24,14 @@ class Renderer
 {
 	//const FLOAT DEFAULT_BG_COLOR[4] = { 0.3f, 0.1f, 0.2f, 1.0f };
 	const FLOAT DEFAULT_BG_COLOR[4] = { 0.2f, 0.2f, 0.2f, 1.0f };
+
+	static const int MAX_BATCH_COUNT = 512;
+	struct Batch
+	{
+		const Material* material;
+		const Mesh* mesh;
+		std::vector<dx::XMFLOAT4X4> transformations;
+	};
 
 	struct RenderItem
 	{
@@ -134,7 +133,8 @@ private:
 
 	std::unordered_map<int, Batch> opaqueBatches;
 	std::unordered_map<int, Batch> transparentBatches;
-	ID3D11Buffer* batchBuffer;
+	ID3D11Buffer* batchInstanceBuffer;
+	dx::XMFLOAT4X4* tmpBatchInstanceData;
 
 	RenderQueue opaqueItemQueue;
 	RenderQueue transparentItemQueue;

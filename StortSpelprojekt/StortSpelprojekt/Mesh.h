@@ -69,7 +69,7 @@ public:
 	std::map<std::string, unsigned int>& GetBoneIDS() { return boneIDMap; }
 	void SetBoneIDS(std::map<std::string, unsigned int> bones){ boneIDMap = bones; }
 	void SetMeshName(std::string name) { this->name = name; }
-	std::string GetMeshName() { return this->name; }
+	std::string GetMeshName() const { return this->name; }
 
 	void CalculateMinMax(dx::XMFLOAT3& min, dx::XMFLOAT3& max) const;
 	

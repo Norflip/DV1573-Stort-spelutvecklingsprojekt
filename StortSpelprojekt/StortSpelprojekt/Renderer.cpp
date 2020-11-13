@@ -5,7 +5,7 @@
 #include "Input.h"
 
 
-Renderer::Renderer() : device(nullptr), context(nullptr), swapchain(nullptr), skeleton_srvbuffer(nullptr), skeleton_srv(nullptr), batchBuffer(nullptr)
+Renderer::Renderer() : device(nullptr), context(nullptr), swapchain(nullptr), skeleton_srvbuffer(nullptr), skeleton_srv(nullptr), batchInstanceBuffer(nullptr)
 {
 	srand(unsigned int(time(0)));
 }
@@ -30,6 +30,8 @@ Renderer::~Renderer()
 	dss->Release();
 	rasterizerStateCCWO->Release();
 
+
+	delete[] tmpBatchInstanceData;
 }
 
 void Renderer::Initialize(Window* window)
@@ -81,9 +83,8 @@ void Renderer::Initialize(Window* window)
 
 	//	CreateInstanceBuffer(device, MAX_BATCH_COUNT, )
 
-	dx::XMFLOAT4X4* tmpData = new dx::XMFLOAT4X4[MAX_BATCH_COUNT];
-	DXHelper::CreateInstanceBuffer(device, MAX_BATCH_COUNT, sizeof(dx::XMFLOAT4X4), tmpData, &batchBuffer);
-	delete[] tmpData;
+	tmpBatchInstanceData = new dx::XMFLOAT4X4[MAX_BATCH_COUNT];
+	DXHelper::CreateInstanceBuffer(device, MAX_BATCH_COUNT, sizeof(dx::XMFLOAT4X4), tmpBatchInstanceData, &batchInstanceBuffer);
 }
 
 
@@ -215,7 +216,7 @@ void Renderer::RenderFrame(CameraComponent* camera, float time, RenderTexture& t
 	DrawQueueToTarget(opaqueItemQueue, camera);
 	DShape::Instance().m_Draw(camera->GetViewMatrix() * camera->GetProjectionMatrix(), context);
 
-	//transparentBatches: opaqueBatches
+	std::cout << "\n" << std::endl;
 
 	for (auto i : opaqueBatches)
 		DrawBatch(i.second, camera);
@@ -297,7 +298,7 @@ void Renderer::Draw(const Mesh* mesh, const Material* material, const dx::XMMATR
 		int batchID = GetBatchID(material, mesh);
 		auto& batches = material->IsTransparent() ? transparentBatches : opaqueBatches;
 		dx::XMFLOAT4X4 modelInFloats;
-		dx::XMStoreFloat4x4(&modelInFloats, model);
+		dx::XMStoreFloat4x4(&modelInFloats, dx::XMMatrixTranspose(model));
 
 		if (batches.find(batchID) != batches.end())
 		{
@@ -547,32 +548,35 @@ void Renderer::DrawBatch(const Batch& batch, CameraComponent* camera)
 {
 	// Skapa indexbuffer
 
+	size_t instanceCount = std::min(batch.transformations.size(), UICAST(MAX_BATCH_COUNT));
+	if (instanceCount == 0)
+		return;
+
 	SetObjectBufferValues(camera, dx::XMMatrixIdentity(), true);
 	objectBuffer.UpdateBuffer(context);
 
-	size_t instanceCount = batch.transformations.size();
-	if (instanceCount == 0)
-		return;
 
 	D3D11_MAPPED_SUBRESOURCE mappedData;
 	ZeroMemory(&mappedData, sizeof(D3D11_MAPPED_SUBRESOURCE));
 
-	GetContext()->Map(batchBuffer, 0, D3D11_MAP_WRITE_DISCARD, 0, &mappedData);
+	GetContext()->Map(batchInstanceBuffer, 0, D3D11_MAP_WRITE_DISCARD, 0, &mappedData);
 	dx::XMFLOAT4X4* dataView = reinterpret_cast<dx::XMFLOAT4X4*>(mappedData.pData);
 
-	for (size_t i = 0; i < batch.transformations.size(); i++) //cull all the instances
+	for (size_t i = 0; i < batch.transformations.size(); i++)
 	{
 		dataView[i] = batch.transformations[i];
 	}
 
-	GetContext()->Unmap(batchBuffer, 0);
+	GetContext()->Unmap(batchInstanceBuffer, 0);
+
+
 
 	UINT stride[2] = { sizeof(Mesh::Vertex), sizeof(dx::XMFLOAT4X4) };
 	UINT offset[2] = { 0 };
 
 	ID3D11Buffer* buffers[2];
 	buffers[0] = batch.mesh->GetVertexBuffer();
-	buffers[1] = batchBuffer;
+	buffers[1] = batchInstanceBuffer;
 
 	context->IASetVertexBuffers(0, 2, buffers, stride, offset);
 	context->IASetIndexBuffer(batch.mesh->GetIndexBuffer(), DXGI_FORMAT_R32_UINT, 0);
@@ -580,6 +584,7 @@ void Renderer::DrawBatch(const Batch& batch, CameraComponent* camera)
 
 	context->DrawIndexedInstanced(batch.mesh->GetIndexCount(), instanceCount, 0, 0, 0);
 
+	//std::cout << "BATCHING(" << batch.material->IsTransparent() << "): " << batch.mesh->GetMeshName() << " / " << batch.material->GetID() << " : " << instanceCount << "\n";
 }
 
 void Renderer::SetObjectBufferValues(const CameraComponent* camera, dx::XMMATRIX world, bool transpose)
