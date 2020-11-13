@@ -48,6 +48,8 @@ void GameScene::InitializeObjects()
 
 	Object* houseDoorObject = resources->AssembleObject("Axe", "HealthKitMaterial");
 
+	//Mesh* door = resources->GetResource<Mesh>("Axe");
+	//Material* doormat = resources->GetResource<Material>("HealthKitMaterial");
 
 	//houseBaseObject->GetTransform().Rotate(0, -90.0f, 0.0);
 	houseBaseObject->GetTransform().Rotate(0, -90.0f * Math::ToRadians, 0.0);
@@ -70,6 +72,7 @@ void GameScene::InitializeObjects()
 
 	houseBaseObject->AddComponent<RigidBodyComponent>(0.0f, FilterGroups::PROPS, FilterGroups::EVERYTHING, BodyType::STATIC, true);
 
+	//houseBaseObject->AddComponent<MeshComponent>(door, doormat);
 	//houseDoorObject->AddComponent<RigidBodyComponent>(0.0f, FilterGroups::DOOR, FilterGroups::EVERYTHING, BodyType::STATIC, true);
 
 	SkeletonMeshComponent* baseComponent = resources->GetResource<SkeletonMeshComponent>("HouseSkeleton"); 
@@ -79,14 +82,14 @@ void GameScene::InitializeObjects()
 	baseComponent->SetTrack(SkeletonStateMachine::IDLE, false);
 	legsComponent->SetTrack(SkeletonStateMachine::IDLE, false);
 
-	houseBaseObject->AddComponent<SkeletonMeshComponent>(baseComponent);
+	SkeletonMeshComponent* houseDoorSkeleton = houseBaseObject->AddComponent<SkeletonMeshComponent>(baseComponent);
 	housesLegsObject->AddComponent<SkeletonMeshComponent>(legsComponent);
 
 	Transform::SetParentChild(houseBaseObject->GetTransform(), housesLegsObject->GetTransform());
 	houseBaseObject->GetTransform().SetScale({ 0.5f, 0.5f, 0.5f });
 
-	Transform::SetParentChild(houseBaseObject->GetTransform(), houseDoorObject->GetTransform());
-	houseDoorObject->GetTransform().SetPosition({ 0, 0, 0 });
+	//Transform::SetParentChild(houseBaseObject->GetTransform(), houseDoorObject->GetTransform());
+	//houseDoorObject->GetTransform().SetPosition({ 0, 0, 0 });
 
 	NodeWalkerComp* nodeWalker = houseBaseObject->AddComponent<NodeWalkerComp>();
 	nodeWalker->InitAnimation();

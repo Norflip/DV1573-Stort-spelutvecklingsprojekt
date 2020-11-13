@@ -283,7 +283,7 @@
     <ClCompile Include="GUICompass.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="ColliderBodyComponent.cpp">
+    <ClCompile Include="CollisionBodyComponent.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>
@@ -573,7 +573,7 @@
     <ClInclude Include="FXAARenderPass.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="ColliderBodyComponent.h">
+    <ClInclude Include="CollisionBodyComponent.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>

@@ -20,9 +20,14 @@ namespace dx = DirectX;
 
 enum  class FilterGroups : unsigned short;
 
-class ColliderBodyComponent : public Component
+enum class BodyType;
+
+class CollisionBodyComponent : public Component
 {
 public:
+
+	void m_initializeBody(Physics* physics);
+	rp::CollisionBody* getcollisionBody() const { return body; }
 
 	void Initialize() override; // OVERRIDE
 
@@ -35,10 +40,18 @@ public:
 
 private:
 
+	rp::Transform ConvertToBtTransform(const Transform& transform) const;
+
 	rp::CollisionBody* body;
+	Physics* physics;
+
 	FilterGroups group;
 	FilterGroups collisionMask;
 
+	rp::Transform currentTransform;
+	rp::Transform previousTransform;
+
+	bool initialized;
 
 	BodyType type;
 };
