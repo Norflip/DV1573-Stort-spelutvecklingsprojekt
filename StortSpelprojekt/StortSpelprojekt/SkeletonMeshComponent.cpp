@@ -54,9 +54,7 @@ SkeletonMeshComponent::~SkeletonMeshComponent()
 
 void SkeletonMeshComponent::Update(const float& deltaTime)
 {
-
 	componentDeltaTime = deltaTime;
-
 }
 
 void SkeletonMeshComponent::Draw(Renderer* renderer, CameraComponent* camera)
@@ -66,7 +64,7 @@ void SkeletonMeshComponent::Draw(Renderer* renderer, CameraComponent* camera)
 	renderer->DrawSkeleton(mesh, material, GetOwner()->GetTransform().GetWorldMatrix(), finalTransforms);
 	if (playOnce)
 	{
-		PlayOnce();
+		PlayOnce(componentDeltaTime);
 	}
 	else
 	{
@@ -90,7 +88,6 @@ void SkeletonMeshComponent::RunAnimation(const float& deltaTime)
 	if (currentAni == SkeletonStateMachine::IDLE)
 	{
 		finalTransforms = skeletonAnimations[0].Makeglobal(time, dx::XMMatrixIdentity(), *skeletonAnimations[0].GetRootKeyJoints());
-
 	}
 	else if (currentAni == SkeletonStateMachine::WALK)
 	{
@@ -103,9 +100,7 @@ void SkeletonMeshComponent::RunAnimation(const float& deltaTime)
 	else if (currentAni == SkeletonStateMachine::ATTACK || currentAni == SkeletonStateMachine::DOWN)
 	{
 		finalTransforms = skeletonAnimations[3].Makeglobal(time, dx::XMMatrixIdentity(), *skeletonAnimations[3].GetRootKeyJoints());
-
 	}
-
 	else if (currentAni == SkeletonStateMachine::DEATH)
 	{
 		finalTransforms = skeletonAnimations[4].Makeglobal(time, dx::XMMatrixIdentity(), *skeletonAnimations[4].GetRootKeyJoints());
@@ -114,7 +109,6 @@ void SkeletonMeshComponent::RunAnimation(const float& deltaTime)
 	{
 		finalTransforms = skeletonAnimations[5].Makeglobal(time, dx::XMMatrixIdentity(), *skeletonAnimations[4].GetRootKeyJoints());
 	}
-
 }
 
 void SkeletonMeshComponent::FindChildren(SkeletonAni& track, unsigned int& index, std::map<std::string, unsigned int>& map, std::string& name,
@@ -122,7 +116,6 @@ void SkeletonMeshComponent::FindChildren(SkeletonAni& track, unsigned int& index
 {
 	for (unsigned int i = 0; i < track.GetKeyFrames().size(); i++)
 	{
-
 		std::string parentName = track.GetKeyFrames()[i][0].parentName;
 		std::string childName = track.GetKeyFrames()[index][0].name;
 
@@ -145,8 +138,6 @@ void SkeletonMeshComponent::FindChildren(SkeletonAni& track, unsigned int& index
 		}
 		else
 		{
-
-
 			if (childName == "leftPinky02" || childName == "leftMiddle02" || childName == "leftRing02" ||
 				childName == "leftThumb02" || childName == "leftIndex02" || childName == "rightPinky02" || childName == "rightMiddle02" || childName == "rightRing02" ||
 				childName == "rightThumb02" || childName == "rightIndex02" || childName == "head")
@@ -163,8 +154,6 @@ void SkeletonMeshComponent::SetAnimationTrack(const SkeletonAni& skeletonAni, co
 	trackMap.insert({ type, skeletonAnimations.size() });
 
 	skeletonAnimations.push_back(skeletonAni);
-
-
 }
 
 SkeletonAni& SkeletonMeshComponent::GetAnimationTrack(unsigned int trackNr)
@@ -176,149 +165,178 @@ void SkeletonMeshComponent::SetTrack(const SkeletonStateMachine& type, bool play
 {
 	currentAni = type;
 	this->playOnce = playOnce;
-
 }
 
-void SkeletonMeshComponent::PlayOnce()
+void SkeletonMeshComponent::PlayOnce(const float& deltaTime)
 {
-
 	float time = 0.0f;
-
-
-
-
+	bool doneOnce = false;
 
 	if (currentAni == SkeletonStateMachine::IDLE)
 	{
-		if (!done)
+		if (!doneOnce)
 		{
-			timer.Restart();
-			timer.Update();
-			time = (float)timer.GetSeconds();
+			elapsedTime += deltaTime;
+			time = elapsedTime;
 			time *= timeScale;
 
-			float animationTime = time * skeletonAnimations[0].GetFPS();
+			float animLength = skeletonAnimations[0].GetAniLength() / skeletonAnimations[0].GetFPS();
 
-			if (animationTime < skeletonAnimations[0].GetAniLength())
+			if (time <= animLength)
 			{
-
+				std::cout << time << std::endl;
 				finalTransforms = skeletonAnimations[0].Makeglobal(time, dx::XMMatrixIdentity(), *skeletonAnimations[0].GetRootKeyJoints());
 			}
 			else
 			{
-				done = true;
-
+				elapsedTime = 0.0f;
+				doneOnce = true;
 			}
 		}
-
 	}
+
 	else if (currentAni == SkeletonStateMachine::WALK)
 	{
-		if (!done)
+		if (!doneOnce)
 		{
-			timer.Restart();
-			timer.Update();
-			time = (float)timer.GetSeconds();
+			elapsedTime += deltaTime;
+			time = elapsedTime;
 			time *= timeScale;
 
-			float animationTime = time * skeletonAnimations[1].GetFPS();
+			float animLength = skeletonAnimations[1].GetAniLength() / skeletonAnimations[1].GetFPS();
 
-			if (animationTime < skeletonAnimations[1].GetAniLength())
+			if (time <= animLength)
 			{
+				std::cout << time << std::endl;
 				finalTransforms = skeletonAnimations[1].Makeglobal(time, dx::XMMatrixIdentity(), *skeletonAnimations[1].GetRootKeyJoints());
 			}
 			else
 			{
-				done = true;
-
+				elapsedTime = 0.0f;
+				doneOnce = true;
 			}
 		}
 	}
-	else if (currentAni == SkeletonStateMachine::RUN || currentAni == SkeletonStateMachine::UP)
+
+	else if (currentAni == SkeletonStateMachine::RUN)
 	{
-
-		if (!done)
+		if (!doneOnce)
 		{
+			elapsedTime += deltaTime;
+			time = elapsedTime;
+			time *= timeScale;
 
+			float animLength = skeletonAnimations[2].GetAniLength() / skeletonAnimations[2].GetFPS();
+
+			if (time <= animLength)
+			{
+				std::cout << time << std::endl;
+				finalTransforms = skeletonAnimations[2].Makeglobal(time, dx::XMMatrixIdentity(), *skeletonAnimations[2].GetRootKeyJoints());
+			}
+			else
+			{
+				elapsedTime = 0.0f;
+				doneOnce = true;
+			}
+		}
+	}
+
+	else if (currentAni == SkeletonStateMachine::UP)
+	{
+		if (!doneOnce)
+		{
 			timer.Start();
 			timer.Update();
 			time = (float)timer.GetSeconds();
 			time *= timeScale;
-			float animationTime = time * skeletonAnimations[3].GetFPS();
+			float animationTime = time * skeletonAnimations[2].GetFPS();
 
-			if (animationTime < skeletonAnimations[3].GetAniLength())
+			if (animationTime < skeletonAnimations[2].GetAniLength())
 			{
 
-				finalTransforms = skeletonAnimations[3].Makeglobal(time, dx::XMMatrixIdentity(), *skeletonAnimations[3].GetRootKeyJoints());
+				finalTransforms = skeletonAnimations[2].Makeglobal(time, dx::XMMatrixIdentity(), *skeletonAnimations[2].GetRootKeyJoints());
 
 			}
 			else
 			{
 				timer.Stop();
-				done = true;
+				doneOnce = true;
 				doneUp = true;
 			}
-
 		}
-
-
 	}
-	else if (currentAni == SkeletonStateMachine::ATTACK || currentAni == SkeletonStateMachine::DOWN)
-	{
-		if (!done)
-		{
-			timer.Restart();
-			timer.Update();
-			time = (float)timer.GetSeconds();
 
+	else if (currentAni == SkeletonStateMachine::ATTACK)
+	{
+		if (!doneOnce)
+		{
+			elapsedTime += deltaTime;
+			time = elapsedTime;
 			time *= timeScale;
 
+			//Get the playtime for the animation in seconds.
+			float animLength = skeletonAnimations[3].GetAniLength() / skeletonAnimations[3].GetFPS(); 
+
+			if (time <= animLength)
+			{
+				std::cout << time << std::endl;
+				finalTransforms = skeletonAnimations[3].Makeglobal(time, dx::XMMatrixIdentity(), *skeletonAnimations[3].GetRootKeyJoints());
+			}
+			else
+			{
+				elapsedTime = 0.0f;
+				doneOnce = true;
+			}
+		}
+	}
+
+	else if (currentAni == SkeletonStateMachine::DOWN)
+	{
+		if (!doneOnce)
+		{
+			timer.Start();
+			timer.Update();
+			time = (float)timer.GetSeconds();
+			time *= timeScale;
 			float animationTime = time * skeletonAnimations[3].GetFPS();
 
 			if (animationTime < skeletonAnimations[3].GetAniLength())
 			{
 
 				finalTransforms = skeletonAnimations[3].Makeglobal(time, dx::XMMatrixIdentity(), *skeletonAnimations[3].GetRootKeyJoints());
+
 			}
 			else
 			{
 				timer.Stop();
-				done = true;
+				doneOnce = true;
 				doneDown = true;
 			}
-
-
-
-
 		}
-
-
 	}
+
 	else if (currentAni == SkeletonStateMachine::DEATH)
 	{
+	if (!doneOnce)
+	{
+		elapsedTime += deltaTime;
+		time = elapsedTime;
+		time *= timeScale;
 
-		if (!done)
+		float animLength = skeletonAnimations[4].GetAniLength() / skeletonAnimations[4].GetFPS();
+
+		if (time <= animLength)
 		{
-
-			timer.Start();
-			timer.Update();
-			time = (float)timer.GetSeconds();
-			time *= timeScale;
-			float animationTime = time * skeletonAnimations[4].GetFPS();
-
-			if (animationTime < skeletonAnimations[4].GetAniLength())
-			{
-
-				finalTransforms = skeletonAnimations[4].Makeglobal(time, dx::XMMatrixIdentity(), *skeletonAnimations[4].GetRootKeyJoints());
-			}
-			else
-			{
-				done = true;
-				timer.Stop();
-			}
+			std::cout << time << std::endl;
+			finalTransforms = skeletonAnimations[4].Makeglobal(time, dx::XMMatrixIdentity(), *skeletonAnimations[4].GetRootKeyJoints());
+		}
+		else
+		{
+			elapsedTime = 0.0f;
+			doneOnce = true;
 		}
 	}
-
+	}
 }
 
 void SkeletonMeshComponent::BlendAnimations()
@@ -385,11 +403,7 @@ void SkeletonMeshComponent::BlendAnimations()
 		{
 			map1.insert({ childName, 0 });
 		}
-
-
-
 	}
-
 
 	SkeletonAni blended;
 
