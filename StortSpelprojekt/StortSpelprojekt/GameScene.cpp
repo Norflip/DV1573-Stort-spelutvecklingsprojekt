@@ -67,8 +67,8 @@ void GameScene::InitializeObjects()
 
 	SkeletonMeshComponent* baseComponent = resources->GetResource<SkeletonMeshComponent>("HouseSkeleton"); 
 	SkeletonMeshComponent* legsComponent = resources->GetResource<SkeletonMeshComponent>("HouseLegsSkeleton");
-	baseComponent->SetTimeScale(0.5f);
-	legsComponent->SetTimeScale(0.5f);
+	baseComponent->SetTimeScale(1.0f);
+	legsComponent->SetTimeScale(1.0f);
 	baseComponent->SetTrack(SkeletonStateMachine::IDLE, false);
 	legsComponent->SetTrack(SkeletonStateMachine::IDLE, false);
 

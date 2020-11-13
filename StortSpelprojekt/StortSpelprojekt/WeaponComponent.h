@@ -21,8 +21,6 @@ public:
 	ALIGN16_ALLOC;
 
 private:
-	Object* camObj;
-	CameraComponent* camComp;
 	SkeletonMeshComponent* skeleton;
 
 	dx::XMVECTOR weaponPos;

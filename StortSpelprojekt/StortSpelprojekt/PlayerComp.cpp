@@ -179,9 +179,6 @@ float PlayerComp::ReverseAndClamp(float inputValue)
 void PlayerComp::RayCast(const float& deltaTime)
 {
 
-	attackTimer += deltaTime;
-	attackCooldown += deltaTime;
-
 	Ray ray = cam->MouseToRay(p.x, p.y);
 
 	if (KEY_DOWN(E))
@@ -284,11 +281,6 @@ void PlayerComp::RayCast(const float& deltaTime)
 				}
 			}
 		}
-	}
-
-	else if (attacking && attackTimer == 0.83f)
-	{
-		attacking = false;
 	}
 
 	// Health drop

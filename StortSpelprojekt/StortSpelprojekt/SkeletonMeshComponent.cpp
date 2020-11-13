@@ -178,6 +178,7 @@ void SkeletonMeshComponent::PlayOnce(const float& deltaTime)
 		{
 			elapsedTime += deltaTime;
 			time = elapsedTime;
+			time *= timeScale;
 
 			float animLength = skeletonAnimations[0].GetAniLength() / skeletonAnimations[0].GetFPS();
 
@@ -200,6 +201,7 @@ void SkeletonMeshComponent::PlayOnce(const float& deltaTime)
 		{
 			elapsedTime += deltaTime;
 			time = elapsedTime;
+			time *= timeScale;
 
 			float animLength = skeletonAnimations[1].GetAniLength() / skeletonAnimations[1].GetFPS();
 
@@ -222,6 +224,7 @@ void SkeletonMeshComponent::PlayOnce(const float& deltaTime)
 		{
 			elapsedTime += deltaTime;
 			time = elapsedTime;
+			time *= timeScale;
 
 			float animLength = skeletonAnimations[2].GetAniLength() / skeletonAnimations[2].GetFPS();
 
@@ -269,6 +272,7 @@ void SkeletonMeshComponent::PlayOnce(const float& deltaTime)
 		{
 			elapsedTime += deltaTime;
 			time = elapsedTime;
+			time *= timeScale;
 
 			//Get the playtime for the animation in seconds.
 			float animLength = skeletonAnimations[3].GetAniLength() / skeletonAnimations[3].GetFPS(); 
@@ -317,6 +321,7 @@ void SkeletonMeshComponent::PlayOnce(const float& deltaTime)
 	{
 		elapsedTime += deltaTime;
 		time = elapsedTime;
+		time *= timeScale;
 
 		float animLength = skeletonAnimations[4].GetAniLength() / skeletonAnimations[4].GetFPS();
 
