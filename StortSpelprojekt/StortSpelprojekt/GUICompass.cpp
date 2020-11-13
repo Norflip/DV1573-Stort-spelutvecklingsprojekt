@@ -8,11 +8,11 @@ GUICompass::GUICompass(Renderer& renderer, Window* window, Object* houseObj, Obj
 {
 	this->renderer = &renderer;
 	this->window = window;
-	backgroundBar = new GUISprite(renderer, "Textures/Compass.png", 0, 10, 0.2f, DrawDirection::Center, ClickFunction::NotClickable);
-	house = new GUISprite(renderer, "Textures/House.png", 0, 10, 0.0f, DrawDirection::Center, ClickFunction::NotClickable);
+	backgroundBar = new GUISprite(renderer, "Textures/Compass.png", 0, 00, 0.2f, DrawDirection::Center, ClickFunction::NotClickable);
+	house = new GUISprite(renderer, "Textures/House.png", 0, 0, 0.0f, DrawDirection::Center, ClickFunction::NotClickable);
 	backgroundBar->Move({ 0.f, 30.f });
-	compassHeight = backgroundBar->GetYpos();
-	compassWidth = backgroundBar->GetXpos();
+	compassYpos = backgroundBar->GetYpos();
+	compassXpos = backgroundBar->GetXpos();
 }
 
 void GUICompass::Update()
@@ -26,8 +26,9 @@ void GUICompass::Update()
 	float scale  = Math::Clamp((10 / pow(distance,0.7f)),0.4f,1.f);
 	std::cout << "post " << scale << std::endl;
 	house->SetScale(scale, scale);
-
-	house->SetPosition(0+ scale*(house->GetWidth()/2), compassHeight+ (house->GetHeight()/2) - scale * (house->GetHeight()/2));
+	//Places icon at centre with scaling taken into consideration
+	house->SetPosition((-house->GetWidth() / 2) +scale*(house->GetWidth()/2), compassYpos+ (house->GetHeight()/2) - scale * (house->GetHeight()/2));
+	house->Move({ 0,0 });
 	//logic here
 }
 

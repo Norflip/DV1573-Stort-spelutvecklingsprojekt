@@ -20,7 +20,7 @@ private:
     GUISprite* fuelTest;;
     Renderer* renderer;
     Window* window;
-    float compassHeight;
-    float compassWidth;
+    float compassYpos;
+    float compassXpos;
 };
 

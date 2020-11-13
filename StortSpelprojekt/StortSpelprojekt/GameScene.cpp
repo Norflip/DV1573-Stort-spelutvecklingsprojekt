@@ -191,7 +191,7 @@ void GameScene::InitializeGUI()
 	//COMPASS
 
 	//FONTS
-	GUIFont* fpsDisplay = new GUIFont(*renderer, "fps", windowWidth / 2, 50);
+	GUIFont* fpsDisplay = new GUIFont(*renderer, "fps",30, 30);
 	//GUIFont* healthDisplay = new GUIFont(*renderer, "playerHealth", 50, 100);
 	//GUIFont* enemyDisplay = new GUIFont(*renderer, "enemyHealth", 50, 150);
 
