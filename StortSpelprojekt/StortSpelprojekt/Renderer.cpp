@@ -216,13 +216,10 @@ void Renderer::RenderFrame(CameraComponent* camera, float time, RenderTexture& t
 	DrawQueueToTarget(opaqueItemQueue, camera);
 	DShape::Instance().m_Draw(camera->GetViewMatrix() * camera->GetProjectionMatrix(), context);
 
-	std::cout << "\n" << std::endl;
-
 	for (auto i : opaqueBatches)
 		DrawBatch(i.second, camera);
 	
 	opaqueBatches.clear();
-
 
 	SetCullBack(false);
 	DrawQueueToTarget(transparentItemQueue, camera);
