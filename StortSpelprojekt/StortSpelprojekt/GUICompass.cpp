@@ -38,20 +38,21 @@ void GUICompass::Update()
 	dx::XMVECTOR camRot = cam->GetOwner()->GetTransform().GetRotation();
 	//camRot = cam->GetOwner()->GetTransform().TransformDirectionCustomRotation({1,0,0 }, camRot);
 	sm::Vector3 test = playerObj->GetComponent<ControllerComp>()->GetGroundRot();
-	//test = playerObj->GetComponent<RigidBodyComponent>()->GetRigidBody().get
+	std::cout << "incomingAngle" << test.y << std::endl;
+	//test = { (sin(test.y), 0, cos(test.y)) };
+	test.x = cos(test.y*Math::PI);
+	test.z = sin(test.y * Math::PI);
 
-	sm::Vector3 playerV = test;
-	playerV.Normalize();
 	std::cout << "X" << test.x << std::endl;
 	std::cout << "Y" << test.y << std::endl;
 	std::cout << "Z" << test.z << std::endl;
 	sm::Vector3 H = houseObj->GetTransform().GetPosition();
 	sm::Vector3 P = playerObj->GetTransform().GetPosition();
 	sm::Vector3 vP2H;
-	vP2H = P - H;
+	vP2H = H - P;
 	vP2H.Normalize();
 	
-	float angle = std::atan2f(dx::XMVectorGetZ(camRot) -vP2H.z , dx::XMVectorGetX(camRot) - vP2H.x  ) * (180 / (Math::PI));
+	float angle = std::atan2f(test.x -vP2H.x , test.z - vP2H.z  ) * (180 / (Math::PI));
 	
 	float movePos = 0;
 	//NOW.... IF ANGLE IS 90 -> 0 it should more to the left

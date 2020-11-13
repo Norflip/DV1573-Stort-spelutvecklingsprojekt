@@ -7,7 +7,7 @@
 #include "math.h"
 namespace dx = DirectX;
 constexpr float CLAMP_X = 90.f * Math::ToRadians;
-constexpr float CLAMP_Y = 360.f * Math::ToRadians;
+constexpr float CLAMP_Y = 180.f * Math::ToRadians;
 
 
 constexpr float WALK_FOV = 50.f;
@@ -83,7 +83,7 @@ protected:
 public:
 	ControllerComp(Object* cameraObject, Object* houseObject);
 	virtual ~ControllerComp();
-	dx::XMVECTOR GetGroundRot() { return groundRotation2; };
+	dx::XMVECTOR GetGroundRot() { return groundRotation; };
 	void Initialize();
 	void Update(const float& deltaTime);
 };

@@ -187,13 +187,10 @@ void ControllerComp::Update(const float& deltaTime)
 		cameraEuler2.x += xPos;
 		cameraEuler2.y += yPos;
 
-		groundRotation2 = dx::XMQuaternionRotationRollPitchYaw(0.f, cameraEuler2.y*10, 0.f);
-
-		dx::XMVectorSetY(groundRotation2,Math::PI * 2);
 		cameraEuler.x = Math::Clamp(cameraEuler.x, -CLAMP_X, CLAMP_X);
 		if (cameraEuler.y >= CLAMP_Y)
-			cameraEuler.y = 0.f;
-		else if (cameraEuler.y <= 0.f)
+			cameraEuler.y = -CLAMP_Y;
+		else if (cameraEuler.y <= -CLAMP_Y)
 			cameraEuler.y = CLAMP_Y;
 
 		//std::cout << "x: " << cameraEuler.x * Math::ToDegree << ", y: " << cameraEuler.y * Math::ToDegree << std::endl;
