@@ -46,7 +46,7 @@ void GameScene::InitializeObjects()
 	Object* housesLegsObject = new Object("houseLegs");
 	//Object* houseDoorObject = new Object("houseDoor");
 
-	Object* houseDoorObject = resources->AssembleObject("Hammer", "HealthKitMaterial");
+	Object* houseDoorObject = resources->AssembleObject("Axe", "HealthKitMaterial");
 
 
 	//houseBaseObject->GetTransform().Rotate(0, -90.0f, 0.0);
@@ -71,9 +71,9 @@ void GameScene::InitializeObjects()
 	houseBaseObject->AddComponent<RigidBodyComponent>(0.0f, FilterGroups::PROPS, FilterGroups::EVERYTHING, BodyType::STATIC, true);
 
 	//houseDoorObject->AddComponent<RigidBodyComponent>(0.0f, FilterGroups::DOOR, FilterGroups::EVERYTHING, BodyType::STATIC, true);
+	//houseDoorObject->AddComponent<RigidBodyComponent>(0.f, FilterGroups::DOOR, (FilterGroups::EVERYTHING &~FilterGroups::PLAYER), BodyType::DYNAMIC,true);
 
-	////Transform::SetParentChild(houseBaseObject->GetTransform(), houseDoorObject->GetTransform());
-	//houseDoorObject->GetTransform().SetPosition({ 23, 3, 49 });
+
 
 
 	//AddObject(houseDoorObject);
@@ -90,6 +90,9 @@ void GameScene::InitializeObjects()
 
 	Transform::SetParentChild(houseBaseObject->GetTransform(), housesLegsObject->GetTransform());
 	houseBaseObject->GetTransform().SetScale({ 0.5f, 0.5f, 0.5f });
+
+	Transform::SetParentChild(houseBaseObject->GetTransform(), houseDoorObject->GetTransform());
+	houseDoorObject->GetTransform().SetPosition({ 0, 0, 0 });
 
 	NodeWalkerComp* nodeWalker = houseBaseObject->AddComponent<NodeWalkerComp>();
 	nodeWalker->InitAnimation();
@@ -143,8 +146,7 @@ void GameScene::InitializeObjects()
 	healthkitObject->GetTransform().SetPosition({ 23,2,50 });
 	healthkitObject->AddComponent<BoxColliderComponent>(dx::XMFLOAT3{ 0.5f, 0.5f, 0.5f }, dx::XMFLOAT3{ 0, 0, 0 });
 	healthkitObject->AddComponent<PickupComponent>(Type::Health, 20.0f);
-	//healthkitObject->AddComponent<RigidBodyComponent>(0.f, FilterGroups::PICKUPS, (FilterGroups::EVERYTHING &~FilterGroups::PLAYER), BodyType::DYNAMIC,true);
-	healthkitObject->AddComponent<RigidBodyComponent>(0.f, FilterGroups::DOOR, (FilterGroups::EVERYTHING &~FilterGroups::PLAYER), BodyType::DYNAMIC,true);
+	healthkitObject->AddComponent<RigidBodyComponent>(0.f, FilterGroups::PICKUPS, (FilterGroups::EVERYTHING &~FilterGroups::PLAYER), BodyType::DYNAMIC,true);
 	AddObject(healthkitObject);
 
 	///* Fuel pickup stuff temporary */
