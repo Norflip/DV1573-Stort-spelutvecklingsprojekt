@@ -68,8 +68,6 @@
       <Filter>Resource Files</Filter>
     </FxCompile>
     <FxCompile Include="ForwardPlusRendering.hlsl" />
-       <Filter>Resource Files</Filter>
-    </FxCompile>
     <FxCompile Include="Shaders\FractionalBrownianMotion.hlsl">
       <Filter>Resource Files</Filter>
     </FxCompile>
@@ -285,7 +283,9 @@
     <ClCompile Include="QuadTree.cpp">
       <Filter>Source Files\SpawnSystems</Filter>
     </ClCompile>
-    <ClCompile Include="PlayerAnimHandlerComp.cpp" />
+    <ClCompile Include="PlayerAnimHandlerComp.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="ObjectSpawner.h">
@@ -570,11 +570,11 @@
     <ClInclude Include="FXAARenderPass.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="PlayerAnimHandlerComp.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
     <ClInclude Include="QuadTree.h">
       <Filter>Source Files\SpawnSystems</Filter>
+    </ClInclude>
+    <ClInclude Include="PlayerAnimHandlerComp.h">
+      <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
