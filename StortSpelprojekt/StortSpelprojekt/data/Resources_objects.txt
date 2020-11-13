@@ -1,4 +1,4 @@
-Objects: 28
+Objects: 29
 
 Enemy: Models/Enemies/baseMonster.ZWEB
 Shader: skeletonShader

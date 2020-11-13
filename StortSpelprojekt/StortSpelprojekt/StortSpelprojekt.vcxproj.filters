@@ -68,6 +68,8 @@
       <Filter>Resource Files</Filter>
     </FxCompile>
     <FxCompile Include="ForwardPlusRendering.hlsl" />
+       <Filter>Resource Files</Filter>
+    </FxCompile>
     <FxCompile Include="Shaders\FractionalBrownianMotion.hlsl">
       <Filter>Resource Files</Filter>
     </FxCompile>
@@ -566,6 +568,8 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="FXAARenderPass.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
     <ClInclude Include="PlayerAnimHandlerComp.h">
       <Filter>Header Files</Filter>
     </ClInclude>

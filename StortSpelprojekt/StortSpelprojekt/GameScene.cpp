@@ -103,14 +103,13 @@ void GameScene::InitializeObjects()
 	AddObject(cameraObject, playerObject);
 	AddObject(playerObject);
 
-	//Object* testPointLight = new Object("body_pointLight");
+	Object* testPointLight = new Object("body_pointLight");
 
-	//dx::XMFLOAT3 lightTranslation = dx::XMFLOAT3(0.0f, 0.0f, 0.0f);
-	//testPointLight->GetTransform().SetPosition(dx::XMLoadFloat3(&lightTranslation));
-	//testPointLight->AddComponent<PointLightComponent>(dx::XMFLOAT4(0.3f, 0.3f, 0.3f, 1.0f), 10.f);
+	dx::XMFLOAT3 lightTranslation = dx::XMFLOAT3(0.0f, 0.0f, 0.0f);
+	testPointLight->GetTransform().SetPosition(dx::XMLoadFloat3(&lightTranslation));
+	testPointLight->AddComponent<PointLightComponent>(dx::XMFLOAT4(0.3f, 0.3f, 0.3f, 1.0f), 10.f);
 
-	//AddObject(testPointLight, playerObject);
-
+	AddObject(testPointLight, playerObject);
 
 	world.Initialize(root, resources, renderer);
 	

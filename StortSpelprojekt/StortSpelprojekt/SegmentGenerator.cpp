@@ -72,10 +72,10 @@ void SegmentGenerator::Construct(const SaveState& state, const SegmentDescriptio
 
 
 
-		//	Object* light = new Object("lantern_pointLight");
-		//	light->GetTransform().SetPosition({ 0,2,0 });
-		//	light->AddComponent<PointLightComponent>(dx::XMFLOAT4(0.3f, 0.3f, 0.3f, 1.0f), 20.f);
-		//	Transform::SetParentChild(obj->GetTransform(), light->GetTransform());
+			Object* light = new Object("lantern_pointLight");
+			light->GetTransform().SetPosition({ 0,2,0 });
+			light->AddComponent<PointLightComponent>(dx::XMFLOAT4(0.3f, 0.3f, 0.3f, 1.0f), 4.0f);
+			Transform::SetParentChild(obj->GetTransform(), light->GetTransform());
 
 		});
 
