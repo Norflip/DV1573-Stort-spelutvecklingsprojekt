@@ -24,7 +24,7 @@
 #include "ObjectPooler.h"
 #include "WeaponComponent.h"
 #include "EnemyManager.h"
-#include "GridMap.h"
+#include "Grid.h"
 
 class GUIFont;
 class SpriteRenderPass;
@@ -77,7 +77,7 @@ protected:
 	Object* enemy;
 	Object* player;
 	EnemyManager* enemyManager;
-	GridMap* gridMap;
+	Grid* grid;
 
 	ObjectPooler* pooler;
 	GUIManager* guiManager;		

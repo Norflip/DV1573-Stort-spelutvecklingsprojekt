@@ -124,7 +124,7 @@ void GameScene::InitializeObjects()
 	enemyManager = new EnemyManager(resources, player, player->GetComponent<PlayerComp>(), root);
 	enemyManager->InitBaseEnemy();
 
-	gridMap = new GridMap(player);
+	grid = new Grid(player);
 	
 	/* PICKUP STUFF DONT DELETE THESEEE */
 	Object* healthkitObject = resources->AssembleObject("HealthKit", "HealthKitMaterial");
@@ -310,7 +310,7 @@ void GameScene::Update(const float& deltaTime)
 	world.UpdateRelevantChunks();
 	//world.DrawDebug();
 
-	gridMap->CheckInGrid();
+	grid->CheckInGrid();
 
 	static_cast<GUIFont*>(guiManager->GetGUIObject("fps"))->SetString(std::to_string((int)GameClock::Instance().GetFramesPerSecond()));
 	dx::XMFLOAT3 playerPosF;

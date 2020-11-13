@@ -1,23 +1,17 @@
 #pragma once
 #include "Object.h"
 
-struct Grid
-{
-	
-};
-
-class GridMap
+class Grid
 {
 	public:
-		GridMap(Object* object);
-		~GridMap();
+		Grid(Object* object);
+		~Grid();
 		void Init();
 		bool CheckInGrid();
 	private:
 		int rows;
-		float gridSize;
+		float nodeSize;
 		int objectOffset;
-		int gridOffset;
 		Object* object;
-		std::vector<Grid> grids;
+		DShape box;
 };
