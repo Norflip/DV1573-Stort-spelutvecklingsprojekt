@@ -22,13 +22,6 @@ private:
 	CameraComponent* camComp;
 	ControllerComp* controlComp;
 
-	dx::XMVECTOR armsPos;
-	dx::XMVECTOR armsRot;
-	dx::XMVECTOR armsScale;
-	dx::XMVECTOR up;
-	dx::XMMATRIX armsWorld, armsOffTrans, armsOffRot;
-	dx::XMMATRIX inverseViewMatrix;
-
 	Object* camObject;
 	Object* playerObject;
 	SkeletonMeshComponent* skeletonMeshComp;

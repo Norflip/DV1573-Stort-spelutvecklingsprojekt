@@ -23,14 +23,14 @@ public:
 private:
 	SkeletonMeshComponent* skeleton;
 
-	dx::XMVECTOR weaponPos;
-	dx::XMVECTOR weaponRot;
-	dx::XMVECTOR weaponScale;
-	dx::XMVECTOR up;
-	dx::XMMATRIX wepWorld, wepOffTrans, wepOffRot;
-	dx::XMMATRIX inverseViewMatrix;
-	dx::XMMATRIX skeletonMatrix;
-	dx::XMMATRIX playerWorldMatrix;
+	//dx::XMVECTOR weaponPos;
+	//dx::XMVECTOR weaponRot;
+	//dx::XMVECTOR weaponScale;
+	//dx::XMVECTOR up;
+	//dx::XMMATRIX wepWorld, wepOffTrans, wepOffRot;
+	//dx::XMMATRIX inverseViewMatrix;
+	//dx::XMMATRIX skeletonMatrix;
+	//dx::XMMATRIX playerWorldMatrix;
 
 
 	void SetPosition(float time);

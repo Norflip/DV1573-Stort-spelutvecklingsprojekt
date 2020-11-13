@@ -5,11 +5,9 @@
 PlayerAnimHandlerComp::PlayerAnimHandlerComp(SkeletonMeshComponent* skeletonMeshComp, Object* object, Object* playerObject)
 	:skeletonMeshComp(skeletonMeshComp), camObject(object), playerObject(playerObject)
 {
-
 	this->skeletonMeshComp = skeletonMeshComp;
 	this->camObject = object;
 	this->playerObject = playerObject;
-
 }
 
 PlayerAnimHandlerComp::~PlayerAnimHandlerComp()
@@ -18,10 +16,8 @@ PlayerAnimHandlerComp::~PlayerAnimHandlerComp()
 
 void PlayerAnimHandlerComp::Initialize()
 {
-	//skeletonMeshComp->SetTrack(SkeletonStateMachine::IDLE, false);
 	camComp = camObject->GetComponent<CameraComponent>();
 	controlComp = playerObject->GetComponent<ControllerComp>();
-	up = { 0.0f, 1.0f, 1.0f };
 }
 
 void PlayerAnimHandlerComp::Update(const float& deltaTime)
@@ -30,6 +26,7 @@ void PlayerAnimHandlerComp::Update(const float& deltaTime)
 	SetPosition();
 }
 
+//Handles the players animation controlls. 
 void PlayerAnimHandlerComp::Animate(const float& time)
 {
 	attackTimer += time;
@@ -49,8 +46,8 @@ void PlayerAnimHandlerComp::Animate(const float& time)
 
 	else if(!attacking)
 	{
-		if (controlComp->GetrbComp()->GetLinearVelocity().x > 0 || controlComp->GetrbComp()->GetLinearVelocity().x < 0 ||
-			controlComp->GetrbComp()->GetLinearVelocity().z > 0 || controlComp->GetrbComp()->GetLinearVelocity().z < 0)
+		if (controlComp->GetRigidBodyComp()->GetLinearVelocity().x > 0 || controlComp->GetRigidBodyComp()->GetLinearVelocity().x < 0 ||
+			controlComp->GetRigidBodyComp()->GetLinearVelocity().z > 0 || controlComp->GetRigidBodyComp()->GetLinearVelocity().z < 0)
 		{
 			if (KEY_PRESSED(LeftShift))
 			{
@@ -62,19 +59,23 @@ void PlayerAnimHandlerComp::Animate(const float& time)
 			}
 		}
 
-		else if (controlComp->GetrbComp()->GetLinearVelocity().x == 0 && controlComp->GetrbComp()->GetLinearVelocity().z == 0)
+		else if (controlComp->GetRigidBodyComp()->GetLinearVelocity().x == 0 && controlComp->GetRigidBodyComp()->GetLinearVelocity().z == 0)
 		{
 			skeletonMeshComp->SetTrack(SkeletonStateMachine::IDLE, false);
 		}
 	}
 }
 
+//Makes the players arms follow the camera.
 void PlayerAnimHandlerComp::SetPosition()
 {
-	inverseViewMatrix = dx::XMMatrixInverse(nullptr, camComp->GetViewMatrix());
-	armsOffTrans = dx::XMMatrixTranslation(0.0f, -1.8f, 0.0f);
-	armsOffRot = dx::XMMatrixRotationAxis(up, dx::XMConvertToRadians(0.0f));
-	armsWorld = armsOffRot * armsOffTrans * inverseViewMatrix;
+	dx::XMVECTOR armsScale;
+	dx::XMVECTOR armsRot;
+	dx::XMVECTOR armsPos;
+	dx::XMMATRIX inverseViewMatrix = dx::XMMatrixInverse(nullptr, camComp->GetViewMatrix());
+	dx::XMMATRIX armsOffTrans = dx::XMMatrixTranslation(0.0f, -1.8f, 0.0f);
+	dx::XMMATRIX armsOffRot = dx::XMMatrixRotationAxis(dx::XMVECTOR{0.0f, 1.0f, 1.0f}, dx::XMConvertToRadians(0.0f));
+	dx::XMMATRIX armsWorld = armsOffRot * armsOffTrans * inverseViewMatrix;
 	dx::XMMatrixDecompose(&armsScale, &armsRot, &armsPos, armsWorld);
 
 	GetOwner()->GetTransform().SetPosition(armsPos);
