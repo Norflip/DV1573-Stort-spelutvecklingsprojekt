@@ -231,21 +231,12 @@ Mesh* SegmentGenerator::CreateChunkMesh(ID3D11Device* device)
 
 				if (z < CHUNK_SIZE && x < CHUNK_SIZE)
 				{
-#if CW_CHUNK_MESH
 					indicies.push_back((indexCount + CHUNK_SIZE + 1));	//TL
 					indicies.push_back((indexCount + CHUNK_SIZE) + 2);	//TR
 					indicies.push_back(indexCount + 1);					//BR
 					indicies.push_back(indexCount + CHUNK_SIZE + 1);	//TL
 					indicies.push_back(indexCount + 1);					//BR
 					indicies.push_back(indexCount);						//BL
-#else
-					indicies.push_back((indexCount + CHUNK_SIZE) + 2);	//TR
-					indicies.push_back((indexCount + CHUNK_SIZE + 1));	//TL
-					indicies.push_back(indexCount + 1);					//BR
-					indicies.push_back(indexCount + 1);					//BR
-					indicies.push_back(indexCount + CHUNK_SIZE + 1);	//TL
-					indicies.push_back(indexCount);						//BL
-#endif
 				}
 
 				indexCount++;

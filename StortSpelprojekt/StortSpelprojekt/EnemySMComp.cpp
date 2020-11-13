@@ -45,6 +45,15 @@ void EnemySMComp::Animate()
 	if (currentState == EnemyState::ATTACK)
 	{
 		skeletonComponent->SetTrack(SkeletonStateMachine::RUN, false);
+
+		if (enemyAttackComp->GetIsAttacking())
+		{
+			skeletonComponent->SetTrack(SkeletonStateMachine::ATTACK, false);
+		}
+	}
+	else if (currentState == EnemyState::PATROL)
+	{
+		skeletonComponent->SetTrack(SkeletonStateMachine::WALK, false);
 	}
 	else
 	{
@@ -58,6 +67,8 @@ void EnemySMComp::Update(const float& deltaTime)
 	if (currentState != EnemyState::ATTACK && enemyAttackComp->ChasePlayer())
 	{
 		SetState(EnemyState::ATTACK);
+
+		
 	}
 	else if (currentState != EnemyState::IDLE && !enemyAttackComp->ChasePlayer())
 	{

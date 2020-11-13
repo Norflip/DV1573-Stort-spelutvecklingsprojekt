@@ -55,7 +55,6 @@ public:
 		{ "INSTANCEWORLD", 3, DXGI_FORMAT_R32G32B32A32_FLOAT, 1, 48, D3D11_INPUT_PER_INSTANCE_DATA, 1},
 	};
 
-
 public:
 	Shader();
 	virtual ~Shader();

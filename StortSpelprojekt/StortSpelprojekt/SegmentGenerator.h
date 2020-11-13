@@ -8,12 +8,8 @@
 #include "PossionDiscSampler.h"
 
 #include "GrassComponent.h"
-#include "PointQuadTree.h"
+#include "QuadTree.h"
 #include "ObjectSpawner.h"
-
-#define CW_CHUNK_MESH 1
-
-#define CREF(T) const T&
 
 class SegmentGenerator
 {
@@ -79,7 +75,7 @@ private:
 	Mesh* chunkMesh;
 	bool hasChunkMesh;
 
-	PointQuadTree treePoints;
+	QuadTree treePoints;
 	Object* root;
 
 	ID3D11Device* device;

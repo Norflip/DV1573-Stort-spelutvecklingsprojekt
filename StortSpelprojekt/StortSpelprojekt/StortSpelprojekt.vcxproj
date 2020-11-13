@@ -214,7 +214,7 @@
     <ClCompile Include="PickupComponent.cpp" />
     <ClCompile Include="PlayerComp.cpp" />
     <ClCompile Include="PlayerAttackComp.cpp" />
-    <ClCompile Include="PointQuadTree.cpp" />
+    <ClCompile Include="QuadTree.cpp" />
     <ClCompile Include="PossionDiscSampler.cpp" />
     <ClCompile Include="PointLightComponent.cpp" />
     <ClCompile Include="Renderer.cpp" />
@@ -283,7 +283,7 @@
     <ClInclude Include="PickupComponent.h" />
     <ClInclude Include="PlayerComp.h" />
     <ClInclude Include="PlayerAttackComp.h" />
-    <ClInclude Include="PointQuadTree.h" />
+    <ClInclude Include="QuadTree.h" />
     <ClInclude Include="PossionDiscSampler.h" />
     <ClInclude Include="Random.h" />
     <ClInclude Include="Resource.h" />
