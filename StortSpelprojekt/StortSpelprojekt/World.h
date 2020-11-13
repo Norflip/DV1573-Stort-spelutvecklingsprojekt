@@ -8,25 +8,27 @@
 class World
 {
 	typedef std::unordered_map<int, Chunk*> ChunkMap;
-	const int RELEVANT_RADIUS = 2;
+	const int RELEVANT_RADIUS = 1;
 
 public:
 	World();
 	virtual ~World();
 
-	void Initialize(Object* root, ResourceManager* resources, ObjectPooler* pooler, Renderer* renderer, CameraComponent* camera);
+	void Initialize(Object* root, ResourceManager* resources, Renderer* renderer);
 
-	void ConstructSegment(SaveState state, SegmentDescription description);
+	void ConstructSegment(const SaveState& state);
 	void DeconstructSegment();
 	
-	void UpdateRelevantChunks ();
-
-	void SetPlayer(Object* object) { this->player = object; }
-	void SetHouse(Object* object) { this->house = object; }
+	void UpdateRelevantChunks (const Transform& transform, CameraComponent* camera);
 	void DrawDebug();
 
+	Chunk* GetChunk(const float& x, const float& z) const;
+	float SampleHeight(const float& x, const float& z) const;
+	float SampleRoadInfluence(const float& x, const float& z) const;
+	void SampleNormal(const float& x, const float& z, dx::XMFLOAT3& normal) const;
+	void GetChunksInRadius(const dx::XMINT2& index, int radius, std::vector<Chunk*>& chunks) const;
+
 	Path& GetPath() { return this->generator.GetPath(); }
-	void MoveHouseAndPlayerToStart();
 
 private:
 	dx::XMINT2 GetChunkIndex(Object* object) const;
@@ -44,10 +46,8 @@ private:
 	ResourceManager* resources;
 	std::vector<Chunk*> relevant;
 
-	ChunkMap relevantChunkMap;
-	ChunkMap chunkMap;
+	ObjectSpawner* spawner;
+	ObjectPooler* pooler;
 	
-	dx::XMINT2 playerIndex;
-	Object* player;
-	Object* house;
+	dx::XMINT2 lastRelevantIndex;
 };

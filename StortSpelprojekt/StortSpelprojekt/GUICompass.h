@@ -3,6 +3,7 @@
 #include "GUISprite.h"
 class GUIManager;
 
+ALIGN16
 class GUICompass : public GUIObject
 {
 public:
@@ -11,6 +12,8 @@ public:
     virtual void Draw(DirectX::SpriteBatch*) override;
 
     virtual void SetPosition(float x, float y) override;
+
+    ALIGN16_ALLOC;
 private:
     GUISprite* backgroundBar;
     GUISprite* house;

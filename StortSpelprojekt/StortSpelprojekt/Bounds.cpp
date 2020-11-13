@@ -58,6 +58,30 @@ void Bounds::SetMinMax(dx::XMFLOAT3 min, dx::XMFLOAT3 max)
 	this->max = max;
 }
 
+void Bounds::TransformMinMax(dx::XMMATRIX worldTransform, dx::XMFLOAT3& min, dx::XMFLOAT3& max) const
+{
+	dx::XMFLOAT3 storedTransformedCorner;
+	dx::XMVECTOR transformedCorner;
+	dx::XMFLOAT3 corners[8];
+	GetCorners(corners);
+
+	for (size_t i = 0; i < 8; i++)
+	{
+		transformedCorner = dx::XMVector3Transform(dx::XMLoadFloat3(&corners[i]), worldTransform);
+		dx::XMStoreFloat3(&storedTransformedCorner, transformedCorner);
+
+		if (i == 0)
+		{
+			min = max = storedTransformedCorner;
+		}
+		else
+		{
+			Float3Min(min, min, storedTransformedCorner);
+			Float3Max(max, max, storedTransformedCorner);
+		}
+	}
+}
+
 void Bounds::GetCorners(dx::XMFLOAT3 corners[8]) const
 {
 	size_t i = 0;
@@ -98,7 +122,7 @@ void Bounds::Float3Min(dx::XMFLOAT3& target, const dx::XMFLOAT3& value0, const d
 
 void Bounds::Float3Max(dx::XMFLOAT3& target, const dx::XMFLOAT3& value0, const dx::XMFLOAT3& value1) const
 {
-	target.x = std::min(value0.x, value1.x);
-	target.y = std::min(value0.y, value1.y);
-	target.z = std::min(value0.z, value1.z);
+	target.x = std::max(value0.x, value1.x);
+	target.y = std::max(value0.y, value1.y);
+	target.z = std::max(value0.z, value1.z);
 }

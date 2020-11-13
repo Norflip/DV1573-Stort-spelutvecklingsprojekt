@@ -1,4 +1,4 @@
-Objects: 27
+Objects: 28
 
 Enemy: Models/Enemies/baseMonster.ZWEB
 Shader: skeletonShader
@@ -24,6 +24,9 @@ Animations: 4
 1: Animations/House/HouseLegsWalk.ZWEB
 7: Animations/House/HouseLegsSitDown.ZWEB
 6: Animations/House/HouseLegsStandUp.ZWEB
+
+Lamp: Models/Props/lampa.ZWEB
+Shader: defaultShader
 
 Test: Models/Debug/brickSphere.ZWEB
 Shader: instanceShader

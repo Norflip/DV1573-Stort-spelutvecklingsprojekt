@@ -328,7 +328,7 @@ void ResourceManager::ReadShaders(ID3D11Device* device)
 					}
 					else if (input == "instance")
 					{
-						tempShader->SetInputLayoutStructure(10, tempShader->INSTANCE_INPUT_LAYOUTd);
+						tempShader->SetInputLayoutStructure(9, tempShader->INSTANCE_INPUT_LAYOUTd);
 					}
 					else if (input == "color")
 					{

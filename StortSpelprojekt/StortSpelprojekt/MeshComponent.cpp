@@ -1,6 +1,12 @@
 #include "stdafx.h"
 #include "MeshComponent.h"
 
+MeshComponent::MeshComponent(Mesh* mesh, Material* material, Bounds bounds) : bounds(bounds), instanced(false)
+{
+	meshes.push_back(mesh);
+	materials.push_back(material);
+}
+
 MeshComponent::MeshComponent(Mesh* mesh, Material* material) : bounds(), instanced(false)
 {
 	meshes.push_back(mesh);
@@ -8,13 +14,13 @@ MeshComponent::MeshComponent(Mesh* mesh, Material* material) : bounds(), instanc
 	bounds.CalculateAABB(meshes);
 }
 
-MeshComponent::MeshComponent(std::vector<Mesh*> meshes, std::vector<Material*> materials) 
+MeshComponent::MeshComponent(std::vector<Mesh*> meshes, std::vector<Material*> materials)
 	: meshes(meshes), materials(materials), bounds(), instanced(false)
 {
 	bounds.CalculateAABB(meshes);
 }
 
-MeshComponent::~MeshComponent() 
+MeshComponent::~MeshComponent()
 {
 	RELEASE(instanceBuffer);
 }
@@ -56,13 +62,11 @@ void MeshComponent::DrawNonInstanced(Renderer* renderer, CameraComponent* camera
 
 void MeshComponent::DrawInstanced(Renderer* renderer, CameraComponent* camera) const
 {
-	for (size_t i = 0; i < meshes.size(); i++)
-		renderer->DrawInstanced(meshes[i], instanceData.size(), instanceBuffer, materials[i]);
-	return; // FIX
 
 	if (GetOwner()->HasFlag(ObjectFlag::NO_CULL))
 	{
-	
+		for (size_t i = 0; i < meshes.size(); i++)
+			renderer->DrawInstanced(meshes[i], instanceData.size(), instanceBuffer, materials[i]);
 	}
 	else
 	{
@@ -77,7 +81,7 @@ void MeshComponent::DrawInstanced(Renderer* renderer, CameraComponent* camera) c
 
 			for (size_t i = 0; i < instanceData.size(); i++) //cull all the instances
 			{
-				if (camera->InView(bounds, dx::XMLoadFloat4x4(&instanceData[i].instanceWorld))) //the bounding box is in local space so it's same for every instance.
+				if (camera->InView(bounds, dx::XMMatrixTranspose(dx::XMLoadFloat4x4(&instanceData[i].instanceWorld)))) //the bounding box is in local space so it's same for every instance.
 				{
 					dataView[instanceCount] = instanceData[i];
 					instanceCount++;

@@ -79,27 +79,6 @@ void Renderer::Initialize(Window* window)
 	screenQuadMesh = CreateScreenQuad();
 	DShape::Instance().m_Initialize(device);
 
-	//EXEMPEL
-	///AddRenderPass(new PSRenderPass(1, L"Shaders/TestPass.hlsl"));
-
-	IDXGIFactory1* pFactory = nullptr;
-	IDXGIAdapter* pAdapter = nullptr;
-	assert(SUCCEEDED(CreateDXGIFactory1(__uuidof(IDXGIFactory1), (void**)&pFactory)));
-
-	if (pFactory != nullptr)
-	{
-		for (UINT i = 0; pFactory->EnumAdapters(i, &pAdapter) != DXGI_ERROR_NOT_FOUND; ++i)
-		{
-			DXGI_ADAPTER_DESC adapterDescription;
-			pAdapter->GetDesc(&adapterDescription);
-
-			std::wstring ws(adapterDescription.Description);
-			std::cout << "GPU #" << std::to_string(i) << ": " << std::string(ws.begin(), ws.end()) << "\t" << adapterDescription.DeviceId << std::endl;
-		}
-
-		if (pFactory)
-			pFactory->Release();
-	}
 }
 
 
@@ -216,7 +195,6 @@ void Renderer::RenderFrame(CameraComponent* camera, float time, RenderTexture& t
 	ClearRenderTarget(midbuffer);
 	SetRenderTarget(midbuffer);
 
-
 	for (auto i = passes.begin(); i < passes.end(); i++)
 	{
 		RenderPass* pass = *i;
@@ -238,16 +216,6 @@ void Renderer::RenderFrame(CameraComponent* camera, float time, RenderTexture& t
 	SetCullBack(true);
 	size_t passCount = 0;
 	size_t bufferIndex = 0;
-
-
-	/* Particle stuffy */
-	SetCullBack(true);
-	/*for (auto i : particleList)
-	{
-		if(i.second->GetActive())
-			i.second->Render(context, camera);
-	}*/
-	SetCullBack(false);
 
 	if (applyRenderPasses)
 	{

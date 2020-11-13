@@ -23,7 +23,7 @@ SkeletonMeshComponent::SkeletonMeshComponent(SkeletonMeshComponent* other)
 	this->material = other->GetMaterial();
 	this->timeScale = other->GetTimeScale();
 
-	for (int i = 0; i < other->GetAnimations().size(); i++)
+	for (size_t i = 0; i < other->GetAnimations().size(); i++)
 	{
 		skeletonAnimations.push_back(other->GetAnimations()[i]);
 	}
@@ -35,7 +35,7 @@ SkeletonMeshComponent::SkeletonMeshComponent(SkeletonMeshComponent* other)
 	this->doneDown = false;
 	this->doneUp = false;
 
-	for (int bone = 0; bone < other->GetAnimationTransforms().size(); bone++)
+	for (size_t bone = 0; bone < other->GetAnimationTransforms().size(); bone++)
 	{
 		dx::XMFLOAT4X4 matrix = other->GetAnimationTransforms()[bone];
 

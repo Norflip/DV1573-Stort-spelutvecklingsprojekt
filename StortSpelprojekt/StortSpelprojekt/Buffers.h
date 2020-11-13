@@ -9,7 +9,7 @@ constexpr size_t CB_LIGHT_SLOT = 3;
 constexpr size_t CB_GRASS_PARAMETERS_SLOT = 4;
 
 
-constexpr size_t POINT_LIGHT_COUNT = 16;
+constexpr size_t POINT_LIGHT_COUNT = 32;
 
 ALIGN16
 struct cb_Object
