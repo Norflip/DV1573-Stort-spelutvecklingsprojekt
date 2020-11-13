@@ -27,7 +27,7 @@ void GameScene::Initialize()
 
 		Mesh* mesh1 = resources->GetResource<Mesh>("Test");
 		Material* material1 = resources->GetResource<Material>("TestMaterial");
-
+		
 		object->AddComponent<MeshComponent>(mesh1, material1);
 		object->AddComponent<BoxColliderComponent>(dx::XMFLOAT3(0.5f, 0.5f, 0.5f), dx::XMFLOAT3(0, 0, 0));
 		object->AddComponent<RigidBodyComponent>(10.0f, FilterGroups::DEFAULT, FilterGroups::EVERYTHING, BodyType::DYNAMIC, true);

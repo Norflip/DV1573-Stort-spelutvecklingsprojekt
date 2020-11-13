@@ -25,8 +25,6 @@ void ObjectSpawner::Spawn(const SaveState& state, PointQuadTree& tree, std::unor
 	propSpawnPositions = CreateSpawnPositions(tree, 10.0f, chunkMap);
 	itemSpawnPositions = CreateSpawnPositions(tree, 20.0f, chunkMap);
 
-	return;
-
 	struct TempData
 	{
 		Prop* prop;
