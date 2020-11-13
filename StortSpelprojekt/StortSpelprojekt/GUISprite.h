@@ -39,6 +39,8 @@ public:
 	virtual void Draw();
 	void SetPosition(float xPos, float yPos);
 	float GetWidth() { return width; };
+	float GetXpos() { return xPos; };
+	float GetYpos() { return yPos; };
 	float GetHeight() { return width; };
 	void SetWICSprite(ID3D11Device* device, std::string spriteFile);
 	

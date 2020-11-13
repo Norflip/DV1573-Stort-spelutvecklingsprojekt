@@ -11,6 +11,8 @@ GUICompass::GUICompass(Renderer& renderer, Window* window, Object* houseObj, Obj
 	backgroundBar = new GUISprite(renderer, "Textures/Compass.png", 0, 10, 0.2f, DrawDirection::Center, ClickFunction::NotClickable);
 	house = new GUISprite(renderer, "Textures/House.png", 0, 10, 0.0f, DrawDirection::Center, ClickFunction::NotClickable);
 	backgroundBar->Move({ 0.f, 30.f });
+	compassHeight = backgroundBar->GetYpos();
+	compassWidth = backgroundBar->GetXpos();
 }
 
 void GUICompass::Update()
@@ -25,7 +27,7 @@ void GUICompass::Update()
 	std::cout << "post " << scale << std::endl;
 	house->SetScale(scale, scale);
 
-	house->SetPosition(0+ scale*house->GetWidth(),30);
+	house->SetPosition(0+ scale*(house->GetWidth()/2), compassHeight+ (house->GetHeight()/2) - scale * (house->GetHeight()/2));
 	//logic here
 }
 
