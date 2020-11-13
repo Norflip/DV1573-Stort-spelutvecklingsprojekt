@@ -68,8 +68,8 @@ void Renderer::Initialize(Window* window)
 
 	/* Screenquad shader */
 	Shader* screenQuadShader = new Shader;
-	screenQuadShader->SetPixelShader("Shaders/ScreenQuad_ps.hlsl");
-	screenQuadShader->SetVertexShader("Shaders/ScreenQuad_vs.hlsl");
+	//screenQuadShader->SetPixelShader("Shaders/ScreenQuad_ps.hlsl");
+	//screenQuadShader->SetVertexShader("Shaders/ScreenQuad_vs.hlsl");
 	screenQuadShader->Compile(device);
 
 	screenQuadMaterial = new Material(screenQuadShader);

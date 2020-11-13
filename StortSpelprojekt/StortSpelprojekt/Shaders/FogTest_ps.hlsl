@@ -3,6 +3,7 @@
 
 Texture2D screenTexture : register (t0);
 Texture2D depthTexture : register (t1);
+Texture2D colorTexture : register (t2);
 Texture2D skyTexture : register (t5);
 SamplerState defaultSampleType : register (s0);
 
@@ -72,14 +73,16 @@ float4 main(PixelInputType input) : SV_TARGET
 
     //return float4(I, I, I, 1.0f);
    // return diffuseColor;
-    float4 background = skyTexture.Sample(defaultSampleType, input.uv);
+    // VIKTOR här samplas ramptexturen. hitta ett sätt att sampla ett specifikt område på texturen.
+    float4 background = colorTexture.Sample(defaultSampleType, input.uv); 
 
-   // float4 fogColor = float4(0.1f, 0.1f, 0.4f, 1.0f);
+   //float4 fogColor = float4(0.1f, 0.1f, 0.4f, 1.0f);
     float4 fogColor = float4(1, 1, 1, 1.0f);
     fogColor = float4(((f * f * f + .6 * f * f + .5 * f) * color).xyz, 1.0f);
 
     //fogColor = (f * f * f + .6 * f * f + .5 * f) * fogColor;
     //diffuseColor = diffuseColor + (background*0.3f);
+    fogColor = fogColor + (background * 0.3); //Här färgas dimman om
     float4 result = lerp(diffuseColor, fogColor, fogFactor);
     return result;
     //return diffuseColor + float4(d, d, d, 1.0f);
