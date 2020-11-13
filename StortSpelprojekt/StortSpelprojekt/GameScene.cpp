@@ -49,24 +49,26 @@ void GameScene::InitializeObjects()
 
 	house = houseBaseObject;
 
-	//														Extence					pos
+	SkeletonMeshComponent* baseComponent = resources->GetResource<SkeletonMeshComponent>("HouseSkeleton");
+	SkeletonMeshComponent* legsComponent = resources->GetResource<SkeletonMeshComponent>("HouseLegsSkeleton");
+
+	houseBaseObject->GetTransform().SetScale({ 0.5f, 0.5f, 0.5f });
+	
 	//WALLS
-	houseBaseObject->AddComponent<BoxColliderComponent>(dx::XMFLOAT3(1.5, 3.5, 2.1), dx::XMFLOAT3(0, 4, -1));
+	houseBaseObject->AddComponent<BoxColliderComponent>(dx::XMFLOAT3(2.0f, 3.5f, 2.3f), dx::XMFLOAT3(0.f, 0.9f, -1.0f));
 	//PORCH
-	houseBaseObject->AddComponent<BoxColliderComponent>(dx::XMFLOAT3(3.375, 0.325, 3), dx::XMFLOAT3(0, 1, 0.05));
+	houseBaseObject->AddComponent<BoxColliderComponent>(dx::XMFLOAT3(3.0f, 0.5f, 3.0f), dx::XMFLOAT3(0.f, 0.5f, 0.f));
 	//FENCE BACK
 	houseBaseObject->AddComponent<BoxColliderComponent>(dx::XMFLOAT3(0.125, 0.625, 3.375), dx::XMFLOAT3(-3.3, 2, 0.05));
 	//FENCE FRONT
-	houseBaseObject->AddComponent<BoxColliderComponent>(dx::XMFLOAT3(0.125, 0.625, 2.25), dx::XMFLOAT3(3.25, 3, 0.7));
+	houseBaseObject->AddComponent<BoxColliderComponent>(dx::XMFLOAT3(0.1f, 3.5, 1.8), dx::XMFLOAT3(3.5, 0.7f, 0.5));
 	//FENCE RIGHT
 	houseBaseObject->AddComponent<BoxColliderComponent>(dx::XMFLOAT3(5.375, 0.625, 0.15), dx::XMFLOAT3(0, 3, -2.75));
 	//FENCE LEFT
 	houseBaseObject->AddComponent<BoxColliderComponent>(dx::XMFLOAT3(5.375, 0.625, 0.15), dx::XMFLOAT3(0, 3, 2.75));
-
+	// RB
 	houseBaseObject->AddComponent<RigidBodyComponent>(0.0f, FilterGroups::PROPS, FilterGroups::EVERYTHING, BodyType::STATIC, true);
 
-	SkeletonMeshComponent* baseComponent = resources->GetResource<SkeletonMeshComponent>("HouseSkeleton"); 
-	SkeletonMeshComponent* legsComponent = resources->GetResource<SkeletonMeshComponent>("HouseLegsSkeleton");
 	baseComponent->SetTimeScale(0.5f);
 	legsComponent->SetTimeScale(0.5f);
 	baseComponent->SetTrack(SkeletonStateMachine::IDLE, false);
@@ -76,11 +78,10 @@ void GameScene::InitializeObjects()
 	housesLegsObject->AddComponent<SkeletonMeshComponent>(legsComponent);
 
 	Transform::SetParentChild(houseBaseObject->GetTransform(), housesLegsObject->GetTransform());
-	houseBaseObject->GetTransform().SetScale({ 0.5f, 0.5f, 0.5f });
 
 	NodeWalkerComp* nodeWalker = houseBaseObject->AddComponent<NodeWalkerComp>();
 	nodeWalker->InitAnimation();
-	
+
 	AddObject(houseBaseObject);
 
 	//Player & Camera
@@ -94,11 +95,11 @@ void GameScene::InitializeObjects()
 	
 	cameraObject->GetTransform().SetPosition(playerSpawnVec);
 	playerObject->GetTransform().SetPosition(playerSpawnVec);
-	playerObject->AddComponent<CapsuleColliderComponent>(0.5f, 1.8f, zero);
-	playerObject->AddComponent<RigidBodyComponent>(60.f, FilterGroups::PLAYER, (FilterGroups::EVERYTHING), BodyType::DYNAMIC, true);
+	playerObject->AddComponent<CapsuleColliderComponent>(0.5f, 1.5f, zero);
+	playerObject->AddComponent<RigidBodyComponent>(50.f, FilterGroups::PLAYER, (FilterGroups::EVERYTHING), BodyType::DYNAMIC, true);
 
 	playerObject->AddComponent<PlayerComp>(renderer, camera, Engine::Instance->GetPhysics(), guiManager, 100.f, 2.f, 20.f, 50.f, 3.f);
-	playerObject->AddComponent<ControllerComp>(cameraObject, houseBaseObject); /////////////////
+	playerObject->AddComponent<ControllerComp>(cameraObject, houseBaseObject); 
 
 	AddObject(cameraObject, playerObject);
 	AddObject(playerObject);
@@ -133,14 +134,6 @@ void GameScene::InitializeObjects()
 	healthkitObject->AddComponent<RigidBodyComponent>(0.f, FilterGroups::PICKUPS, (FilterGroups::EVERYTHING &~FilterGroups::PLAYER), BodyType::DYNAMIC,true);
 	AddObject(healthkitObject);
 
-	///* Fuel pickup stuff temporary */
-	Object* fuelCanObject = resources->AssembleObject("FuelCanGreen", "FuelCanGreenMaterial");
-
-	fuelCanObject->GetTransform().SetPosition({ 22,2,52 });
-	fuelCanObject->AddComponent<BoxColliderComponent>(dx::XMFLOAT3{ 0.3f, 0.3f, 0.3f }, dx::XMFLOAT3{ 0, 0, 0 });
-	fuelCanObject->AddComponent<PickupComponent>(Type::Fuel, 20.0f);
-	fuelCanObject->AddComponent<RigidBodyComponent>(10.f, FilterGroups::HOLDABLE, (FilterGroups::EVERYTHING &~FilterGroups::PLAYER), BodyType::DYNAMIC, true);
-	AddObject(fuelCanObject);
 
 	///* Banana pickup stuff temporary */
 	Shader* particleShader = resources->GetShaderResource("particleShader");
@@ -152,9 +145,7 @@ void GameScene::InitializeObjects()
 
 	beansObject->AddComponent<ParticleSystemComponent>(renderer, camera, particleShader);
 	beansObject->GetComponent<ParticleSystemComponent>()->InitializeParticles(renderer->GetDevice(), L"Textures/starstar.png");
-	AddObject(beansObject);		
-
-
+	AddObject(beansObject);
 }
 
 void GameScene::InitializeGUI()
@@ -277,17 +268,11 @@ void GameScene::OnActivate()
 	house->GetComponent<NodeWalkerComp>()->InitializePath(world.GetPath());
 	world.MoveHouseAndPlayerToStart();
 
-
-
-
 	renderer->AddRenderPass(guiManager);
 
-	
 	Input::Instance().ConfineMouse();
 	Input::Instance().SetMouseMode(dx::Mouse::Mode::MODE_RELATIVE);
 	ShowCursor(false);
-
-
 
 	AudioMaster::Instance().PlaySoundEvent("wind");
 	//this->PrintSceneHierarchy(root, 0);

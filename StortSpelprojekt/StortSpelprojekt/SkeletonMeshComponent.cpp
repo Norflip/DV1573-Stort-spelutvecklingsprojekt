@@ -145,8 +145,6 @@ void SkeletonMeshComponent::FindChildren(SkeletonAni& track, unsigned int& index
 		}
 		else
 		{
-
-
 			if (childName == "leftPinky02" || childName == "leftMiddle02" || childName == "leftRing02" ||
 				childName == "leftThumb02" || childName == "leftIndex02" || childName == "rightPinky02" || childName == "rightMiddle02" || childName == "rightRing02" ||
 				childName == "rightThumb02" || childName == "rightIndex02" || childName == "head")
@@ -181,12 +179,7 @@ void SkeletonMeshComponent::SetTrack(const SkeletonStateMachine& type, bool play
 
 void SkeletonMeshComponent::PlayOnce()
 {
-
 	float time = 0.0f;
-
-
-
-
 
 	if (currentAni == SkeletonStateMachine::IDLE)
 	{
