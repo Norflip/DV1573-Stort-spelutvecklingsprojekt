@@ -3,11 +3,7 @@
 
 struct Grid
 {
-	dx::XMFLOAT2 buttomLeft;
-	dx::XMFLOAT2 buttomRight;
-	dx::XMFLOAT2 topRight;
-	dx::XMFLOAT2 topLeft;
-	dx::XMFLOAT2 position;
+	
 };
 
 class GridMap
@@ -18,7 +14,10 @@ class GridMap
 		void Init();
 		bool CheckInGrid();
 	private:
+		int rows;
+		float gridSize;
+		int objectOffset;
+		int gridOffset;
 		Object* object;
 		std::vector<Grid> grids;
-		Grid oneGrid;
 };

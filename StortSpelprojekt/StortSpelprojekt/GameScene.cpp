@@ -191,6 +191,7 @@ void GameScene::InitializeGUI()
 	GUICompass* compass = new GUICompass(*renderer, window);
 	//FONTS
 	GUIFont* fpsDisplay = new GUIFont(*renderer, "fps", windowWidth / 2, 50);
+	GUIFont* playerPosDisplay = new GUIFont(*renderer, "playerPos", 50, 100);
 	//GUIFont* healthDisplay = new GUIFont(*renderer, "playerHealth", 50, 100);
 	//GUIFont* enemyDisplay = new GUIFont(*renderer, "enemyHealth", 50, 150);
 
@@ -201,6 +202,7 @@ void GameScene::InitializeGUI()
 	// INSERTIONS
 	guiManager = new GUIManager(renderer, 100);
 	guiManager->AddGUIObject(fpsDisplay, "fps");
+	guiManager->AddGUIObject(playerPosDisplay, "playerPos");
 	//guiManager->AddGUIObject(healthDisplay, "playerHealth");
 	//guiManager->AddGUIObject(enemyDisplay, "enemyHealth");
 
@@ -311,6 +313,10 @@ void GameScene::Update(const float& deltaTime)
 	gridMap->CheckInGrid();
 
 	static_cast<GUIFont*>(guiManager->GetGUIObject("fps"))->SetString(std::to_string((int)GameClock::Instance().GetFramesPerSecond()));
+	dx::XMFLOAT3 playerPosF;
+	dx::XMStoreFloat3(&playerPosF, player->GetTransform().GetPosition());
+	static_cast<GUIFont*>(guiManager->GetGUIObject("playerPos"))->SetString("Player pos x:" + std::to_string((int)playerPosF.x)
+	+ " y: " + std::to_string((int)playerPosF.z));
 	guiManager->UpdateAll();
 }
 
