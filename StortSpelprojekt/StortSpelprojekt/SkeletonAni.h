@@ -14,7 +14,6 @@ struct Bone
 	std::string parentName;
 	dx::SimpleMath::Quaternion rotationQuaternion;
 	dx::SimpleMath::Vector3 translationVector;
-	
 };
 
 class SkeletonAni
@@ -51,7 +50,8 @@ public:
 	float GetAniLength();
 	void SetOffsetsDirect(std::vector<dx::SimpleMath::Matrix>& directOffsets);
 	void SetKeyFramesDirect(std::vector<std::vector<Bone>>& directKeys);
-	
 
+	std::vector<dx::XMFLOAT4X4> GetBones() { return this->bones; }
+	
 };
 

@@ -21,7 +21,7 @@ void SegmentGenerator::Initialize(Object* root, ResourceManager* resources, Obje
 	//Material* mat = resourceManager->GetResource<Material>("TestMaterial");
 	//materialData = mat->GetMaterialData();
 
-	// Något fel med resourceManagerns textures, får fixa det efter sprintmötet
+	// Nï¿½got fel med resourceManagerns textures, fï¿½r fixa det efter sprintmï¿½tet
 	//grassTexture = resourceManager->GetResource<Texture>("Grass");// .LoadTexture(device, L"Textures/newGrass.png");
 	//roadTexture = resourceManager->GetResource<Texture>("Road");// .LoadTexture(device, L"Textures/Stone_Floor_003_COLOR.jpg");
 
@@ -70,9 +70,11 @@ void SegmentGenerator::Construct(const SaveState& state, const SegmentDescriptio
 		{
 			obj->GetTransform().SetScale({ 1.2f, 1.2f, 1.2f });
 
+
+
 			/*Object* light = new Object("lantern_pointLight");
 			light->GetTransform().SetPosition({ 0,2,0 });
-			light->AddComponent<PointLightComponent>(dx::XMFLOAT4(0.3f, 0.3f, 0.3f, 1.0f), 6.f);
+			light->AddComponent<PointLightComponent>(dx::XMFLOAT4(0.3f, 0.3f, 0.3f, 1.0f), 4.0f);
 			Transform::SetParentChild(obj->GetTransform(), light->GetTransform());*/
 
 		});

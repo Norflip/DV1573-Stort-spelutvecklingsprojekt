@@ -24,6 +24,7 @@
 #include "ObjectPooler.h"
 #include "WeaponComponent.h"
 #include "EnemyManager.h"
+#include "PlayerAnimHandlerComp.h"
 
 class GUIFont;
 class SpriteRenderPass;
