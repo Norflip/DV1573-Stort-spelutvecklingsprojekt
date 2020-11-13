@@ -67,8 +67,8 @@ void GameScene::InitializeObjects()
 
 	SkeletonMeshComponent* baseComponent = resources->GetResource<SkeletonMeshComponent>("HouseSkeleton"); 
 	SkeletonMeshComponent* legsComponent = resources->GetResource<SkeletonMeshComponent>("HouseLegsSkeleton");
-	baseComponent->SetTimeScale(0.5f);
-	legsComponent->SetTimeScale(0.5f);
+	baseComponent->SetTimeScale(1.0f);
+	legsComponent->SetTimeScale(1.0f);
 	baseComponent->SetTrack(SkeletonStateMachine::IDLE, false);
 	legsComponent->SetTrack(SkeletonStateMachine::IDLE, false);
 
@@ -103,21 +103,13 @@ void GameScene::InitializeObjects()
 	AddObject(cameraObject, playerObject);
 	AddObject(playerObject);
 
-	//Object* testPointLight = new Object("body_pointLight");
+	Object* testPointLight = new Object("body_pointLight");
 
-	//dx::XMFLOAT3 lightTranslation = dx::XMFLOAT3(0.0f, 0.0f, 0.0f);
-	//testPointLight->GetTransform().SetPosition(dx::XMLoadFloat3(&lightTranslation));
-	//testPointLight->AddComponent<PointLightComponent>(dx::XMFLOAT4(0.3f, 0.3f, 0.3f, 1.0f), 10.f);
+	dx::XMFLOAT3 lightTranslation = dx::XMFLOAT3(0.0f, 0.0f, 0.0f);
+	testPointLight->GetTransform().SetPosition(dx::XMLoadFloat3(&lightTranslation));
+	testPointLight->AddComponent<PointLightComponent>(dx::XMFLOAT4(0.3f, 0.3f, 0.3f, 1.0f), 7.f);
 
-	//AddObject(testPointLight, playerObject);
-
-	Object* axeObject = resources->AssembleObject("Axe", "AxeMaterial");
-	axeObject->GetTransform().SetPosition({ 0,0,0 });
-	axeObject->GetTransform().SetScale({ 1, 1, 1 });
-	axeObject->AddComponent<WeaponComponent>(cameraObject);
-	axeObject->AddFlag(ObjectFlag::NO_CULL);
-	AddObject(axeObject);
-	playerObject->GetComponent<PlayerComp>()->InsertWeapon(axeObject->GetComponent<WeaponComponent>(), axeObject->GetName());
+	AddObject(testPointLight, playerObject);
 
 	world.Initialize(root, resources, renderer);
 	
@@ -154,7 +146,24 @@ void GameScene::InitializeObjects()
 	beansObject->GetComponent<ParticleSystemComponent>()->InitializeParticles(renderer->GetDevice(), L"Textures/starstar.png");
 	AddObject(beansObject);		
 
+	beansObject->AddComponent<RigidBodyComponent>(0.f, FilterGroups::PICKUPS, FilterGroups::TERRAIN, BodyType::DYNAMIC, true);
+	AddObject(beansObject);
 
+	//Player Arms
+	Object* playerArms = new Object("PlayerArms", ObjectFlag::DEFAULT | ObjectFlag::NO_CULL);
+	SkeletonMeshComponent* armsSkeleton = resources->GetResource<SkeletonMeshComponent>("PlayerArmsSkeleton");
+	playerArms->AddComponent<SkeletonMeshComponent>(armsSkeleton);
+	playerArms->AddComponent<PlayerAnimHandlerComp>(playerArms->GetComponent<SkeletonMeshComponent>(), cameraObject, player);
+	AddObject(playerArms);
+
+	//Axe
+	Object* axeObject = resources->AssembleObject("Axe", "AxeMaterial", ObjectFlag::DEFAULT | ObjectFlag::NO_CULL);
+	axeObject->GetTransform().SetPosition({ 21.0f, 1.0f, -16.0f });
+	axeObject->GetTransform().SetScale({ 1.0f, 1.0f, 1.0f });
+	axeObject->AddComponent<WeaponComponent>(playerArms->GetComponent<SkeletonMeshComponent>());
+	playerObject->GetComponent<PlayerComp>()->InsertWeapon(axeObject->GetComponent<WeaponComponent>(), axeObject->GetName());
+	AddObject(axeObject);
+	
 }
 
 void GameScene::InitializeGUI()
@@ -294,12 +303,9 @@ void GameScene::OnActivate()
 
 	renderer->AddRenderPass(guiManager);
 
-	
 	Input::Instance().ConfineMouse();
 	Input::Instance().SetMouseMode(dx::Mouse::Mode::MODE_RELATIVE);
 	ShowCursor(false);
-
-
 
 	AudioMaster::Instance().PlaySoundEvent("wind");
 	//this->PrintSceneHierarchy(root, 0);
@@ -324,6 +330,7 @@ void GameScene::Update(const float& deltaTime)
 
 	static_cast<GUIFont*>(guiManager->GetGUIObject("fps"))->SetString(std::to_string((int)GameClock::Instance().GetFramesPerSecond()));
 	guiManager->UpdateAll();
+
 }
 
 void GameScene::FixedUpdate(const float& fixedDeltaTime)

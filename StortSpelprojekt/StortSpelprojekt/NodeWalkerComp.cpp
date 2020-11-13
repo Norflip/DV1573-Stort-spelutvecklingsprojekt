@@ -132,6 +132,11 @@ void NodeWalkerComp::Update(const float& deltaTime)
 		base->SetTrack(SkeletonStateMachine::WALK, false);
 		legs->SetTrack(SkeletonStateMachine::WALK, false);
 	}
+	if (base->SetAndGetDoneDown())
+	{
+		base->SetTrack(SkeletonStateMachine::IDLE, false);
+		legs->SetTrack(SkeletonStateMachine::IDLE, false);
+	}
 
 	if (KEY_DOWN(I)) //used to display info and test paths
 	{
