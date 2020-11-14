@@ -171,13 +171,26 @@ void GameScene::InitializeObjects()
 	//Material *chargermat = new Material(resources->GetShaderResource("skeletonShader"));
 	std::vector<Material*> chargerMat = ZWEBLoader::LoadMaterials("Models/Enemies/Charger_Model.ZWEB", resources->GetShaderResource("skeletonShader"), renderer->GetDevice());
 	std::vector<Mesh*> chargerMesh = ZWEBLoader::LoadMeshes(ZWEBLoadType::SkeletonAnimation, "../Models/Enemies/Charger_Model.ZWEB", renderer->GetDevice());
+	
 	SkeletonAni chargerIdle = ZWEBLoader::LoadSkeletonOnly("Animations/Charger/Charger_Idle.ZWEB", chargerMesh[0]->GetBoneIDS(), false);
+	
+	SkeletonAni chargerLoad = ZWEBLoader::LoadSkeletonOnly("Animations/Charger/Charger_Load.ZWEB", chargerMesh[0]->GetBoneIDS(), false);
+
+	SkeletonAni chargerRun = ZWEBLoader::LoadSkeletonOnly("Animations/Charger/Charger_Run16.ZWEB", chargerMesh[0]->GetBoneIDS(), false);
+
+	SkeletonAni chargerAttack = ZWEBLoader::LoadSkeletonOnly("Animations/Charger/Charger_RunAttack.ZWEB", chargerMesh[0]->GetBoneIDS(), false);
+
+	SkeletonAni chargerUnload = ZWEBLoader::LoadSkeletonOnly("Animations/Charger/Charger_Unload.ZWEB", chargerMesh[0]->GetBoneIDS(), false);
 
 	Object* charge = new Object("Charger");
 	charge->GetTransform().SetPosition(dx::XMVECTOR({ 24.0f, 2.0f, 53, 1.0f }));
+
 	SkeletonMeshComponent* idle = charge->AddComponent<SkeletonMeshComponent>(chargerMesh[0], chargerMat[0]);
-	idle->SetAnimationTrack(chargerIdle, SkeletonStateMachine::IDLE);
+	idle->SetAnimationTrack(chargerUnload, SkeletonStateMachine::IDLE);
 	idle->SetTrack(SkeletonStateMachine::IDLE, false);
+
+
+
 	AddObject(charge);
 }
 
