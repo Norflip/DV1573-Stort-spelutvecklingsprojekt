@@ -17,26 +17,19 @@ GUICompass::GUICompass(Renderer& renderer, Window* window, Object* houseObj, Obj
 
 void GUICompass::Update()
 {
-	system("CLS");
+
 	sm::Vector3 playerPos = playerObj->GetTransform().GetPosition();
 	sm::Vector3 housePos= houseObj->GetTransform().GetPosition();
 	
 	float distance = playerPos.Distance(playerPos, housePos);
-	//std::cout <<"pre "<< distance << std::endl;
-	
 	float scale  = Math::Clamp((10 / pow(distance,0.7f)),0.4f,1.f);
-	//std::cout << "post " << scale << std::endl;
 	house->SetScale(scale, scale);
-	//Places icon at centre with scaling taken into consideration
 	house->SetPosition((-house->GetWidth() / 2) +scale*(house->GetWidth()/2), compassYpos+ (house->GetHeight()/2) - scale * (house->GetHeight()/2));
 	house->SetColor({ house->GetColor().x, house->GetColor().y, house->GetColor().z, scale });
 	
-	// some logic for lookat house should be done here
+
 	
-	//GETS ROTATION OF PLAYER WITH FUCKERY. PLEASE FIX AN ACTUAL ROTATION OF THE PLAYER
 	CameraComponent* cam = playerObj->GetComponent<PlayerComp>()->GetCamera();
-	dx::XMVECTOR camRot = cam->GetOwner()->GetTransform().GetRotation();
-	//camRot = cam->GetOwner()->GetTransform().TransformDirectionCustomRotation({1,0,0 }, camRot);
 	sm::Vector3 test = cam->GetOwner()->GetTransform().GetLocalRotation();
 	float angleOfPlayer = test.y * Math::PI * (180 / (Math::PI));
 	
@@ -73,9 +66,7 @@ void GUICompass::Update()
 	std::cout <<std::endl<< "RESULTANGLE" << resultAngle << std::endl;
 	float movePos = 0;
 	//NOW.... IF ANGLE IS 90 -> 0 it should more to the left
-	//angle = abs(angle);
-	backgroundBar->GetWidth();
-
+	//backgroundBar->GetWidth();
 	if (resultAngle > 0 && resultAngle < 90.f)
 	{
 		movePos = -(resultAngle);
