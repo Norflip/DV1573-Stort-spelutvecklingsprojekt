@@ -74,13 +74,15 @@ void GUICompass::Update()
 	float movePos = 0;
 	//NOW.... IF ANGLE IS 90 -> 0 it should more to the left
 	//angle = abs(angle);
-	if (angle > 0 && angle < 90.f)
+	backgroundBar->GetWidth();
+
+	if (resultAngle > 0 && resultAngle < 90.f)
 	{
-		movePos = -(angle);
+		movePos = -(resultAngle);
 	}
-	else if (angle < 360.f && angle > 270.f)
+	else if (resultAngle < 0 && resultAngle > -90.f)
 	{
-		movePos = 360.f-(angle);
+		movePos = -(resultAngle);
 	}
 	else
 		movePos = 10000;
