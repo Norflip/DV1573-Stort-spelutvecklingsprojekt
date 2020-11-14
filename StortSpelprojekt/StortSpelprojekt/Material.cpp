@@ -3,9 +3,9 @@
 
 size_t Material::idCounter = 0;
 
-Material::Material() : id(idCounter++) {  }
-
+Material::Material() : id(idCounter++) {}
 Material::Material(Shader* shader) : shader(shader), id(idCounter++) {}
+
 Material::~Material() 
 {
 

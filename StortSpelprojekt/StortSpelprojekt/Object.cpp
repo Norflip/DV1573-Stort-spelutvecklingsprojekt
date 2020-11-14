@@ -26,8 +26,6 @@ void Object::Update(const float& deltaTime)
 {
 	if (HasFlag(ObjectFlag::ENABLED))
 	{
-		transform.MarkNotChanged();
-
 		for (auto i = components.begin(); i < components.end(); i++)
 		{
 			if ((*i)->IsEnabled())

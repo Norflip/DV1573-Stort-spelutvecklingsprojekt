@@ -40,12 +40,8 @@ public:
 	Object* GetOwner() const { return this->owner; }
 
 	bool ChangedThisFrame() const { return this->changedThisFrame; }
-	void MarkNotChanged() { this->changedThisFrame = false; }
-	void MarkAsChanged() { this->changedThisFrame = true; }
-	
-
-	//dx::XMVECTOR GetPosition() const { GetWorldPosition(); }
-	//void SetPosition(dx::XMVECTOR position) { SetWorldPosition(position); }
+	void ResetChanged();
+	void MarkAsChanged();
 
 	dx::XMVECTOR GetPosition() const { return this->GetWorldPosition(); }
 	dx::XMVECTOR GetLocalPosition();
