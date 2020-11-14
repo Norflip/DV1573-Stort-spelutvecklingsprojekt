@@ -37,23 +37,40 @@ void GUICompass::Update()
 	CameraComponent* cam = playerObj->GetComponent<PlayerComp>()->GetCamera();
 	dx::XMVECTOR camRot = cam->GetOwner()->GetTransform().GetRotation();
 	//camRot = cam->GetOwner()->GetTransform().TransformDirectionCustomRotation({1,0,0 }, camRot);
-	sm::Vector3 test = playerObj->GetComponent<ControllerComp>()->GetGroundRot();
-	std::cout << "incomingAngle" << test.y << std::endl;
-	//test = { (sin(test.y), 0, cos(test.y)) };
-	test.x = cos(test.y*Math::PI);
-	test.z = sin(test.y * Math::PI);
-
-	std::cout << "X" << test.x << std::endl;
-	std::cout << "Y" << test.y << std::endl;
-	std::cout << "Z" << test.z << std::endl;
+	sm::Vector3 test = cam->GetOwner()->GetTransform().GetLocalRotation();
+	float angleOfPlayer = test.y * Math::PI * (180 / (Math::PI));
+	
+	std::cout <<"ANGLE OF PLAYER"<< angleOfPlayer << std::endl;
+	test *= Math::PI;
+	std::cout << "X PLAYER" << test.x << std::endl;
+	std::cout << "Y PLAYER" << test.y << std::endl;
+	std::cout << "Z PLAYER" << test.z << std::endl;
 	sm::Vector3 H = houseObj->GetTransform().GetPosition();
 	sm::Vector3 P = playerObj->GetTransform().GetPosition();
 	sm::Vector3 vP2H;
 	vP2H = H - P;
 	vP2H.Normalize();
 	
-	float angle = std::atan2f(test.x -vP2H.x , test.z - vP2H.z  ) * (180 / (Math::PI));
+	std::cout<<std::endl << "X HOUSE" << vP2H.x << std::endl;
+	std::cout << "Y HOUSE" << vP2H.y << std::endl;
+	std::cout << "Z HOUSE" << vP2H.z << std::endl;
 	
+
+
+	float angle = std::atan2f(test.x -vP2H.x , test.z - vP2H.z  ) * (180 / (Math::PI));
+
+
+	float resultAngle = angleOfPlayer - angle + 180;
+	if (resultAngle > 360)
+	{
+		resultAngle -= 360;
+	}
+	if (resultAngle > 180)
+	{
+		resultAngle -= 360;
+	}
+
+	std::cout <<std::endl<< "RESULTANGLE" << resultAngle << std::endl;
 	float movePos = 0;
 	//NOW.... IF ANGLE IS 90 -> 0 it should more to the left
 	//angle = abs(angle);
@@ -72,7 +89,7 @@ void GUICompass::Update()
 
 
 	//std::cout << test.m128_f32[0] << std::endl;
-	std::cout <<"ANGLE"<< angle << std::endl;
+	//std::cout <<"ANGLE"<< angle << std::endl;
 	//std::cout<< playerV.z << std::endl;
 	//std::cout << playerV.y << std::endl;
 	//std::cout << playerV.x << std::endl;
