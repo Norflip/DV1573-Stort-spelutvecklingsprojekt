@@ -24,7 +24,7 @@
 #include "ObjectPooler.h"
 #include "WeaponComponent.h"
 #include "EnemyManager.h"
-
+#include <wchar.h>
 class GUIFont;
 class SpriteRenderPass;
 class PlayerComp;
@@ -59,8 +59,13 @@ public:
 	Object* GetRoot() const { return this->root; }
 
 	void PrintSceneHierarchy(Object* object, size_t level) const;
-	
+	virtual void AnimateIcon();
 protected:
+	int amountOfFrames = 8;
+	int currentframe = 0;
+	int frameToDraw = 1;
+	int lastFrame = 1;
+	wchar_t iconText[10];
 	Object* root;
 	Renderer* renderer;
 	ResourceManager* resources;

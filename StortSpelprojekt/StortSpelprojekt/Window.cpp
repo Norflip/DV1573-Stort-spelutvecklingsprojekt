@@ -22,11 +22,12 @@ void Window::Open(size_t width, size_t height)
 	this->width = width;
 	this->height = height;
 	//Initializing console
-	AllocConsole();
-	HANDLE stdHandle = GetStdHandle(STD_OUTPUT_HANDLE);
-	int hConsole = _open_osfhandle((intptr_t)stdHandle, _O_TEXT);
-	FILE* fp = _fdopen(hConsole, "w");
-	freopen_s(&fp, "CONOUT$", "w", stdout);
+
+	//AllocConsole();
+	//HANDLE stdHandle = GetStdHandle(STD_OUTPUT_HANDLE);
+	//int hConsole = _open_osfhandle((intptr_t)stdHandle, _O_TEXT);
+	//FILE* fp = _fdopen(hConsole, "w");
+	//freopen_s(&fp, "CONOUT$", "w", stdout);
 
 	//Creating window
 	WNDCLASS wndclass;
@@ -35,7 +36,7 @@ void Window::Open(size_t width, size_t height)
 	wndclass.lpfnWndProc = WindowProc;
 	wndclass.lpszClassName = CLASS_NAME;
 	wndclass.style = CS_HREDRAW | CS_VREDRAW | CS_OWNDC;
-	wndclass.hIcon = LoadIcon(NULL, IDI_WINLOGO);
+	wndclass.hIcon = LoadIcon(hInstance, L"MAINICON");
 	RegisterClass(&wndclass);
 	RECT windowRect = { 0, 0, (LONG)width, (LONG)height };
 	//Adjusting rect to fit the window
@@ -43,11 +44,12 @@ void Window::Open(size_t width, size_t height)
 	int wWidth = windowRect.right - windowRect.left;
 	int wHeight = windowRect.bottom - windowRect.top;
 	this->hwnd = CreateWindowEx(0, CLASS_NAME, projectTitel, WS_OVERLAPPEDWINDOW, windowRect.left, windowRect.top, wWidth, wHeight, nullptr, nullptr, hInstance, nullptr);
-	
+
 	//Moving window
 	SetWindowPos(hwnd, nullptr, 100, 100, 0, 0, SWP_NOSIZE | SWP_NOZORDER);
 	ShowWindow(hwnd, SW_SHOW);
 	int i = wWidth;
+	//SendMessage(hwnd, WM_SETICON, ICON_SMALL, (LPARAM)LoadIcon(hInstance, L"MAINICON"));
 }
 
 LRESULT Window::WindowProc(HWND hwnd, UINT umsg, WPARAM wParam, LPARAM lParam)
