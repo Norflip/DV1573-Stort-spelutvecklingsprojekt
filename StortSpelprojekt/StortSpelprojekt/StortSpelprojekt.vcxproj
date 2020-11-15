@@ -227,6 +227,7 @@
     <ClCompile Include="GUIFont.cpp" />
     <ClCompile Include="EnemySMComp.cpp" />
     <ClCompile Include="EnemyStatsComp.cpp" />
+    <ClCompile Include="SkeletonChargerMeshComponent.cpp" />
     <ClCompile Include="SkyboxRenderPass.cpp" />
     <ClCompile Include="SphereColliderComponent.cpp" />
     <ClCompile Include="stdafx.cpp">
@@ -324,6 +325,7 @@
     <ClInclude Include="Shader.h" />
     <ClInclude Include="EnemySMComp.h" />
     <ClInclude Include="EnemyStatsComp.h" />
+    <ClInclude Include="SkeletonChargerMeshComponent.h" />
     <ClInclude Include="SkyboxRenderPass.h" />
     <ClInclude Include="SphereColliderComponent.h" />
     <ClInclude Include="stdafx.h" />

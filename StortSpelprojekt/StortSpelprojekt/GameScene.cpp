@@ -185,11 +185,19 @@ void GameScene::InitializeObjects()
 	Object* charge = new Object("Charger");
 	charge->GetTransform().SetPosition(dx::XMVECTOR({ 24.0f, 2.0f, 53, 1.0f }));
 
-	SkeletonMeshComponent* idle = charge->AddComponent<SkeletonMeshComponent>(chargerMesh[0], chargerMat[0]);
-	idle->SetAnimationTrack(chargerUnload, SkeletonStateMachine::IDLE);
-	idle->SetTrack(SkeletonStateMachine::IDLE, false);
+	/*SkeletonMeshComponent* idle = charge->AddComponent<SkeletonMeshComponent>(chargerMesh[0], chargerMat[0]);
+	idle->SetAnimationTrack(chargerAttack, SkeletonStateMachine::IDLE);
+	idle->SetTrack(SkeletonStateMachine::IDLE, false);*/
 
+	charge->AddComponent<EnemyStatsComp>(100.0f, 5.0f, 10.0f, 10.0f, 5.0f, 2.0f);
+	charge->AddComponent<SkeletonChargerMeshComponent>(chargerMesh[0], chargerMat[0]);
+	charge->GetComponent<SkeletonChargerMeshComponent>()->SetAnimationTrack(chargerIdle, SkeletonChargerStateMachine::IDLE);
+	charge->GetComponent<SkeletonChargerMeshComponent>()->SetAnimationTrack(chargerLoad, SkeletonChargerStateMachine::LOAD);
+	charge->GetComponent<SkeletonChargerMeshComponent>()->SetAnimationTrack(chargerRun, SkeletonChargerStateMachine::RUN);
+	charge->GetComponent<SkeletonChargerMeshComponent>()->SetAnimationTrack(chargerAttack, SkeletonChargerStateMachine::ATTACK);
+	charge->GetComponent<SkeletonChargerMeshComponent>()->SetAnimationTrack(chargerUnload, SkeletonChargerStateMachine::UNLOAD);
 
+	charge->GetComponent<SkeletonChargerMeshComponent>()->SetTrack(SkeletonChargerStateMachine::LOAD, true);
 
 	AddObject(charge);
 }
