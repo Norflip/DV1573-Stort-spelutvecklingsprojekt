@@ -169,8 +169,8 @@ void GameScene::InitializeObjects()
 	playerObject->GetComponent<PlayerComp>()->InsertWeapon(axeObject->GetComponent<WeaponComponent>(), axeObject->GetName());
 	AddObject(axeObject);
 	
-	// Inside house
 
+	// Inside house
 	Object* houseInterior = resources->AssembleObject("HouseInterior", "HouseInteriorMaterial");
 	houseInterior->GetTransform().SetPosition({ this->interiorPosition.x, this->interiorPosition.y, this->interiorPosition.z, 0 });
 	AddObject(houseInterior);
@@ -204,7 +204,6 @@ void GameScene::InitializeObjects()
 
 	Object* insideDoor = resources->AssembleObject("InsideDoor", "InsideDoorMaterial");
 	AddObject(insideDoor, houseInterior);
-
 }
 
 void GameScene::InitializeGUI()

@@ -98,7 +98,6 @@ void ControllerComp::Initialize()
 	this->rbComp->EnableGravity(!this->freeCam);
 	this->rbComp->SetLinearVelocity({ 0.f, 0.f, 0.f });
 
-
 	dx::XMVECTOR reset = dx::XMLoadFloat4(&RESET_ROT);
 	this->cameraObject->GetTransform().SetRotation(reset);
 }
@@ -135,6 +134,7 @@ void ControllerComp::Update(const float& deltaTime)
 		this->showCursor = !this->showCursor;
 		ShowCursor(this->showCursor);
 	}
+
 	if (KEY_DOWN(V))
 	{
 		this->freeCam = !this->freeCam;
@@ -142,6 +142,7 @@ void ControllerComp::Update(const float& deltaTime)
 		rbComp->SetLinearVelocity({ 0.f, 0.f, 0.f });
 		rbComp->EnableGravity(!this->freeCam);
 	}
+
 	if (KEY_DOWN(F))
 	{
 		this->canRotate = !this->canRotate;
