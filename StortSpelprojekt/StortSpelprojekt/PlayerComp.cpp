@@ -282,15 +282,6 @@ void PlayerComp::RayCast(const float& deltaTime)
 			}
 		}
 	}
-	//FORTSÄTT HÄR_______________________________________________________________________________________________________________________
-	if (KEY_DOWN(Q))																					
-	{																									
-		if (physics->RaytestSingle(ray, rayDistance, hit, FilterGroups::DOOR))							
-		{																								
-			ControllerComp* contComp = hit.object->GetComponent<ControllerComp>();						
-		}																								
-	}																									
-	//___________________________________________________________________________________________________________________________________
 	// Health drop
 	healthDippingBar->SetScaleBars(ReverseAndClamp(health));
 

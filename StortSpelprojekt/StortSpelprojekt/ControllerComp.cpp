@@ -182,12 +182,11 @@ void ControllerComp::Update(const float& deltaTime)
 		//std::cout << "length: " << length << std::endl;
 		if (length < playerComp->GetRadius() && length > 7.0f && !inside)
 			houseWalkComp->Start();
-		if (length < 4.0f && !inside)
+		if (length < 3.9f && !inside)
 		{
 			if (KEY_DOWN(Q))
 			{
 				inside = true;
-				//rbComp->SetPosition({ 0, 5, 0, 0 });
 			}
 		}
 	}

@@ -1,607 +1,202 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <ItemGroup>
-    <FxCompile Include="Shaders\Alpha_ps.hlsl">
-      <Filter>Resource Files</Filter>
-    </FxCompile>
-    <FxCompile Include="Shaders\CommonBuffers.hlsl">
-      <Filter>Resource Files</Filter>
-    </FxCompile>
-    <FxCompile Include="Shaders\Default_ps.hlsl">
-      <Filter>Resource Files</Filter>
-    </FxCompile>
-    <FxCompile Include="Shaders\Default_vs.hlsl">
-      <Filter>Resource Files</Filter>
-    </FxCompile>
-    <FxCompile Include="Shaders\Grass_ds.hlsl">
-      <Filter>Resource Files</Filter>
-    </FxCompile>
-    <FxCompile Include="Shaders\Grass_gs.hlsl">
-      <Filter>Resource Files</Filter>
-    </FxCompile>
-    <FxCompile Include="Shaders\Grass_hs.hlsl">
-      <Filter>Resource Files</Filter>
-    </FxCompile>
-    <FxCompile Include="Shaders\Grass_ps.hlsl">
-      <Filter>Resource Files</Filter>
-    </FxCompile>
-    <FxCompile Include="Shaders\Grass_vs.hlsl">
-      <Filter>Resource Files</Filter>
-    </FxCompile>
-    <FxCompile Include="Shaders\Instance_vs.hlsl">
-      <Filter>Resource Files</Filter>
-    </FxCompile>
-    <FxCompile Include="Shaders\IO.hlsl">
-      <Filter>Resource Files</Filter>
-    </FxCompile>
-    <FxCompile Include="Shaders\PhongShading.hlsl">
-      <Filter>Resource Files</Filter>
-    </FxCompile>
-    <FxCompile Include="Shaders\PSBlendModes.hlsl">
-      <Filter>Resource Files</Filter>
-    </FxCompile>
-    <FxCompile Include="Shaders\ScreenQuad_ps.hlsl">
-      <Filter>Resource Files</Filter>
-    </FxCompile>
-    <FxCompile Include="Shaders\ScreenQuad_vs.hlsl">
-      <Filter>Resource Files</Filter>
-    </FxCompile>
-    <FxCompile Include="Shaders\Skeleton_vs.hlsl">
-      <Filter>Resource Files</Filter>
-    </FxCompile>
-    <FxCompile Include="Shaders\Sky_ps.hlsl">
-      <Filter>Resource Files</Filter>
-    </FxCompile>
-    <FxCompile Include="Shaders\Sky_vs.hlsl">
-      <Filter>Resource Files</Filter>
-    </FxCompile>
-    <FxCompile Include="Shaders\Terrain_ps.hlsl">
-      <Filter>Resource Files</Filter>
-    </FxCompile>
-    <FxCompile Include="Shaders\Terrain_vs.hlsl">
-      <Filter>Resource Files</Filter>
-    </FxCompile>
-    <FxCompile Include="Shaders\TestPass.hlsl">
-      <Filter>Resource Files</Filter>
-    </FxCompile>
-    <FxCompile Include="Shaders\FogTest_ps.hlsl">
-      <Filter>Resource Files</Filter>
-    </FxCompile>
     <FxCompile Include="ForwardPlusRendering.hlsl" />
-    <FxCompile Include="Shaders\FractionalBrownianMotion.hlsl">
-      <Filter>Resource Files</Filter>
-    </FxCompile>
+    <FxCompile Include="Shaders\Alpha_ps.hlsl" />
+    <FxCompile Include="Shaders\CommonBuffers.hlsl" />
+    <FxCompile Include="Shaders\Default_ps.hlsl" />
+    <FxCompile Include="Shaders\Default_vs.hlsl" />
+    <FxCompile Include="Shaders\FogTest_ps.hlsl" />
+    <FxCompile Include="Shaders\FractionalBrownianMotion.hlsl" />
+    <FxCompile Include="Shaders\Grass_ds.hlsl" />
+    <FxCompile Include="Shaders\Grass_gs.hlsl" />
+    <FxCompile Include="Shaders\Grass_hs.hlsl" />
+    <FxCompile Include="Shaders\Grass_ps.hlsl" />
+    <FxCompile Include="Shaders\Grass_vs.hlsl" />
+    <FxCompile Include="Shaders\Instance_vs.hlsl" />
+    <FxCompile Include="Shaders\IO.hlsl" />
+    <FxCompile Include="Shaders\PhongShading.hlsl" />
+    <FxCompile Include="Shaders\Skeleton_vs.hlsl" />
+    <FxCompile Include="Shaders\PSBlendModes.hlsl" />
+    <FxCompile Include="Shaders\Sky_ps.hlsl" />
+    <FxCompile Include="Shaders\Sky_vs.hlsl" />
+    <FxCompile Include="Shaders\Terrain_ps.hlsl" />
+    <FxCompile Include="Shaders\Terrain_vs.hlsl" />
+    <FxCompile Include="Shaders\TestPass.hlsl" />
+    <FxCompile Include="Shaders\ScreenQuad_ps.hlsl" />
+    <FxCompile Include="Shaders\ScreenQuad_vs.hlsl" />
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="BoxColliderComponent.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="CameraComponent.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="CapsuleColliderComponent.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="Chunk.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="Collider.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="DShape.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="DXHelper.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="Engine.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="GameClock.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="GUIManager.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="Input.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="GrassComponent.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="GUIFont.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="GUISprite.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="Input.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="LightManager.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="main.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="Material.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="MeshComponent.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="MoveComponent.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="PointLightComponent.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="PossionDiscSampler.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="Physics.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="ResourceManager.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="RigidBodyComponent.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="Renderer.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="Shader.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="ThirdParty\SimplexNoise.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="SkeletonAni.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="SkeletonMeshComponent.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="SphereColliderComponent.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="Texture.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="Transform.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="Window.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="Scene.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="ObjectPooler.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="EnemyAttackComp.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="EnemyIdleComp.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="EnemyPatrolComp.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="EnemyStatsComp.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="EnemySMComp.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="PlayerAttackComp.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="Object.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="GameOverScene.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="GameScene.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="IntroScene.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="PlayerComp.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="ControllerComp.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="NodeWalkerComp.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="PickupComponent.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="WinScene.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="ObjectSpawner.cpp">
-      <Filter>Source Files\SpawnSystems</Filter>
-    </ClCompile>
-    <ClCompile Include="SegmentGenerator.cpp">
-      <Filter>Source Files\SpawnSystems</Filter>
-    </ClCompile>
-    <ClCompile Include="World.cpp">
-      <Filter>Source Files\SpawnSystems</Filter>
-    </ClCompile>
-    <ClCompile Include="AudioEngine.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="AudioMaster.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="ChunkGrid.cpp">
-      <Filter>Source Files\SpawnSystems</Filter>
-    </ClCompile>
-    <ClCompile Include="Path.cpp">
-      <Filter>Source Files\SpawnSystems</Filter>
-    </ClCompile>
-    <ClCompile Include="stdafx.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="WeaponComponent.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="Mesh.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="VirtualCamera.cpp">
-      <Filter>Header Files</Filter>
-    </ClCompile>
-    <ClCompile Include="Bounds.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="MeshCollider.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="ThirdParty\quickhull\QuickHull.cpp">
-      <Filter>ThirdParty</Filter>
-    </ClCompile>
-    <ClCompile Include="EnemyManager.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="ParticlesystemComponent.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="SkyboxRenderPass.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="GUICompass.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="CollisionBodyComponent.cpp">
-    <ClCompile Include="QuadTree.cpp">
-      <Filter>Source Files\SpawnSystems</Filter>
-    </ClCompile>
-    <ClCompile Include="PlayerAnimHandlerComp.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
+    <ClCompile Include="AudioMaster.cpp" />
+    <ClCompile Include="AudioEngine.cpp" />
+    <ClCompile Include="EnemyAttackComp.cpp" />
+    <ClCompile Include="EnemyIdleComp.cpp" />
+    <ClCompile Include="EnemyManager.cpp" />
+    <ClCompile Include="EnemyPatrolComp.cpp" />
+    <ClCompile Include="Bounds.cpp" />
+    <ClCompile Include="BoxColliderComponent.cpp" />
+    <ClCompile Include="CameraComponent.cpp" />
+    <ClCompile Include="CapsuleColliderComponent.cpp" />
+    <ClCompile Include="Chunk.cpp" />
+    <ClCompile Include="Collider.cpp" />
+    <ClCompile Include="ControllerComp.cpp" />
+    <ClCompile Include="DXHelper.cpp" />
+    <ClCompile Include="DShape.cpp" />
+    <ClCompile Include="Engine.cpp" />
+    <ClCompile Include="GameClock.cpp" />
+    <ClCompile Include="GameOverScene.cpp" />
+    <ClCompile Include="GameScene.cpp" />
+    <ClCompile Include="GrassComponent.cpp" />
+    <ClCompile Include="ChunkGrid.cpp" />
+    <ClCompile Include="GUICompass.cpp" />
+    <ClCompile Include="GUIManager.cpp" />
+    <ClCompile Include="GUISprite.cpp" />
+    <ClCompile Include="Input.cpp" />
+    <ClCompile Include="IntroScene.cpp" />
+    <ClCompile Include="LightManager.cpp" />
+    <ClCompile Include="main.cpp" />
+    <ClCompile Include="Material.cpp" />
+    <ClCompile Include="Mesh.cpp" />
+    <ClCompile Include="MeshCollider.cpp" />
+    <ClCompile Include="MeshComponent.cpp" />
+    <ClCompile Include="MoveComponent.cpp" />
+    <ClCompile Include="NodeWalkerComp.cpp" />
+    <ClCompile Include="Object.cpp" />
+    <ClCompile Include="ObjectPooler.cpp" />
+    <ClCompile Include="ObjectSpawner.cpp" />
+    <ClCompile Include="ParticlesystemComponent.cpp" />
+    <ClCompile Include="Path.cpp" />
+    <ClCompile Include="Physics.cpp" />
+    <ClCompile Include="PickupComponent.cpp" />
+    <ClCompile Include="PlayerAnimHandlerComp.cpp" />
+    <ClCompile Include="PlayerComp.cpp" />
+    <ClCompile Include="PlayerAttackComp.cpp" />
+    <ClCompile Include="QuadTree.cpp" />
+    <ClCompile Include="PossionDiscSampler.cpp" />
+    <ClCompile Include="PointLightComponent.cpp" />
+    <ClCompile Include="Renderer.cpp" />
+    <ClCompile Include="RigidBodyComponent.cpp" />
+    <ClCompile Include="ResourceManager.cpp" />
+    <ClCompile Include="Scene.cpp" />
+    <ClCompile Include="SegmentGenerator.cpp" />
+    <ClCompile Include="Shader.cpp" />
+    <ClCompile Include="GUIFont.cpp" />
+    <ClCompile Include="EnemySMComp.cpp" />
+    <ClCompile Include="EnemyStatsComp.cpp" />
+    <ClCompile Include="SkyboxRenderPass.cpp" />
+    <ClCompile Include="SphereColliderComponent.cpp" />
+    <ClCompile Include="stdafx.cpp" />
+    <ClCompile Include="Texture.cpp" />
+    <ClCompile Include="SkeletonAni.cpp" />
+    <ClCompile Include="SkeletonMeshComponent.cpp" />
+    <ClCompile Include="ThirdParty\quickhull\QuickHull.cpp" />
+    <ClCompile Include="ThirdParty\SimplexNoise.cpp" />
+    <ClCompile Include="Transform.cpp" />
+    <ClCompile Include="VirtualCamera.cpp" />
+    <ClCompile Include="WeaponComponent.cpp" />
+    <ClCompile Include="Window.cpp" />
+    <ClCompile Include="WinScene.cpp" />
+    <ClCompile Include="World.cpp" />
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="ObjectSpawner.h">
-      <Filter>Source Files\SpawnSystems</Filter>
-    </ClInclude>
-    <ClInclude Include="Random.h">
-      <Filter>Source Files\SpawnSystems</Filter>
-    </ClInclude>
-    <ClInclude Include="SegmentDescription.h">
-      <Filter>Source Files\SpawnSystems</Filter>
-    </ClInclude>
-    <ClInclude Include="SegmentGenerator.h">
-      <Filter>Source Files\SpawnSystems</Filter>
-    </ClInclude>
-    <ClInclude Include="World.h">
-      <Filter>Source Files\SpawnSystems</Filter>
-    </ClInclude>
-    <ClInclude Include="ChunkGrid.h">
-      <Filter>Source Files\SpawnSystems</Filter>
-    </ClInclude>
-    <ClInclude Include="Path.h">
-      <Filter>Source Files\SpawnSystems</Filter>
-    </ClInclude>
-    <ClInclude Include="AudioEngine.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="AudioMaster.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="BoxColliderComponent.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="Buffers.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="BusNode.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="CameraComponent.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="CapsuleColliderComponent.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="Chunk.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="Collider.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="CollisionInfo.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="Component.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="ConstantBuffer.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="ControllerComp.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="DebugBoxShapeComponent.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="DShape.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="DXHelper.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="EnemyAttackComp.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="EnemyIdleComp.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="EnemyPatrolComp.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="EnemySMComp.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="EnemyStatsComp.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="Engine.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="FogRenderPass.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="GameClock.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="GameOverScene.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="GameScene.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="GrassComponent.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="GUIFont.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="GUIManager.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="GUISprite.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="Input.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="IntroScene.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="LightManager.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="Material.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="Math.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="Mesh.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="MeshComponent.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="Message.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="MessageBus.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="MoveComponent.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="NodeWalkerComp.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="Noise.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="Object.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="ObjectPooler.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="PhysicCallbacks.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="Physics.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="PickupComponent.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="PlayerAttackComp.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="PlayerComp.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="PointLightComponent.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="PossionDiscSampler.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="Ray.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="Renderer.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="RenderPass.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="ResourceManager.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="RigidBodyComponent.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="SaveState.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="Scene.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="Shader.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="Shapes.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="ThirdParty\SimplexNoise.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="SkeletonAni.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="SkeletonMeshComponent.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="SphereColliderComponent.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="stdafx.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="Texture.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="Transform.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="WeaponComponent.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="Window.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="WinScene.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="WorldGenerator.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="ZWEBLoader.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="FXAARenderPass.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="Resource.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="VirtualCamera.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="Bounds.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="MeshCollider.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="ThirdParty\quickhull\ConvexHull.hpp">
-      <Filter>ThirdParty</Filter>
-    </ClInclude>
-    <ClInclude Include="ThirdParty\quickhull\HalfEdgeMesh.hpp">
-      <Filter>ThirdParty</Filter>
-    </ClInclude>
-    <ClInclude Include="ThirdParty\quickhull\MathUtils.hpp">
-      <Filter>ThirdParty</Filter>
-    </ClInclude>
-    <ClInclude Include="ThirdParty\quickhull\QuickHull.hpp">
-      <Filter>ThirdParty</Filter>
-    </ClInclude>
-    <ClInclude Include="EnemyManager.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="ParticlesystemComponent.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="SkyboxRenderPass.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="Defines.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="GUICompass.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="FXAARenderPass.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="CollisionBodyComponent.h">
-    <ClInclude Include="QuadTree.h">
-      <Filter>Source Files\SpawnSystems</Filter>
-    </ClInclude>
-    <ClInclude Include="PlayerAnimHandlerComp.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
+    <ClInclude Include="AudioMaster.h" />
+    <ClInclude Include="AudioEngine.h" />
+    <ClInclude Include="Defines.h" />
+    <ClInclude Include="EnemyAttackComp.h" />
+    <ClInclude Include="EnemyIdleComp.h" />
+    <ClInclude Include="EnemyManager.h" />
+    <ClInclude Include="EnemyPatrolComp.h" />
+    <ClInclude Include="Bounds.h" />
+    <ClInclude Include="BoxColliderComponent.h" />
+    <ClInclude Include="Buffers.h" />
+    <ClInclude Include="BusNode.h" />
+    <ClInclude Include="CameraComponent.h" />
+    <ClInclude Include="CapsuleColliderComponent.h" />
+    <ClInclude Include="Chunk.h" />
+    <ClInclude Include="Collider.h" />
+    <ClInclude Include="CollisionInfo.h" />
+    <ClInclude Include="ConstantBuffer.h" />
+    <ClInclude Include="ControllerComp.h" />
+    <ClInclude Include="DebugBoxShapeComponent.h" />
+    <ClInclude Include="DShape.h" />
+    <ClInclude Include="FXAARenderPass.h" />
+    <ClInclude Include="GameOverScene.h" />
+    <ClInclude Include="GameScene.h" />
+    <ClInclude Include="ChunkGrid.h" />
+    <ClInclude Include="GUICompass.h" />
+    <ClInclude Include="IntroScene.h" />
+    <ClInclude Include="FogRenderPass.h" />
+    <ClInclude Include="MeshCollider.h" />
+    <ClInclude Include="ObjectPooler.h" />
+    <ClInclude Include="ObjectSpawner.h" />
+    <ClInclude Include="ParticlesystemComponent.h" />
+    <ClInclude Include="Path.h" />
+    <ClInclude Include="PhysicCallbacks.h" />
+    <ClInclude Include="PickupComponent.h" />
+    <ClInclude Include="PlayerAnimHandlerComp.h" />
+    <ClInclude Include="PlayerComp.h" />
+    <ClInclude Include="PlayerAttackComp.h" />
+    <ClInclude Include="QuadTree.h" />
+    <ClInclude Include="PossionDiscSampler.h" />
+    <ClInclude Include="Random.h" />
+    <ClInclude Include="Resource.h" />
+    <ClInclude Include="ResourceManager.h" />
+    <ClInclude Include="SegmentDescription.h" />
+    <ClInclude Include="SegmentGenerator.h" />
+    <ClInclude Include="Shapes.h" />
+    <ClInclude Include="GameClock.h" />
+    <ClInclude Include="GrassComponent.h" />
+    <ClInclude Include="GUIFont.h" />
+    <ClInclude Include="GUIManager.h" />
+    <ClInclude Include="LightManager.h" />
+    <ClInclude Include="GUISprite.h" />
+    <ClInclude Include="Math.h" />
+    <ClInclude Include="MoveComponent.h" />
+    <ClInclude Include="Component.h" />
+    <ClInclude Include="DXHelper.h" />
+    <ClInclude Include="Engine.h" />
+    <ClInclude Include="Input.h" />
+    <ClInclude Include="Material.h" />
+    <ClInclude Include="Mesh.h" />
+    <ClInclude Include="MeshComponent.h" />
+    <ClInclude Include="Message.h" />
+    <ClInclude Include="MessageBus.h" />
+    <ClInclude Include="NodeWalkerComp.h" />
+    <ClInclude Include="Noise.h" />
+    <ClInclude Include="Object.h" />
+    <ClInclude Include="Physics.h" />
+    <ClInclude Include="Ray.h" />
+    <ClInclude Include="PointLightComponent.h" />
+    <ClInclude Include="Renderer.h" />
+    <ClInclude Include="RenderPass.h" />
+    <ClInclude Include="RigidBodyComponent.h" />
+    <ClInclude Include="SaveState.h" />
+    <ClInclude Include="Scene.h" />
+    <ClInclude Include="Shader.h" />
+    <ClInclude Include="EnemySMComp.h" />
+    <ClInclude Include="EnemyStatsComp.h" />
+    <ClInclude Include="SkyboxRenderPass.h" />
+    <ClInclude Include="SphereColliderComponent.h" />
+    <ClInclude Include="stdafx.h" />
+    <ClInclude Include="Texture.h" />
+    <ClInclude Include="SkeletonAni.h" />
+    <ClInclude Include="SkeletonMeshComponent.h" />
+    <ClInclude Include="ThirdParty\quickhull\ConvexHull.hpp" />
+    <ClInclude Include="ThirdParty\quickhull\HalfEdgeMesh.hpp" />
+    <ClInclude Include="ThirdParty\quickhull\MathUtils.hpp" />
+    <ClInclude Include="ThirdParty\quickhull\QuickHull.hpp" />
+    <ClInclude Include="ThirdParty\SimplexNoise.h" />
+    <ClInclude Include="Transform.h" />
+    <ClInclude Include="VirtualCamera.h" />
+    <ClInclude Include="WeaponComponent.h" />
+    <ClInclude Include="Window.h" />
+    <ClInclude Include="WinScene.h" />
+    <ClInclude Include="World.h" />
+    <ClInclude Include="WorldGenerator.h" />
+    <ClInclude Include="ZWEBLoader.h" />
   </ItemGroup>
   <ItemGroup>
-    <Filter Include="Header Files">
-      <UniqueIdentifier>{112ce23a-8f0e-4ad3-9037-91f0c614f526}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="Resource Files">
-      <UniqueIdentifier>{29a22d78-6c4d-4f3f-a865-f815c364ce42}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="Source Files">
-      <UniqueIdentifier>{fc4097e4-11ed-434b-927c-b1e1fd9cd99d}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="Source Files\SpawnSystems">
-      <UniqueIdentifier>{5552950f-3623-49fb-b848-f9f6029a934a}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="ThirdParty">
-      <UniqueIdentifier>{3859562d-ae0e-4db7-ada7-9953f90c3049}</UniqueIdentifier>
-    </Filter>
-  </ItemGroup>
-  <ItemGroup>
-    <None Include="packages.config">
-      <Filter>Resource Files</Filter>
-    </None>
-    <None Include="cpp.hint">
-      <Filter>Source Files</Filter>
-    </None>
+    <None Include="cpp.hint" />
+    <None Include="packages.config" />
   </ItemGroup>
 </Project>
