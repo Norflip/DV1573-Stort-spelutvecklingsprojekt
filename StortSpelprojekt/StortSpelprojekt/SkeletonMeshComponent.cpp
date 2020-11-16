@@ -184,7 +184,7 @@ void SkeletonMeshComponent::PlayOnce(const float& deltaTime)
 
 			if (time <= animLength)
 			{
-				std::cout << time << std::endl;
+				//std::cout << time << std::endl;
 				finalTransforms = skeletonAnimations[0].Makeglobal(time, dx::XMMatrixIdentity(), *skeletonAnimations[0].GetRootKeyJoints());
 			}
 			else
@@ -207,7 +207,7 @@ void SkeletonMeshComponent::PlayOnce(const float& deltaTime)
 
 			if (time <= animLength)
 			{
-				std::cout << time << std::endl;
+				//std::cout << time << std::endl;
 				finalTransforms = skeletonAnimations[1].Makeglobal(time, dx::XMMatrixIdentity(), *skeletonAnimations[1].GetRootKeyJoints());
 			}
 			else
@@ -230,7 +230,7 @@ void SkeletonMeshComponent::PlayOnce(const float& deltaTime)
 
 			if (time <= animLength)
 			{
-				std::cout << time << std::endl;
+				//std::cout << time << std::endl;
 				finalTransforms = skeletonAnimations[2].Makeglobal(time, dx::XMMatrixIdentity(), *skeletonAnimations[2].GetRootKeyJoints());
 			}
 			else
@@ -279,7 +279,7 @@ void SkeletonMeshComponent::PlayOnce(const float& deltaTime)
 
 			if (time <= animLength)
 			{
-				std::cout << time << std::endl;
+				//std::cout << time << std::endl;
 				finalTransforms = skeletonAnimations[3].Makeglobal(time, dx::XMMatrixIdentity(), *skeletonAnimations[3].GetRootKeyJoints());
 			}
 			else
@@ -327,7 +327,7 @@ void SkeletonMeshComponent::PlayOnce(const float& deltaTime)
 
 		if (time <= animLength)
 		{
-			std::cout << time << std::endl;
+			//std::cout << time << std::endl;
 			finalTransforms = skeletonAnimations[4].Makeglobal(time, dx::XMMatrixIdentity(), *skeletonAnimations[4].GetRootKeyJoints());
 		}
 		else

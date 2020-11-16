@@ -83,9 +83,9 @@ void PlayerComp::Update(const float& deltaTime)
 		fuel -= frameTime * fuelBurnPerMeter;
 		// loose food
 		food -= frameTime * foodLossPerSecond;
-#if !immortal
+#if !IMMORTAL
 		// make better later
-		if ((fuel < 0 || health <= 0))
+		if ((fuel < 0 || health <= 0) && !IMMORTAL)
 			Engine::Instance->SwitchScene(SceneIndex::GAME_OVER);
 #endif
 		if (food < 0)
@@ -118,7 +118,6 @@ void PlayerComp::Update(const float& deltaTime)
 
 void PlayerComp::HoldObject()
 {
-
 	inverseViewMatrix = dx::XMMatrixInverse(nullptr, cam->GetViewMatrix());
 	wepOffTrans.Translation(holdAngle);
 	wepOffRot = wepOffRot.CreateFromAxisAngle(up, dx::XMConvertToRadians(-40.0f));
@@ -178,9 +177,38 @@ float PlayerComp::ReverseAndClamp(float inputValue)
 
 void PlayerComp::RayCast(const float& deltaTime)
 {
-
 	Ray ray = cam->MouseToRay(p.x, p.y);
 
+	// Check fireplace 
+	if (physics->RaytestSingle(ray, rayDistance, hit, FilterGroups::PICKUPS) && holding)
+	{
+		if (hit.object != nullptr)
+		{
+			if (KEY_DOWN(T))
+			{
+				std::cout << "Pressed F" << std::endl;
+
+				if (hit.object != nullptr)
+				{
+					std::cout << "Fill up fuel" << std::endl;
+
+					float refill = holding->GetComponent<PickupComponent>()->GetAmount();
+					if ((fuel + refill) <= 100.0f)
+						fuel += refill;
+
+					if (holding->HasComponent<ParticleSystemComponent>())
+						if (holding->GetComponent<ParticleSystemComponent>()->GetActive())
+							holding->GetComponent<ParticleSystemComponent>()->SetActive(false);
+
+					holding->GetComponent<PickupComponent>()->SetActive(false);
+					holding = nullptr;
+					currentWeapon->AddFlag(ObjectFlag::ENABLED);
+				}
+			}
+		}
+	}
+
+	// Pick up health and food
 	if (KEY_DOWN(E))
 	{
 		if (physics->RaytestSingle(ray, rayDistance, hit, FilterGroups::PICKUPS))
@@ -213,18 +241,17 @@ void PlayerComp::RayCast(const float& deltaTime)
 				
 
 				hit.object->GetComponent<PickupComponent>()->SetActive(false);
-				RigidBodyComponent* rbComp = hit.object->GetComponent<RigidBodyComponent>();
-				rbComp->Release();
+				//RigidBodyComponent* rbComp = hit.object->GetComponent<RigidBodyComponent>();
+				//rbComp->Release();
 				
 			}
 		}
 
-		//HELVETE
+		// Check fuel
 		if (physics->RaytestSingle(ray, rayDistance, hit, FilterGroups::HOLDABLE))
 		{
 			if (hit.object != nullptr)
 			{
-
 				AudioMaster::Instance().PlaySoundEvent("pickupFuel");
 				holding = hit.object;
 				RigidBodyComponent* rbComp = hit.object->GetComponent<RigidBodyComponent>();
@@ -242,8 +269,8 @@ void PlayerComp::RayCast(const float& deltaTime)
 				
 			}
 		}
-
 	}
+
 	//ATTACK ENEMIES
 	if (LMOUSE_DOWN && holding == nullptr)
 	{
@@ -257,7 +284,7 @@ void PlayerComp::RayCast(const float& deltaTime)
 					{
 						AudioMaster::Instance().PlaySoundEvent("punch");
 						hit.object->GetComponent<EnemyStatsComp>()->LoseHealth(attack);
-						std::cout << "Hit hit hit" << std::endl;
+						//std::cout << "Hit hit hit" << std::endl;
 						
 					}
 					else if (hit.object->GetComponent<EnemyStatsComp>()->GetHealth() <= 0.0f)
@@ -265,8 +292,8 @@ void PlayerComp::RayCast(const float& deltaTime)
 						AudioMaster::Instance().PlaySoundEvent("punch");
 						//hit.object.s  ->GetComponent<PickupComponent>()->SetActive(false);
 
-						RigidBodyComponent* rbComp = hit.object->GetComponent<RigidBodyComponent>();
-						rbComp->Release();
+						//RigidBodyComponent* rbComp = hit.object->GetComponent<RigidBodyComponent>();
+						//rbComp->Release();
 
 						////hit.object->GetComponent<EnemyStatsComp>()->SetEnabled(false);
 						////hit.object->GetComponent<EnemyStatsComp>()->SetEnabled(false);

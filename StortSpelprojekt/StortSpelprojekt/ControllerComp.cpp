@@ -177,7 +177,6 @@ void ControllerComp::Update(const float& deltaTime)
 	}
 	else if (!houseWalkComp->GetIsWalking())
 	{
-
 		length = 0.f;
 		lengthVec = dx::XMVector3Length(dx::XMVectorSubtract(houseWalkComp->GetOwner()->GetTransform().GetPosition(), GetOwner()->GetTransform().GetPosition()));
 		dx::XMStoreFloat(&length, lengthVec);
