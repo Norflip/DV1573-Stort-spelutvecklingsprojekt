@@ -90,7 +90,6 @@ void EnemyChargerSMComp::Animate()
 
 		if(!loadRun)
 			skeletonComponent->SetTrack(SkeletonStateMachine::IDLE, false);
-		//loadRun = false;
 	}
 	else
 	{
@@ -102,6 +101,5 @@ void EnemyChargerSMComp::Animate()
 
 		if (!loadRun)
 			skeletonComponent->SetTrack(SkeletonStateMachine::IDLE, false);
-		//loadRun = false;
 	}
 }

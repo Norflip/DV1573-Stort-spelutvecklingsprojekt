@@ -206,12 +206,9 @@ void GameScene::InitializeObjects()
 
 	charge->AddComponent< EnemyChargerSMComp>(EnemyChargerState::IDLE);
 	charge->GetComponent< EnemyChargerSMComp>()->RegisterState(EnemyChargerState::IDLE, charge->AddComponent<EnemyIdleComp>());
-	////stateMachine->RegisterState(EnemyState::PATROL, enemy->AddComponent<EnemyPatrolComp>());
 	charge->GetComponent< EnemyChargerSMComp>()->RegisterState(EnemyChargerState::ATTACK, charge->AddComponent<EnemyAttackComp>(player->GetComponent<PlayerComp>()));
 	charge->GetComponent< EnemyChargerSMComp>()->RegisterState(EnemyChargerState::RUN, charge->GetComponent<EnemyAttackComp>());
-	charge->GetComponent< EnemyChargerSMComp>()->RegisterState(EnemyChargerState::LOAD, charge->GetComponent<EnemyAttackComp>());
 
-	////stateMachine->RegisterState(EnemyState::ATTACK, object->AddComponent<EnemyAttackComp>(nullptr));
 	charge->GetComponent< EnemyChargerSMComp>()->InitAnimation();
 	AddObject(charge);
 }
