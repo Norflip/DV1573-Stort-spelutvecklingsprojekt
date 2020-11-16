@@ -36,7 +36,6 @@ private:
 
 	//cb_Scene cb_scene;
 	ConstantBuffer<cb_Lights> lightBuffer;
-
 	size_t index;
 	std::unordered_map<size_t, PointLightComponent*> pointLightMap;
 };
