@@ -47,8 +47,6 @@ void GameScene::InitializeObjects()
 
 	Object* houseDoorObject = resources->AssembleObject("Axe", "HealthKitMaterial");
 
-
-	//houseBaseObject->GetTransform().Rotate(0, -90.0f, 0.0);
 	houseBaseObject->GetTransform().Rotate(0, -90.0f * Math::ToRadians, 0.0);
 
 	house = houseBaseObject;
@@ -73,15 +71,12 @@ void GameScene::InitializeObjects()
 	// RB
 	houseBaseObject->AddComponent<RigidBodyComponent>(0.0f, FilterGroups::PROPS, FilterGroups::EVERYTHING, BodyType::STATIC, true);
 
-	//SkeletonMeshComponent* baseComponent = resources->GetResource<SkeletonMeshComponent>("HouseSkeleton"); 
-	//SkeletonMeshComponent* legsComponent = resources->GetResource<SkeletonMeshComponent>("HouseLegsSkeleton");
-
 	baseComponent->SetTimeScale(1.0f);
 	legsComponent->SetTimeScale(1.0f);
 	baseComponent->SetTrack(SkeletonStateMachine::IDLE, false);
 	legsComponent->SetTrack(SkeletonStateMachine::IDLE, false);
 
-	SkeletonMeshComponent* houseDoorSkeleton = houseBaseObject->AddComponent<SkeletonMeshComponent>(baseComponent);
+	houseBaseObject->AddComponent<SkeletonMeshComponent>(baseComponent);
 	housesLegsObject->AddComponent<SkeletonMeshComponent>(legsComponent);
 
 	Transform::SetParentChild(houseBaseObject->GetTransform(), housesLegsObject->GetTransform());
