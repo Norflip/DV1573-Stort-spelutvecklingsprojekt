@@ -1,6 +1,13 @@
 #pragma once
 #include "Object.h"
 
+struct aStar
+{
+	int nextNode;
+	int endNode;
+	int totalCost;
+};
+
 class Grid
 {
 	public:
