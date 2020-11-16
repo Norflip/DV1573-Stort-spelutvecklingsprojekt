@@ -7,6 +7,7 @@ constexpr size_t CB_MATERIAL_SLOT = 1;
 constexpr size_t CB_SCENE_SLOT = 2; 
 constexpr size_t CB_LIGHT_SLOT = 3;
 constexpr size_t CB_GRASS_PARAMETERS_SLOT = 4;
+constexpr size_t CB_FOG_SLOT = 5;
 
 
 constexpr size_t POINT_LIGHT_COUNT = 32;
@@ -76,4 +77,9 @@ struct cb_grass
 	float grassDisplacement;
 };
 
+ALIGN16
+struct cb_fog
+{
+	int dayTime;
+};
 
