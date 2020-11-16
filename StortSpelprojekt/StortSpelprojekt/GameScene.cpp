@@ -215,6 +215,12 @@ void GameScene::InitializeObjects()
 
 	//charge->GetComponent< EnemyChargerSMComp>()->InitAnimation();
 	//AddObject(charge);
+
+	
+	Object* testObject = resources->AssembleObject("LeftDirectionSign", "LeftDirectionSignMaterial");
+	testObject->GetTransform().SetPosition({ 22, 2.0f, 54 });
+	AddObject(testObject);
+
 }
 
 void GameScene::InitializeGUI()

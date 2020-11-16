@@ -1,4 +1,4 @@
-Objects: 30
+Objects: 33
 
 Charger: Models/Enemies/Charger_Model.ZWEB
 Shader: skeletonShader
@@ -117,3 +117,12 @@ Shader: instanceShader
 
 Rock3: Models/Props/Rock_3.ZWEB
 Shader: instanceShader
+
+Endsign: Models/Props/Endsign.ZWEB
+Shader: defaultShader
+
+LeftDirectionSign: Models/Props/LeftDirectionSign.ZWEB
+Shader: defaultShader
+
+RightDirectionSign: Models/Props/RightDirectionSign.ZWEB
+Shader: defaultShader
