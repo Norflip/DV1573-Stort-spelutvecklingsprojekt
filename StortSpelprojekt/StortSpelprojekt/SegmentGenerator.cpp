@@ -21,7 +21,7 @@ void SegmentGenerator::Initialize(Object* root, ResourceManager* resources, Obje
 	//Material* mat = resourceManager->GetResource<Material>("TestMaterial");
 	//materialData = mat->GetMaterialData();
 
-	// Något fel med resourceManagerns textures, får fixa det efter sprintmötet
+	// Nï¿½got fel med resourceManagerns textures, fï¿½r fixa det efter sprintmï¿½tet
 	//grassTexture = resourceManager->GetResource<Texture>("Grass");// .LoadTexture(device, L"Textures/newGrass.png");
 	//roadTexture = resourceManager->GetResource<Texture>("Road");// .LoadTexture(device, L"Textures/Stone_Floor_003_COLOR.jpg");
 
@@ -152,7 +152,7 @@ Chunk* SegmentGenerator::CreateChunk(const dx::XMINT2& index, Object* root, cons
 	CreateChunkMap(index, description, data);
 
 	std::string name = "chunk " + std::to_string(index.x) + ", " + std::to_string(index.y);
-	Object* chunkObject = new Object(name, ObjectFlag::RENDER | ObjectFlag::ENABLED);
+	Object* chunkObject = new Object(name, ObjectFlag::RENDER);
 	Chunk* chunk = chunkObject->AddComponent<Chunk>(index, type, data);
 
 	chunkObject->GetTransform().SetPosition(Chunk::IndexToWorld(index, 0.0f));
@@ -277,7 +277,7 @@ void SegmentGenerator::AddTreesToChunk(Chunk* chunk, const Chunk::Data& data)
 		size_t nrOfInstancedStyTrees = validPoints.size();
 		if (nrOfInstancedStyTrees > 0)
 		{
-			std::vector<Mesh::InstanceData> treesInstanced(nrOfInstancedStyTrees);
+			std::vector<dx::XMFLOAT4X4> treesInstanced(nrOfInstancedStyTrees);
 			dx::XMFLOAT2 posXZ = Chunk::IndexToWorldXZ(chunk->GetIndex());
 
 			Bounds bbInfo;
@@ -297,7 +297,10 @@ void SegmentGenerator::AddTreesToChunk(Chunk* chunk, const Chunk::Data& data)
 				float scale = Random::Range(1.4f, 2.0f);
 				dx::XMMATRIX rotation = dx::XMMatrixRotationQuaternion(dx::XMQuaternionRotationAxis({ 0,1,0 }, Random::RadAngle()));
 				dx::XMMATRIX translation = dx::XMMatrixScaling(scale, scale, scale) * rotation * dx::XMMatrixTranslation(position.x, position.y, position.z);
-				dx::XMStoreFloat4x4(&treesInstanced[i].instanceWorld, dx::XMMatrixTranspose(translation));
+				
+				//dx::XMFLOAT4X4 transf;
+				dx::XMStoreFloat4x4(&treesInstanced[i], dx::XMMatrixTranspose(translation));
+				//treesInstanced.push_back(transf);
 
 				colliderPositions.push_back(position);
 				colliderExtends.push_back(extends);

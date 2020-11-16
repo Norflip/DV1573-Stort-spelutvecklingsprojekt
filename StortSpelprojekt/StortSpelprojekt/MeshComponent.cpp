@@ -37,14 +37,14 @@ void MeshComponent::Draw(Renderer* renderer, CameraComponent* camera)
 	}
 }
 
-void MeshComponent::SetInstanceable(size_t index, std::vector<Mesh::InstanceData> instanceData, size_t instanceCount, ID3D11Device* device)
+void MeshComponent::SetInstanceable(size_t index, std::vector<dx::XMFLOAT4X4> instanceData, size_t instanceCount, ID3D11Device* device)
 {
 	//Initialize(device);
 	this->instanceCount = instanceCount;
 	this->instanceData = instanceData;
 	this->instanced = true;
 
-	DXHelper::CreateInstanceBuffer(device, instanceData.size(), sizeof(Mesh::InstanceData), instanceData.data(), &instanceBuffer);
+	DXHelper::CreateInstanceBuffer(device, instanceData.size(), sizeof(dx::XMFLOAT4X4), instanceData.data(), &instanceBuffer);
 	assert(instanceBuffer != nullptr);
 }
 
@@ -56,7 +56,7 @@ void MeshComponent::DrawNonInstanced(Renderer* renderer, CameraComponent* camera
 	if (GetOwner()->HasFlag(ObjectFlag::NO_CULL) || camera->InView(bounds, GetOwner()->GetTransform().GetWorldMatrix()))
 	{
 		for (size_t i = 0; i < meshes.size(); i++)
-			renderer->Draw(meshes[i], materials[i], GetOwner()->GetTransform().GetWorldMatrix());
+			renderer->Draw(meshes[i], materials[i], GetOwner()->GetTransform().GetWorldMatrix(), batchable);
 	}
 }
 
@@ -76,12 +76,12 @@ void MeshComponent::DrawInstanced(Renderer* renderer, CameraComponent* camera) c
 			ZeroMemory(&mappedData, sizeof(D3D11_MAPPED_SUBRESOURCE));
 
 			renderer->GetContext()->Map(instanceBuffer, 0, D3D11_MAP_WRITE_DISCARD, 0, &mappedData);
-			Mesh::InstanceData* dataView = reinterpret_cast<Mesh::InstanceData*>(mappedData.pData);
+			dx::XMFLOAT4X4* dataView = reinterpret_cast<dx::XMFLOAT4X4*>(mappedData.pData);
 			size_t instanceCount = 0;
 
 			for (size_t i = 0; i < instanceData.size(); i++) //cull all the instances
 			{
-				if (camera->InView(bounds, dx::XMMatrixTranspose(dx::XMLoadFloat4x4(&instanceData[i].instanceWorld)))) //the bounding box is in local space so it's same for every instance.
+				if (camera->InView(bounds, dx::XMMatrixTranspose(dx::XMLoadFloat4x4(&instanceData[i])))) //the bounding box is in local space so it's same for every instance.
 				{
 					dataView[instanceCount] = instanceData[i];
 					instanceCount++;

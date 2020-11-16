@@ -65,6 +65,8 @@ void World::UpdateRelevantChunks(const Transform& transform, CameraComponent* ca
 			relevant.clear();
 			GetChunksInRadius(lastRelevantIndex, RELEVANT_RADIUS, relevant);
 
+			std::cout << "CHUNKS: " << relevant.size() << std::endl;
+
 			for (auto i : relevant)
 			{
 				i->GetOwner()->AddFlag(ObjectFlag::ENABLED);
