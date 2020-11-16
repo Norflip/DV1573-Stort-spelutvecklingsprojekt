@@ -79,8 +79,8 @@ void GameScene::InitializeObjects()
 	//houseBaseObject->AddComponent<MeshComponent>(door, doormat);
 	//houseDoorObject->AddComponent<RigidBodyComponent>(0.0f, FilterGroups::DOOR, FilterGroups::EVERYTHING, BodyType::STATIC, true);
 
-	SkeletonMeshComponent* baseComponent = resources->GetResource<SkeletonMeshComponent>("HouseSkeleton"); 
-	SkeletonMeshComponent* legsComponent = resources->GetResource<SkeletonMeshComponent>("HouseLegsSkeleton");
+	//SkeletonMeshComponent* baseComponent = resources->GetResource<SkeletonMeshComponent>("HouseSkeleton"); 
+	//SkeletonMeshComponent* legsComponent = resources->GetResource<SkeletonMeshComponent>("HouseLegsSkeleton");
 
 	baseComponent->SetTimeScale(1.0f);
 	legsComponent->SetTimeScale(1.0f);

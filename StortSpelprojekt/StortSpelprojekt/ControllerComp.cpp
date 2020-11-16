@@ -119,13 +119,11 @@ void ControllerComp::Update(const float& deltaTime)
 	this->velocityTimer += deltaTime; 
 	this->crouchTimer += deltaTime;
 
-	// CHANGE THIS LOGIC TO "CLICKED ON DOOR LOGIC" WHEN TRISTAN IS DONE
-	if(KEY_DOWN(L))
+	if (inside)
 	{
-		if (inside)
-			inside = false;
-		else
-			inside = true;
+		inside = false;
+		//REPLACE THIS WITH THE POSITION OF THE ROOM WHEN WE HAVE THAT
+		rbComp->SetPosition({ 0, 5, 0, 0 });
 	}
 
 	if (KEY_DOWN(D0))
@@ -184,6 +182,14 @@ void ControllerComp::Update(const float& deltaTime)
 		//std::cout << "length: " << length << std::endl;
 		if (length < playerComp->GetRadius() && length > 7.0f && !inside)
 			houseWalkComp->Start();
+		if (length < 4.0f && !inside)
+		{
+			if (KEY_DOWN(Q))
+			{
+				inside = true;
+				//rbComp->SetPosition({ 0, 5, 0, 0 });
+			}
+		}
 	}
 	
 	if (this->canRotate)
