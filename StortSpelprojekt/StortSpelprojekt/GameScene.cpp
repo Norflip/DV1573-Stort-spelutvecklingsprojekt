@@ -113,10 +113,8 @@ void GameScene::InitializeObjects()
 
 	world.Initialize(root, resources, renderer);
 	
-	//LOADING BASE MONSTER; ADDING SKELETONS TO IT
-	enemyManager = new EnemyManager(resources, player, player->GetComponent<PlayerComp>(), root);
-	enemyManager->InitBaseEnemy();
 	
+
 	/* PICKUP STUFF DONT DELETE THESEEE */
 	Object* healthkitObject = resources->AssembleObject("HealthKit", "HealthKitMaterial");
 	healthkitObject->GetTransform().SetPosition({ 23,2,50 });
@@ -169,48 +167,48 @@ void GameScene::InitializeObjects()
 	//Object* charger = 
 	 // skeletonShader
 	//Material *chargermat = new Material(resources->GetShaderResource("skeletonShader"));
-	std::vector<Material*> chargerMat = ZWEBLoader::LoadMaterials("Models/Enemies/Charger_Model.ZWEB", resources->GetShaderResource("skeletonShader"), renderer->GetDevice());
-	std::vector<Mesh*> chargerMesh = ZWEBLoader::LoadMeshes(ZWEBLoadType::SkeletonAnimation, "../Models/Enemies/Charger_Model.ZWEB", renderer->GetDevice());
-	
-	SkeletonAni chargerIdle = ZWEBLoader::LoadSkeletonOnly("Animations/Charger/Charger_Idle.ZWEB", chargerMesh[0]->GetBoneIDS(), false);
-	
-	SkeletonAni chargerLoad = ZWEBLoader::LoadSkeletonOnly("Animations/Charger/Charger_Load.ZWEB", chargerMesh[0]->GetBoneIDS(), false);
+	//std::vector<Material*> chargerMat = ZWEBLoader::LoadMaterials("Models/Enemies/Charger_Model.ZWEB", resources->GetShaderResource("skeletonShader"), renderer->GetDevice());
+	//std::vector<Mesh*> chargerMesh = ZWEBLoader::LoadMeshes(ZWEBLoadType::SkeletonAnimation, "../Models/Enemies/Charger_Model.ZWEB", renderer->GetDevice());
+	//
+	//SkeletonAni chargerIdle = ZWEBLoader::LoadSkeletonOnly("Animations/Charger/Charger_Idle.ZWEB", chargerMesh[0]->GetBoneIDS(), false);
+	//
+	//SkeletonAni chargerLoad = ZWEBLoader::LoadSkeletonOnly("Animations/Charger/Charger_Load.ZWEB", chargerMesh[0]->GetBoneIDS(), false);
 
-	SkeletonAni chargerRun = ZWEBLoader::LoadSkeletonOnly("Animations/Charger/Charger_Run16.ZWEB", chargerMesh[0]->GetBoneIDS(), false);
+	//SkeletonAni chargerRun = ZWEBLoader::LoadSkeletonOnly("Animations/Charger/Charger_Run16.ZWEB", chargerMesh[0]->GetBoneIDS(), false);
 
-	SkeletonAni chargerAttack = ZWEBLoader::LoadSkeletonOnly("Animations/Charger/Charger_RunAttack.ZWEB", chargerMesh[0]->GetBoneIDS(), false);
+	//SkeletonAni chargerAttack = ZWEBLoader::LoadSkeletonOnly("Animations/Charger/Charger_RunAttack.ZWEB", chargerMesh[0]->GetBoneIDS(), false);
 
-	SkeletonAni chargerUnload = ZWEBLoader::LoadSkeletonOnly("Animations/Charger/Charger_Unload.ZWEB", chargerMesh[0]->GetBoneIDS(), false);
+	//SkeletonAni chargerUnload = ZWEBLoader::LoadSkeletonOnly("Animations/Charger/Charger_Unload.ZWEB", chargerMesh[0]->GetBoneIDS(), false);
 
-	Object* charge = new Object("Charger");
-	charge->GetTransform().SetPosition(dx::XMVECTOR({ 24.0f, 2.0f, 53, 1.0f }));
+	//Object* charge = new Object("Charger");
+	//charge->GetTransform().SetPosition(dx::XMVECTOR({ 24.0f, 2.0f, 53, 1.0f }));
 
-	/*SkeletonMeshComponent* idle = charge->AddComponent<SkeletonMeshComponent>(chargerMesh[0], chargerMat[0]);
-	idle->SetAnimationTrack(chargerAttack, SkeletonStateMachine::IDLE);
-	idle->SetTrack(SkeletonStateMachine::IDLE, false);*/
+	///*SkeletonMeshComponent* idle = charge->AddComponent<SkeletonMeshComponent>(chargerMesh[0], chargerMat[0]);
+	//idle->SetAnimationTrack(chargerAttack, SkeletonStateMachine::IDLE);
+	//idle->SetTrack(SkeletonStateMachine::IDLE, false);*/
 
-	charge->AddComponent<EnemyStatsComp>(100.f, 2.0f, 10.f, 5.f, 3.f, 3.f);
-	charge->AddComponent<SkeletonMeshComponent>(chargerMesh[0], chargerMat[0]);
-	charge->GetComponent<SkeletonMeshComponent>()->SetAnimationTrack(chargerIdle, SkeletonStateMachine::IDLE);
-	charge->GetComponent<SkeletonMeshComponent>()->SetAnimationTrack(chargerLoad, SkeletonStateMachine::LOAD);
-	charge->GetComponent<SkeletonMeshComponent>()->SetAnimationTrack(chargerRun, SkeletonStateMachine::RUN);
-	charge->GetComponent<SkeletonMeshComponent>()->SetAnimationTrack(chargerAttack, SkeletonStateMachine::ATTACK);
-	charge->GetComponent<SkeletonMeshComponent>()->SetAnimationTrack(chargerUnload, SkeletonStateMachine::UNLOAD);
+	//charge->AddComponent<EnemyStatsComp>(100.f, 2.0f, 10.f, 5.f, 3.f, 3.f);
+	//charge->AddComponent<SkeletonMeshComponent>(chargerMesh[0], chargerMat[0]);
+	//charge->GetComponent<SkeletonMeshComponent>()->SetAnimationTrack(chargerIdle, SkeletonStateMachine::IDLE);
+	//charge->GetComponent<SkeletonMeshComponent>()->SetAnimationTrack(chargerLoad, SkeletonStateMachine::LOAD);
+	//charge->GetComponent<SkeletonMeshComponent>()->SetAnimationTrack(chargerRun, SkeletonStateMachine::RUN);
+	//charge->GetComponent<SkeletonMeshComponent>()->SetAnimationTrack(chargerAttack, SkeletonStateMachine::ATTACK);
+	//charge->GetComponent<SkeletonMeshComponent>()->SetAnimationTrack(chargerUnload, SkeletonStateMachine::UNLOAD);
 
-	//charge->GetComponent<SkeletonMeshComponent>()->SetTrack(SkeletonStateMachine::UNLOAD, true);
+	////charge->GetComponent<SkeletonMeshComponent>()->SetTrack(SkeletonStateMachine::UNLOAD, true);
 
-	charge->AddComponent<CapsuleColliderComponent>(0.8f, 0.8f, zero); 
-	charge->AddComponent<RigidBodyComponent>(10.f, FilterGroups::ENEMIES, (FilterGroups::EVERYTHING & ~FilterGroups::PICKUPS) & ~FilterGroups::HOLDABLE, BodyType::KINEMATIC, true);
+	//charge->AddComponent<CapsuleColliderComponent>(0.8f, 0.8f, zero); 
+	//charge->AddComponent<RigidBodyComponent>(10.f, FilterGroups::ENEMIES, (FilterGroups::EVERYTHING & ~FilterGroups::PICKUPS) & ~FilterGroups::HOLDABLE, BodyType::KINEMATIC, true);
 
-	//charge->AddComponent<EnemyAttackComp>(player->GetComponent<PlayerComp>());
+	////charge->AddComponent<EnemyAttackComp>(player->GetComponent<PlayerComp>());
 
-	charge->AddComponent< EnemyChargerSMComp>(EnemyChargerState::IDLE);
-	charge->GetComponent< EnemyChargerSMComp>()->RegisterState(EnemyChargerState::IDLE, charge->AddComponent<EnemyIdleComp>());
-	charge->GetComponent< EnemyChargerSMComp>()->RegisterState(EnemyChargerState::ATTACK, charge->AddComponent<EnemyAttackComp>(player->GetComponent<PlayerComp>()));
-	charge->GetComponent< EnemyChargerSMComp>()->RegisterState(EnemyChargerState::RUN, charge->GetComponent<EnemyAttackComp>());
+	//charge->AddComponent< EnemyChargerSMComp>(EnemyChargerState::IDLE);
+	//charge->GetComponent< EnemyChargerSMComp>()->RegisterState(EnemyChargerState::IDLE, charge->AddComponent<EnemyIdleComp>());
+	//charge->GetComponent< EnemyChargerSMComp>()->RegisterState(EnemyChargerState::ATTACK, charge->AddComponent<EnemyAttackComp>(player->GetComponent<PlayerComp>()));
+	//charge->GetComponent< EnemyChargerSMComp>()->RegisterState(EnemyChargerState::RUN, charge->GetComponent<EnemyAttackComp>());
 
-	charge->GetComponent< EnemyChargerSMComp>()->InitAnimation();
-	AddObject(charge);
+	//charge->GetComponent< EnemyChargerSMComp>()->InitAnimation();
+	//AddObject(charge);
 }
 
 void GameScene::InitializeGUI()
@@ -356,6 +354,11 @@ void GameScene::OnActivate()
 
 	AudioMaster::Instance().PlaySoundEvent("wind");
 	//this->PrintSceneHierarchy(root, 0);
+
+	//LOADING BASE MONSTER; ADDING SKELETONS TO IT
+	enemyManager = new EnemyManager(resources, player, player->GetComponent<PlayerComp>(), root);
+	enemyManager->InitBaseEnemy();
+	enemyManager->InitChargerEnemy();
 }
 
 void GameScene::OnDeactivate()

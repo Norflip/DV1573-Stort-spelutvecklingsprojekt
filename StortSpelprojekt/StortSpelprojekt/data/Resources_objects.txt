@@ -1,4 +1,13 @@
-Objects: 29
+Objects: 30
+
+Charger: Models/Enemies/Charger_Model.ZWEB
+Shader: skeletonShader
+Animations: 5
+0: Animations/Charger/Charger_Idle.ZWEB
+9: Animations/Charger/Charger_Load.ZWEB
+2: Animations/Charger/Charger_Run16.ZWEB
+3: Animations/Charger/Charger_RunAttack.ZWEB
+10: Animations/Charger/Charger_Unload.ZWEB
 
 Enemy: Models/Enemies/baseMonster.ZWEB
 Shader: skeletonShader

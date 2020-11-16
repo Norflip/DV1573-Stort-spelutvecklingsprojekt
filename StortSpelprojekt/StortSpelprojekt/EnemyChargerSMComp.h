@@ -2,7 +2,7 @@
 //#include "SkeletonChargerMeshComponent.h"
 #include <map>
 #include "EnemyPatrolComp.h"
-//#include "EnemyIdleComp.h"
+#include "EnemyIdleComp.h"
 #include "EnemyAttackComp.h"
 #include "Input.h"
 #include <unordered_map>

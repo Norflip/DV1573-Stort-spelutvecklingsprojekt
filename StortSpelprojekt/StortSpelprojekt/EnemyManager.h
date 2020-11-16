@@ -3,7 +3,6 @@
 #include "EnemySMComp.h"
 #include "ResourceManager.h"
 #include "ObjectPooler.h"
-
 class EnemyManager
 {
 	public:
@@ -14,8 +13,11 @@ class EnemyManager
 		void InitChargerEnemy();
 		void RemoveEnemy(Object* enemy);
 		ObjectPooler* GetPool() { return enemyPool; }
+
 	private:
 		void SpawnEnemy(dx::XMVECTOR position);
+
+		void SpawnChargerEnemy(dx::XMVECTOR position);
 
 		ObjectPooler* enemyPool;
 		std::vector<Object*> baseEnemies;

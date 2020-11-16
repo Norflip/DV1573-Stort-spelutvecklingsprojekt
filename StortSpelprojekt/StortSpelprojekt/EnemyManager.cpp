@@ -23,6 +23,7 @@ void EnemyManager::InitBaseEnemy()
 		stateMachine->RegisterState(EnemyState::IDLE, object->AddComponent<EnemyIdleComp>());
 		//stateMachine->RegisterState(EnemyState::PATROL, enemy->AddComponent<EnemyPatrolComp>());
 		stateMachine->RegisterState(EnemyState::ATTACK, object->AddComponent<EnemyAttackComp>(nullptr));
+		object->AddFlag(ObjectFlag::DEFAULT);
 		return object;
 	});
 
@@ -39,19 +40,29 @@ void EnemyManager::InitChargerEnemy()
 	enemyPool->Register("chargerEnemy", 2, [](ResourceManager* resources)
 	{
 		Object* object = new Object("chargerEnemy", ObjectFlag::ENABLED);
-		object->AddComponent<SkeletonChargerMeshComponent>(resources->GetResource<SkeletonChargerMeshComponent>("ChargerSkeleton"));
+		object->AddComponent<SkeletonMeshComponent>(resources->GetResource<SkeletonMeshComponent>("ChargerSkeleton"));
 		//object->GetTransform().SetScale({ 0.125f, 0.125f, 0.125f });
 		object->AddComponent<EnemyStatsComp>(100.f, 2.0f, 10.f, 5.f, 3.f, 3.f);
 		dx::XMFLOAT3 zero = { 0.f, 0.f, 0.f };
-		object->AddComponent<CapsuleColliderComponent>(1.6f, 1.8f, zero);
+		object->AddComponent<CapsuleColliderComponent>(0.8f, 0.8f, zero);
 
 		object->AddComponent<RigidBodyComponent>(10.f, FilterGroups::ENEMIES, (FilterGroups::EVERYTHING & ~FilterGroups::PICKUPS) & ~FilterGroups::HOLDABLE, BodyType::KINEMATIC, true);
-		EnemySMComp* stateMachine = object->AddComponent<EnemySMComp>(EnemyState::IDLE);
-		stateMachine->RegisterState(EnemyState::IDLE, object->AddComponent<EnemyIdleComp>());
+		EnemyChargerSMComp* stateMachine = object->AddComponent<EnemyChargerSMComp>(EnemyChargerState::IDLE);
+		stateMachine->RegisterState(EnemyChargerState::IDLE, object->AddComponent<EnemyIdleComp>());
+
+		stateMachine->RegisterState(EnemyChargerState::ATTACK, object->AddComponent<EnemyAttackComp>(nullptr));
 		//stateMachine->RegisterState(EnemyState::PATROL, enemy->AddComponent<EnemyPatrolComp>());
-		stateMachine->RegisterState(EnemyState::ATTACK, object->AddComponent<EnemyAttackComp>(nullptr));
+		stateMachine->RegisterState(EnemyChargerState::RUN, object->AddComponent<EnemyAttackComp>(nullptr));
+		object->AddFlag(ObjectFlag::DEFAULT);
 		return object;
 	});
+
+	for (int i = 0; i < nrOfEnemies; i++)
+	{
+		dx::XMFLOAT3 playerPos;
+		dx::XMStoreFloat3(&playerPos, player->GetTransform().GetPosition());
+		SpawnChargerEnemy({ playerPos.x, playerPos.y, (float)(playerPos.z + i) });
+	}
 }
 
 void EnemyManager::RemoveEnemy(Object* enemy)
@@ -63,6 +74,17 @@ void EnemyManager::SpawnEnemy(dx::XMVECTOR position)
 {
 	Object* enemy = enemyPool->GetItem("baseEnemy");
 	EnemySMComp* stateMachine = enemy->GetComponent<EnemySMComp>();
+	enemy->GetComponent<EnemyAttackComp>()->SetPlayer(playerComp);
+	stateMachine->Start();
+	stateMachine->InitAnimation();
+	enemy->GetComponent<RigidBodyComponent>()->SetPosition(position);
+	Transform::SetParentChild(root->GetTransform(), enemy->GetTransform());
+}
+
+void EnemyManager::SpawnChargerEnemy(dx::XMVECTOR position)
+{
+	Object* enemy = enemyPool->GetItem("chargerEnemy");
+	EnemyChargerSMComp* stateMachine = enemy->GetComponent<EnemyChargerSMComp>();
 	enemy->GetComponent<EnemyAttackComp>()->SetPlayer(playerComp);
 	stateMachine->Start();
 	stateMachine->InitAnimation();
