@@ -50,6 +50,9 @@ void EnemyChargerSMComp::Update(const float& deltaTime)
 		SetState(EnemyChargerState::IDLE);
 	}
 
+	/*if(statsComponent->GetHealth() <= 0.0f)
+		SetState(EnemyChargerState::DEATH);*/
+
 	if (GetOwner()->HasComponent<SkeletonMeshComponent>())
 	{
 		Animate();
@@ -90,6 +93,11 @@ void EnemyChargerSMComp::Animate()
 
 		if(!loadRun)
 			skeletonComponent->SetTrack(SkeletonStateMachine::IDLE, false);
+	}
+	else if (currentState == EnemyChargerState::DEATH)
+	{		
+		skeletonComponent->SetTrack(SkeletonStateMachine::DEATH, false);
+		//loadRun = false;		
 	}
 	else
 	{

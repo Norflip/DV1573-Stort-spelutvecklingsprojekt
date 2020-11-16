@@ -41,18 +41,17 @@ void EnemyManager::InitChargerEnemy()
 	{
 		Object* object = new Object("chargerEnemy", ObjectFlag::ENABLED);
 		object->AddComponent<SkeletonMeshComponent>(resources->GetResource<SkeletonMeshComponent>("ChargerSkeleton"));
-		//object->GetTransform().SetScale({ 0.125f, 0.125f, 0.125f });
 		object->AddComponent<EnemyStatsComp>(100.f, 2.0f, 10.f, 5.f, 3.f, 3.f);
 		dx::XMFLOAT3 zero = { 0.f, 0.f, 0.f };
 		object->AddComponent<CapsuleColliderComponent>(0.8f, 0.8f, zero);
-
 		object->AddComponent<RigidBodyComponent>(10.f, FilterGroups::ENEMIES, (FilterGroups::EVERYTHING & ~FilterGroups::PICKUPS) & ~FilterGroups::HOLDABLE, BodyType::KINEMATIC, true);
+		
 		EnemyChargerSMComp* stateMachine = object->AddComponent<EnemyChargerSMComp>(EnemyChargerState::IDLE);
 		stateMachine->RegisterState(EnemyChargerState::IDLE, object->AddComponent<EnemyIdleComp>());
-
 		stateMachine->RegisterState(EnemyChargerState::ATTACK, object->AddComponent<EnemyAttackComp>(nullptr));
 		//stateMachine->RegisterState(EnemyState::PATROL, enemy->AddComponent<EnemyPatrolComp>());
 		stateMachine->RegisterState(EnemyChargerState::RUN, object->AddComponent<EnemyAttackComp>(nullptr));
+		//stateMachine->RegisterState(EnemyChargerState::DEATH, object->GetComponent<EnemyStatsComp>());	// Death component or something something???
 		object->AddFlag(ObjectFlag::DEFAULT);
 		return object;
 	});
@@ -61,7 +60,7 @@ void EnemyManager::InitChargerEnemy()
 	{
 		dx::XMFLOAT3 playerPos;
 		dx::XMStoreFloat3(&playerPos, player->GetTransform().GetPosition());
-		SpawnChargerEnemy({ playerPos.x, playerPos.y, (float)(playerPos.z + i) });
+		SpawnChargerEnemy({ playerPos.x, playerPos.y, (float)(playerPos.z + i * 5) });
 	}
 }
 

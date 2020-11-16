@@ -164,8 +164,8 @@ void GameScene::InitializeObjects()
 
 
 	/* Charger Anim stuff */
-	//Object* charger = 
-	 // skeletonShader
+	/*Object* charger = 
+	  skeletonShader*/
 	//Material *chargermat = new Material(resources->GetShaderResource("skeletonShader"));
 	//std::vector<Material*> chargerMat = ZWEBLoader::LoadMaterials("Models/Enemies/Charger_Model.ZWEB", resources->GetShaderResource("skeletonShader"), renderer->GetDevice());
 	//std::vector<Mesh*> chargerMesh = ZWEBLoader::LoadMeshes(ZWEBLoadType::SkeletonAnimation, "../Models/Enemies/Charger_Model.ZWEB", renderer->GetDevice());
@@ -179,15 +179,16 @@ void GameScene::InitializeObjects()
 	//SkeletonAni chargerAttack = ZWEBLoader::LoadSkeletonOnly("Animations/Charger/Charger_RunAttack.ZWEB", chargerMesh[0]->GetBoneIDS(), false);
 
 	//SkeletonAni chargerUnload = ZWEBLoader::LoadSkeletonOnly("Animations/Charger/Charger_Unload.ZWEB", chargerMesh[0]->GetBoneIDS(), false);
+	//SkeletonAni chargerDeath = ZWEBLoader::LoadSkeletonOnly("Animations/Charger/Charger_Death.ZWEB", chargerMesh[0]->GetBoneIDS(), false);
 
 	//Object* charge = new Object("Charger");
 	//charge->GetTransform().SetPosition(dx::XMVECTOR({ 24.0f, 2.0f, 53, 1.0f }));
 
-	///*SkeletonMeshComponent* idle = charge->AddComponent<SkeletonMeshComponent>(chargerMesh[0], chargerMat[0]);
-	//idle->SetAnimationTrack(chargerAttack, SkeletonStateMachine::IDLE);
-	//idle->SetTrack(SkeletonStateMachine::IDLE, false);*/
+	//SkeletonMeshComponent* idle = charge->AddComponent<SkeletonMeshComponent>(chargerMesh[0], chargerMat[0]);
+	//idle->SetAnimationTrack(chargerDeath, SkeletonStateMachine::IDLE);
+	//idle->SetTrack(SkeletonStateMachine::IDLE, false);
 
-	//charge->AddComponent<EnemyStatsComp>(100.f, 2.0f, 10.f, 5.f, 3.f, 3.f);
+	////charge->AddComponent<EnemyStatsComp>(100.f, 2.0f, 10.f, 5.f, 3.f, 3.f);
 	//charge->AddComponent<SkeletonMeshComponent>(chargerMesh[0], chargerMat[0]);
 	//charge->GetComponent<SkeletonMeshComponent>()->SetAnimationTrack(chargerIdle, SkeletonStateMachine::IDLE);
 	//charge->GetComponent<SkeletonMeshComponent>()->SetAnimationTrack(chargerLoad, SkeletonStateMachine::LOAD);
@@ -398,5 +399,3 @@ void GameScene::Render()
 	
 	renderer->RenderFrame(camera, (float)clock.GetSeconds());
 }
-
-

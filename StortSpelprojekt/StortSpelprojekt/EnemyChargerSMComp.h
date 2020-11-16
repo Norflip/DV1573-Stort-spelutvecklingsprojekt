@@ -14,7 +14,8 @@ enum class EnemyChargerState
 	LOAD,
 	RUN,
 	UNLOAD,
-	ATTACK
+	ATTACK,
+	DEATH
 };
 
 class EnemyChargerSMComp : public Component
@@ -26,7 +27,8 @@ public:
 		{EnemyChargerState::LOAD, EnemyChargerState::RUN},
 		{EnemyChargerState::RUN, EnemyChargerState::ATTACK},
 		{EnemyChargerState::RUN, EnemyChargerState::UNLOAD},
-		{EnemyChargerState::UNLOAD, EnemyChargerState::IDLE}
+		{EnemyChargerState::UNLOAD, EnemyChargerState::IDLE},
+		{EnemyChargerState::IDLE, EnemyChargerState::DEATH}
 	};
 
 public:
@@ -49,4 +51,5 @@ private:
 
 	void Animate();
 	bool loadRun;
+	bool death;
 };
