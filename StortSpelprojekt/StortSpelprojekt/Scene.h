@@ -25,7 +25,6 @@
 #include "WeaponComponent.h"
 #include "EnemyManager.h"
 #include "PlayerAnimHandlerComp.h"
-#include "SkeletonChargerMeshComponent.h"
 #include "EnemyChargerSMComp.h"
 
 class GUIFont;

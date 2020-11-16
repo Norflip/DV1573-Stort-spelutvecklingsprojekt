@@ -1,5 +1,4 @@
 #pragma once
-#include "SkeletonChargerMeshComponent.h"
 
 class ResourceManager
 {
