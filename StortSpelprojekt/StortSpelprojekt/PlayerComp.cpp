@@ -170,6 +170,11 @@ void PlayerComp::InsertWeapon(WeaponComponent* weapon, std::string name)
 	currentWeapon = weapon->GetOwner();
 }
 
+void PlayerComp::SetInteriorPosition(float x, float y, float z)
+{
+	this->interiorPosition = { x, y, z };
+}
+
 float PlayerComp::ReverseAndClamp(float inputValue)
 {
 	return 1.0f - (inputValue / 100.0f);

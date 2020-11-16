@@ -159,8 +159,10 @@ void ControllerComp::Update(const float& deltaTime)
 	
 	if (houseWalkComp->GetIsWalking())
 	{
+		dx::XMVECTOR offset = { 2.0f, 0.0f, 2.0f, 0.0f };
+
 		length = 0.f;
-		lengthVec = dx::XMVector3Length(dx::XMVectorSubtract(houseWalkComp->GetOwner()->GetTransform().GetPosition(), GetOwner()->GetTransform().GetPosition()));
+		lengthVec = dx::XMVector3Length(dx::XMVectorSubtract(dx::XMVectorAdd(houseWalkComp->GetOwner()->GetTransform().GetPosition(), offset), GetOwner()->GetTransform().GetPosition()));
 		dx::XMStoreFloat(&length, lengthVec);
 
 		// If next to the house
@@ -169,24 +171,36 @@ void ControllerComp::Update(const float& deltaTime)
 	}
 	else if (!houseWalkComp->GetIsWalking())
 	{
+		dx::XMVECTOR offset = { 2.0f, 0.0f, 2.0f, 0.0f };
 		length = 0.f;
-		lengthVec = dx::XMVector3Length(dx::XMVectorSubtract(houseWalkComp->GetOwner()->GetTransform().GetPosition(), GetOwner()->GetTransform().GetPosition()));
+		lengthVec = dx::XMVector3Length(dx::XMVectorSubtract(dx::XMVectorAdd(houseWalkComp->GetOwner()->GetTransform().GetPosition(), offset), GetOwner()->GetTransform().GetPosition()));
 		dx::XMStoreFloat(&length, lengthVec);
 
 		if (length < playerComp->GetRadius() && length > 7.0f && !inside)
 			houseWalkComp->Start();
 
-		// If right outside the door
-		if (length < 3.9f && !inside)
+		if (KEY_DOWN(Q))
 		{
-			if (KEY_DOWN(Q))
+			if (inside)
 			{
+				rbComp->SetPosition(dx::XMVECTOR{ this->outsidePos.x, this->outsidePos.y, this->outsidePos.z, 0 });
+				inside = false;
+			}
+			else if (length < 2.5f && !inside)
+			{
+				dx::XMVECTOR pos = houseWalkComp->GetOwner()->GetTransform().GetPosition();
+				dx::XMVECTOR current = rbComp->GetPosition();
+
 				// Change position here
 				// Save the last position before changing, so we can change back later
-				dx::XMVECTOR current = rbComp->GetPosition();
+				//dx::XMVECTOR current = rbComp->GetPosition();
 				dx::XMVECTOR offset{ 0, 0, 10, 0 };
 
-				rbComp->SetPosition(dx::XMVectorAdd(current, offset));
+				this->outsidePos = { current.m128_f32[0], current.m128_f32[1], current.m128_f32[2] };
+				dx::XMFLOAT3 temp = this->playerComp->GetInteriorPosition();
+
+				rbComp->SetPosition({ temp.x, temp.y, temp.z, 0.0f });
+
 				inside = true;
 			}
 		}

@@ -57,10 +57,12 @@ private:
 	bool canRotate;
 	bool isGrounded;
 	bool inside;
+
 	dx::XMFLOAT3 houseVelocity;
 	dx::XMFLOAT3 jumpDir; 
 	dx::XMFLOAT3 cameraOffset;
 	dx::XMFLOAT3 cameraEuler;
+	dx::XMFLOAT3 outsidePos;
 
 	Object* cameraObject;
 	NodeWalkerComp* houseWalkComp;

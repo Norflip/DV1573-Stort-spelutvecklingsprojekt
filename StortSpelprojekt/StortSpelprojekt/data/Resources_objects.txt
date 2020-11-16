@@ -1,4 +1,4 @@
-Objects: 29
+Objects: 40
 
 Enemy: Models/Enemies/baseMonster.ZWEB
 Shader: skeletonShader
@@ -107,3 +107,36 @@ Shader: instanceShader
 
 Rock3: Models/Props/Rock_3.ZWEB
 Shader: instanceShader
+
+Curtains: Models/House/Curtains.ZWEB
+Shader: defaultShader
+
+Fireplace: Models/House/Fireplace.ZWEB
+Shader: defaultShader
+
+Logs: Models/House/Logs.ZWEB
+Shader: defaultShader
+
+Flowerpot: Models/House/Flowerpot.ZWEB
+Shader: defaultShader
+
+Bed: Models/House/Bed.ZWEB
+Shader: defaultShader
+
+BookShelf: Models/House/BookShelf.ZWEB
+Shader: defaultShader
+
+Chair: Models/House/Chair.ZWEB
+Shader: defaultShader
+
+HouseInterior: Models/House/HouseInterior.ZWEB
+Shader: defaultShader
+
+Sink: Models/House/Sink.ZWEB
+Shader: defaultShader
+
+Stove: Models/House/Stove.ZWEB
+Shader: defaultShader
+
+InsideDoor: Models/House/InsideDoor.ZWEB
+Shader: defaultShader

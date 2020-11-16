@@ -12,7 +12,7 @@ void GameScene::RemoveEnemy()
 
 GameScene::GameScene()
 {
-	
+	this->interiorPosition = { 0.0f, -100.0f, 0.0f };
 }
 
 GameScene::~GameScene()
@@ -105,7 +105,7 @@ void GameScene::InitializeObjects()
 
 	playerObject->AddComponent<PlayerComp>(renderer, camera, Engine::Instance->GetPhysics(), guiManager, 100.f, 2.f, 20.f, 50.f, 3.f);
 	playerObject->AddComponent<ControllerComp>(cameraObject, houseBaseObject); 
-
+	playerObject->GetComponent<PlayerComp>()->SetInteriorPosition(this->interiorPosition.x, this->interiorPosition.y, this->interiorPosition.z);
 	AddObject(cameraObject, playerObject);
 	AddObject(playerObject);
 
@@ -169,6 +169,42 @@ void GameScene::InitializeObjects()
 	playerObject->GetComponent<PlayerComp>()->InsertWeapon(axeObject->GetComponent<WeaponComponent>(), axeObject->GetName());
 	AddObject(axeObject);
 	
+	// Inside house
+
+	Object* houseInterior = resources->AssembleObject("HouseInterior", "HouseInteriorMaterial");
+	houseInterior->GetTransform().SetPosition({ this->interiorPosition.x, this->interiorPosition.y, this->interiorPosition.z, 0 });
+	AddObject(houseInterior);
+
+	Object* fireplace = resources->AssembleObject("Fireplace", "FireplaceMaterial");
+	AddObject(fireplace, houseInterior);
+
+	Object* logs = resources->AssembleObject("Logs", "LogsMaterial");
+	AddObject(logs, houseInterior);
+
+	Object* flowerpot = resources->AssembleObject("Flowerpot", "FlowerpotMaterial");
+	AddObject(flowerpot, houseInterior);
+
+	Object* curtains = resources->AssembleObject("Curtains", "CurtainsMaterial");
+	AddObject(curtains, houseInterior);
+
+	Object* bed = resources->AssembleObject("Bed", "BedMaterial");
+	AddObject(bed, houseInterior);
+
+	Object* bookShelf = resources->AssembleObject("BookShelf", "BookShelfMaterial");
+	AddObject(bookShelf, houseInterior);
+
+	Object* chair = resources->AssembleObject("Chair", "ChairMaterial");
+	AddObject(chair, houseInterior);
+
+	Object* sink = resources->AssembleObject("Sink", "SinkMaterial");
+	AddObject(sink, houseInterior);
+
+	Object* stove = resources->AssembleObject("Stove", "StoveMaterial");
+	AddObject(stove, houseInterior);
+
+	Object* insideDoor = resources->AssembleObject("InsideDoor", "InsideDoorMaterial");
+	AddObject(insideDoor, houseInterior);
+
 }
 
 void GameScene::InitializeGUI()
@@ -335,6 +371,8 @@ void GameScene::Update(const float& deltaTime)
 
 	static_cast<GUIFont*>(guiManager->GetGUIObject("fps"))->SetString(std::to_string((int)GameClock::Instance().GetFramesPerSecond()));
 	guiManager->UpdateAll();
+
+	std::cout << "Pos: " << player->GetTransform().GetPosition().m128_f32[0] << " " << player->GetTransform().GetPosition().m128_f32[1] << " " << player->GetTransform().GetPosition().m128_f32[2] << std::endl;
 
 }
 

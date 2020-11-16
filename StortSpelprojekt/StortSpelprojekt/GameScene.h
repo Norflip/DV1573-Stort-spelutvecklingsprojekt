@@ -33,4 +33,6 @@ public:
 private:
 	World world;
 	Object* house;
+
+	dx::XMFLOAT3 interiorPosition;
 };
