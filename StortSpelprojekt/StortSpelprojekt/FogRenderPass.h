@@ -10,7 +10,7 @@ public:
 	void m_Initialize(ID3D11Device* device) override
 	{
 		Shader* shader = resources->GetShaderResource("fogShader");
-		Fogmaterial = new Material(shader);
+		fogMaterial = new Material(shader);
 		LoadTexturesFog(device);
 	}
 
@@ -21,13 +21,13 @@ public:
 
 		renderer->GetContext()->PSSetShaderResources(0, 1, &inTexture.srv);
 		renderer->GetContext()->PSSetShaderResources(1, 1, &renderer->GetMidbuffer().depthSRV);
-		renderer->DrawScreenQuad(Fogmaterial);
+		renderer->DrawScreenQuad(fogMaterial);
 
 		ID3D11ShaderResourceView* nullSRV[1] = { nullptr };
 		renderer->GetContext()->PSSetShaderResources(1, 1, nullSRV);
 	}
 
-	void LoadTexturesFog(ID3D11Device* device) //VIKTOR
+	void LoadTexturesFog(ID3D11Device* device)
 	{
 		const LPCWSTR FOG_TEXTURE_PATHS[] = {
 			L"Textures/Ramp_Day.png",
@@ -43,18 +43,18 @@ public:
 		{
 			
 			rampTexture = Texture::LoadTexture(device, FOG_TEXTURE_PATHS[i]);
-			Fogmaterial->SetTexture(rampTexture, DIFFUSE_START_SLOT + i, ShaderBindFlag::PIXEL);
+			fogMaterial->SetTexture(rampTexture, DIFFUSE_START_SLOT + i, ShaderBindFlag::PIXEL);
 		}
 		
 	
 
-		Fogmaterial->SetSampler(DXHelper::CreateSampler(D3D11_FILTER_MIN_MAG_MIP_LINEAR, D3D11_TEXTURE_ADDRESS_WRAP, device), 0, ShaderBindFlag::PIXEL);
+		fogMaterial->SetSampler(DXHelper::CreateSampler(D3D11_FILTER_MIN_MAG_MIP_LINEAR, D3D11_TEXTURE_ADDRESS_WRAP, device), 0, ShaderBindFlag::PIXEL);
 	}
 
 	ALIGN16_ALLOC;
 
 private:
-	Material* Fogmaterial;
+	Material* fogMaterial;
 	ResourceManager* resources;
 	Texture* rampTexture;
 };
