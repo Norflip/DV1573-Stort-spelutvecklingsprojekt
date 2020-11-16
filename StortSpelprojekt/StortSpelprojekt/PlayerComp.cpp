@@ -309,7 +309,6 @@ void PlayerComp::RayCast(const float& deltaTime)
 			}
 		}
 	}
-
 	// Health drop
 	healthDippingBar->SetScaleBars(ReverseAndClamp(health));
 

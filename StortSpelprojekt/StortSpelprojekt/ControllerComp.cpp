@@ -119,15 +119,6 @@ void ControllerComp::Update(const float& deltaTime)
 	this->velocityTimer += deltaTime; 
 	this->crouchTimer += deltaTime;
 
-	// CHANGE THIS LOGIC TO "CLICKED ON DOOR LOGIC" WHEN TRISTAN IS DONE
-	if(KEY_DOWN(L))
-	{
-		if (inside)
-			inside = false;
-		else
-			inside = true;
-	}
-
 	if (KEY_DOWN(D0))
 	{
 		this->cameraObject->GetTransform().SetRotation(dx::XMLoadFloat4(&RESET_ROT));
@@ -171,7 +162,8 @@ void ControllerComp::Update(const float& deltaTime)
 		length = 0.f;
 		lengthVec = dx::XMVector3Length(dx::XMVectorSubtract(houseWalkComp->GetOwner()->GetTransform().GetPosition(), GetOwner()->GetTransform().GetPosition()));
 		dx::XMStoreFloat(&length, lengthVec);
-		//std::cout << "length: " << length << std::endl;
+
+		// If next to the house
 		if (length > playerComp->GetRadius() || length < 7.0f)
 			houseWalkComp->Stop();
 	}
@@ -180,9 +172,24 @@ void ControllerComp::Update(const float& deltaTime)
 		length = 0.f;
 		lengthVec = dx::XMVector3Length(dx::XMVectorSubtract(houseWalkComp->GetOwner()->GetTransform().GetPosition(), GetOwner()->GetTransform().GetPosition()));
 		dx::XMStoreFloat(&length, lengthVec);
-		//std::cout << "length: " << length << std::endl;
+
 		if (length < playerComp->GetRadius() && length > 7.0f && !inside)
 			houseWalkComp->Start();
+
+		// If right outside the door
+		if (length < 3.9f && !inside)
+		{
+			if (KEY_DOWN(Q))
+			{
+				// Change position here
+				// Save the last position before changing, so we can change back later
+				dx::XMVECTOR current = rbComp->GetPosition();
+				dx::XMVECTOR offset{ 0, 0, 10, 0 };
+
+				rbComp->SetPosition(dx::XMVectorAdd(current, offset));
+				inside = true;
+			}
+		}
 	}
 	
 	if (this->canRotate)
