@@ -287,6 +287,7 @@
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="SkeletonChargerMeshComponent.cpp" />
+    <ClCompile Include="EnemyChargerSMComp.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="ObjectSpawner.h">
@@ -578,6 +579,9 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="SkeletonChargerMeshComponent.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="EnemyChargerSMComp.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>

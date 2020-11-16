@@ -189,16 +189,30 @@ void GameScene::InitializeObjects()
 	idle->SetAnimationTrack(chargerAttack, SkeletonStateMachine::IDLE);
 	idle->SetTrack(SkeletonStateMachine::IDLE, false);*/
 
-	charge->AddComponent<EnemyStatsComp>(100.0f, 5.0f, 10.0f, 10.0f, 5.0f, 2.0f);
-	charge->AddComponent<SkeletonChargerMeshComponent>(chargerMesh[0], chargerMat[0]);
-	charge->GetComponent<SkeletonChargerMeshComponent>()->SetAnimationTrack(chargerIdle, SkeletonChargerStateMachine::IDLE);
-	charge->GetComponent<SkeletonChargerMeshComponent>()->SetAnimationTrack(chargerLoad, SkeletonChargerStateMachine::LOAD);
-	charge->GetComponent<SkeletonChargerMeshComponent>()->SetAnimationTrack(chargerRun, SkeletonChargerStateMachine::RUN);
-	charge->GetComponent<SkeletonChargerMeshComponent>()->SetAnimationTrack(chargerAttack, SkeletonChargerStateMachine::ATTACK);
-	charge->GetComponent<SkeletonChargerMeshComponent>()->SetAnimationTrack(chargerUnload, SkeletonChargerStateMachine::UNLOAD);
+	charge->AddComponent<EnemyStatsComp>(100.f, 2.0f, 10.f, 5.f, 3.f, 3.f);
+	charge->AddComponent<SkeletonMeshComponent>(chargerMesh[0], chargerMat[0]);
+	charge->GetComponent<SkeletonMeshComponent>()->SetAnimationTrack(chargerIdle, SkeletonStateMachine::IDLE);
+	charge->GetComponent<SkeletonMeshComponent>()->SetAnimationTrack(chargerLoad, SkeletonStateMachine::LOAD);
+	charge->GetComponent<SkeletonMeshComponent>()->SetAnimationTrack(chargerRun, SkeletonStateMachine::RUN);
+	charge->GetComponent<SkeletonMeshComponent>()->SetAnimationTrack(chargerAttack, SkeletonStateMachine::ATTACK);
+	charge->GetComponent<SkeletonMeshComponent>()->SetAnimationTrack(chargerUnload, SkeletonStateMachine::UNLOAD);
 
-	charge->GetComponent<SkeletonChargerMeshComponent>()->SetTrack(SkeletonChargerStateMachine::LOAD, true);
+	//charge->GetComponent<SkeletonMeshComponent>()->SetTrack(SkeletonStateMachine::UNLOAD, true);
 
+	charge->AddComponent<CapsuleColliderComponent>(0.8f, 0.8f, zero); 
+	charge->AddComponent<RigidBodyComponent>(10.f, FilterGroups::ENEMIES, (FilterGroups::EVERYTHING & ~FilterGroups::PICKUPS) & ~FilterGroups::HOLDABLE, BodyType::KINEMATIC, true);
+
+	//charge->AddComponent<EnemyAttackComp>(player->GetComponent<PlayerComp>());
+
+	charge->AddComponent< EnemyChargerSMComp>(EnemyChargerState::IDLE);
+	charge->GetComponent< EnemyChargerSMComp>()->RegisterState(EnemyChargerState::IDLE, charge->AddComponent<EnemyIdleComp>());
+	////stateMachine->RegisterState(EnemyState::PATROL, enemy->AddComponent<EnemyPatrolComp>());
+	charge->GetComponent< EnemyChargerSMComp>()->RegisterState(EnemyChargerState::ATTACK, charge->AddComponent<EnemyAttackComp>(player->GetComponent<PlayerComp>()));
+	charge->GetComponent< EnemyChargerSMComp>()->RegisterState(EnemyChargerState::RUN, charge->GetComponent<EnemyAttackComp>());
+	charge->GetComponent< EnemyChargerSMComp>()->RegisterState(EnemyChargerState::LOAD, charge->GetComponent<EnemyAttackComp>());
+
+	////stateMachine->RegisterState(EnemyState::ATTACK, object->AddComponent<EnemyAttackComp>(nullptr));
+	charge->GetComponent< EnemyChargerSMComp>()->InitAnimation();
 	AddObject(charge);
 }
 

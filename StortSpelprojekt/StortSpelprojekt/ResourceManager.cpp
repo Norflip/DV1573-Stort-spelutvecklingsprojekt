@@ -89,6 +89,8 @@ void ResourceManager::InitializeResources(ID3D11Device* device)
 void ResourceManager::ReadObjects(ID3D11Device* device)
 {
 	// Start reading the file with the objects
+	SkeletonChargerMeshComponent* skeletonChargerMesh = nullptr;
+	SkeletonMeshComponent* skeletonMesh = nullptr;
 	std::ifstream file("data/Resources_objects.txt");
 	if (file.is_open())
 	{
@@ -132,7 +134,16 @@ void ResourceManager::ReadObjects(ID3D11Device* device)
 
 				int nrOfAnimations = std::stoi(line.substr(pos + 2, line.length() - pos - 2), &sz);
 
-				SkeletonMeshComponent* skeletonMesh = new SkeletonMeshComponent(meshes[0], materials[0]);
+				
+
+				if (name == "Charger")
+				{					
+					skeletonChargerMesh = new SkeletonChargerMeshComponent(meshes[0], materials[0]);
+				}
+				else
+				{
+					skeletonMesh = new SkeletonMeshComponent(meshes[0], materials[0]);
+				}
 
 				for (int j = 0; j < nrOfAnimations; j++)
 				{
@@ -149,13 +160,29 @@ void ResourceManager::ReadObjects(ID3D11Device* device)
 					}
 					else
 					{
-						SkeletonAni animation = ZWEBLoader::LoadSkeletonOnly(path, meshes[0]->GetBoneIDS(), false);
-						skeletonMesh->SetAnimationTrack(animation, (SkeletonStateMachine)type);
+						if (name == "Charger")
+						{
+							SkeletonAni animation = ZWEBLoader::LoadSkeletonOnly(path, meshes[0]->GetBoneIDS(), false);
+							skeletonChargerMesh->SetAnimationTrack(animation, (SkeletonChargerStateMachine)type);
+						}
+						else
+						{
+							SkeletonAni animation = ZWEBLoader::LoadSkeletonOnly(path, meshes[0]->GetBoneIDS(), false);
+							skeletonMesh->SetAnimationTrack(animation, (SkeletonStateMachine)type);
+						}
 					}
 				}
 
-				skeletonMesh->BlendAnimations();
-				AddResource(name+"Skeleton", skeletonMesh);
+				if (name != "Charger")
+				{
+					skeletonMesh->BlendAnimations();
+					AddResource(name + "Skeleton", skeletonMesh);
+				}
+				else
+				{
+					AddResource(name + "Skeleton", skeletonMesh);
+				}
+
 			}
 			// Ugly presumption that we load a Tree at some point
 			else if (name == "Tree")

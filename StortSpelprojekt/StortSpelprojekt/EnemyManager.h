@@ -1,4 +1,5 @@
 #pragma once
+#include "EnemyChargerSMComp.h"
 #include "EnemySMComp.h"
 #include "ResourceManager.h"
 #include "ObjectPooler.h"
@@ -10,6 +11,7 @@ class EnemyManager
 		~EnemyManager() {}
 		std::vector<Object*> GetBaseEnemies() const { return baseEnemies; }
 		void InitBaseEnemy();
+		void InitChargerEnemy();
 		void RemoveEnemy(Object* enemy);
 		ObjectPooler* GetPool() { return enemyPool; }
 	private:

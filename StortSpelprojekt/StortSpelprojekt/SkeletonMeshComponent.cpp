@@ -314,28 +314,71 @@ void SkeletonMeshComponent::PlayOnce(const float& deltaTime)
 			}
 		}
 	}
-
 	else if (currentAni == SkeletonStateMachine::DEATH)
 	{
-	if (!doneOnce)
-	{
-		elapsedTime += deltaTime;
-		time = elapsedTime;
-		time *= timeScale;
-
-		float animLength = skeletonAnimations[4].GetAniLength() / skeletonAnimations[4].GetFPS();
-
-		if (time <= animLength)
+		if (!doneOnce)
 		{
-			std::cout << time << std::endl;
-			finalTransforms = skeletonAnimations[4].Makeglobal(time, dx::XMMatrixIdentity(), *skeletonAnimations[4].GetRootKeyJoints());
-		}
-		else
-		{
-			elapsedTime = 0.0f;
-			doneOnce = true;
+			elapsedTime += deltaTime;
+			time = elapsedTime;
+			time *= timeScale;
+
+			float animLength = skeletonAnimations[4].GetAniLength() / skeletonAnimations[4].GetFPS();
+
+			if (time <= animLength)
+			{
+				std::cout << time << std::endl;
+				finalTransforms = skeletonAnimations[4].Makeglobal(time, dx::XMMatrixIdentity(), *skeletonAnimations[4].GetRootKeyJoints());
+			}
+			else
+			{
+				elapsedTime = 0.0f;
+				doneOnce = true;
+			}
 		}
 	}
+	else if (currentAni == SkeletonStateMachine::LOAD)
+	{
+		if (!doneOnce)
+		{
+			elapsedTime += deltaTime;
+			time = elapsedTime;
+			time *= timeScale;
+
+			float animLength = skeletonAnimations[1].GetAniLength() / skeletonAnimations[1].GetFPS();
+
+			if (time <= animLength)
+			{
+				std::cout << time << std::endl;
+				finalTransforms = skeletonAnimations[1].Makeglobal(time, dx::XMMatrixIdentity(), *skeletonAnimations[1].GetRootKeyJoints());
+			}
+			else
+			{
+				elapsedTime = 0.0f;
+				doneOnce = true;
+			}
+		}
+	}
+	else if (currentAni == SkeletonStateMachine::UNLOAD)
+	{
+		if (!doneOnce)
+		{
+			elapsedTime += deltaTime;
+			time = elapsedTime;
+			time *= timeScale;
+
+			float animLength = skeletonAnimations[4].GetAniLength() / skeletonAnimations[4].GetFPS();
+
+			if (time <= animLength)
+			{
+				std::cout << time << std::endl;
+				finalTransforms = skeletonAnimations[4].Makeglobal(time, dx::XMMatrixIdentity(), *skeletonAnimations[4].GetRootKeyJoints());
+			}
+			else
+			{
+				elapsedTime = 0.0f;
+				doneOnce = true;
+			}
+		}
 	}
 }
 
