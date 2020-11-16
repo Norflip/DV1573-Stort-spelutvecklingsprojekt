@@ -218,8 +218,16 @@ void GameScene::InitializeObjects()
 
 	
 	Object* testObject = resources->AssembleObject("LeftDirectionSign", "LeftDirectionSignMaterial");
-	testObject->GetTransform().SetPosition({ 22, 2.0f, 54 });
+	testObject->GetTransform().SetPosition({ 22, 0.5f, 50 });
 	AddObject(testObject);
+
+	Object* testObject1 = resources->AssembleObject("RightDirectionSign", "RightDirectionSignMaterial"); 
+	testObject1->GetTransform().SetPosition({ 24, 0.5f, 50 });
+	AddObject(testObject1);
+
+	Object* testObject2 = resources->AssembleObject("Endsign", "EndsignMaterial"); 
+	testObject2->GetTransform().SetPosition({ 23, 0.5f, 50 });
+	AddObject(testObject2);
 
 }
 
