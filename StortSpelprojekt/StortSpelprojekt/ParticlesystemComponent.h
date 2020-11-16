@@ -13,7 +13,7 @@ private:
 	};	
 
 public:
-	ParticleSystemComponent(Renderer* renderer, CameraComponent* camera, Shader* shader);
+	ParticleSystemComponent(Renderer* renderer, Shader* shader);
 	virtual ~ParticleSystemComponent();
 	void Shutdown();
 
@@ -40,7 +40,6 @@ private:
 private:
 	Renderer* renderer;
 	Shader* particlesShader;
-	CameraComponent* camera;
 	ID3D11ShaderResourceView* srv;	
 
 	int vertexCount, indexCount;

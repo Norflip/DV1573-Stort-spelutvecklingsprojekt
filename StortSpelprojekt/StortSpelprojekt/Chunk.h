@@ -4,6 +4,7 @@
 #include "Component.h"
 #include "Math.h"
 #include "DShape.h"
+#include "Texture.h"
 
 enum class ChunkType
 {
@@ -35,19 +36,26 @@ class Chunk : public Component
 		dx::XMFLOAT3(1,1,1)					// white
 	};
 
+public:
+	struct Data
+	{
+		float* heightMap;
+		float* influenceMap;
+		Texture* dataTexture;
+		Data() : heightMap(nullptr), influenceMap(nullptr), dataTexture(nullptr) {}
+	};
 
 public:
-	Chunk(dx::XMINT2 index, ChunkType type);
+	Chunk(dx::XMINT2 index, ChunkType type, const Data& data);
 	virtual ~Chunk();
 
 	void Update(const float& deltaTime) override;
 
-	void SetupCollisionObject(Physics* physics, float* heightMap);
+	void Create();
 
-	float SampleHeight(float x, float z);
-
-	void SetHeightMap(float* heightMap) { this->heightMap = heightMap; }
-	float* GetHeightMap() const { return this->heightMap; }
+	bool TryGetLocalColRow(const float& x, const float& z, int& col, int& row) const;
+	float SampleHeight(const float& x, const float& z) const;
+	float SampleInfluence(const float& x, const float& z) const;
 
 	dx::XMINT2 GetIndex() const { return this->index; }
 	ChunkType GetType() const { return this->type; }
@@ -60,7 +68,7 @@ public:
 	void PhysicRelease();
 
 private:
-	void GetHeightFieldMinMax(float* heightMap, size_t size, float& min, float& max);
+	void SetupCollisionObject();
 
 private:
 	float min, max;
@@ -68,7 +76,7 @@ private:
 	rp::RigidBody* body;
 	rp::HeightFieldShape* shape;
 
+	Data data;
 	dx::XMINT2 index;
 	ChunkType type;
-	float* heightMap;
 };

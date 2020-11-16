@@ -15,8 +15,7 @@ DShape::~DShape()
 
 void DShape::DrawLine(dx::XMFLOAT3 a, dx::XMFLOAT3 b, dx::XMFLOAT3 color)
 {
-	return;
-	DShape::Instance().AddShape(Shape(a, b, color, Type::LINE));
+//	DShape::Instance().AddShape(Shape(a, b, color, Type::LINE));
 }
 
 void DShape::DrawBox(dx::XMFLOAT3 center, dx::XMFLOAT3 extends, dx::XMFLOAT3 color)
