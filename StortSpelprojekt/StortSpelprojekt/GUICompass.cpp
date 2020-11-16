@@ -4,7 +4,7 @@
 
 //GUICompass::GUICompass(Renderer& renderer, std::string file, float xPos, float yPos, float layerDepth, DrawDirection dir, ClickFunction clickFunc, GuiGroup group) :GUISprite(renderer, file, xPos, yPos, layerDepth, dir, clickFunc, group)
 
-GUICompass::GUICompass(Renderer& renderer, Window* window, Object* houseObj, Object* playerObj):houseObj(houseObj), playerObj(playerObj)
+GUICompass::GUICompass(Renderer& renderer, Window* window, Object* houseObj, Object* playerObj) :houseObj(houseObj), playerObj(playerObj)
 {
 	this->renderer = &renderer;
 	this->window = window;
@@ -19,41 +19,33 @@ void GUICompass::Update()
 {
 
 	sm::Vector3 playerPos = playerObj->GetTransform().GetPosition();
-	sm::Vector3 housePos= houseObj->GetTransform().GetPosition();
-	
-	float distance = playerPos.Distance(playerPos, housePos);
-	float scale  = Math::Clamp((10 / pow(distance,0.7f)),0.4f,1.f);
-	house->SetScale(scale, scale);
-	house->SetPosition((-house->GetWidth() / 2) +scale*(house->GetWidth()/2), compassYpos+ (house->GetHeight()/2) - scale * (house->GetHeight()/2));
-	house->SetColor({ house->GetColor().x, house->GetColor().y, house->GetColor().z, scale });
-	
+	sm::Vector3 housePos = houseObj->GetTransform().GetPosition();
 
-	
+	float distance = playerPos.Distance(playerPos, housePos);
+	float scale = Math::Clamp((10 / pow(distance, 0.7f)), 0.4f, 1.f);
+	house->SetScale(scale, scale);
+	house->SetPosition((-house->GetWidth() / 2) + scale * (house->GetWidth() / 2), compassYpos + (house->GetHeight() / 2) - scale * (house->GetHeight() / 2));
+	house->SetColor({ house->GetColor().x, house->GetColor().y, house->GetColor().z, scale });
+
+
+	system("CLS");
 	CameraComponent* cam = playerObj->GetComponent<PlayerComp>()->GetCamera();
-	sm::Vector3 test = cam->GetOwner()->GetTransform().GetLocalRotation();
-	float angleOfPlayer = test.y * Math::PI * (180 / (Math::PI));
-	
-	std::cout <<"ANGLE OF PLAYER"<< angleOfPlayer << std::endl;
-	test *= Math::PI;
-	std::cout << "X PLAYER" << test.x << std::endl;
-	std::cout << "Y PLAYER" << test.y << std::endl;
-	std::cout << "Z PLAYER" << test.z << std::endl;
+	sm::Vector4 camRot = cam->GetOwner()->GetTransform().GetWorldRotation();
+
 	sm::Vector3 H = houseObj->GetTransform().GetPosition();
 	sm::Vector3 P = playerObj->GetTransform().GetPosition();
-	sm::Vector3 vP2H;
-	vP2H = H - P;
-	vP2H.Normalize();
-	
-	std::cout<<std::endl << "X HOUSE" << vP2H.x << std::endl;
-	std::cout << "Y HOUSE" << vP2H.y << std::endl;
-	std::cout << "Z HOUSE" << vP2H.z << std::endl;
-	
 
 
-	float angle = std::atan2f(test.x -vP2H.x , test.z - vP2H.z  ) * (180 / (Math::PI));
 
+	float angleHouse = std::atan2f(H.x - P.x, H.z - P.z) * (180 / (Math::PI));
+	std::cout << "ANGLE OF TO HOUSE" << angleHouse << std::endl;
 
-	float resultAngle = angleOfPlayer - angle + 180;
+	dx::XMFLOAT3 direction;
+	dx::XMStoreFloat3(&direction, dx::XMVector3Rotate({ 0,0,1 }, camRot));
+	float angleOfPlayer = atan2(direction.x, direction.z) * (180 / (Math::PI));
+	std::cout << "ANGLE OF PLAYERS" << angleOfPlayer << std::endl;
+
+	float resultAngle = angleOfPlayer - angleHouse;
 	if (resultAngle > 360)
 	{
 		resultAngle -= 360;
@@ -62,31 +54,28 @@ void GUICompass::Update()
 	{
 		resultAngle -= 360;
 	}
+	if (resultAngle < -360)
+	{
+		resultAngle += 360;
+	}
+	if (resultAngle < -180)
+	{
+		resultAngle += 360;
+	}
 
-	std::cout <<std::endl<< "RESULTANGLE" << resultAngle << std::endl;
+	std::cout << std::endl << "RESULTANGLE" << resultAngle << std::endl;
 	float movePos = 0;
-	//NOW.... IF ANGLE IS 90 -> 0 it should more to the left
-	//backgroundBar->GetWidth();
+
 	if (resultAngle > 0 && resultAngle < 90.f)
 	{
-		movePos = -(resultAngle);
+		movePos = -(resultAngle)*4.44;
 	}
 	else if (resultAngle < 0 && resultAngle > -90.f)
 	{
-		movePos = -(resultAngle);
+		movePos = -(resultAngle) * 4.44;
 	}
 	else
 		movePos = 10000;
-	// IF > 90 die
-
-
-
-	//std::cout << test.m128_f32[0] << std::endl;
-	//std::cout <<"ANGLE"<< angle << std::endl;
-	//std::cout<< playerV.z << std::endl;
-	//std::cout << playerV.y << std::endl;
-	//std::cout << playerV.x << std::endl;
-	//sm::Vector3 houseV= houseObj->GetTransform().GetPosition();
 	house->Move({ movePos,0 });
 
 
