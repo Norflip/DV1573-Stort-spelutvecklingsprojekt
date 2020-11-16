@@ -79,9 +79,9 @@ void PlayerComp::Update(const float& deltaTime)
 		fuel -= frameTime * fuelBurnPerMeter;
 		// loose food
 		food -= frameTime * foodLossPerSecond;
-#if !immortal
+#if IMMORTAL
 		// make better later
-		if ((fuel < 0 || health <= 0))
+		if ((fuel < 0 || health <= 0) && /*!IMMORTAL*/)
 			Engine::Instance->SwitchScene(SceneIndex::GAME_OVER);
 #endif
 		if (food < 0)
