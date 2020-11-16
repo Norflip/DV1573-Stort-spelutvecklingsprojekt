@@ -142,6 +142,7 @@ void Renderer::RenderFrame(CameraComponent* camera, float time)
 	// UPDATE SCENE
 	RenderFrame(camera, time, backbuffer, true, true);
 	HRESULT hr = swapchain->Present(0, 0); //1 here?
+	swapchain->SetFullscreenState(true, nullptr);
 	assert(SUCCEEDED(hr));
 }
 
