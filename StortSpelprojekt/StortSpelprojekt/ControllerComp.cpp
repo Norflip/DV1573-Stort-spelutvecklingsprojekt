@@ -19,10 +19,10 @@ void ControllerComp::CheckGrounded()
 	phy->RaytestSingle(ray, distance, hitProps, FilterGroups::PROPS);
 	
 	this->isGrounded = false;
-	if (hitTerrain.object != nullptr || (hitProps.object != nullptr && hitProps.object->GetName() == "houseBase"))
+	if (hitTerrain.object != nullptr)// || hitProps.object != nullptr )//&& hitProps.object->GetName() == "houseBase"))
 	{
-		this->houseVelocity = { 0.f,0.f,0.f };
-		if (hitProps.object != nullptr && hitProps.object->GetName() == "houseBase")
+		//this->houseVelocity = { 0.f,0.f,0.f };
+		/*if (hitProps.object != nullptr && hitProps.object->GetName() == "houseBase")
 		{
 			dx::XMFLOAT3 move = hitProps.object->GetComponent<NodeWalkerComp>()->GetMoveVec();
 			this->houseVelocity = move;
@@ -31,7 +31,7 @@ void ControllerComp::CheckGrounded()
 			dx::XMStoreFloat3(&this->houseVelocity, houseVec);
 			GetOwner()->GetTransform().Translate(move.x, move.y, move.z); 
 			rbComp->SetPosition(GetOwner()->GetTransform().GetPosition());
-		}
+		}*/
 		this->isGrounded = true;
 		//std::cout << "picking: " << hit.object->GetName() << std::endl;
 		//DShape::DrawLine(ray.origin, ray.GetPoint(distance), { 0,0,1 });
@@ -67,7 +67,7 @@ ControllerComp::ControllerComp(Object* cameraObject, Object* houseObject)
 	this->camComp = nullptr;
 	this->capsuleComp = nullptr;
 	this->playerComp = nullptr;
-
+	this->inside = false;
 }
 
 ControllerComp::~ControllerComp()
@@ -119,6 +119,15 @@ void ControllerComp::Update(const float& deltaTime)
 	this->velocityTimer += deltaTime; 
 	this->crouchTimer += deltaTime;
 
+	// CHANGE THIS LOGIC TO "CLICKED ON DOOR LOGIC" WHEN TRISTAN IS DONE
+	if(KEY_DOWN(L))
+	{
+		if (inside)
+			inside = false;
+		else
+			inside = true;
+	}
+
 	if (KEY_DOWN(D0))
 	{
 		this->cameraObject->GetTransform().SetRotation(dx::XMLoadFloat4(&RESET_ROT));
@@ -155,26 +164,28 @@ void ControllerComp::Update(const float& deltaTime)
 	
 	float length = 0.f;
 	dx::XMVECTOR lengthVec;
+
+	
 	if (houseWalkComp->GetIsWalking())
-	{
-		length = 0.f;
-		lengthVec = dx::XMVector3Length(dx::XMVectorSubtract(houseWalkComp->GetOwner()->GetTransform().GetPosition(),GetOwner()->GetTransform().GetPosition()));
-		dx::XMStoreFloat(&length, lengthVec);
-		if (length > playerComp->GetRadius())
-			houseWalkComp->Stop();
-	}
-	else if (!houseWalkComp->GetIsWalking())
 	{
 		length = 0.f;
 		lengthVec = dx::XMVector3Length(dx::XMVectorSubtract(houseWalkComp->GetOwner()->GetTransform().GetPosition(), GetOwner()->GetTransform().GetPosition()));
 		dx::XMStoreFloat(&length, lengthVec);
-		if (length < playerComp->GetRadius())
-			houseWalkComp->Start();
-		
+		//std::cout << "length: " << length << std::endl;
+		if (length > playerComp->GetRadius() || length < 7.0f)
+			houseWalkComp->Stop();
 	}
+	else if (!houseWalkComp->GetIsWalking())
+	{
 
-
-
+		length = 0.f;
+		lengthVec = dx::XMVector3Length(dx::XMVectorSubtract(houseWalkComp->GetOwner()->GetTransform().GetPosition(), GetOwner()->GetTransform().GetPosition()));
+		dx::XMStoreFloat(&length, lengthVec);
+		//std::cout << "length: " << length << std::endl;
+		if (length < playerComp->GetRadius() && length > 7.0f && !inside)
+			houseWalkComp->Start();
+	}
+	
 	if (this->canRotate)
 	{
 		//Input::Instance().ConfineMouse();
@@ -288,6 +299,7 @@ void ControllerComp::Update(const float& deltaTime)
 				else if(this->velocity > WALK_VELOCITY) //is more decrease
 					acceleration = -WALK_ACCELERATION;		
 
+				// Kan lägga in ljud för att gå på plankor här med, ha en bool för "onHouse" t.ex.
 				if (isGrounded)
 				{
 					AudioMaster::Instance().StopSoundEvent("run");
