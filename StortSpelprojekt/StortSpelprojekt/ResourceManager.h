@@ -28,7 +28,7 @@ public:
 	void ReadAnimations(ID3D11Device* device);
 
 	void CompileShaders(ID3D11Device* device);
-	Object* AssembleObject(std::string meshName, std::string materialName);
+	Object* AssembleObject(std::string meshName, std::string materialName, ObjectFlag flag = ObjectFlag::DEFAULT);
 };
 
 // Måste template funktioner ligga i .h filen?

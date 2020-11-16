@@ -8,7 +8,7 @@ GUICompass::GUICompass(Renderer& renderer, Window* window)
 {
 	this->renderer = &renderer;
 	this->window = window;
-	backgroundBar = new GUISprite(renderer, "Textures/FireIcon.png", window->GetWidth()/2, 10, 0, DrawDirection::Default, ClickFunction::NotClickable);
+	backgroundBar = new GUISprite(renderer, "Textures/FireIcon.png", FCAST(window->GetWidth()) / 2.0f, 10.0f, 0, DrawDirection::Default, ClickFunction::NotClickable);
 }
 
 void GUICompass::Update()

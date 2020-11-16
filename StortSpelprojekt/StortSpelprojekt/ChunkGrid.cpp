@@ -1,11 +1,17 @@
 #include "stdafx.h"
 #include "ChunkGrid.h"
 
+ChunkGrid::ChunkGrid()
+{
+}
+
+ChunkGrid::~ChunkGrid()
+{
+}
+
 void ChunkGrid::Generate(int maxSteps, int padding, int directionalSteps)
 {
 	Clear();
-	std::vector<dx::XMINT2> points;
-	std::vector<dx::XMINT2> pathIndexes;
 
 	dx::XMINT2 current(0, 0);
 	dx::XMINT2 direction(0, 1);
@@ -18,44 +24,45 @@ void ChunkGrid::Generate(int maxSteps, int padding, int directionalSteps)
 			current.x += direction.x;
 			current.y += direction.y;
 
-			pathIndexes.push_back(dx::XMINT2(current));
-			points.push_back(dx::XMINT2(current));
+			indexes.push_back(dx::XMINT2(current));
 			steps--;
 		}
 		UpdateDirection(direction);
 	}
 
-	size_t size = points.size();
 
-	AddChunksFromPath(points, pathIndexes, chunks);
+	AddChunksFromPath(indexes, chunks);
 
-	dx::XMINT2 index;
-	AddPrePostChunks(points[0], dx::XMINT2(0, -1), NON_WALK_STEPS, points, index, chunks);
-	pathIndexes.insert(pathIndexes.begin(), index);
+//	dx::XMINT2 index;
+	//AddPrePostChunks(points[0], dx::XMINT2(0, -1), NON_WALK_STEPS, points, index, chunks);
+	//indexes.insert(indexes.begin(), index);
 
 	//AddPrePostChunks(points[size - 1], dx::XMINT2(0,1), NON_WALK_STEPS, points, index, chunks);
 	//pathIndexes.push_back(index);
 
-	AddPadding(padding, points, chunks);
+	AddPadding(padding, indexes, chunks);
 
 	FindMinMax(chunks);
-	path = Path(pathIndexes);
+
+	std::cout << "INDEX: " << indexes.size() << std::endl;
+	std::cout << "CHUNKS: " << chunks.size() << std::endl;
+
 }
 
 void ChunkGrid::Clear()
 {
 	chunks.clear();
-	path.Clear();
+	indexes.clear();
 }
 
-void ChunkGrid::AddChunksFromPath(std::vector<dx::XMINT2>& points, std::vector<dx::XMINT2>& path, std::unordered_map<int, ChunkIndexInfo>& chunks)
+void ChunkGrid::AddChunksFromPath(std::vector<dx::XMINT2>& path, std::unordered_map<int, ChunkIndexInfo>& chunks)
 {
-	size_t size = points.size();
+	size_t size = indexes.size();
 	for (size_t i = 0; i < size; i++)
 	{
-		int index = HASH2D_I(points[i].x, points[i].y);
+		int index = HASH2D_I(indexes[i].x, indexes[i].y);
 		ChunkIndexInfo info;
-		info.index = points[i];
+		info.index = indexes[i];
 		info.type = ChunkType::PATH;
 
 		if (i == 0)

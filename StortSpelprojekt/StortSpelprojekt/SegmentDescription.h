@@ -5,6 +5,7 @@ struct SegmentDescription
 {
 	int maxSteps;
 	int directionalSteps;
+	std::map<std::string, int> queueModifier;
 	Noise::Settings noiseSettings;
 
 	SegmentDescription(int noiseSeed, int maxSteps, int directionalSteps)

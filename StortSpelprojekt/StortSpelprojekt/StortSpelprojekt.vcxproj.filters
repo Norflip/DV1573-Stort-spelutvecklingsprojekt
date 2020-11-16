@@ -235,9 +235,6 @@
     <ClCompile Include="World.cpp">
       <Filter>Source Files\SpawnSystems</Filter>
     </ClCompile>
-    <ClCompile Include="PointQuadTree.cpp">
-      <Filter>Source Files\SpawnSystems</Filter>
-    </ClCompile>
     <ClCompile Include="AudioEngine.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
@@ -284,6 +281,10 @@
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="CollisionBodyComponent.cpp">
+    <ClCompile Include="QuadTree.cpp">
+      <Filter>Source Files\SpawnSystems</Filter>
+    </ClCompile>
+    <ClCompile Include="PlayerAnimHandlerComp.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>
@@ -301,9 +302,6 @@
       <Filter>Source Files\SpawnSystems</Filter>
     </ClInclude>
     <ClInclude Include="World.h">
-      <Filter>Source Files\SpawnSystems</Filter>
-    </ClInclude>
-    <ClInclude Include="PointQuadTree.h">
       <Filter>Source Files\SpawnSystems</Filter>
     </ClInclude>
     <ClInclude Include="ChunkGrid.h">
@@ -574,6 +572,10 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="CollisionBodyComponent.h">
+    <ClInclude Include="QuadTree.h">
+      <Filter>Source Files\SpawnSystems</Filter>
+    </ClInclude>
+    <ClInclude Include="PlayerAnimHandlerComp.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>

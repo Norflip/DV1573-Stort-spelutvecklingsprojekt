@@ -1,4 +1,4 @@
-static const int POINT_LIGHT_COUNT = 16;
+static const int POINT_LIGHT_COUNT = 32;
 struct PointLight
 {
     float4 lightColor;
@@ -24,8 +24,7 @@ cbuffer cb_Material : register(b1)
 	
 	bool hasAlbedo;
 	bool hasNormalMap;
-	float paddingOne;
-	float paddingTwo;
+	float2 pad_cbm;
 }
 
 cbuffer cb_Scene : register(b2)
@@ -39,7 +38,7 @@ cbuffer cb_Scene : register(b2)
 	float time;
 	float2 mousePos;
 	float2 screenSize;
-	float2 pad4;
+	float2 pad_cbs;
 }
 
 cbuffer cb_Lights : register(b3)
@@ -48,7 +47,7 @@ cbuffer cb_Lights : register(b3)
 	int nrOfPointLights;
 	float3 sunDirection;
 	float sunIntensity;
-	float3 pad3;
+	float3 pad_cbl;
 };
 
 StructuredBuffer<float4x4> bones : register(t2);
