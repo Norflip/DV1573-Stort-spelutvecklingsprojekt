@@ -41,9 +41,8 @@ void EnemyChargerSMComp::InitAnimation()
 void EnemyChargerSMComp::Update(const float& deltaTime)
 {
 	if (currentState != EnemyChargerState::ATTACK && enemyAttackComp->ChasePlayer())
-	{
-		SetState(EnemyChargerState::ATTACK);
-
+	{		
+		SetState(EnemyChargerState::ATTACK);		
 	}
 	else if (currentState != EnemyChargerState::IDLE && !enemyAttackComp->ChasePlayer())
 	{
@@ -71,7 +70,7 @@ void EnemyChargerSMComp::Animate()
 	{
 		if (!loadRun)
 		{
-			skeletonComponent->SetTrack(SkeletonStateMachine::LOAD, true);
+			skeletonComponent->SetTrack(SkeletonStateMachine::LOAD, true);			
 			loadRun = true;
 		}
 
@@ -98,7 +97,7 @@ void EnemyChargerSMComp::Animate()
 	{		
 		skeletonComponent->SetTrack(SkeletonStateMachine::DEATH, false);
 		//loadRun = false;		
-	}
+	}	
 	else
 	{
 		if (loadRun)

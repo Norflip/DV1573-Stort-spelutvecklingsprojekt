@@ -109,6 +109,15 @@ void SkeletonMeshComponent::RunAnimation(const float& deltaTime)
 	{
 		finalTransforms = skeletonAnimations[5].Makeglobal(time, dx::XMMatrixIdentity(), *skeletonAnimations[4].GetRootKeyJoints());
 	}
+	else if (currentAni == SkeletonStateMachine::LOAD)
+	{
+		finalTransforms = skeletonAnimations[1].Makeglobal(time, dx::XMMatrixIdentity(), *skeletonAnimations[1].GetRootKeyJoints());
+	}
+	else if (currentAni == SkeletonStateMachine::UNLOAD)
+	{
+		finalTransforms = skeletonAnimations[4].Makeglobal(time, dx::XMMatrixIdentity(), *skeletonAnimations[4].GetRootKeyJoints());
+	}
+
 }
 
 void SkeletonMeshComponent::FindChildren(SkeletonAni& track, unsigned int& index, std::map<std::string, unsigned int>& map, std::string& name,
@@ -302,9 +311,7 @@ void SkeletonMeshComponent::PlayOnce(const float& deltaTime)
 
 			if (animationTime < skeletonAnimations[3].GetAniLength())
 			{
-
 				finalTransforms = skeletonAnimations[3].Makeglobal(time, dx::XMMatrixIdentity(), *skeletonAnimations[3].GetRootKeyJoints());
-
 			}
 			else
 			{
