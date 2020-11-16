@@ -57,4 +57,5 @@ private:
 	Material* fogMaterial;
 	ResourceManager* resources;
 	Texture* rampTexture;
+
 };
