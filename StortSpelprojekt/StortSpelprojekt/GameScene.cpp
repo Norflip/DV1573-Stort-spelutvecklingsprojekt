@@ -61,16 +61,16 @@ void GameScene::InitializeObjects()
 	//FENCE BACK
 	houseBaseObject->AddComponent<BoxColliderComponent>(dx::XMFLOAT3(0.125f, 0.625f, 3.375f), dx::XMFLOAT3(-3.3f, 2.f, 0.05f));
 	//FENCE FRONT
-	houseBaseObject->AddComponent<BoxColliderComponent>(dx::XMFLOAT3(0.1f, 3.5, 1.8), dx::XMFLOAT3(3.5, 0.7f, 0.5));
+	houseBaseObject->AddComponent<BoxColliderComponent>(dx::XMFLOAT3(0.1f, 3.5f, 1.8f), dx::XMFLOAT3(3.5f, 0.7f, 0.5f));
 	//FENCE RIGHT
 	houseBaseObject->AddComponent<BoxColliderComponent>(dx::XMFLOAT3(5.375f, 0.625f, 0.15f), dx::XMFLOAT3(0.f, 3.f, -2.75f));
 	//FENCE LEFT
-	houseBaseObject->AddComponent<BoxColliderComponent>(dx::XMFLOAT3(5.375, 0.625, 0.15), dx::XMFLOAT3(0, 3, 2.75));
+	houseBaseObject->AddComponent<BoxColliderComponent>(dx::XMFLOAT3(5.375f, 0.625f, 0.15f), dx::XMFLOAT3(0.f, 3.f, 2.75f));
 	// RB
 	houseBaseObject->AddComponent<RigidBodyComponent>(0.0f, FilterGroups::PROPS, FilterGroups::EVERYTHING, BodyType::STATIC, true);
 
-	baseComponent->SetTimeScale(0.5f);
-	legsComponent->SetTimeScale(0.5f);
+	baseComponent->SetTimeScale(1.0f);
+	legsComponent->SetTimeScale(1.0f);
 	baseComponent->SetTrack(SkeletonStateMachine::IDLE, false);
 	legsComponent->SetTrack(SkeletonStateMachine::IDLE, false);
 
