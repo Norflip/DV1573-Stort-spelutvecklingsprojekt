@@ -63,7 +63,6 @@ void LightManager::UpdateBuffers(ID3D11DeviceContext* context)
 	
 		lightBuffer.SetData(data);
 		lightBuffer.UpdateBuffer(context);
-	
 }
 
 void LightManager::Clear()
