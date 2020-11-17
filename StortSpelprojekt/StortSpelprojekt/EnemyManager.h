@@ -1,5 +1,4 @@
 #pragma once
-#include "EnemyChargerSMComp.h"
 #include "EnemySMComp.h"
 #include "ResourceManager.h"
 #include "ObjectPooler.h"

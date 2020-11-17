@@ -12,7 +12,11 @@ enum class EnemyState
 	NONE,
 	IDLE,
 	PATROL,
-	ATTACK
+	ATTACK,
+	RUN,
+	LOAD,
+	UNLOAD,
+	DEATH
 };
 
 class EnemySMComp : public Component
@@ -38,7 +42,7 @@ class EnemySMComp : public Component
 	private:
 		EnemyState currentState;
 		std::unordered_map<EnemyState, Component*> stateMap;
-		EnemyAttackComp* enemyAttackComp;
+		//EnemyAttackComp* enemyAttackComp;
 		void Animate();
 		SkeletonMeshComponent* skeletonComponent;
 		EnemyAttackComp* attackComponent;
