@@ -19,7 +19,9 @@ enum class SkeletonStateMachine
 	DEATH,
 	UP,
 	DOWN,
-	BLENDED
+	BLENDED,
+	LOAD,
+	UNLOAD,
 };
 
 
