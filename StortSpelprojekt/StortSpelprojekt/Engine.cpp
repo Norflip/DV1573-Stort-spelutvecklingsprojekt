@@ -15,6 +15,7 @@ Engine::Engine(HINSTANCE hInstance) : window(hInstance), activeScene(nullptr), s
 
 	window.Open(1600, 900);
 
+
 	renderer = new Renderer();
 	renderer->Initialize(&window);
 
