@@ -2,7 +2,7 @@
 #include "PointLightComponent.h"
 #include "LightManager.h"
 
-PointLightComponent::PointLightComponent(dx::XMFLOAT4 color, float range, dx::XMFLOAT3 attenuation) : lightColor(color), range(range), attenuation(attenuation), dirty(true) {}
+PointLightComponent::PointLightComponent(UINT type, dx::XMFLOAT4 color, float range, dx::XMFLOAT3 attenuation) : type(LightType(type)), lightColor(color), range(range), attenuation(attenuation), lightDirection({ 0,0,0 }), spotlightAngle(1.f), enabled(true), dirty(true) {}
 PointLightComponent::~PointLightComponent() {}
 
 void PointLightComponent::Initialize()
@@ -41,4 +41,47 @@ void PointLightComponent::SetAttenuation(dx::XMFLOAT3 attenuation)
 {
 	this->dirty = true;
 	this->attenuation = attenuation;
+}
+
+dx::XMFLOAT3 PointLightComponent::GetDirection()
+{
+	return this->lightDirection;
+}
+
+void PointLightComponent::SetDirection(dx::XMFLOAT3 direction)
+{
+	this->dirty = true;
+	this->lightDirection = direction;
+}
+
+float PointLightComponent::GetSpotlightAngle()
+{
+	return this->spotlightAngle;
+}
+
+void PointLightComponent::SetSpotlightAngle(float angle)
+{
+	this->dirty = true;
+	this->spotlightAngle = angle;
+}
+
+bool PointLightComponent::GetEnabled()
+{
+	return this->enabled;
+}
+
+void PointLightComponent::SetEnabled(bool enabled)
+{
+	this->dirty = true;
+	this->enabled = enabled;
+}
+
+LightType PointLightComponent::GetType()
+{
+	return this->type;
+}
+void PointLightComponent::SetType(LightType type)
+{
+	this->dirty = true;
+	this->type = type;
 }

@@ -96,6 +96,17 @@ void GameScene::InitializeObjects()
 	this->player = playerObject;
 	camera = cameraObject->AddComponent<CameraComponent>(window->GetWidth(), window->GetHeight(), 60.0f);
 	
+	Shader forwardPlusShader;// = 
+
+	forwardPlusShader.SetComputeShader("Shaders/ForwardPlusRendering.hlsl", "ComputeFrustums");
+	forwardPlusShader.CompileCS(renderer->GetDevice());
+	forwardPlusShader.BindToContext(renderer->GetContext());
+	renderer->InitForwardPlus(camera, window);
+	forwardPlusShader.Unbind(renderer->GetContext());
+
+
+	//renderer->UpdateForwardPlus()
+
 	cameraObject->GetTransform().SetPosition(playerSpawnVec);
 	playerObject->GetTransform().SetPosition(playerSpawnVec);
 	playerObject->AddComponent<CapsuleColliderComponent>(0.5f, 1.5f, zero);
@@ -111,7 +122,7 @@ void GameScene::InitializeObjects()
 
 	dx::XMFLOAT3 lightTranslation = dx::XMFLOAT3(0.0f, 0.0f, 0.0f);
 	testPointLight->GetTransform().SetPosition(dx::XMLoadFloat3(&lightTranslation));
-	testPointLight->AddComponent<PointLightComponent>(dx::XMFLOAT4(0.3f, 0.3f, 0.3f, 1.0f), 7.f);
+	testPointLight->AddComponent<PointLightComponent>(0,dx::XMFLOAT4(0.3f, 0.3f, 0.3f, 1.0f), 7.f);
 
 	AddObject(testPointLight, playerObject);
 
@@ -359,7 +370,7 @@ void GameScene::OnActivate()
 	enemyManager->InitBaseEnemy();
 	enemyManager->InitChargerEnemy();
 	
-	LightManager::Instance().ForceUpdateBuffers(renderer->GetContext());
+	LightManager::Instance().ForceUpdateBuffers(renderer->GetContext(),camera);
 }
 
 void GameScene::OnDeactivate()

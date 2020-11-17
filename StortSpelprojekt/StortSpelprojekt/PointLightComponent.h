@@ -7,12 +7,17 @@
 namespace dx = DirectX;
 
 constexpr dx::XMFLOAT3 POINT_DEFAULT_ATTENUATION = dx::XMFLOAT3(1.0f, 0.02f, 0.0f);
-
+enum LightType
+{
+	POINT_LIGHT = 0,
+	SPOT_LIGHT = 1,
+	DIRECTIONAL_LIGHT = 2
+};
 class PointLightComponent : public Component
 {
 public:
 
-	PointLightComponent(dx::XMFLOAT4 color, float range, dx::XMFLOAT3 attenuation = POINT_DEFAULT_ATTENUATION);
+	PointLightComponent(UINT type, dx::XMFLOAT4 color, float range, dx::XMFLOAT3 attenuation = POINT_DEFAULT_ATTENUATION);
 	virtual ~PointLightComponent();
 
 	virtual void Initialize() override;
@@ -23,6 +28,15 @@ public:
 	dx::XMFLOAT3 GetAttenuation();
 	void SetAttenuation(dx::XMFLOAT3 attenuation);
 
+	dx::XMFLOAT3 GetDirection();
+	void SetDirection(dx::XMFLOAT3 direction);
+	float GetSpotlightAngle();
+	void SetSpotlightAngle(float angle);
+	bool GetEnabled();
+	void SetEnabled(bool enabled);
+	LightType GetType();
+	void SetType(LightType type); //pointlight 0, spotlight 1, directional 2
+
 	bool IsDirty() { return this->dirty || GetOwner()->GetTransform().ChangedThisFrame(); }
 	void MarkAsNotDirty() { this->dirty = false; }
 
@@ -32,6 +46,9 @@ private:
 	dx::XMFLOAT3 lightPosition;
 	float range;
 	dx::XMFLOAT3 attenuation;
+	dx::XMFLOAT3 lightDirection;
+	float spotlightAngle;
+	bool enabled;
+	LightType type;
 	float elapsedTime;
-
 };

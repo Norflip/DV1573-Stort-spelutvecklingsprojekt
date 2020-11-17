@@ -67,8 +67,13 @@
     <FxCompile Include="Shaders\FogTest_ps.hlsl">
       <Filter>Resource Files</Filter>
     </FxCompile>
-    <FxCompile Include="ForwardPlusRendering.hlsl" />
     <FxCompile Include="Shaders\FractionalBrownianMotion.hlsl">
+      <Filter>Resource Files</Filter>
+    </FxCompile>
+    <FxCompile Include="Shaders\ForwardPlusRendering.hlsl">
+      <Filter>Resource Files</Filter>
+    </FxCompile>
+    <FxCompile Include="Shaders\ForwardPlus_ps.hlsl">
       <Filter>Resource Files</Filter>
     </FxCompile>
   </ItemGroup>
@@ -288,6 +293,9 @@
     </ClCompile>
     <ClCompile Include="PuzzleManager.cpp" />
     <ClCompile Include="FrogPuzzle.cpp" />
+    <ClCompile Include="DepthPass.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="ObjectSpawner.h">
@@ -582,6 +590,9 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="FrogPuzzle.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="DepthPass.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>

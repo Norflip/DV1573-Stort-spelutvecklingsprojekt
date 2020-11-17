@@ -19,7 +19,8 @@ enum class ShaderBindFlag
 	PIXEL = 1 << 1,
 	GEOMETRY = 1 << 2,
 	HULL = 1 << 3,
-	DOMAINS = 1 << 4
+	DOMAINS = 1 << 4,
+	COMPUTE = 1 << 5
 };
 
 DEFINE_ENUM_FLAG_OPERATORS(ShaderBindFlag);
@@ -66,7 +67,10 @@ namespace DXHelper
 
 	//Structured buffer
 	//stride is sizeof struct, width is all it contains.
+	void CreateCopyBuffer(ID3D11Device* device, ID3D11Buffer** buffer, unsigned int byteStride, unsigned int arraySize);
+	void CreateStructuredBuffer(ID3D11Device* device, ID3D11Buffer** buffer, void* data, unsigned int byteStride, unsigned int arraySize, ID3D11UnorderedAccessView** uav, ID3D11ShaderResourceView** srv);
 	void CreateStructuredBuffer(ID3D11Device* device, ID3D11Buffer** buffer, void* data, unsigned int byteStride, unsigned int arraySize, ID3D11ShaderResourceView** srv);
+	void BindStructuredBuffer(ID3D11DeviceContext* context, ID3D11Buffer* buffer, void* data, size_t slot, ShaderBindFlag flag, ID3D11UnorderedAccessView** uav, const UINT* count);
 	void BindStructuredBuffer(ID3D11DeviceContext* context, ID3D11Buffer* buffer, void* data, size_t slot, ShaderBindFlag flag, ID3D11ShaderResourceView** srv);
 
 	ID3D11RasterizerState* CreateRasterizerState(D3D11_CULL_MODE cullMode, D3D11_FILL_MODE fillMode, ID3D11Device* device);

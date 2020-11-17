@@ -1,32 +1,32 @@
 #include "CommonBuffers.hlsl"
 
 // Calculate light with the given pointlight
-float4 CalculatePointLight(PointLight pointLight, float3 normal, float3 objectPosition, float3 viewDirection)
+float4 CalculatePointLight(Light light, float3 normal, float3 objectPosition, float3 viewDirection)
 {
 	float4 ambient = float4(0.0f, 0.0f, 0.0f, 0.0f);
 	float4 specular = float4(0.0f, 0.0f, 0.0f, 0.0f);
 	float4 diffuse = float4(0.0f, 0.0f, 0.0f, 0.0f);
 	float4 finalColor = float4(0.0f, 0.0f, 0.0f, 0.0f);
 
-	float3 light = pointLight.lightPosition - objectPosition;
+	float3 lightVec = light.lightPosition - objectPosition;
 	
-	float distance = length(light);
-	light = normalize(light);
+	float distance = length(lightVec);
+	lightVec = normalize(lightVec);
 
-	if (distance > pointLight.range)
+	if (distance > light.range)
 	{
 		return float4(0.0f, 0.0f, 0.0f, 0.0f);
 	}
 
-	float diffuseFactor = dot(light, normal);
+	float diffuseFactor = dot(lightVec, normal);
 
 	if (diffuseFactor > 0.0f)
 	{
-		float3 reflection = reflect(-light, normal);
+		float3 reflection = reflect(-lightVec, normal);
 		float shine = pow(max(dot(reflection, viewDirection), 0.0f), 0.1f);
 
-		diffuse = diffuseFactor * matDiffuse * pointLight.lightColor;
-		specular = shine * matSpecular * pointLight.lightColor;
+		diffuse = diffuseFactor * matDiffuse * light.lightColor;
+		specular = shine * matSpecular * light.lightColor;
 	}
 
 	//float attenuationFactor = saturate(1.0f - distance / (pointLight.range * 5.0f));
@@ -34,9 +34,9 @@ float4 CalculatePointLight(PointLight pointLight, float3 normal, float3 objectPo
 
 	//float attenuationFactor = 1.0f / pointLight.attenuation.x + (pointLight.attenuation.y * distance) + (pointLight.attenuation.z * (distance * distance));
 
-	float attenuationFactor = clamp(1.0f - distance * distance / (pointLight.range * pointLight.range), 0.0f, 1.0f);
+	float attenuationFactor = clamp(1.0f - distance * distance / (light.range * light.range), 0.0f, 1.0f);
 
-	ambient = saturate(matAmbient * pointLight.lightColor * attenuationFactor);
+	ambient = saturate(matAmbient * light.lightColor * attenuationFactor);
 	diffuse = saturate(diffuse * attenuationFactor);
 	specular = saturate(specular * attenuationFactor);
 
@@ -84,7 +84,7 @@ float3 CalculateNormalMapping(float3 normal, float3 tangent, float4 normalmap)
 
 	float3x3 TBN = float3x3(tangent, biTangent, normal);
 
-	normal = mul(normalmap, TBN);
+	normal = mul(normalmap.xyz, TBN); //.xyz??
 
 	return normal;
 }
@@ -122,4 +122,49 @@ float4 CalculateDirectionalLight(float3 lightDirection, float3 normal, float3 vi
 }
 
 
+float DoSpotCone(Light light, float3 L)
+{
+    float minCos = cos(radians(light.spotlightAngle));
+    float maxCos = lerp(minCos, 1, 0.5f);
+    float cosAngle = dot(light.lightDirection, -L);
+    return smoothstep(minCos, maxCos, cosAngle); //use clamp??
+}
+
+float4 CalculateSpotLight(Light light, float3 normal, float3 objectPosition, float3 viewDirection)
+{
+    float4 ambient = float4(0.0f, 0.0f, 0.0f, 0.0f);
+    float4 specular = float4(0.0f, 0.0f, 0.0f, 0.0f);
+    float4 diffuse = float4(0.0f, 0.0f, 0.0f, 0.0f);
+    float4 finalColor = float4(0.0f, 0.0f, 0.0f, 0.0f);
+
+    float3 lightVec = light.lightPosition - objectPosition;
+    float distance = length(lightVec);
+    lightVec = normalize(lightVec);
+
+    if (distance > light.range)
+    {
+        return float4(0.0f, 0.0f, 0.0f, 0.0f);
+    }
+
+    float attenuationFactor = clamp(1.0f - distance * distance / (light.range * light.range), 0.0f, 1.0f);
+    float spotIntensity = DoSpotCone(light, lightVec); //pointlight, light
+
+    float diffuseFactor = dot(lightVec, normal);
+    if (diffuseFactor > 0.0f)
+    {
+        float3 reflection = reflect(-lightVec, normal);
+        float shine = pow(max(dot(reflection, viewDirection), 0.0f), 0.1f); //matSpecular.w);
+
+        diffuse = diffuseFactor * matDiffuse * light.lightColor * spotIntensity /* * light.Intensity*/;
+        specular = shine * matSpecular * light.lightColor * spotIntensity /* * light.Intensity*/;
+    }
+
+
+    ambient = saturate(matAmbient * light.lightColor * attenuationFactor);
+    diffuse = saturate(diffuse * attenuationFactor);
+    specular = saturate(specular * attenuationFactor);
+
+    finalColor = ambient + diffuse + specular;
+    return finalColor;
+}
 

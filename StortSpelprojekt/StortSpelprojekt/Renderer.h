@@ -95,6 +95,8 @@ public:
 
 	void RemoveRenderPass(RenderPass*);
 
+	void InitForwardPlus(CameraComponent* camera, Window* window);
+
 	ALIGN16_ALLOC;
 
 private:
@@ -108,6 +110,7 @@ private:
 
 	void SetObjectBufferValues(const CameraComponent* camera, dx::XMMATRIX world, bool transpose);
 	Mesh* CreateScreenQuad();
+
 
 private:
 	IDXGISwapChain* swapchain;
@@ -124,7 +127,18 @@ private:
 	ConstantBuffer<cb_Object> objectBuffer;
 	ConstantBuffer<cb_Scene> sceneBuffer;
 	ConstantBuffer<cb_Material> materialBuffer;
-	
+	ConstantBuffer<cb_DispatchParams> dispatchParamsBuffer; //F+
+	ConstantBuffer<cb_ScreenToViewParams> screenToViewParams;//F+
+
+	UINT width; //F+
+	UINT height;//F+
+	//Frustums
+	std::vector<s_Frustum> frustum_data;
+	ID3D11Buffer* frustums_buffer;
+	ID3D11ShaderResourceView* inFrustums_srv;
+	ID3D11UnorderedAccessView* outFrustums_uav;
+
+
 	std::vector<dx::XMFLOAT4X4> srv_skeleton_data;
 	ID3D11Buffer* skeleton_srvbuffer;
 	ID3D11ShaderResourceView* skeleton_srv;

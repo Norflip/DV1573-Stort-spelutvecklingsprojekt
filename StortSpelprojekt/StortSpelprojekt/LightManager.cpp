@@ -37,7 +37,7 @@ void LightManager::RemovePointLight(size_t index)
 		pointLightMap.erase(temp);
 }
 
-void LightManager::UpdateBuffers(ID3D11DeviceContext* context)
+void LightManager::UpdateBuffers(ID3D11DeviceContext* context, CameraComponent* camComp)
 {
 	bool updated = false;
 
@@ -45,27 +45,34 @@ void LightManager::UpdateBuffers(ID3D11DeviceContext* context)
 	{
 		if (i->second->IsDirty())
 		{
-			ForceUpdateBuffers(context);
+			ForceUpdateBuffers(context,camComp);
 			updated = true;
 		}
 	}
 }
 
-void LightManager::ForceUpdateBuffers(ID3D11DeviceContext* context)
+void LightManager::ForceUpdateBuffers(ID3D11DeviceContext* context, CameraComponent* camComp)
 {
 	cb_Lights& data = lightBuffer.GetData();
 	dx::XMStoreFloat3(&data.sunDirection, dx::XMVector3Normalize(dx::XMVectorSet(0, -1, 1, 0)));
 	data.sunIntensity = 0.1f;
-	data.nrOfPointLights = pointLightMap.size();
+	data.nrOfLights = pointLightMap.size();
 
 	for (auto i = pointLightMap.begin(); i != pointLightMap.end(); i++)
 	{
 		i->second->MarkAsNotDirty();
 
-		data.pointLights[i->first].lightColor = i->second->GetColor();
-		dx::XMStoreFloat3(&data.pointLights[i->first].lightPosition, (i->second->GetOwner()->GetTransform().GetWorldPosition()));
-		data.pointLights[i->first].attenuation = i->second->GetAttenuation();
-		data.pointLights[i->first].range = i->second->GetRange();
+		data.lights[i->first].lightColor = i->second->GetColor();
+		dx::XMStoreFloat3(&data.lights[i->first].lightPosition, (i->second->GetOwner()->GetTransform().GetWorldPosition()));
+		
+		dx::XMVECTOR viewPos = dx::XMVector3TransformCoord(i->second->GetOwner()->GetTransform().GetWorldPosition(), camComp->GetViewMatrix());
+		dx::XMStoreFloat4(&data.lights[i->first].positionVS, viewPos);
+		data.lights[i->first].attenuation = i->second->GetAttenuation();
+		data.lights[i->first].range = i->second->GetRange();
+		data.lights[i->first].spotlightAngle = i->second->GetSpotlightAngle();
+		data.lights[i->first].lightDirection = i->second->GetDirection();
+		data.lights[i->first].enabled = i->second->GetEnabled();
+		data.lights[i->first].type = i->second->GetType();
 	}
 
 	lightBuffer.SetData(data);

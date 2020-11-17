@@ -200,7 +200,7 @@ void Renderer::RenderFrame(CameraComponent* camera, float time, RenderTexture& t
 
 
 
-	LightManager::Instance().UpdateBuffers(context);
+	LightManager::Instance().UpdateBuffers(context,camera);
 
 	//We need to clear Depth Stencil View as well.//Emil
 
@@ -658,4 +658,60 @@ void Renderer::DrawScreenQuad(const Material* material)
 	context->IASetIndexBuffer(screenQuadMesh->GetIndexBuffer(), DXGI_FORMAT_R32_UINT, 0);
 	context->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
 	context->DrawIndexed(screenQuadMesh->GetIndexCount(), 0, 0);
+}
+
+
+void Renderer::InitForwardPlus(CameraComponent* camera, Window* window)
+{
+	this->width = window->GetWidth();
+	this->height = window->GetHeight();
+	int screenWidth = std::max(window->GetWidth(), 1u);
+	int screenHeight = std::max(window->GetHeight(), 1u);
+	int lightCullingBlockSize = 32;
+	dx::XMUINT4 numThreads = dx::XMUINT4(std::ceil(screenWidth / (float)lightCullingBlockSize), std::ceil(screenHeight / (float)lightCullingBlockSize),1, 1);
+	dx::XMUINT4 numThreadGroups = dx::XMUINT4(std::ceil(numThreads.x / (float)lightCullingBlockSize), std::ceil(numThreads.y / (float)lightCullingBlockSize),1, 1);
+	UINT count = numThreads.x * numThreads.y * numThreads.z;
+
+	//Dispatch Forward+
+	dispatchParamsBuffer.Initialize(CB_DISPATCH_PARAMS_SLOT, ShaderBindFlag::COMPUTE, device);
+	//std::cout << sizeof(cb_DispatchParams) << std::endl;
+	cb_DispatchParams& dataDP = dispatchParamsBuffer.GetData();
+	dataDP.numThreadGroups = numThreadGroups;
+	dataDP.numThreads = numThreads;
+	dispatchParamsBuffer.SetData(dataDP);
+	dispatchParamsBuffer.UpdateBuffer(context);
+
+	//ScreenToViewParams Forward+
+	screenToViewParams.Initialize(CB_SCREEN_TOVIEW_PARAMS_SLOT, ShaderBindFlag::COMPUTE, device);
+	cb_ScreenToViewParams& dataSVP = screenToViewParams.GetData();
+	dx::XMFLOAT4X4 inverse;
+	dx::XMStoreFloat4x4(&inverse, dx::XMMatrixInverse(nullptr, camera->GetProjectionMatrix()));
+	dataSVP.inverseProjection = inverse;
+	dataSVP.screenDimensions.x = window->GetWidth();
+	dataSVP.screenDimensions.y = window->GetHeight();
+	screenToViewParams.SetData(dataSVP);
+	screenToViewParams.UpdateBuffer(context);
+
+	//out_Frustums Forward+
+	frustum_data.resize(count);
+	DXHelper::CreateCopyBuffer(device, &frustums_buffer, sizeof(s_Frustum), frustum_data.size());
+	DXHelper::CreateStructuredBuffer(device, &frustums_buffer, frustum_data.data(), sizeof(s_Frustum), frustum_data.size(), &outFrustums_uav, &inFrustums_srv);
+	DXHelper::BindStructuredBuffer(context, frustums_buffer, frustum_data.data(), 0, ShaderBindFlag::COMPUTE, &outFrustums_uav, nullptr); //u0
+
+	//context->Dispatch(numThreadGroups.x, numThreadGroups.y, numThreadGroups.z);
+	context->Dispatch(1, 1, 1);
+
+	D3D11_MAPPED_SUBRESOURCE resource;
+	HRESULT hr = context->Map(frustums_buffer, 0, D3D11_MAP_READ_WRITE, 0, &resource);
+	assert(SUCCEEDED(hr));
+	s_Frustum* someFrustums;
+	someFrustums = (s_Frustum*)resource.pData;
+	for (int i = 0; i < count; i++)
+	{
+		frustum_data[i] = someFrustums[i];
+	}
+
+
+	context->Unmap(frustums_buffer, 0);
+
 }
