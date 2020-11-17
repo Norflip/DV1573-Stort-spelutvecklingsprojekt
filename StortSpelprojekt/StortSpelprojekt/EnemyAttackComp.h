@@ -16,8 +16,8 @@ class EnemyAttackComp : public Component
 		bool ChasePlayer();
 		bool GetIsAttacking();
 		void SetPlayer(PlayerComp* player) { this->player = player; }
-	private:
 
+	private:
 		void UpdateEnemyPos(const float& deltaTime);
 		void UpdateAttackPlayer(const float& deltaTime);
 
