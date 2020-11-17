@@ -304,7 +304,7 @@ void ComputeFrustums(ComputeShaderInput IN) // compute ONCE or when resize windo
     {
         uint index = IN.dispatchThreadID.x + (IN.dispatchThreadID.y * numThreads.x);
         out_Frustums[index] = frustum;
-		
+    }
         //out_Frustums[index].thread.x = 5; // uint(numThreads.x);
         //out_Frustums[index].thread.y = 7; // uint(numThreads.y);
         //out_Frustums[index].thread.z = 8;  //uint(numThreads.z);
@@ -313,22 +313,19 @@ void ComputeFrustums(ComputeShaderInput IN) // compute ONCE or when resize windo
         //out_Frustums[index].tID.y = uint(IN.dispatchThreadID.y);
         //out_Frustums[index].tID.z = uint(IN.dispatchThreadID.z);
         //out_Frustums[index].tID.w = 0;
-      
-		//if(index == 5)
-  //      {
-        
-        out_Frustums[index].planes[0].N = float3(numThreads.x, numThreads.y, numThreads.z);
-        out_Frustums[index].planes[0].d = 99.0222;
-		out_Frustums[index].planes[1].N = float3(IN.dispatchThreadID.x, IN.dispatchThreadID.y, IN.dispatchThreadID.z);
-        out_Frustums[index].planes[1].d = 77.0222;
-        out_Frustums[index].planes[2].N = float3(6, 46, 9);
-        out_Frustums[index].planes[2].d = 0.01222;
-        //out_Frustums[index].planes[3].d = 9.0222;
-
-  //      }
-    }
- 
+		//   out_Frustums[0].planes[0].N = float3(numThreads.x, numThreads.y, numThreads.z);
+		//   out_Frustums[0].planes[0].d = 99.0222;
+		////out_Frustums[index].planes[1].N = float3(IN.dispatchThreadID.x, IN.dispatchThreadID.y, IN.dispatchThreadID.z);
+		//   out_Frustums[0].planes[1].d = 77.0222;
+		//   out_Frustums[0].planes[2].N = float3(ScreenDimensions.x, ScreenDimensions.y, 9);
+		//   out_Frustums[0].planes[2].d = 0.01222;
 }
+
+
+
+
+
+
 //[numthreads(1, 1, 1)]
 //void main( uint3 DTid : SV_DispatchThreadID )
 //{
