@@ -46,11 +46,11 @@ void EnemyManager::InitChargerEnemy()
 		object->AddComponent<CapsuleColliderComponent>(0.8f, 0.8f, zero);
 		object->AddComponent<RigidBodyComponent>(10.f, FilterGroups::ENEMIES, (FilterGroups::EVERYTHING & ~FilterGroups::PICKUPS) & ~FilterGroups::HOLDABLE, BodyType::KINEMATIC, true);
 		
-		EnemyChargerSMComp* stateMachine = object->AddComponent<EnemyChargerSMComp>(EnemyChargerState::IDLE);
-		stateMachine->RegisterState(EnemyChargerState::IDLE, object->AddComponent<EnemyIdleComp>());
-		stateMachine->RegisterState(EnemyChargerState::ATTACK, object->AddComponent<EnemyAttackComp>(nullptr));
+		EnemySMComp* stateMachine = object->AddComponent<EnemySMComp>(EnemyState::IDLE);
+		stateMachine->RegisterState(EnemyState::IDLE, object->AddComponent<EnemyIdleComp>());
+		stateMachine->RegisterState(EnemyState::ATTACK, object->AddComponent<EnemyAttackComp>(nullptr));
 		//stateMachine->RegisterState(EnemyState::PATROL, enemy->AddComponent<EnemyPatrolComp>());
-		stateMachine->RegisterState(EnemyChargerState::RUN, object->AddComponent<EnemyAttackComp>(nullptr));
+		stateMachine->RegisterState(EnemyState::RUN, object->AddComponent<EnemyAttackComp>(nullptr));
 		//stateMachine->RegisterState(EnemyChargerState::DEATH, object->GetComponent<EnemyStatsComp>());	// Death component or something something???
 		object->AddFlag(ObjectFlag::DEFAULT);
 		return object;
@@ -74,7 +74,7 @@ void EnemyManager::SpawnEnemy(dx::XMVECTOR position)
 	Object* enemy = enemyPool->GetItem("baseEnemy");
 	EnemySMComp* stateMachine = enemy->GetComponent<EnemySMComp>();
 	enemy->GetComponent<EnemyAttackComp>()->SetPlayer(playerComp);
-	stateMachine->Start();
+	//stateMachine->Start();
 	stateMachine->InitAnimation();
 	enemy->GetComponent<RigidBodyComponent>()->SetPosition(position);
 	Transform::SetParentChild(root->GetTransform(), enemy->GetTransform());
@@ -83,9 +83,9 @@ void EnemyManager::SpawnEnemy(dx::XMVECTOR position)
 void EnemyManager::SpawnChargerEnemy(dx::XMVECTOR position)
 {
 	Object* enemy = enemyPool->GetItem("chargerEnemy");
-	EnemyChargerSMComp* stateMachine = enemy->GetComponent<EnemyChargerSMComp>();
+	EnemySMComp* stateMachine = enemy->GetComponent<EnemySMComp>();
 	enemy->GetComponent<EnemyAttackComp>()->SetPlayer(playerComp);
-	stateMachine->Start();
+	//stateMachine->Start();
 	stateMachine->InitAnimation();
 	enemy->GetComponent<RigidBodyComponent>()->SetPosition(position);
 	Transform::SetParentChild(root->GetTransform(), enemy->GetTransform());
