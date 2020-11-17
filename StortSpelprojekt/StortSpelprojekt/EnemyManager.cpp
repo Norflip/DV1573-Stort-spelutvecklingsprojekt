@@ -11,7 +11,7 @@ void EnemyManager::InitBaseEnemy()
 {
 	enemyPool->Register("baseEnemy", 2, [](ResourceManager* resources)
 	{
-		Object* object = new Object("baseEnemy", ObjectFlag::ENABLED);
+		Object* object = new Object("baseEnemy", ObjectFlag::DEFAULT);
 		object->AddComponent<SkeletonMeshComponent>(resources->GetResource<SkeletonMeshComponent>("EnemySkeleton"));
 		object->GetTransform().SetScale({ 0.125f, 0.125f, 0.125f });
 		object->AddComponent<EnemyStatsComp>(100.f, 2.0f, 10.f, 5.f, 3.f, 3.f);
@@ -22,7 +22,6 @@ void EnemyManager::InitBaseEnemy()
 		stateMachine->RegisterState(EnemyState::IDLE, object->AddComponent<EnemyIdleComp>());
 		//stateMachine->RegisterState(EnemyState::PATROL, enemy->AddComponent<EnemyPatrolComp>());
 		stateMachine->RegisterState(EnemyState::ATTACK, object->AddComponent<EnemyAttackComp>(nullptr));
-		object->AddFlag(ObjectFlag::DEFAULT);
 		return object;
 	});
 
@@ -38,7 +37,7 @@ void EnemyManager::InitChargerEnemy()
 {
 	enemyPool->Register("chargerEnemy", 2, [](ResourceManager* resources)
 	{
-		Object* object = new Object("chargerEnemy", ObjectFlag::ENABLED);
+		Object* object = new Object("chargerEnemy", ObjectFlag::DEFAULT);
 		object->AddComponent<SkeletonMeshComponent>(resources->GetResource<SkeletonMeshComponent>("ChargerSkeleton"));
 		object->AddComponent<EnemyStatsComp>(100.f, 2.0f, 10.f, 5.f, 3.f, 3.f);
 		dx::XMFLOAT3 zero = { 0.f, 0.f, 0.f };
@@ -51,7 +50,6 @@ void EnemyManager::InitChargerEnemy()
 		//stateMachine->RegisterState(EnemyState::PATROL, enemy->AddComponent<EnemyPatrolComp>());
 		stateMachine->RegisterState(EnemyState::RUN, object->AddComponent<EnemyAttackComp>(nullptr));
 		//stateMachine->RegisterState(EnemyChargerState::DEATH, object->GetComponent<EnemyStatsComp>());	// Death component or something something???
-		object->AddFlag(ObjectFlag::DEFAULT);
 		return object;
 	});
 
