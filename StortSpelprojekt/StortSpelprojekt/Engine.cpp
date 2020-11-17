@@ -13,8 +13,8 @@ Engine::Engine(HINSTANCE hInstance) : window(hInstance), activeScene(nullptr), s
 	HRESULT hr = CoInitializeEx(nullptr, COINIT_MULTITHREADED);
 	assert(SUCCEEDED(hr));
 
-	//window.Open(1600, 900);
-	window.Open(1280, 720);
+	window.Open(1600, 900);
+	//window.Open(1280, 720);
 	//window.Open(1920, 1080);
 
 
