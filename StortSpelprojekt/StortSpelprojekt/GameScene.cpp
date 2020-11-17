@@ -142,6 +142,7 @@ void GameScene::InitializeObjects()
 	///* Banana pickup stuff temporary */
 	Shader* particleShader = resources->GetShaderResource("particleShader");
 	Object* beansObject = resources->AssembleObject("Soup", "SoupMaterial");
+	beansObject->AddFlag(ObjectFlag::DEFAULT);
 	beansObject->GetComponent<MeshComponent>()->SetBatchable(true);
 	beansObject->GetTransform().SetPosition({22, 2.0f, 53 });
 	beansObject->AddComponent<BoxColliderComponent>(dx::XMFLOAT3{ 0.5f, 0.5f, 0.5f }, dx::XMFLOAT3{ 0, 0, 0 });
@@ -181,6 +182,15 @@ void GameScene::InitializeObjects()
 	testObject2->GetTransform().SetPosition({ 23, 0.5f, 50 });
 	AddObject(testObject2);
 
+
+	/* PuzzleModels */
+	Object* puzzleFrog = resources->AssembleObject("PuzzleFrogStatue", "PuzzleFrogStatueMaterial");
+	puzzleFrog->GetTransform().SetPosition({ 25, 0.5f, 50 });
+	AddObject(puzzleFrog);
+
+	Object* puzzleFly = resources->AssembleObject("PuzzleFlyStatue", "PuzzleFlyStatueMaterial");
+	puzzleFly->GetTransform().SetPosition({ 27, 0.5f, 50 });
+	AddObject(puzzleFly);
 }
 
 void GameScene::InitializeGUI()
