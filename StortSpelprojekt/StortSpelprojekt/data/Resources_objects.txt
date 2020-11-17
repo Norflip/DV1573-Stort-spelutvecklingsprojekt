@@ -1,4 +1,14 @@
-Objects: 40
+Objects: 44
+
+Charger: Models/Enemies/Charger_Model.ZWEB
+Shader: skeletonShader
+Animations: 6
+0: Animations/Charger/Charger_Idle.ZWEB
+9: Animations/Charger/Charger_Load.ZWEB
+2: Animations/Charger/Charger_Run16.ZWEB
+3: Animations/Charger/Charger_RunAttack.ZWEB
+10: Animations/Charger/Charger_Unload.ZWEB
+5: Animations/Charger/Charger_Death.ZWEB
 
 Enemy: Models/Enemies/baseMonster.ZWEB
 Shader: skeletonShader
@@ -139,4 +149,13 @@ Stove: Models/House/Stove.ZWEB
 Shader: defaultShader
 
 InsideDoor: Models/House/InsideDoor.ZWEB
+Shader: defaultShader
+
+Endsign: Models/Props/Endsign.ZWEB
+Shader: defaultShader
+
+LeftDirectionSign: Models/Props/LeftDirectionSign.ZWEB
+Shader: defaultShader
+
+RightDirectionSign: Models/Props/RightDirectionSign.ZWEB
 Shader: defaultShader

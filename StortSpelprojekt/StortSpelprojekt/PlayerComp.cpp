@@ -279,6 +279,7 @@ void PlayerComp::RayCast(const float& deltaTime)
 	//ATTACK ENEMIES
 	if (LMOUSE_DOWN && holding == nullptr)
 	{
+		
 		if (physics->RaytestSingle(ray, 5.0f, hit, FilterGroups::ENEMIES))
 		{
 			if (hit.object != nullptr && hit.object->HasComponent<EnemyStatsComp>())
@@ -286,34 +287,27 @@ void PlayerComp::RayCast(const float& deltaTime)
 				if (hit.object->GetComponent<EnemyStatsComp>()->IsEnabled())
 				{
 					if (hit.object->GetComponent<EnemyStatsComp>()->GetHealth() >= 0.0f)
-					{
-						AudioMaster::Instance().PlaySoundEvent("punch");
+					{						
 						hit.object->GetComponent<EnemyStatsComp>()->LoseHealth(attack);
-						//std::cout << "Hit hit hit" << std::endl;
-						
-					}
-					else if (hit.object->GetComponent<EnemyStatsComp>()->GetHealth() <= 0.0f)
-					{
 						AudioMaster::Instance().PlaySoundEvent("punch");
-						//hit.object.s  ->GetComponent<PickupComponent>()->SetActive(false);
 
-						//RigidBodyComponent* rbComp = hit.object->GetComponent<RigidBodyComponent>();
-						//rbComp->Release();
-
-						////hit.object->GetComponent<EnemyStatsComp>()->SetEnabled(false);
-						////hit.object->GetComponent<EnemyStatsComp>()->SetEnabled(false);
-						///*hit.object->GetComponent<EnemyStatsComp>()->SetEnabled(false);
-						//RigidBodyComponent* rbComp = hit.object->GetComponent<RigidBodyComponent>();
-						//rp::RigidBody* objectRb = rbComp->GetRigidBody();
-
-						//phy.UnregisterRigidBody(hit.object->GetComponent<RigidBodyComponent>());
-						//*/
-						Engine::Instance->GetActiveScene()->RemoveObject(hit.object);
-					}
+						if (hit.object->GetComponent<EnemyStatsComp>()->GetHealth() <= 0.0f)
+						{
+							RigidBodyComponent* rbComp = hit.object->GetComponent<RigidBodyComponent>();
+							rbComp->Release();
+							Engine::Instance->GetActiveScene()->RemoveObject(hit.object);
+						}						
+					}					
 				}
 			}
 		}
+
+		else if (physics->RaytestSingle(ray, 5.0f, hit, FilterGroups::PROPS))
+		{
+			AudioMaster::Instance().PlaySoundEvent("choptree");
+		}
 	}
+
 	// Health drop
 	healthDippingBar->SetScaleBars(ReverseAndClamp(health));
 
