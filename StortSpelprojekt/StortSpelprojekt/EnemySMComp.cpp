@@ -55,6 +55,10 @@ void EnemySMComp::Animate()
 	{
 		skeletonComponent->SetTrack(SkeletonStateMachine::WALK, false);
 	}
+	/*else if (currentState == EnemyState::DEATH)
+	{
+		skeletonComponent->SetTrack(SkeletonStateMachine::DEATH, false);
+	}*/
 	else
 	{
 		skeletonComponent->SetTrack(SkeletonStateMachine::IDLE,false);
