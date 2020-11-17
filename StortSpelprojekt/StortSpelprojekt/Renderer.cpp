@@ -151,7 +151,6 @@ void Renderer::RenderFrame(CameraComponent* camera, float time)
 	RenderFrame(camera, time, backbuffer, true, true);
 	HRESULT hr = swapchain->Present(0, 0); //1 here?
 	swapchain->SetFullscreenState(isFullScreen, nullptr);
-	//swapchain->SetFullscreenState(true, nullptr);
 	assert(SUCCEEDED(hr));
 }
 
