@@ -71,9 +71,6 @@ void PlayerComp::Update(const float& deltaTime)
 {
 	RayCast(deltaTime);
 
-
-
-
 	float frameTime = FCAST(GameClock::Instance().GetFrameTime() / 1000.0);
 
 	//temp fix for wierd clock start at 
@@ -85,12 +82,9 @@ void PlayerComp::Update(const float& deltaTime)
 		food -= frameTime * foodLossPerSecond;
 
 		if(!IMMORTAL)
-			if ((/*fuel < 0 ||*/ health <= 0))
+			if ((health <= 0))
 				Engine::Instance->SwitchScene(SceneIndex::GAME_OVER);
-//#if !immortal
-		// make better later
-		
-//#endif
+
 		if (food < 0)
 			foodEmpty = true;
 
@@ -121,7 +115,6 @@ void PlayerComp::Update(const float& deltaTime)
 
 void PlayerComp::HoldObject()
 {
-
 	inverseViewMatrix = dx::XMMatrixInverse(nullptr, cam->GetViewMatrix());
 	wepOffTrans.Translation(holdAngle);
 	wepOffRot = wepOffRot.CreateFromAxisAngle(up, dx::XMConvertToRadians(-40.0f));
@@ -133,7 +126,6 @@ void PlayerComp::HoldObject()
 	holding->GetTransform().SetPosition(weaponPos);
 	holding->GetTransform().SetRotation(weaponRot);
 	holding->GetTransform().SetScale(weaponScale);
-
 }
 
 void PlayerComp::DropObject()
@@ -181,7 +173,6 @@ float PlayerComp::ReverseAndClamp(float inputValue)
 
 void PlayerComp::RayCast(const float& deltaTime)
 {
-
 	Ray ray = cam->MouseToRay(p.x, p.y);
 
 	if (KEY_DOWN(E))
@@ -214,11 +205,9 @@ void PlayerComp::RayCast(const float& deltaTime)
 					if(hit.object->GetComponent<ParticleSystemComponent>()->GetActive())
 						hit.object->GetComponent<ParticleSystemComponent>()->SetActive(false);
 				
-
 				hit.object->GetComponent<PickupComponent>()->SetActive(false);
 				RigidBodyComponent* rbComp = hit.object->GetComponent<RigidBodyComponent>();
-				rbComp->Release();
-				
+				rbComp->Release();				
 			}
 		}
 
@@ -250,8 +239,7 @@ void PlayerComp::RayCast(const float& deltaTime)
 
 	//ATTACK ENEMIES
 	if (LMOUSE_DOWN && holding == nullptr)
-	{
-		
+	{		
 		if (physics->RaytestSingle(ray, 5.0f, hit, FilterGroups::ENEMIES))
 		{
 			if (hit.object != nullptr && hit.object->HasComponent<EnemyStatsComp>())
@@ -277,9 +265,7 @@ void PlayerComp::RayCast(const float& deltaTime)
 
 		else if (physics->RaytestSingle(ray, 5.0f, hit, FilterGroups::PROPS))
 		{
-
-			AudioMaster::Instance().PlaySoundEvent("choptree");
-			
+			AudioMaster::Instance().PlaySoundEvent("choptree");			
 		}
 	}
 
