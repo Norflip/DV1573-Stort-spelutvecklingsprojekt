@@ -123,8 +123,9 @@ void GameScene::InitializeObjects()
 
 	/* PICKUP STUFF DONT DELETE THESEEE */
 	Object* healthkitObject = resources->AssembleObject("HealthKit", "HealthKitMaterial");
+	healthkitObject->AddFlag(ObjectFlag::DEFAULT);
 	healthkitObject->GetComponent<MeshComponent>()->SetBatchable(true);
-	healthkitObject->GetTransform().SetPosition({ 23,2,50 });
+	healthkitObject->GetTransform().SetPosition({ 23,3,50 });
 	healthkitObject->AddComponent<BoxColliderComponent>(dx::XMFLOAT3{ 0.5f, 0.5f, 0.5f }, dx::XMFLOAT3{ 0, 0, 0 });
 	healthkitObject->AddComponent<PickupComponent>(Type::Health, 20.0f);
 	healthkitObject->AddComponent<RigidBodyComponent>(0.f, FilterGroups::PICKUPS, (FilterGroups::EVERYTHING &~FilterGroups::PLAYER), BodyType::DYNAMIC,true);
@@ -132,8 +133,9 @@ void GameScene::InitializeObjects()
 
 	///* Fuel pickup stuff temporary */
 	Object* fuelCanObject = resources->AssembleObject("FuelCanGreen", "FuelCanGreenMaterial");
+	fuelCanObject->AddFlag(ObjectFlag::DEFAULT);
 	fuelCanObject->GetComponent<MeshComponent>()->SetBatchable(true);
-	fuelCanObject->GetTransform().SetPosition({ 22,2,52 });
+	fuelCanObject->GetTransform().SetPosition({ 22,3,52 });
 	fuelCanObject->AddComponent<BoxColliderComponent>(dx::XMFLOAT3{ 0.3f, 0.3f, 0.3f }, dx::XMFLOAT3{ 0, 0, 0 });
 	fuelCanObject->AddComponent<PickupComponent>(Type::Fuel, 20.0f);
 	fuelCanObject->AddComponent<RigidBodyComponent>(10.f, FilterGroups::HOLDABLE, (FilterGroups::EVERYTHING &~FilterGroups::PLAYER), BodyType::DYNAMIC, true);
@@ -144,7 +146,7 @@ void GameScene::InitializeObjects()
 	Object* beansObject = resources->AssembleObject("Soup", "SoupMaterial");
 	beansObject->AddFlag(ObjectFlag::DEFAULT);
 	beansObject->GetComponent<MeshComponent>()->SetBatchable(true);
-	beansObject->GetTransform().SetPosition({22, 2.0f, 53 });
+	beansObject->GetTransform().SetPosition({22, 3.0f, 53 });
 	beansObject->AddComponent<BoxColliderComponent>(dx::XMFLOAT3{ 0.5f, 0.5f, 0.5f }, dx::XMFLOAT3{ 0, 0, 0 });
 	beansObject->AddComponent<PickupComponent>(Type::Food, 20.0f);
 	beansObject->AddComponent<RigidBodyComponent>(0.f, FilterGroups::PICKUPS, (FilterGroups::EVERYTHING & ~FilterGroups::PLAYER), BodyType::DYNAMIC, true);
@@ -184,13 +186,27 @@ void GameScene::InitializeObjects()
 
 
 	/* PuzzleModels */
-	Object* puzzleFrog = resources->AssembleObject("PuzzleFrogStatue", "PuzzleFrogStatueMaterial");
-	puzzleFrog->GetTransform().SetPosition({ 25, 0.5f, 50 });
+	Object* puzzleFrog = resources->AssembleObject("PuzzleFrogStatue", "PuzzleFrogStatueMaterial", ObjectFlag::DEFAULT);	
+	//puzzleManager = new PuzzleManager(resources, player, house);
+	puzzleFrog->GetTransform().SetPosition({ 26, 1.5f, 50 });
+	puzzleFrog->AddComponent<BoxColliderComponent>(dx::XMFLOAT3{ 2.0f, 2.0f, 2.0f }, dx::XMFLOAT3{ 0, 0, 0 });
+	puzzleFrog->AddComponent<RigidBodyComponent>(0.0f, FilterGroups::PROPS, FilterGroups::EVERYTHING, BodyType::DYNAMIC, true);
+	/*puzzleFrog->AddComponent<BoxColliderComponent>(dx::XMFLOAT3{ 2.0f, 2.0f, 2.0f }, dx::XMFLOAT3{ 0, 0, 0 });
+	puzzleFrog->AddComponent<RigidBodyComponent>(50.f, FilterGroups::PROPS, (FilterGroups::EVERYTHING), BodyType::DYNAMIC, true);*/
 	AddObject(puzzleFrog);
-
-	Object* puzzleFly = resources->AssembleObject("PuzzleFlyStatue", "PuzzleFlyStatueMaterial");
-	puzzleFly->GetTransform().SetPosition({ 27, 0.5f, 50 });
+	
+	Object* puzzleFly = resources->AssembleObject("PuzzleFlyStatue", "PuzzleFlyStatueMaterial", ObjectFlag::DEFAULT | ObjectFlag::NO_CULL);
+	puzzleFly->GetTransform().SetPosition({ 28, 1.3f, 50 });
+	puzzleFly->AddComponent<BoxColliderComponent>(dx::XMFLOAT3{ 1.0f, 1.0f, 1.0f }, dx::XMFLOAT3{ 0, 0, 0 });
+	puzzleFly->AddComponent<RigidBodyComponent>(0.0f, FilterGroups::HOLDABLE, FilterGroups::EVERYTHING, BodyType::DYNAMIC, true);
+	puzzleFly->AddComponent<ParticleSystemComponent>(renderer, particleShader);
+	puzzleFly->GetComponent<ParticleSystemComponent>()->SetMaxParticles(50);
+	puzzleFly->GetComponent<ParticleSystemComponent>()->SetParticleSize(0.1f);
+	puzzleFly->GetComponent<ParticleSystemComponent>()->InitializeParticles(renderer->GetDevice(), L"Textures/fire1.png");
 	AddObject(puzzleFly);
+
+	/*FrogPuzzle* frogpuzzle = new FrogPuzzle(resources);
+	frogpuzzle*/
 }
 
 void GameScene::InitializeGUI()
@@ -339,8 +355,8 @@ void GameScene::OnActivate()
 
 	//LOADING BASE MONSTER; ADDING SKELETONS TO IT
 	enemyManager = new EnemyManager(resources, player, player->GetComponent<PlayerComp>(), root);
-	enemyManager->InitBaseEnemy();
-	enemyManager->InitChargerEnemy();
+	/*enemyManager->InitBaseEnemy();
+	enemyManager->InitChargerEnemy();*/
 	
 	LightManager::Instance().ForceUpdateBuffers(renderer->GetContext());
 }
