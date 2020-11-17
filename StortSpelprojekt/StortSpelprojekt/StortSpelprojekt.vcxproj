@@ -215,7 +215,6 @@
     <ClCompile Include="PlayerComp.cpp" />
     <ClCompile Include="PlayerAttackComp.cpp" />
     <ClCompile Include="QuadTree.cpp" />
-    <ClCompile Include="PossionDiscSampler.cpp" />
     <ClCompile Include="PointLightComponent.cpp" />
     <ClCompile Include="Renderer.cpp" />
     <ClCompile Include="RigidBodyComponent.cpp" />

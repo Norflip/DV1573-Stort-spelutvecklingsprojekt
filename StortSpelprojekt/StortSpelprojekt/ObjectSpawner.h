@@ -9,6 +9,8 @@
 
 #define SPAWN_ITEMS TRUE
 
+class World;
+
 class ObjectSpawner
 {
 	struct Item
@@ -20,6 +22,7 @@ class ObjectSpawner
 	{
 		Mesh* mesh;
 		Material* material;
+		Bounds bounds;
 		float yOffset;
 		size_t queueCount;
 		dx::XMUINT3 randomRotationAxis;
@@ -29,6 +32,8 @@ class ObjectSpawner
 	{
 		float minScale;
 		float maxScale;
+		float minRotation;
+		float maxRotation;
 		std::vector<Mesh*> meshes;
 		std::vector<Material*> materials;
 	};
@@ -37,12 +42,13 @@ class ObjectSpawner
 	const float TREE_SPAWN_FACTOR = 0.4f;
 	const float TREE_RADIUS = 1.0f;
 	const float TREE_HEIGHT_ADJUSTMENT_FACTOR = 0.9f;
+	const float NO_TREE_CHANCE = 0.1f;
 
 public:
 	ObjectSpawner();
 	virtual ~ObjectSpawner();
 
-	void Initialize(Object* root, Renderer* renderer);
+	void Initialize(Object* root, World* world, Renderer* renderer);
 
 	void Spawn(const SaveState& state, const Bounds& worldBounds, std::unordered_map<int, Chunk*>& chunkMap);
 	void Despawn();
@@ -54,13 +60,13 @@ public:
 	void RegisterInstancedItem(Mesh* mesh, Material* material, float yOffset, size_t queueCount, dx::XMUINT3 rotationAxis);
 	void DrawDebug();
 
-
-	
-	bool ValidateTreePoint(const dx::XMFLOAT2& point, const Chunk::Data& data) const;
-
 	static Object* DefaultCreateItem(std::string key, PickupType type, float value);
 
 private:
+	void SpawnStatic(std::unordered_map<int, Chunk*>& chunkMap);
+	void SpawnItem (Chunk* chunk);
+
+	bool ValidSpawnPoint(const dx::XMFLOAT2& point, const Chunk::Data& data, float minInfluence) const;
 	void AddTreesToChunk(Chunk* chunk) const;
 	void AddGrassToChunk(Chunk* chunk) const;
 
@@ -77,13 +83,13 @@ private:
 
 	ObjectPooler* pooler;
 	Object* root;
-
+	World* world;
 	QuadTree* globalTreeQT;
 
 	std::vector<dx::XMFLOAT2> itemSpawnPositions;
 	std::vector<dx::XMFLOAT2> propSpawnPositions;
 
-	std::vector<Item> items;
+	std::vector<Item> itemRegistry;
 	std::vector<Prop> instancedProps;
 	TreeModel tree;
 

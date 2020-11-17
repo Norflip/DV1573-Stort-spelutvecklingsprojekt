@@ -10,14 +10,14 @@ WorldGenerator::~WorldGenerator()
 {
 }
 
-void WorldGenerator::Initialize(Object* root, Renderer* renderer)
+void WorldGenerator::Initialize(Object* root, World* world, Renderer* renderer)
 {
 	this->root = root;
 	this->renderer = renderer;
 	this->initialized = true;
 
 	this->spawner = new ObjectSpawner();
-	this->spawner->Initialize(root, renderer);
+	this->spawner->Initialize(root, world, renderer);
 
 	ResourceManager* resources = Engine::Instance->GetResources();
 	this->chunkShader = resources->GetShaderResource("terrainShader");
@@ -54,19 +54,6 @@ void WorldGenerator::Construct(const SaveState& state, const WorldDescription& d
 
 		AddChunksFromPath(indexes, chunks);
 		AddPadding(CHUNK_PADDING, indexes, chunks, minIndex, maxIndex);
-
-		/*
-		dx::XMINT2 testMin, testMax;
-		for (auto i : chunks)
-		{
-			dx::XMINT2 in = i.second.index;
-			testMin.x = std::min(testMin.x, in.x);
-			testMin.y = std::min(testMin.y, in.y);
-			testMax.x = std::max(testMax.x, in.x);
-			testMax.y = std::max(testMax.y, in.y);
-		}
-		*/
-
 
 		path = Path(indexes);
 		

@@ -15,7 +15,7 @@ World::~World()
 void World::Initialize(Object* root, ResourceManager* resources, Renderer* renderer)
 {
 	this->resources = resources;
-	generator.Initialize(root, renderer);
+	generator.Initialize(root, this, renderer);
 	lastRelevantIndex = dx::XMINT2(-5000, -5000);
 }
 
@@ -70,22 +70,6 @@ void World::UpdateRelevantChunks(const Transform& transform, CameraComponent* ca
 				i->GetOwner()->AddFlag(ObjectFlag::ENABLED);
 			}
 		}
-
-		/*for (auto i : relevant)
-		{
-			Object* obj = i->GetOwner();
-			Bounds bounds = obj->GetComponent<MeshComponent>()->GetBounds();
-			bool inView = camera->InView(bounds, obj->GetTransform().GetWorldMatrix());
-
-			if (inView)
-			{
-				obj->RemoveFlag(ObjectFlag::ENABLED);
-			}
-			else
-			{
-				obj->AddFlag(ObjectFlag::ENABLED);
-			}
-		}*/
 	}
 }
 
@@ -130,6 +114,10 @@ void World::SampleNormal(const float& x, const float& z, dx::XMFLOAT3& normal) c
 	dx::XMVECTOR horizontal = dx::XMVector3Normalize({ 1.0f, 0.0f, hLeft - hRight });
 	dx::XMVECTOR vertical = dx::XMVector3Normalize({ 0.0f, 1.0f, hUp - hDown });
 	dx::XMStoreFloat3(&normal, dx::XMVector3Cross(horizontal, vertical));
+
+	float tmp = normal.y;
+	normal.y = normal.z;
+	normal.z = tmp;
 }
 
 void World::GetChunksInRadius(const dx::XMINT2& index, int radius, std::vector<Chunk*>& chunks) const
@@ -240,9 +228,11 @@ void World::RegisterWeapon(ObjectSpawner* spawner, const std::map<std::string, i
 
 void World::RegisterStatic(ObjectSpawner* spawner, const std::map<std::string, int>& queueCountTable) const
 {
-	spawner->RegisterInstancedItem("Rock1", 0.0f, 5, dx::XMUINT3(1, 1, 1));
-	spawner->RegisterInstancedItem("Rock2", 0.0f, 5, dx::XMUINT3(1, 1, 1));
-	spawner->RegisterInstancedItem("Rock3", 0.0f, 5, dx::XMUINT3(1, 1, 1));
-	spawner->RegisterInstancedItem("Log", 0.0f, 1, dx::XMUINT3(0, 1, 0));
+	static const dx::XMUINT3 UP = dx::XMUINT3(0, 1, 0);
+
+	spawner->RegisterInstancedItem("Rock1", 0.0f, 5, UP);
+	spawner->RegisterInstancedItem("Rock2", 0.0f, 5, UP);
+	spawner->RegisterInstancedItem("Rock3", 0.0f, 5, UP);
+	spawner->RegisterInstancedItem("Log", 0.0f, 1, UP);
 
 }

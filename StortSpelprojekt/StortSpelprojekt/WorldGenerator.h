@@ -10,6 +10,8 @@
 #include "QuadTree.h"
 #include "ObjectSpawner.h"
 
+class World;
+
 class WorldGenerator
 {
 
@@ -27,7 +29,7 @@ public:
 public:
 	WorldGenerator();
 	virtual ~WorldGenerator();
-	void Initialize(Object* root, Renderer* renderer);
+	void Initialize(Object* root, World* world, Renderer* renderer);
 
 	void Construct(const SaveState& state, const WorldDescription& description);
 	void Deconstruct();

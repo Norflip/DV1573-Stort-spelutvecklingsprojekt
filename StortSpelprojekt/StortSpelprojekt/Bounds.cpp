@@ -62,6 +62,14 @@ void Bounds::SetMinMax(dx::XMFLOAT3 min, dx::XMFLOAT3 max)
 	this->max = max;
 }
 
+dx::XMFLOAT3 Bounds::GetSize() const
+{
+	float x = max.x - min.x;
+	float y = max.y - min.y;
+	float z = max.z - min.z;
+	return dx::XMFLOAT3(x, y, z);
+}
+
 void Bounds::TransformMinMax(dx::XMMATRIX worldTransform, dx::XMFLOAT3& min, dx::XMFLOAT3& max) const
 {
 	dx::XMFLOAT3 storedTransformedCorner;
