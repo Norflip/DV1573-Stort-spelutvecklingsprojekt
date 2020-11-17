@@ -150,7 +150,7 @@ private:
 	
 	bool drawShapes = true;
 
-	bool isFullScreen = true;
+	bool isFullScreen = false;
 
 	float xPos= 0;
 	float yPos =0;

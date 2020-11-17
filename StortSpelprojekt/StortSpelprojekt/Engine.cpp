@@ -14,9 +14,6 @@ Engine::Engine(HINSTANCE hInstance) : window(hInstance), activeScene(nullptr), s
 	assert(SUCCEEDED(hr));
 
 	window.Open(1600, 900);
-	//window.Open(1280, 720);
-	//window.Open(1920, 1080);
-
 
 	renderer = new Renderer();
 	renderer->Initialize(&window);
