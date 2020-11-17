@@ -292,7 +292,6 @@ void GameScene::InitializeInterior()
 	logs->GetTransform().SetPosition({ this->interiorPosition.x, this->interiorPosition.y, this->interiorPosition.z });
 	logs->AddComponent<BoxColliderComponent>(dx::XMFLOAT3(1.0f, 1.0f, 1.0f), dx::XMFLOAT3(-8.1f, 1.0f, -1.3f));
 	logs->AddComponent<RigidBodyComponent>(0.0f, FilterGroups::PROPS, FilterGroups::PLAYER, BodyType::STATIC, true);
-	logs->AddComponent<PointLightComponent>(dx::XMFLOAT4(1.0f, 0.27f, 0, 1.0f), 6.0f);
 	AddObject(logs);
 
 	Object* flowerpot = resources->AssembleObject("Flowerpot", "FlowerpotMaterial");
@@ -314,7 +313,10 @@ void GameScene::InitializeInterior()
 	AddObject(bookShelf);
 
 	Object* chair = resources->AssembleObject("Chair", "ChairMaterial");
-	AddObject(chair, houseInterior);
+	chair->GetTransform().SetPosition({ this->interiorPosition.x, this->interiorPosition.y, this->interiorPosition.z });
+	chair->AddComponent<BoxColliderComponent>(dx::XMFLOAT3(0.5f, 2.0f, 1.0f), dx::XMFLOAT3(-4.0f, 1.0f, 1.5f));
+	chair->AddComponent<RigidBodyComponent>(0.0f, FilterGroups::PROPS, FilterGroups::PLAYER, BodyType::STATIC, true);
+	AddObject(chair);
 
 	Object* sink = resources->AssembleObject("Sink", "SinkMaterial");
 	sink->GetTransform().SetPosition({ this->interiorPosition.x, this->interiorPosition.y, this->interiorPosition.z });
@@ -330,9 +332,24 @@ void GameScene::InitializeInterior()
 
 	Object* insideDoor = resources->AssembleObject("InsideDoor", "InsideDoorMaterial");
 	insideDoor->GetTransform().SetPosition({ this->interiorPosition.x, this->interiorPosition.y, this->interiorPosition.z });
-	insideDoor->AddComponent<BoxColliderComponent>(dx::XMFLOAT3(0.5f, 2.0f, 1.5f), dx::XMFLOAT3(-2.5f, 1.0f, -7.f));
-	insideDoor->AddComponent<RigidBodyComponent>(0.0f, FilterGroups::PROPS, FilterGroups::PLAYER, BodyType::STATIC, true);
+	insideDoor->AddComponent<BoxColliderComponent>(dx::XMFLOAT3(0.2f, 2.0f, 1.5f), dx::XMFLOAT3(3.0f, 2.0f, -3.0f));
+	insideDoor->AddComponent<RigidBodyComponent>(0.0f, FilterGroups::DOOR, FilterGroups::PLAYER, BodyType::STATIC, true);
 	AddObject(insideDoor);
+
+	Object* fireLight = new Object("fireLight");
+	fireLight->AddComponent<PointLightComponent>(dx::XMFLOAT4(1.0f, 0.29f, 0.0f, 1.0f), 1.2f);
+	fireLight->GetTransform().SetPosition({ -7.0f, -99.f, -1.36 });
+	AddObject(fireLight);
+
+	Object* windowLight = new Object("windowLight");
+	windowLight->AddComponent<PointLightComponent>(dx::XMFLOAT4(0.3f, 0.41f, 0.8f, 1.0f), 5.0f);
+	windowLight->GetTransform().SetPosition({3.0f, -98.f, 3 });
+	AddObject(windowLight);
+
+	Object* windowLight2 = new Object("windowLight2");
+	windowLight2->AddComponent<PointLightComponent>(dx::XMFLOAT4(0.3f, 0.41f, 0.8f, 1.0f), 5.0f);
+	windowLight2->GetTransform().SetPosition({ -7, -98.f, 3 });
+	AddObject(windowLight2);
 }
 
 void GameScene::OnActivate()
