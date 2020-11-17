@@ -96,7 +96,7 @@ public:
 	void RemoveRenderPass(RenderPass*);
 
 	void InitForwardPlus(CameraComponent* camera, Window* window);
-
+	void UpdateForwardPlus();
 	ALIGN16_ALLOC;
 
 private:
@@ -137,6 +137,35 @@ private:
 	ID3D11Buffer* frustums_buffer;
 	ID3D11ShaderResourceView* inFrustums_srv;
 	ID3D11UnorderedAccessView* outFrustums_uav;
+
+	//light index counter
+	std::vector<UINT> o_LightIndexCounter;
+	ID3D11Buffer* o_LightIndexCounter_uavbuffer;
+	ID3D11ShaderResourceView* o_LightIndexCounter_srv;
+	ID3D11UnorderedAccessView* o_LightIndexCounter_uav;
+	std::vector<UINT> t_LightIndexCounter;
+	ID3D11Buffer* t_LightIndexCounter_uavbuffer;
+	ID3D11ShaderResourceView* t_LightIndexCounter_srv;
+	ID3D11UnorderedAccessView* t_LightIndexCounter_uav;
+	
+	//light index list
+	std::vector<UINT> o_LightIndexList;
+	ID3D11Buffer* o_LightIndexList_uavbuffer;
+	ID3D11ShaderResourceView* o_LightIndexList_srv;
+	ID3D11UnorderedAccessView* o_LightIndexList_uav;
+	std::vector<UINT> t_LightIndexList;
+	ID3D11Buffer* t_LightIndexList_uavbuffer;
+	ID3D11ShaderResourceView* t_LightIndexList_srv;
+	ID3D11UnorderedAccessView* t_LightIndexList_uav;
+
+	//light grid
+	//std::vector<dx::XMUINT2> o_LightGrid;
+	//ID3D11Buffer* o_LightGrid_texbuffer;
+	ID3D11Texture2D* o_LightGrid_tex;
+	//std::vector<dx::XMUINT2> t_LightGrid;
+	//ID3D11Buffer* t_LightGrid_texbuffer;
+	ID3D11Texture2D* t_LightGrid_tex;
+
 
 
 	std::vector<dx::XMFLOAT4X4> srv_skeleton_data;

@@ -429,6 +429,7 @@ void Renderer::RemoveRenderPass(RenderPass* pass)
 	passes.erase(it);
 }
 
+
 void Renderer::AddItem(const RenderItem& item, bool transparent)
 {
 	if (transparent)
@@ -698,8 +699,8 @@ void Renderer::InitForwardPlus(CameraComponent* camera, Window* window)
 	DXHelper::CreateStructuredBuffer(device, &frustums_buffer, frustum_data.data(), sizeof(s_Frustum), frustum_data.size(), &outFrustums_uav, &inFrustums_srv);
 	DXHelper::BindStructuredBuffer(context, frustums_buffer, frustum_data.data(), 0, ShaderBindFlag::COMPUTE, &outFrustums_uav, nullptr); //u0
 
-	//context->Dispatch(numThreadGroups.x, numThreadGroups.y, numThreadGroups.z);
-	context->Dispatch(1, 1, 1);
+	context->Dispatch(numThreadGroups.x, numThreadGroups.y, numThreadGroups.z);
+	//context->Dispatch(1, 1, 1);
 
 	D3D11_MAPPED_SUBRESOURCE resource;
 	HRESULT hr = context->Map(frustums_buffer, 0, D3D11_MAP_READ_WRITE, 0, &resource);
@@ -714,4 +715,37 @@ void Renderer::InitForwardPlus(CameraComponent* camera, Window* window)
 
 	context->Unmap(frustums_buffer, 0);
 
+}
+
+void Renderer::UpdateForwardPlus()
+{
+	//this is to be run for lightculling compute shader
+
+	//precomputed in_Frustums
+	//DXHelper::CreateStructuredBuffer(device, &frustums_buffer, frustum_data.data(), sizeof(s_Frustum), frustum_data.size(), &inFrustums_srv);
+	DXHelper::BindStructuredBuffer(context, frustums_buffer, frustum_data.data(), 9, ShaderBindFlag::COMPUTE, &inFrustums_srv);
+
+
+	//opaque_light index counter
+	o_LightIndexCounter.resize(1);
+	DXHelper::CreateCopyBuffer(device, &o_LightIndexCounter_uavbuffer, sizeof(UINT), o_LightIndexCounter.size());
+	DXHelper::CreateStructuredBuffer(device, &o_LightIndexCounter_uavbuffer, o_LightIndexCounter.data(), sizeof(UINT), o_LightIndexCounter.size(), &o_LightIndexCounter_uav, &o_LightIndexCounter_srv);
+	DXHelper::BindStructuredBuffer(context, o_LightIndexCounter_uavbuffer, o_LightIndexCounter.data(), 1, ShaderBindFlag::COMPUTE, &o_LightIndexCounter_uav, nullptr); //u1
+	//transparent_light index counter
+	t_LightIndexCounter.resize(1);
+	DXHelper::CreateStructuredBuffer(device, &t_LightIndexCounter_uavbuffer, t_LightIndexCounter.data(), sizeof(UINT), t_LightIndexCounter.size(), &t_LightIndexCounter_uav, &t_LightIndexCounter_srv);
+	DXHelper::BindStructuredBuffer(context, t_LightIndexCounter_uavbuffer, t_LightIndexCounter.data(), 2, ShaderBindFlag::COMPUTE, &t_LightIndexCounter_uav, nullptr); //u2
+
+	o_LightIndexList.resize(32); //light block size??
+	DXHelper::CreateStructuredBuffer(device, &o_LightIndexList_uavbuffer, o_LightIndexList.data(), sizeof(UINT), o_LightIndexList.size(), &o_LightIndexList_uav, &o_LightIndexList_srv);
+	DXHelper::BindStructuredBuffer(context, o_LightIndexList_uavbuffer, o_LightIndexCounter.data(), 3, ShaderBindFlag::COMPUTE, &o_LightIndexList_uav, nullptr); //u3
+	t_LightIndexList.resize(32); //lightcount??
+	DXHelper::CreateStructuredBuffer(device, &t_LightIndexList_uavbuffer, t_LightIndexList.data(), sizeof(UINT), t_LightIndexList.size(), &t_LightIndexList_uav, &t_LightIndexList_srv);
+	DXHelper::BindStructuredBuffer(context, t_LightIndexList_uavbuffer, t_LightIndexCounter.data(), 4, ShaderBindFlag::COMPUTE, &t_LightIndexList_uav, nullptr); //u4
+
+
+	//DXHelper::CreateTexture2D(width, height, device, &o_LightGrid_tex, DXGI_FORMAT_R32G32_UINT);
+	//DXHelper::CreateTexture2D(width, height, device, &t_LightGrid_tex, DXGI_FORMAT_R32G32_UINT);
+
+	//context->Dispatch(1, 1, 1);
 }
