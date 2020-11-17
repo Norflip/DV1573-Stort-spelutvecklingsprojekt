@@ -50,9 +50,8 @@ struct VS_INSTANCE_INPUT
 	float3 normal	: NORMAL;
 	float3 tangent	: TANGENT;
 	float3 binormal : BINORMAL;
-	uint id	: SV_InstanceID;
     row_major matrix instanceWorld : INSTANCEWORLD;
-	float3 instancePos : INSTANCEPOS;
+    uint id : SV_InstanceID;
 };
 
 struct VS_OUTPUT_GRASS

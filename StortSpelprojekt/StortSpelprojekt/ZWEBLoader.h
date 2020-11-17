@@ -6,6 +6,7 @@ enum ZWEBLoadType
 	NoAnimation,
 	SkeletonAnimation,
 };
+
 namespace ZWEBLoader //TO BE ADDED: FUNCTION TO LOAD LIGHTS
 {
 	inline SkeletonAni LoadSkeletonOnly( std::string animationPath, std::map<std::string, unsigned int>& boneIDMap,
@@ -23,7 +24,6 @@ namespace ZWEBLoader //TO BE ADDED: FUNCTION TO LOAD LIGHTS
 
 		if (parentAnimation)
 		{
-
 			for (std::pair<std::string, unsigned int> map : boneIDMap)
 			{
 				if (map.first == "")
@@ -66,7 +66,6 @@ namespace ZWEBLoader //TO BE ADDED: FUNCTION TO LOAD LIGHTS
 	}
 	inline std::vector<Mesh*> LoadMeshes(ZWEBLoadType type, std::string scenePath, ID3D11Device* device)
 	{
-
 		ZWEB::ZWEBImporter importer;
 		importer.importScene(scenePath);
 

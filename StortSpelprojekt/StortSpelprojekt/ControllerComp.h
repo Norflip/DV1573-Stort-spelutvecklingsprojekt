@@ -37,6 +37,7 @@ class CameraComponent;
 class ControllerComp :public Component 
 {
 private:
+
 	enum MoveState
 	{
 		IDLE,
@@ -55,6 +56,7 @@ private:
 	bool showCursor;
 	bool canRotate;
 	bool isGrounded;
+	bool inside;
 	dx::XMFLOAT3 houseVelocity;
 	dx::XMFLOAT3 jumpDir; 
 	dx::XMFLOAT3 cameraOffset;
@@ -69,6 +71,8 @@ private:
 
 	void CheckGrounded();
 
+	MoveState isMoving; 
+
 	void CalcVelocity(float acceleration)
 	{
 		if (this->velocityTimer >= VELOCITY_INC_RATE)
@@ -81,6 +85,8 @@ public:
 	ControllerComp(Object* cameraObject, Object* houseObject);
 	virtual ~ControllerComp();
 
+	RigidBodyComponent* GetRigidBodyComp() { return this->rbComp; }
 	void Initialize();
 	void Update(const float& deltaTime);
+	float GetVelocity() { return this->velocity; }
 };

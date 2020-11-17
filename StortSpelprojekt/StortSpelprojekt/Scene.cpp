@@ -43,6 +43,7 @@ void Scene::Update(const float& deltaTime)
 
 	clock.Update();
 	input.UpdateInputs();
+	root->GetTransform().ResetChanged();
 	root->Update(deltaTime);
 	GameClock::Instance().Update();
 
@@ -63,7 +64,7 @@ void Scene::Update(const float& deltaTime)
 
 void Scene::FixedUpdate(const float& fixedDeltaTime)
 {
-	root->FixedUpdate(fixedDeltaTime);
+	//root->FixedUpdate(fixedDeltaTime);
 	physics->FixedUpdate(fixedDeltaTime);
 }
 

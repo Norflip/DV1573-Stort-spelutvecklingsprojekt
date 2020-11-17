@@ -97,6 +97,9 @@ bool PossionDiscSampler::IsValid(dx::XMFLOAT2 point, dx::XMFLOAT2 regionSize, fl
 			{
 				int index = grid[x * cols + y] - 1;
 
+				if (index > points.size())
+					continue;
+
 				if (index != -1)
 				{
 					dx::XMFLOAT2 found = points[index];

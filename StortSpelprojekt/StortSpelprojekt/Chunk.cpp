@@ -4,18 +4,14 @@
 #include "Physics.h"
 #include "Engine.h"
 
-Chunk::Chunk(dx::XMINT2 index, ChunkType type) : index(index), type(type), heightMap(nullptr)
+Chunk::Chunk(dx::XMINT2 index, ChunkType type, const Data& data) : index(index), type(type), data(data)
 {
 
 }
 
 Chunk::~Chunk()
 {
-	if (heightMap != nullptr)
-	{
-		delete heightMap;
-		heightMap = nullptr;
-	}
+	
 }
 
 void Chunk::Update(const float& deltaTime)
@@ -50,63 +46,41 @@ void Chunk::Update(const float& deltaTime)
 #endif
 }
 
-
-void Chunk::SetupCollisionObject(Physics* physics, float* heightMap)
+void Chunk::Create()
 {
-	this->heightMap = heightMap;
-	dx::XMFLOAT3 worldPosition;
-	dx::XMStoreFloat3(&worldPosition, GetOwner()->GetTransform().GetPosition());
-
-	const int gridSize = static_cast<int>(CHUNK_SIZE) + 1;
-
-	min = 0.1f;// 0.1f;
-	max = TERRAIN_SCALE;
-
-	rp::PhysicsCommon& common = physics->GetCommon();
-	shape = common.createHeightFieldShape(gridSize, gridSize, min, max, static_cast<void*>(heightMap), rp::HeightFieldShape::HeightDataType::HEIGHT_FLOAT_TYPE);
-
-	float origin =  (max - min) * 0.5f;
-	const float offset = CHUNK_SIZE / 2.0f;
-
-	rp::Transform transform;
-	rp::Vector3 btPosition(worldPosition.x + offset, origin, worldPosition.z + offset);
-	transform.setPosition(btPosition);
-
-	rp::PhysicsWorld* world = physics->GetWorld();
-
-	body = world->createRigidBody(transform);
-	body->setType(rp::BodyType::STATIC);
-	body->enableGravity(false);
-
-	collider = body->addCollider(shape, rp::Transform::identity());
-
-	body->setUserData(static_cast<void*>(GetOwner()));
-	body->setIsActive(true);
-	collider->setCollisionCategoryBits(static_cast<unsigned short>(FilterGroups::TERRAIN));
-	collider->setCollideWithMaskBits(static_cast<unsigned short>(FilterGroups::EVERYTHING));
-	collider->getMaterial().setBounciness(0.f);
-	collider->getMaterial().setFrictionCoefficient(10.f);
+	SetupCollisionObject();
 }
 
-float Chunk::SampleHeight(float x, float z)
+float Chunk::SampleInfluence(const float& x, const float& z) const
 {
+	int col, row;
+	float influence = -1.0f;
+	if (TryGetLocalColRow(x, z, col, row))
+		influence = data.influenceMap[col + row * (CHUNK_SIZE + 1)];
+	
+	return influence;
+}
+
+bool Chunk::TryGetLocalColRow(const float& x, const float& z, int& col, int& row) const
+{
+	bool inside = false;
+
 	dx::XMFLOAT3 position;
 	dx::XMStoreFloat3(&position, GetOwner()->GetTransform().GetPosition());
 	dx::XMFLOAT2 chunkPosition = IndexToWorldXZ(WorldToIndex(x, z));
 
-	int col = static_cast<int>(floorf(x - chunkPosition.x));
-	int row = static_cast<int>(floorf(z - chunkPosition.y));
+	col = static_cast<int>(floorf(x - chunkPosition.x));
+	row = static_cast<int>(floorf(z - chunkPosition.y));
 
-	float height = 0.0f;
+	return (col >= 0 && row >= 0 && col <= CHUNK_SIZE && row <= CHUNK_SIZE);
+}
 
-	if (col >= 0 && row >= 0 && col <= CHUNK_SIZE && row <= CHUNK_SIZE)
-	{
+float Chunk::SampleHeight(const float& x, const float& z) const
+{
+	int col, row;
+	float height = -1.0f;
+	if (TryGetLocalColRow(x,z, col, row))
 		height = shape->getHeightAt(col, row);
-	}
-	else
-	{
-		std::cout << "FAILED to get chunk height: col: " << col << ", row: " << row << std::endl;
-	}
 
 	return height;
 }
@@ -152,17 +126,40 @@ void Chunk::PhysicRelease()
 
 }
 
-void Chunk::GetHeightFieldMinMax(float* heightMap, size_t size, float& minv, float& maxv)
+void Chunk::SetupCollisionObject()
 {
-	minv = FLT_MAX;
-	maxv = FLT_MIN;
+	Physics* physics = Engine::Instance->GetPhysics();
 
-	for (size_t i = 0; i < size * size; i++)
-	{
-		float height = heightMap[i];
-		minv = std::min(height, minv);
-		maxv = std::max(height, maxv);
-	}
+	dx::XMFLOAT3 worldPosition;
+	dx::XMStoreFloat3(&worldPosition, GetOwner()->GetTransform().GetPosition());
 
-	std::cout << "min: " << minv << ", max: " << maxv << std::endl;
+	const int gridSize = static_cast<int>(CHUNK_SIZE) + 1;
+
+	min = 0.1f;// 0.1f;
+	max = TERRAIN_SCALE;
+
+	rp::PhysicsCommon& common = physics->GetCommon();
+	shape = common.createHeightFieldShape(gridSize, gridSize, min, max, static_cast<void*>(data.heightMap), rp::HeightFieldShape::HeightDataType::HEIGHT_FLOAT_TYPE);
+
+	float origin = (max - min) * 0.5f;
+	const float offset = CHUNK_SIZE / 2.0f;
+
+	rp::Transform transform;
+	rp::Vector3 btPosition(worldPosition.x + offset, origin, worldPosition.z + offset);
+	transform.setPosition(btPosition);
+
+	rp::PhysicsWorld* world = physics->GetWorld();
+
+	body = world->createRigidBody(transform);
+	body->setType(rp::BodyType::STATIC);
+	body->enableGravity(false);
+
+	collider = body->addCollider(shape, rp::Transform::identity());
+
+	body->setUserData(static_cast<void*>(GetOwner()));
+	body->setIsActive(true);
+	collider->setCollisionCategoryBits(static_cast<unsigned short>(FilterGroups::TERRAIN));
+	collider->setCollideWithMaskBits(static_cast<unsigned short>(FilterGroups::EVERYTHING));
+	collider->getMaterial().setBounciness(0.f);
+	collider->getMaterial().setFrictionCoefficient(10.f);
 }

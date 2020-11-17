@@ -42,7 +42,7 @@ void NodeWalkerComp::InitializePath(Path thePath)
 	this->GetOwner()->GetTransform().SetPosition(startPos);
 
 	this->rbComp = GetOwner()->GetComponent<RigidBodyComponent>();
-	this->rbComp->GetRigidBody()->getCollider(0)->getMaterial().setBounciness(0.f);
+	//this->rbComp->GetRigidBody()->getCollider(0)->getMaterial().setBounciness(0.f);
 	//this->rbComp->GetRigidBody()->getCollider(0)->getMaterial().setFrictionCoefficient(100.f);
 	//this->rbComp->GetRigidBody()->getCollider(0)->getMaterial().setRollingResistance(100.f);
 	this->rbComp->SetPosition(startPos);
@@ -126,11 +126,17 @@ void NodeWalkerComp::StopAnim()
 void NodeWalkerComp::Update(const float& deltaTime)
 {
 	//dx::XMStoreFloat3(&this->lastPos, GetOwner()->GetTransform().GetPosition());
+
 	if (base->SetAndGetDoneUp())
 	{
 		//canWalk = true;
 		base->SetTrack(SkeletonStateMachine::WALK, false);
 		legs->SetTrack(SkeletonStateMachine::WALK, false);
+	}
+	if (base->SetAndGetDoneDown())
+	{
+		base->SetTrack(SkeletonStateMachine::IDLE, false);
+		legs->SetTrack(SkeletonStateMachine::IDLE, false);
 	}
 
 	if (KEY_DOWN(I)) //used to display info and test paths
@@ -178,9 +184,7 @@ void NodeWalkerComp::Update(const float& deltaTime)
 				this->nextChosen = currentNode + skip; //skip is 10
 				StartAnim();
 				canWalk = true;
-
 			}
-
 		}
 	}
 }

@@ -1,11 +1,18 @@
 #include "stdafx.h"
 #include "Texture.h"
 
-Texture::Texture() : srv(nullptr)
+Texture::Texture() 
+	: srv(nullptr), buffer(nullptr), width(-1), height(-1), channels(-1)
 {	
 }
 
-Texture::Texture(ID3D11ShaderResourceView* srv) : srv(srv)
+Texture::Texture(ID3D11ShaderResourceView* srv)
+	: srv(srv), buffer(nullptr), width(-1), height(-1), channels(-1)
+{
+}
+
+Texture::Texture(ID3D11ShaderResourceView* srv, unsigned char* buffer, size_t width, size_t height, size_t channels)
+	: srv(srv), buffer(buffer), width(width), height(height), channels(channels)
 {
 }
 
@@ -49,7 +56,7 @@ Texture* Texture::CreateFromBuffer(unsigned char* buffer, size_t width, size_t h
 		texture = nullptr;
 	}
 
-	return new Texture(srv);
+	return new Texture(srv, buffer, width, height, channels);
 }
 
 Texture* Texture::LoadTexture(ID3D11Device* device, LPCWSTR textureFilepath)

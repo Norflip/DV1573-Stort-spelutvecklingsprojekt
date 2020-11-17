@@ -1,5 +1,6 @@
 #include "CommonBuffers.hlsl"
 
+// Calculate light with the given pointlight
 float4 CalculatePointLight(PointLight pointLight, float3 normal, float3 objectPosition, float3 viewDirection)
 {
 	float4 ambient = float4(0.0f, 0.0f, 0.0f, 0.0f);
@@ -22,7 +23,7 @@ float4 CalculatePointLight(PointLight pointLight, float3 normal, float3 objectPo
 	if (diffuseFactor > 0.0f)
 	{
 		float3 reflection = reflect(-light, normal);
-		float shine = pow(max(dot(reflection, viewDirection), 0.0f), 0.1f); //matSpecular.w);
+		float shine = pow(max(dot(reflection, viewDirection), 0.0f), 0.1f);
 
 		diffuse = diffuseFactor * matDiffuse * pointLight.lightColor;
 		specular = shine * matSpecular * pointLight.lightColor;
@@ -44,6 +45,7 @@ float4 CalculatePointLight(PointLight pointLight, float3 normal, float3 objectPo
 	return finalColor;
 }
 
+// Calculate normalmapping
 float3 CalculateNormalMapping(float3 normal, float3 tangent, float4 normalmap)
 {
 	float3 mult = float3(1.0f, 1.0f, 1.0f);
@@ -62,8 +64,8 @@ float3 CalculateNormalMapping(float3 normal, float3 tangent, float4 normalmap)
 		float3 temp2 = cross(normal, float3(0.0f, 1.0f, 0.0f));
 
 		//Get their length
-		float length1 = length(temp1); // sqrt(c1.x * c1.x + c1.y * c1.y + c1.z * c1.z);
-		float length2 = length(temp2); // sqrt(c2.x * c2.x + c2.y * c2.y + c2.z * c2.z);
+		float length1 = length(temp1);
+		float length2 = length(temp2); 
 
 		if (length1 > length2)
 		{
@@ -87,6 +89,7 @@ float3 CalculateNormalMapping(float3 normal, float3 tangent, float4 normalmap)
 	return normal;
 }
 
+// Calculate light with the sun
 float4 CalculateDirectionalLight(float3 lightDirection, float3 normal, float3 viewDirection)
 {
 	float4 ambient = float4(0.0f, 0.0f, 0.0f, 0.0f);

@@ -19,6 +19,8 @@ public:
 	dx::XMFLOAT3 GetMin() const { return this->min; }
 	dx::XMFLOAT3 GetMax() const { return this->max; }
 	
+	void TransformMinMax(dx::XMMATRIX worldTransform, dx::XMFLOAT3& min, dx::XMFLOAT3& max) const;
+
 	void GetCorners(dx::XMFLOAT3 corners[8]) const;
 	dx::XMFLOAT3 GetCenter() const;
 	dx::XMFLOAT3 GetExtends() const;

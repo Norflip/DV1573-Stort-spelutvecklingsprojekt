@@ -45,6 +45,10 @@ PlayerComp::PlayerComp(Renderer* renderer, CameraComponent* camComp, Physics* ph
 	this->foodDippingBar = static_cast<GUISprite*>(guiMan->GetGUIObject("foodDippingBar"));
 	this->healthDippingBar = static_cast<GUISprite*>(guiMan->GetGUIObject("healthDippingBar"));
 
+	this->fuelBar = static_cast<GUISprite*>(guiMan->GetGUIObject("fuelBar"));
+	this->foodBar = static_cast<GUISprite*>(guiMan->GetGUIObject("foodBar"));
+	this->healthBar = static_cast<GUISprite*>(guiMan->GetGUIObject("healthBar"));
+
 
 
 	//this->GetOwner()->GetComponent<CameraComponent>()
@@ -95,12 +99,15 @@ void PlayerComp::Update(const float& deltaTime)
 
 	// Fuel drop
 	fuelDippingBar->SetScaleBars(ReverseAndClamp(fuel));
+	fuelBar->SetScaleColor(ReverseAndClamp(fuel));
 
 	// Food drop
 	foodDippingBar->SetScaleBars(ReverseAndClamp(food));
+	foodBar->SetScaleColor(ReverseAndClamp(food));
 
 	// Health drop
 	healthDippingBar->SetScaleBars(ReverseAndClamp(health));
+	healthBar->SetScaleColor(ReverseAndClamp(health));
 
 	if (holding != nullptr)
 	{
@@ -172,7 +179,6 @@ float PlayerComp::ReverseAndClamp(float inputValue)
 void PlayerComp::RayCast(const float& deltaTime)
 {
 
-
 	Ray ray = cam->MouseToRay(p.x, p.y);
 
 	if (KEY_DOWN(E))
@@ -218,6 +224,8 @@ void PlayerComp::RayCast(const float& deltaTime)
 		{
 			if (hit.object != nullptr)
 			{
+
+				AudioMaster::Instance().PlaySoundEvent("pickupFuel");
 				holding = hit.object;
 				RigidBodyComponent* rbComp = hit.object->GetComponent<RigidBodyComponent>();
 				rp::RigidBody* objectRb = rbComp->GetRigidBody();
@@ -227,7 +235,7 @@ void PlayerComp::RayCast(const float& deltaTime)
 				hit.object->GetComponent<BoxColliderComponent>()->SetRotation(0, { 5, 5, 5, 5 });
 				//hit.object->RemoveFlag(ObjectFlag::ENABLED);
 				currentWeapon->RemoveFlag(ObjectFlag::ENABLED);
-
+				
 				if (holding->HasComponent<ParticleSystemComponent>())
 					if (holding->GetComponent<ParticleSystemComponent>()->GetActive())
 						holding->GetComponent<ParticleSystemComponent>()->SetActive(false);
@@ -236,10 +244,11 @@ void PlayerComp::RayCast(const float& deltaTime)
 		}
 
 	}
+
 	//ATTACK ENEMIES
 	if (LMOUSE_DOWN && holding == nullptr)
 	{
-
+		
 		if (physics->RaytestSingle(ray, 5.0f, hit, FilterGroups::ENEMIES))
 		{
 			if (hit.object != nullptr && hit.object->HasComponent<EnemyStatsComp>())
@@ -247,31 +256,27 @@ void PlayerComp::RayCast(const float& deltaTime)
 				if (hit.object->GetComponent<EnemyStatsComp>()->IsEnabled())
 				{
 					if (hit.object->GetComponent<EnemyStatsComp>()->GetHealth() >= 0.0f)
-					{
-						AudioMaster::Instance().PlaySoundEvent("punch");
+					{						
 						hit.object->GetComponent<EnemyStatsComp>()->LoseHealth(attack);
 						std::cout << "Hit hit hit" << std::endl;
-					}
-					else if (hit.object->GetComponent<EnemyStatsComp>()->GetHealth() <= 0.0f)
-					{
 						AudioMaster::Instance().PlaySoundEvent("punch");
-						//hit.object.s  ->GetComponent<PickupComponent>()->SetActive(false);
 
-						RigidBodyComponent* rbComp = hit.object->GetComponent<RigidBodyComponent>();
-						rbComp->Release();
-
-						////hit.object->GetComponent<EnemyStatsComp>()->SetEnabled(false);
-						////hit.object->GetComponent<EnemyStatsComp>()->SetEnabled(false);
-						///*hit.object->GetComponent<EnemyStatsComp>()->SetEnabled(false);
-						//RigidBodyComponent* rbComp = hit.object->GetComponent<RigidBodyComponent>();
-						//rp::RigidBody* objectRb = rbComp->GetRigidBody();
-
-						//phy.UnregisterRigidBody(hit.object->GetComponent<RigidBodyComponent>());
-						//*/
-						Engine::Instance->GetActiveScene()->RemoveObject(hit.object);
-					}
+						if (hit.object->GetComponent<EnemyStatsComp>()->GetHealth() <= 0.0f)
+						{
+							RigidBodyComponent* rbComp = hit.object->GetComponent<RigidBodyComponent>();
+							rbComp->Release();
+							Engine::Instance->GetActiveScene()->RemoveObject(hit.object);
+						}						
+					}					
 				}
 			}
+		}
+
+		else if (physics->RaytestSingle(ray, 5.0f, hit, FilterGroups::PROPS))
+		{
+
+			AudioMaster::Instance().PlaySoundEvent("choptree");
+			
 		}
 	}
 

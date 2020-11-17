@@ -79,6 +79,10 @@ void EnemyAttackComp::UpdateEnemyPos(const float& deltaTime)
 		{
 			attackPlayer = true;
 		}
+		else
+		{
+			attackPlayer = false;
+		}
 
 		dx::XMFLOAT3 vel = rbComp->GetLinearVelocity();
 
