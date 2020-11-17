@@ -19,7 +19,7 @@ void ControllerComp::CheckGrounded()
 	phy->RaytestSingle(ray, distance, hitProps, FilterGroups::PROPS);
 	
 	this->isGrounded = false;
-	if (hitTerrain.object != nullptr)// || hitProps.object != nullptr )//&& hitProps.object->GetName() == "houseBase"))
+	if (hitTerrain.object != nullptr || hitProps.object != nullptr )//&& hitProps.object->GetName() == "houseBase"))
 	{
 		//this->houseVelocity = { 0.f,0.f,0.f };
 		/*if (hitProps.object != nullptr && hitProps.object->GetName() == "houseBase")
@@ -200,7 +200,7 @@ void ControllerComp::Update(const float& deltaTime)
 				this->outsidePos = { current.m128_f32[0], current.m128_f32[1], current.m128_f32[2] };
 				dx::XMFLOAT3 temp = this->playerComp->GetInteriorPosition();
 
-				rbComp->SetPosition({ temp.x, temp.y, temp.z, 0.0f });
+				rbComp->SetPosition({ temp.x, temp.y + 5.0f, temp.z, 0.0f });
 
 				inside = true;
 			}

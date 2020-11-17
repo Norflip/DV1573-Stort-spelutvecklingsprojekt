@@ -37,6 +37,7 @@ void GameScene::Initialize()
 	InitializeLights();
 	InitializeGUI();
 	InitializeObjects();
+	InitializeInterior();
 
 }
 
@@ -44,8 +45,6 @@ void GameScene::InitializeObjects()
 {
 	Object* houseBaseObject = new Object("houseBase");
 	Object* housesLegsObject = new Object("houseLegs");
-
-	Object* houseDoorObject = resources->AssembleObject("Axe", "HealthKitMaterial");
 
 	houseBaseObject->GetTransform().Rotate(0, -90.0f * Math::ToRadians, 0.0);
 
@@ -80,9 +79,6 @@ void GameScene::InitializeObjects()
 	housesLegsObject->AddComponent<SkeletonMeshComponent>(legsComponent);
 
 	Transform::SetParentChild(houseBaseObject->GetTransform(), housesLegsObject->GetTransform());
-
-	Transform::SetParentChild(houseBaseObject->GetTransform(), houseDoorObject->GetTransform());
-	houseDoorObject->GetTransform().SetPosition({ 0, 0, 0 });
 
 	NodeWalkerComp* nodeWalker = houseBaseObject->AddComponent<NodeWalkerComp>();
 	nodeWalker->InitAnimation();
@@ -168,42 +164,7 @@ void GameScene::InitializeObjects()
 	axeObject->AddComponent<WeaponComponent>(playerArms->GetComponent<SkeletonMeshComponent>());
 	playerObject->GetComponent<PlayerComp>()->InsertWeapon(axeObject->GetComponent<WeaponComponent>(), axeObject->GetName());
 	AddObject(axeObject);
-	
 
-	// Inside house
-	Object* houseInterior = resources->AssembleObject("HouseInterior", "HouseInteriorMaterial");
-	houseInterior->GetTransform().SetPosition({ this->interiorPosition.x, this->interiorPosition.y, this->interiorPosition.z, 0 });
-	AddObject(houseInterior);
-
-	Object* fireplace = resources->AssembleObject("Fireplace", "FireplaceMaterial");
-	AddObject(fireplace, houseInterior);
-
-	Object* logs = resources->AssembleObject("Logs", "LogsMaterial");
-	AddObject(logs, houseInterior);
-
-	Object* flowerpot = resources->AssembleObject("Flowerpot", "FlowerpotMaterial");
-	AddObject(flowerpot, houseInterior);
-
-	Object* curtains = resources->AssembleObject("Curtains", "CurtainsMaterial");
-	AddObject(curtains, houseInterior);
-
-	Object* bed = resources->AssembleObject("Bed", "BedMaterial");
-	AddObject(bed, houseInterior);
-
-	Object* bookShelf = resources->AssembleObject("BookShelf", "BookShelfMaterial");
-	AddObject(bookShelf, houseInterior);
-
-	Object* chair = resources->AssembleObject("Chair", "ChairMaterial");
-	AddObject(chair, houseInterior);
-
-	Object* sink = resources->AssembleObject("Sink", "SinkMaterial");
-	AddObject(sink, houseInterior);
-
-	Object* stove = resources->AssembleObject("Stove", "StoveMaterial");
-	AddObject(stove, houseInterior);
-
-	Object* insideDoor = resources->AssembleObject("InsideDoor", "InsideDoorMaterial");
-	AddObject(insideDoor, houseInterior);
 }
 
 void GameScene::InitializeGUI()
@@ -306,6 +267,72 @@ void GameScene::InitializeLights()
 	//testPointLight3->AddComponent<PointLightComponent>(dx::XMFLOAT4(0.f, 0.f, 1.f, 1.f), 25);
 	////AddObject(testPointLight3);
 	//_____________________________________________________________________________________________________________________________________
+}
+
+void GameScene::InitializeInterior()
+{
+	// Inside house
+	Object* houseInterior = resources->AssembleObject("HouseInterior", "HouseInteriorMaterial");
+	houseInterior->GetTransform().SetPosition({ this->interiorPosition.x, this->interiorPosition.y, this->interiorPosition.z, 0 });
+	houseInterior->AddComponent<BoxColliderComponent>(dx::XMFLOAT3(10.0f, 0.5f, 10.0f), dx::XMFLOAT3(0, 0, 0)); // Floor
+	houseInterior->AddComponent<BoxColliderComponent>(dx::XMFLOAT3(1.5f, 10.0f, 10.0f), dx::XMFLOAT3(5.0f, 0, 0)); // Right wall
+	houseInterior->AddComponent<BoxColliderComponent>(dx::XMFLOAT3(1.5f, 10.0f, 10.0f), dx::XMFLOAT3(-9.0f, 0, 0)); // Left wall
+	houseInterior->AddComponent<BoxColliderComponent>(dx::XMFLOAT3(10.0f, 10.0f, 1.5f), dx::XMFLOAT3(0, 0, 7.0f)); // Front wall
+	houseInterior->AddComponent<BoxColliderComponent>(dx::XMFLOAT3(10.0f, 10.0f, 1.5f), dx::XMFLOAT3(0, 0, -8.0f)); // Back wall
+	houseInterior->AddComponent<RigidBodyComponent>(0.0f, FilterGroups::PROPS, FilterGroups::PLAYER, BodyType::STATIC, true); // RB
+	AddObject(houseInterior);
+
+	Object* fireplace = resources->AssembleObject("Fireplace", "FireplaceMaterial");
+	fireplace->GetTransform().SetPosition({ this->interiorPosition.x, this->interiorPosition.y, this->interiorPosition.z });
+	fireplace->AddComponent<BoxColliderComponent>(dx::XMFLOAT3(1.5f, 5.0f, 1.0f), dx::XMFLOAT3(-8.1f, 0, -1.3f));
+	fireplace->AddComponent<RigidBodyComponent>(0.0f, FilterGroups::PROPS, FilterGroups::PLAYER, BodyType::STATIC, true);
+	AddObject(fireplace);
+
+	Object* logs = resources->AssembleObject("Logs", "LogsMaterial");
+	logs->GetTransform().SetPosition({ this->interiorPosition.x, this->interiorPosition.y, this->interiorPosition.z });
+	logs->AddComponent<BoxColliderComponent>(dx::XMFLOAT3(1.0f, 1.0f, 1.0f), dx::XMFLOAT3(-8.1f, 1.0f, -1.3f));
+	logs->AddComponent<RigidBodyComponent>(0.0f, FilterGroups::PROPS, FilterGroups::PLAYER, BodyType::STATIC, true);
+	logs->AddComponent<PointLightComponent>(dx::XMFLOAT4(1.0f, 0.27f, 0, 1.0f), 6.0f);
+	AddObject(logs);
+
+	Object* flowerpot = resources->AssembleObject("Flowerpot", "FlowerpotMaterial");
+	AddObject(flowerpot, houseInterior);
+
+	Object* curtains = resources->AssembleObject("Curtains", "CurtainsMaterial");
+	AddObject(curtains, houseInterior);
+
+	Object* bed = resources->AssembleObject("Bed", "BedMaterial");
+	bed->GetTransform().SetPosition({ this->interiorPosition.x, this->interiorPosition.y, this->interiorPosition.z });
+	bed->AddComponent<BoxColliderComponent>(dx::XMFLOAT3(2.5f, 1.0f, 2.0f), dx::XMFLOAT3(-2.0f, 1.0f, 5.f));
+	bed->AddComponent<RigidBodyComponent>(0.0f, FilterGroups::PROPS, FilterGroups::PLAYER, BodyType::STATIC, true);
+	AddObject(bed);
+
+	Object* bookShelf = resources->AssembleObject("BookShelf", "BookShelfMaterial");
+	bookShelf->GetTransform().SetPosition({ this->interiorPosition.x, this->interiorPosition.y, this->interiorPosition.z });
+	bookShelf->AddComponent<BoxColliderComponent>(dx::XMFLOAT3(1.0f, 5.0f, 1.5f), dx::XMFLOAT3(1.0f, 1.0f, -7.f));
+	bookShelf->AddComponent<RigidBodyComponent>(0.0f, FilterGroups::PROPS, FilterGroups::PLAYER, BodyType::STATIC, true);
+	AddObject(bookShelf);
+
+	Object* chair = resources->AssembleObject("Chair", "ChairMaterial");
+	AddObject(chair, houseInterior);
+
+	Object* sink = resources->AssembleObject("Sink", "SinkMaterial");
+	sink->GetTransform().SetPosition({ this->interiorPosition.x, this->interiorPosition.y, this->interiorPosition.z });
+	sink->AddComponent<BoxColliderComponent>(dx::XMFLOAT3(0.5f, 2.0f, 1.5f), dx::XMFLOAT3(-1.5f, 1.0f, -7.f));
+	sink->AddComponent<RigidBodyComponent>(0.0f, FilterGroups::PROPS, FilterGroups::PLAYER, BodyType::STATIC, true);
+	AddObject(sink);
+
+	Object* stove = resources->AssembleObject("Stove", "StoveMaterial");
+	stove->GetTransform().SetPosition({ this->interiorPosition.x, this->interiorPosition.y, this->interiorPosition.z });
+	stove->AddComponent<BoxColliderComponent>(dx::XMFLOAT3(0.5f, 2.0f, 1.5f), dx::XMFLOAT3(-2.5f, 1.0f, -7.f));
+	stove->AddComponent<RigidBodyComponent>(0.0f, FilterGroups::PROPS, FilterGroups::PLAYER, BodyType::STATIC, true);
+	AddObject(stove);
+
+	Object* insideDoor = resources->AssembleObject("InsideDoor", "InsideDoorMaterial");
+	insideDoor->GetTransform().SetPosition({ this->interiorPosition.x, this->interiorPosition.y, this->interiorPosition.z });
+	insideDoor->AddComponent<BoxColliderComponent>(dx::XMFLOAT3(0.5f, 2.0f, 1.5f), dx::XMFLOAT3(-2.5f, 1.0f, -7.f));
+	insideDoor->AddComponent<RigidBodyComponent>(0.0f, FilterGroups::PROPS, FilterGroups::PLAYER, BodyType::STATIC, true);
+	AddObject(insideDoor);
 }
 
 void GameScene::OnActivate()
