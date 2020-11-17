@@ -29,7 +29,7 @@ void EnemyManager::InitBaseEnemy()
 	{
 		dx::XMFLOAT3 playerPos;
 		dx::XMStoreFloat3(&playerPos, player->GetTransform().GetPosition());
-		SpawnEnemy({ playerPos.x, playerPos.y + 6, (float)(playerPos.z + i * 5 )});
+		SpawnEnemy({ playerPos.x - i - 5 * 10, playerPos.y, (float)(playerPos.z - i - 5 * 5 )});
 	}
 }
 
@@ -57,7 +57,7 @@ void EnemyManager::InitChargerEnemy()
 	{
 		dx::XMFLOAT3 playerPos;
 		dx::XMStoreFloat3(&playerPos, player->GetTransform().GetPosition());
-		SpawnChargerEnemy({ playerPos.x, playerPos.y, (float)(playerPos.z + i * 5) });
+		SpawnChargerEnemy({ playerPos.x + i + 1 * 10, playerPos.y, (float)(playerPos.z + i + 1 * 10) });
 	}
 }
 
