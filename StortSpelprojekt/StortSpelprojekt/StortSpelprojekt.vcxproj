@@ -186,7 +186,6 @@
     <ClCompile Include="GameOverScene.cpp" />
     <ClCompile Include="GameScene.cpp" />
     <ClCompile Include="GrassComponent.cpp" />
-    <ClCompile Include="ChunkGrid.cpp" />
     <ClCompile Include="GUICompass.cpp">
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">false</ExcludedFromBuild>
     </ClCompile>
@@ -222,7 +221,7 @@
     <ClCompile Include="RigidBodyComponent.cpp" />
     <ClCompile Include="ResourceManager.cpp" />
     <ClCompile Include="Scene.cpp" />
-    <ClCompile Include="SegmentGenerator.cpp" />
+    <ClCompile Include="WorldGenerator.cpp" />
     <ClCompile Include="Shader.cpp" />
     <ClCompile Include="GUIFont.cpp" />
     <ClCompile Include="EnemySMComp.cpp" />
@@ -269,7 +268,6 @@
     <ClInclude Include="FXAARenderPass.h" />
     <ClInclude Include="GameOverScene.h" />
     <ClInclude Include="GameScene.h" />
-    <ClInclude Include="ChunkGrid.h" />
     <ClInclude Include="GUICompass.h">
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">false</ExcludedFromBuild>
     </ClInclude>
@@ -290,8 +288,8 @@
     <ClInclude Include="Random.h" />
     <ClInclude Include="Resource.h" />
     <ClInclude Include="ResourceManager.h" />
-    <ClInclude Include="SegmentDescription.h" />
-    <ClInclude Include="SegmentGenerator.h" />
+    <ClInclude Include="WorldDescription.h" />
+    <ClInclude Include="WorldGenerator.h" />
     <ClInclude Include="Shapes.h" />
     <ClInclude Include="GameClock.h" />
     <ClInclude Include="GrassComponent.h" />

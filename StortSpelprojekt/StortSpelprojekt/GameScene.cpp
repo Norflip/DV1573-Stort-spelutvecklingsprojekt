@@ -122,7 +122,7 @@ void GameScene::InitializeObjects()
 	healthkitObject->GetComponent<MeshComponent>()->SetBatchable(true);
 	healthkitObject->GetTransform().SetPosition({ 23,2,50 });
 	healthkitObject->AddComponent<BoxColliderComponent>(dx::XMFLOAT3{ 0.5f, 0.5f, 0.5f }, dx::XMFLOAT3{ 0, 0, 0 });
-	healthkitObject->AddComponent<PickupComponent>(Type::Health, 20.0f);
+	healthkitObject->AddComponent<PickupComponent>(PickupType::Health, 20.0f);
 	healthkitObject->AddComponent<RigidBodyComponent>(0.f, FilterGroups::PICKUPS, (FilterGroups::EVERYTHING &~FilterGroups::PLAYER), BodyType::DYNAMIC,true);
 	AddObject(healthkitObject);
 
@@ -131,7 +131,7 @@ void GameScene::InitializeObjects()
 	fuelCanObject->GetComponent<MeshComponent>()->SetBatchable(true);
 	fuelCanObject->GetTransform().SetPosition({ 22,2,52 });
 	fuelCanObject->AddComponent<BoxColliderComponent>(dx::XMFLOAT3{ 0.3f, 0.3f, 0.3f }, dx::XMFLOAT3{ 0, 0, 0 });
-	fuelCanObject->AddComponent<PickupComponent>(Type::Fuel, 20.0f);
+	fuelCanObject->AddComponent<PickupComponent>(PickupType::Fuel, 20.0f);
 	fuelCanObject->AddComponent<RigidBodyComponent>(10.f, FilterGroups::HOLDABLE, (FilterGroups::EVERYTHING &~FilterGroups::PLAYER), BodyType::DYNAMIC, true);
 	AddObject(fuelCanObject);
 
@@ -141,7 +141,7 @@ void GameScene::InitializeObjects()
 	beansObject->GetComponent<MeshComponent>()->SetBatchable(true);
 	beansObject->GetTransform().SetPosition({22, 2.0f, 53 });
 	beansObject->AddComponent<BoxColliderComponent>(dx::XMFLOAT3{ 0.5f, 0.5f, 0.5f }, dx::XMFLOAT3{ 0, 0, 0 });
-	beansObject->AddComponent<PickupComponent>(Type::Food, 20.0f);
+	beansObject->AddComponent<PickupComponent>(PickupType::Food, 20.0f);
 	beansObject->AddComponent<RigidBodyComponent>(0.f, FilterGroups::PICKUPS, (FilterGroups::EVERYTHING & ~FilterGroups::PLAYER), BodyType::DYNAMIC, true);
 
 	beansObject->AddComponent<ParticleSystemComponent>(renderer, particleShader);
@@ -328,7 +328,7 @@ void GameScene::Update(const float& deltaTime)
 {
 	Scene::Update(deltaTime);
 	world.UpdateRelevantChunks(player->GetTransform(), camera);
-//	world.DrawDebug();
+	world.DrawDebug();
 
 	static_cast<GUIFont*>(guiManager->GetGUIObject("fps"))->SetString(std::to_string((int)GameClock::Instance().GetFramesPerSecond()));
 	guiManager->UpdateAll();

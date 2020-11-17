@@ -8,6 +8,10 @@ Bounds::Bounds() :
 
 }
 
+Bounds::Bounds(dx::XMFLOAT3 min, dx::XMFLOAT3 max) : min(min), max(max)
+{
+}
+
 Bounds::~Bounds()
 {
 }

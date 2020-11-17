@@ -30,6 +30,7 @@ float4 main(PixelInputType input) : SV_TARGET
 {
     float4 diffuseColor = float4(1.0f, 1.0f, 1.0f, 1.0f);
     diffuseColor = screenTexture.Sample(defaultSampleType, input.uv);
+    return diffuseColor;
     
     float depth = depthTexture.Sample(defaultSampleType, input.uv).x;
     

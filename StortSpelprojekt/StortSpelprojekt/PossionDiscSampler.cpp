@@ -95,12 +95,11 @@ bool PossionDiscSampler::IsValid(dx::XMFLOAT2 point, dx::XMFLOAT2 regionSize, fl
 		{
 			for (int y = ymin; y <= ymax; y++)
 			{
+
+				// cols fick ett skräpvärde?
+
 				int index = grid[x * cols + y] - 1;
-
-				if (index > points.size())
-					continue;
-
-				if (index != -1)
+				if (index >= 0 && index < points.size())
 				{
 					dx::XMFLOAT2 found = points[index];
 					dx::XMFLOAT2 differance(point.x - found.x, point.y - found.y);

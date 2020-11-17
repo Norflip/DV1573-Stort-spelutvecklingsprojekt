@@ -188,20 +188,20 @@ void PlayerComp::RayCast(const float& deltaTime)
 			if (hit.object != nullptr)
 			{
 				AudioMaster::Instance().PlaySoundEvent("pickupSound");
-				Type pickupType = hit.object->GetComponent<PickupComponent>()->GetType();
+				PickupType pickupType = hit.object->GetComponent<PickupComponent>()->GetType();
 				float temp = hit.object->GetComponent<PickupComponent>()->GetAmount();
 
-				if (pickupType == Type::Health)
+				if (pickupType == PickupType::Health)
 				{
 					if ((health + temp) <= 100.0f)
 						health += temp;
 				}
-				else if (pickupType == Type::Food)
+				else if (pickupType == PickupType::Food)
 				{
 					if ((food + temp) <= 100.0f)
 						food += temp;
 				}
-				else if (pickupType == Type::Fuel)
+				else if (pickupType == PickupType::Fuel)
 				{
 					if ((fuel + temp) <= 100.0f)
 						fuel += temp;

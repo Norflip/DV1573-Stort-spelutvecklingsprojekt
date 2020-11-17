@@ -6,6 +6,7 @@ class Bounds
 {
 public:
 	Bounds();
+	Bounds(dx::XMFLOAT3 min, dx::XMFLOAT3 max);
 	virtual ~Bounds();
 	
 	void CalculateAABB(const std::vector<Mesh*>& meshes);

@@ -1,14 +1,14 @@
 #pragma once
 #include "Noise.h"
 
-struct SegmentDescription
+struct WorldDescription
 {
 	int maxSteps;
 	int directionalSteps;
 	std::map<std::string, int> queueModifier;
 	Noise::Settings noiseSettings;
 
-	SegmentDescription(int noiseSeed, int maxSteps, int directionalSteps)
+	WorldDescription(int noiseSeed, int maxSteps, int directionalSteps)
 	{
 		this->maxSteps = maxSteps;
 		this->directionalSteps = directionalSteps;

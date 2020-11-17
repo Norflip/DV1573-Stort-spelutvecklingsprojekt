@@ -1,8 +1,8 @@
 #pragma once
 #include "ObjectPooler.h"
 #include "ResourceManager.h"
-#include "SegmentDescription.h"
-#include "SegmentGenerator.h"
+#include "WorldDescription.h"
+#include "WorldGenerator.h"
 #include "SaveState.h"
 
 class World
@@ -32,22 +32,17 @@ public:
 
 private:
 	dx::XMINT2 GetChunkIndex(Object* object) const;
-	void RegisterToPool(ObjectPooler* pooler, ObjectSpawner* spawner, const std::map<std::string, int>& queueCountTable) const;
 	int TryGetQueueCount(std::string key,  const std::map<std::string, int>& queueCountTable, int defaultCount = 1) const;
 	
-	void RegisterFood(ObjectPooler* pooler, ObjectSpawner* spawner, const std::map<std::string, int>& queueCountTable) const;
-	void RegisterFuel(ObjectPooler* pooler, ObjectSpawner* spawner, const std::map<std::string, int>& queueCountTable) const;
-	void RegisterHealth(ObjectPooler* pooler, ObjectSpawner* spawner, const std::map<std::string, int>& queueCountTable) const;
-	void RegisterWeapon(ObjectPooler* pooler, ObjectSpawner* spawner, const std::map<std::string, int>& queueCountTable) const;
-	void RegisterStatic(ObjectPooler* pooler, ObjectSpawner* spawner, const std::map<std::string, int>& queueCountTable) const;
+	void RegisterFood(ObjectSpawner* spawner, const std::map<std::string, int>& queueCountTable) const;
+	void RegisterFuel(ObjectSpawner* spawner, const std::map<std::string, int>& queueCountTable) const;
+	void RegisterHealth(ObjectSpawner* spawner, const std::map<std::string, int>& queueCountTable) const;
+	void RegisterWeapon(ObjectSpawner* spawner, const std::map<std::string, int>& queueCountTable) const;
+	void RegisterStatic(ObjectSpawner* spawner, const std::map<std::string, int>& queueCountTable) const;
 
 private:
-	SegmentGenerator generator;
+	WorldGenerator generator;
 	ResourceManager* resources;
-	std::vector<Chunk*> relevant;
-
-	ObjectSpawner* spawner;
-	ObjectPooler* pooler;
-	
+	std::vector<Chunk*> relevant;	
 	dx::XMINT2 lastRelevantIndex;
 };
