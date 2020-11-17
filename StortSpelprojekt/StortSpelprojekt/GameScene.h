@@ -23,6 +23,7 @@ public:
 
 	void OnActivate() override;
 	void OnDeactivate() override;
+	void SwitchScene();
 
 	void Update(const float& deltaTime) override;
 	void FixedUpdate(const float& fixedDeltaTime) override;
@@ -33,4 +34,7 @@ public:
 private:
 	World world;
 	Object* house;
+
+	int fogId;
+	float fogCol;
 };

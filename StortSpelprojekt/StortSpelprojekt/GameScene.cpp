@@ -8,6 +8,9 @@ void GameScene::RemoveEnemy()
 {
 	enemy->RemoveFlag(ObjectFlag::ENABLED);
 	enemy->AddFlag(ObjectFlag::REMOVED);
+	srand(time(0));
+	fogId = 0;
+	fogCol = 0;
 }
 
 GameScene::GameScene()
@@ -37,6 +40,7 @@ void GameScene::Initialize()
 	InitializeLights();
 	InitializeGUI();
 	InitializeObjects();
+	
 
 }
 
@@ -171,10 +175,18 @@ void GameScene::InitializeObjects()
 	/* Test sign */	
 	Object* testObject = resources->AssembleObject("LeftDirectionSign", "LeftDirectionSignMaterial");
 	testObject->GetTransform().SetPosition({ 22, 0.5f, 50 });
+	testObject->GetComponent<MeshComponent>()->SetBatchable(true);
+	testObject->AddComponent<BoxColliderComponent>(dx::XMFLOAT3{ 0.3f, 0.3f, 0.3f }, dx::XMFLOAT3{ 0, 0, 0 });
+	testObject->AddComponent<PickupComponent>(Type::Fuel, 20.0f);
+	testObject->AddComponent<RigidBodyComponent>(10.f, FilterGroups::HOLDABLE, (FilterGroups::EVERYTHING & ~FilterGroups::PLAYER), BodyType::DYNAMIC, true);
 	AddObject(testObject);
 
 	Object* testObject1 = resources->AssembleObject("RightDirectionSign", "RightDirectionSignMaterial"); 
 	testObject1->GetTransform().SetPosition({ 24, 0.5f, 50 });
+	testObject1->GetComponent<MeshComponent>()->SetBatchable(true);
+	testObject1->AddComponent<BoxColliderComponent>(dx::XMFLOAT3{ 0.3f, 0.3f, 0.3f }, dx::XMFLOAT3{ 0, 0, 0 });
+	testObject1->AddComponent<PickupComponent>(Type::Fuel, 20.0f);
+	testObject1->AddComponent<RigidBodyComponent>(10.f, FilterGroups::HOLDABLE, (FilterGroups::EVERYTHING & ~FilterGroups::PLAYER), BodyType::DYNAMIC, true);
 	AddObject(testObject1);
 
 	Object* testObject2 = resources->AssembleObject("Endsign", "EndsignMaterial"); 
@@ -287,15 +299,15 @@ void GameScene::InitializeLights()
 
 void GameScene::OnActivate()
 {
+	
 	SaveState state;
-	state.seed = 1337;
+	state.seed = rand();
 	state.segment = 0;
 
 	player->GetComponent<PlayerComp>()->Reset();
 	world.ConstructSegment(state);
 
 	PrintSceneHierarchy(root, 0);
-
 
 	house->GetComponent<NodeWalkerComp>()->InitializePath(world.GetPath());
 	
@@ -310,13 +322,11 @@ void GameScene::OnActivate()
 		if (house->HasComponent<RigidBodyComponent>())
 			house->GetComponent<RigidBodyComponent>()->SetPosition(position);
 
-		position = dx::XMVectorAdd(position, dx::XMVectorSet(5, 12, 0, 0));
+		position = dx::XMVectorAdd(position, dx::XMVectorSet(0, 12, -5, 0));
 
 		player->GetTransform().SetPosition(position);
 		player->GetComponent<RigidBodyComponent>()->SetPosition(position);
 	}
-
-
 
 	renderer->AddRenderPass(guiManager);
 
@@ -346,11 +356,67 @@ void GameScene::OnDeactivate()
 	//this->PrintSceneHierarchy(root, 0);
 }
 
+void GameScene::SwitchScene()
+{
+	OnDeactivate();
+	ShowCursor(false);
+	fogId += 0.5f;
+	fogCol += 0.5f; 
+
+	SaveState state;
+	state.seed = rand();
+	state.segment = 0;
+	world.ConstructSegment(state);
+	PrintSceneHierarchy(root, 0);
+	renderer->SetIdAndColor(fogId, fogCol);
+
+	house->GetComponent<NodeWalkerComp>()->InitializePath(world.GetPath());
+
+	if (house != nullptr && player != nullptr)
+	{
+		std::vector<dx::XMINT2> indexes = world.GetPath().GetIndexes();
+		dx::XMINT2 spawnIndex = indexes[0];
+
+		dx::XMVECTOR position = dx::XMVectorAdd(Chunk::IndexToWorld(spawnIndex, 0.0f), dx::XMVectorSet(CHUNK_SIZE / 2.0f, 0, CHUNK_SIZE / 2.0f, 0));
+		house->GetTransform().SetPosition(position);
+
+		if (house->HasComponent<RigidBodyComponent>())
+			house->GetComponent<RigidBodyComponent>()->SetPosition(position);
+
+		position = dx::XMVectorAdd(position, dx::XMVectorSet(0, 12, -5, 0));
+
+		player->GetTransform().SetPosition(position);
+		player->GetComponent<RigidBodyComponent>()->SetPosition(position);
+	}
+
+	renderer->AddRenderPass(guiManager);
+
+	/*
+	Input::Instance().ConfineMouse();
+	Input::Instance().SetMouseMode(dx::Mouse::Mode::MODE_RELATIVE);
+	ShowCursor(false);
+
+	AudioMaster::Instance().PlaySoundEvent("wind");*/
+	//this->PrintSceneHierarchy(root, 0);
+
+	//LOADING BASE MONSTER; ADDING SKELETONS TO IT
+	enemyManager = new EnemyManager(resources, player, player->GetComponent<PlayerComp>(), root);
+	enemyManager->InitBaseEnemy();
+	enemyManager->InitChargerEnemy();
+
+	LightManager::Instance().ForceUpdateBuffers(renderer->GetContext());
+}
+
 void GameScene::Update(const float& deltaTime)
 {
 	Scene::Update(deltaTime);
 	world.UpdateRelevantChunks(player->GetTransform(), camera);
 //	world.DrawDebug();
+
+	if (KEY_PRESSED(LeftShift) && KEY_PRESSED(P))
+	{
+		SwitchScene();
+	}
 
 	static_cast<GUIFont*>(guiManager->GetGUIObject("fps"))->SetString(std::to_string((int)GameClock::Instance().GetFramesPerSecond()));
 	guiManager->UpdateAll();

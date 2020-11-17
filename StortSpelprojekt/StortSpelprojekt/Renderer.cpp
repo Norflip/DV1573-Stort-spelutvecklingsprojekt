@@ -153,18 +153,18 @@ void Renderer::RenderFrame(CameraComponent* camera, float time, RenderTexture& t
 	// ----------
 
 	// Tempor�rt f�r att �ndra skybox texture
-	static int ids = 0;
-	static float color = 0.0f;
+	//ids = 0;
+	//color = 0.0f;
 
-	color += (float)0.0005f;
-	if (color > 1.0f)
-	{
-		color -= 1.0f;
-		if (ids != 3)
-			ids += 1;
-		else
-			ids = 0;
-	}
+	//color += (float)0.000005f;
+	//if (color > 1.0f)
+	//{
+	//	color -= 1.0f;
+	//	if (ids != 3)
+	//		ids += 1;
+	//	else
+	//		ids = 0;
+	//}
 
 	cb_Scene& data = sceneBuffer.GetData();
 
@@ -418,6 +418,12 @@ void Renderer::RemoveRenderPass(RenderPass* pass)
 	std::vector<RenderPass*>::iterator it = std::find(passes.begin(), passes.end(), pass);
 
 	passes.erase(it);
+}
+
+void Renderer::SetIdAndColor(int id, float color)
+{
+	this->ids = id;
+	this->color = color;
 }
 
 void Renderer::AddItem(const RenderItem& item, bool transparent)

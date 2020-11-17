@@ -71,7 +71,7 @@ void PlayerComp::Update(const float& deltaTime)
 {
 	RayCast(deltaTime);
 
-
+	
 
 
 	float frameTime = FCAST(GameClock::Instance().GetFrameTime() / 1000.0);
@@ -86,7 +86,7 @@ void PlayerComp::Update(const float& deltaTime)
 #if !immortal
 		// make better later
 		if ((fuel < 0 || health <= 0))
-			Engine::Instance->SwitchScene(SceneIndex::GAME_OVER);
+			//Engine::Instance->SwitchScene(SceneIndex::GAME_OVER); //VIKTOR TA BORT REEEEEEEEEEEEEEEEEEEEEEE
 #endif
 		if (food < 0)
 			foodEmpty = true;
