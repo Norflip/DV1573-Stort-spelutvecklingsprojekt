@@ -119,10 +119,8 @@ void GameScene::InitializeObjects()
 
 	world.Initialize(root, resources, renderer);
 	
-	//LOADING BASE MONSTER; ADDING SKELETONS TO IT
-	enemyManager = new EnemyManager(resources, player, player->GetComponent<PlayerComp>(), root);
-	enemyManager->InitBaseEnemy();
 	
+
 	/* PICKUP STUFF DONT DELETE THESEEE */
 	Object* healthkitObject = resources->AssembleObject("HealthKit", "HealthKitMaterial");
 	healthkitObject->GetComponent<MeshComponent>()->SetBatchable(true);
@@ -169,6 +167,20 @@ void GameScene::InitializeObjects()
 	playerObject->GetComponent<PlayerComp>()->InsertWeapon(axeObject->GetComponent<WeaponComponent>(), axeObject->GetName());
 	AddObject(axeObject);
 	
+
+	/* Test sign */	
+	Object* testObject = resources->AssembleObject("LeftDirectionSign", "LeftDirectionSignMaterial");
+	testObject->GetTransform().SetPosition({ 22, 0.5f, 50 });
+	AddObject(testObject);
+
+	Object* testObject1 = resources->AssembleObject("RightDirectionSign", "RightDirectionSignMaterial"); 
+	testObject1->GetTransform().SetPosition({ 24, 0.5f, 50 });
+	AddObject(testObject1);
+
+	Object* testObject2 = resources->AssembleObject("Endsign", "EndsignMaterial"); 
+	testObject2->GetTransform().SetPosition({ 23, 0.5f, 50 });
+	AddObject(testObject2);
+
 }
 
 void GameScene::InitializeGUI()
@@ -313,6 +325,13 @@ void GameScene::OnActivate()
 	ShowCursor(false);
 
 	AudioMaster::Instance().PlaySoundEvent("wind");
+	//this->PrintSceneHierarchy(root, 0);
+
+	//LOADING BASE MONSTER; ADDING SKELETONS TO IT
+	enemyManager = new EnemyManager(resources, player, player->GetComponent<PlayerComp>(), root);
+	enemyManager->InitBaseEnemy();
+	enemyManager->InitChargerEnemy();
+	
 	LightManager::Instance().ForceUpdateBuffers(renderer->GetContext());
 }
 
@@ -353,5 +372,3 @@ void GameScene::Render()
 	
 	renderer->RenderFrame(camera, (float)clock.GetSeconds());
 }
-
-

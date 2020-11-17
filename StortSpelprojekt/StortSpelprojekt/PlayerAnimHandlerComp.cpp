@@ -38,6 +38,7 @@ void PlayerAnimHandlerComp::Animate(const float& time)
 		attackTimer = 0;
 		attackCooldown = 0;
 		attacking = true;
+		AudioMaster::Instance().PlaySoundEvent("axeSwing");
 	}
 	else if (attacking && attackTimer > 0.83f)
 	{
