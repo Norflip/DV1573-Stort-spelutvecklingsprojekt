@@ -34,6 +34,8 @@ public:
 private:
 	World world;
 	Object* house;
+	Object* leftSign;
+	Object* rightSign;
 
 	int fogId;
 	float fogCol;

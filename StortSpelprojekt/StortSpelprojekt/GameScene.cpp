@@ -172,26 +172,31 @@ void GameScene::InitializeObjects()
 	AddObject(axeObject);
 	
 
+
+	Object* roadSign = resources->AssembleObject("Endsign", "EndsignMaterial");
+	roadSign->GetTransform().SetPosition({ 23, 0.5f, 50 });
+	AddObject(roadSign);
+
+	rightSign = new Object("LeftDirectionSign");
+
 	/* Test sign */	
-	Object* testObject = resources->AssembleObject("LeftDirectionSign", "LeftDirectionSignMaterial");
-	testObject->GetTransform().SetPosition({ 22, 0.5f, 50 });
-	testObject->GetComponent<MeshComponent>()->SetBatchable(true);
-	testObject->AddComponent<BoxColliderComponent>(dx::XMFLOAT3{ 0.3f, 0.3f, 0.3f }, dx::XMFLOAT3{ 0, 0, 0 });
-	testObject->AddComponent<PickupComponent>(Type::Fuel, 20.0f);
-	testObject->AddComponent<RigidBodyComponent>(10.f, FilterGroups::HOLDABLE, (FilterGroups::EVERYTHING & ~FilterGroups::PLAYER), BodyType::DYNAMIC, true);
-	AddObject(testObject);
+	rightSign = resources->AssembleObject("LeftDirectionSign", "LeftDirectionSignMaterial");
+	rightSign->GetTransform().SetPosition({ roadSign->GetTransform().GetPosition().m128_f32[0] - 1.0f, roadSign->GetTransform().GetPosition().m128_f32[1], roadSign->GetTransform().GetPosition().m128_f32[2] });
+	rightSign->AddComponent<BoxColliderComponent>(dx::XMFLOAT3{ 0.3f, 0.3f, 0.3f }, dx::XMFLOAT3{ 0, 0, 0 });
+	//leftSign->AddComponent<ClickableComponent>(ClickType::Switch);
+	rightSign->AddComponent<RigidBodyComponent>(10.f, FilterGroups::CLICKABLE, (FilterGroups::EVERYTHING & ~FilterGroups::PLAYER), BodyType::DYNAMIC, true);
+	AddObject(rightSign);
 
-	Object* testObject1 = resources->AssembleObject("RightDirectionSign", "RightDirectionSignMaterial"); 
-	testObject1->GetTransform().SetPosition({ 24, 0.5f, 50 });
-	testObject1->GetComponent<MeshComponent>()->SetBatchable(true);
-	testObject1->AddComponent<BoxColliderComponent>(dx::XMFLOAT3{ 0.3f, 0.3f, 0.3f }, dx::XMFLOAT3{ 0, 0, 0 });
-	testObject1->AddComponent<PickupComponent>(Type::Fuel, 20.0f);
-	testObject1->AddComponent<RigidBodyComponent>(10.f, FilterGroups::HOLDABLE, (FilterGroups::EVERYTHING & ~FilterGroups::PLAYER), BodyType::DYNAMIC, true);
-	AddObject(testObject1);
+	leftSign = new Object("RightDirectionSign");
 
-	Object* testObject2 = resources->AssembleObject("Endsign", "EndsignMaterial"); 
-	testObject2->GetTransform().SetPosition({ 23, 0.5f, 50 });
-	AddObject(testObject2);
+	leftSign = resources->AssembleObject("RightDirectionSign", "RightDirectionSignMaterial");
+	leftSign->GetTransform().SetPosition({ roadSign->GetTransform().GetPosition().m128_f32[0] + 1.0f, roadSign->GetTransform().GetPosition().m128_f32[1], roadSign->GetTransform().GetPosition().m128_f32[2] });
+	leftSign->AddComponent<BoxColliderComponent>(dx::XMFLOAT3{ 0.3f, 0.3f, 0.3f }, dx::XMFLOAT3{ 0, 0, 0 });
+	//leftSign->AddComponent<ClickableComponent>(ClickType::Switch);
+	leftSign->AddComponent<RigidBodyComponent>(10.f, FilterGroups::CLICKABLE, (FilterGroups::EVERYTHING & ~FilterGroups::PLAYER), BodyType::DYNAMIC, true);
+	AddObject(leftSign);
+
+
 
 }
 
@@ -413,9 +418,16 @@ void GameScene::Update(const float& deltaTime)
 	world.UpdateRelevantChunks(player->GetTransform(), camera);
 //	world.DrawDebug();
 
-	if (KEY_PRESSED(LeftShift) && KEY_PRESSED(P))
+	if (rightSign->GetComponent<ClickableComponent>()->GetActive())
 	{
 		SwitchScene();
+		//rightSign->GetComponent<ClickableComponent>()->SetActive(false); //VIKTOR
+
+	}
+	if (KEY_PRESSED(LeftShift) && KEY_PRESSED(P))
+	{
+		rightSign; //nånting nånting klicka på skylten
+		//SwitchScene();
 	}
 
 	static_cast<GUIFont*>(guiManager->GetGUIObject("fps"))->SetString(std::to_string((int)GameClock::Instance().GetFramesPerSecond()));

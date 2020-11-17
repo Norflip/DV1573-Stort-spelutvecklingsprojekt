@@ -4,21 +4,19 @@
 namespace dx = DirectX;
 
 
-enum class Type { Switch };
+enum class ClickType { Switch };
 
-class PickupComponent :public Component
+class ClickableComponent :public Component
 {
 private:
-	float value;
-	Type clickableType;
+	ClickType clickableType;
 	bool isActive;
 
 public:
-
-	PickupComponent(Type type, float amount = 25.f);
-	virtual ~PickupComponent();
+	ClickableComponent(ClickType type);
+	virtual ~ClickableComponent();
 	void SetActive(bool isActive);
-	float GetAmount() { return this->value; }
-	Type GetType() { return this->clickableType; }
+	bool GetActive() { return this->isActive; }
+	ClickType GetType() { return this->clickableType; }
 	void Update(const float& deltaTime);
 };

@@ -66,6 +66,7 @@ private:
 	float rayDistance;	
 	Object* currentWeapon;
 	Object* holding;
+	Object* clickable;
 	RayHit hit;
 	Physics* physics;
 	CameraComponent* cam;
