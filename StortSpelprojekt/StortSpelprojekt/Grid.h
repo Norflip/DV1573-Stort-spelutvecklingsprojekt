@@ -16,9 +16,12 @@ class Grid
 		void Init();
 		bool CheckInGrid();
 	private:
+		void PriorityQueue(int cost);
+
 		int rows;
 		float nodeSize;
 		int objectOffset;
 		Object* object;
 		DShape box;
+		std::priority_queue<int, int> maxHeap;
 };

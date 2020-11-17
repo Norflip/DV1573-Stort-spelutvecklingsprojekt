@@ -28,11 +28,11 @@ bool Grid::CheckInGrid()
 	dx::XMFLOAT2 endNode = dx::XMFLOAT2(8, 0);
 	std::vector<aStar*> nodeValue;
 
-
 	for (int x = 0; x < rows; x++)
 	{
 		for (int z = 0; z < rows; z++)
 		{
+			nodeValue[x+z]->nextNode = 
 			if (gridPosX == x && gridPosZ == z)
 			{
 				box.DrawBox(dx::XMFLOAT3((x * nodeSize) + 5, 4, (z * nodeSize) + 5), dx::XMFLOAT3(2, 2, 2), dx::XMFLOAT3(0, 1, 0));
@@ -54,4 +54,9 @@ bool Grid::CheckInGrid()
 	//std::cout << test << std::endl;
 
 	return false;
+}
+
+void Grid::PriorityQueue(int cost)
+{
+	maxHeap.push(cost);
 }
