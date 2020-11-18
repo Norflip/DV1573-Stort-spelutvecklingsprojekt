@@ -28,7 +28,6 @@ float4 main(VS_OUTPUT input) : SV_TARGET
 
 	for (uint i = 0; i < lightCount; i++)
 	{
-		float4 result = float4(0.0f, 0.0f, 0.0f, 0.0f);
 		uint lightIndex = LightIndexList[startOffset + i];
 		Light light = Lights[lightIndex];
 		

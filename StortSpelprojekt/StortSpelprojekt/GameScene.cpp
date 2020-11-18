@@ -118,15 +118,20 @@ void GameScene::InitializeObjects()
 	AddObject(cameraObject, playerObject);
 	AddObject(playerObject);
 
-	Object* testPointLight = new Object("body_pointLight");
+	Object* spotLight = new Object("body_spotLight");
 
-	dx::XMFLOAT3 lightTranslation = dx::XMFLOAT3(0.0f, 0.0f, 0.0f);
-	testPointLight->GetTransform().SetPosition(dx::XMLoadFloat3(&lightTranslation));
+	dx::XMFLOAT3 lightTranslation = dx::XMFLOAT3(0.0f, 0.5f, 0.0f);
+	spotLight->GetTransform().SetPosition(dx::XMLoadFloat3(&lightTranslation));
 
-	LightComponent* pLight = testPointLight->AddComponent<LightComponent>(0,dx::XMFLOAT4(0.7f, 0.3f, 0.0f, 1.0f), 7.f);
-	pLight->SetEnabled(true);
-	//pLight->SetIntensity(0.05f);
-	AddObject(testPointLight, playerObject);
+	LightComponent* sLight = spotLight->AddComponent<LightComponent>(1,dx::XMFLOAT4(0.7f, 0.7f, 0.3f, 1.0f), 7.f);
+	sLight->SetEnabled(true);
+	//sLightC->SetEnabled(true);
+	sLight->SetIntensity(0.5f);
+	sLight->SetRange(7.f);
+	sLight->SetSpotlightAngle(10.f);
+	sLight->SetDirection({ 1.f,0.f,0.f });
+	AddObject(spotLight, playerObject);
+
 
 	/* For fuel info from playercomp */
 	nodeWalker->GetPlayerInfo(playerObject->GetComponent<PlayerComp>());
@@ -308,15 +313,28 @@ void GameScene::InitializeLights()
 
 	dx::XMFLOAT3 lightTranslation = dx::XMFLOAT3(0.0f, 0.0f, 0.0f);
 	dLight->GetTransform().SetPosition(dx::XMLoadFloat3(&lightTranslation));
-	LightComponent* dLightC = dLight->AddComponent<LightComponent>(2, dx::XMFLOAT4(0.3f, 0.3f, 0.8f, 1.0f), 7.f);
+	LightComponent* dLightC = dLight->AddComponent<LightComponent>(2, dx::XMFLOAT4(0.7f, 0.2f, 0.2f, 1.0f), 7.f);
 	dLightC->SetEnabled(true);
-	dLightC->SetIntensity(0.5f);
+	dLightC->SetIntensity(0.1f);
 	dx::XMFLOAT3 sunDirection;
 	dx::XMStoreFloat3(&sunDirection, dx::XMVector3Normalize(dx::XMVectorSet(0, -1, 1, 0)));
 	dLightC->SetDirection(sunDirection);
 	AddObject(dLight);
-	
-	
+
+	//Object* sLight = new Object("sLight");
+	//dx::XMFLOAT3 lightTranslation2 = dx::XMFLOAT3(20.0f, 10.0f, 20.0f);
+	//sLight->GetTransform().SetPosition(dx::XMLoadFloat3(&lightTranslation2));
+	//LightComponent* sLightC = sLight->AddComponent<LightComponent>(1, dx::XMFLOAT4(0.3f, 0.3f, 0.8f, 1.0f), 7.f);
+	//sLightC->SetEnabled(true);
+	//sLightC->SetIntensity(0.5f);
+	//sLightC->SetRange(20.f);
+	//sLightC->SetSpotlightAngle(45.f);
+	//dx::XMFLOAT3 sunDirection;
+	//dx::XMStoreFloat3(&sunDirection, dx::XMVector3Normalize(dx::XMVectorSet(0, -1, 1, 0)));
+	//dLightC->SetDirection(sunDirection);
+	//AddObject(sLight);
+
+
 	//data.sunIntensity = 0.1f;
 
 	//TEST POINT LIGHTS____________________________________________________________________________________________________________________

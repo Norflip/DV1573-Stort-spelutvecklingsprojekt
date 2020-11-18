@@ -39,10 +39,10 @@ float4 CalculatePointLight(Light light, float3 normal, float3 objectPosition, fl
 	ambient = saturate(matAmbient * light.lightColor * attenuationFactor);
 	diffuse = saturate(diffuse * attenuationFactor);
 	specular = saturate(specular * attenuationFactor);
-
+   
 	finalColor = ambient + diffuse + specular;
 
-	return finalColor;
+    return finalColor * light.intensity;
 }
 
 // Calculate normalmapping
@@ -126,6 +126,7 @@ float DoSpotCone(Light light, float3 L)
 {
     float minCos = cos(radians(light.spotlightAngle));
     float maxCos = lerp(minCos, 1, 0.5f);
+    //float4 lightDirectionVS = mul(float4(light.lightDirection, 0), view);
     float cosAngle = dot(light.lightDirection, -L);
     return smoothstep(minCos, maxCos, cosAngle); //use clamp??
 }
@@ -137,6 +138,9 @@ float4 CalculateSpotLight(Light light, float3 normal, float3 objectPosition, flo
     float4 diffuse = float4(0.0f, 0.0f, 0.0f, 0.0f);
     float4 finalColor = float4(0.0f, 0.0f, 0.0f, 0.0f);
 
+    //viewDirection = mul(float4(viewDirection, 0), view).xyz;
+   // float4 lightPositionVS = mul(light.lightPosition, view);
+    //float4 objVS = mul(float4(objectPosition, 0), view);
     float3 lightVec = light.lightPosition.xyz - objectPosition;
     float distance = length(lightVec);
     lightVec = normalize(lightVec);
@@ -147,7 +151,7 @@ float4 CalculateSpotLight(Light light, float3 normal, float3 objectPosition, flo
     }
 
     float attenuationFactor = clamp(1.0f - distance * distance / (light.range * light.range), 0.0f, 1.0f);
-    float spotIntensity = DoSpotCone(light, lightVec); //pointlight, light
+	float spotIntensity = DoSpotCone(light, lightVec); //pointlight, light
 
     float diffuseFactor = dot(lightVec, normal);
     if (diffuseFactor > 0.0f)
@@ -155,16 +159,16 @@ float4 CalculateSpotLight(Light light, float3 normal, float3 objectPosition, flo
         float3 reflection = reflect(-lightVec, normal);
         float shine = pow(max(dot(reflection, viewDirection), 0.0f), 0.1f); //matSpecular.w);
 
-        diffuse = diffuseFactor * matDiffuse * light.lightColor * spotIntensity /* * light.Intensity*/;
-        specular = shine * matSpecular * light.lightColor * spotIntensity /* * light.Intensity*/;
+        diffuse = diffuseFactor * matDiffuse * light.lightColor * spotIntensity /* * light.intensity*/;
+        specular = shine * matSpecular * light.lightColor * spotIntensity /* * light.intensity*/;
     }
 
 
     ambient = saturate(matAmbient * light.lightColor * attenuationFactor);
     diffuse = saturate(diffuse * attenuationFactor);
     specular = saturate(specular * attenuationFactor);
-
-    finalColor = ambient + diffuse + specular;
-    return finalColor;
+    //float4 temp = float4(1, 0, 0, 0);
+    finalColor = ambient + diffuse + specular/*+temp*/;
+    return finalColor * light.intensity;
 }
 
