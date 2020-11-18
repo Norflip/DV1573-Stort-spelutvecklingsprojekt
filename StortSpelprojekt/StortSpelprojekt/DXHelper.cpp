@@ -530,6 +530,45 @@ ID3D11RasterizerState* DXHelper::CreateRasterizerState(D3D11_CULL_MODE cullMode,
 	return rasterizerState;
 }
 
+bool DXHelper::SphereInsidePlane(Sphere sphere, Plane plane)
+{
+
+	return dx::XMVectorGetX(dx::XMVector3Dot(plane.N, sphere.c)) - plane.d < -sphere.r;
+}
+
+bool DXHelper::ConeInsidePlane(Cone cone, Plane plane)
+{
+	/*float3 m = cross(cross(plane.N, cone.d), cone.d);
+	float3 Q = cone.T + cone.d * cone.h - m * cone.r;
+
+
+	return PointInsidePlane(cone.T, plane) && PointInsidePlane(Q, plane);*/
+}
+
+bool DXHelper::SphereInsideFrustum(Sphere sphere, Frustum frustum, float zNear, float zFar)
+{
+	bool result = true;
+
+	// First check depth
+	// Note: Here, the view vector points in the -Z axis so the 
+	// far depth value will be approaching -infinity.
+	if (dx::XMVectorGetZ(sphere.c) - sphere.r > zFar || dx::XMVectorGetZ(sphere.c) + sphere.r < zNear) //Switched places for zNear and zFar
+	{
+		result = false;
+	}
+
+	// Then check frustum planes
+	for (int i = 0; i < 4 && result; i++)
+	{
+		if (SphereInsidePlane(sphere, frustum.planes[i]))
+		{
+			result = false;
+		}
+	}
+
+	return result;
+}
+
 
 void DXHelper::CreateInstanceBuffer(ID3D11Device* device, size_t instanceCount, size_t instanceDataSize, void* instanceData, ID3D11Buffer** instanceBuffer)
 {

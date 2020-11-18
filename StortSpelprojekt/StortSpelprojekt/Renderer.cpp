@@ -820,9 +820,20 @@ void Renderer::InitForwardPlus(CameraComponent* camera, Window* window, Shader f
 	assert(SUCCEEDED(hr));
 	s_Frustum* someFrustums;
 	someFrustums = (s_Frustum*)resource.pData;
+	frustum_CPU_data.resize(count);
 	for (int i = 0; i < count; i++)
 	{
 		frustum_data[i] = someFrustums[i];
+		frustum_CPU_data[i].planes[0].d= frustum_data[i].planes[0].d;
+		frustum_CPU_data[i].planes[1].d= frustum_data[i].planes[1].d;
+		frustum_CPU_data[i].planes[2].d= frustum_data[i].planes[2].d;
+		frustum_CPU_data[i].planes[3].d= frustum_data[i].planes[3].d;
+
+		frustum_CPU_data[i].planes[0].N = dx::XMLoadFloat3(&frustum_data[i].planes[0].N);
+		frustum_CPU_data[i].planes[1].N = dx::XMLoadFloat3(&frustum_data[i].planes[1].N);
+		frustum_CPU_data[i].planes[2].N = dx::XMLoadFloat3(&frustum_data[i].planes[2].N);
+		frustum_CPU_data[i].planes[3].N = dx::XMLoadFloat3(&frustum_data[i].planes[3].N);
+
 	}
 
 
@@ -934,4 +945,37 @@ void Renderer::UpdateForwardPlus(CameraComponent* camera)
 	context->CSSetUnorderedAccessViews(5, 1, &nullUAV, NULL); //u5
 	context->CSSetUnorderedAccessViews(6, 1, &nullUAV, NULL); //u6
 	//context->Dispatch(1, 1, 1);
+}
+
+std::vector<UINT>& Renderer::cullLightsOnCPU()
+{
+	
+	//for (int frustum = 0; frustum < frustum_CPU_data.size(); frustum++)
+	//{
+	//	for (int light = 0; light < LightManager::Instance().GetPointLightCount(); light++)
+	//	{
+	//		PointLightComponent* pLight = LightManager::Instance().GetPointLight(light);
+	//		
+	//		Sphere sphere;
+	//		sphere.c = pLight->GetOwner()->GetTransform().GetWorldPosition();
+	//		sphere.r = pLight->GetRange();
+	//		if (DXHelper::SphereInsideFrustum(sphere, frustum_CPU_data[frustum], nearClipVS, maxDepthVS))
+	//		{
+	//			// Add light to light list for transparent geometry.
+	//			t_AppendLight(i);
+
+	//			if (!SphereInsidePlane(sphere, minPlane))
+	//			{
+	//				// Add light to light list for opaque geometry.
+	//				o_AppendLight(i);
+	//			}
+	//		}
+	//	}
+	//}
+
+
+
+
+
+
 }

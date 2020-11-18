@@ -10,6 +10,7 @@
 #include "ConstantBuffer.h"
 #include "DepthPass.h"
 #include <time.h>
+#include "PointLightComponent.h"
 
 
 inline int GetBatchID(const Material* material, const Mesh* mesh)
@@ -97,6 +98,7 @@ public:
 
 	void InitForwardPlus(CameraComponent* camera, Window* window, Shader forwardPlusShader);
 	void UpdateForwardPlus(CameraComponent* camera);
+	std::vector<UINT>& cullLightsOnCPU();
 	ALIGN16_ALLOC;
 
 private:
@@ -136,6 +138,7 @@ private:
 	dx::XMUINT3 numThreadGroups;
 
 	//Frustums
+	std::vector<Frustum> frustum_CPU_data;
 	std::vector<s_Frustum> frustum_data;
 	ID3D11Buffer* frustums_buffer = 0;
 	ID3D11ShaderResourceView* inFrustums_srv = 0;

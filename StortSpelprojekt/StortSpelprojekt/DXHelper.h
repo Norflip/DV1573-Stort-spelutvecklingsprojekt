@@ -12,6 +12,60 @@
 
 #include "Window.h"
 
+struct Plane
+{
+	dx::XMVECTOR N; //plane normal
+	float d; //distance to origin
+};
+
+
+struct Frustum
+{
+	Plane planes[4];
+};
+
+struct Sphere
+{
+	dx::XMVECTOR c; // Center point.
+	float r; // Radius.
+};
+
+struct Cone
+{
+	dx::XMVECTOR T; // Cone tip.
+	float h; // Height of the cone.
+	dx::XMVECTOR d; // Direction of the cone.
+	float r; // bottom radius of the cone.
+};
+
+
+
+
+
+//bool ConeInsideFrustum(Cone cone, Frustum frustum, float zNear, float zFar)
+//{
+//	bool result = true;
+//
+//	Plane nearPlane = { float3(0, 0, -1), -zNear };
+//	Plane farPlane = { float3(0, 0, 1), zFar };
+//
+//	// First check the near and far clipping planes.
+//	if (ConeInsidePlane(cone, nearPlane) || ConeInsidePlane(cone, farPlane))
+//	{
+//		result = false;
+//	}
+//
+//	// Then check frustum planes
+//	for (int i = 0; i < 4 && result; i++)
+//	{
+//		if (ConeInsidePlane(cone, frustum.planes[i]))
+//		{
+//			result = false;
+//		}
+//	}
+//
+//	return result;
+//}
 enum class ShaderBindFlag
 {
 	NONE = 0,
@@ -75,4 +129,9 @@ namespace DXHelper
 	void BindStructuredBuffer(ID3D11DeviceContext* context, ID3D11Buffer* buffer, void* data, size_t slot, ShaderBindFlag flag, ID3D11ShaderResourceView** srv);
 
 	ID3D11RasterizerState* CreateRasterizerState(D3D11_CULL_MODE cullMode, D3D11_FILL_MODE fillMode, ID3D11Device* device);
+	//Functions to cull lights on cpu
+	bool SphereInsidePlane(Sphere sphere, Plane plane);
+	bool ConeInsidePlane(Cone cone, Plane plane);
+	bool SphereInsideFrustum(Sphere sphere, Frustum frustum, float zNear, float zFar);
+
 }

@@ -31,7 +31,7 @@ public:
 	void UpdateBuffers(ID3D11DeviceContext* context, CameraComponent* camComp);
 	void ForceUpdateBuffers(ID3D11DeviceContext* context, CameraComponent* camComp);
 	void Clear();
-
+	UINT GetPointLightCount(){ return (UINT)pointLightMap.size(); }
 private:
 
 	//cb_Scene cb_scene;
