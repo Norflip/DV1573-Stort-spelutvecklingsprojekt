@@ -56,12 +56,12 @@ StructuredBuffer<Frustum> in_Frustums : register(t9);
 // Global counter for current index into the light index list.
 // "o_" prefix indicates light lists for opaque geometry while 
 // "t_" prefix indicates light lists for transparent geometry.
-RWStructuredBuffer<uint> o_LightIndexCounter : register(u1);
-RWStructuredBuffer<uint> t_LightIndexCounter : register(u2);
+RWStructuredBuffer<int> o_LightIndexCounter : register(u1);
+RWStructuredBuffer<int> t_LightIndexCounter : register(u2);
 
 // Light index lists and light grids.
-RWStructuredBuffer<int> o_LightIndexList : register(u3);
-RWStructuredBuffer<int> t_LightIndexList : register(u4);
+RWStructuredBuffer<uint> o_LightIndexList : register(u3);
+RWStructuredBuffer<uint> t_LightIndexList : register(u4);
 RWTexture2D<uint2> o_LightGrid : register(u5);
 RWTexture2D<uint2> t_LightGrid : register(u6);
 
