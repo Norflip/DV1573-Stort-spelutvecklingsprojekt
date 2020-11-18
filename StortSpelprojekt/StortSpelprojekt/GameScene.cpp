@@ -172,27 +172,28 @@ void GameScene::InitializeObjects()
 	AddObject(axeObject);
 	
 
-
+	//Road Sign
 	Object* roadSign = resources->AssembleObject("Endsign", "EndsignMaterial");
 	roadSign->GetTransform().SetPosition({ 23, 0.5f, 50 });
 	AddObject(roadSign);
 
+	//Right Sign
 	rightSign = new Object("LeftDirectionSign");
 
-	/* Test sign */	
 	rightSign = resources->AssembleObject("LeftDirectionSign", "LeftDirectionSignMaterial");
 	rightSign->GetTransform().SetPosition({ roadSign->GetTransform().GetPosition().m128_f32[0] - 1.0f, roadSign->GetTransform().GetPosition().m128_f32[1], roadSign->GetTransform().GetPosition().m128_f32[2] });
 	rightSign->AddComponent<BoxColliderComponent>(dx::XMFLOAT3{ 1.0f, 1.0f, 1.0f }, dx::XMFLOAT3{ 0, 0, 0 });
-	rightSign->AddComponent<ClickableComponent>(ClickType::Switch);
+	rightSign->AddComponent<SelectableComponent>();
 	rightSign->AddComponent<RigidBodyComponent>(0.0f, FilterGroups::CLICKABLE, (FilterGroups::EVERYTHING & ~FilterGroups::PLAYER), BodyType::STATIC, true);
 	AddObject(rightSign);
 
+	//Left Sign
 	leftSign = new Object("RightDirectionSign");
 
 	leftSign = resources->AssembleObject("RightDirectionSign", "RightDirectionSignMaterial");
 	leftSign->GetTransform().SetPosition({ roadSign->GetTransform().GetPosition().m128_f32[0] + 1.0f, roadSign->GetTransform().GetPosition().m128_f32[1], roadSign->GetTransform().GetPosition().m128_f32[2] });
 	leftSign->AddComponent<BoxColliderComponent>(dx::XMFLOAT3{ 1.0f, 1.0f, 1.0f }, dx::XMFLOAT3{ 0, 0, 0 });
-	leftSign->AddComponent<ClickableComponent>(ClickType::Switch);
+	leftSign->AddComponent<SelectableComponent>();
 	leftSign->AddComponent<RigidBodyComponent>(0.0f, FilterGroups::CLICKABLE, (FilterGroups::EVERYTHING & ~FilterGroups::PLAYER), BodyType::STATIC, true);
 	AddObject(leftSign);
 
@@ -418,16 +419,16 @@ void GameScene::Update(const float& deltaTime)
 	world.UpdateRelevantChunks(player->GetTransform(), camera);
 //	world.DrawDebug();
 
-	if (rightSign->GetComponent<ClickableComponent>()->GetActive())
+	if (rightSign->GetComponent<SelectableComponent>()->GetActive())
 	{
 		SwitchScene();
-		rightSign->GetComponent<ClickableComponent>()->SetActive(false); //VIKTOR
+		rightSign->GetComponent<SelectableComponent>()->SetActive(false); //VIKTOR
 
 	}
-	else if (leftSign->GetComponent<ClickableComponent>()->GetActive())
+	else if (leftSign->GetComponent<SelectableComponent>()->GetActive())
 	{
 		SwitchScene();
-		leftSign->GetComponent<ClickableComponent>()->SetActive(false); //VIKTOR
+		leftSign->GetComponent<SelectableComponent>()->SetActive(false); //VIKTOR
 
 	}
 	//if (KEY_PRESSED(LeftShift) && KEY_PRESSED(P))

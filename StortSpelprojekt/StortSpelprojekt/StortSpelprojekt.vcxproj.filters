@@ -289,7 +289,7 @@
     <ClCompile Include="GameHandler.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="ClickableComponent.cpp">
+    <ClCompile Include="SelectableComponent.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>
@@ -585,7 +585,7 @@
     <ClInclude Include="GameHandler.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="ClickableComponent.h">
+    <ClInclude Include="SelectableComponent.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>
