@@ -60,8 +60,8 @@ RWStructuredBuffer<uint> o_LightIndexCounter : register(u1);
 RWStructuredBuffer<uint> t_LightIndexCounter : register(u2);
 
 // Light index lists and light grids.
-RWStructuredBuffer<uint> o_LightIndexList : register(u3);
-RWStructuredBuffer<uint> t_LightIndexList : register(u4);
+RWStructuredBuffer<int> o_LightIndexList : register(u3);
+RWStructuredBuffer<int> t_LightIndexList : register(u4);
 RWTexture2D<uint2> o_LightGrid : register(u5);
 RWTexture2D<uint2> t_LightGrid : register(u6);
 
