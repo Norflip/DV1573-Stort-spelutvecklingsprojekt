@@ -49,6 +49,8 @@ public:
 	
 	void SetguiMan(GUIManager* guiMan) { this->guiMan = guiMan; }
 	void InsertWeapon(WeaponComponent* weapon, std::string name);
+	void SetInteriorPosition(float x, float y, float z);
+	dx::XMFLOAT3 GetInteriorPosition() { return this->interiorPosition; }
 
 private:
 	//det h�r skriver en kommentar till hold objekt
@@ -86,5 +88,9 @@ private:
 	sm::Matrix inverseViewMatrix, wepOffTrans, wepOffRot, wepWorld;
 	sm::Vector3	weaponScale, weaponPos, up;
 	sm::Quaternion weaponRot;
+
+	dx::XMFLOAT3 interiorPosition;
+
+	 
 };
 
