@@ -141,7 +141,7 @@ void PlayerComp::FixedUpdate(const float& fixedDeltaTime)
 		health -= distance * hpLossPerDistance;
 
 	// around 90
-	if (distance > maxDist)
+	if (distance > maxDist && !GetOwner()->GetComponent<ControllerComp>()->GetInside())
 		health = 0;
 }
 

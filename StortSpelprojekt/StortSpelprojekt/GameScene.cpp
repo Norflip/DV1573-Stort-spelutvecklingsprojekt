@@ -46,6 +46,7 @@ void GameScene::InitializeObjects()
 	Object* houseBaseObject = new Object("houseBase");
 	Object* housesLegsObject = new Object("houseLegs");
 	Object* houseDoor = resources->AssembleObject("HouseDoor", "HouseDoorMaterial");
+	Object* houseExterior = resources->AssembleObject("HouseExterior", "HouseExteriorMaterial");
 
 	houseBaseObject->GetTransform().Rotate(0, -90.0f * Math::ToRadians, 0.0);
 
@@ -81,6 +82,7 @@ void GameScene::InitializeObjects()
 
 	Transform::SetParentChild(houseBaseObject->GetTransform(), housesLegsObject->GetTransform());
 	Transform::SetParentChild(houseBaseObject->GetTransform(), houseDoor->GetTransform());
+	Transform::SetParentChild(houseBaseObject->GetTransform(), houseExterior->GetTransform());
 
 	NodeWalkerComp* nodeWalker = houseBaseObject->AddComponent<NodeWalkerComp>();
 	nodeWalker->InitAnimation();

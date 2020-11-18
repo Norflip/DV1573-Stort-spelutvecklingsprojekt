@@ -1,4 +1,4 @@
-Objects: 47
+Objects: 48
 
 Charger: Models/Enemies/Charger_Model.ZWEB
 Shader: skeletonShader
@@ -168,3 +168,6 @@ Shader: defaultShader
 
 PuzzleFrogStatue: Models/Puzzles/Puzzle_Frog_statue.ZWEB
 Shader: defaultShader
+
+HouseExterior: Models/House/House_Exterior.ZWEB
+Shader: alphaShader
