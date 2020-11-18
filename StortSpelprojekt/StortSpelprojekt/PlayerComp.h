@@ -86,5 +86,7 @@ private:
 	sm::Quaternion weaponRot;
 
 	dx::XMFLOAT3 interiorPosition;
+
+	 
 };
 

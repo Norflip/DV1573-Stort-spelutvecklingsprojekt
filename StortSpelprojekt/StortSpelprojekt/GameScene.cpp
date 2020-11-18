@@ -58,15 +58,15 @@ void GameScene::InitializeObjects()
 	//WALLS
 	houseBaseObject->AddComponent<BoxColliderComponent>(dx::XMFLOAT3(2.0f, 3.5f, 2.3f), dx::XMFLOAT3(0.f, 0.9f, -1.0f));
 	//PORCH
-	houseBaseObject->AddComponent<BoxColliderComponent>(dx::XMFLOAT3(3.0f, 0.5f, 3.0f), dx::XMFLOAT3(0.f, 0.5f, 0.f));
+	houseBaseObject->AddComponent<BoxColliderComponent>(dx::XMFLOAT3(3.0f, 0.5f, 3.0f), dx::XMFLOAT3(0.f, 0.2f, 0.f));
 	//FENCE BACK
 	houseBaseObject->AddComponent<BoxColliderComponent>(dx::XMFLOAT3(0.125f, 0.625f, 3.375f), dx::XMFLOAT3(-3.3f, 2.f, 0.05f));
 	//FENCE FRONT
 	houseBaseObject->AddComponent<BoxColliderComponent>(dx::XMFLOAT3(0.1f, 3.5f, 1.8f), dx::XMFLOAT3(3.5f, 0.7f, 0.5f));
 	//FENCE RIGHT
-	houseBaseObject->AddComponent<BoxColliderComponent>(dx::XMFLOAT3(5.375f, 0.625f, 0.15f), dx::XMFLOAT3(0.f, 3.f, -2.75f));
+	houseBaseObject->AddComponent<BoxColliderComponent>(dx::XMFLOAT3(3.f, 0.625f, 0.1f), dx::XMFLOAT3(0.f, 3.f, -3.f));
 	//FENCE LEFT
-	houseBaseObject->AddComponent<BoxColliderComponent>(dx::XMFLOAT3(5.375f, 0.625f, 0.15f), dx::XMFLOAT3(0.f, 3.f, 2.75f));
+	houseBaseObject->AddComponent<BoxColliderComponent>(dx::XMFLOAT3(5.375f, 0.625f, 0.15f), dx::XMFLOAT3(0.f, 3.f, 3.f));
 	// RB
 	houseBaseObject->AddComponent<RigidBodyComponent>(0.0f, FilterGroups::PROPS, FilterGroups::EVERYTHING, BodyType::STATIC, true);
 
@@ -219,7 +219,14 @@ void GameScene::InitializeGUI()
 
 	//CROSSHAIR
 	GUISprite* dot = new GUISprite(*renderer, "Textures/TestFix2.png", (windowWidth / 2) - 6, (windowHeight / 2) - 6, 0, DrawDirection::BottomLeft, ClickFunction::NotClickable);
-	//GUISprite* crosshair = new GUISprite(*renderer, "Textures/Crosshair.png", (windowWidth / 2) - 25, (windowHeight / 2) - 25, 0, DrawDirection::BottomLeft, ClickFunction::NotClickable);
+	GUISprite* crosshair = new GUISprite(*renderer, "Textures/Crosshair.png", (windowWidth / 2) - 25, (windowHeight / 2) - 25, 0, DrawDirection::BottomLeft, ClickFunction::NotClickable);
+	GUISprite* doorSprite = new GUISprite(*renderer, "Textures/DoorSprite.png", (windowWidth / 2) - 6, (windowHeight / 2) - 6, 0, DrawDirection::BottomLeft, ClickFunction::NotClickable);
+	GUISprite* fuel = new GUISprite(*renderer, "Textures/Fuel_Icon.png", (windowWidth / 2) - 6, (windowHeight / 2) - 6, 0, DrawDirection::BottomLeft, ClickFunction::NotClickable);
+
+	//dot->SetVisible(false);
+	crosshair->SetVisible(false);
+	doorSprite->SetVisible(false);
+	fuel->SetVisible(false);
 
 	// INSERTIONS
 	guiManager = new GUIManager(renderer, 100);
@@ -255,7 +262,10 @@ void GameScene::InitializeGUI()
 
 	//CROSSHAIR
 	guiManager->AddGUIObject(dot, "dot");
-	//guiManager->AddGUIObject(crosshair, "crosshair");
+	guiManager->AddGUIObject(crosshair, "crosshair");
+	guiManager->AddGUIObject(doorSprite, "door");
+	guiManager->AddGUIObject(fuel, "fuel");
+
 }
 
 void GameScene::InitializeLights()
@@ -303,7 +313,7 @@ void GameScene::InitializeInterior()
 	Object* logs = resources->AssembleObject("Logs", "LogsMaterial");
 	logs->GetTransform().SetPosition({ this->interiorPosition.x, this->interiorPosition.y, this->interiorPosition.z });
 	logs->AddComponent<BoxColliderComponent>(dx::XMFLOAT3(1.0f, 1.0f, 1.0f), dx::XMFLOAT3(-8.1f, 1.0f, -1.3f));
-	logs->AddComponent<RigidBodyComponent>(0.0f, FilterGroups::PROPS, FilterGroups::PLAYER, BodyType::STATIC, true);
+	logs->AddComponent<RigidBodyComponent>(0.0f, FilterGroups::FIRE, FilterGroups::PLAYER, BodyType::STATIC, true);
 	AddObject(logs);
 
 	Object* flowerpot = resources->AssembleObject("Flowerpot", "FlowerpotMaterial");
@@ -395,8 +405,6 @@ void GameScene::OnActivate()
 		player->GetComponent<RigidBodyComponent>()->SetPosition(position);
 	}
 
-
-
 	renderer->AddRenderPass(guiManager);
 
 	Input::Instance().ConfineMouse();
@@ -429,13 +437,23 @@ void GameScene::Update(const float& deltaTime)
 {
 	Scene::Update(deltaTime);
 	world.UpdateRelevantChunks(player->GetTransform(), camera);
-//	world.DrawDebug();
+	//world.DrawDebug();
+
+	if (player->GetComponent<ControllerComp>()->GetInRange() && !static_cast<GUISprite*>(guiManager->GetGUIObject("door"))->GetVisible())
+	{
+		static_cast<GUISprite*>(guiManager->GetGUIObject("door"))->SetVisible(true);
+		static_cast<GUISprite*>(guiManager->GetGUIObject("dot"))->SetVisible(false);
+	}
+	else if (!player->GetComponent<ControllerComp>()->GetInRange() && !static_cast<GUISprite*>(guiManager->GetGUIObject("dot"))->GetVisible())
+	{
+		static_cast<GUISprite*>(guiManager->GetGUIObject("door"))->SetVisible(false);
+		static_cast<GUISprite*>(guiManager->GetGUIObject("dot"))->SetVisible(true);
+	}
 
 	static_cast<GUIFont*>(guiManager->GetGUIObject("fps"))->SetString(std::to_string((int)GameClock::Instance().GetFramesPerSecond()));
 	guiManager->UpdateAll();
 
-	std::cout << "Pos: " << player->GetTransform().GetPosition().m128_f32[0] << " " << player->GetTransform().GetPosition().m128_f32[1] << " " << player->GetTransform().GetPosition().m128_f32[2] << std::endl;
-
+	//std::cout << "Pos: " << player->GetTransform().GetPosition().m128_f32[0] << " " << player->GetTransform().GetPosition().m128_f32[1] << " " << player->GetTransform().GetPosition().m128_f32[2] << std::endl;
 }
 
 void GameScene::FixedUpdate(const float& fixedDeltaTime)

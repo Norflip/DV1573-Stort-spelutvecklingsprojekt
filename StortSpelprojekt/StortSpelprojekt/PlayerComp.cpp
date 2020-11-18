@@ -71,9 +71,6 @@ void PlayerComp::Update(const float& deltaTime)
 {
 	RayCast(deltaTime);
 
-
-
-
 	float frameTime = FCAST(GameClock::Instance().GetFrameTime() / 1000.0);
 
 	//temp fix for wierd clock start at 
@@ -185,31 +182,50 @@ void PlayerComp::RayCast(const float& deltaTime)
 	Ray ray = cam->MouseToRay(p.x, p.y);
 
 	// Check fireplace 
-	if (physics->RaytestSingle(ray, rayDistance, hit, FilterGroups::PICKUPS) && holding)
+	if (physics->RaytestSingle(ray, rayDistance, hit, FilterGroups::FIRE) && holding)
 	{
 		if (hit.object != nullptr)
 		{
-			if (KEY_DOWN(T))
+			static_cast<GUISprite*>(guiMan->GetGUIObject("fuel"))->SetVisible(true);
+			static_cast<GUISprite*>(guiMan->GetGUIObject("dot"))->SetVisible(false);
+
+			if (KEY_DOWN(E))
 			{
-				std::cout << "Pressed F" << std::endl;
+				float refill = holding->GetComponent<PickupComponent>()->GetAmount();
+				if ((fuel + refill) <= 100.0f)
+					fuel += refill;
+				else
+					fuel = 100.0f;
 
-				if (hit.object != nullptr)
-				{
-					std::cout << "Fill up fuel" << std::endl;
+				if (holding->HasComponent<ParticleSystemComponent>())
+					if (holding->GetComponent<ParticleSystemComponent>()->GetActive())
+						holding->GetComponent<ParticleSystemComponent>()->SetActive(false);
 
-					float refill = holding->GetComponent<PickupComponent>()->GetAmount();
-					if ((fuel + refill) <= 100.0f)
-						fuel += refill;
+				holding->GetComponent<PickupComponent>()->SetActive(false);
+				holding = nullptr;
+				currentWeapon->AddFlag(ObjectFlag::ENABLED);
 
-					if (holding->HasComponent<ParticleSystemComponent>())
-						if (holding->GetComponent<ParticleSystemComponent>()->GetActive())
-							holding->GetComponent<ParticleSystemComponent>()->SetActive(false);
-
-					holding->GetComponent<PickupComponent>()->SetActive(false);
-					holding = nullptr;
-					currentWeapon->AddFlag(ObjectFlag::ENABLED);
-				}
+				static_cast<GUISprite*>(guiMan->GetGUIObject("fuel"))->SetVisible(false);
+				static_cast<GUISprite*>(guiMan->GetGUIObject("dot"))->SetVisible(true);
 			}
+		}
+		else
+		{
+			static_cast<GUISprite*>(guiMan->GetGUIObject("fuel"))->SetVisible(false);
+			static_cast<GUISprite*>(guiMan->GetGUIObject("dot"))->SetVisible(true);
+		}
+	}
+
+	// Check door
+	if (physics->RaytestSingle(ray, rayDistance, hit, FilterGroups::DOOR))
+	{
+		if (hit.object != nullptr)
+		{
+			this->GetOwner()->GetComponent<ControllerComp>()->SetInRange(true);
+		}
+		else
+		{
+			this->GetOwner()->GetComponent<ControllerComp>()->SetInRange(false);
 		}
 	}
 
@@ -248,7 +264,6 @@ void PlayerComp::RayCast(const float& deltaTime)
 				hit.object->GetComponent<PickupComponent>()->SetActive(false);
 				//RigidBodyComponent* rbComp = hit.object->GetComponent<RigidBodyComponent>();
 				//rbComp->Release();
-				
 			}
 		}
 

@@ -57,6 +57,7 @@ private:
 	bool canRotate;
 	bool isGrounded;
 	bool inside;
+	bool inDoorRange;
 
 	dx::XMFLOAT3 houseVelocity;
 	dx::XMFLOAT3 jumpDir; 
@@ -91,4 +92,6 @@ public:
 	void Initialize();
 	void Update(const float& deltaTime);
 	float GetVelocity() { return this->velocity; }
+	bool GetInRange() { return this->inDoorRange; }
+	void SetInRange(bool state) { this->inDoorRange = state; }
 };
