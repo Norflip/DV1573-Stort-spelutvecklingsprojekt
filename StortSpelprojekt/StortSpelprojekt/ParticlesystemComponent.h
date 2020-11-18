@@ -18,6 +18,8 @@ public:
 	void Shutdown();
 
 	void InitializeParticles(ID3D11Device* device, LPCWSTR textureFilename);
+	void InitializeFirelikeParticles(ID3D11Device* device, LPCWSTR textureFilename);
+
 	void Update(const float& deltaTime) override;
 	void Draw(Renderer* renderer, CameraComponent* camera) override;
 

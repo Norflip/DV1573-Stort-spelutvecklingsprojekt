@@ -92,6 +92,26 @@ void ParticleSystemComponent::InitializeParticles(ID3D11Device* device, LPCWSTR 
 	LoadTexture(device, textureFilename);
 }
 
+void ParticleSystemComponent::InitializeFirelikeParticles(ID3D11Device* device, LPCWSTR textureFilename)
+{
+	maxParticles = 50;
+	particleSize = 0.1f;
+	particleList = new Particles[maxParticles];
+
+	for (int i = 0; i < maxParticles; i++)
+		particleList[i].active = false;
+
+
+	/* Init and pass it to mesh, can do a initializefunction in mesh later.. or something. */
+	InitializeBuffers(device);
+	mesh->SetVertexBuffer(vertexBuffer);
+	mesh->SetIndexBuffer(indexBuffer);
+	mesh->SetIndexCount(indexCount);
+	mesh->SetVertexCount(vertexCount);
+
+	LoadTexture(device, textureFilename);
+}
+
 void ParticleSystemComponent::SetDifference(float x, float y, float z)
 {
 	this->differenceOnX = x;
