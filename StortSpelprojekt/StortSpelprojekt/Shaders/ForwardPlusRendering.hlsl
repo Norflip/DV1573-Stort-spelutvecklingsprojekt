@@ -145,7 +145,7 @@ void main(ComputeShaderInput IN) // light culling everyframe
 
 	// Clipping plane for minimum depth value 
 	// (used for testing lights within the bounds of opaque geometry).
-	Plane minPlane = { float3(0, 0, -1), -minDepthVS };
+	Plane minPlane = { float3(0, 0, 1), minDepthVS }; //made z and minDepthVS positive
 
 	// Cull lights
 	// Each thread in a group will cull 1 light until all lights have been culled.
@@ -159,6 +159,8 @@ void main(ComputeShaderInput IN) // light culling everyframe
 			{
 			case POINT_LIGHT:
 			{
+				//test
+				o_LightGrid[IN.dispatchThreadID.xy] = uint2(1, 1);
 				Sphere sphere = { light.positionVS.xyz, light.range };
 				if (SphereInsideFrustum(sphere, GroupFrustum, nearClipVS, maxDepthVS))
 				{
@@ -272,13 +274,13 @@ void ComputeFrustums(ComputeShaderInput IN) // compute ONCE or when resize windo
 	// frustum vertices.
     float4 screenSpace[4];
 	// Top left point
-    screenSpace[0] = float4(IN.dispatchThreadID.xy * BLOCK_SIZE, -1.0f, 1.0f);
+    screenSpace[0] = float4(IN.dispatchThreadID.xy * BLOCK_SIZE, 1.0f, 1.0f); //changed z from negative to positive in z component, all of these 4.
 	// Top right point
-    screenSpace[1] = float4(float2(IN.dispatchThreadID.x + 1, IN.dispatchThreadID.y) * BLOCK_SIZE, -1.0f, 1.0f);
+    screenSpace[1] = float4(float2(IN.dispatchThreadID.x + 1, IN.dispatchThreadID.y) * BLOCK_SIZE, 1.0f, 1.0f);
 	// Bottom left point
-    screenSpace[2] = float4(float2(IN.dispatchThreadID.x, IN.dispatchThreadID.y + 1) * BLOCK_SIZE, -1.0f, 1.0f);
+    screenSpace[2] = float4(float2(IN.dispatchThreadID.x, IN.dispatchThreadID.y + 1) * BLOCK_SIZE, 1.0f, 1.0f);
 	// Bottom right point
-    screenSpace[3] = float4(float2(IN.dispatchThreadID.x + 1, IN.dispatchThreadID.y + 1) * BLOCK_SIZE, -1.0f, 1.0f);
+    screenSpace[3] = float4(float2(IN.dispatchThreadID.x + 1, IN.dispatchThreadID.y + 1) * BLOCK_SIZE, 1.0f, 1.0f);
 
     float3 viewSpace[4];
 	// Now convert the screen space points to view space

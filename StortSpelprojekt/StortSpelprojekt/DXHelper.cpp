@@ -383,6 +383,33 @@ void DXHelper::CreateCopyBuffer(ID3D11Device* device, ID3D11Buffer** buffer, uns
 	assert(SUCCEEDED(hr));
 }
 
+void DXHelper::CreateStructuredBuffer(ID3D11Device* device, ID3D11Buffer** buffer, void* data, unsigned int byteStride, unsigned int arraySize, ID3D11UnorderedAccessView** uav)
+{
+	D3D11_BUFFER_DESC sBufferDesc = {};
+	D3D11_SUBRESOURCE_DATA sBufferSub = {};
+
+	sBufferDesc.Usage = D3D11_USAGE_DEFAULT;
+	sBufferDesc.ByteWidth = byteStride * arraySize; //sizeofStruct*nrOfElements
+	sBufferDesc.BindFlags = D3D11_BIND_UNORDERED_ACCESS; //D3D11_BIND_UNORDERED_ACCESS
+	sBufferDesc.CPUAccessFlags = D3D11_CPU_ACCESS_READ | D3D11_CPU_ACCESS_WRITE;// 0; //D3D11_CPU_ACCESS_WRITE
+	sBufferDesc.StructureByteStride = byteStride; //sizeofStruct
+	sBufferDesc.MiscFlags = D3D11_RESOURCE_MISC_BUFFER_STRUCTURED;
+	sBufferSub.pSysMem = data;
+
+	HRESULT hr = device->CreateBuffer(&sBufferDesc, &sBufferSub, buffer);
+	assert(SUCCEEDED(hr));
+
+	D3D11_UNORDERED_ACCESS_VIEW_DESC uavDesc = {};
+	uavDesc.Format = DXGI_FORMAT_UNKNOWN;
+	uavDesc.ViewDimension = D3D11_UAV_DIMENSION_BUFFER;
+	uavDesc.Buffer.FirstElement = 0;
+	uavDesc.Buffer.Flags = 0;
+	uavDesc.Buffer.NumElements = arraySize;
+	hr = device->CreateUnorderedAccessView(*buffer, &uavDesc, uav);
+
+	assert(SUCCEEDED(hr));
+}
+
 void DXHelper::CreateStructuredBuffer(ID3D11Device* device, ID3D11Buffer** buffer, void* data, unsigned int byteStride, unsigned int arraySize, ID3D11UnorderedAccessView** uav, ID3D11ShaderResourceView** srv)
 {
 	D3D11_BUFFER_DESC sBufferDesc = {};

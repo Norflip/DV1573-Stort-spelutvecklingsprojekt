@@ -101,14 +101,11 @@ void GameScene::InitializeObjects()
 	forwardPlusShader.SetComputeShader("Shaders/ForwardPlusRendering.hlsl", "ComputeFrustums");
 	forwardPlusShader.CompileCS(renderer->GetDevice());
 	forwardPlusShader.BindToContext(renderer->GetContext());
-	renderer->InitForwardPlus(camera, window);
-	forwardPlusShader.Unbind(renderer->GetContext());
+	renderer->InitForwardPlus(camera, window,forwardPlusShader);
 
-	forwardPlusShader.SetComputeShader("Shaders/ForwardPlusRendering.hlsl");
-	forwardPlusShader.CompileCS(renderer->GetDevice());
-	forwardPlusShader.BindToContext(renderer->GetContext());
-	renderer->UpdateForwardPlus();
-	forwardPlusShader.Unbind(renderer->GetContext());
+
+	
+	
 
 	cameraObject->GetTransform().SetPosition(playerSpawnVec);
 	playerObject->GetTransform().SetPosition(playerSpawnVec);

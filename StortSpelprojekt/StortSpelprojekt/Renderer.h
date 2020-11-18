@@ -95,12 +95,12 @@ public:
 
 	void RemoveRenderPass(RenderPass*);
 
-	void InitForwardPlus(CameraComponent* camera, Window* window);
-	void UpdateForwardPlus();
+	void InitForwardPlus(CameraComponent* camera, Window* window, Shader forwardPlusShader);
+	void UpdateForwardPlus(CameraComponent* camera);
 	ALIGN16_ALLOC;
 
 private:
-	void AddItem(const RenderItem& item, bool transparent);
+	void AddItem(const RenderItem& item, bool transparent, bool cullDepth);
 	void DrawRenderItem(const RenderItem& item, CameraComponent* camera);
 	void DrawRenderItemInstanced(const RenderItem& item, CameraComponent* camera);
 	void DrawRenderItemSkeleton(const RenderItem& item, CameraComponent* camera);
@@ -137,38 +137,34 @@ private:
 
 	//Frustums
 	std::vector<s_Frustum> frustum_data;
-	ID3D11Buffer* frustums_buffer;
-	ID3D11ShaderResourceView* inFrustums_srv;
-	ID3D11UnorderedAccessView* outFrustums_uav;
+	ID3D11Buffer* frustums_buffer = 0;
+	ID3D11ShaderResourceView* inFrustums_srv = 0;
+	ID3D11UnorderedAccessView* outFrustums_uav = 0;
 
 	//light index counter
 	std::vector<UINT> o_LightIndexCounter;
-	ID3D11Buffer* o_LightIndexCounter_uavbuffer;
-	ID3D11ShaderResourceView* o_LightIndexCounter_srv;
-	ID3D11UnorderedAccessView* o_LightIndexCounter_uav;
+	ID3D11Buffer* o_LightIndexCounter_uavbuffer = 0;
+	ID3D11UnorderedAccessView* o_LightIndexCounter_uav = 0;
 	std::vector<UINT> t_LightIndexCounter;
-	ID3D11Buffer* t_LightIndexCounter_uavbuffer;
-	ID3D11ShaderResourceView* t_LightIndexCounter_srv;
-	ID3D11UnorderedAccessView* t_LightIndexCounter_uav;
+	ID3D11Buffer* t_LightIndexCounter_uavbuffer = 0;
+	ID3D11UnorderedAccessView* t_LightIndexCounter_uav = 0;
 	
 	//light index list
 	std::vector<UINT> o_LightIndexList;
-	ID3D11Buffer* o_LightIndexList_uavbuffer;
-	ID3D11ShaderResourceView* o_LightIndexList_srv;
-	ID3D11UnorderedAccessView* o_LightIndexList_uav;
+	ID3D11Buffer* o_LightIndexList_uavbuffer = 0;
+	ID3D11ShaderResourceView* o_LightIndexList_srv = 0;
+	ID3D11UnorderedAccessView* o_LightIndexList_uav = 0;
 	std::vector<UINT> t_LightIndexList;
-	ID3D11Buffer* t_LightIndexList_uavbuffer;
-	ID3D11ShaderResourceView* t_LightIndexList_srv;
-	ID3D11UnorderedAccessView* t_LightIndexList_uav;
+	ID3D11Buffer* t_LightIndexList_uavbuffer = 0;
+	ID3D11ShaderResourceView* t_LightIndexList_srv = 0;
+	ID3D11UnorderedAccessView* t_LightIndexList_uav = 0;
 
 	//light grid
-	//std::vector<dx::XMUINT2> o_LightGrid;
-	//ID3D11Buffer* o_LightGrid_texbuffer;
-	ID3D11UnorderedAccessView* o_LightGrid_tex;
-	//std::vector<dx::XMUINT2> t_LightGrid;
-	//ID3D11Buffer* t_LightGrid_texbuffer;
-	ID3D11UnorderedAccessView* t_LightGrid_tex;
-
+	
+	ID3D11UnorderedAccessView* o_LightGrid_tex = 0;
+	ID3D11ShaderResourceView* o_LightGrid_texSRV = 0;
+	ID3D11UnorderedAccessView* t_LightGrid_tex = 0;
+	ID3D11ShaderResourceView* t_LightGrid_texSRV = 0;
 
 
 	std::vector<dx::XMFLOAT4X4> srv_skeleton_data;
@@ -184,6 +180,10 @@ private:
 
 	RenderQueue opaqueItemQueue;
 	RenderQueue transparentItemQueue;
+	RenderQueue opaqueItemQueueDepth;
+	RenderQueue transparentItemQueueDepth;
+	std::unordered_map<int, Batch> opaqueBatchesDepth;
+	std::unordered_map<int, Batch> transparentBatchesDepth;
 	std::vector<RenderPass*> passes;
 
 	//blendstate

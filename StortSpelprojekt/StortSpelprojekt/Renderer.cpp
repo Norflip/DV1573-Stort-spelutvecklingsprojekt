@@ -32,6 +32,92 @@ Renderer::~Renderer()
 	
 
 	delete[] tmpBatchInstanceData;
+	if (o_LightGrid_tex)
+	{
+		o_LightGrid_tex->Release();
+	}
+	if (o_LightGrid_texSRV)
+	{
+		o_LightGrid_texSRV->Release();
+	}
+	if (t_LightGrid_tex)
+	{
+		t_LightGrid_tex->Release();
+	}
+	if (t_LightGrid_texSRV)
+	{
+		t_LightGrid_texSRV->Release();
+	}
+	
+	
+	
+	if (frustums_buffer)
+	{
+		frustums_buffer->Release();
+	}
+	if (inFrustums_srv)
+	{
+		inFrustums_srv->Release();
+	}
+	if (outFrustums_uav)
+	{
+		outFrustums_uav->Release();
+	}
+	
+	
+	
+	
+	if (o_LightIndexCounter_uavbuffer)
+	{
+		o_LightIndexCounter_uavbuffer->Release();
+	}
+	if (o_LightIndexCounter_uav)
+	{
+		o_LightIndexCounter_uav->Release();
+	}
+	
+	
+	if (t_LightIndexCounter_uavbuffer)
+	{
+		t_LightIndexCounter_uavbuffer->Release();
+	}
+	if (t_LightIndexCounter_uav)
+	{
+		t_LightIndexCounter_uav->Release();
+	}
+	
+	
+	if (o_LightIndexList_uavbuffer)
+	{
+		o_LightIndexList_uavbuffer->Release();
+	}
+	if (o_LightIndexList_srv)
+	{
+		o_LightIndexList_srv->Release();
+	}
+	
+	
+	
+	if (o_LightIndexList_uav)
+	{
+		o_LightIndexList_uav->Release();
+	}
+	if (t_LightIndexList_uavbuffer)
+	{
+		t_LightIndexList_uavbuffer->Release();
+	}
+	if (t_LightIndexList_srv)
+	{
+		t_LightIndexList_srv->Release();
+	}
+	
+	
+	
+	if (t_LightIndexList_uav)
+	{
+		t_LightIndexList_uav->Release();
+	}
+
 }
 
 void Renderer::Initialize(Window* window)
@@ -45,16 +131,12 @@ void Renderer::Initialize(Window* window)
 	this->renderPassSwapBuffers[1] = DXHelper::CreateRenderTexture(window->GetWidth(), window->GetHeight(), device, context, &dss);
 	srv_skeleton_data.resize(60);
 
-	dx::XMFLOAT4X4 bone;
-	dx::XMStoreFloat4x4(&bone, dx::XMMatrixIdentity());
+
 
 	DXHelper::CreateRSState(device, &rasterizerStateCullBack, &rasterizerStateCullNone, &rasterizerStateCCWO);
 
 
-	for (int boneNr = 0; boneNr < 60; boneNr++) //set id matrix as default for the bones. So if no animation is happening the character is not funky.
-	{
-		srv_skeleton_data[boneNr] = bone;//set id matrix as default for the bones. So if no animation is happening the character is not funky. I need to bind them as well.
-	}
+
 
 	LightManager::Instance().Initialize(device);
 
@@ -202,7 +284,7 @@ void Renderer::RenderFrame(CameraComponent* camera, float time, RenderTexture& t
 
 	LightManager::Instance().UpdateBuffers(context,camera);
 
-	//We need to clear Depth Stencil View as well.//Emil
+	UpdateForwardPlus(camera);
 
 	ID3D11ShaderResourceView* nullSRV[1] = { nullptr };
 	context->PSSetShaderResources(0, 1, nullSRV);
@@ -218,6 +300,7 @@ void Renderer::RenderFrame(CameraComponent* camera, float time, RenderTexture& t
 			pass->Pass(this, camera, renderPassSwapBuffers[0], renderPassSwapBuffers[0]);
 		}
 	}
+	
 
 	context->OMSetDepthStencilState(dss, 0);
 
@@ -318,6 +401,20 @@ void Renderer::Draw(const Mesh* mesh, const Material* material, const dx::XMMATR
 			batch.transformations.push_back(modelInFloats);
 			batches.insert({ batchID, batch });
 		}
+
+		auto& batchesDepth = material->IsTransparent() ? transparentBatchesDepth : opaqueBatchesDepth;
+		if (batchesDepth.find(batchID) != batchesDepth.end())
+		{
+			batchesDepth[batchID].transformations.push_back(modelInFloats);
+		}
+		else
+		{
+			Batch batch;
+			batch.material = material;
+			batch.mesh = mesh;
+			batch.transformations.push_back(modelInFloats);
+			batchesDepth.insert({ batchID, batch });
+		}
 	}
 	else
 	{
@@ -326,7 +423,7 @@ void Renderer::Draw(const Mesh* mesh, const Material* material, const dx::XMMATR
 		item.material = material;
 		item.type = RenderItem::Type::Default;
 		item.world = model;
-		AddItem(item, material->IsTransparent());
+		AddItem(item, material->IsTransparent(), false);
 	}
 }
 
@@ -340,7 +437,7 @@ void Renderer::DrawInstanced(const Mesh* mesh, const size_t& count, ID3D11Buffer
 	item.instanceBuffer = instanceBuffer;
 	item.instanceCount = count;
 
-	AddItem(item, material->IsTransparent());
+	AddItem(item, material->IsTransparent(), false);
 }
 
 void Renderer::DrawSkeleton(const Mesh* mesh, const Material* material, const dx::XMMATRIX& model, std::vector<dx::XMFLOAT4X4>& bones)
@@ -351,7 +448,7 @@ void Renderer::DrawSkeleton(const Mesh* mesh, const Material* material, const dx
 	item.type = RenderItem::Type::Skeleton;
 	item.bones = &bones;
 	item.world = model;
-	AddItem(item, false);
+	AddItem(item, false, false);
 }
 
 void Renderer::DrawGrass(const Mesh* mesh, const Material* material, const dx::XMMATRIX& model)
@@ -361,7 +458,7 @@ void Renderer::DrawGrass(const Mesh* mesh, const Material* material, const dx::X
 	item.mesh = mesh;
 	item.material = material;
 	item.world = model;
-	AddItem(item, false);
+	AddItem(item, false, true);
 }
 
 void Renderer::DrawParticles(const Mesh* mesh, const Material* material, const dx::XMMATRIX& model)
@@ -371,7 +468,7 @@ void Renderer::DrawParticles(const Mesh* mesh, const Material* material, const d
 	part.mesh = mesh;
 	part.material = material;
 	part.world = model;
-	AddItem(part, true);
+	AddItem(part, true, true);
 }
 
 void Renderer::DrawImmediate(const Mesh* mesh, const Material* material, const CameraComponent* camera, const dx::XMMATRIX& model)
@@ -430,7 +527,7 @@ void Renderer::RemoveRenderPass(RenderPass* pass)
 }
 
 
-void Renderer::AddItem(const RenderItem& item, bool transparent)
+void Renderer::AddItem(const RenderItem& item, bool transparent, bool cullDepth)
 {
 	if (transparent)
 	{
@@ -441,6 +538,14 @@ void Renderer::AddItem(const RenderItem& item, bool transparent)
 			transparentItemQueue.insert({ materialID, std::queue<RenderItem>() });
 
 		transparentItemQueue[materialID].push(item);
+		if (!cullDepth)
+		{
+			auto foundDepth = transparentItemQueueDepth.find(materialID);
+			if (foundDepth == transparentItemQueueDepth.end())
+				transparentItemQueueDepth.insert({ materialID, std::queue<RenderItem>() });
+			transparentItemQueueDepth[materialID].push(item);
+		}
+		
 	}
 	else
 	{
@@ -451,6 +556,13 @@ void Renderer::AddItem(const RenderItem& item, bool transparent)
 			opaqueItemQueue.insert({ materialID, std::queue<RenderItem>() });
 
 		opaqueItemQueue[materialID].push(item);
+		if (!cullDepth)
+		{
+			auto foundDepth = opaqueItemQueueDepth.find(materialID);
+			if (foundDepth == opaqueItemQueueDepth.end())
+				opaqueItemQueueDepth.insert({ materialID, std::queue<RenderItem>() });
+			opaqueItemQueueDepth[materialID].push(item);
+		}
 	}
 }
 
@@ -662,20 +774,21 @@ void Renderer::DrawScreenQuad(const Material* material)
 }
 
 
-void Renderer::InitForwardPlus(CameraComponent* camera, Window* window)
+void Renderer::InitForwardPlus(CameraComponent* camera, Window* window, Shader forwardPlusShader)
 {
+	
+	
 	this->width = window->GetWidth();
 	this->height = window->GetHeight();
 	int screenWidth = std::max(window->GetWidth(), 1u);
 	int screenHeight = std::max(window->GetHeight(), 1u);
 	int lightCullingBlockSize = 32;
-	dx::XMUINT4 numThreads = dx::XMUINT4(std::ceil(screenWidth / (float)lightCullingBlockSize), std::ceil(screenHeight / (float)lightCullingBlockSize),1, 1);
-	this->numThreadGroups = dx::XMUINT3(std::ceil(numThreads.x / (float)lightCullingBlockSize), std::ceil(numThreads.y / (float)lightCullingBlockSize), 1);
-	UINT count = numThreads.x * numThreads.y * numThreads.z;
+	dx::XMUINT4 numThreads = dx::XMUINT4(std::ceil((float)screenWidth / (float)lightCullingBlockSize), std::ceil((float)screenHeight / (float)lightCullingBlockSize),1, 1);
+	this->numThreadGroups = dx::XMUINT3(std::ceil((float)numThreads.x / (float)lightCullingBlockSize), std::ceil((float)numThreads.y / (float)lightCullingBlockSize), 1);
+	UINT count = numThreadGroups.x * numThreadGroups.y * numThreadGroups.z;
 
 	//Dispatch Forward+
 	dispatchParamsBuffer.Initialize(CB_DISPATCH_PARAMS_SLOT, ShaderBindFlag::COMPUTE, device);
-	//std::cout << sizeof(cb_DispatchParams) << std::endl;
 	cb_DispatchParams& dataDP = dispatchParamsBuffer.GetData();
 	dataDP.numThreadGroups = dx::XMUINT4(numThreadGroups.x, numThreadGroups.y, numThreadGroups.z, 1);
 	dataDP.numThreads = numThreads;
@@ -686,7 +799,7 @@ void Renderer::InitForwardPlus(CameraComponent* camera, Window* window)
 	screenToViewParams.Initialize(CB_SCREEN_TOVIEW_PARAMS_SLOT, ShaderBindFlag::COMPUTE, device);
 	cb_ScreenToViewParams& dataSVP = screenToViewParams.GetData();
 	dx::XMFLOAT4X4 inverse;
-	dx::XMStoreFloat4x4(&inverse, dx::XMMatrixInverse(nullptr, camera->GetProjectionMatrix()));
+	dx::XMStoreFloat4x4(&inverse, dx::XMMatrixTranspose(dx::XMMatrixInverse(nullptr, camera->GetProjectionMatrix()))); //transposed matrix.
 	dataSVP.inverseProjection = inverse;
 	dataSVP.screenDimensions.x = window->GetWidth();
 	dataSVP.screenDimensions.y = window->GetHeight();
@@ -714,53 +827,111 @@ void Renderer::InitForwardPlus(CameraComponent* camera, Window* window)
 
 
 	context->Unmap(frustums_buffer, 0);
+	ID3D11Texture2D* tex2D = nullptr;
+	ID3D11Texture2D* tex2D2 = nullptr;
+	D3D11_TEXTURE2D_DESC desc = {};
 
-}
+	desc.Width = numThreads.x;
+	desc.Height = numThreads.y;
+	desc.MipLevels = 1;
+	desc.ArraySize = 1;
+	desc.Format = DXGI_FORMAT_R32G32_UINT;
+	desc.SampleDesc.Count = 1;
+	desc.Usage = D3D11_USAGE_DEFAULT;
+	desc.BindFlags = D3D11_BIND_UNORDERED_ACCESS | D3D11_BIND_SHADER_RESOURCE;
+	desc.CPUAccessFlags = 0;
+	desc.MiscFlags = 0;
 
-void Renderer::UpdateForwardPlus()
-{
-	//this is to be run for lightculling compute shader
-	//////DEPTH PASS BEGIN---------------------------
-	////DepthPass::BindNull(context);
-	////DepthPass::BindDSV(context);
-	////context->OMSetDepthStencilState(dss, 0);
-	////SetCullBack(true);
-	////DrawQueueToTarget(depthOpaqueItemQueue, camera);
+	device->CreateTexture2D(&desc, NULL, &tex2D);
+	device->CreateTexture2D(&desc, NULL, &tex2D2);
 
-	////SetCullBack(false);
-	////DrawQueueToTarget(depthTransparentItemQueue, camera);
+	D3D11_UNORDERED_ACCESS_VIEW_DESC uavDesc = {};
+	uavDesc.Format = DXGI_FORMAT_R32G32_UINT;
+	uavDesc.ViewDimension = D3D11_UAV_DIMENSION_TEXTURE2D;
+	D3D11_SHADER_RESOURCE_VIEW_DESC srvDesc = {};
+	srvDesc.Format = DXGI_FORMAT_R32G32_UINT;
+	srvDesc.ViewDimension = D3D11_SRV_DIMENSION_TEXTURE2D;
+	srvDesc.Texture2D.MostDetailedMip = 0;
+	srvDesc.Texture2D.MipLevels = desc.MipLevels;
 
-	////SetCullBack(true);
-	////DepthPass::BindNull(context);
-	////ClearRenderTarget(midbuffer);
-	////SetRenderTarget(midbuffer);
-	//////DEPTH PASS END-----------------------------------------------
-	//precomputed in_Frustums
-	//DXHelper::CreateStructuredBuffer(device, &frustums_buffer, frustum_data.data(), sizeof(s_Frustum), frustum_data.size(), &inFrustums_srv);
+	device->CreateUnorderedAccessView(tex2D, &uavDesc, &o_LightGrid_tex);
+	device->CreateUnorderedAccessView(tex2D2, &uavDesc, &t_LightGrid_tex);
+	device->CreateShaderResourceView(tex2D, &srvDesc, &o_LightGrid_texSRV);
+	device->CreateShaderResourceView(tex2D, &srvDesc, &t_LightGrid_texSRV);
+	tex2D->Release();
+	tex2D2->Release();
+
+	forwardPlusShader.Unbind(context);
+	forwardPlusShader.SetComputeShader("Shaders/ForwardPlusRendering.hlsl");
+	forwardPlusShader.CompileCS(device);
+	forwardPlusShader.BindToContext(context);
+
 	DXHelper::BindStructuredBuffer(context, frustums_buffer, frustum_data.data(), 9, ShaderBindFlag::COMPUTE, &inFrustums_srv);
-
-
 	//opaque_light index counter
 	o_LightIndexCounter.resize(1);
-	DXHelper::CreateCopyBuffer(device, &o_LightIndexCounter_uavbuffer, sizeof(UINT), o_LightIndexCounter.size());
-	DXHelper::CreateStructuredBuffer(device, &o_LightIndexCounter_uavbuffer, o_LightIndexCounter.data(), sizeof(UINT), o_LightIndexCounter.size(), &o_LightIndexCounter_uav, &o_LightIndexCounter_srv);
+	DXHelper::CreateStructuredBuffer(device, &o_LightIndexCounter_uavbuffer, o_LightIndexCounter.data(), sizeof(UINT), o_LightIndexCounter.size(), &o_LightIndexCounter_uav);
 	DXHelper::BindStructuredBuffer(context, o_LightIndexCounter_uavbuffer, o_LightIndexCounter.data(), 1, ShaderBindFlag::COMPUTE, &o_LightIndexCounter_uav, nullptr); //u1
 	//transparent_light index counter
 	t_LightIndexCounter.resize(1);
-	DXHelper::CreateStructuredBuffer(device, &t_LightIndexCounter_uavbuffer, t_LightIndexCounter.data(), sizeof(UINT), t_LightIndexCounter.size(), &t_LightIndexCounter_uav, &t_LightIndexCounter_srv);
+	DXHelper::CreateStructuredBuffer(device, &t_LightIndexCounter_uavbuffer, t_LightIndexCounter.data(), sizeof(UINT), t_LightIndexCounter.size(), &t_LightIndexCounter_uav);
 	DXHelper::BindStructuredBuffer(context, t_LightIndexCounter_uavbuffer, t_LightIndexCounter.data(), 2, ShaderBindFlag::COMPUTE, &t_LightIndexCounter_uav, nullptr); //u2
-
 	o_LightIndexList.resize(32); //light block size??
 	DXHelper::CreateStructuredBuffer(device, &o_LightIndexList_uavbuffer, o_LightIndexList.data(), sizeof(UINT), o_LightIndexList.size(), &o_LightIndexList_uav, &o_LightIndexList_srv);
-	DXHelper::BindStructuredBuffer(context, o_LightIndexList_uavbuffer, o_LightIndexCounter.data(), 3, ShaderBindFlag::COMPUTE, &o_LightIndexList_uav, nullptr); //u3
 	t_LightIndexList.resize(32); //lightcount??
 	DXHelper::CreateStructuredBuffer(device, &t_LightIndexList_uavbuffer, t_LightIndexList.data(), sizeof(UINT), t_LightIndexList.size(), &t_LightIndexList_uav, &t_LightIndexList_srv);
-	DXHelper::BindStructuredBuffer(context, t_LightIndexList_uavbuffer, t_LightIndexCounter.data(), 4, ShaderBindFlag::COMPUTE, &t_LightIndexList_uav, nullptr); //u4
+	DepthPass::Init(device, width,height);
+	
+	
+}
 
+void Renderer::UpdateForwardPlus(CameraComponent* camera)
+{
+	//this is to be run for lightculling compute shader
+	//////DEPTH PASS BEGIN---------------------------
+	DepthPass::BindNull(context);
+	DepthPass::BindDSV(context);
 
-	//DXHelper::CreateTexture2D(width, height, device, &o_LightGrid_tex, DXGI_FORMAT_R32G32_UINT);
-	//DXHelper::CreateTexture2D(width, height, device, &t_LightGrid_tex, DXGI_FORMAT_R32G32_UINT);
+	SetCullBack(true);
+	DrawQueueToTarget(opaqueItemQueueDepth, camera);
+	
+	for (auto i : opaqueBatchesDepth)
+		DrawBatch(i.second, camera);
+
+	opaqueBatchesDepth.clear();
+
+	SetCullBack(false);
+	DrawQueueToTarget(transparentItemQueueDepth, camera);
+	for (auto i : transparentBatchesDepth)
+		DrawBatch(i.second, camera);
+
+	transparentBatchesDepth.clear();
+
+	SetCullBack(true);
+
+	DepthPass::BindNull(context);
+	//////DEPTH PASS END-----------------------------------------------
+	ClearRenderTarget(midbuffer);
+	SetRenderTarget(midbuffer);
+	ID3D11UnorderedAccessView* nullUAV = nullptr;
+	context->CSSetUnorderedAccessViews(3, 1, &nullUAV, NULL); //u3
+	context->CSSetUnorderedAccessViews(4, 1, &nullUAV, NULL); //u4
+	context->CSSetUnorderedAccessViews(5, 1, &nullUAV, NULL); //u5
+	context->CSSetUnorderedAccessViews(6, 1, &nullUAV, NULL); //u6
+	
+	context->CSSetShaderResources(1, 1, DepthPass::GetDepthSRV());
+
+	DXHelper::BindStructuredBuffer(context, o_LightIndexList_uavbuffer, o_LightIndexList.data(), 3, ShaderBindFlag::COMPUTE, &o_LightIndexList_uav, nullptr); //u3
+	
+	DXHelper::BindStructuredBuffer(context, t_LightIndexList_uavbuffer, t_LightIndexList.data(), 4, ShaderBindFlag::COMPUTE, &t_LightIndexList_uav, nullptr); //u4
+
+	context->CSSetUnorderedAccessViews(5, 1, &o_LightGrid_tex, NULL); //u5
+
+	context->CSSetUnorderedAccessViews(6, 1, &t_LightGrid_tex, NULL); //u6
 
 	context->Dispatch(numThreadGroups.x, numThreadGroups.y, numThreadGroups.z);
+	context->CSSetUnorderedAccessViews(3, 1, &nullUAV, NULL); //u3
+	context->CSSetUnorderedAccessViews(4, 1, &nullUAV, NULL); //u4
+	context->CSSetUnorderedAccessViews(5, 1, &nullUAV, NULL); //u5
+	context->CSSetUnorderedAccessViews(6, 1, &nullUAV, NULL); //u6
 	//context->Dispatch(1, 1, 1);
 }
