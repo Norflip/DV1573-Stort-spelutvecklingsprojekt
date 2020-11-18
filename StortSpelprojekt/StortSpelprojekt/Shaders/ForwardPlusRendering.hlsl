@@ -127,7 +127,9 @@ void main(ComputeShaderInput IN) // light culling everyframe
 		t_LightCount = 0;
 		GroupFrustum = in_Frustums[IN.groupID.x + (IN.groupID.y * numThreadGroups.x)];
 	}
-
+	//test
+	o_LightGrid[IN.dispatchThreadID.xy] = uint2(1, 1);
+	//test
 	GroupMemoryBarrierWithGroupSync();
 
 	InterlockedMin(uMinDepth, uDepth);
@@ -151,6 +153,7 @@ void main(ComputeShaderInput IN) // light culling everyframe
 	// Each thread in a group will cull 1 light until all lights have been culled.
 	for (uint i = IN.groupIndex; i < LIGHT_COUNT; i += BLOCK_SIZE * BLOCK_SIZE)
 	{
+		
 		if (Lights[i].enabled)
 		{
 			Light light = Lights[i];
@@ -159,8 +162,7 @@ void main(ComputeShaderInput IN) // light culling everyframe
 			{
 			case POINT_LIGHT:
 			{
-				//test
-				o_LightGrid[IN.dispatchThreadID.xy] = uint2(1, 1);
+				
 				Sphere sphere = { light.positionVS.xyz, light.range };
 				if (SphereInsideFrustum(sphere, GroupFrustum, nearClipVS, maxDepthVS))
 				{
@@ -213,7 +215,7 @@ void main(ComputeShaderInput IN) // light culling everyframe
 	{
 		// Update light grid for opaque geometry.
 		InterlockedAdd(o_LightIndexCounter[0], o_LightCount, o_LightIndexStartOffset);
-		o_LightGrid[IN.groupID.xy] = uint2(o_LightIndexStartOffset, o_LightCount);
+		//o_LightGrid[IN.groupID.xy] = uint2(o_LightIndexStartOffset, o_LightCount);
 
 		// Update light grid for transparent geometry.
 		InterlockedAdd(t_LightIndexCounter[0], t_LightCount, t_LightIndexStartOffset);
