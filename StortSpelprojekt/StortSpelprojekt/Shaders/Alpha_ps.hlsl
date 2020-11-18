@@ -29,6 +29,7 @@ float4 main(VS_OUTPUT input) : SV_TARGET
 
 	for (uint i = 0; i < lightCount; i++)
 	{
+		float4 result = float4(0.0f, 0.0f, 0.0f, 0.0f);
 		uint lightIndex = LightIndexList[startOffset + i];
 		Light light = Lights[lightIndex];
 		switch (light.type)
@@ -52,7 +53,7 @@ float4 main(VS_OUTPUT input) : SV_TARGET
 		}
 		finalColor += result;
 	}
-
+	finalColor.a = 1;
 	textureColor.a = alphaMap.Sample(defaultSampleType, input.uv).r;
 	finalColor = saturate(finalColor * textureColor);
 	
