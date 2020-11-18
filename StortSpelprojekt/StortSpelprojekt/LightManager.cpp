@@ -18,13 +18,13 @@ void LightManager::Initialize(ID3D11Device* device)
 {
 	lightBuffer.Initialize(CB_LIGHT_SLOT, ShaderBindFlag::PIXEL | ShaderBindFlag::DOMAINS, device);
 
-	lightData.resize(10);
-	for (int i = 0; i < 10; i++)
+	lightData.resize(5);
+	for (int i = 0; i < 5; i++)
 	{
 		lightData[i].attenuation = POINT_DEFAULT_ATTENUATION;
 		lightData[i].enabled = 1;
 		lightData[i].lightColor = dx::XMFLOAT4(1, 0, 0, 1);
-		lightData[i].lightPosition = dx::XMFLOAT3(16, 0, 48+(i*5));
+		lightData[i].lightPosition = dx::XMFLOAT3(16, 0, 48);
 		lightData[i].type = 0;
 		lightData[i].range = 100;
 		
@@ -94,7 +94,7 @@ void LightManager::ForceUpdateBuffers(ID3D11DeviceContext* context, CameraCompon
 
 	lightBuffer.SetData(data);
 	lightBuffer.UpdateBuffer(context);
-	DXHelper::BindStructuredBuffer(context, lightsSRVBfr, lightData.data(), 8, ShaderBindFlag::COMPUTE, &lightsSRV);
+	DXHelper::BindStructuredBuffer(context, lightsSRVBfr, lightData.data(), 8, ShaderBindFlag::COMPUTE|ShaderBindFlag::PIXEL, &lightsSRV);
 }
 
 void LightManager::Clear()

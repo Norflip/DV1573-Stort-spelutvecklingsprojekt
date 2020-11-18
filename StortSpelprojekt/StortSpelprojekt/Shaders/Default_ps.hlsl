@@ -29,7 +29,7 @@ float4 main(VS_OUTPUT input) : SV_TARGET
 
 	finalColor += CalculateDirectionalLight(sunDirection, normalized, viewDirection);
 
-    for (int i = 0; i < 10; i++)
+    for (int i = 0; i < 5; i++)
     {
 		finalColor += CalculatePointLight(Lights[i], normalized, input.worldPosition, viewDirection);
     }
