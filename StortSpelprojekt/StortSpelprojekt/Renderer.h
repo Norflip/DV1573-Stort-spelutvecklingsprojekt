@@ -144,11 +144,9 @@ private:
 	//light index counter
 	std::vector<UINT> o_LightIndexCounter;
 	ID3D11Buffer* o_LightIndexCounter_uavbuffer;
-	ID3D11ShaderResourceView* o_LightIndexCounter_srv;
 	ID3D11UnorderedAccessView* o_LightIndexCounter_uav;
 	std::vector<UINT> t_LightIndexCounter;
 	ID3D11Buffer* t_LightIndexCounter_uavbuffer;
-	ID3D11ShaderResourceView* t_LightIndexCounter_srv;
 	ID3D11UnorderedAccessView* t_LightIndexCounter_uav;
 	
 	//light index list
@@ -162,13 +160,11 @@ private:
 	ID3D11UnorderedAccessView* t_LightIndexList_uav;
 
 	//light grid
-	//std::vector<dx::XMUINT2> o_LightGrid;
-	//ID3D11Buffer* o_LightGrid_texbuffer;
+	
 	ID3D11UnorderedAccessView* o_LightGrid_tex;
-	//std::vector<dx::XMUINT2> t_LightGrid;
-	//ID3D11Buffer* t_LightGrid_texbuffer;
+	ID3D11ShaderResourceView* o_LightGrid_texSRV;
 	ID3D11UnorderedAccessView* t_LightGrid_tex;
-
+	ID3D11ShaderResourceView* t_LightGrid_texSRV;
 
 
 	std::vector<dx::XMFLOAT4X4> srv_skeleton_data;

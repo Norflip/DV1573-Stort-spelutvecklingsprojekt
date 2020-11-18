@@ -32,6 +32,31 @@ Renderer::~Renderer()
 
 
 	delete[] tmpBatchInstanceData;
+
+	o_LightGrid_tex->Release();
+	o_LightGrid_texSRV->Release();
+	t_LightGrid_tex->Release();
+	t_LightGrid_texSRV->Release();
+
+	
+	frustums_buffer->Release();
+	inFrustums_srv->Release();
+	outFrustums_uav->Release();
+	
+	o_LightIndexCounter_uavbuffer->Release();
+	o_LightIndexCounter_uav->Release();
+	
+	t_LightIndexCounter_uavbuffer->Release();
+	t_LightIndexCounter_uav->Release();
+	
+	o_LightIndexList_uavbuffer->Release();
+	o_LightIndexList_srv->Release();
+	o_LightIndexList_uav->Release();
+	
+	t_LightIndexList_uavbuffer->Release();
+	t_LightIndexList_srv->Release();
+	t_LightIndexList_uav->Release();
+
 }
 
 void Renderer::Initialize(Window* window)
@@ -673,7 +698,7 @@ void Renderer::InitForwardPlus(CameraComponent* camera, Window* window)
 	int lightCullingBlockSize = 32;
 	dx::XMUINT4 numThreads = dx::XMUINT4(std::ceil((float)screenWidth / (float)lightCullingBlockSize), std::ceil((float)screenHeight / (float)lightCullingBlockSize),1, 1);
 	this->numThreadGroups = dx::XMUINT3(std::ceil((float)numThreads.x / (float)lightCullingBlockSize), std::ceil((float)numThreads.y / (float)lightCullingBlockSize), 1);
-	UINT count = numThreads.x * numThreads.y * numThreads.z;
+	UINT count = numThreadGroups.x * numThreadGroups.y * numThreadGroups.z;
 
 	//Dispatch Forward+
 	dispatchParamsBuffer.Initialize(CB_DISPATCH_PARAMS_SLOT, ShaderBindFlag::COMPUTE, device);
@@ -703,7 +728,7 @@ void Renderer::InitForwardPlus(CameraComponent* camera, Window* window)
 	context->Dispatch(numThreadGroups.x, numThreadGroups.y, numThreadGroups.z);
 	//context->Dispatch(1, 1, 1);
 
-	D3D11_MAPPED_SUBRESOURCE resource;
+	/*D3D11_MAPPED_SUBRESOURCE resource;
 	HRESULT hr = context->Map(frustums_buffer, 0, D3D11_MAP_READ_WRITE, 0, &resource);
 	assert(SUCCEEDED(hr));
 	s_Frustum* someFrustums;
@@ -714,8 +739,40 @@ void Renderer::InitForwardPlus(CameraComponent* camera, Window* window)
 	}
 
 
-	context->Unmap(frustums_buffer, 0);
+	context->Unmap(frustums_buffer, 0);*/
+	ID3D11Texture2D* tex2D = nullptr;
+	ID3D11Texture2D* tex2D2 = nullptr;
+	D3D11_TEXTURE2D_DESC desc = {};
 
+	desc.Width = numThreads.x;
+	desc.Height = numThreads.y;
+	desc.MipLevels = 1;
+	desc.ArraySize = 1;
+	desc.Format = DXGI_FORMAT_R32G32_UINT;
+	desc.SampleDesc.Count = 1;
+	desc.Usage = D3D11_USAGE_DEFAULT;
+	desc.BindFlags = D3D11_BIND_UNORDERED_ACCESS | D3D11_BIND_SHADER_RESOURCE;
+	desc.CPUAccessFlags = 0;
+	desc.MiscFlags = 0;
+
+	device->CreateTexture2D(&desc, NULL, &tex2D);
+	device->CreateTexture2D(&desc, NULL, &tex2D2);
+
+	D3D11_UNORDERED_ACCESS_VIEW_DESC uavDesc = {};
+	uavDesc.Format = DXGI_FORMAT_R32G32_UINT;
+	uavDesc.ViewDimension = D3D11_UAV_DIMENSION_TEXTURE2D;
+	D3D11_SHADER_RESOURCE_VIEW_DESC srvDesc = {};
+	srvDesc.Format = DXGI_FORMAT_R32G32_UINT;
+	srvDesc.ViewDimension = D3D11_SRV_DIMENSION_TEXTURE2D;
+	srvDesc.Texture2D.MostDetailedMip = 0;
+	srvDesc.Texture2D.MipLevels = desc.MipLevels;
+
+	device->CreateUnorderedAccessView(tex2D, &uavDesc, &o_LightGrid_tex);
+	device->CreateUnorderedAccessView(tex2D2, &uavDesc, &t_LightGrid_tex);
+	device->CreateShaderResourceView(tex2D, &srvDesc, &o_LightGrid_texSRV);
+	device->CreateShaderResourceView(tex2D, &srvDesc, &t_LightGrid_texSRV);
+	tex2D->Release();
+	tex2D2->Release();
 }
 
 void Renderer::UpdateForwardPlus()
@@ -744,11 +801,11 @@ void Renderer::UpdateForwardPlus()
 	//opaque_light index counter
 	o_LightIndexCounter.resize(1);
 	DXHelper::CreateCopyBuffer(device, &o_LightIndexCounter_uavbuffer, sizeof(UINT), o_LightIndexCounter.size());
-	DXHelper::CreateStructuredBuffer(device, &o_LightIndexCounter_uavbuffer, o_LightIndexCounter.data(), sizeof(UINT), o_LightIndexCounter.size(), &o_LightIndexCounter_uav, &o_LightIndexCounter_srv);
+	DXHelper::CreateStructuredBuffer(device, &o_LightIndexCounter_uavbuffer, o_LightIndexCounter.data(), sizeof(UINT), o_LightIndexCounter.size(), &o_LightIndexCounter_uav);
 	DXHelper::BindStructuredBuffer(context, o_LightIndexCounter_uavbuffer, o_LightIndexCounter.data(), 1, ShaderBindFlag::COMPUTE, &o_LightIndexCounter_uav, nullptr); //u1
 	//transparent_light index counter
 	t_LightIndexCounter.resize(1);
-	DXHelper::CreateStructuredBuffer(device, &t_LightIndexCounter_uavbuffer, t_LightIndexCounter.data(), sizeof(UINT), t_LightIndexCounter.size(), &t_LightIndexCounter_uav, &t_LightIndexCounter_srv);
+	DXHelper::CreateStructuredBuffer(device, &t_LightIndexCounter_uavbuffer, t_LightIndexCounter.data(), sizeof(UINT), t_LightIndexCounter.size(), &t_LightIndexCounter_uav);
 	DXHelper::BindStructuredBuffer(context, t_LightIndexCounter_uavbuffer, t_LightIndexCounter.data(), 2, ShaderBindFlag::COMPUTE, &t_LightIndexCounter_uav, nullptr); //u2
 
 	o_LightIndexList.resize(32); //light block size??
