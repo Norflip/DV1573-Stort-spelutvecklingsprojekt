@@ -220,7 +220,7 @@
     <ClCompile Include="PuzzleManager.cpp" />
     <ClCompile Include="QuadTree.cpp" />
     <ClCompile Include="PossionDiscSampler.cpp" />
-    <ClCompile Include="PointLightComponent.cpp" />
+    <ClCompile Include="LightComponent.cpp" />
     <ClCompile Include="Renderer.cpp" />
     <ClCompile Include="RigidBodyComponent.cpp" />
     <ClCompile Include="ResourceManager.cpp" />
@@ -321,7 +321,7 @@
     <ClInclude Include="Object.h" />
     <ClInclude Include="Physics.h" />
     <ClInclude Include="Ray.h" />
-    <ClInclude Include="PointLightComponent.h" />
+    <ClInclude Include="LightComponent.h" />
     <ClInclude Include="Renderer.h" />
     <ClInclude Include="RenderPass.h" />
     <ClInclude Include="RigidBodyComponent.h" />

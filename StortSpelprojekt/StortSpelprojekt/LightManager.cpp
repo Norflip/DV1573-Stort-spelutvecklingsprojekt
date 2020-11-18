@@ -1,6 +1,6 @@
 #include "stdafx.h"
 #include "LightManager.h"
-#include "PointLightComponent.h"
+#include "LightComponent.h"
 
 LightManager::LightManager()
 {
@@ -23,38 +23,38 @@ void LightManager::Initialize(ID3D11Device* device)
 	DXHelper::CreateStructuredBuffer(device, &the_Light_srvbuffer, the_Lights.data(), sizeof(s_Light), the_Lights.size(), &the_Light_srv);
 }
 
-size_t LightManager::RegisterPointLight(PointLightComponent* pointLight)
+size_t LightManager::RegisterLight(LightComponent* light)
 {
 	if (index < lightCount)
 	{
-		pointLightMap.insert({ index, pointLight });
+		lightMap.insert({ index, light });
 		return this->index++;
 	}
 	else
 		return this->index;
 }
 
-PointLightComponent* LightManager::GetPointLight(size_t index)
+LightComponent* LightManager::GetLight(size_t index)
 {
-	std::unordered_map<size_t, PointLightComponent*>::const_iterator lightObject = pointLightMap.find(index);
-	if (lightObject == pointLightMap.end())
+	std::unordered_map<size_t, LightComponent*>::const_iterator lightObject = lightMap.find(index);
+	if (lightObject == lightMap.end())
 		return nullptr;
 	else
 		return lightObject->second;
 }
 
-void LightManager::RemovePointLight(size_t index)
+void LightManager::RemoveLight(size_t index)
 {
-	auto temp = pointLightMap.find(index);
-	if (temp != pointLightMap.end())
-		pointLightMap.erase(temp);
+	auto temp = lightMap.find(index);
+	if (temp != lightMap.end())
+		lightMap.erase(temp);
 }
 
 void LightManager::UpdateBuffers(ID3D11DeviceContext* context, CameraComponent* camComp)
 {
 	bool updated = false;
 
-	for (auto i = pointLightMap.begin(); i != pointLightMap.end() && !updated; i++)
+	for (auto i = lightMap.begin(); i != lightMap.end() && !updated; i++)
 	{
 		if (i->second->IsDirty())
 		{
@@ -74,7 +74,7 @@ void LightManager::ForceUpdateBuffers(ID3D11DeviceContext* context, CameraCompon
 
 
 
-	for (auto i = pointLightMap.begin(); i != pointLightMap.end(); i++)
+	for (auto i = lightMap.begin(); i != lightMap.end(); i++)
 	{
 		i->second->MarkAsNotDirty();
 
@@ -97,5 +97,5 @@ void LightManager::ForceUpdateBuffers(ID3D11DeviceContext* context, CameraCompon
 
 void LightManager::Clear()
 {
-	pointLightMap.clear();
+	lightMap.clear();
 }

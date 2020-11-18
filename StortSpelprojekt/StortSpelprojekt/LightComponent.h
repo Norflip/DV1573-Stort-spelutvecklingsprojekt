@@ -13,12 +13,12 @@ enum class LightType
 	SPOT_LIGHT = 1,
 	DIRECTIONAL_LIGHT = 2
 };
-class PointLightComponent : public Component
+class LightComponent : public Component
 {
 public:
 
-	PointLightComponent(UINT type, dx::XMFLOAT4 color, float range, dx::XMFLOAT3 attenuation = POINT_DEFAULT_ATTENUATION);
-	virtual ~PointLightComponent();
+	LightComponent(UINT type, dx::XMFLOAT4 color, float range, dx::XMFLOAT3 attenuation = POINT_DEFAULT_ATTENUATION);
+	virtual ~LightComponent();
 
 	virtual void Initialize() override;
 	dx::XMFLOAT4 GetColor();

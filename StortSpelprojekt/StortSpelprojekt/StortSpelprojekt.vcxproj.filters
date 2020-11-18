@@ -138,9 +138,6 @@
     <ClCompile Include="MoveComponent.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="PointLightComponent.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="PossionDiscSampler.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
@@ -294,6 +291,9 @@
     <ClCompile Include="PuzzleManager.cpp" />
     <ClCompile Include="FrogPuzzle.cpp" />
     <ClCompile Include="DepthPass.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="LightComponent.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>
@@ -466,9 +466,6 @@
     <ClInclude Include="PlayerComp.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="PointLightComponent.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
     <ClInclude Include="PossionDiscSampler.h">
       <Filter>Header Files</Filter>
     </ClInclude>
@@ -593,6 +590,9 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="DepthPass.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="LightComponent.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>
