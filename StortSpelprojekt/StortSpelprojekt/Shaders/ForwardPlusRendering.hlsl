@@ -73,19 +73,19 @@ groupshared Frustum GroupFrustum;
 // Opaque geometry light lists.
 groupshared uint o_LightCount;
 groupshared uint o_LightIndexStartOffset;
-groupshared uint o_LightList[1024];
+groupshared uint o_LightList[32];
 
 // Transparent geometry light lists.
 groupshared uint t_LightCount;
 groupshared uint t_LightIndexStartOffset;
-groupshared uint t_LightList[1024];
+groupshared uint t_LightList[32];
 
 // Add the light to the visible light list for opaque geometry.
 void o_AppendLight(uint lightIndex)
 {
 	uint index; // Index into the visible lights array.
 	InterlockedAdd(o_LightCount, 1, index);
-	if (index < 1024)
+	if (index < 32)
 	{
 		o_LightList[index] = lightIndex;
 	}
@@ -96,7 +96,7 @@ void t_AppendLight(uint lightIndex)
 {
 	uint index; // Index into the visible lights array.
 	InterlockedAdd(t_LightCount, 1, index);
-	if (index < 1024)
+	if (index < 32)
 	{
 		t_LightList[index] = lightIndex;
 	}

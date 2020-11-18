@@ -514,6 +514,31 @@ void DXHelper::BindStructuredBuffer(ID3D11DeviceContext* context, ID3D11Buffer* 
 		context->CSSetShaderResources(slot, 1, srv);
 }
 
+void DXHelper::BindStructuredBuffer(ID3D11DeviceContext* context, size_t slot, ShaderBindFlag flag, ID3D11ShaderResourceView** srv)
+{
+	int bflag = static_cast<int>(flag);
+
+	if ((bflag & (int)ShaderBindFlag::PIXEL) != 0)
+		context->PSSetShaderResources(slot, 1, srv);
+
+	if ((bflag & (int)ShaderBindFlag::VERTEX) != 0)
+		context->VSSetShaderResources(slot, 1, srv);
+
+	if ((bflag & (int)ShaderBindFlag::HULL) != 0)
+		context->HSSetShaderResources(slot, 1, srv);
+
+	if ((bflag & (int)ShaderBindFlag::DOMAINS) != 0)
+		context->DSSetShaderResources(slot, 1, srv);
+
+	if ((bflag & (int)ShaderBindFlag::GEOMETRY) != 0)
+		context->GSSetShaderResources(slot, 1, srv);
+
+	if ((bflag & (int)ShaderBindFlag::COMPUTE) != 0)
+		context->CSSetShaderResources(slot, 1, srv);
+}
+
+
+
 
 ID3D11RasterizerState* DXHelper::CreateRasterizerState(D3D11_CULL_MODE cullMode, D3D11_FILL_MODE fillMode, ID3D11Device* device)
 {

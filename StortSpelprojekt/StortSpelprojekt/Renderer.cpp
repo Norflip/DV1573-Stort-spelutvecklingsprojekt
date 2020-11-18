@@ -303,7 +303,7 @@ void Renderer::RenderFrame(CameraComponent* camera, float time, RenderTexture& t
 	
 
 	context->OMSetDepthStencilState(dss, 0);
-
+	DXHelper::BindStructuredBuffer(context, 10, ShaderBindFlag::PIXEL, &o_LightIndexList_srv);
 	SetCullBack(true);
 	DrawQueueToTarget(opaqueItemQueue, camera);
 	DShape::Instance().m_Draw(camera->GetViewMatrix() * camera->GetProjectionMatrix(), context);
@@ -312,7 +312,7 @@ void Renderer::RenderFrame(CameraComponent* camera, float time, RenderTexture& t
 		DrawBatch(i.second, camera);
 	
 	opaqueBatches.clear();
-
+	DXHelper::BindStructuredBuffer(context, 10, ShaderBindFlag::PIXEL, &t_LightIndexList_srv);
 	SetCullBack(false);
 	DrawQueueToTarget(transparentItemQueue, camera);
 	for (auto i : transparentBatches)
@@ -886,9 +886,15 @@ void Renderer::InitForwardPlus(CameraComponent* camera, Window* window, Shader& 
 	t_LightIndexCounter.resize(1);
 	DXHelper::CreateStructuredBuffer(device, &t_LightIndexCounter_uavbuffer, t_LightIndexCounter.data(), sizeof(UINT), t_LightIndexCounter.size(), &t_LightIndexCounter_uav);
 	
-	o_LightIndexList.resize(32); //light block size??
-	DXHelper::CreateStructuredBuffer(device, &o_LightIndexList_uavbuffer, o_LightIndexList.data(), sizeof(UINT), o_LightIndexList.size(), &o_LightIndexList_uav, &o_LightIndexList_srv);
+	o_LightIndexList.resize(32); //light block size?
 	t_LightIndexList.resize(32); //lightcount??
+	for (int index = 0; index < 32; index++)
+	{
+		o_LightIndexList[index] = 0;
+		t_LightIndexList[index] = 0;
+	}
+	DXHelper::CreateStructuredBuffer(device, &o_LightIndexList_uavbuffer, o_LightIndexList.data(), sizeof(UINT), o_LightIndexList.size(), &o_LightIndexList_uav, &o_LightIndexList_srv);
+	
 	DXHelper::CreateStructuredBuffer(device, &t_LightIndexList_uavbuffer, t_LightIndexList.data(), sizeof(UINT), t_LightIndexList.size(), &t_LightIndexList_uav, &t_LightIndexList_srv);
 	DepthPass::Init(device, width,height);
 	
@@ -947,6 +953,8 @@ void Renderer::UpdateForwardPlus(CameraComponent* camera)
 	context->CSSetUnorderedAccessViews(4, 1, &nullUAV, NULL); //u4
 	context->CSSetUnorderedAccessViews(5, 1, &nullUAV, NULL); //u5
 	context->CSSetUnorderedAccessViews(6, 1, &nullUAV, NULL); //u6
+
+	
 	//context->Dispatch(1, 1, 1);
 }
 
