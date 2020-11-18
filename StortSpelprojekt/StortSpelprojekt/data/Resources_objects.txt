@@ -1,4 +1,4 @@
-Objects: 44
+Objects: 45
 
 Charger: Models/Enemies/Charger_Model.ZWEB
 Shader: skeletonShader

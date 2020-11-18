@@ -356,7 +356,7 @@ void PlayerComp::Reset()
 	// defaulting some shit
 	this->foodLossPerSecond = 0.3f;
 	this->food = 50.0f;
-	this->fuelBurnPerMeter = 3.0f;
+	this->fuelBurnPerMeter = 0.7f;
 	this->fuel = 50.0f;
 	this->healthLossPerSecond = 0.5f;
 
