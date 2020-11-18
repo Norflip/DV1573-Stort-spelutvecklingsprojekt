@@ -332,6 +332,7 @@ void GameScene::OnActivate()
 	enemyManager->InitBaseEnemy();
 	enemyManager->InitChargerEnemy();
 	grid = new Grid(player);
+	grid->CalculatePath();
 	
 	LightManager::Instance().ForceUpdateBuffers(renderer->GetContext());
 }

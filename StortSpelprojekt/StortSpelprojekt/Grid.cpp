@@ -17,39 +17,33 @@ void Grid::Init()
 
 void Grid::DrawGrid()
 {
-	dx::XMFLOAT3 objectPos;
-	dx::XMStoreFloat3(&objectPos, object->GetTransform().GetPosition());
-
-	int gridPosX = std::round((objectPos.x - objectOffset) / nodeSize);
-	int gridPosZ = std::round((objectPos.z - objectOffset) / nodeSize);
-	//int gridPosZ = (std::round((objectPos.z - objectOffset) / nodeSize) * rows) + 1;
-	int gridPos = gridPosX * gridPosZ;
-	dx::XMFLOAT2 startPos = dx::XMFLOAT2(gridPosX, gridPosZ);
-	dx::XMFLOAT2 endPos = dx::XMFLOAT2(8, 0);
-	FindPath(startPos, endPos);
-
-	for (int x = 0; x < rows; x++)
+	std::cout << gridPath.size() << std::endl;
+	bool checkNode = false;
+	for (int i = 0; i < allNodes.size(); i++)
 	{
-		for (int z = 0; z < rows; z++)
+		for (int j = 0; j < gridPath.size(); j++)
 		{
-			if (gridPosX == x && gridPosZ == z)
+			if (allNodes[i].pos.x == gridPath[j].pos.x && allNodes[i].pos.y == gridPath[j].pos.y)
 			{
-				box.DrawBox(dx::XMFLOAT3((x * nodeSize) + 5, 4, (z * nodeSize) + 5), dx::XMFLOAT3(2, 2, 2), dx::XMFLOAT3(0, 1, 0));
-			}	
+				checkNode = true;
+				break;
+			}
 			else
-				box.DrawBox(dx::XMFLOAT3((x * nodeSize) + 5, 4, (z * nodeSize) + 5), dx::XMFLOAT3(2, 2, 2), dx::XMFLOAT3(1, 0, 0));
+			{
+				checkNode = false;
+			}
 		}
+		if (checkNode)
+			box.DrawBox(dx::XMFLOAT3((allNodes[i].pos.x * nodeSize) + 5, 4, (allNodes[i].pos.y * nodeSize) + 5), dx::XMFLOAT3(2, 2, 2), dx::XMFLOAT3(0, 1, 0));
+		else
+			box.DrawBox(dx::XMFLOAT3((allNodes[i].pos.x * nodeSize) + 5, 4, (allNodes[i].pos.y * nodeSize) + 5), dx::XMFLOAT3(2, 2, 2), dx::XMFLOAT3(1, 0, 0));
+		checkNode = false;
 	}
 
-	if (gridPos == 0)
-	{
-		//grids[gridPos];
-		//std::cout << "You are in a grid" << std::endl;
-	}
-	//std::cout << "Grid pos: " << gridPos << std::endl;
-	//std::cout << "x: " << objectPos.x << ", z: " << objectPos.z << std::endl;
-
-	//std::cout << test << std::endl;
+	//for (int i = 0; i < allNodes.size(); i++)
+	//{
+	//	box.DrawBox(dx::XMFLOAT3((allNodes[i].pos.x * nodeSize) + 5, 4, (allNodes[i].pos.y * nodeSize) + 5), dx::XMFLOAT3(2, 2, 2), dx::XMFLOAT3(1, 0, 0));
+	//}
 }
 
 void Grid::FindPath(dx::XMFLOAT2 startPos, dx::XMFLOAT2 endPos)
@@ -59,10 +53,10 @@ void Grid::FindPath(dx::XMFLOAT2 startPos, dx::XMFLOAT2 endPos)
 	Node currentNode;
 	int erasePos = 0;
 
-	startNode.posX = startPos.x;
-	startNode.posY = startPos.y;
-	endNode.posX = endPos.x;
-	endNode.posY = endPos.y;
+	startNode.pos.x = startPos.x;
+	startNode.pos.y = startPos.y;
+	endNode.pos.x = endPos.x;
+	endNode.pos.y = endPos.y;
 
 	openList.push_back(startNode);
 	while (openList.size() > 0)
@@ -79,7 +73,7 @@ void Grid::FindPath(dx::XMFLOAT2 startPos, dx::XMFLOAT2 endPos)
 		openList.erase(openList.begin() + erasePos);
 		openList.shrink_to_fit();
 		closedList.push_back(currentNode);
-		if (currentNode.posX == endNode.posX && currentNode.posY == endNode.posY)
+		if (currentNode.pos.x == endNode.pos.x && currentNode.pos.y == endNode.pos.y)
 		{
 			RetracePath(startNode, endNode);
 			return;
@@ -114,6 +108,32 @@ void Grid::FindPath(dx::XMFLOAT2 startPos, dx::XMFLOAT2 endPos)
 	}
 }
 
+void Grid::CalculatePath()
+{
+	//dx::XMFLOAT3 objectPos;
+	//dx::XMStoreFloat3(&objectPos, object->GetTransform().GetPosition());
+
+	//int gridPosX = std::round((objectPos.x - objectOffset) / nodeSize);
+	//int gridPosZ = std::round((objectPos.z - objectOffset) / nodeSize);
+	//int gridPosZ = (std::round((objectPos.z - objectOffset) / nodeSize) * rows) + 1;
+	//int gridPos = gridPosX * gridPosZ;
+	//dx::XMFLOAT2 startPos = dx::XMFLOAT2(gridPosX, gridPosZ);
+	dx::XMFLOAT2 startPos = dx::XMFLOAT2(0, 0);
+	dx::XMFLOAT2 endPos = dx::XMFLOAT2(2, 2);
+	FindPath(startPos, endPos);
+
+	for (int x = 0; x < rows; x++)
+	{
+		for (int z = 0; z < rows; z++)
+		{
+			Node temp;
+			temp.pos.x = x;
+			temp.pos.y = z;
+			allNodes.push_back(temp);
+		}
+	}
+}
+
 std::vector<Node> Grid::GetNeighbours(Node node)
 {
 	std::vector<Node> neighbours;
@@ -123,14 +143,14 @@ std::vector<Node> Grid::GetNeighbours(Node node)
 		{
 			if ((x + y) == 0)
 				continue;
-			int checkX = node.posX + x;
-			int checkY = node.posY + y;
+			int checkX = node.pos.x + x;
+			int checkY = node.pos.y + y;
 
 			if (checkX >= 0 && checkX < gridSize && checkY >= 0 && checkY < gridSize)
 			{
 				Node neighbour;
-				neighbour.posX = checkX;
-				neighbour.posY = checkY;
+				neighbour.pos.x = checkX;
+				neighbour.pos.y = checkY;
 				neighbours.push_back(neighbour);
 			}
 		}
@@ -140,8 +160,8 @@ std::vector<Node> Grid::GetNeighbours(Node node)
 
 int Grid::GetDistance(Node nodeA, Node nodeB)
 {
-	int distX = abs(nodeA.posX - nodeB.posX);
-	int distY = abs(nodeA.posY - nodeB.posY);
+	int distX = abs(nodeA.pos.x - nodeB.pos.x);
+	int distY = abs(nodeA.pos.y - nodeB.pos.y);
 
 	if (distX > distY)
 		return 14 * distY + 10 * (distX - distY);
@@ -159,6 +179,9 @@ void Grid::RetracePath(Node startNode, Node endNode)
 		path.push_back(currentNode);
 		currentNode = *currentNode.parent;
 	}
+	
 	std::reverse(path.begin(), path.end());
-	gridPath = path;
+	
+	for (int i = 0; i < path.size(); i++)
+		gridPath.push_back(path[i]);
 }
