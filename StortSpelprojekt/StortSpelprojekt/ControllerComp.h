@@ -57,10 +57,14 @@ private:
 	bool canRotate;
 	bool isGrounded;
 	bool inside;
+	bool inDoorRange;
+
 	dx::XMFLOAT3 houseVelocity;
 	dx::XMFLOAT3 jumpDir; 
 	dx::XMFLOAT3 cameraOffset;
 	dx::XMFLOAT3 cameraEuler;
+	dx::XMFLOAT3 outsidePos;
+
 	dx::XMFLOAT3 cameraEuler2;
 	Object* cameraObject;
 	NodeWalkerComp* houseWalkComp;
@@ -92,4 +96,7 @@ public:
 	void Initialize();
 	void Update(const float& deltaTime);
 	float GetVelocity() { return this->velocity; }
+	bool GetInRange() { return this->inDoorRange; }
+	void SetInRange(bool state) { this->inDoorRange = state; }
+	bool GetInside() { return this->inside; }
 };

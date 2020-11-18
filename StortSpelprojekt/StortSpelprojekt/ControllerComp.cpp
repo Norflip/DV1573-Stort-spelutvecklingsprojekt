@@ -19,7 +19,7 @@ void ControllerComp::CheckGrounded()
 	phy->RaytestSingle(ray, distance, hitProps, FilterGroups::PROPS);
 	
 	this->isGrounded = false;
-	if (hitTerrain.object != nullptr)// || hitProps.object != nullptr )//&& hitProps.object->GetName() == "houseBase"))
+	if (hitTerrain.object != nullptr || (hitProps.object != nullptr && hitProps.object->GetName() == "HouseInterior"))// != nullptr )//&& hitProps.object->GetName() == "houseBase"))
 	{
 		//this->houseVelocity = { 0.f,0.f,0.f };
 		/*if (hitProps.object != nullptr && hitProps.object->GetName() == "houseBase")
@@ -68,6 +68,7 @@ ControllerComp::ControllerComp(Object* cameraObject, Object* houseObject)
 	this->capsuleComp = nullptr;
 	this->playerComp = nullptr;
 	this->inside = false;
+	this->inDoorRange = false;
 }
 
 ControllerComp::~ControllerComp()
@@ -97,7 +98,6 @@ void ControllerComp::Initialize()
 	this->rbComp->GetRigidBody()->getCollider(0)->getMaterial().setFrictionCoefficient(10.f);
 	this->rbComp->EnableGravity(!this->freeCam);
 	this->rbComp->SetLinearVelocity({ 0.f, 0.f, 0.f });
-
 
 	dx::XMVECTOR reset = dx::XMLoadFloat4(&RESET_ROT);
 	this->cameraObject->GetTransform().SetRotation(reset);
@@ -135,6 +135,7 @@ void ControllerComp::Update(const float& deltaTime)
 		this->showCursor = !this->showCursor;
 		ShowCursor(this->showCursor);
 	}
+
 	if (KEY_DOWN(V))
 	{
 		this->freeCam = !this->freeCam;
@@ -142,6 +143,7 @@ void ControllerComp::Update(const float& deltaTime)
 		rbComp->SetLinearVelocity({ 0.f, 0.f, 0.f });
 		rbComp->EnableGravity(!this->freeCam);
 	}
+
 	if (KEY_DOWN(F))
 	{
 		this->canRotate = !this->canRotate;
@@ -155,40 +157,47 @@ void ControllerComp::Update(const float& deltaTime)
 	
 	float length = 0.f;
 	dx::XMVECTOR lengthVec;
-
+	if (!inside)
+	{
+		// Check length from player
+		dx::XMVECTOR offset = { 2.0f, 0.0f, 2.0f, 0.0f };
+		lengthVec = dx::XMVector3Length(dx::XMVectorSubtract(dx::XMVectorAdd(houseWalkComp->GetOwner()->GetTransform().GetPosition(), offset), GetOwner()->GetTransform().GetPosition()));;
+		dx::XMStoreFloat(&length, lengthVec);
+		if (length <= 2.2f)
+			inDoorRange = true;
+		else
+			inDoorRange = false;
+	}
 	
 	if (houseWalkComp->GetIsWalking())
 	{
-		length = 0.f;
-		lengthVec = dx::XMVector3Length(dx::XMVectorSubtract(houseWalkComp->GetOwner()->GetTransform().GetPosition(), GetOwner()->GetTransform().GetPosition()));
-		dx::XMStoreFloat(&length, lengthVec);
-
 		// If next to the house
 		if (length > playerComp->GetRadius() || length < 7.0f)
 			houseWalkComp->Stop();
 	}
 	else if (!houseWalkComp->GetIsWalking())
 	{
-
-		length = 0.f;
-		lengthVec = dx::XMVector3Length(dx::XMVectorSubtract(houseWalkComp->GetOwner()->GetTransform().GetPosition(), GetOwner()->GetTransform().GetPosition()));
-		dx::XMStoreFloat(&length, lengthVec);
-
 		if (length < playerComp->GetRadius() && length > 7.0f && !inside)
 			houseWalkComp->Start();
 
-		// If right outside the door
-		if (length < 3.9f && !inside)
+		if (LMOUSE_DOWN)
 		{
-			if (KEY_DOWN(Q))
+			if (inside && inDoorRange)
 			{
-				// Change position here
-				// Save the last position before changing, so we can change back later
+				rbComp->SetPosition(dx::XMVECTOR{ this->outsidePos.x, this->outsidePos.y, this->outsidePos.z, 0 });
+				inside = false;
+			}
+			else if (inDoorRange && !inside)
+			{
 				dx::XMVECTOR current = rbComp->GetPosition();
-				dx::XMVECTOR offset{ 0, 0, 10, 0 };
 
-				rbComp->SetPosition(dx::XMVectorAdd(current, offset));
+				this->outsidePos = { current.m128_f32[0], current.m128_f32[1], current.m128_f32[2] };
+				dx::XMFLOAT3 interior = this->playerComp->GetInteriorPosition();
+
+				rbComp->SetPosition({ interior.x, interior.y + 3.0f, interior.z, 0.0f });
+
 				inside = true;
+				inDoorRange = false;
 			}
 		}
 	}

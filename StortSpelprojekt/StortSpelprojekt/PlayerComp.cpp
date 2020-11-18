@@ -79,9 +79,11 @@ void PlayerComp::Update(const float& deltaTime)
 	//temp fix for wierd clock start at 
 	if (frameTime < 5.f)
 	{
-		//loose fuel
-		fuel -= frameTime * fuelBurnPerMeter;
-		// loose food
+		//lose fuel if not inside house
+		if(!GetOwner()->GetComponent<ControllerComp>()->GetInside())
+			fuel -= frameTime * fuelBurnPerMeter;
+
+		// lose food
 		food -= frameTime * foodLossPerSecond;
 
 		if(!IMMORTAL)
@@ -115,7 +117,17 @@ void PlayerComp::Update(const float& deltaTime)
 		DropObject();
 	}
 
-
+	if (GetOwner()->GetComponent<ControllerComp>()->GetInRange() && !static_cast<GUISprite*>(guiMan->GetGUIObject("door"))->GetVisible())
+	{
+		static_cast<GUISprite*>(guiMan->GetGUIObject("door"))->SetVisible(true);
+		static_cast<GUISprite*>(guiMan->GetGUIObject("dot"))->SetVisible(false);
+	}
+	else if (!GetOwner()->GetComponent<ControllerComp>()->GetInRange() && !static_cast<GUISprite*>(guiMan->GetGUIObject("dot"))->GetVisible()
+		&& !static_cast<GUISprite*>(guiMan->GetGUIObject("fuel"))->GetVisible())
+	{
+		static_cast<GUISprite*>(guiMan->GetGUIObject("door"))->SetVisible(false);
+		static_cast<GUISprite*>(guiMan->GetGUIObject("dot"))->SetVisible(true);
+	}
 }
 
 void PlayerComp::FixedUpdate(const float& fixedDeltaTime)
@@ -129,7 +141,7 @@ void PlayerComp::FixedUpdate(const float& fixedDeltaTime)
 		health -= distance * hpLossPerDistance;
 
 	// around 90
-	if (distance > maxDist)
+	if (distance > maxDist && !GetOwner()->GetComponent<ControllerComp>()->GetInside())
 		health = 0;
 }
 
@@ -186,6 +198,11 @@ void PlayerComp::InsertWeapon(WeaponComponent* weapon, std::string name)
 	currentWeapon = weapon->GetOwner();
 }
 
+void PlayerComp::SetInteriorPosition(float x, float y, float z)
+{
+	this->interiorPosition = { x, y, z };
+}
+
 float PlayerComp::ReverseAndClamp(float inputValue)
 {
 	return 1.0f - (inputValue / 100.0f);
@@ -195,6 +212,55 @@ void PlayerComp::RayCast(const float& deltaTime)
 {
 	Ray ray = cam->MouseToRay(p.x, p.y);
 
+	// Check fireplace 
+	if (physics->RaytestSingle(ray, rayDistance, hit, FilterGroups::FIRE) && holding)
+	{
+		if (hit.object != nullptr)
+		{
+			static_cast<GUISprite*>(guiMan->GetGUIObject("fuel"))->SetVisible(true);
+			static_cast<GUISprite*>(guiMan->GetGUIObject("dot"))->SetVisible(false);
+
+			if (KEY_DOWN(E))
+			{
+				float refill = holding->GetComponent<PickupComponent>()->GetAmount();
+				if ((fuel + refill) <= 100.0f)
+					fuel += refill;
+				else
+					fuel = 100.0f;
+
+				if (holding->HasComponent<ParticleSystemComponent>())
+					if (holding->GetComponent<ParticleSystemComponent>()->GetActive())
+						holding->GetComponent<ParticleSystemComponent>()->SetActive(false);
+
+				holding->GetComponent<PickupComponent>()->SetActive(false);
+				holding = nullptr;
+				currentWeapon->AddFlag(ObjectFlag::ENABLED);
+
+				static_cast<GUISprite*>(guiMan->GetGUIObject("fuel"))->SetVisible(false);
+				static_cast<GUISprite*>(guiMan->GetGUIObject("dot"))->SetVisible(true);
+			}
+		}
+		else
+		{
+			static_cast<GUISprite*>(guiMan->GetGUIObject("fuel"))->SetVisible(false);
+			static_cast<GUISprite*>(guiMan->GetGUIObject("dot"))->SetVisible(true);
+		}
+	}
+
+	// Check door
+	if (physics->RaytestSingle(ray, rayDistance, hit, FilterGroups::DOOR))
+	{
+		if (hit.object != nullptr)
+		{
+			this->GetOwner()->GetComponent<ControllerComp>()->SetInRange(true);
+		}
+		else
+		{
+			this->GetOwner()->GetComponent<ControllerComp>()->SetInRange(false);
+		}
+	}
+
+	// Pick up health and food
 	if (KEY_DOWN(E))
 	{
 		if (physics->RaytestSingle(ray, rayDistance, hit, FilterGroups::PICKUPS))
@@ -209,16 +275,22 @@ void PlayerComp::RayCast(const float& deltaTime)
 				{
 					if ((health + temp) <= 100.0f)
 						health += temp;
+					else
+						health = 100.0f;
 				}
 				else if (pickupType == Type::Food)
 				{
 					if ((food + temp) <= 100.0f)
 						food += temp;
+					else
+						food = 100.0f;
 				}
 				else if (pickupType == Type::Fuel)
 				{
 					if ((fuel + temp) <= 100.0f)
 						fuel += temp;
+					else
+						fuel = 100.0f;
 				}
 				
 				if (hit.object->HasComponent<ParticleSystemComponent>())
@@ -226,17 +298,16 @@ void PlayerComp::RayCast(const float& deltaTime)
 						hit.object->GetComponent<ParticleSystemComponent>()->SetActive(false);
 				
 				hit.object->GetComponent<PickupComponent>()->SetActive(false);
-				RigidBodyComponent* rbComp = hit.object->GetComponent<RigidBodyComponent>();
-				rbComp->Release();				
+				//RigidBodyComponent* rbComp = hit.object->GetComponent<RigidBodyComponent>();
+				//rbComp->Release();
 			}
 		}
 
-		//HELVETE
+		// Check fuel
 		if (physics->RaytestSingle(ray, rayDistance, hit, FilterGroups::HOLDABLE))
 		{
 			if (hit.object != nullptr)
 			{
-
 				AudioMaster::Instance().PlaySoundEvent("pickupFuel");
 				holding = hit.object;
 				RigidBodyComponent* rbComp = hit.object->GetComponent<RigidBodyComponent>();
@@ -254,7 +325,6 @@ void PlayerComp::RayCast(const float& deltaTime)
 				
 			}
 		}
-
 	}
 
 	//ATTACK ENEMIES
@@ -269,7 +339,6 @@ void PlayerComp::RayCast(const float& deltaTime)
 					if (hit.object->GetComponent<EnemyStatsComp>()->GetHealth() >= 0.0f)
 					{						
 						hit.object->GetComponent<EnemyStatsComp>()->LoseHealth(attack);
-						std::cout << "Hit hit hit" << std::endl;
 						AudioMaster::Instance().PlaySoundEvent("punch");
 
 						if (hit.object->GetComponent<EnemyStatsComp>()->GetHealth() <= 0.0f)
