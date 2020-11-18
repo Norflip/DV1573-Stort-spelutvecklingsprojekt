@@ -1,5 +1,5 @@
 //static const int POINT_LIGHT_COUNT = 16;
-static const int LIGHT_COUNT = 16;
+static const int LIGHT_COUNT = 1;
 
 #ifndef BLOCK_SIZE
 #pragma message( "BLOCK_SIZE undefined. Default to 32.")
@@ -18,7 +18,7 @@ static const int LIGHT_COUNT = 16;
 //	float paddingThree;
 //};
 
-struct Light
+struct Light //slot t8
 {
     float4 lightColor;
     float4 lightPosition;
@@ -107,12 +107,6 @@ cbuffer cb_grass : register(b4)
     float grassRadius;
     float grassDisplacement;
 };
-
-///
-//#ifndef NUM_LIGHTS
-//#pragma message( "NUM_LIGHTS undefined. Default to 8.")
-//#define NUM_LIGHTS 8 // should be defined by the application.
-//#endif
 
 struct Plane
 {

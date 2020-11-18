@@ -61,7 +61,7 @@ struct s_Frustum
 
 
 ALIGN16
-struct s_Light
+struct s_Light //slot 8
 {
 	dx::XMFLOAT4 lightColor;
 	dx::XMFLOAT4 lightPosition;

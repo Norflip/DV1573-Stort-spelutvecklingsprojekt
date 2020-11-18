@@ -4,7 +4,7 @@
 
 LightManager::LightManager()
 {
-	this->lightCount = 16;
+	this->lightCount = 1;
 	this->index = 0;
 }
 
@@ -16,7 +16,7 @@ void LightManager::Initialize(ID3D11Device* device)
 {
 	//lightBuffer.Initialize(CB_LIGHT_SLOT, ShaderBindFlag::PIXEL | ShaderBindFlag::DOMAINS, device);
 	the_Lights.resize(this->lightCount);
-	DXHelper::CreateStructuredBuffer(device, &the_Light_srvbuffer, the_Lights.data(), sizeof(UINT), the_Lights.size(), &the_Light_srv);
+	DXHelper::CreateStructuredBuffer(device, &the_Light_srvbuffer, the_Lights.data(), sizeof(s_Light), the_Lights.size(), &the_Light_srv);
 }
 
 size_t LightManager::RegisterPointLight(PointLightComponent* pointLight)
@@ -82,7 +82,7 @@ void LightManager::ForceUpdateBuffers(ID3D11DeviceContext* context, CameraCompon
 		the_Lights[i->first].range = i->second->GetRange();
 		the_Lights[i->first].attenuation = i->second->GetAttenuation();
 		the_Lights[i->first].spotlightAngle = i->second->GetSpotlightAngle();
-		the_Lights[i->first].enabled = i->second->GetEnabled();
+		the_Lights[i->first].enabled = (UINT)i->second->GetEnabled();
 		the_Lights[i->first].type = (UINT)i->second->GetType();
 		the_Lights[i->first].intensity = i->second->GetIntensity();
 	}
