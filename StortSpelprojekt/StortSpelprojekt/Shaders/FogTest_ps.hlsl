@@ -8,6 +8,7 @@ Texture2D day : register(t2);
 Texture2D dusk : register(t3);	
 Texture2D night : register(t4);		
 Texture2D endNight : register (t5);
+Texture2D gradient : register(t6);
 
 SamplerState defaultSampleType : register (s0);
 
@@ -107,7 +108,12 @@ float4 main(PixelInputType input) : SV_TARGET
     //return float4(I, I, I, 1.0f);
    // return diffuseColor;
 
+
+    float4 depthSample = depthTexture.Sample(defaultSampleType, input.uv);
+
+
     color += final; //Add ramp texture color to fog
+    color += depthSample;
    //float4 fogColor = float4(0.1f, 0.1f, 0.4f, 1.0f);
     float4 fogColor = float4(1, 1, 1, 1.0f);
     fogColor = float4(((f * f * f + .6 * f * f + .5 * f) * color).xyz, 1.0f);
@@ -116,6 +122,6 @@ float4 main(PixelInputType input) : SV_TARGET
     //diffuseColor = diffuseColor + (background*0.3f);
     //fogColor = fogColor + (background * 0.5f); //Här färgas dimman om
     float4 result = lerp(diffuseColor, fogColor, fogFactor);
-    return result;
+    return depth/100.f;
     //return diffuseColor + float4(d, d, d, 1.0f);
 }
