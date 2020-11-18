@@ -353,7 +353,7 @@ void GameScene::Update(const float& deltaTime)
 	world.UpdateRelevantChunks(player->GetTransform(), camera);
 //	world.DrawDebug();
 
-	grid->CheckInGrid();
+	grid->DrawGrid();
 
 	static_cast<GUIFont*>(guiManager->GetGUIObject("fps"))->SetString(std::to_string((int)GameClock::Instance().GetFramesPerSecond()));
 	dx::XMFLOAT3 playerPosF;
