@@ -39,8 +39,8 @@ void Renderer::Initialize(Window* window)
 	this->outputWindow = window;
 
 	DXHelper::CreateSwapchain(*window, &device, &context, &swapchain);
-	this->backbuffer = DXHelper::CreateBackbuffer(window->GetWidth(), window->GetHeight(), device, swapchain);
-	this->midbuffer = DXHelper::CreateRenderTexture(window->GetWidth(), window->GetHeight(), device, context, &dss);
+	this->backbuffer = DXHelper::CreateBackbuffer(window->GetWidth() , window->GetHeight(), device, swapchain);
+	this->midbuffer = DXHelper::CreateRenderTexture(window->GetWidth() , window->GetHeight(), device, context, &dss);
 	this->renderPassSwapBuffers[0] = DXHelper::CreateRenderTexture(window->GetWidth(), window->GetHeight(), device, context, &dss);
 	this->renderPassSwapBuffers[1] = DXHelper::CreateRenderTexture(window->GetWidth(), window->GetHeight(), device, context, &dss);
 	srv_skeleton_data.resize(60);

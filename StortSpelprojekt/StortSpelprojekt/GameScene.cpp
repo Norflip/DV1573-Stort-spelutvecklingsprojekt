@@ -154,6 +154,9 @@ void GameScene::InitializeObjects()
 
 	beansObject->AddComponent<ParticleSystemComponent>(renderer, particleShader);
 	beansObject->GetComponent<ParticleSystemComponent>()->InitializeParticles(renderer->GetDevice(), L"Textures/starstar.png");
+	AddObject(beansObject);		
+	//Has to be made in end of objects in order to use them
+
 	AddObject(beansObject);
 
 	//Player Arms
@@ -208,6 +211,8 @@ void GameScene::InitializeObjects()
 
 	/*FrogPuzzle* frogpuzzle = new FrogPuzzle(resources);
 	frogpuzzle*/
+	GUICompass* compass = new GUICompass(*renderer, window, house, player);
+	guiManager->AddGUIObject(compass, "compass");
 }
 
 void GameScene::InitializeGUI()
@@ -242,9 +247,9 @@ void GameScene::InitializeGUI()
 	GUISprite* healthSprite = new GUISprite(*renderer, "Textures/HealthIcon.png", 10, 10, 0, DrawDirection::BottomRight, ClickFunction::NotClickable);
 
 	//COMPASS
-	GUICompass* compass = new GUICompass(*renderer, window);
+
 	//FONTS
-	GUIFont* fpsDisplay = new GUIFont(*renderer, "fps", windowWidth / 2, 50);
+	GUIFont* fpsDisplay = new GUIFont(*renderer, "fps",30, 30);
 	//GUIFont* healthDisplay = new GUIFont(*renderer, "playerHealth", 50, 100);
 	//GUIFont* enemyDisplay = new GUIFont(*renderer, "enemyHealth", 50, 150);
 
@@ -253,10 +258,12 @@ void GameScene::InitializeGUI()
 	//GUISprite* crosshair = new GUISprite(*renderer, "Textures/Crosshair.png", (windowWidth / 2) - 25, (windowHeight / 2) - 25, 0, DrawDirection::BottomLeft, ClickFunction::NotClickable);
 
 	// INSERTIONS
-	guiManager = new GUIManager(renderer, 100);
+	guiManager = new GUIManager(renderer, 0);
 	guiManager->AddGUIObject(fpsDisplay, "fps");
 	//guiManager->AddGUIObject(healthDisplay, "playerHealth");
 	//guiManager->AddGUIObject(enemyDisplay, "enemyHealth");
+	//COMPASS
+
 
 	//BASE OF EQUIPMENT
 	guiManager->AddGUIObject(equimpmentSprite1, "equimpmentSprite1");
