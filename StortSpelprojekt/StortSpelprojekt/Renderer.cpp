@@ -140,17 +140,17 @@ void Renderer::DrawQueueToTarget(RenderQueue& queue, CameraComponent* camera)
 void Renderer::RenderFrame(CameraComponent* camera, float time)
 {
 	// UPDATE SCENE
-	if (KEY_PRESSED(Y) && isFullScreen == true)
+	/*if (KEY_PRESSED(Y) && isFullScreen == true)
 	{
 		isFullScreen = false;
 	}
 	else if (KEY_PRESSED(Y) && isFullScreen == false)
 	{
 		isFullScreen = true;
-	}
+	}*/
 	RenderFrame(camera, time, backbuffer, true, true);
 	HRESULT hr = swapchain->Present(0, 0); //1 here?
-	swapchain->SetFullscreenState(isFullScreen, nullptr);
+	//swapchain->SetFullscreenState(isFullScreen, nullptr);
 	assert(SUCCEEDED(hr));
 }
 
