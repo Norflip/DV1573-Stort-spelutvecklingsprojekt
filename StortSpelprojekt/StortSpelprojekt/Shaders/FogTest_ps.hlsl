@@ -43,33 +43,33 @@ float4 main(PixelInputType input) : SV_TARGET
     float depth = depthTexture.Sample(defaultSampleType, input.uv).x;
 
     // different id, different lerps between textures
-    if (id == 0)
-    {
+   // if (id == 0)
+    //{
         diff = day.Sample(defaultSampleType, depth);
         diff2 = dusk.Sample(defaultSampleType, depth);
-        final = lerp(diff, diff2, factor);
-    }
-    if (id == 1)
-    {
-        diff = dusk.Sample(defaultSampleType, depth);
-        diff2 = night.Sample(defaultSampleType, depth);
-        final = lerp(diff, diff2, factor);
-    }
-    if (id == 2)
-    {
-        diff = night.Sample(defaultSampleType, depth);
-        diff2 = endNight.Sample(defaultSampleType, depth);
-        final = lerp(diff, diff2, factor);
-    }
-    if (id == 3) // this one keeps the last texture i place a while longer, wont be needed in the end product when we change id after we change chunk
-    {
-        diff = endNight.Sample(defaultSampleType, depth);
-        diff2 = float4(diff.r, diff.g, diff.b, diff.a);
-        final = lerp(diff, diff2, factor);
-    }
+        final = lerp(diff, diff2, 0.3f);
+  //  }
+    //if (id == 1)
+    //{
+    //    diff = dusk.Sample(defaultSampleType, depth);
+    //    diff2 = night.Sample(defaultSampleType, depth);
+    //    final = lerp(diff, diff2, factor);
+    //}
+    //if (id == 2)
+    //{
+    //    diff = night.Sample(defaultSampleType, depth);
+    //    diff2 = endNight.Sample(defaultSampleType, depth);
+    //    final = lerp(diff, diff2, factor);
+    //}
+    //if (id == 3) // this one keeps the last texture i place a while longer, wont be needed in the end product when we change id after we change chunk
+    //{
+    //    diff = endNight.Sample(defaultSampleType, depth);
+    //    diff2 = float4(diff.r, diff.g, diff.b, diff.a);
+    //    final = lerp(diff, diff2, factor);
+    //}
 
-    const float start = 30; // FOG START
-    const float end = 60; // FOG END
+    const float start = 1; // FOG START
+    const float end = 120; // FOG END
 
     const float near = 0.01f; // NEAR PLANE
     const float far = 500.0f; // FAR PLANE
@@ -111,17 +111,29 @@ float4 main(PixelInputType input) : SV_TARGET
 
     float4 depthSample = depthTexture.Sample(defaultSampleType, input.uv);
 
+    depthSample.x = 1.f - depthSample.x;
+    depthSample.x = 300.f * depthSample.x;
+    // POW POW Looks good at 3.0 with 2 coil
+    depthSample.x = pow(depthSample.x, 3.0f);
+    //depthSample.x = depthSample.x * depthSample.x;
+    float wtf = clamp(depthSample.x, 0.f, 0.999f);
+    
+    float4 colorSample = gradient.Sample(defaultSampleType, (1.f, wtf));
+    //depthSample = depthSample * 100.f;
 
-    color += final; //Add ramp texture color to fog
-    color += depthSample;
+    color += colorSample; //Add ramp texture color to fog
+   // color += depthSample;
    //float4 fogColor = float4(0.1f, 0.1f, 0.4f, 1.0f);
     float4 fogColor = float4(1, 1, 1, 1.0f);
+
     fogColor = float4(((f * f * f + .6 * f * f + .5 * f) * color).xyz, 1.0f);
 
     //fogColor = (f * f * f + .6 * f * f + .5 * f) * fogColor;
     //diffuseColor = diffuseColor + (background*0.3f);
     //fogColor = fogColor + (background * 0.5f); //Här färgas dimman om
+    //fogColor = fogColor * colorSample;
     float4 result = lerp(diffuseColor, fogColor, fogFactor);
-    return depth/100.f;
+    //result = result * colorSample;
+    return result;
     //return diffuseColor + float4(d, d, d, 1.0f);
 }
