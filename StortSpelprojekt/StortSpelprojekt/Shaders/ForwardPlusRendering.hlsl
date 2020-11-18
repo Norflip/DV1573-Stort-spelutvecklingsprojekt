@@ -168,11 +168,12 @@ void main(ComputeShaderInput IN) // light culling everyframe
 				{
 					// Add light to light list for transparent geometry.
 					t_AppendLight(i);
-					
+					o_LightGrid[IN.dispatchThreadID.xy] = uint2(1, 1);
 					if (!SphereInsidePlane(sphere, minPlane))
 					{
 						// Add light to light list for opaque geometry.
 						o_AppendLight(i);
+						t_LightGrid[IN.dispatchThreadID.xy] = uint2(1, 1);
 					}
 				}
 			}

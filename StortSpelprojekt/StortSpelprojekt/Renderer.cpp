@@ -872,10 +872,12 @@ void Renderer::InitForwardPlus(CameraComponent* camera, Window* window, Shader& 
 	
 	//opaque_light index counter
 	o_LightIndexCounter.resize(1);
+	o_LightIndexCounter.push_back(0);
 	DXHelper::CreateStructuredBuffer(device, &o_LightIndexCounter_uavbuffer, o_LightIndexCounter.data(), sizeof(UINT), o_LightIndexCounter.size(), &o_LightIndexCounter_uav);
 	
 	//transparent_light index counter
 	t_LightIndexCounter.resize(1);
+	t_LightIndexCounter.push_back(0);
 	DXHelper::CreateStructuredBuffer(device, &t_LightIndexCounter_uavbuffer, t_LightIndexCounter.data(), sizeof(UINT), t_LightIndexCounter.size(), &t_LightIndexCounter_uav);
 	
 	o_LightIndexList.resize(32); //light block size?
