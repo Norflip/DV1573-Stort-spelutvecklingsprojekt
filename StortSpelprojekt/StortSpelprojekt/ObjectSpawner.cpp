@@ -108,6 +108,8 @@ void ObjectSpawner::Spawn(const SaveState& state, QuadTree& tree, std::unordered
 				Transform::SetParentChild(root->GetTransform(), object->GetTransform());
 				activeItems.push_back(object);
 
+				object->AddFlag(ObjectFlag::NO_CULL);
+
 				itemIndex++;
 
 				/* Particles */
