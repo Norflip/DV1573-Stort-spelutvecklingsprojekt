@@ -280,11 +280,11 @@
     <ClCompile Include="WorldGenerator.cpp">
       <Filter>Source Files\SpawnSystems</Filter>
     </ClCompile>
-    <ClCompile Include="PuzzleManager.cpp">
-      <Filter>Source Files\SpawnSystems</Filter>
-    </ClCompile>
     <ClCompile Include="FrogPuzzle.cpp">
       <Filter>Source Files\SpawnSystems</Filter>
+    </ClCompile>
+    <ClCompile Include="PuzzleManager.cpp">
+      <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -581,6 +581,9 @@
     </ClInclude>
     <ClInclude Include="FrogPuzzle.h">
       <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="WorldGenerator.h">
+      <Filter>Source Files\SpawnSystems</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

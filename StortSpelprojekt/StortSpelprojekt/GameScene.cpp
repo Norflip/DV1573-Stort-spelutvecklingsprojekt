@@ -191,14 +191,14 @@ void GameScene::InitializeObjects()
 	testObject2->GetTransform().SetPosition({ 23, 0.5f, 50 });
 	AddObject(testObject2);
 
+	AddObject(testObject2);*/
+
+
 	//LOADING BASE MONSTER; ADDING SKELETONS TO IT
 	enemyManager = new EnemyManager();
 	enemyManager->Initialize(player, player->GetComponent<PlayerComp>(), root);
 	enemyManager->InitBaseEnemy();
 	enemyManager->InitChargerEnemy();
-	AddObject(testObject2);*/
-
-
 	/* PuzzleModels */
 	//Object* puzzleFrog = resources->AssembleObject("PuzzleFrogStatue", "PuzzleFrogStatueMaterial", ObjectFlag::DEFAULT);
 	////puzzleManager = new PuzzleManager(resources, player, house);
