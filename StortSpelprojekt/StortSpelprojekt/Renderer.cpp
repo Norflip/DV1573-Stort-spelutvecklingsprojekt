@@ -916,7 +916,7 @@ void Renderer::UpdateForwardPlus(CameraComponent* camera)
 	//////DEPTH PASS END-----------------------------------------------
 	ClearRenderTarget(midbuffer);
 	SetRenderTarget(midbuffer);
-	ID3D11UnorderedAccessView* nullUAV;
+	ID3D11UnorderedAccessView* nullUAV = nullptr;
 	context->CSSetUnorderedAccessViews(3, 1, &nullUAV, NULL); //u3
 	context->CSSetUnorderedAccessViews(4, 1, &nullUAV, NULL); //u4
 	context->CSSetUnorderedAccessViews(5, 1, &nullUAV, NULL); //u5
