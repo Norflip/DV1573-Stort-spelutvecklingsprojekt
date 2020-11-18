@@ -31,7 +31,7 @@ float4 main(VS_OUTPUT input) : SV_TARGET
 
 	for (int i = 0; i < 32; i++)
 	{
-		if (lightList[i] == 0)
+		if (lightList[i] == -1)
 		{
 			break;
 		}

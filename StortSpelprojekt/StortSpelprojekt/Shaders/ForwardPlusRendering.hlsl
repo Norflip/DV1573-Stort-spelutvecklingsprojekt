@@ -87,6 +87,16 @@ void o_AppendLight(uint lightIndex)
 	InterlockedAdd(o_LightIndexCounter[0], 1, index);
 	if (index < 32)
 	{
+		
+		for (uint i = 0; i < o_LightIndexCounter[0]; i++)
+		{
+
+			if (o_LightIndexList[i] == lightIndex)
+			{
+				return;
+			}
+		}
+
 		o_LightIndexList[index] = lightIndex;
 	}
 }
@@ -98,6 +108,14 @@ void t_AppendLight(uint lightIndex)
 	InterlockedAdd(t_LightIndexCounter[0], 1, index);
 	if (index < 32)
 	{
+		for (uint i = 0; i < o_LightIndexCounter[0]; i++)
+		{
+
+			if (t_LightIndexList[i] == lightIndex)
+			{
+				return;
+			}
+		}
 		t_LightIndexList[index] = lightIndex;
 	}
 }

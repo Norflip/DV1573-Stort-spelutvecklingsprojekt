@@ -884,8 +884,8 @@ void Renderer::InitForwardPlus(CameraComponent* camera, Window* window, Shader& 
 	t_LightIndexList.resize(32); //lightcount??
 	for (int index = 0; index < 32; index++)
 	{
-		o_LightIndexList[index] = 0;
-		t_LightIndexList[index] = 0;
+		o_LightIndexList[index] = -1;
+		t_LightIndexList[index] = -1;
 	}
 	DXHelper::CreateStructuredBuffer(device, &o_LightIndexList_uavbuffer, o_LightIndexList.data(), sizeof(UINT), o_LightIndexList.size(), &o_LightIndexList_uav, &o_LightIndexList_srv);
 	

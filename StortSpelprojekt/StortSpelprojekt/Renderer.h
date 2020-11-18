@@ -153,11 +153,11 @@ private:
 	ID3D11UnorderedAccessView* t_LightIndexCounter_uav = 0;
 	
 	//light index list
-	std::vector<UINT> o_LightIndexList;
+	std::vector<int> o_LightIndexList;
 	ID3D11Buffer* o_LightIndexList_uavbuffer = 0;
 	ID3D11ShaderResourceView* o_LightIndexList_srv = 0;
 	ID3D11UnorderedAccessView* o_LightIndexList_uav = 0;
-	std::vector<UINT> t_LightIndexList;
+	std::vector<int> t_LightIndexList;
 	ID3D11Buffer* t_LightIndexList_uavbuffer = 0;
 	ID3D11ShaderResourceView* t_LightIndexList_srv = 0;
 	ID3D11UnorderedAccessView* t_LightIndexList_uav = 0;

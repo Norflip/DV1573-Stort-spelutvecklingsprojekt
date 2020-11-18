@@ -34,7 +34,7 @@ struct Light
     float paddingThree;
 };
 StructuredBuffer<Light> Lights : register(t8); 
-StructuredBuffer<uint> lightList : register(t10);
+StructuredBuffer<int> lightList : register(t10);
 cbuffer cb_Object : register(b0)
 {
     row_major matrix mvp;
