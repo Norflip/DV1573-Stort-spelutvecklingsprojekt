@@ -112,10 +112,12 @@ float4 main(PixelInputType input) : SV_TARGET
     float4 depthSample = depthTexture.Sample(defaultSampleType, input.uv);
 
     depthSample.x = 1.f - depthSample.x;
-    depthSample.x = 300.f * depthSample.x;
+    depthSample.x = (far-100) * depthSample.x;
     // POW POW Looks good at 3.0 with 2 coil
+    depthSample.x = abs(depthSample.x);
     depthSample.x = pow(depthSample.x, 3.0f);
     //depthSample.x = depthSample.x * depthSample.x;
+    
     float wtf = clamp(depthSample.x, 0.f, 0.999f);
     
     float4 colorSample = gradient.Sample(defaultSampleType, (1.f, wtf));
