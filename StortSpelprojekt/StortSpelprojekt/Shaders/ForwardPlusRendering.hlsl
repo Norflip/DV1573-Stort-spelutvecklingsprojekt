@@ -83,19 +83,20 @@ groupshared uint t_LightList[32];
 // Add the light to the visible light list for opaque geometry.
 void o_AppendLight(uint lightIndex)
 {
+	for (uint i = 0; i < o_LightIndexCounter[0]; i++)
+	{
+
+		if (o_LightIndexList[i] == lightIndex)
+		{
+			return;
+		}
+	}
 	uint index; // Index into the visible lights array.
 	InterlockedAdd(o_LightIndexCounter[0], 1, index);
 	if (index < 32)
 	{
 		
-		for (uint i = 0; i < o_LightIndexCounter[0]; i++)
-		{
-
-			if (o_LightIndexList[i] == lightIndex)
-			{
-				return;
-			}
-		}
+		
 
 		o_LightIndexList[index] = lightIndex;
 	}
@@ -104,18 +105,19 @@ void o_AppendLight(uint lightIndex)
 // Add the light to the visible light list for transparent geometry.
 void t_AppendLight(uint lightIndex)
 {
+	for (uint i = 0; i < o_LightIndexCounter[0]; i++)
+	{
+
+		if (t_LightIndexList[i] == lightIndex)
+		{
+			return;
+		}
+	}
 	uint index; // Index into the visible lights array.
 	InterlockedAdd(t_LightIndexCounter[0], 1, index);
 	if (index < 32)
 	{
-		for (uint i = 0; i < o_LightIndexCounter[0]; i++)
-		{
-
-			if (t_LightIndexList[i] == lightIndex)
-			{
-				return;
-			}
-		}
+		
 		t_LightIndexList[index] = lightIndex;
 	}
 }
@@ -167,7 +169,7 @@ void main(ComputeShaderInput IN) // light culling everyframe
 	
 	// Cull lights
 	// Each thread in a group will cull 1 light until all lights have been culled.
-	for (uint i = 0; i < 5; i += 1) //BLOCK_SIZE * BLOCK_SIZE IN.groupIndex
+	for (uint i = 0; i < 30; i += 1) //BLOCK_SIZE * BLOCK_SIZE IN.groupIndex
 	{
 		
 		//en grupp per tråd, i = 0 i++ alla ljusen.

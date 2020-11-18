@@ -24,7 +24,7 @@ void LightManager::Initialize(ID3D11Device* device)
 		lightData[i].attenuation = POINT_DEFAULT_ATTENUATION;
 		lightData[i].enabled = 1;
 		lightData[i].lightColor = dx::XMFLOAT4(1, 0, 0, 1);
-		lightData[i].lightPosition = dx::XMFLOAT3(16, 4, 48+(i*2));
+		lightData[i].lightPosition = dx::XMFLOAT3(16 + (i * 10), 4, 48+(i*10));
 		lightData[i].type = 0;
 		lightData[i].range = 100;
 		
