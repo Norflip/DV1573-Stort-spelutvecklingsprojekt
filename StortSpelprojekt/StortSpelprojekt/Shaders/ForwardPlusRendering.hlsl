@@ -149,7 +149,7 @@ void main(ComputeShaderInput IN) // light culling everyframe
 
 	// Cull lights
 	// Each thread in a group will cull 1 light until all lights have been culled.
-	for (uint i = 0; i < LIGHT_COUNT; i += 1) //BLOCK_SIZE * BLOCK_SIZE IN.groupIndex
+	for (uint i = IN.groupIndex; i < LIGHT_COUNT; i += BLOCK_SIZE * BLOCK_SIZE) //BLOCK_SIZE * BLOCK_SIZE IN.groupIndex
 	{
 		
 		if (Lights[i].enabled)

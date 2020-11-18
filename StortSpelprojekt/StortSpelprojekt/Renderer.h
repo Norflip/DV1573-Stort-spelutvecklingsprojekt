@@ -10,7 +10,7 @@
 #include "ConstantBuffer.h"
 #include "DepthPass.h"
 #include <time.h>
-#include "PointLightComponent.h"
+
 
 
 inline int GetBatchID(const Material* material, const Mesh* mesh)
