@@ -123,11 +123,10 @@ void GameScene::InitializeObjects()
 	dx::XMFLOAT3 lightTranslation = dx::XMFLOAT3(0.0f, 0.5f, 0.0f);
 	spotLight->GetTransform().SetPosition(dx::XMLoadFloat3(&lightTranslation));
 
-	LightComponent* sLight = spotLight->AddComponent<LightComponent>(1,dx::XMFLOAT4(0.7f, 0.7f, 0.3f, 1.0f), 7.f);
+	LightComponent* sLight = spotLight->AddComponent<LightComponent>(1,dx::XMFLOAT4(0.7f, 0.7f, 0.4f, 1.0f), 7.f);
 	sLight->SetEnabled(true);
-	//sLightC->SetEnabled(true);
 	sLight->SetIntensity(0.5f);
-	sLight->SetRange(7.f);
+	sLight->SetRange(8.f);
 	sLight->SetSpotlightAngle(10.f);
 	sLight->SetDirection({ 1.f,0.f,0.f });
 	AddObject(spotLight, playerObject);
@@ -320,6 +319,20 @@ void GameScene::InitializeLights()
 	dx::XMStoreFloat3(&sunDirection, dx::XMVector3Normalize(dx::XMVectorSet(0, -1, 1, 0)));
 	dLightC->SetDirection(sunDirection);
 	AddObject(dLight);
+
+
+	Object* spotLight2 = new Object("spotLight2");
+
+	dx::XMFLOAT3 lightTranslation2 = dx::XMFLOAT3(0.0f, 30.f, 0.0f);
+	spotLight2->GetTransform().SetPosition(dx::XMLoadFloat3(&lightTranslation));
+
+	LightComponent* sLight = spotLight2->AddComponent<LightComponent>(1, dx::XMFLOAT4(0.2f, 0.6f, 1.0f, 1.0f), 7.f);
+	sLight->SetEnabled(true);
+	sLight->SetIntensity(0.8f);
+	sLight->SetRange(60.f);
+	sLight->SetSpotlightAngle(10.f);
+	sLight->SetDirection({ 0.f,-1.f,0.f });
+	AddObject(spotLight2);
 
 	//Object* sLight = new Object("sLight");
 	//dx::XMFLOAT3 lightTranslation2 = dx::XMFLOAT3(20.0f, 10.0f, 20.0f);

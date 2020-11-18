@@ -126,7 +126,7 @@ float DoSpotCone(Light light, float3 L)
 {
     float minCos = cos(radians(light.spotlightAngle));
     float maxCos = lerp(minCos, 1, 0.5f);
-    //float4 lightDirectionVS = mul(float4(light.lightDirection, 0), view);
+    //float3 lightDirectionVS = mul(float4(light.lightDirection, 0), transpose(view)).xyz;
     float cosAngle = dot(light.lightDirection, -L);
     return smoothstep(minCos, maxCos, cosAngle); //use clamp??
 }
@@ -138,10 +138,12 @@ float4 CalculateSpotLight(Light light, float3 normal, float3 objectPosition, flo
     float4 diffuse = float4(0.0f, 0.0f, 0.0f, 0.0f);
     float4 finalColor = float4(0.0f, 0.0f, 0.0f, 0.0f);
 
-    //viewDirection = mul(float4(viewDirection, 0), view).xyz;
-   // float4 lightPositionVS = mul(light.lightPosition, view);
-    //float4 objVS = mul(float4(objectPosition, 0), view);
+    //viewDirection = mul(float4(viewDirection, 0), transpose(view)).xyz;
+	
+	//float3 lightPositionVS = mul(light.lightPosition, transpose(view));
+    //float3 objVS = mul(float4(objectPosition, 1), transpose(view));
     float3 lightVec = light.lightPosition.xyz - objectPosition;
+    //float3 lightVec = lightPositionVS - objVS;
     float distance = length(lightVec);
     lightVec = normalize(lightVec);
 
