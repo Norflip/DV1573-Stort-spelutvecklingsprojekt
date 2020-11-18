@@ -83,7 +83,6 @@ protected:
 public:
 	ControllerComp(Object* cameraObject, Object* houseObject);
 	virtual ~ControllerComp();
-	dx::XMVECTOR GetGroundRot() { return groundRotation; };
 	void Initialize();
 	void Update(const float& deltaTime);
 };
