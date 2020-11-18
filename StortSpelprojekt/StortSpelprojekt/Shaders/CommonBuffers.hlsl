@@ -184,7 +184,7 @@ bool SphereInsideFrustum(Sphere sphere, Frustum frustum, float zNear, float zFar
 	// First check depth
 	// Note: Here, the view vector points in the -Z axis so the 
 	// far depth value will be approaching -infinity.
-    if (sphere.c.z - sphere.r > zNear || sphere.c.z + sphere.r < zFar)
+    if (sphere.c.z - sphere.r > zFar || sphere.c.z + sphere.r < zNear ) //Switched places for zNear and zFar
     {
         result = false;
     }

@@ -96,11 +96,11 @@ public:
 	void RemoveRenderPass(RenderPass*);
 
 	void InitForwardPlus(CameraComponent* camera, Window* window);
-	void UpdateForwardPlus();
+	void UpdateForwardPlus(CameraComponent* camera);
 	ALIGN16_ALLOC;
 
 private:
-	void AddItem(const RenderItem& item, bool transparent);
+	void AddItem(const RenderItem& item, bool transparent, bool cullDepth);
 	void DrawRenderItem(const RenderItem& item, CameraComponent* camera);
 	void DrawRenderItemInstanced(const RenderItem& item, CameraComponent* camera);
 	void DrawRenderItemSkeleton(const RenderItem& item, CameraComponent* camera);
@@ -180,6 +180,10 @@ private:
 
 	RenderQueue opaqueItemQueue;
 	RenderQueue transparentItemQueue;
+	RenderQueue opaqueItemQueueDepth;
+	RenderQueue transparentItemQueueDepth;
+	std::unordered_map<int, Batch> opaqueBatchesDepth;
+	std::unordered_map<int, Batch> transparentBatchesDepth;
 	std::vector<RenderPass*> passes;
 
 	//blendstate
