@@ -180,7 +180,7 @@ void main(ComputeShaderInput IN) // light culling everyframe
 			case SPOT_LIGHT:
 			{
 				float coneRadius = tan(radians(light.spotlightAngle)) * light.range;
-				Cone cone = { light.positionVS.xyz, light.range, light.lightDirection, coneRadius };
+				Cone cone = { light.lightPositionVS.xyz, light.range, light.lightDirection, coneRadius };
 				if (ConeInsideFrustum(cone, GroupFrustum, nearClipVS, maxDepthVS))
 				{
 					// Add light to light list for transparent geometry.

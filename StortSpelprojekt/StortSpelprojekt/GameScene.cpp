@@ -124,6 +124,7 @@ void GameScene::InitializeObjects()
 	testPointLight->GetTransform().SetPosition(dx::XMLoadFloat3(&lightTranslation));
 	PointLightComponent* pLight = testPointLight->AddComponent<PointLightComponent>(0,dx::XMFLOAT4(0.3f, 0.3f, 0.3f, 1.0f), 7.f);
 	pLight->SetEnabled(true);
+	pLight->SetIntensity(0.05f);
 	AddObject(testPointLight, playerObject);
 
 	/* For fuel info from playercomp */

@@ -1,5 +1,5 @@
 //static const int POINT_LIGHT_COUNT = 16;
-static const int LIGHT_COUNT = 32;
+static const int LIGHT_COUNT = 1;
 
 #ifndef BLOCK_SIZE
 #pragma message( "BLOCK_SIZE undefined. Default to 32.")
@@ -18,20 +18,19 @@ static const int LIGHT_COUNT = 32;
 //	float paddingThree;
 //};
 
-struct Light
+struct Light //slot t8
 {
     float4 lightColor;
-    float3 lightPosition;
-    float range;
-    float4 positionVS;
-    float3 attenuation;
-    float paddda;
+    float4 lightPosition;
+    float4 lightPositionVS;
     float3 lightDirection;
-    float paddda2;
+    float range;
+    float3 attenuation;
     float spotlightAngle;
     uint enabled;
     uint type;
-    float paddingThree;
+    float intensity;
+    float padding;
 };
 StructuredBuffer<Light> Lights : register(t8); 
 StructuredBuffer<uint> LightIndexList : register(t10);
@@ -79,14 +78,14 @@ cbuffer cb_Scene : register(b2)
 //	float3 pad3;
 //};
 
-cbuffer cb_Lights : register(b3)
-{
-    Light lights[LIGHT_COUNT];
-    int nrOfLights;
-    float3 sunDirection;
-    float sunIntensity;
-    float3 pad_cbl;
-};
+//cbuffer cb_Lights : register(b3)
+//{
+//    Light lights[LIGHT_COUNT];
+//    int nrOfLights;
+//    float3 sunDirection;
+//    float sunIntensity;
+//    float3 pad_cbl;
+//};
 
 StructuredBuffer<float4x4> bones : register(t2);
 
@@ -110,12 +109,6 @@ cbuffer cb_grass : register(b4)
     float grassRadius;
     float grassDisplacement;
 };
-
-///
-//#ifndef NUM_LIGHTS
-//#pragma message( "NUM_LIGHTS undefined. Default to 8.")
-//#define NUM_LIGHTS 8 // should be defined by the application.
-//#endif
 
 struct Plane
 {

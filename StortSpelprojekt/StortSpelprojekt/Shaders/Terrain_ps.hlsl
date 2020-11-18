@@ -40,7 +40,7 @@ float4 main(VS_OUTPUT input) : SV_TARGET
 	float4 finalColor = float4(0,0,0,1);
 
 	float3 normal = normalize(input.normal);
-	finalColor += CalculateDirectionalLight(sunDirection, normal, viewDirection);
+    finalColor += CalculateDirectionalLight(Lights[0], normal, viewDirection);
 
 	uint2 tileIndex = uint2(floor(input.position.xy / 32));
 

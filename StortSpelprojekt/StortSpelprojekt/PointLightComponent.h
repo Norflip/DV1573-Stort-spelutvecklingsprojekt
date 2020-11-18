@@ -7,7 +7,7 @@
 namespace dx = DirectX;
 
 constexpr dx::XMFLOAT3 POINT_DEFAULT_ATTENUATION = dx::XMFLOAT3(1.0f, 0.02f, 0.0f);
-enum LightType
+enum class LightType
 {
 	POINT_LIGHT = 0,
 	SPOT_LIGHT = 1,
@@ -36,6 +36,8 @@ public:
 	void SetEnabled(bool enabled);
 	LightType GetType();
 	void SetType(LightType type); //pointlight 0, spotlight 1, directional 2
+	float GetIntensity();
+	void SetIntensity(float intensity);
 
 	bool IsDirty() { return this->dirty || GetOwner()->GetTransform().ChangedThisFrame(); }
 	void MarkAsNotDirty() { this->dirty = false; }
@@ -43,12 +45,14 @@ public:
 private:
 	bool dirty;
 	dx::XMFLOAT4 lightColor;
-	dx::XMFLOAT3 lightPosition;
+	//dx::XMFLOAT4 lightPosition;
+	//(lightPositionVs is calculated every frame)
+	dx::XMFLOAT3 lightDirection;
 	float range;
 	dx::XMFLOAT3 attenuation;
-	dx::XMFLOAT3 lightDirection;
 	float spotlightAngle;
 	bool enabled;
 	LightType type;
+	float intensity;
 	float elapsedTime;
 };
