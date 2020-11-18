@@ -234,7 +234,7 @@ void World::RegisterFood(ObjectPooler* pooler, ObjectSpawner* spawner, const std
 			return object;
 		});
 
-	spawner->RegisterItem("Baked_beans", 1.0f, 1.0f, 0.0f, TryGetQueueCount("Baked_beans", queueCountTable));
+	spawner->RegisterItem("Baked_beans", 1.0f, 1.0f, 0.0f, TryGetQueueCount("Baked_beans", 1000));
 	spawner->RegisterItem("Banana", 1.0f, 1.0f, 0.0f, TryGetQueueCount("Banana", queueCountTable));
 	spawner->RegisterItem("Apple", 1.0f, 1.0f, 0.0f, TryGetQueueCount("Apple", queueCountTable));
 	spawner->RegisterItem("Fruits", 1.0f, 1.0f, 0.0f, TryGetQueueCount("Fruits", queueCountTable));
