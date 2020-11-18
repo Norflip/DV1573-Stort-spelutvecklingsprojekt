@@ -8,7 +8,7 @@ float4 CalculatePointLight(Light light, float3 normal, float3 objectPosition, fl
 	float4 diffuse = float4(0.0f, 0.0f, 0.0f, 0.0f);
 	float4 finalColor = float4(0.0f, 0.0f, 0.0f, 0.0f);
 
-	float3 lightVec = light.lightPosition - objectPosition;
+	float3 lightVec = light.lightPosition.xyz - objectPosition;
 	
 	float distance = length(lightVec);
 	lightVec = normalize(lightVec);
@@ -90,7 +90,7 @@ float3 CalculateNormalMapping(float3 normal, float3 tangent, float4 normalmap)
 }
 
 // Calculate light with the sun
-float4 CalculateDirectionalLight(float3 lightDirection, float3 normal, float3 viewDirection)
+float4 CalculateDirectionalLight(Light light, float3 normal, float3 viewDirection)
 {
 	float4 ambient = float4(0.0f, 0.0f, 0.0f, 0.0f);
 	float4 specular = float4(0.0f, 0.0f, 0.0f, 0.0f);
@@ -100,13 +100,13 @@ float4 CalculateDirectionalLight(float3 lightDirection, float3 normal, float3 vi
 	// Can change from white to wanted color here
 	float4 sunColor = float4(1.0f, 1.0f, 1.0f, 1.0f);
 
-	lightDirection = normalize(lightDirection - float3(0.0f, 0.0f, 0.0f));
+	float3 lightDirection = normalize(light.lightDirection);
 
-	float diffuseFactor = max(dot(normal, -lightDirection), 0.0f);
+    float diffuseFactor = max(dot(normal, -lightDirection), 0.0f);
 
 	if (diffuseFactor > 0.0f)
 	{
-		float3 reflection = reflect(lightDirection, normal);
+        float3 reflection = reflect(lightDirection, normal);
 		float spec = pow(max(dot(viewDirection, reflection), 0.0f), 1.0f);
 
 		diffuse = diffuseFactor * sunColor * matDiffuse;
@@ -118,7 +118,7 @@ float4 CalculateDirectionalLight(float3 lightDirection, float3 normal, float3 vi
 
 	finalColor = ambient + diffuse + specular;
 
-	return finalColor * sunIntensity;
+	return finalColor * light.intensity;
 }
 
 
@@ -137,7 +137,7 @@ float4 CalculateSpotLight(Light light, float3 normal, float3 objectPosition, flo
     float4 diffuse = float4(0.0f, 0.0f, 0.0f, 0.0f);
     float4 finalColor = float4(0.0f, 0.0f, 0.0f, 0.0f);
 
-    float3 lightVec = light.lightPosition - objectPosition;
+    float3 lightVec = light.lightPosition.xyz - objectPosition;
     float distance = length(lightVec);
     lightVec = normalize(lightVec);
 

@@ -40,11 +40,11 @@ float4 main(VS_OUTPUT input) : SV_TARGET
 	float4 finalColor = float4(0,0,0,1);
 
 	float3 normal = normalize(input.normal);
-	finalColor += CalculateDirectionalLight(sunDirection, normal, viewDirection);
+    finalColor += CalculateDirectionalLight(Lights[0], normal, viewDirection);
 
-	for (int i = 0; i < nrOfLights; i++)
+	for (int i = 0; i < LIGHT_COUNT; i++)
 	{
-		finalColor += CalculatePointLight(lights[i], normal, input.worldPosition, viewDirection);
+		finalColor += CalculatePointLight(Lights[i], normal, input.worldPosition, viewDirection);
 	}
 
 	finalColor = saturate(textureColor * finalColor);

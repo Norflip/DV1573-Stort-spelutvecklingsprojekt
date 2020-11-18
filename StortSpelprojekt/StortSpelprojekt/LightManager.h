@@ -35,7 +35,14 @@ public:
 private:
 
 	//cb_Scene cb_scene;
-	ConstantBuffer<cb_Lights> lightBuffer;
+	//ConstantBuffer<cb_Lights> lightBuffer;
+	//
+	std::vector<s_Light> the_Lights;
+	ID3D11Buffer* the_Light_srvbuffer = 0;
+	ID3D11ShaderResourceView* the_Light_srv = 0;
+	UINT lightCount; //total lights
+
+
 	size_t index;
 	std::unordered_map<size_t, PointLightComponent*> pointLightMap;
 };

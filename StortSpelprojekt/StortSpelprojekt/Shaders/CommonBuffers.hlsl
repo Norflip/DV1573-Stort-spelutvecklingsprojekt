@@ -1,5 +1,5 @@
 //static const int POINT_LIGHT_COUNT = 16;
-static const int LIGHT_COUNT = 32;
+static const int LIGHT_COUNT = 16;
 
 #ifndef BLOCK_SIZE
 #pragma message( "BLOCK_SIZE undefined. Default to 32.")
@@ -21,15 +21,16 @@ static const int LIGHT_COUNT = 32;
 struct Light
 {
     float4 lightColor;
-    float3 lightPosition;
-    float4 positionVS;
+    float4 lightPosition;
+    float4 lightPositionVS;
+    float3 lightDirection;
     float range;
     float3 attenuation;
-    float3 lightDirection;
     float spotlightAngle;
-    bool enabled;
+    uint enabled;
     uint type;
-    float paddingThree;
+    float intensity;
+    float padding;
 };
 StructuredBuffer<Light> Lights : register(t8); //not final
 
@@ -75,14 +76,14 @@ cbuffer cb_Scene : register(b2)
 //	float3 pad3;
 //};
 
-cbuffer cb_Lights : register(b3)
-{
-    Light lights[LIGHT_COUNT];
-    int nrOfLights;
-    float3 sunDirection;
-    float sunIntensity;
-    float3 pad_cbl;
-};
+//cbuffer cb_Lights : register(b3)
+//{
+//    Light lights[LIGHT_COUNT];
+//    int nrOfLights;
+//    float3 sunDirection;
+//    float sunIntensity;
+//    float3 pad_cbl;
+//};
 
 StructuredBuffer<float4x4> bones : register(t2);
 

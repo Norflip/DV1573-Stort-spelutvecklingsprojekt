@@ -5,7 +5,7 @@ namespace dx = DirectX;
 constexpr size_t CB_OBJECT_SLOT = 0;
 constexpr size_t CB_MATERIAL_SLOT = 1;
 constexpr size_t CB_SCENE_SLOT = 2; 
-constexpr size_t CB_LIGHT_SLOT = 3;
+//constexpr size_t CB_LIGHT_SLOT = 3;
 constexpr size_t CB_GRASS_PARAMETERS_SLOT = 4;
 //constexpr size_t CB_FOG_SLOT = 5;
 constexpr size_t CB_DISPATCH_PARAMS_SLOT = 5;
@@ -64,15 +64,16 @@ ALIGN16
 struct s_Light
 {
 	dx::XMFLOAT4 lightColor;
-	dx::XMFLOAT3 lightPosition;
-	dx::XMFLOAT4 positionVS;
+	dx::XMFLOAT4 lightPosition;
+	dx::XMFLOAT4 lightPositionVS;
+	dx::XMFLOAT3 lightDirection;
 	float range;
 	dx::XMFLOAT3 attenuation;
-	dx::XMFLOAT3 lightDirection;
 	float spotlightAngle;
-	bool enabled;
+	UINT enabled;
 	UINT type;
-	float paddingThree;
+	float intensity;
+	float padding;
 };
 
 ALIGN16
@@ -99,15 +100,15 @@ struct cb_ScreenToViewParams
 //	dx::XMFLOAT3 pad;
 //};
 
-ALIGN16
-struct cb_Lights
-{
-	s_Light lights[LIGHT_COUNT];
-	int nrOfLights;
-	dx::XMFLOAT3 sunDirection; //
-	float sunIntensity; //
-	dx::XMFLOAT3 pad;
-};
+//ALIGN16
+//struct cb_Lights
+//{
+//	s_Light lights[LIGHT_COUNT];
+//	int nrOfLights;
+//	dx::XMFLOAT3 sunDirection; //
+//	float sunIntensity; //
+//	dx::XMFLOAT3 pad;
+//};
 
 ALIGN16
 struct cb_Scene
