@@ -55,8 +55,6 @@ void GameScene::InitializeObjects()
 	SkeletonMeshComponent* baseComponent = resources->GetResource<SkeletonMeshComponent>("HouseSkeleton");
 	SkeletonMeshComponent* legsComponent = resources->GetResource<SkeletonMeshComponent>("HouseLegsSkeleton");
 
-	
-
 	houseBaseObject->GetTransform().SetScale({ 0.5f, 0.5f, 0.5f });
 	
 	//WALLS
