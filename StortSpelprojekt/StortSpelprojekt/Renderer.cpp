@@ -774,7 +774,7 @@ void Renderer::DrawScreenQuad(const Material* material)
 }
 
 
-void Renderer::InitForwardPlus(CameraComponent* camera, Window* window, Shader forwardPlusShader)
+void Renderer::InitForwardPlus(CameraComponent* camera, Window* window, Shader& forwardPlusShader)
 {
 	
 	
