@@ -38,6 +38,9 @@ float4 main(VS_OUTPUT input) : SV_TARGET
 	{
 		uint lightIndex = LightIndexList[startOffset + i];
 		Light light = Lights[lightIndex];
+		
+        float4 result = float4(0.0f, 0.0f, 0.0f, 0.0f);
+		
 		switch (light.type)
 		{
 		case DIRECTIONAL_LIGHT:

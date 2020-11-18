@@ -10,8 +10,8 @@ LightManager::LightManager()
 
 LightManager::~LightManager()
 {
-	lightsSRV->Release();
-	lightsSRVBfr->Release();
+	//lightsSRV->Release();
+	//lightsSRVBfr->Release();
 }
 
 
@@ -80,8 +80,8 @@ void LightManager::ForceUpdateBuffers(ID3D11DeviceContext* context, CameraCompon
 
 		the_Lights[i->first].lightColor = i->second->GetColor();
 		dx::XMStoreFloat4(&the_Lights[i->first].lightPosition, (i->second->GetOwner()->GetTransform().GetWorldPosition()));
-		dx::XMVECTOR viewPos = dx::XMVector3TransformCoord(i->second->GetOwner()->GetTransform().GetWorldPosition(), camComp->GetViewMatrix());
-		dx::XMStoreFloat4(&the_Lights[i->first].lightPositionVS, viewPos);
+		//dx::XMVECTOR viewPos = dx::XMVector3TransformCoord(i->second->GetOwner()->GetTransform().GetWorldPosition(), camComp->GetViewMatrix());
+		//dx::XMStoreFloat4(&the_Lights[i->first].lightPositionVS, viewPos);
 		the_Lights[i->first].lightDirection = i->second->GetDirection();
 		the_Lights[i->first].range = i->second->GetRange();
 		the_Lights[i->first].attenuation = i->second->GetAttenuation();

@@ -8,8 +8,8 @@ TextureCube skymap : register(t2); //just testing
 SamplerState defaultSampleType : register(s0);
 
 
-StructuredBuffer<uint> LightIndexList : register(t9);
-Texture2D<uint2> LightGrid : register(t10);
+//StructuredBuffer<uint> LightIndexList : register(t9);
+//Texture2D<uint2> LightGrid : register(t10);
 
 [earlydepthstencil]
 float4 main(VS_OUTPUT input) : SV_TARGET //VS_OUTPUT input = IN
@@ -122,18 +122,18 @@ float4 mainAlpha(VS_OUTPUT input) : SV_TARGET //VS_OUTPUT input = IN
         switch (light.type)
         {
             case DIRECTIONAL_LIGHT:
-		{
-                    result = CalculateDirectionalLight(light, normalized, viewDirection);
+		    {
+                result = CalculateDirectionalLight(light, normalized, viewDirection);
 				//DirectionVS =sunDirection
-                }
-                break;
+            }
+            break;
             case POINT_LIGHT:
-		{
-                    result = CalculatePointLight(light, normalized, input.worldPosition, viewDirection);
-                }
-                break;
+		    {
+                result = CalculatePointLight(light, normalized, input.worldPosition, viewDirection);
+            }
+            break;
             case SPOT_LIGHT:
-		{
+		    {
                     result = CalculateSpotLight(light, normalized, input.worldPosition, viewDirection);
                 }
                 break;

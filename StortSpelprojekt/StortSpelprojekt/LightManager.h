@@ -34,8 +34,8 @@ public:
 	void Clear();
 	UINT GetLightCount(){ return (UINT)lightMap.size(); }
 private:
-	ID3D11ShaderResourceView* lightsSRV = nullptr;
-	ID3D11Buffer* lightsSRVBfr = nullptr;
+	//ID3D11ShaderResourceView* lightsSRV = nullptr;
+	//ID3D11Buffer* lightsSRVBfr = nullptr;
 	//cb_Scene cb_scene;
 	//ConstantBuffer<cb_Lights> lightBuffer;
 	//

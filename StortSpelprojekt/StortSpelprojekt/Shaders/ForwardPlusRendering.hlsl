@@ -162,7 +162,7 @@ void main(ComputeShaderInput IN) // light culling everyframe
 			case POINT_LIGHT:
 			{
 
-				float3 lightPositionVS = mul(float4(light.lightPosition, 1), view).xyz;
+				float3 lightPositionVS = mul(float4(light.lightPosition.xyz, 1), view).xyz;
 				Sphere sphere = { lightPositionVS, light.range };
 				if (SphereInsideFrustum(sphere, GroupFrustum, nearClipVS, maxDepthVS))
 				{
@@ -180,7 +180,8 @@ void main(ComputeShaderInput IN) // light culling everyframe
 			case SPOT_LIGHT:
 			{
 				float coneRadius = tan(radians(light.spotlightAngle)) * light.range;
-				Cone cone = { light.lightPositionVS.xyz, light.range, light.lightDirection, coneRadius };
+                float3 lightPositionVS = mul(float4(light.lightPosition.xyz, 1), view).xyz;
+				Cone cone = { lightPositionVS, light.range, light.lightDirection, coneRadius };
 				if (ConeInsideFrustum(cone, GroupFrustum, nearClipVS, maxDepthVS))
 				{
 					// Add light to light list for transparent geometry.

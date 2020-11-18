@@ -65,7 +65,7 @@ struct s_Light //slot t8
 {
 	dx::XMFLOAT4 lightColor;
 	dx::XMFLOAT4 lightPosition;
-	dx::XMFLOAT4 lightPositionVS;
+	//dx::XMFLOAT4 lightPositionVS;
 	dx::XMFLOAT3 lightDirection;
 	float range;
 	dx::XMFLOAT3 attenuation;

@@ -836,8 +836,8 @@ void Renderer::InitForwardPlus(CameraComponent* camera, Window* window, Shader& 
 	ID3D11Texture2D* tex2D2 = nullptr;
 	D3D11_TEXTURE2D_DESC desc = {};
 
-	desc.Width = numThreads.x;
-	desc.Height = numThreads.y;
+	desc.Width = numThreadGroups.x;
+	desc.Height = numThreadGroups.y;
 	desc.MipLevels = 1;
 	desc.ArraySize = 1;
 	desc.Format = DXGI_FORMAT_R32G32_UINT;

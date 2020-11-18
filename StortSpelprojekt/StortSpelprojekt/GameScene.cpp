@@ -122,9 +122,9 @@ void GameScene::InitializeObjects()
 
 	dx::XMFLOAT3 lightTranslation = dx::XMFLOAT3(0.0f, 0.0f, 0.0f);
 	testPointLight->GetTransform().SetPosition(dx::XMLoadFloat3(&lightTranslation));
-	PointLightComponent* pLight = testPointLight->AddComponent<PointLightComponent>(0,dx::XMFLOAT4(0.3f, 0.3f, 0.3f, 1.0f), 7.f);
+	LightComponent* pLight = testPointLight->AddComponent<LightComponent>(0,dx::XMFLOAT4(0.7f, 0.3f, 0.0f, 1.0f), 7.f);
 	pLight->SetEnabled(true);
-	pLight->SetIntensity(0.05f);
+	//pLight->SetIntensity(0.05f);
 	AddObject(testPointLight, playerObject);
 
 	/* For fuel info from playercomp */
@@ -307,9 +307,9 @@ void GameScene::InitializeLights()
 
 	dx::XMFLOAT3 lightTranslation = dx::XMFLOAT3(0.0f, 0.0f, 0.0f);
 	dLight->GetTransform().SetPosition(dx::XMLoadFloat3(&lightTranslation));
-	PointLightComponent* dLightC = dLight->AddComponent<PointLightComponent>(2, dx::XMFLOAT4(0.3f, 0.3f, 0.3f, 1.0f), 7.f);
+	LightComponent* dLightC = dLight->AddComponent<LightComponent>(2, dx::XMFLOAT4(0.3f, 0.3f, 0.8f, 1.0f), 7.f);
 	dLightC->SetEnabled(true);
-	dLightC->SetIntensity(0.05f);
+	dLightC->SetIntensity(0.5f);
 	dx::XMFLOAT3 sunDirection;
 	dx::XMStoreFloat3(&sunDirection, dx::XMVector3Normalize(dx::XMVectorSet(0, -1, 1, 0)));
 	dLightC->SetDirection(sunDirection);
