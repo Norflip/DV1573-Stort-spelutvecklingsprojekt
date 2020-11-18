@@ -36,6 +36,7 @@ private:
 	Object* house;
 	Object* leftSign;
 	Object* rightSign;
+	Object* roadSign;
 
 	int fogId;
 	float fogCol;

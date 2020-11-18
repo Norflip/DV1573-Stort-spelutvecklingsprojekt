@@ -30,16 +30,16 @@ public:
 	void LoadTexturesFog(ID3D11Device* device)
 	{
 		const LPCWSTR FOG_TEXTURE_PATHS[] = {
-			L"Textures/Ramp_Day.png",
-			L"Textures/Ramp_Dusk.png",
+			L"Textures/gradient.jpg",
+	/*		L"Textures/Ramp_Dusk.png",
 			L"Textures/Ramp_Night.png",
-			L"Textures/Ramp_End.png",
+			L"Textures/Ramp_End.png",*/
 		
 		};
 
 		const size_t DIFFUSE_START_SLOT = 2;
 
-		for (size_t i = 0; i < 4; i++)
+		for (size_t i = 0; i < 1; i++)
 		{
 			
 			rampTexture = Texture::LoadTexture(device, FOG_TEXTURE_PATHS[i]);

@@ -171,10 +171,13 @@ void GameScene::InitializeObjects()
 	playerObject->GetComponent<PlayerComp>()->InsertWeapon(axeObject->GetComponent<WeaponComponent>(), axeObject->GetName());
 	AddObject(axeObject);
 	
-
 	//Road Sign
-	Object* roadSign = resources->AssembleObject("Endsign", "EndsignMaterial");
-	roadSign->GetTransform().SetPosition({ 23, 0.5f, 50 });
+	roadSign = new Object("Endsign");
+
+	//world.GetPath().GetPoints().back().x, 2.0f, world.GetPath().GetPoints().back().z
+
+	roadSign = resources->AssembleObject("Endsign", "EndsignMaterial");
+	roadSign->GetTransform().SetPosition({ 23, 0.5f, 50 }); //HÄMTA SISTA NODEN I PATHEN OCH DESS POSITION FÖR ATT SÄTTA SKYLTARNAS POSITION.
 	AddObject(roadSign);
 
 	//Right Sign
@@ -196,7 +199,6 @@ void GameScene::InitializeObjects()
 	leftSign->AddComponent<SelectableComponent>();
 	leftSign->AddComponent<RigidBodyComponent>(0.0f, FilterGroups::CLICKABLE, (FilterGroups::EVERYTHING & ~FilterGroups::PLAYER), BodyType::STATIC, true);
 	AddObject(leftSign);
-
 
 
 }
