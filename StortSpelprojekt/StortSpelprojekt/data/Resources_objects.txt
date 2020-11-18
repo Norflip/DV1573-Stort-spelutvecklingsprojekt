@@ -159,3 +159,6 @@ Shader: defaultShader
 
 RightDirectionSign: Models/Props/RightDirectionSign.ZWEB
 Shader: defaultShader
+
+HouseDoor: Models/House/House_Door.ZWEB
+Shader: defaultShader
