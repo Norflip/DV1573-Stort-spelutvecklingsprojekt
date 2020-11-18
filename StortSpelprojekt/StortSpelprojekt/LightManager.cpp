@@ -26,6 +26,7 @@ void LightManager::Initialize(ID3D11Device* device)
 		lightData[i].lightColor = dx::XMFLOAT4(1, 1, 0, 1);
 		lightData[i].lightPosition = dx::XMFLOAT3(i, 5, i * 2);
 		lightData[i].type = 0;
+		lightData[i].range = 100;
 		
 	}
 	DXHelper::CreateStructuredBuffer(device, &lightsSRVBfr, lightData.data(), sizeof(s_Light), lightData.size(), &lightsSRV);

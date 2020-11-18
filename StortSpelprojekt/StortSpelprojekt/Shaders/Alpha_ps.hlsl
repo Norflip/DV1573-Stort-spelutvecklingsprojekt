@@ -23,9 +23,9 @@ float4 main(VS_OUTPUT input) : SV_TARGET
 
 	finalColor += CalculateDirectionalLight(sunDirection, normalized, viewDirection);
 
-	for (int i = 0; i < nrOfLights; i++)
+	for (int i = 0; i < 10; i++)
 	{
-		finalColor += CalculatePointLight(lights[i], normalized, input.worldPosition, viewDirection);
+		finalColor += CalculatePointLight(Lights[i], normalized, input.worldPosition, viewDirection);
 	}
 
 	textureColor.a = alphaMap.Sample(defaultSampleType, input.uv).r;

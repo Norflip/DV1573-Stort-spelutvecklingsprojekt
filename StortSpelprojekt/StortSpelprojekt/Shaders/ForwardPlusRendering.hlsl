@@ -110,7 +110,7 @@ void t_AppendLight(uint lightIndex)
 // And "Forward+: A Step Toward Film-Style Shading in Real Time", Takahiro Harada (2012)
 // published in "GPU Pro 4", Chapter 5 (2013) Taylor & Francis Group, LLC.
 
-[numthreads(BLOCK_SIZE, BLOCK_SIZE, 1)]
+[numthreads(1, 1, 1)]
 void main(ComputeShaderInput IN) // light culling everyframe 
 {
 	// Calculate min & max depth in threadgroup / tile.
@@ -146,10 +146,10 @@ void main(ComputeShaderInput IN) // light culling everyframe
 	// Clipping plane for minimum depth value 
 	// (used for testing lights within the bounds of opaque geometry).
 	Plane minPlane = { float3(0, 0, 1), minDepthVS }; //made z and minDepthVS positive
-	float3 lightPositionVS = mul(float4(light.lightPosition,1), view).xyz;
+	
 	// Cull lights
 	// Each thread in a group will cull 1 light until all lights have been culled.
-	for (uint i = IN.groupIndex; i < LIGHT_COUNT; i += BLOCK_SIZE * BLOCK_SIZE) //BLOCK_SIZE * BLOCK_SIZE IN.groupIndex
+	for (uint i = 0; i < 10; i += 1) //BLOCK_SIZE * BLOCK_SIZE IN.groupIndex
 	{
 		//en grupp per tråd, i = 0 i++ alla ljusen.
 		if (Lights[i].enabled)
@@ -160,13 +160,13 @@ void main(ComputeShaderInput IN) // light culling everyframe
 			{
 			case POINT_LIGHT:
 			{
-				
+				float3 lightPositionVS = mul(float4(light.lightPosition, 1), view).xyz;
 				Sphere sphere = { lightPositionVS, light.range };
 				if (SphereInsideFrustum(sphere, GroupFrustum, nearClipVS, maxDepthVS))
 				{
 					// Add light to light list for transparent geometry.
 					t_AppendLight(i);
-
+					o_LightGrid[IN.groupID.xy] = uint2(1, 1);
 					if (!SphereInsidePlane(sphere, minPlane))
 					{
 						// Add light to light list for opaque geometry.
