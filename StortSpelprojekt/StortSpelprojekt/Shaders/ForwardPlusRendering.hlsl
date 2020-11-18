@@ -272,13 +272,13 @@ void ComputeFrustums(ComputeShaderInput IN) // compute ONCE or when resize windo
 	// frustum vertices.
     float4 screenSpace[4];
 	// Top left point
-    screenSpace[0] = float4(IN.dispatchThreadID.xy * BLOCK_SIZE, -1.0f, 1.0f);
+    screenSpace[0] = float4(IN.dispatchThreadID.xy * BLOCK_SIZE, 1.0f, 1.0f); //changed z from negative to positive in z component, all of these 4.
 	// Top right point
-    screenSpace[1] = float4(float2(IN.dispatchThreadID.x + 1, IN.dispatchThreadID.y) * BLOCK_SIZE, -1.0f, 1.0f);
+    screenSpace[1] = float4(float2(IN.dispatchThreadID.x + 1, IN.dispatchThreadID.y) * BLOCK_SIZE, 1.0f, 1.0f);
 	// Bottom left point
-    screenSpace[2] = float4(float2(IN.dispatchThreadID.x, IN.dispatchThreadID.y + 1) * BLOCK_SIZE, -1.0f, 1.0f);
+    screenSpace[2] = float4(float2(IN.dispatchThreadID.x, IN.dispatchThreadID.y + 1) * BLOCK_SIZE, 1.0f, 1.0f);
 	// Bottom right point
-    screenSpace[3] = float4(float2(IN.dispatchThreadID.x + 1, IN.dispatchThreadID.y + 1) * BLOCK_SIZE, -1.0f, 1.0f);
+    screenSpace[3] = float4(float2(IN.dispatchThreadID.x + 1, IN.dispatchThreadID.y + 1) * BLOCK_SIZE, 1.0f, 1.0f);
 
     float3 viewSpace[4];
 	// Now convert the screen space points to view space

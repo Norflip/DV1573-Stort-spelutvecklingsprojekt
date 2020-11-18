@@ -664,18 +664,19 @@ void Renderer::DrawScreenQuad(const Material* material)
 
 void Renderer::InitForwardPlus(CameraComponent* camera, Window* window)
 {
+	
+	
 	this->width = window->GetWidth();
 	this->height = window->GetHeight();
 	int screenWidth = std::max(window->GetWidth(), 1u);
 	int screenHeight = std::max(window->GetHeight(), 1u);
 	int lightCullingBlockSize = 32;
-	dx::XMUINT4 numThreads = dx::XMUINT4(std::ceil(screenWidth / (float)lightCullingBlockSize), std::ceil(screenHeight / (float)lightCullingBlockSize),1, 1);
-	this->numThreadGroups = dx::XMUINT3(std::ceil(numThreads.x / (float)lightCullingBlockSize), std::ceil(numThreads.y / (float)lightCullingBlockSize), 1);
+	dx::XMUINT4 numThreads = dx::XMUINT4(std::ceil((float)screenWidth / (float)lightCullingBlockSize), std::ceil((float)screenHeight / (float)lightCullingBlockSize),1, 1);
+	this->numThreadGroups = dx::XMUINT3(std::ceil((float)numThreads.x / (float)lightCullingBlockSize), std::ceil((float)numThreads.y / (float)lightCullingBlockSize), 1);
 	UINT count = numThreads.x * numThreads.y * numThreads.z;
 
 	//Dispatch Forward+
 	dispatchParamsBuffer.Initialize(CB_DISPATCH_PARAMS_SLOT, ShaderBindFlag::COMPUTE, device);
-	//std::cout << sizeof(cb_DispatchParams) << std::endl;
 	cb_DispatchParams& dataDP = dispatchParamsBuffer.GetData();
 	dataDP.numThreadGroups = dx::XMUINT4(numThreadGroups.x, numThreadGroups.y, numThreadGroups.z, 1);
 	dataDP.numThreads = numThreads;
@@ -686,7 +687,7 @@ void Renderer::InitForwardPlus(CameraComponent* camera, Window* window)
 	screenToViewParams.Initialize(CB_SCREEN_TOVIEW_PARAMS_SLOT, ShaderBindFlag::COMPUTE, device);
 	cb_ScreenToViewParams& dataSVP = screenToViewParams.GetData();
 	dx::XMFLOAT4X4 inverse;
-	dx::XMStoreFloat4x4(&inverse, dx::XMMatrixInverse(nullptr, camera->GetProjectionMatrix()));
+	dx::XMStoreFloat4x4(&inverse, dx::XMMatrixTranspose(dx::XMMatrixInverse(nullptr, camera->GetProjectionMatrix()))); //transposed matrix.
 	dataSVP.inverseProjection = inverse;
 	dataSVP.screenDimensions.x = window->GetWidth();
 	dataSVP.screenDimensions.y = window->GetHeight();

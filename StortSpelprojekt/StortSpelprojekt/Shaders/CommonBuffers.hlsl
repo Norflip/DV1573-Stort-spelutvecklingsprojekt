@@ -130,7 +130,7 @@ Plane ComputePlane(float3 p0, float3 p1, float3 p2)
     Plane plane;
     float3 v0 = p1 - p0;
     float3 v2 = p2 - p0;
-    plane.N = normalize(cross(v0, v2));
+    plane.N = normalize(cross(v2, v0)); //switched these for left
 
 	//Compute the distance to the origin using p0.
     plane.d = dot(plane.N, p0);
