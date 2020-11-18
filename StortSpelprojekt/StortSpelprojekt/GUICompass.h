@@ -25,5 +25,8 @@ private:
     Window* window;
     float compassYpos;
     float compassXpos;
+    sm::Vector3 playerPos;
+    sm::Vector3 housePos;
+    CameraComponent* cam;
 };
 
