@@ -32,30 +32,91 @@ Renderer::~Renderer()
 
 
 	delete[] tmpBatchInstanceData;
-
-	o_LightGrid_tex->Release();
-	o_LightGrid_texSRV->Release();
-	t_LightGrid_tex->Release();
-	t_LightGrid_texSRV->Release();
-
+	if (o_LightGrid_tex)
+	{
+		o_LightGrid_tex->Release();
+	}
+	if (o_LightGrid_texSRV)
+	{
+		o_LightGrid_texSRV->Release();
+	}
+	if (t_LightGrid_tex)
+	{
+		t_LightGrid_tex->Release();
+	}
+	if (t_LightGrid_texSRV)
+	{
+		t_LightGrid_texSRV->Release();
+	}
 	
-	frustums_buffer->Release();
-	inFrustums_srv->Release();
-	outFrustums_uav->Release();
 	
-	o_LightIndexCounter_uavbuffer->Release();
-	o_LightIndexCounter_uav->Release();
 	
-	t_LightIndexCounter_uavbuffer->Release();
-	t_LightIndexCounter_uav->Release();
+	if (frustums_buffer)
+	{
+		frustums_buffer->Release();
+	}
+	if (inFrustums_srv)
+	{
+		inFrustums_srv->Release();
+	}
+	if (outFrustums_uav)
+	{
+		outFrustums_uav->Release();
+	}
 	
-	o_LightIndexList_uavbuffer->Release();
-	o_LightIndexList_srv->Release();
-	o_LightIndexList_uav->Release();
 	
-	t_LightIndexList_uavbuffer->Release();
-	t_LightIndexList_srv->Release();
-	t_LightIndexList_uav->Release();
+	
+	
+	if (o_LightIndexCounter_uavbuffer)
+	{
+		o_LightIndexCounter_uavbuffer->Release();
+	}
+	if (o_LightIndexCounter_uav)
+	{
+		o_LightIndexCounter_uav->Release();
+	}
+	
+	
+	if (t_LightIndexCounter_uavbuffer)
+	{
+		t_LightIndexCounter_uavbuffer->Release();
+	}
+	if (t_LightIndexCounter_uav)
+	{
+		t_LightIndexCounter_uav->Release();
+	}
+	
+	
+	if (o_LightIndexList_uavbuffer)
+	{
+		o_LightIndexList_uavbuffer->Release();
+	}
+	if (o_LightIndexList_srv)
+	{
+		o_LightIndexList_srv->Release();
+	}
+	
+	
+	
+	if (o_LightIndexList_uav)
+	{
+		o_LightIndexList_uav->Release();
+	}
+	if (t_LightIndexList_uavbuffer)
+	{
+		t_LightIndexList_uavbuffer->Release();
+	}
+	if (t_LightIndexList_srv)
+	{
+		t_LightIndexList_srv->Release();
+	}
+	
+	
+	
+	if (t_LightIndexList_uav)
+	{
+		t_LightIndexList_uav->Release();
+	}
 
 }
 
@@ -227,7 +288,7 @@ void Renderer::RenderFrame(CameraComponent* camera, float time, RenderTexture& t
 
 	LightManager::Instance().UpdateBuffers(context,camera);
 
-	//We need to clear Depth Stencil View as well.//Emil
+	UpdateForwardPlus(camera);
 
 	ID3D11ShaderResourceView* nullSRV[1] = { nullptr };
 	context->PSSetShaderResources(0, 1, nullSRV);
@@ -243,7 +304,7 @@ void Renderer::RenderFrame(CameraComponent* camera, float time, RenderTexture& t
 			pass->Pass(this, camera, renderPassSwapBuffers[0], renderPassSwapBuffers[0]);
 		}
 	}
-	UpdateForwardPlus(camera);
+	
 
 	context->OMSetDepthStencilState(dss, 0);
 
@@ -803,6 +864,12 @@ void Renderer::InitForwardPlus(CameraComponent* camera, Window* window, Shader f
 	device->CreateShaderResourceView(tex2D, &srvDesc, &t_LightGrid_texSRV);
 	tex2D->Release();
 	tex2D2->Release();
+
+	forwardPlusShader.Unbind(context);
+	forwardPlusShader.SetComputeShader("Shaders/ForwardPlusRendering.hlsl");
+	forwardPlusShader.CompileCS(device);
+	forwardPlusShader.BindToContext(context);
+
 	DXHelper::BindStructuredBuffer(context, frustums_buffer, frustum_data.data(), 9, ShaderBindFlag::COMPUTE, &inFrustums_srv);
 	//opaque_light index counter
 	o_LightIndexCounter.resize(1);
@@ -817,10 +884,8 @@ void Renderer::InitForwardPlus(CameraComponent* camera, Window* window, Shader f
 	t_LightIndexList.resize(32); //lightcount??
 	DXHelper::CreateStructuredBuffer(device, &t_LightIndexList_uavbuffer, t_LightIndexList.data(), sizeof(UINT), t_LightIndexList.size(), &t_LightIndexList_uav, &t_LightIndexList_srv);
 	DepthPass::Init(device, width,height);
-
-	forwardPlusShader.SetComputeShader("Shaders/ForwardPlusRendering.hlsl");
-	forwardPlusShader.CompileCS(device);
-	forwardPlusShader.BindToContext(context);
+	
+	
 }
 
 void Renderer::UpdateForwardPlus(CameraComponent* camera)
@@ -849,7 +914,8 @@ void Renderer::UpdateForwardPlus(CameraComponent* camera)
 
 	DepthPass::BindNull(context);
 	//////DEPTH PASS END-----------------------------------------------
-
+	ClearRenderTarget(midbuffer);
+	SetRenderTarget(midbuffer);
 	ID3D11UnorderedAccessView* nullUAV;
 	context->CSSetUnorderedAccessViews(3, 1, &nullUAV, NULL); //u3
 	context->CSSetUnorderedAccessViews(4, 1, &nullUAV, NULL); //u4
@@ -867,8 +933,8 @@ void Renderer::UpdateForwardPlus(CameraComponent* camera)
 	context->CSSetUnorderedAccessViews(6, 1, &t_LightGrid_tex, NULL); //u6
 
 	context->Dispatch(numThreadGroups.x, numThreadGroups.y, numThreadGroups.z);
-	context->CSSetUnorderedAccessViews(3, 1, &nullUAV, NULL); //u5
-	context->CSSetUnorderedAccessViews(4, 1, &nullUAV, NULL); //u6
+	context->CSSetUnorderedAccessViews(3, 1, &nullUAV, NULL); //u3
+	context->CSSetUnorderedAccessViews(4, 1, &nullUAV, NULL); //u4
 	context->CSSetUnorderedAccessViews(5, 1, &nullUAV, NULL); //u5
 	context->CSSetUnorderedAccessViews(6, 1, &nullUAV, NULL); //u6
 	//context->Dispatch(1, 1, 1);

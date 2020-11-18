@@ -102,7 +102,7 @@ void GameScene::InitializeObjects()
 	forwardPlusShader.CompileCS(renderer->GetDevice());
 	forwardPlusShader.BindToContext(renderer->GetContext());
 	renderer->InitForwardPlus(camera, window,forwardPlusShader);
-	forwardPlusShader.Unbind(renderer->GetContext());
+
 
 	
 	
