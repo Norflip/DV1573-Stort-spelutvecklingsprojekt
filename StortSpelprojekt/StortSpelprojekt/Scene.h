@@ -26,6 +26,7 @@
 #include "EnemyManager.h"
 #include <wchar.h>
 #include "PlayerAnimHandlerComp.h"
+#include "HousePartsComponent.h"
 
 class GUIFont;
 class SpriteRenderPass;

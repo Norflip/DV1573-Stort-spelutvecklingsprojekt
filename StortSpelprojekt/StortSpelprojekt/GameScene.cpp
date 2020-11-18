@@ -55,6 +55,8 @@ void GameScene::InitializeObjects()
 	SkeletonMeshComponent* baseComponent = resources->GetResource<SkeletonMeshComponent>("HouseSkeleton");
 	SkeletonMeshComponent* legsComponent = resources->GetResource<SkeletonMeshComponent>("HouseLegsSkeleton");
 
+	
+
 	houseBaseObject->GetTransform().SetScale({ 0.5f, 0.5f, 0.5f });
 	
 	//WALLS
@@ -79,14 +81,18 @@ void GameScene::InitializeObjects()
 
 	houseBaseObject->AddComponent<SkeletonMeshComponent>(baseComponent);
 	housesLegsObject->AddComponent<SkeletonMeshComponent>(legsComponent);
-
+	
 	Transform::SetParentChild(houseBaseObject->GetTransform(), housesLegsObject->GetTransform());
-	Transform::SetParentChild(houseBaseObject->GetTransform(), houseDoor->GetTransform());
-	Transform::SetParentChild(houseBaseObject->GetTransform(), houseExterior->GetTransform());
 
 	NodeWalkerComp* nodeWalker = houseBaseObject->AddComponent<NodeWalkerComp>();
 	nodeWalker->InitAnimation();
 	AddObject(houseBaseObject);
+
+	houseDoor->AddComponent<HousePartsComponent>(houseBaseObject->GetComponent<SkeletonMeshComponent>());
+	houseExterior->AddComponent<HousePartsComponent>(houseBaseObject->GetComponent<SkeletonMeshComponent>());
+
+	AddObject(houseDoor);
+	AddObject(houseExterior);
 
 	//Player & Camera
 	dx::XMFLOAT3 playerSpawn = { 10,2,10 };

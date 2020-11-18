@@ -170,4 +170,4 @@ PuzzleFrogStatue: Models/Puzzles/Puzzle_Frog_statue.ZWEB
 Shader: defaultShader
 
 HouseExterior: Models/House/House_Exterior.ZWEB
-Shader: alphaShader
+Shader: defaultShader

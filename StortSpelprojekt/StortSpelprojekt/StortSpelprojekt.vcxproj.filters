@@ -288,6 +288,7 @@
     </ClCompile>
     <ClCompile Include="PuzzleManager.cpp" />
     <ClCompile Include="FrogPuzzle.cpp" />
+    <ClCompile Include="HousePartsComponent.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="ObjectSpawner.h">
@@ -582,6 +583,9 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="FrogPuzzle.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="HousePartsComponent.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>
