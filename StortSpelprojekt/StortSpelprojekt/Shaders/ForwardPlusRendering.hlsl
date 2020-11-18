@@ -85,7 +85,7 @@ void o_AppendLight(uint lightIndex)
 {
 	uint index; // Index into the visible lights array.
 	InterlockedAdd(o_LightCount, 1, index);
-	if (index < 1024)
+	if (index < 32)
 	{
 		o_LightList[index] = lightIndex;
 	}
@@ -96,7 +96,7 @@ void t_AppendLight(uint lightIndex)
 {
 	uint index; // Index into the visible lights array.
 	InterlockedAdd(t_LightCount, 1, index);
-	if (index < 1024)
+	if (index < 32)
 	{
 		t_LightList[index] = lightIndex;
 	}
