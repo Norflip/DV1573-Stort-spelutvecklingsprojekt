@@ -8,7 +8,7 @@
 #include "CameraComponent.h"
 #include "LightManager.h"
 #include "ConstantBuffer.h"
-
+#include "DepthPass.h"
 #include <time.h>
 
 
@@ -132,6 +132,9 @@ private:
 
 	UINT width; //F+
 	UINT height;//F+
+
+	dx::XMUINT3 numThreadGroups;
+
 	//Frustums
 	std::vector<s_Frustum> frustum_data;
 	ID3D11Buffer* frustums_buffer;
@@ -161,10 +164,10 @@ private:
 	//light grid
 	//std::vector<dx::XMUINT2> o_LightGrid;
 	//ID3D11Buffer* o_LightGrid_texbuffer;
-	ID3D11Texture2D* o_LightGrid_tex;
+	ID3D11UnorderedAccessView* o_LightGrid_tex;
 	//std::vector<dx::XMUINT2> t_LightGrid;
 	//ID3D11Buffer* t_LightGrid_texbuffer;
-	ID3D11Texture2D* t_LightGrid_tex;
+	ID3D11UnorderedAccessView* t_LightGrid_tex;
 
 
 

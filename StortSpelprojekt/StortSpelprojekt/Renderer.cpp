@@ -670,14 +670,14 @@ void Renderer::InitForwardPlus(CameraComponent* camera, Window* window)
 	int screenHeight = std::max(window->GetHeight(), 1u);
 	int lightCullingBlockSize = 32;
 	dx::XMUINT4 numThreads = dx::XMUINT4(std::ceil(screenWidth / (float)lightCullingBlockSize), std::ceil(screenHeight / (float)lightCullingBlockSize),1, 1);
-	dx::XMUINT4 numThreadGroups = dx::XMUINT4(std::ceil(numThreads.x / (float)lightCullingBlockSize), std::ceil(numThreads.y / (float)lightCullingBlockSize),1, 1);
+	this->numThreadGroups = dx::XMUINT3(std::ceil(numThreads.x / (float)lightCullingBlockSize), std::ceil(numThreads.y / (float)lightCullingBlockSize), 1);
 	UINT count = numThreads.x * numThreads.y * numThreads.z;
 
 	//Dispatch Forward+
 	dispatchParamsBuffer.Initialize(CB_DISPATCH_PARAMS_SLOT, ShaderBindFlag::COMPUTE, device);
 	//std::cout << sizeof(cb_DispatchParams) << std::endl;
 	cb_DispatchParams& dataDP = dispatchParamsBuffer.GetData();
-	dataDP.numThreadGroups = numThreadGroups;
+	dataDP.numThreadGroups = dx::XMUINT4(numThreadGroups.x, numThreadGroups.y, numThreadGroups.z, 1);
 	dataDP.numThreads = numThreads;
 	dispatchParamsBuffer.SetData(dataDP);
 	dispatchParamsBuffer.UpdateBuffer(context);
@@ -720,7 +720,21 @@ void Renderer::InitForwardPlus(CameraComponent* camera, Window* window)
 void Renderer::UpdateForwardPlus()
 {
 	//this is to be run for lightculling compute shader
+	//////DEPTH PASS BEGIN---------------------------
+	////DepthPass::BindNull(context);
+	////DepthPass::BindDSV(context);
+	////context->OMSetDepthStencilState(dss, 0);
+	////SetCullBack(true);
+	////DrawQueueToTarget(depthOpaqueItemQueue, camera);
 
+	////SetCullBack(false);
+	////DrawQueueToTarget(depthTransparentItemQueue, camera);
+
+	////SetCullBack(true);
+	////DepthPass::BindNull(context);
+	////ClearRenderTarget(midbuffer);
+	////SetRenderTarget(midbuffer);
+	//////DEPTH PASS END-----------------------------------------------
 	//precomputed in_Frustums
 	//DXHelper::CreateStructuredBuffer(device, &frustums_buffer, frustum_data.data(), sizeof(s_Frustum), frustum_data.size(), &inFrustums_srv);
 	DXHelper::BindStructuredBuffer(context, frustums_buffer, frustum_data.data(), 9, ShaderBindFlag::COMPUTE, &inFrustums_srv);
@@ -747,5 +761,6 @@ void Renderer::UpdateForwardPlus()
 	//DXHelper::CreateTexture2D(width, height, device, &o_LightGrid_tex, DXGI_FORMAT_R32G32_UINT);
 	//DXHelper::CreateTexture2D(width, height, device, &t_LightGrid_tex, DXGI_FORMAT_R32G32_UINT);
 
+	context->Dispatch(numThreadGroups.x, numThreadGroups.y, numThreadGroups.z);
 	//context->Dispatch(1, 1, 1);
 }
