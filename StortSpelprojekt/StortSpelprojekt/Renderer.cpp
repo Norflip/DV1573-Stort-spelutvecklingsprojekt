@@ -29,7 +29,7 @@ Renderer::~Renderer()
 	skeleton_srv->Release();
 	dss->Release();
 	rasterizerStateCCWO->Release();
-
+	
 
 	delete[] tmpBatchInstanceData;
 }
