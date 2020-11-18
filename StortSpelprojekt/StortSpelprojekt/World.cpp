@@ -230,9 +230,9 @@ void World::RegisterStatic(ObjectSpawner* spawner, const std::map<std::string, i
 {
 	static const dx::XMUINT3 UP = dx::XMUINT3(0, 1, 0);
 
-	spawner->RegisterInstancedItem("Rock1", 0.0f, 5, UP);
-	spawner->RegisterInstancedItem("Rock2", 0.0f, 5, UP);
-	spawner->RegisterInstancedItem("Rock3", 0.0f, 5, UP);
-	spawner->RegisterInstancedItem("Log", 0.0f, 1, UP);
+	spawner->RegisterInstancedItem("Rock1", 0.0f, 1, UP);
+	spawner->RegisterInstancedItem("Rock2", 0.0f, 1, UP);
+	spawner->RegisterInstancedItem("Rock3", 0.0f, 1, UP);
+	spawner->RegisterInstancedItem("Log",	0.0f, 1, UP);
 
 }

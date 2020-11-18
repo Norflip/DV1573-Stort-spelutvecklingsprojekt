@@ -34,35 +34,54 @@ Object* ObjectPooler::GetItem(std::string key)
 	if (pool != nullptr)
 	{
 		if (pool->inside.size() == 0)
+		{
 			Warm(pool, 1, true);
+		}
+		else
+		{
+			std::cout << "RETURNING POOLED ITEM. " << pool->inside.size() << " REMANING.\n";
+		}
 
 		obj = pool->inside.front();
 		pool->inside.pop();
 
 		pool->outside.insert(obj);
 		obj->AddFlag(ObjectFlag::ENABLED);
+		RigidBodyComponent* body = obj->GetComponent<RigidBodyComponent>();
+		if (body != nullptr)
+			body->GetRigidBody()->setIsActive(true);
 	}
 
 	return obj;
 }
 
-void ObjectPooler::ReturnItem(std::string key, Object* object)
+void ObjectPooler::ReturnItem(Object* object)
 {
-	Pool* pool = GetPool(key);
-	if (pool != nullptr)
+	PooledItem* pooledItem = object->GetComponent<PooledItem>();
+	if (pooledItem != nullptr)
 	{
-		object->RemoveFlag(ObjectFlag::ENABLED);
-		assert(pool->inside.size() + pool->outside.size() > POOL_MAX_LIMIT);
-
-		auto found = pool->outside.find(object);
-		if (found != pool->outside.end())
+		std::string key = pooledItem->GetKey();
+		Pool* pool = GetPool(key);
+		if (pool != nullptr)
 		{
-			auto callbacks = object->GetComponentsOfSubType<PoolReturnCallback>();
-			for (auto i : callbacks)
-				i->OnReturn();
+			object->RemoveFlag(ObjectFlag::ENABLED);
+			assert(pool->inside.size() + pool->outside.size() > POOL_MAX_LIMIT);
 
-			pool->outside.erase(found);
-			pool->inside.push(object);
+			RigidBodyComponent* body = object->GetComponent<RigidBodyComponent>();
+			if (body != nullptr)
+				body->GetRigidBody()->setIsActive(false);
+
+
+			auto found = pool->outside.find(object);
+			if (found != pool->outside.end())
+			{
+				auto callbacks = object->GetComponentsOfSubType<PoolReturnCallback>();
+				for (auto i : callbacks)
+					i->OnReturn();
+
+				pool->outside.erase(found);
+				pool->inside.push(object);
+			}
 		}
 	}
 }
@@ -108,6 +127,7 @@ void ObjectPooler::Warm(Pool* pool, size_t amount, bool additive)
 		for (size_t i = 0; i < toAdd; i++)
 		{
 			Object* obj = (pool->factory)(resourceManager);
+			obj->AddComponent< PooledItem>()->SetKey(pool->key);
 
 			obj->RemoveFlag(ObjectFlag::ENABLED);
 			pool->inside.push(obj);

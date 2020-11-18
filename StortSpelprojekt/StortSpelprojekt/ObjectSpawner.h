@@ -66,14 +66,12 @@ private:
 	void SpawnStatic(std::unordered_map<int, Chunk*>& chunkMap);
 	void SpawnItem (Chunk* chunk);
 
-	bool ValidSpawnPoint(const dx::XMFLOAT2& point, const Chunk::Data& data, float minInfluence) const;
+	bool ValidSpawnPoint(const dx::XMFLOAT2& point, Chunk* chunk, float minInfluence) const;
 	void AddTreesToChunk(Chunk* chunk) const;
 	void AddGrassToChunk(Chunk* chunk) const;
 
 private:
-	std::vector<dx::XMFLOAT2> CreateSpawnPositions(QuadTree* tree, float radius, std::unordered_map<int, Chunk*>& chunkMap) const;
-	Chunk* GetChunk(float x, float z, std::unordered_map<int, Chunk*>& chunkMap) const;
-
+	std::vector<dx::XMFLOAT2> CreateSpawnPositions(QuadTree* tree, float spawnRadius, float itemRadius, std::unordered_map<int, Chunk*>& chunkMap) const;
 	template <typename T> 
 	void ShuffleVector(std::vector<T>& v) const;
 

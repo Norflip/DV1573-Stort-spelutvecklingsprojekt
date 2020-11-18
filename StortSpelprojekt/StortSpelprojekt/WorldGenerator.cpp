@@ -1,6 +1,8 @@
 #include "stdafx.h"
+#include <algorithm>
 #include "WorldGenerator.h"
 #include "Engine.h"
+
 
 WorldGenerator::WorldGenerator() : constructed(false), treePoints(dx::XMFLOAT2(0, 0), dx::XMFLOAT2(0, 0))
 {
@@ -55,15 +57,17 @@ void WorldGenerator::Construct(const SaveState& state, const WorldDescription& d
 		AddChunksFromPath(indexes, chunks);
 		AddPadding(CHUNK_PADDING, indexes, chunks, minIndex, maxIndex);
 
+		chunks[HASH2D_I(1, 1)].type = ChunkType::PUZZEL;
+
 		path = Path(indexes);
-		
+
 		treePoints.Clear();
 		dx::XMFLOAT2 wmin = Chunk::IndexToWorldXZ(minIndex);
 		dx::XMFLOAT2 wmax = Chunk::IndexToWorldXZ(maxIndex);
 		wmax.x += CHUNK_SIZE;
 		wmax.y += CHUNK_SIZE;
 		treePoints.SetMinMax(wmin, wmax);
-		
+
 		for (auto i : chunks)
 		{
 			ChunkIndexInfo indexInfo = i.second;
@@ -78,17 +82,17 @@ void WorldGenerator::Construct(const SaveState& state, const WorldDescription& d
 		path.GetLanternInformation(positions, angles);
 
 		spawner->SpawnSpecific(positions, { 0,1,0 }, angles, "Lamp", chunkMap, [](Object* obj)
-		{
-			obj->GetTransform().SetScale({ 1.2f, 1.2f, 1.2f });
+			{
+				obj->GetTransform().SetScale({ 1.2f, 1.2f, 1.2f });
 
 
 
-			/*Object* light = new Object("lantern_pointLight");
-			light->GetTransform().SetPosition({ 0,2,0 });
-			light->AddComponent<PointLightComponent>(dx::XMFLOAT4(0.3f, 0.3f, 0.3f, 1.0f), 4.0f);
-			Transform::SetParentChild(obj->GetTransform(), light->GetTransform());*/
+				/*Object* light = new Object("lantern_pointLight");
+				light->GetTransform().SetPosition({ 0,2,0 });
+				light->AddComponent<PointLightComponent>(dx::XMFLOAT4(0.3f, 0.3f, 0.3f, 1.0f), 4.0f);
+				Transform::SetParentChild(obj->GetTransform(), light->GetTransform());*/
 
-		});
+			});
 
 		constructed = true;
 	}
@@ -115,6 +119,75 @@ void WorldGenerator::DrawDebug()
 {
 	path.DrawDebug();
 	spawner->DrawDebug();
+}
+
+size_t WorldGenerator::RegisterEnviromentProp(size_t minSegment, size_t maxSegment, size_t queueCount, std::function<void(Object*)> factory)
+{
+	size_t index = enviromentProps.size();
+
+	WorldGenerator::EnviromentProp prop;
+	prop.factory = factory;
+	prop.width = prop.height = 1;
+	prop.minSegment = minSegment;
+	prop.maxSegment = maxSegment;
+	prop.onRoad = false;
+	prop.usedCount = 0;
+
+	for (size_t i = 0; i < queueCount; i++)
+		enviromentProps.push_back(prop);
+
+	return index;
+}
+
+void WorldGenerator::AddEnvProps(const SaveState& state, dx::XMINT2 minIndex, dx::XMINT2 maxIndex, std::unordered_map<int, ChunkIndexInfo>& chunkInformation)
+{
+	if (enviromentProps.empty())
+		return;
+
+	// hitta alla props som passar in på segment  INdex
+	size_t segment = state.segment;
+	size_t nrOfProps = Random::Range(3, 6);
+
+	std::vector<EnviromentProp> validProps;
+	for (size_t i = 0; i < enviromentProps.size(); i++)
+	{
+		if (enviromentProps[i].minSegment >= segment && enviromentProps[i].maxSegment < segment)
+			validProps.push_back(enviromentProps[i]);
+	}
+
+	if (!validProps.empty())
+	{
+		// sortera dom baserat på usage  <- detta måste sparas sen
+		std::sort(validProps.begin(), validProps.end(), SortProps);
+
+		size_t indexesFound = 0;
+		size_t maxTries = 1000;
+		size_t propIndex = 0;
+
+		while (indexesFound < nrOfProps && maxTries > 0)
+		{
+			int dx = Random::Range(minIndex.x, maxIndex.x);
+			int dy = Random::Range(minIndex.y, maxIndex.y);
+			int hash = HASH2D_I(dx, dy);
+
+			if (chunkInformation.find(hash) != chunkInformation.end() && chunkInformation[hash].type == ChunkType::TERRAIN)
+			{
+				chunkInformation[hash].type = ChunkType::PUZZEL;
+				chunkInformation[hash].prop = &validProps[propIndex];
+				propIndex = (propIndex + 1) % validProps.size();
+				indexesFound++;
+			}
+
+			maxTries--;
+		}
+	}
+
+	const int a = 0;
+}
+
+bool WorldGenerator::SortProps(const EnviromentProp& propA, const EnviromentProp& propB)
+{
+	return propA.usedCount < propB.usedCount;
 }
 
 Chunk* WorldGenerator::CreateChunk(const dx::XMINT2& index, Object* root, const WorldDescription& description, ChunkType type)
@@ -149,12 +222,12 @@ Chunk* WorldGenerator::CreateChunk(const dx::XMINT2& index, Object* root, const 
 	auto textureSampler = DXHelper::CreateSampler(D3D11_FILTER_MIN_MAG_MIP_LINEAR, D3D11_TEXTURE_ADDRESS_WRAP, renderer->GetDevice());
 	material->SetSampler(textureSampler, 1, ShaderBindFlag::PIXEL);
 
-	Bounds bounds (dx::XMFLOAT3(0, 0, 0), dx::XMFLOAT3(CHUNK_SIZE, TERRAIN_SCALE + 1.0f, CHUNK_SIZE));
+	Bounds bounds(dx::XMFLOAT3(0, 0, 0), dx::XMFLOAT3(CHUNK_SIZE, TERRAIN_SCALE + 1.0f, CHUNK_SIZE));
 	chunkObject->AddComponent<MeshComponent>(chunkMesh, material, bounds);
 
 	int i = HASH2D_I(index.x, index.y);
 	chunkMap.insert({ i, chunk });
-	
+
 	return chunk;
 }
 
@@ -245,7 +318,7 @@ void WorldGenerator::AddPadding(int radius, std::vector<dx::XMINT2>& points, std
 	{
 		if (i == 0)
 			minIndex = maxIndex = points[i];
-		
+
 		for (int y = -radius; y <= radius; y++)
 		{
 			for (int x = -radius; x <= radius; x++)

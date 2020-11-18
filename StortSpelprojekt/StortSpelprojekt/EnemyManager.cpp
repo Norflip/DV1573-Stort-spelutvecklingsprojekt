@@ -63,7 +63,7 @@ void EnemyManager::InitChargerEnemy()
 
 void EnemyManager::RemoveEnemy(Object* enemy)
 {
-	enemyPool->ReturnItem("baseEnemy", enemy);
+	enemyPool->ReturnItem(enemy);
 }
 
 void EnemyManager::SpawnEnemy(dx::XMVECTOR position)

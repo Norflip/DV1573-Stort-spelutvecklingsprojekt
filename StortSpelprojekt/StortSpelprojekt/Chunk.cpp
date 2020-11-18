@@ -191,16 +191,85 @@ void Chunk::CreateChunkData(const WorldDescription& description, const Path& pat
 			worldHeight = std::max(worldHeight, MIN_TERRAIN_HEIGHT);
 			float height = worldHeight / TERRAIN_SCALE;
 
-			data.heightMap[x + size * y] = worldHeight;
-			data.influenceMap[x + size * y] = influence;
-
 			int bufferIndex = x + size * y;
+
+			data.heightMap[bufferIndex] = worldHeight;
+			data.influenceMap[bufferIndex] = influence;
+
 
 			buffer[bufferIndex * 4 + 0] = static_cast<unsigned char>(255 * height);
 			buffer[bufferIndex * 4 + 1] = static_cast<unsigned char>(255 * sampledHeight);
 			buffer[bufferIndex * 4 + 2] = static_cast<unsigned char>(255 * influence);
 			buffer[bufferIndex * 4 + 3] = static_cast<unsigned char>(255);
 		}
+	}
+
+	if (type == ChunkType::PUZZEL)
+	{
+
+		const int SMOOTH_IT = 64;
+		const int SAMPLE_SIZE = 2;
+
+		for (size_t i = 0; i < SMOOTH_IT; i++)
+		{
+			for (size_t y = SAMPLE_SIZE; y < size - SAMPLE_SIZE; y++)
+			{
+				for (size_t x = SAMPLE_SIZE; x < size - SAMPLE_SIZE; x++)
+				{
+					float average = 0.0f;
+					int samples = 0;
+
+					for (int dy = -SAMPLE_SIZE; dy <= SAMPLE_SIZE; dy++)
+					{
+						for (int dx = -SAMPLE_SIZE; dx <= SAMPLE_SIZE; dx++)
+						{
+							average += data.heightMap[(x + dx) + size * (y + dy)];
+							samples++;
+						}
+					}
+
+					average /= samples;
+					float height01 = (average / TERRAIN_SCALE);
+					int bufferIndex = x + size * y;
+					data.heightMap[bufferIndex] = average;
+					buffer[bufferIndex * 4 + 0] = static_cast<unsigned char>(255 * height01);
+				}
+			}
+		}
+
+		
+
+
+		/*float average = 0.0f;
+
+
+		for (size_t y = 0; y < size; y++)
+		{
+			for (size_t x = 0; x < size; x++)
+			{
+				average += data.heightMap[x + size * y];
+			}
+		}
+
+		int smoothSize = 3;
+
+		average /= ((size - (smoothSize * 2)) * (size - (smoothSize * 2)));
+
+		for (size_t y = smoothSize; y < size - smoothSize; y++)
+		{
+			for (size_t x = smoothSize; x < size - smoothSize; x++)
+			{
+				float worldHeight = average;
+				float height = worldHeight / TERRAIN_SCALE;
+
+				int bufferIndex = x + size * y;
+
+				data.heightMap[x + size * y] = worldHeight;
+
+				buffer[bufferIndex * 4 + 0] = static_cast<unsigned char>(255 * height);
+			}
+		}*/
+
 	}
 
 	data.dataTexture = Texture::CreateFromBuffer(buffer, CHUNK_SIZE + 1, CHUNK_SIZE + 1, 4, DXGI_FORMAT_R8G8B8A8_UNORM, device);

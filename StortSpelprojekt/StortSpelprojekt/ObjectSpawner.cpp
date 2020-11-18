@@ -32,7 +32,7 @@ void ObjectSpawner::Initialize(Object* root, World* world, Renderer* renderer)
 	tree.minScale = 1.4f;
 	tree.maxScale = 2.0f;
 	tree.minRotation = 5.0f;
-	tree.maxRotation = 20.0f;
+	tree.maxRotation = 15.0f;
 }
 
 void ObjectSpawner::Spawn(const SaveState& state, const Bounds& worldBounds, std::unordered_map<int, Chunk*>& chunkMap)
@@ -62,10 +62,12 @@ void ObjectSpawner::Despawn()
 	{
 		for (auto i : activeItems)
 		{
-			Object* obj = i;
-			obj->GetComponent<RigidBodyComponent>()->Release();
-			Transform::ClearFromHierarchy(obj->GetTransform());
-			delete obj;
+			pooler->ReturnItem(i);
+
+			//Object* obj = i;
+			//obj->GetComponent<RigidBodyComponent>()->Release();
+			//Transform::ClearFromHierarchy(obj->GetTransform());
+			//delete obj;
 		}
 	}
 
@@ -76,7 +78,7 @@ void ObjectSpawner::SpawnSpecific(std::vector<dx::XMFLOAT2> positions, dx::XMVEC
 {
 	for (size_t i = 0; i < positions.size(); i++)
 	{
-		Chunk* chunk = GetChunk(positions[i].x, positions[i].y, chunkMap);
+		Chunk* chunk = world->GetChunk(positions[i].x, positions[i].y);
 
 		if (chunk != nullptr)
 		{
@@ -132,9 +134,7 @@ void ObjectSpawner::RegisterInstancedItem(Mesh* mesh, Material* material, float 
 
 void ObjectSpawner::DrawDebug()
 {
-	globalTreeQT->DebugDraw();
 	return;
-
 	for (size_t i = 0; i < itemSpawnPositions.size(); i++)
 	{
 		dx::XMFLOAT3 worldPoint(itemSpawnPositions[i].x, 5, itemSpawnPositions[i].y);
@@ -159,7 +159,7 @@ void ObjectSpawner::AddTreesToChunk(Chunk* chunk) const
 
 		for (size_t i = 0; i < points.size(); i++)
 		{
-			if (Random::Value() > NO_TREE_CHANCE && ValidSpawnPoint(points[i], chunk->GetData(), TREE_SPAWN_FACTOR))
+			if (Random::Value() > NO_TREE_CHANCE && ValidSpawnPoint(points[i], chunk, TREE_SPAWN_FACTOR))
 				validPoints.push_back(points[i]);
 		}
 
@@ -232,13 +232,13 @@ void ObjectSpawner::AddGrassToChunk(Chunk* chunk) const
 	grassComponent->InitializeGrass(chunkMesh, renderer->GetDevice(), renderer->GetContext());
 }
 
-bool ObjectSpawner::ValidSpawnPoint(const dx::XMFLOAT2& point, const Chunk::Data& data, float minInfluence) const
+bool ObjectSpawner::ValidSpawnPoint(const dx::XMFLOAT2& point, Chunk* chunk, float minInfluence) const
 {
 	int dx = static_cast<int>(roundf(point.x));
 	int dy = static_cast<int>(roundf(point.y));
 
-	float v = data.influenceMap[dx + dy * (CHUNK_SIZE + 1)];
-	return v > minInfluence;
+	float v = chunk->GetData().influenceMap[dx + dy * (CHUNK_SIZE + 1)];
+	return chunk->GetType() != ChunkType::PUZZEL && v > minInfluence;
 }
 
 Object* ObjectSpawner::DefaultCreateItem(std::string key, PickupType type, float value)
@@ -252,7 +252,7 @@ Object* ObjectSpawner::DefaultCreateItem(std::string key, PickupType type, float
 
 void ObjectSpawner::SpawnStatic(std::unordered_map<int, Chunk*>& chunkMap)
 {
-	propSpawnPositions = CreateSpawnPositions(globalTreeQT, 10.0f, chunkMap);
+	propSpawnPositions = CreateSpawnPositions(globalTreeQT, 10.0f, 5.0f, chunkMap);
 
 	if (instancedProps.size() > 0)
 	{
@@ -275,8 +275,8 @@ void ObjectSpawner::SpawnStatic(std::unordered_map<int, Chunk*>& chunkMap)
 			{
 				dx::XMFLOAT2 pos = propSpawnPositions[i];
 
-				Chunk* chunk = GetChunk(pos.x, pos.y, chunkMap);
-				valid = ValidSpawnPoint(pos, chunk->GetData(), 0.3f);
+				Chunk* chunk = world->GetChunk(pos.x, pos.y);
+				valid = ValidSpawnPoint(pos, chunk, 0.3f);
 
 				if (valid)
 				{
@@ -288,14 +288,12 @@ void ObjectSpawner::SpawnStatic(std::unordered_map<int, Chunk*>& chunkMap)
 					dx::XMFLOAT3 position = dx::XMFLOAT3(pos.x, y, pos.y);
 
 					float height = prop.bounds.GetSize().y;
-					position.y += ((height / 2.0f) * (1.0f - prop.yOffset));
+					//position.y += ((height / 2.0f) * (1.0f - prop.yOffset));
 
 					dx::XMMATRIX rotation = dx::XMMatrixIdentity();
-					
-					rotation = dx::XMMatrixMultiply(rotation, dx::XMMatrixRotationNormal({0, 0, prop.randomRotationAxis.z}, Random::RadAngle()));
-					rotation = dx::XMMatrixMultiply(rotation, dx::XMMatrixRotationNormal({0, prop.randomRotationAxis.y, 0}, Random::RadAngle()));
-					rotation = dx::XMMatrixMultiply(rotation, dx::XMMatrixRotationNormal({prop.randomRotationAxis.x, 0, 0}, Random::RadAngle()));
-
+					rotation = dx::XMMatrixMultiply(rotation, dx::XMMatrixRotationNormal({0, 0, FCAST(prop.randomRotationAxis.z)}, Random::RadAngle()));
+					rotation = dx::XMMatrixMultiply(rotation, dx::XMMatrixRotationNormal({0, FCAST(prop.randomRotationAxis.y), 0}, Random::RadAngle()));
+					rotation = dx::XMMatrixMultiply(rotation, dx::XMMatrixRotationNormal({ FCAST(prop.randomRotationAxis.x), 0, 0}, Random::RadAngle()));
 				
 					dx::XMFLOAT4X4 instancedData;
 					dx::XMMATRIX translation = dx::XMMatrixTranslation(position.x, position.y, position.z);
@@ -383,24 +381,30 @@ void ObjectSpawner::SpawnItem(Chunk* chunk)
 	std::cout << "SPAWNED: " << TMP_spawned << std::endl;
 }
 
-std::vector<dx::XMFLOAT2> ObjectSpawner::CreateSpawnPositions(QuadTree* tree, float radius, std::unordered_map<int, Chunk*>& chunkMap) const
+std::vector<dx::XMFLOAT2> ObjectSpawner::CreateSpawnPositions(QuadTree* tree, float spawnRadius, float itemRadius, std::unordered_map<int, Chunk*>& chunkMap) const
 {
 	dx::XMFLOAT2 min = tree->GetMin();
 	dx::XMFLOAT2 max = tree->GetMax();
 
-	std::vector<dx::XMFLOAT2> points = PossionDiscSampler::Sample(radius, max.x - min.x, max.y - min.y);
+	float width = max.x - min.x;
+	float height = max.y - min.y;
+
+	std::vector<dx::XMFLOAT2> points = PossionDiscSampler::Sample(spawnRadius, width, height);
 	std::vector<dx::XMFLOAT2> validPoints;
 	size_t fails = 0;
+	size_t cols = 0;
+
+	std::cout << "getting spawn positions ---------------\n";
 
 	for (size_t i = 0; i < points.size(); i++)
 	{
 		dx::XMFLOAT2 point = points[i];
-		point.x += (min.x - max.x) / 2.0f;
-		point.y += (min.y - max.y) / 2.0f;
+		point.x += min.x;
+		point.y += min.y;
 
-		if (tree->CountInRange(point, radius) == 0)
+		if (tree->CountInRange(point, itemRadius) == 0)
 		{
-			Chunk* chunk = GetChunk(point.x, point.y, chunkMap);
+			Chunk* chunk = world->GetChunk(point.x, point.y);
 
 			if (chunk != nullptr && chunk->GetType() == ChunkType::TERRAIN)
 			{
@@ -412,21 +416,17 @@ std::vector<dx::XMFLOAT2> ObjectSpawner::CreateSpawnPositions(QuadTree* tree, fl
 				fails++;
 			}
 		}
+		else
+		{
+			cols++;
+		}
 	}
+
+	std::cout << "VALID: " << validPoints.size() << std::endl;
+	std::cout << "FAILS: " << fails << std::endl;
+	std::cout << "COLS: " << cols << std::endl;
+
 
 	ShuffleVector(validPoints);
 	return validPoints;
-}
-
-Chunk* ObjectSpawner::GetChunk(float x, float z, std::unordered_map<int, Chunk*>& chunkMap) const
-{
-	dx::XMINT2 index = Chunk::WorldToIndex(x, z);
-	int hash = HASH2D_I(index.x, index.y);
-
-	Chunk* chunk = nullptr;
-	auto find = chunkMap.find(hash);
-
-	if (find != chunkMap.end())
-		chunk = find->second;
-	return chunk;
 }
