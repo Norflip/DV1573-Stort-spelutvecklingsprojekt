@@ -92,8 +92,8 @@ float4 main(PixelInputType input) : SV_TARGET
     float f = fbm(st + r + (mousePos / 690));
     float3 color = float3(0,0,0);
 
-    //color = lerp(float3(0.101961, 0.919608, 0.666667),
-    //    float3(0.666667, 0.666667, 0.498039),
+    //color = lerp(float3(0.101961, 0.319608, 0.266667),
+    //    float3(0.266667, 0.266667, 0.198039),
     //    clamp((f * f) * 4.0, 0.0, 1.0));
 
     //color = lerp(color,
@@ -101,7 +101,7 @@ float4 main(PixelInputType input) : SV_TARGET
     //    clamp(length(q), 0.0, 1.0));
 
     //color = lerp(color,
-    //    float3(0.666667, 1, 1),
+    //    float3(0.266667, 1, 1),
     //    clamp(length(r.x), 0.0, 1.0));
 
 

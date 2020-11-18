@@ -34,7 +34,7 @@ public:
 			L"Textures/Ramp_Dusk.png",
 			L"Textures/Ramp_Night.png",
 			L"Textures/Ramp_End.png",
-			L"Textures/Gradiant.png",
+			L"Textures/Gradiant3.png",
 		};
 
 		const size_t DIFFUSE_START_SLOT = 2;
