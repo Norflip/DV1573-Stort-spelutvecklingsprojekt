@@ -138,7 +138,7 @@ private:
 	dx::XMUINT3 numThreadGroups;
 
 	//Frustums
-	std::vector<Frustum> frustum_CPU_data;
+	
 	std::vector<s_Frustum> frustum_data;
 	ID3D11Buffer* frustums_buffer = 0;
 	ID3D11ShaderResourceView* inFrustums_srv = 0;

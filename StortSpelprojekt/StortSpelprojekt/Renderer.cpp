@@ -820,19 +820,11 @@ void Renderer::InitForwardPlus(CameraComponent* camera, Window* window, Shader& 
 	assert(SUCCEEDED(hr));
 	s_Frustum* someFrustums;
 	someFrustums = (s_Frustum*)resource.pData;
-	frustum_CPU_data.resize(count);
+	
 	for (int i = 0; i < count; i++)
 	{
 		frustum_data[i] = someFrustums[i];
-		frustum_CPU_data[i].planes[0].d= frustum_data[i].planes[0].d;
-		frustum_CPU_data[i].planes[1].d= frustum_data[i].planes[1].d;
-		frustum_CPU_data[i].planes[2].d= frustum_data[i].planes[2].d;
-		frustum_CPU_data[i].planes[3].d= frustum_data[i].planes[3].d;
-
-		frustum_CPU_data[i].planes[0].N = dx::XMLoadFloat3(&frustum_data[i].planes[0].N);
-		frustum_CPU_data[i].planes[1].N = dx::XMLoadFloat3(&frustum_data[i].planes[1].N);
-		frustum_CPU_data[i].planes[2].N = dx::XMLoadFloat3(&frustum_data[i].planes[2].N);
-		frustum_CPU_data[i].planes[3].N = dx::XMLoadFloat3(&frustum_data[i].planes[3].N);
+		
 
 	}
 
