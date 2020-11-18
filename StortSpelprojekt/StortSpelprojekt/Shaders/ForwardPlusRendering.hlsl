@@ -56,8 +56,8 @@ StructuredBuffer<Frustum> in_Frustums : register(t9);
 // Global counter for current index into the light index list.
 // "o_" prefix indicates light lists for opaque geometry while 
 // "t_" prefix indicates light lists for transparent geometry.
-RWStructuredBuffer<int> o_LightIndexCounter : register(u1);
-RWStructuredBuffer<int> t_LightIndexCounter : register(u2);
+RWStructuredBuffer<uint> o_LightIndexCounter : register(u1);
+RWStructuredBuffer<uint> t_LightIndexCounter : register(u2);
 
 // Light index lists and light grids.
 RWStructuredBuffer<uint> o_LightIndexList : register(u3);
@@ -83,42 +83,22 @@ groupshared uint t_LightList[32];
 // Add the light to the visible light list for opaque geometry.
 void o_AppendLight(uint lightIndex)
 {
-	for (uint i = 0; i < o_LightIndexCounter[0]; i++)
-	{
-
-		if (o_LightIndexList[i] == lightIndex)
-		{
-			return;
-		}
-	}
 	uint index; // Index into the visible lights array.
-	InterlockedAdd(o_LightIndexCounter[0], 1, index);
-	if (index < 32)
+	InterlockedAdd(o_LightCount, 1, index);
+	if (index < 1024)
 	{
-		
-		
-
-		o_LightIndexList[index] = lightIndex;
+		o_LightList[index] = lightIndex;
 	}
 }
 
 // Add the light to the visible light list for transparent geometry.
 void t_AppendLight(uint lightIndex)
 {
-	for (uint i = 0; i < o_LightIndexCounter[0]; i++)
-	{
-
-		if (t_LightIndexList[i] == lightIndex)
-		{
-			return;
-		}
-	}
 	uint index; // Index into the visible lights array.
-	InterlockedAdd(t_LightIndexCounter[0], 1, index);
-	if (index < 32)
+	InterlockedAdd(t_LightCount, 1, index);
+	if (index < 1024)
 	{
-		
-		t_LightIndexList[index] = lightIndex;
+		t_LightList[index] = lightIndex;
 	}
 }
 
@@ -130,7 +110,7 @@ void t_AppendLight(uint lightIndex)
 // And "Forward+: A Step Toward Film-Style Shading in Real Time", Takahiro Harada (2012)
 // published in "GPU Pro 4", Chapter 5 (2013) Taylor & Francis Group, LLC.
 
-[numthreads(1, 1, 1)]
+[numthreads(BLOCK_SIZE, BLOCK_SIZE, 1)]
 void main(ComputeShaderInput IN) // light culling everyframe 
 {
 	// Calculate min & max depth in threadgroup / tile.
@@ -169,31 +149,30 @@ void main(ComputeShaderInput IN) // light culling everyframe
 	
 	// Cull lights
 	// Each thread in a group will cull 1 light until all lights have been culled.
-	for (uint i = 0; i < 30; i += 1) //BLOCK_SIZE * BLOCK_SIZE IN.groupIndex
+
+	for (uint i = IN.groupIndex; i < LIGHT_COUNT; i += BLOCK_SIZE * BLOCK_SIZE)
 	{
-		
-		//en grupp per tråd, i = 0 i++ alla ljusen.
-		if (Lights[i].enabled==1)
+
+		if (Lights[i].enabled)
 		{
 			Light light = Lights[i];
-			
+
 			switch (light.type)
 			{
 			case POINT_LIGHT:
 			{
-				
+
 				float3 lightPositionVS = mul(float4(light.lightPosition, 1), view).xyz;
 				Sphere sphere = { lightPositionVS, light.range };
 				if (SphereInsideFrustum(sphere, GroupFrustum, nearClipVS, maxDepthVS))
 				{
 					// Add light to light list for transparent geometry.
 					t_AppendLight(i);
-					o_LightGrid[IN.dispatchThreadID.xy] = uint2(1, 1);
+
 					if (!SphereInsidePlane(sphere, minPlane))
 					{
 						// Add light to light list for opaque geometry.
 						o_AppendLight(i);
-						t_LightGrid[IN.dispatchThreadID.xy] = uint2(1, 1);
 					}
 				}
 			}
@@ -232,50 +211,33 @@ void main(ComputeShaderInput IN) // light culling everyframe
 
 	// Update global memory with visible light buffer.
 	// First update the light grid (only thread 0 in group needs to do this)
-	//if (IN.groupIndex == 0)
-	//{
-	//	// Update light grid for opaque geometry.
-	//	InterlockedAdd(o_LightIndexCounter[0], o_LightCount, o_LightIndexStartOffset);
-	//	o_LightGrid[IN.groupID.xy] = uint2(o_LightIndexStartOffset, o_LightCount);
+	if (IN.groupIndex == 0)
+	{
+		// Update light grid for opaque geometry.
+		InterlockedAdd(o_LightIndexCounter[0], o_LightCount, o_LightIndexStartOffset);
+		o_LightGrid[IN.groupID.xy] = uint2(o_LightIndexStartOffset, o_LightCount);
 
-	//	// Update light grid for transparent geometry.
-	//	InterlockedAdd(t_LightIndexCounter[0], t_LightCount, t_LightIndexStartOffset);
-	//	t_LightGrid[IN.groupID.xy] = uint2(t_LightIndexStartOffset, t_LightCount);
-	//}
+		// Update light grid for transparent geometry.
+		InterlockedAdd(t_LightIndexCounter[0], t_LightCount, t_LightIndexStartOffset);
+		t_LightGrid[IN.groupID.xy] = uint2(t_LightIndexStartOffset, t_LightCount);
+	}
 
 	GroupMemoryBarrierWithGroupSync();
 
 	// Now update the light index list (all threads).
 	// For opaque geometry.
-	//for (i = IN.groupIndex; i < o_LightCount; i += BLOCK_SIZE * BLOCK_SIZE)
-	//{
-	//	o_LightIndexList[o_LightIndexStartOffset + i] = o_LightList[i];
-	//}
-	//// For transparent geometry.
-	//for (i = IN.groupIndex; i < t_LightCount; i += BLOCK_SIZE * BLOCK_SIZE)
-	//{
-	//	t_LightIndexList[t_LightIndexStartOffset + i] = t_LightList[i];
-	//}
+	for (i = IN.groupIndex; i < o_LightCount; i += BLOCK_SIZE * BLOCK_SIZE)
+	{
+		o_LightIndexList[o_LightIndexStartOffset + i] = o_LightList[i];
+	}
+	// For transparent geometry.
+	for (i = IN.groupIndex; i < t_LightCount; i += BLOCK_SIZE * BLOCK_SIZE)
+	{
+		t_LightIndexList[t_LightIndexStartOffset + i] = t_LightList[i];
+	}
 
-	//// Update the debug texture output.
-	//if (IN.groupThreadID.x == 0 || IN.groupThreadID.y == 0)
-	//{
-	//	DebugTexture[texCoord] = float4(0, 0, 0, 0.9f);
-	//}
-	//else if (IN.groupThreadID.x == 1 || IN.groupThreadID.y == 1)
-	//{
-	//	DebugTexture[texCoord] = float4(1, 1, 1, 0.5f);
-	//}
-	//else if (o_LightCount > 0)
-	//{
-	//	float normalizedLightCount = o_LightCount / 50.0f;
-	//	float4 lightCountHeatMapColor = LightCountHeatMap.SampleLevel(LinearClampSampler, float2(normalizedLightCount, 0), 0);
-	//	DebugTexture[texCoord] = lightCountHeatMapColor;
-	//}
-	//else
-	//{
-	//	DebugTexture[texCoord] = float4(0, 0, 0, 1);
-	//}
+
+	
 }
 
 

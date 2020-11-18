@@ -34,7 +34,8 @@ struct Light
     float paddingThree;
 };
 StructuredBuffer<Light> Lights : register(t8); 
-StructuredBuffer<int> lightList : register(t10);
+StructuredBuffer<uint> LightIndexList : register(t10);
+Texture2D<uint2> LightGrid : register(t11);
 cbuffer cb_Object : register(b0)
 {
     row_major matrix mvp;

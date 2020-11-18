@@ -304,6 +304,7 @@ void Renderer::RenderFrame(CameraComponent* camera, float time, RenderTexture& t
 
 	context->OMSetDepthStencilState(dss, 0);
 	DXHelper::BindStructuredBuffer(context, 10, ShaderBindFlag::PIXEL, &o_LightIndexList_srv);
+	context->PSSetShaderResources(11, 1, &o_LightGrid_texSRV);
 	SetCullBack(true);
 	DrawQueueToTarget(opaqueItemQueue, camera);
 	DShape::Instance().m_Draw(camera->GetViewMatrix() * camera->GetProjectionMatrix(), context);
@@ -313,6 +314,7 @@ void Renderer::RenderFrame(CameraComponent* camera, float time, RenderTexture& t
 	
 	opaqueBatches.clear();
 	DXHelper::BindStructuredBuffer(context, 10, ShaderBindFlag::PIXEL, &t_LightIndexList_srv);
+	context->PSSetShaderResources(11, 1, &t_LightGrid_texSRV);
 	SetCullBack(false);
 	DrawQueueToTarget(transparentItemQueue, camera);
 	for (auto i : transparentBatches)
@@ -884,8 +886,8 @@ void Renderer::InitForwardPlus(CameraComponent* camera, Window* window, Shader& 
 	t_LightIndexList.resize(32); //lightcount??
 	for (int index = 0; index < 32; index++)
 	{
-		o_LightIndexList[index] = -1;
-		t_LightIndexList[index] = -1;
+		o_LightIndexList[index] = 0;
+		t_LightIndexList[index] = 0;
 	}
 	DXHelper::CreateStructuredBuffer(device, &o_LightIndexList_uavbuffer, o_LightIndexList.data(), sizeof(UINT), o_LightIndexList.size(), &o_LightIndexList_uav, &o_LightIndexList_srv);
 	

@@ -29,13 +29,16 @@ float4 main(VS_OUTPUT input) : SV_TARGET
 
 	finalColor += CalculateDirectionalLight(sunDirection, normalized, viewDirection);
 
-	for (int i = 0; i < 32; i++)
+	uint2 tileIndex = uint2(floor(input.position.xy / 32));
+
+	uint startOffset = LightGrid[tileIndex].x;
+	uint lightCount = LightGrid[tileIndex].y;
+
+	for (int i = 0; i < 30; i++)
 	{
-		if (lightList[i] == -1)
-		{
-			break;
-		}
-		finalColor += CalculatePointLight(Lights[lightList[i]], normalized, input.worldPosition, viewDirection);
+		uint lightIndex = LightIndexList[startOffset + i];
+
+		finalColor += CalculatePointLight(Lights[lightIndex], normalized, input.worldPosition, viewDirection);
 
 	}
 
