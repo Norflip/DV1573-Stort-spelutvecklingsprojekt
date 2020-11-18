@@ -206,6 +206,8 @@ void GameScene::InitializeObjects()
 	puzzleFly->GetComponent<ParticleSystemComponent>()->InitializeParticles(renderer->GetDevice(), L"Textures/fire1.png");
 	AddObject(puzzleFly);
 
+	Shader* fireShader = resources->GetShaderResource("fireShader");
+
 	/*FrogPuzzle* frogpuzzle = new FrogPuzzle(resources);
 	frogpuzzle*/
 }

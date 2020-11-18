@@ -1,4 +1,4 @@
-Shaders: 12
+Shaders: 13
 
 Name: default
 
@@ -21,6 +21,11 @@ Name: particleShader
 Input: color
 VS: Shaders/Particles_vs.hlsl
 PS: Shaders/Particles_ps.hlsl
+
+Name: fireShader
+Input: texture
+VS: Shaders/Fire_vs.hlsl
+PS: Shaders/Fire_ps.hlsl
 
 Name: terrainShader
 VS: Shaders/Terrain_vs.hlsl

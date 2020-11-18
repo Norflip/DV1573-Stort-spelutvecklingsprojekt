@@ -334,6 +334,10 @@ void ResourceManager::ReadShaders(ID3D11Device* device)
 					{
 						tempShader->SetInputLayoutStructure(3, tempShader->DEFAULT_INPUT_LAYOUTCOLOR);
 					}
+					else if (input == "texture")
+					{
+						tempShader->SetInputLayoutStructure(3, tempShader->DEFAULT_INPUT_LAYOUTTEXTURE);
+					}
 					
 					// Compile the shader
 					tempShader->SetVertexShader(vertexPath);

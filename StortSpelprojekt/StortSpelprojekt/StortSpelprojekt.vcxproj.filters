@@ -288,6 +288,9 @@
     </ClCompile>
     <ClCompile Include="PuzzleManager.cpp" />
     <ClCompile Include="FrogPuzzle.cpp" />
+    <ClCompile Include="FireTextureComponent.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="ObjectSpawner.h">
@@ -582,6 +585,9 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="FrogPuzzle.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="FireTextureComponent.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>
