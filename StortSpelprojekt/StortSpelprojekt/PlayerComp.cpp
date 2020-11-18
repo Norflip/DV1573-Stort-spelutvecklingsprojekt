@@ -20,7 +20,7 @@
 //	gg = false;
 //}
 
-PlayerComp::PlayerComp(Renderer* renderer, CameraComponent* camComp, Physics* physics, GUIManager* guimanager, float health, float movementSpeed, float radius, float attack, float attackSpeed)
+PlayerComp::PlayerComp(Renderer* renderer, CameraComponent* camComp, Object* house, Physics* physics, GUIManager* guimanager, float health, float movementSpeed, float radius, float attack, float attackSpeed)
 {
 	//attackTimer.Start();
 	this->guiMan = guimanager;
@@ -39,13 +39,16 @@ PlayerComp::PlayerComp(Renderer* renderer, CameraComponent* camComp, Physics* ph
 	this->renderer = renderer;
 	this->physics = physics;
 	this->throwStrength = 50;
-	this->holdAngle = dx::SimpleMath::Vector3(0.3f, -0.4f, 0.8f);
+	this->hpLossDist = 40;
+	this->maxDist = 90;
+	this->holdAngle = dx::SimpleMath::Vector3( 0.3f, -0.4f, 0.8f );
+	this->house = house;
+	this->hpLossPerDistance = 0.0001f;
 	Reset();
 
 	this->fuelDippingBar = static_cast<GUISprite*>(guiMan->GetGUIObject("fuelDippingBar"));
 	this->foodDippingBar = static_cast<GUISprite*>(guiMan->GetGUIObject("foodDippingBar"));
 	this->healthDippingBar = static_cast<GUISprite*>(guiMan->GetGUIObject("healthDippingBar"));
-
 	this->fuelBar = static_cast<GUISprite*>(guiMan->GetGUIObject("fuelBar"));
 	this->foodBar = static_cast<GUISprite*>(guiMan->GetGUIObject("foodBar"));
 	this->healthBar = static_cast<GUISprite*>(guiMan->GetGUIObject("healthBar"));
@@ -72,9 +75,6 @@ void PlayerComp::Update(const float& deltaTime)
 {
 	RayCast(deltaTime);
 
-
-
-
 	float frameTime = FCAST(GameClock::Instance().GetFrameTime() / 1000.0);
 
 	//temp fix for wierd clock start at 
@@ -84,11 +84,11 @@ void PlayerComp::Update(const float& deltaTime)
 		fuel -= frameTime * fuelBurnPerMeter;
 		// loose food
 		food -= frameTime * foodLossPerSecond;
-#if !immortal
-		// make better later
-		if ((fuel < 0 || health <= 0))
-			Engine::Instance->SwitchScene(SceneIndex::GAME_OVER);
-#endif
+
+		if(!IMMORTAL)
+			if ((health <= 0))
+				Engine::Instance->SwitchScene(SceneIndex::GAME_OVER);
+
 		if (food < 0)
 			foodEmpty = true;
 
@@ -115,11 +115,27 @@ void PlayerComp::Update(const float& deltaTime)
 		HoldObject();
 		DropObject();
 	}
+
+
+}
+
+void PlayerComp::FixedUpdate(const float& fixedDeltaTime)
+{
+	sm::Vector3 housePos = house->GetTransform().GetPosition();
+	sm::Vector3 playerPos = this->GetOwner()->GetTransform().GetPosition();
+	float distance = playerPos.Distance(playerPos, housePos);
+	//std::cout << distance << std::endl;
+	// around 30-50
+	if (distance > hpLossDist)
+		health -= distance * hpLossPerDistance;
+
+	// around 90
+	if (distance > maxDist)
+		health = 0;
 }
 
 void PlayerComp::HoldObject()
 {
-
 	inverseViewMatrix = dx::XMMatrixInverse(nullptr, cam->GetViewMatrix());
 	wepOffTrans.Translation(holdAngle);
 	wepOffRot = wepOffRot.CreateFromAxisAngle(up, dx::XMConvertToRadians(-40.0f));
@@ -131,7 +147,6 @@ void PlayerComp::HoldObject()
 	holding->GetTransform().SetPosition(weaponPos);
 	holding->GetTransform().SetRotation(weaponRot);
 	holding->GetTransform().SetScale(weaponScale);
-
 }
 
 void PlayerComp::DropObject()
@@ -179,7 +194,6 @@ float PlayerComp::ReverseAndClamp(float inputValue)
 
 void PlayerComp::RayCast(const float& deltaTime)
 {
-
 	Ray ray = cam->MouseToRay(p.x, p.y);
 
 	if (KEY_DOWN(E))
@@ -211,12 +225,10 @@ void PlayerComp::RayCast(const float& deltaTime)
 				if (hit.object->HasComponent<ParticleSystemComponent>())
 					if (hit.object->GetComponent<ParticleSystemComponent>()->GetActive())
 						hit.object->GetComponent<ParticleSystemComponent>()->SetActive(false);
-
-
+				
 				hit.object->GetComponent<PickupComponent>()->SetActive(false);
 				RigidBodyComponent* rbComp = hit.object->GetComponent<RigidBodyComponent>();
-				rbComp->Release();
-
+				rbComp->Release();				
 			}
 		}
 
@@ -275,9 +287,7 @@ void PlayerComp::RayCast(const float& deltaTime)
 
 		else if (physics->RaytestSingle(ray, 5.0f, hit, FilterGroups::PROPS))
 		{
-
-			AudioMaster::Instance().PlaySoundEvent("choptree");
-
+			AudioMaster::Instance().PlaySoundEvent("choptree");			
 		}
 	}
 

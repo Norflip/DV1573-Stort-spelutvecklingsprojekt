@@ -80,13 +80,11 @@ void GameScene::InitializeObjects()
 	housesLegsObject->AddComponent<SkeletonMeshComponent>(legsComponent);
 
 	Transform::SetParentChild(houseBaseObject->GetTransform(), housesLegsObject->GetTransform());
-
 	Transform::SetParentChild(houseBaseObject->GetTransform(), houseDoorObject->GetTransform());
 	houseDoorObject->GetTransform().SetPosition({ 0, 0, 0 });
 
 	NodeWalkerComp* nodeWalker = houseBaseObject->AddComponent<NodeWalkerComp>();
 	nodeWalker->InitAnimation();
-
 	AddObject(houseBaseObject);
 
 
@@ -106,7 +104,7 @@ void GameScene::InitializeObjects()
 	playerObject->AddComponent<CapsuleColliderComponent>(0.5f, 1.5f, zero);
 	playerObject->AddComponent<RigidBodyComponent>(50.f, FilterGroups::PLAYER, (FilterGroups::EVERYTHING), BodyType::DYNAMIC, true);
 
-	playerObject->AddComponent<PlayerComp>(renderer, camera, Engine::Instance->GetPhysics(), guiManager, 100.f, 2.f, 20.f, 50.f, 3.f);
+	playerObject->AddComponent<PlayerComp>(renderer, camera, house, Engine::Instance->GetPhysics(), guiManager, 100.f, 2.f, 20.f, 50.f, 3.f);
 	playerObject->AddComponent<ControllerComp>(cameraObject, houseBaseObject); 
 
 	AddObject(cameraObject, playerObject);
@@ -120,12 +118,16 @@ void GameScene::InitializeObjects()
 
 	AddObject(testPointLight, playerObject);
 
+	/* For fuel info from playercomp */
+	nodeWalker->GetPlayerInfo(playerObject->GetComponent<PlayerComp>());
+
 	world.Initialize(root, resources, renderer);
 	
 	
 
 	/* PICKUP STUFF DONT DELETE THESEEE */
 	Object* healthkitObject = resources->AssembleObject("HealthKit", "HealthKitMaterial");
+	healthkitObject->AddFlag(ObjectFlag::DEFAULT);
 	healthkitObject->GetComponent<MeshComponent>()->SetBatchable(true);
 	healthkitObject->GetTransform().SetPosition({ 23,2,50 });
 	healthkitObject->AddComponent<BoxColliderComponent>(dx::XMFLOAT3{ 0.5f, 0.5f, 0.5f }, dx::XMFLOAT3{ 0, 0, 0 });
@@ -135,6 +137,7 @@ void GameScene::InitializeObjects()
 
 	///* Fuel pickup stuff temporary */
 	Object* fuelCanObject = resources->AssembleObject("FuelCanGreen", "FuelCanGreenMaterial");
+	fuelCanObject->AddFlag(ObjectFlag::DEFAULT);
 	fuelCanObject->GetComponent<MeshComponent>()->SetBatchable(true);
 	fuelCanObject->GetTransform().SetPosition({ 22,2,52 });
 	fuelCanObject->AddComponent<BoxColliderComponent>(dx::XMFLOAT3{ 0.3f, 0.3f, 0.3f }, dx::XMFLOAT3{ 0, 0, 0 });
@@ -145,6 +148,7 @@ void GameScene::InitializeObjects()
 	///* Banana pickup stuff temporary */
 	Shader* particleShader = resources->GetShaderResource("particleShader");
 	Object* beansObject = resources->AssembleObject("Soup", "SoupMaterial");
+	beansObject->AddFlag(ObjectFlag::DEFAULT);
 	beansObject->GetComponent<MeshComponent>()->SetBatchable(true);
 	beansObject->GetTransform().SetPosition({22, 2.0f, 53 });
 	beansObject->AddComponent<BoxColliderComponent>(dx::XMFLOAT3{ 0.5f, 0.5f, 0.5f }, dx::XMFLOAT3{ 0, 0, 0 });
@@ -153,6 +157,9 @@ void GameScene::InitializeObjects()
 
 	beansObject->AddComponent<ParticleSystemComponent>(renderer, particleShader);
 	beansObject->GetComponent<ParticleSystemComponent>()->InitializeParticles(renderer->GetDevice(), L"Textures/starstar.png");
+	AddObject(beansObject);		
+	//Has to be made in end of objects in order to use them
+
 	AddObject(beansObject);
 
 	//Player Arms
@@ -172,7 +179,7 @@ void GameScene::InitializeObjects()
 	
 
 	/* Test sign */	
-	Object* testObject = resources->AssembleObject("LeftDirectionSign", "LeftDirectionSignMaterial");
+	/*Object* testObject = resources->AssembleObject("LeftDirectionSign", "LeftDirectionSignMaterial");
 	testObject->GetTransform().SetPosition({ 22, 0.5f, 50 });
 	AddObject(testObject);
 
@@ -189,6 +196,33 @@ void GameScene::InitializeObjects()
 	enemyManager->Initialize(player, player->GetComponent<PlayerComp>(), root);
 	enemyManager->InitBaseEnemy();
 	enemyManager->InitChargerEnemy();
+	AddObject(testObject2);*/
+
+
+	/* PuzzleModels */
+	//Object* puzzleFrog = resources->AssembleObject("PuzzleFrogStatue", "PuzzleFrogStatueMaterial", ObjectFlag::DEFAULT);
+	////puzzleManager = new PuzzleManager(resources, player, house);
+	//puzzleFrog->GetTransform().SetPosition({ 26, 1.5f, 50 });
+	//puzzleFrog->AddComponent<BoxColliderComponent>(dx::XMFLOAT3{ 2.0f, 2.0f, 2.0f }, dx::XMFLOAT3{ 0, 0, 0 });
+	//puzzleFrog->AddComponent<RigidBodyComponent>(0.0f, FilterGroups::PROPS, FilterGroups::EVERYTHING, BodyType::DYNAMIC, true);
+	///*puzzleFrog->AddComponent<BoxColliderComponent>(dx::XMFLOAT3{ 2.0f, 2.0f, 2.0f }, dx::XMFLOAT3{ 0, 0, 0 });
+	//puzzleFrog->AddComponent<RigidBodyComponent>(50.f, FilterGroups::PROPS, (FilterGroups::EVERYTHING), BodyType::DYNAMIC, true);*/
+	//AddObject(puzzleFrog);
+	
+	Object* puzzleFly = resources->AssembleObject("PuzzleFlyStatue", "PuzzleFlyStatueMaterial", ObjectFlag::DEFAULT | ObjectFlag::NO_CULL);
+	puzzleFly->GetTransform().SetPosition({ 28, 1.3f, 50 });
+	puzzleFly->AddComponent<BoxColliderComponent>(dx::XMFLOAT3{ 1.0f, 1.0f, 1.0f }, dx::XMFLOAT3{ 0, 0, 0 });
+	puzzleFly->AddComponent<RigidBodyComponent>(0.0f, FilterGroups::HOLDABLE, FilterGroups::EVERYTHING, BodyType::DYNAMIC, true);
+	puzzleFly->AddComponent<ParticleSystemComponent>(renderer, particleShader);
+	puzzleFly->GetComponent<ParticleSystemComponent>()->SetMaxParticles(50);
+	puzzleFly->GetComponent<ParticleSystemComponent>()->SetParticleSize(0.1f);
+	puzzleFly->GetComponent<ParticleSystemComponent>()->InitializeParticles(renderer->GetDevice(), L"Textures/fire1.png");
+	AddObject(puzzleFly);
+
+	/*FrogPuzzle* frogpuzzle = new FrogPuzzle(resources);
+	frogpuzzle*/
+	GUICompass* compass = new GUICompass(*renderer, window, house, player);
+	guiManager->AddGUIObject(compass, "compass");
 }
 
 void GameScene::InitializeGUI()
@@ -223,9 +257,9 @@ void GameScene::InitializeGUI()
 	GUISprite* healthSprite = new GUISprite(*renderer, "Textures/HealthIcon.png", 10, 10, 0, DrawDirection::BottomRight, ClickFunction::NotClickable);
 
 	//COMPASS
-	GUICompass* compass = new GUICompass(*renderer, window);
+
 	//FONTS
-	GUIFont* fpsDisplay = new GUIFont(*renderer, "fps", windowWidth / 2, 50);
+	GUIFont* fpsDisplay = new GUIFont(*renderer, "fps",30, 30);
 	//GUIFont* healthDisplay = new GUIFont(*renderer, "playerHealth", 50, 100);
 	//GUIFont* enemyDisplay = new GUIFont(*renderer, "enemyHealth", 50, 150);
 
@@ -234,10 +268,12 @@ void GameScene::InitializeGUI()
 	//GUISprite* crosshair = new GUISprite(*renderer, "Textures/Crosshair.png", (windowWidth / 2) - 25, (windowHeight / 2) - 25, 0, DrawDirection::BottomLeft, ClickFunction::NotClickable);
 
 	// INSERTIONS
-	guiManager = new GUIManager(renderer, 100);
+	guiManager = new GUIManager(renderer, 0);
 	guiManager->AddGUIObject(fpsDisplay, "fps");
 	//guiManager->AddGUIObject(healthDisplay, "playerHealth");
 	//guiManager->AddGUIObject(enemyDisplay, "enemyHealth");
+	//COMPASS
+
 
 	//BASE OF EQUIPMENT
 	guiManager->AddGUIObject(equimpmentSprite1, "equimpmentSprite1");

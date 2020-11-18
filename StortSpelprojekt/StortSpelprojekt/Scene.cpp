@@ -33,6 +33,11 @@ void Scene::SetDepedencies(ResourceManager* resources, Renderer* renderer, Physi
 
 void Scene::Update(const float& deltaTime)
 {
+
+
+
+
+	
 	while (!removeQueue.empty())
 	{
 		Object* obj = removeQueue.front();
@@ -64,7 +69,7 @@ void Scene::Update(const float& deltaTime)
 
 void Scene::FixedUpdate(const float& fixedDeltaTime)
 {
-	//root->FixedUpdate(fixedDeltaTime);
+	root->FixedUpdate(fixedDeltaTime);
 	physics->FixedUpdate(fixedDeltaTime);
 }
 
@@ -121,6 +126,25 @@ void Scene::PrintSceneHierarchy(Object* object, size_t level) const
 		{
 			PrintSceneHierarchy(children[i]->GetOwner(), level + 1);
 		}
+	}
+}
+
+void Scene::AnimateIcon()
+{
+	//LPCWSTR icon = L"MAINICON2";
+	currentframe++;
+	if (currentframe > 35)
+		currentframe = 1;
+
+	int frameToDraw = (currentframe / 5)+1;
+	if (lastFrame != frameToDraw)
+	{
+		lastFrame = frameToDraw;
+		std::string narrow_string("test");
+		narrow_string.append(std::to_string(frameToDraw));
+		std::wstring wide_string = std::wstring(narrow_string.begin(), narrow_string.end());
+		const wchar_t* iconText = wide_string.c_str();
+		SendMessage(window->GetHWND(), WM_SETICON, ICON_SMALL, (LPARAM)LoadIcon(window->GetHINSTANCE(), iconText));
 	}
 }
 

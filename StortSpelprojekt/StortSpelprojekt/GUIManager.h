@@ -1,7 +1,7 @@
 #pragma once
 #include <SpriteBatch.h>
 #include <SpriteFont.h>
-
+#include <CommonStates.h>
 #include "DirectXHelpers.h"
 #include "Renderer.h"
 #include "RenderPass.h"
@@ -25,6 +25,7 @@ ALIGN16
 class GUIObject
 {
 public:
+	
 	GUIObject() {};
 	virtual ~GUIObject() {};
 	virtual void Draw(DirectX::SpriteBatch*) = 0;
@@ -64,6 +65,8 @@ public:
 	void UpdateAll();
 
 private:
+
+	std::unique_ptr<DirectX::CommonStates> m_states;
 	GUICompass* compass;
 	ID3D11RasterizerState* testState;
 	ID3D11SamplerState* samplerState;

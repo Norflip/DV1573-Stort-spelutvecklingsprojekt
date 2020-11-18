@@ -1,4 +1,4 @@
-Objects: 33
+Objects: 35
 
 Charger: Models/Enemies/Charger_Model.ZWEB
 Shader: skeletonShader
@@ -125,4 +125,10 @@ LeftDirectionSign: Models/Props/LeftDirectionSign.ZWEB
 Shader: defaultShader
 
 RightDirectionSign: Models/Props/RightDirectionSign.ZWEB
+Shader: defaultShader
+
+PuzzleFlyStatue: Models/Puzzles/Puzzle_Fly_Statue.ZWEB
+Shader: defaultShader
+
+PuzzleFrogStatue: Models/Puzzles/Puzzle_Frog_statue.ZWEB
 Shader: defaultShader
