@@ -112,7 +112,7 @@ float4 main(PixelInputType input) : SV_TARGET
     float4 depthSample = depthTexture.Sample(defaultSampleType, input.uv);
 
     depthSample.x = 1.f - depthSample.x;
-    depthSample.x = (far-100) * depthSample.x;
+    depthSample.x = (far) * depthSample.x;
     // POW POW Looks good at 3.0 with 2 coil
     depthSample.x = abs(depthSample.x);
     depthSample.x = pow(depthSample.x, 3.0f);
@@ -128,7 +128,7 @@ float4 main(PixelInputType input) : SV_TARGET
    //float4 fogColor = float4(0.1f, 0.1f, 0.4f, 1.0f);
     float4 fogColor = float4(1, 1, 1, 1.0f);
 
-    fogColor = float4(((f * f * f + .6 * f * f + .5 * f) * color).xyz, 1.0f);
+    fogColor = float4((((f * f * f + .6 * f * f + .5 * f) * color)+color).xyz, 1.0f);
 
     //fogColor = (f * f * f + .6 * f * f + .5 * f) * fogColor;
     //diffuseColor = diffuseColor + (background*0.3f);
