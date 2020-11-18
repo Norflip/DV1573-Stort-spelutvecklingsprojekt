@@ -7,7 +7,7 @@
 #include "math.h"
 namespace dx = DirectX;
 constexpr float CLAMP_X = 90.f * Math::ToRadians;
-constexpr float CLAMP_Y = 360.f * Math::ToRadians;
+constexpr float CLAMP_Y = 180.f * Math::ToRadians;
 
 
 constexpr float WALK_FOV = 50.f;
@@ -65,6 +65,7 @@ private:
 	dx::XMFLOAT3 cameraEuler;
 	dx::XMFLOAT3 outsidePos;
 
+	dx::XMFLOAT3 cameraEuler2;
 	Object* cameraObject;
 	NodeWalkerComp* houseWalkComp;
 	RigidBodyComponent* rbComp;
@@ -84,6 +85,9 @@ private:
 			this->velocityTimer = 0.f;
 		}
 	};
+protected:
+	dx::XMVECTOR groundRotation2;
+	dx::XMVECTOR groundRotation;
 public:
 	ControllerComp(Object* cameraObject, Object* houseObject);
 	virtual ~ControllerComp();

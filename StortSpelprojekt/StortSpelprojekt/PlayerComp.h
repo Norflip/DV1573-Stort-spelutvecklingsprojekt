@@ -6,6 +6,7 @@
 #include "Scene.h"
 #include "AudioMaster.h"
 #include "WeaponComponent.h"
+
 class EnemyStatsComp;
 
 class PlayerComp :
@@ -15,10 +16,10 @@ public:
 	//enum NEXT_SCENE { INTRO, LOSE, GAME, WIN };
 
 	//PlayerComp();
-	PlayerComp(Renderer* renderer, CameraComponent* camComp, Physics* physics, GUIManager* guimanager, float health, float movementSpeed, float radius, float attack, float attackSpeed);
+	PlayerComp(Renderer* renderer, CameraComponent* camComp, Object* house, Physics* physics, GUIManager* guimanager, float health, float movementSpeed, float radius, float attack, float attackSpeed);
 	virtual ~PlayerComp();
 	void Update(const float& deltaTime) override;
-
+	void FixedUpdate(const float& fixedDeltaTime) override;
 	float GetHealth() const { return health; }
 	float GetSpeed() const { return movementSpeed; }
 	float GetAttack() const { return attack; }
@@ -44,14 +45,15 @@ public:
 	void SetSprintSpeed(float SprintSpeed) { this->crouchSpeed = SprintSpeed; }
 	void SetFuel(float fuel) { this->fuel = fuel; }
 	void SetFood(float food) { this->fuel = food; }
-
+	CameraComponent* GetCamera(){ return cam; };
+	
 	void SetguiMan(GUIManager* guiMan) { this->guiMan = guiMan; }
 	void InsertWeapon(WeaponComponent* weapon, std::string name);
 	void SetInteriorPosition(float x, float y, float z);
 	dx::XMFLOAT3 GetInteriorPosition() { return this->interiorPosition; }
 
 private:
-	//det här skriver en kommentar till hold objekt
+	//det hï¿½r skriver en kommentar till hold objekt
 	void HoldObject();
 	void DropObject();
 	float health, attack, attackSpeed, fuel, food;
@@ -68,6 +70,7 @@ private:
 	float rayDistance;	
 	Object* currentWeapon;
 	Object* holding;
+	Object* house;
 	RayHit hit;
 	Physics* physics;
 	CameraComponent* cam;
@@ -76,6 +79,7 @@ private:
 	bool foodEmpty;
 	bool gg;
 	float throwStrength;
+	float hpLossDist, maxDist, hpLossPerDistance;
 	float ReverseAndClamp(float inputValue);
 	float test = 0;
 	void RayCast(const float& deltaTime);

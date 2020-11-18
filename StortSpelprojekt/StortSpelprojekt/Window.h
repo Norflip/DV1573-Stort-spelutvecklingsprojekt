@@ -30,6 +30,7 @@ public:
 	float GetWindowAspect() const { return static_cast<float>(this->width) / static_cast<float>(this->height); }
 
 	HWND GetHWND() const { return this->hwnd; }
+	HINSTANCE GetHINSTANCE() { return this->hInstance; }
 	static LRESULT CALLBACK WindowProc(HWND hwnd, UINT umsg, WPARAM wParam, LPARAM lParam);
 
 private:

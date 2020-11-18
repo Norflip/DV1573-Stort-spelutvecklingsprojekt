@@ -157,8 +157,8 @@ void IntroScene::OnDeactivate()
 
 void IntroScene::Update(const float& deltaTime)
 {
-	Scene::Update(deltaTime);
 
+	Scene::Update(deltaTime);
 	//Cleanup Later
 	static_cast<GUIFont*>(guiManager->GetGUIObject("fps"))->SetString(std::to_string((int)GameClock::Instance().GetFramesPerSecond()));
 
@@ -246,5 +246,6 @@ void IntroScene::Update(const float& deltaTime)
 
 void IntroScene::FixedUpdate(const float& fixedDeltaTime)
 {
-	//Scene::FixedUpdate(fixedDeltaTime);
+	AnimateIcon();
+	Scene::FixedUpdate(fixedDeltaTime);
 }

@@ -35,8 +35,15 @@ GUISprite::GUISprite(Renderer& renderer , std::string path, float xPos, float yP
 	HRESULT result;
 	std::wstring wsConvert(filePath.begin(), filePath.end());
 	spriteBatch = std::make_unique<dx::SpriteBatch>(renderer.GetContext());
-	
-	result = DirectX::CreateWICTextureFromFile(renderer.GetDevice(), wsConvert.c_str(), &res, &SRV);
+
+	// for testing purposes
+	std::size_t found = path.find("Compass.dds");
+	if (found != std::string::npos)
+		result = DirectX::CreateDDSTextureFromFile(renderer.GetDevice(), wsConvert.c_str(), &res, &SRV);
+	else
+		result = DirectX::CreateWICTextureFromFile(renderer.GetDevice(), wsConvert.c_str(), &res, &SRV);
+		
+				//DirectX::SaveWICTextureToFile(renderer.GetContext(),res.Get(),GUID_ContainerFormatPng, L"SCREENSHOT.png");
 
 	assert(SUCCEEDED(result));
 	result = res.As(&tex);
@@ -98,6 +105,11 @@ void GUISprite::SetWICSprite(ID3D11Device* device,std::string spriteFile)
 	assert(SUCCEEDED(result));
 }
 
+void GUISprite::SetColor(sm::Vector4 color)
+{
+	this->baseColor = color;
+}
+
 
 void GUISprite::SetActiveColor(dx::XMVECTOR vector)
 {
@@ -136,6 +148,13 @@ void GUISprite::SetScaleBars(float yValue)
 		yScale = 1.0f;
 
 	this->scale = dx::XMVectorSet(this->xScale, this->yScale, 0, 0);
+}
+
+void GUISprite::Move(POINTFLOAT moveDir)
+{
+	//Fix this after meeting
+	this->position= dx::XMVectorSet(this->xPos+moveDir.x, this->yPos + moveDir.y, 0, 0);
+	this->yPos = yPos + moveDir.y;
 }
 
 bool GUISprite::IsClicked()
@@ -200,6 +219,12 @@ void GUISprite::SetPos(float xPos, float yPos, DrawDirection dir)
 		this->yPos = renderer->GetOutputWindow()->GetHeight() - height * 2 - yPos;
 		this->relativeXPos = renderer->GetOutputWindow()->GetWidth() - xPos - width;
 		this->relativeYPos = renderer->GetOutputWindow()->GetHeight() - yPos - height;
+		break;
+	case Center:
+		this->xPos = renderer->GetOutputWindow()->GetWidth() / 2 - width /2 - xPos;
+		this->yPos = yPos;
+		this->relativeXPos = renderer->GetOutputWindow()->GetWidth() / 2 - xPos - width/2;
+		this->relativeYPos = yPos;	
 		break;
 	default:
 		this->xPos = xPos;

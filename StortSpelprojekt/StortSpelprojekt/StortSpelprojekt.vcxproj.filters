@@ -286,6 +286,8 @@
     <ClCompile Include="PlayerAnimHandlerComp.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="PuzzleManager.cpp" />
+    <ClCompile Include="FrogPuzzle.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="ObjectSpawner.h">
@@ -576,6 +578,12 @@
     <ClInclude Include="PlayerAnimHandlerComp.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="PuzzleManager.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="FrogPuzzle.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <Filter Include="Header Files">
@@ -601,5 +609,10 @@
     <None Include="cpp.hint">
       <Filter>Source Files</Filter>
     </None>
+  </ItemGroup>
+  <ItemGroup>
+    <ResourceCompile Include="icons.rc">
+      <Filter>Resource Files</Filter>
+    </ResourceCompile>
   </ItemGroup>
 </Project>
