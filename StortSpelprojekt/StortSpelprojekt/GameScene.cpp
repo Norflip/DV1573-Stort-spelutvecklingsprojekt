@@ -303,6 +303,21 @@ void GameScene::InitializeGUI()
 
 void GameScene::InitializeLights()
 {
+	Object* dLight = new Object("dLight");
+
+	dx::XMFLOAT3 lightTranslation = dx::XMFLOAT3(0.0f, 0.0f, 0.0f);
+	dLight->GetTransform().SetPosition(dx::XMLoadFloat3(&lightTranslation));
+	PointLightComponent* dLightC = dLight->AddComponent<PointLightComponent>(2, dx::XMFLOAT4(0.3f, 0.3f, 0.3f, 1.0f), 7.f);
+	dLightC->SetEnabled(true);
+	dLightC->SetIntensity(0.05f);
+	dx::XMFLOAT3 sunDirection;
+	dx::XMStoreFloat3(&sunDirection, dx::XMVector3Normalize(dx::XMVectorSet(0, -1, 1, 0)));
+	dLightC->SetDirection(sunDirection);
+	AddObject(dLight);
+	
+	
+	//data.sunIntensity = 0.1f;
+
 	//TEST POINT LIGHTS____________________________________________________________________________________________________________________
 	/*Object* testPointLight = new Object("testPointLight");
 	dx::XMFLOAT3 lightTranslation = dx::XMFLOAT3(2.0f, 0.0f, 3.0f);

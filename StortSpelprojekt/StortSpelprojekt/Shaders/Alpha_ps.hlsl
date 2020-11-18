@@ -21,18 +21,36 @@ float4 main(VS_OUTPUT input) : SV_TARGET
 
 	float4 finalColor = float4(0.0f, 0.0f, 0.0f, 0.0);
 
-	finalColor += CalculateDirectionalLight(sunDirection, normalized, viewDirection);
+	
 	uint2 tileIndex = uint2(floor(input.position.xy / 32));
 
 	uint startOffset = LightGrid[tileIndex].x;
 	uint lightCount = LightGrid[tileIndex].y;
 
-	for (int i = 0; i < 30; i++)
+	for (uint i = 0; i < lightCount; i++)
 	{
 		uint lightIndex = LightIndexList[startOffset + i];
-
-		finalColor += CalculatePointLight(Lights[lightIndex], normalized, input.worldPosition, viewDirection);
-		
+		Light light = Lights[lightIndex];
+		switch (light.type)
+		{
+		case DIRECTIONAL_LIGHT:
+		{
+			result = CalculateDirectionalLight(light, normalized, viewDirection);
+			
+		}
+		break;
+		case POINT_LIGHT:
+		{
+			result = CalculatePointLight(light, normalized, input.worldPosition, viewDirection);
+		}
+		break;
+		case SPOT_LIGHT:
+		{
+			result = CalculateSpotLight(light, normalized, input.worldPosition, viewDirection);
+		}
+		break;
+		}
+		finalColor += result;
 	}
 
 	textureColor.a = alphaMap.Sample(defaultSampleType, input.uv).r;

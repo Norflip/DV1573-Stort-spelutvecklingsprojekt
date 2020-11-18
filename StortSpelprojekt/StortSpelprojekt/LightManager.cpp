@@ -4,7 +4,7 @@
 
 LightManager::LightManager()
 {
-	this->lightCount = 1;
+	this->lightCount = 40;
 	this->index = 0;
 }
 
