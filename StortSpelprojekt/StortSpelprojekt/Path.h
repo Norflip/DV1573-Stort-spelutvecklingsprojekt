@@ -83,6 +83,8 @@ public:
 	size_t CountPoints() const { return this->points.size(); }
 
 	std::vector<dx::XMINT2> GetIndexes() const { return this->indexes; }
+	
+	void GetLanternInformation(std::vector<dx::XMFLOAT2>& positions, std::vector<float>& axisAngle) const;
 
 	size_t GetFirstPointIndex() const { return 0; }
 	size_t GetLastPointIndex() const { return points.size() - 1; }
@@ -91,6 +93,8 @@ public:
 private:
 	void SetPointsFromIndexes(const std::vector<dx::XMINT2>& indexes);
 	void CreateLineSegments();
+	void CreateLanternPoints();
+	void GetDistanceDirection(const PathPoint& point0, const PathPoint& point1, float& distance, dx::XMFLOAT2& direction) const;
 
 	PathPoint Lerp(const PathPoint& a, const PathPoint& b, float t) const;
 	PathPoint IndexToPoint(const dx::XMINT2& index) const;
@@ -99,4 +103,7 @@ private:
 	std::vector<dx::XMINT2> indexes;
 	std::vector<PathPoint> points;
 	std::vector<LineSegment> segments;
+
+	std::vector<dx::XMFLOAT2> lanternPoints;
+	std::vector<float> lanternAxisAngle;
 };

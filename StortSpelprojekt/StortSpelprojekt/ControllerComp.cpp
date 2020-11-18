@@ -19,10 +19,10 @@ void ControllerComp::CheckGrounded()
 	phy->RaytestSingle(ray, distance, hitProps, FilterGroups::PROPS);
 	
 	this->isGrounded = false;
-	if (hitTerrain.object != nullptr || (hitProps.object != nullptr && hitProps.object->GetName() == "houseBase"))
+	if (hitTerrain.object != nullptr)// || hitProps.object != nullptr )//&& hitProps.object->GetName() == "houseBase"))
 	{
-		this->houseVelocity = { 0.f,0.f,0.f };
-		if (hitProps.object != nullptr && hitProps.object->GetName() == "houseBase")
+		//this->houseVelocity = { 0.f,0.f,0.f };
+		/*if (hitProps.object != nullptr && hitProps.object->GetName() == "houseBase")
 		{
 			dx::XMFLOAT3 move = hitProps.object->GetComponent<NodeWalkerComp>()->GetMoveVec();
 			this->houseVelocity = move;
@@ -31,7 +31,7 @@ void ControllerComp::CheckGrounded()
 			dx::XMStoreFloat3(&this->houseVelocity, houseVec);
 			GetOwner()->GetTransform().Translate(move.x, move.y, move.z); 
 			rbComp->SetPosition(GetOwner()->GetTransform().GetPosition());
-		}
+		}*/
 		this->isGrounded = true;
 		//std::cout << "picking: " << hit.object->GetName() << std::endl;
 		//DShape::DrawLine(ray.origin, ray.GetPoint(distance), { 0,0,1 });
@@ -67,7 +67,7 @@ ControllerComp::ControllerComp(Object* cameraObject, Object* houseObject)
 	this->camComp = nullptr;
 	this->capsuleComp = nullptr;
 	this->playerComp = nullptr;
-
+	this->inside = false;
 }
 
 ControllerComp::~ControllerComp()
@@ -155,26 +155,44 @@ void ControllerComp::Update(const float& deltaTime)
 	
 	float length = 0.f;
 	dx::XMVECTOR lengthVec;
+
+	
 	if (houseWalkComp->GetIsWalking())
-	{
-		length = 0.f;
-		lengthVec = dx::XMVector3Length(dx::XMVectorSubtract(houseWalkComp->GetOwner()->GetTransform().GetPosition(),GetOwner()->GetTransform().GetPosition()));
-		dx::XMStoreFloat(&length, lengthVec);
-		if (length > playerComp->GetRadius())
-			houseWalkComp->Stop();
-	}
-	else if (!houseWalkComp->GetIsWalking())
 	{
 		length = 0.f;
 		lengthVec = dx::XMVector3Length(dx::XMVectorSubtract(houseWalkComp->GetOwner()->GetTransform().GetPosition(), GetOwner()->GetTransform().GetPosition()));
 		dx::XMStoreFloat(&length, lengthVec);
-		if (length < playerComp->GetRadius())
-			houseWalkComp->Start();
-		
+
+		// If next to the house
+		if (length > playerComp->GetRadius() || length < 7.0f)
+			houseWalkComp->Stop();
 	}
+	else if (!houseWalkComp->GetIsWalking())
+	{
 
+		length = 0.f;
+		lengthVec = dx::XMVector3Length(dx::XMVectorSubtract(houseWalkComp->GetOwner()->GetTransform().GetPosition(), GetOwner()->GetTransform().GetPosition()));
+		dx::XMStoreFloat(&length, lengthVec);
 
+		if (length < playerComp->GetRadius() && length > 7.0f && !inside)
+			houseWalkComp->Start();
 
+		// If right outside the door
+		if (length < 3.9f && !inside)
+		{
+			if (KEY_DOWN(Q))
+			{
+				// Change position here
+				// Save the last position before changing, so we can change back later
+				dx::XMVECTOR current = rbComp->GetPosition();
+				dx::XMVECTOR offset{ 0, 0, 10, 0 };
+
+				rbComp->SetPosition(dx::XMVectorAdd(current, offset));
+				inside = true;
+			}
+		}
+	}
+	
 	if (this->canRotate)
 	{
 		//Input::Instance().ConfineMouse();
@@ -200,17 +218,24 @@ void ControllerComp::Update(const float& deltaTime)
 		
 		Input::Instance().ResetRelative();
 
-		MoveState isMoving = IDLE;
+		//MoveState isMoving = IDLE;
 
 		/*if (isMoving == MoveState::IDLE)
 			AudioMaster::Instance().StopSoundEvent("walk");*/
 
 		if (KEY_PRESSED(W) || KEY_PRESSED(S) || KEY_PRESSED(A) || KEY_PRESSED(D))
 		{
+			isMoving = MoveState::WALKING;
 
-			isMoving = WALKING;
 			if (KEY_PRESSED(LeftShift)) //sprint
-				isMoving = SPRINTING;
+			{
+				isMoving = MoveState::SPRINTING;
+			}
+			else
+			{
+				isMoving = MoveState::WALKING;		
+			}
+				
 		
 			if (KEY_PRESSED(W))
 				dir.z += 1.f;
@@ -219,14 +244,15 @@ void ControllerComp::Update(const float& deltaTime)
 			if (KEY_PRESSED(A))
 				dir.x -= 1.f;
 			if (KEY_PRESSED(D))
-				dir.x += 1.f;
-
-
-			/*if (isMoving == MoveState::WALKING)
-				AudioMaster::Instance().PlaySoundEvent("walk");*/
+				dir.x += 1.f;							
 
 		}
+		else
+		{
+			isMoving = MoveState::IDLE;			
+		}
 		
+
 		if (freeCam) //flying camera
 		{
 			if (KEY_PRESSED(Space)) //Free cam
@@ -256,29 +282,37 @@ void ControllerComp::Update(const float& deltaTime)
 			{
 				jumpVelocity = JUMP_VELOCITY;
 				this->jumpDir.x = dir.x;
-				this->jumpDir.z = dir.z;
+				this->jumpDir.z = dir.z;				
 			}
 
 			if (KEY_PRESSED(LeftControl)) //crouch is scuffed and outdated
 			{
-				isMoving = CROUCHING;
-			}
+				isMoving = CROUCHING;				
+			}			
 
 			//std::cout << this->cameraOffset.y << std::endl;
 			float acceleration = 0.f;
 			if (isMoving == IDLE)
 			{
 				if (this->velocity > 0.f) //is more decrease
-					acceleration = -WALK_ACCELERATION;
+					acceleration = -WALK_ACCELERATION;		
 				
+				AudioMaster::Instance().StopSoundEvent("walk");
+				AudioMaster::Instance().StopSoundEvent("run");
 			}
 			else if (isMoving == WALKING)
 			{
 				if (this->velocity+ WALK_ACCELERATION < WALK_VELOCITY) //is less increase
 					acceleration = WALK_ACCELERATION;
 				else if(this->velocity > WALK_VELOCITY) //is more decrease
-					acceleration = -WALK_ACCELERATION;
-					
+					acceleration = -WALK_ACCELERATION;		
+
+				// Kan lägga in ljud för att gå på plankor här med, ha en bool för "onHouse" t.ex.
+				if (isGrounded)
+				{
+					AudioMaster::Instance().StopSoundEvent("run");
+					AudioMaster::Instance().PlaySoundEvent("walk");
+				}
 			}
 			else if (isMoving == SPRINTING)
 			{
@@ -287,7 +321,12 @@ void ControllerComp::Update(const float& deltaTime)
 				
 				else if (this->velocity > RUN_VELOCITY)//is more decrease
 					acceleration = -RUN_ACCELERATION;
-
+				
+				if (isGrounded)
+				{
+					AudioMaster::Instance().PlaySoundEvent("run");
+					AudioMaster::Instance().StopSoundEvent("walk");
+				}
 			}
 			else if (isMoving==CROUCHING)
 			{

@@ -7,6 +7,7 @@
 #include <cmath>
 class GUIManager;
 
+ALIGN16
 class GUICompass : public GUIObject
 {
 public:
@@ -14,7 +15,9 @@ public:
     void Update() override;
     virtual void Draw(DirectX::SpriteBatch*) override;
 
-    virtual void SetPosition(float x, float y) override; // the whole compass shouldnt change pos
+    virtual void SetPosition(float x, float y) override;
+
+    ALIGN16_ALLOC;
 private:
     Object* playerObj;
     Object* houseObj;

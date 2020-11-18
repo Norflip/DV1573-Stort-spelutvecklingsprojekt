@@ -15,7 +15,6 @@ class PlayerComp :
 public:
 	//enum NEXT_SCENE { INTRO, LOSE, GAME, WIN };
 
-	
 	//PlayerComp();
 	PlayerComp(Renderer* renderer, CameraComponent* camComp, Physics* physics, GUIManager* guimanager, float health, float movementSpeed, float radius, float attack, float attackSpeed);
 	virtual ~PlayerComp();
@@ -52,7 +51,7 @@ public:
 	void InsertWeapon(WeaponComponent* weapon, std::string name);
 
 private:
-	//det här skriver en kommentar till hold objekt
+	//det hï¿½r skriver en kommentar till hold objekt
 	void HoldObject();
 	void DropObject();
 	float health, attack, attackSpeed, fuel, food;
@@ -61,7 +60,7 @@ private:
 	float foodLossPerSecond, fuelBurnPerMeter, healthLossPerSecond;
 	float radius;
 	GUIManager* guiMan;
-	GUISprite* fuelDippingBar, *foodDippingBar,* healthDippingBar;
+	GUISprite* fuelDippingBar, * foodDippingBar, * healthDippingBar, * fuelBar, * foodBar, * healthBar;
 	Renderer* renderer;
 	POINT p;
 	std::unordered_map<std::string, WeaponComponent*> weaponsList;

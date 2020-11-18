@@ -26,14 +26,12 @@ void Object::Update(const float& deltaTime)
 {
 	if (HasFlag(ObjectFlag::ENABLED))
 	{
-		transform.MarkNotChanged();
-
 		for (auto i = components.begin(); i < components.end(); i++)
 		{
-			if((*i)->IsEnabled())
+			if ((*i)->IsEnabled())
 				(*i)->Update(deltaTime);
 		}
-		
+
 		auto children = transform.GetChildren();
 		for (auto i = children.begin(); i < children.end(); i++)
 			(*i)->GetOwner()->Update(deltaTime);
@@ -58,11 +56,14 @@ void Object::Draw(Renderer* renderer, CameraComponent* camera)
 	if (HasFlag(ObjectFlag::ENABLED))
 	{
 		for (auto i = components.begin(); i < components.end(); i++)
-			(*i)->Draw(renderer, camera);
+		{
+			if (HasFlag(ObjectFlag::RENDER))
+				(*i)->Draw(renderer, camera);
+		}
 
 		auto children = transform.GetChildren();
 		for (auto i = children.begin(); i < children.end(); i++)
-			(*i)->GetOwner()->Draw(renderer, camera);			
+			(*i)->GetOwner()->Draw(renderer, camera);
 	}
 }
 
@@ -93,7 +94,7 @@ void Object::AddFlag(ObjectFlag flag)
 void Object::RemoveFlag(ObjectFlag flag)
 {
 	ObjectFlag old = this->flags;
-	this->flags &=  ~flag;
+	this->flags &= ~flag;
 
 
 	//for (auto i = components.begin(); i < components.end(); i++)

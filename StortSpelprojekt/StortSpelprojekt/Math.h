@@ -73,7 +73,26 @@ namespace Math
 		float t = InverseLerp(imin, imax, v);
 		return Lerp(omin, omax, t);
 	}
-	
+
+	inline float NormalizeValue(float value, float start, float end) 
+	{
+		float width = end - start;
+		float offsetValue = value - start;
+		return (offsetValue - (floorf(offsetValue / width) * width)) + start;
+	}
+
+	inline int NormalizeValue(int value, int start, int end)
+	{
+		int width = end - start;
+		int offsetValue = value - start;
+		return (offsetValue - ((offsetValue / width) * width)) + start;
+	}
+
+	inline float NormalizeAngle(float angle) 
+	{
+		return NormalizeValue(angle, 0.0f, PI * 2.0f);
+	}
+
 	inline float Clamp(float value, float min, float max)
 	{
 		if (value < min)

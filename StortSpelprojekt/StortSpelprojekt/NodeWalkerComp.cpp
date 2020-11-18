@@ -1,4 +1,5 @@
 #include "NodeWalkerComp.h"
+#include "PlayerComp.h"
 
 NodeWalkerComp::NodeWalkerComp()
 {
@@ -42,7 +43,7 @@ void NodeWalkerComp::InitializePath(Path thePath)
 	this->GetOwner()->GetTransform().SetPosition(startPos);
 
 	this->rbComp = GetOwner()->GetComponent<RigidBodyComponent>();
-	this->rbComp->GetRigidBody()->getCollider(0)->getMaterial().setBounciness(0.f);
+	//this->rbComp->GetRigidBody()->getCollider(0)->getMaterial().setBounciness(0.f);
 	//this->rbComp->GetRigidBody()->getCollider(0)->getMaterial().setFrictionCoefficient(100.f);
 	//this->rbComp->GetRigidBody()->getCollider(0)->getMaterial().setRollingResistance(100.f);
 	this->rbComp->SetPosition(startPos);
@@ -91,6 +92,11 @@ void NodeWalkerComp::Stop()
 	StopAnim();
 }
 
+void NodeWalkerComp::GetPlayerInfo(PlayerComp* playerComp)
+{
+	this->playerComp = playerComp;
+}
+
 void NodeWalkerComp::StartAnim()
 {
 	//if (canWalk)
@@ -126,11 +132,61 @@ void NodeWalkerComp::StopAnim()
 void NodeWalkerComp::Update(const float& deltaTime)
 {
 	//dx::XMStoreFloat3(&this->lastPos, GetOwner()->GetTransform().GetPosition());
-	if (base->SetAndGetDoneUp())
+	if (playerComp->GetFuel() > 0.0f)
 	{
-		//canWalk = true;
-		base->SetTrack(SkeletonStateMachine::WALK, false);
-		legs->SetTrack(SkeletonStateMachine::WALK, false);
+		if (base->SetAndGetDoneUp())
+		{
+			//canWalk = true;
+			base->SetTrack(SkeletonStateMachine::WALK, false);
+			legs->SetTrack(SkeletonStateMachine::WALK, false);
+		}
+		if (base->SetAndGetDoneDown())
+		{
+			base->SetTrack(SkeletonStateMachine::IDLE, false);
+			legs->SetTrack(SkeletonStateMachine::IDLE, false);
+		}
+	
+		if (isWalking)
+		{
+			if (canWalk)
+			{
+				//DirectX::XMFLOAT3 dir = { 0.f,0.f,0.f };
+				dx::XMFLOAT3 nextPoint = { thePath.GetPoint(this->currentNode).x,HEIGHT, thePath.GetPoint(this->currentNode).z };
+				dx::XMVECTOR vdir = dx::XMVectorSubtract(dx::XMLoadFloat3(&nextPoint), GetOwner()->GetTransform().GetPosition());
+				dx::XMStoreFloat(&this->length, dx::XMVector3Length(vdir));
+				if (this->length < nodeRadius)
+				{
+					StopAnim();
+					canWalk = false;
+					this->currentNode = this->nextChosen;
+				}
+				else
+				{
+					vdir = dx::XMVector3Normalize(vdir);
+					vdir = dx::XMVectorScale(vdir, speed * deltaTime);
+					dx::XMStoreFloat3(&moveVec, vdir);
+					//this->moveVec = dir;
+
+					GetOwner()->GetTransform().Translate(moveVec.x, moveVec.y, moveVec.z);
+					this->rbComp->SetPosition(GetOwner()->GetTransform().GetWorldPosition());
+				}
+			}
+			else
+			{
+				const int skip = 1;
+				if (this->nextChosen <= ICAST(this->thePath.GetLastPointIndex()))
+				{
+					this->nextChosen = currentNode + skip; //skip is 10
+					StartAnim();
+					canWalk = true;
+				}
+			}
+		}
+	}
+	else
+	{
+		base->SetTrack(SkeletonStateMachine::IDLE, false);
+		legs->SetTrack(SkeletonStateMachine::IDLE, false);
 	}
 
 	if (KEY_DOWN(I)) //used to display info and test paths
@@ -144,45 +200,6 @@ void NodeWalkerComp::Update(const float& deltaTime)
 
 	if (KEY_DOWN(R))
 		this->Reset();
-
-	if (isWalking)
-	{
-		if (canWalk)
-		{
-			//DirectX::XMFLOAT3 dir = { 0.f,0.f,0.f };
-			dx::XMFLOAT3 nextPoint = { thePath.GetPoint(this->currentNode).x,HEIGHT, thePath.GetPoint(this->currentNode).z  };
-			dx::XMVECTOR vdir = dx::XMVectorSubtract(dx::XMLoadFloat3(&nextPoint), GetOwner()->GetTransform().GetPosition());
-			dx::XMStoreFloat(&this->length, dx::XMVector3Length(vdir));
-			if (this->length < nodeRadius)
-			{
-				StopAnim();
-				canWalk = false;
-				this->currentNode = this->nextChosen;
-			}
-			else
-			{
-				vdir = dx::XMVector3Normalize(vdir);
-				vdir = dx::XMVectorScale(vdir, speed * deltaTime);
-				dx::XMStoreFloat3(&moveVec, vdir);
-				//this->moveVec = dir;
-
-				GetOwner()->GetTransform().Translate(moveVec.x, moveVec.y, moveVec.z);
-				this->rbComp->SetPosition(GetOwner()->GetTransform().GetWorldPosition());
-			}
-		}
-		else
-		{
-			const int skip = 1;
-			if (this->nextChosen <= ICAST(this->thePath.GetLastPointIndex()))
-			{
-				this->nextChosen = currentNode + skip; //skip is 10
-				StartAnim();
-				canWalk = true;
-
-			}
-
-		}
-	}
 }
 
 dx::XMFLOAT3 NodeWalkerComp::GetMoveVec()

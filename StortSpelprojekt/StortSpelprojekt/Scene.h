@@ -25,11 +25,13 @@
 #include "WeaponComponent.h"
 #include "EnemyManager.h"
 #include <wchar.h>
+#include "PlayerAnimHandlerComp.h"
+
 class GUIFont;
 class SpriteRenderPass;
 class PlayerComp;
 
-constexpr auto IMMORTAL = 0;
+constexpr auto IMMORTAL = 1;
 
 ALIGN16
 class Scene
@@ -44,7 +46,6 @@ public:
 	virtual void InitializeObjects() = 0;
 	virtual void InitializeGUI() = 0;
 	
-	// What is this for?
 	virtual void OnActivate() = 0;
 	virtual void OnDeactivate() = 0;
 	
@@ -52,7 +53,10 @@ public:
 	virtual void FixedUpdate(const float& fixedDeltaTime);
 	virtual void Render();
 	
+	// Add object to the scene hierarchy
 	void AddObject(Object* object);
+
+	// Add object as a child to another object
 	void AddObject(Object* object, Object* parent);
 
 	void RemoveObject(Object* object);

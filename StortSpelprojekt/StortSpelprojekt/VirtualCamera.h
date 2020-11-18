@@ -24,6 +24,9 @@ public:
 protected:
 	dx::XMFLOAT4X4 projection;
 	dx::XMFLOAT4X4 view;
+	
+	void Swap(float& a, float& b) const;
+
 	CameraMode mode;
 	size_t width, height;
 	float farZ, nearZ;

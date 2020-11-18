@@ -1,11 +1,10 @@
 #include "stdafx.h"
 #include "ParticlesystemComponent.h"
 
-ParticleSystemComponent::ParticleSystemComponent(Renderer* renderer, CameraComponent* camera, Shader* shader) : mesh(new Mesh(vertexBuffer, indexBuffer))
+ParticleSystemComponent::ParticleSystemComponent(Renderer* renderer, Shader* shader) : mesh(new Mesh(vertexBuffer, indexBuffer))
 {
 	this->renderer = renderer;
 	this->particlesShader = shader;
-	this->camera = camera;
 	this->mat = new Material(particlesShader);
 
 	/* Default stuff about every particle */
@@ -19,7 +18,7 @@ ParticleSystemComponent::ParticleSystemComponent(Renderer* renderer, CameraCompo
 
 	this->currentParticleCount = 0;
 	this->accumulatedTime = 0.0f;
-	
+
 	this->vertexCount = 0;
 	this->indexCount = 0;
 
@@ -44,13 +43,13 @@ void ParticleSystemComponent::Shutdown()
 	{
 		particlesShader = 0;
 	}
-	
+
 	if (srv)
 	{
 		srv->Release();
 		srv = 0;
 	}
-		
+
 	if (indexBuffer)
 	{
 		indexBuffer->Release();
@@ -82,7 +81,7 @@ void ParticleSystemComponent::InitializeParticles(ID3D11Device* device, LPCWSTR 
 	for (int i = 0; i < maxParticles; i++)
 		particleList[i].active = false;
 
-		
+
 	/* Init and pass it to mesh, can do a initializefunction in mesh later.. or something. */
 	InitializeBuffers(device);
 	mesh->SetVertexBuffer(vertexBuffer);
@@ -105,9 +104,9 @@ void ParticleSystemComponent::LoadTexture(ID3D11Device* device, LPCWSTR textureF
 	HRESULT hr = dx::CreateWICTextureFromFile(device, textureFilename, nullptr, &srv);
 	if (FAILED(hr))
 		MessageBox(0, L"Failed to 'Load WIC Texture'", L"Graphics scene Initialization Message", MB_ICONERROR);
-		
+
 	/* Mat info */
-	mat->SetTexture(new Texture(srv), TEXTURE_DIFFUSE_SLOT, ShaderBindFlag::PIXEL);	
+	mat->SetTexture(new Texture(srv), TEXTURE_DIFFUSE_SLOT, ShaderBindFlag::PIXEL);
 	mat->SetSampler(DXHelper::CreateSampler(D3D11_FILTER_MIN_MAG_MIP_LINEAR, D3D11_TEXTURE_ADDRESS_WRAP, device), 0, ShaderBindFlag::PIXEL);
 }
 
@@ -335,23 +334,8 @@ void ParticleSystemComponent::UpdateBuffers()
 }
 
 void ParticleSystemComponent::Update(const float& deltaTime)
-{	
-	dx::XMFLOAT3 particlesPosition;
-	particlesPosition.x = GetOwner()->GetTransform().GetPosition().m128_f32[0];
-	particlesPosition.y = GetOwner()->GetTransform().GetPosition().m128_f32[1] + 0.4f;
-	particlesPosition.z = GetOwner()->GetTransform().GetPosition().m128_f32[2];
-		
-	dx::XMVECTOR cam = camera->GetOwner()->GetTransform().GetPosition();
-	float xPos = cam.m128_f32[0];
-	float zPos = cam.m128_f32[2];
-	double anglepart = atan2(particlesPosition.x - xPos, particlesPosition.z - zPos) * (180.0 / dx::XM_PI);
-	float rotationPart = (float)anglepart * 0.0174532925f;
+{
 
-	dx::XMMATRIX worldParticles = dx::XMMatrixIdentity();
-	dx::XMMATRIX particlesRotationY = dx::XMMatrixRotationY(rotationPart);
-	dx::XMMATRIX particlesTranslation = dx::XMMatrixTranslation(particlesPosition.x, particlesPosition.y, particlesPosition.z);
-	worldParticles = particlesRotationY * particlesTranslation;
-	worldmatrix = worldParticles;
 
 	/*
 		Delete old particles that reaches a height. Create new particles after some time.
@@ -367,6 +351,25 @@ void ParticleSystemComponent::Update(const float& deltaTime)
 
 void ParticleSystemComponent::Draw(Renderer* renderer, CameraComponent* camera)
 {
-	if(active)
+	if (active)
+	{
+		dx::XMFLOAT3 particlesPosition;
+		particlesPosition.x = GetOwner()->GetTransform().GetPosition().m128_f32[0];
+		particlesPosition.y = GetOwner()->GetTransform().GetPosition().m128_f32[1] + 0.4f;
+		particlesPosition.z = GetOwner()->GetTransform().GetPosition().m128_f32[2];
+
+		dx::XMVECTOR cam = camera->GetOwner()->GetTransform().GetPosition();
+		float xPos = cam.m128_f32[0];
+		float zPos = cam.m128_f32[2];
+		double anglepart = atan2(particlesPosition.x - xPos, particlesPosition.z - zPos) * (180.0 / dx::XM_PI);
+		float rotationPart = (float)anglepart * 0.0174532925f;
+
+		dx::XMMATRIX worldParticles = dx::XMMatrixIdentity();
+		dx::XMMATRIX particlesRotationY = dx::XMMatrixRotationY(rotationPart);
+		dx::XMMATRIX particlesTranslation = dx::XMMatrixTranslation(particlesPosition.x, particlesPosition.y, particlesPosition.z);
+		worldParticles = particlesRotationY * particlesTranslation;
+		worldmatrix = worldParticles;
+
 		renderer->DrawParticles(mesh, mat, worldmatrix);
+	}
 }

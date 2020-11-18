@@ -27,10 +27,10 @@ void SkyboxRenderPass::Pass(Renderer* renderer, CameraComponent* camera, RenderT
 {
 	dx::XMVECTOR eye = camera->GetOwner()->GetTransform().GetWorldPosition();
 	dx::XMMATRIX transformation = scaleRot * dx::XMMatrixTranslationFromVector(eye);
-	renderer->Draw(mesh, material, transformation);
+	renderer->Draw(mesh, material, transformation, false);
 }
 
-void SkyboxRenderPass::LoadTextures(ID3D11Device* device)
+void SkyboxRenderPass::LoadTextures(ID3D11Device* device) //VIKTOR
 {
 	const LPCWSTR TEXTURE_PATHS[] = {
 		L"Textures/Day.png",

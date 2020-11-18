@@ -32,7 +32,7 @@ void EnemySMComp::SetState(EnemyState state)
 
 void EnemySMComp::Start()
 {
-	enemyAttackComp = GetOwner()->GetComponent<EnemyAttackComp>();
+	//enemyAttackComp = GetOwner()->GetComponent<EnemyAttackComp>();
 }
 
 void EnemySMComp::Initialize()
@@ -41,11 +41,24 @@ void EnemySMComp::Initialize()
 
 void EnemySMComp::Animate()
 {
-	//OutputDebugStringA(std::to_string(statsComponent->GetHealth()).c_str());
+	
 	if (currentState == EnemyState::ATTACK)
 	{
-		skeletonComponent->SetTrack(SkeletonStateMachine::BLENDED, false);
+		skeletonComponent->SetTrack(SkeletonStateMachine::RUN, false);
+
+		if (attackComponent->GetIsAttacking())
+		{
+			skeletonComponent->SetTrack(SkeletonStateMachine::ATTACK, false);
+		}
 	}
+	else if (currentState == EnemyState::PATROL)
+	{
+		skeletonComponent->SetTrack(SkeletonStateMachine::WALK, false);
+	}
+	/*else if (currentState == EnemyState::DEATH)
+	{
+		skeletonComponent->SetTrack(SkeletonStateMachine::DEATH, false);
+	}*/
 	else
 	{
 		skeletonComponent->SetTrack(SkeletonStateMachine::IDLE,false);
@@ -55,11 +68,11 @@ void EnemySMComp::Animate()
 
 void EnemySMComp::Update(const float& deltaTime)
 {
-	if (currentState != EnemyState::ATTACK && enemyAttackComp->ChasePlayer())
+	if (currentState != EnemyState::ATTACK && attackComponent->ChasePlayer())
 	{
-		SetState(EnemyState::ATTACK);
+		SetState(EnemyState::ATTACK);		
 	}
-	else if (currentState != EnemyState::IDLE && !enemyAttackComp->ChasePlayer())
+	else if (currentState != EnemyState::IDLE && !attackComponent->ChasePlayer())
 	{
 		SetState(EnemyState::IDLE);
 	}

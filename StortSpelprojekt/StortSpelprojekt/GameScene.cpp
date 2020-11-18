@@ -27,7 +27,7 @@ void GameScene::Initialize()
 
 		Mesh* mesh1 = resources->GetResource<Mesh>("Test");
 		Material* material1 = resources->GetResource<Material>("TestMaterial");
-
+		
 		object->AddComponent<MeshComponent>(mesh1, material1);
 		object->AddComponent<BoxColliderComponent>(dx::XMFLOAT3(0.5f, 0.5f, 0.5f), dx::XMFLOAT3(0, 0, 0));
 		object->AddComponent<RigidBodyComponent>(10.0f, FilterGroups::DEFAULT, FilterGroups::EVERYTHING, BodyType::DYNAMIC, true);
@@ -37,37 +37,42 @@ void GameScene::Initialize()
 	InitializeLights();
 	InitializeGUI();
 	InitializeObjects();
+
 }
 
 void GameScene::InitializeObjects()
 {
 	Object* houseBaseObject = new Object("houseBase");
 	Object* housesLegsObject = new Object("houseLegs");
-	//houseBaseObject->GetTransform().Rotate(0, -90.0f, 0.0);
+
+	Object* houseDoorObject = resources->AssembleObject("Axe", "HealthKitMaterial");
+
 	houseBaseObject->GetTransform().Rotate(0, -90.0f * Math::ToRadians, 0.0);
 
 	house = houseBaseObject;
 
-	//														Extence					pos
-	//WALLS
-	houseBaseObject->AddComponent<BoxColliderComponent>(dx::XMFLOAT3(1.5, 3.5, 2.1), dx::XMFLOAT3(0, 4, -1));
-	//PORCH
-	houseBaseObject->AddComponent<BoxColliderComponent>(dx::XMFLOAT3(3.375, 0.325, 3), dx::XMFLOAT3(0, 1, 0.05));
-	//FENCE BACK
-	houseBaseObject->AddComponent<BoxColliderComponent>(dx::XMFLOAT3(0.125, 0.625, 3.375), dx::XMFLOAT3(-3.3, 2, 0.05));
-	//FENCE FRONT
-	houseBaseObject->AddComponent<BoxColliderComponent>(dx::XMFLOAT3(0.125, 0.625, 2.25), dx::XMFLOAT3(3.25, 3, 0.7));
-	//FENCE RIGHT
-	houseBaseObject->AddComponent<BoxColliderComponent>(dx::XMFLOAT3(5.375, 0.625, 0.15), dx::XMFLOAT3(0, 3, -2.75));
-	//FENCE LEFT
-	houseBaseObject->AddComponent<BoxColliderComponent>(dx::XMFLOAT3(5.375, 0.625, 0.15), dx::XMFLOAT3(0, 3, 2.75));
+	SkeletonMeshComponent* baseComponent = resources->GetResource<SkeletonMeshComponent>("HouseSkeleton");
+	SkeletonMeshComponent* legsComponent = resources->GetResource<SkeletonMeshComponent>("HouseLegsSkeleton");
 
+	houseBaseObject->GetTransform().SetScale({ 0.5f, 0.5f, 0.5f });
+	
+	//WALLS
+	houseBaseObject->AddComponent<BoxColliderComponent>(dx::XMFLOAT3(2.0f, 3.5f, 2.3f), dx::XMFLOAT3(0.f, 0.9f, -1.0f));
+	//PORCH
+	houseBaseObject->AddComponent<BoxColliderComponent>(dx::XMFLOAT3(3.0f, 0.5f, 3.0f), dx::XMFLOAT3(0.f, 0.5f, 0.f));
+	//FENCE BACK
+	houseBaseObject->AddComponent<BoxColliderComponent>(dx::XMFLOAT3(0.125f, 0.625f, 3.375f), dx::XMFLOAT3(-3.3f, 2.f, 0.05f));
+	//FENCE FRONT
+	houseBaseObject->AddComponent<BoxColliderComponent>(dx::XMFLOAT3(0.1f, 3.5f, 1.8f), dx::XMFLOAT3(3.5f, 0.7f, 0.5f));
+	//FENCE RIGHT
+	houseBaseObject->AddComponent<BoxColliderComponent>(dx::XMFLOAT3(5.375f, 0.625f, 0.15f), dx::XMFLOAT3(0.f, 3.f, -2.75f));
+	//FENCE LEFT
+	houseBaseObject->AddComponent<BoxColliderComponent>(dx::XMFLOAT3(5.375f, 0.625f, 0.15f), dx::XMFLOAT3(0.f, 3.f, 2.75f));
+	// RB
 	houseBaseObject->AddComponent<RigidBodyComponent>(0.0f, FilterGroups::PROPS, FilterGroups::EVERYTHING, BodyType::STATIC, true);
 
-	SkeletonMeshComponent* baseComponent = resources->GetResource<SkeletonMeshComponent>("HouseSkeleton"); 
-	SkeletonMeshComponent* legsComponent = resources->GetResource<SkeletonMeshComponent>("HouseLegsSkeleton");
-	baseComponent->SetTimeScale(0.5f);
-	legsComponent->SetTimeScale(0.5f);
+	baseComponent->SetTimeScale(1.0f);
+	legsComponent->SetTimeScale(1.0f);
 	baseComponent->SetTrack(SkeletonStateMachine::IDLE, false);
 	legsComponent->SetTrack(SkeletonStateMachine::IDLE, false);
 
@@ -75,11 +80,11 @@ void GameScene::InitializeObjects()
 	housesLegsObject->AddComponent<SkeletonMeshComponent>(legsComponent);
 
 	Transform::SetParentChild(houseBaseObject->GetTransform(), housesLegsObject->GetTransform());
-	houseBaseObject->GetTransform().SetScale({ 0.5f, 0.5f, 0.5f });
+	Transform::SetParentChild(houseBaseObject->GetTransform(), houseDoorObject->GetTransform());
+	houseDoorObject->GetTransform().SetPosition({ 0, 0, 0 });
 
 	NodeWalkerComp* nodeWalker = houseBaseObject->AddComponent<NodeWalkerComp>();
 	nodeWalker->InitAnimation();
-	
 	AddObject(houseBaseObject);
 
 	//Player & Camera
@@ -93,11 +98,11 @@ void GameScene::InitializeObjects()
 	
 	cameraObject->GetTransform().SetPosition(playerSpawnVec);
 	playerObject->GetTransform().SetPosition(playerSpawnVec);
-	playerObject->AddComponent<CapsuleColliderComponent>(0.5f, 1.8f, zero);
-	playerObject->AddComponent<RigidBodyComponent>(60.f, FilterGroups::PLAYER, (FilterGroups::EVERYTHING), BodyType::DYNAMIC, true);
+	playerObject->AddComponent<CapsuleColliderComponent>(0.5f, 1.5f, zero);
+	playerObject->AddComponent<RigidBodyComponent>(50.f, FilterGroups::PLAYER, (FilterGroups::EVERYTHING), BodyType::DYNAMIC, true);
 
 	playerObject->AddComponent<PlayerComp>(renderer, camera, Engine::Instance->GetPhysics(), guiManager, 100.f, 2.f, 20.f, 50.f, 3.f);
-	playerObject->AddComponent<ControllerComp>(cameraObject, houseBaseObject); /////////////////
+	playerObject->AddComponent<ControllerComp>(cameraObject, houseBaseObject); 
 
 	AddObject(cameraObject, playerObject);
 	AddObject(playerObject);
@@ -106,26 +111,21 @@ void GameScene::InitializeObjects()
 
 	dx::XMFLOAT3 lightTranslation = dx::XMFLOAT3(0.0f, 0.0f, 0.0f);
 	testPointLight->GetTransform().SetPosition(dx::XMLoadFloat3(&lightTranslation));
-	testPointLight->AddComponent<PointLightComponent>(dx::XMFLOAT4(0.3f, 0.3f, 0.3f, 1.0f), 10.f);
+	testPointLight->AddComponent<PointLightComponent>(dx::XMFLOAT4(0.3f, 0.3f, 0.3f, 1.0f), 7.f);
 
 	AddObject(testPointLight, playerObject);
 
-	Object* axeObject = resources->AssembleObject("Axe", "AxeMaterial");
-	axeObject->GetTransform().SetPosition({ 0,0,0 });
-	axeObject->GetTransform().SetScale({ 1, 1, 1 });
-	axeObject->AddComponent<WeaponComponent>(cameraObject);
-	axeObject->AddFlag(ObjectFlag::NO_CULL);
-	AddObject(axeObject);
-	playerObject->GetComponent<PlayerComp>()->InsertWeapon(axeObject->GetComponent<WeaponComponent>(), axeObject->GetName());
+	/* For fuel info from playercomp */
+	nodeWalker->GetPlayerInfo(playerObject->GetComponent<PlayerComp>());
 
-	world.Initialize(root, resources, pooler, renderer, camera);
-
-	//LOADING BASE MONSTER; ADDING SKELETONS TO IT
-	enemyManager = new EnemyManager(resources, player, player->GetComponent<PlayerComp>(), root);
-	enemyManager->InitBaseEnemy();
+	world.Initialize(root, resources, renderer);
 	
+	
+
 	/* PICKUP STUFF DONT DELETE THESEEE */
 	Object* healthkitObject = resources->AssembleObject("HealthKit", "HealthKitMaterial");
+	healthkitObject->AddFlag(ObjectFlag::DEFAULT);
+	healthkitObject->GetComponent<MeshComponent>()->SetBatchable(true);
 	healthkitObject->GetTransform().SetPosition({ 23,2,50 });
 	healthkitObject->AddComponent<BoxColliderComponent>(dx::XMFLOAT3{ 0.5f, 0.5f, 0.5f }, dx::XMFLOAT3{ 0, 0, 0 });
 	healthkitObject->AddComponent<PickupComponent>(Type::Health, 20.0f);
@@ -134,7 +134,8 @@ void GameScene::InitializeObjects()
 
 	///* Fuel pickup stuff temporary */
 	Object* fuelCanObject = resources->AssembleObject("FuelCanGreen", "FuelCanGreenMaterial");
-
+	fuelCanObject->AddFlag(ObjectFlag::DEFAULT);
+	fuelCanObject->GetComponent<MeshComponent>()->SetBatchable(true);
 	fuelCanObject->GetTransform().SetPosition({ 22,2,52 });
 	fuelCanObject->AddComponent<BoxColliderComponent>(dx::XMFLOAT3{ 0.3f, 0.3f, 0.3f }, dx::XMFLOAT3{ 0, 0, 0 });
 	fuelCanObject->AddComponent<PickupComponent>(Type::Fuel, 20.0f);
@@ -144,15 +145,72 @@ void GameScene::InitializeObjects()
 	///* Banana pickup stuff temporary */
 	Shader* particleShader = resources->GetShaderResource("particleShader");
 	Object* beansObject = resources->AssembleObject("Soup", "SoupMaterial");
+	beansObject->AddFlag(ObjectFlag::DEFAULT);
+	beansObject->GetComponent<MeshComponent>()->SetBatchable(true);
 	beansObject->GetTransform().SetPosition({22, 2.0f, 53 });
 	beansObject->AddComponent<BoxColliderComponent>(dx::XMFLOAT3{ 0.5f, 0.5f, 0.5f }, dx::XMFLOAT3{ 0, 0, 0 });
 	beansObject->AddComponent<PickupComponent>(Type::Food, 20.0f);
 	beansObject->AddComponent<RigidBodyComponent>(0.f, FilterGroups::PICKUPS, (FilterGroups::EVERYTHING & ~FilterGroups::PLAYER), BodyType::DYNAMIC, true);
 
-	beansObject->AddComponent<ParticleSystemComponent>(renderer, camera, particleShader);
+	beansObject->AddComponent<ParticleSystemComponent>(renderer, particleShader);
 	beansObject->GetComponent<ParticleSystemComponent>()->InitializeParticles(renderer->GetDevice(), L"Textures/starstar.png");
 	AddObject(beansObject);		
 	//Has to be made in end of objects in order to use them
+
+	AddObject(beansObject);
+
+	//Player Arms
+	Object* playerArms = new Object("PlayerArms", ObjectFlag::DEFAULT | ObjectFlag::NO_CULL);
+	SkeletonMeshComponent* armsSkeleton = resources->GetResource<SkeletonMeshComponent>("PlayerArmsSkeleton");
+	playerArms->AddComponent<SkeletonMeshComponent>(armsSkeleton);
+	playerArms->AddComponent<PlayerAnimHandlerComp>(playerArms->GetComponent<SkeletonMeshComponent>(), cameraObject, player);
+	AddObject(playerArms);
+
+	//Axe
+	Object* axeObject = resources->AssembleObject("Axe", "AxeMaterial", ObjectFlag::DEFAULT | ObjectFlag::NO_CULL);
+	axeObject->GetTransform().SetPosition({ 21.0f, 1.0f, -16.0f });
+	axeObject->GetTransform().SetScale({ 1.0f, 1.0f, 1.0f });
+	axeObject->AddComponent<WeaponComponent>(playerArms->GetComponent<SkeletonMeshComponent>());
+	playerObject->GetComponent<PlayerComp>()->InsertWeapon(axeObject->GetComponent<WeaponComponent>(), axeObject->GetName());
+	AddObject(axeObject);
+	
+
+	/* Test sign */	
+	/*Object* testObject = resources->AssembleObject("LeftDirectionSign", "LeftDirectionSignMaterial");
+	testObject->GetTransform().SetPosition({ 22, 0.5f, 50 });
+	AddObject(testObject);
+
+	Object* testObject1 = resources->AssembleObject("RightDirectionSign", "RightDirectionSignMaterial"); 
+	testObject1->GetTransform().SetPosition({ 24, 0.5f, 50 });
+	AddObject(testObject1);
+
+	Object* testObject2 = resources->AssembleObject("Endsign", "EndsignMaterial"); 
+	testObject2->GetTransform().SetPosition({ 23, 0.5f, 50 });
+	AddObject(testObject2);*/
+
+
+	/* PuzzleModels */
+	//Object* puzzleFrog = resources->AssembleObject("PuzzleFrogStatue", "PuzzleFrogStatueMaterial", ObjectFlag::DEFAULT);
+	////puzzleManager = new PuzzleManager(resources, player, house);
+	//puzzleFrog->GetTransform().SetPosition({ 26, 1.5f, 50 });
+	//puzzleFrog->AddComponent<BoxColliderComponent>(dx::XMFLOAT3{ 2.0f, 2.0f, 2.0f }, dx::XMFLOAT3{ 0, 0, 0 });
+	//puzzleFrog->AddComponent<RigidBodyComponent>(0.0f, FilterGroups::PROPS, FilterGroups::EVERYTHING, BodyType::DYNAMIC, true);
+	///*puzzleFrog->AddComponent<BoxColliderComponent>(dx::XMFLOAT3{ 2.0f, 2.0f, 2.0f }, dx::XMFLOAT3{ 0, 0, 0 });
+	//puzzleFrog->AddComponent<RigidBodyComponent>(50.f, FilterGroups::PROPS, (FilterGroups::EVERYTHING), BodyType::DYNAMIC, true);*/
+	//AddObject(puzzleFrog);
+	
+	Object* puzzleFly = resources->AssembleObject("PuzzleFlyStatue", "PuzzleFlyStatueMaterial", ObjectFlag::DEFAULT | ObjectFlag::NO_CULL);
+	puzzleFly->GetTransform().SetPosition({ 28, 1.3f, 50 });
+	puzzleFly->AddComponent<BoxColliderComponent>(dx::XMFLOAT3{ 1.0f, 1.0f, 1.0f }, dx::XMFLOAT3{ 0, 0, 0 });
+	puzzleFly->AddComponent<RigidBodyComponent>(0.0f, FilterGroups::HOLDABLE, FilterGroups::EVERYTHING, BodyType::DYNAMIC, true);
+	puzzleFly->AddComponent<ParticleSystemComponent>(renderer, particleShader);
+	puzzleFly->GetComponent<ParticleSystemComponent>()->SetMaxParticles(50);
+	puzzleFly->GetComponent<ParticleSystemComponent>()->SetParticleSize(0.1f);
+	puzzleFly->GetComponent<ParticleSystemComponent>()->InitializeParticles(renderer->GetDevice(), L"Textures/fire1.png");
+	AddObject(puzzleFly);
+
+	/*FrogPuzzle* frogpuzzle = new FrogPuzzle(resources);
+	frogpuzzle*/
 	GUICompass* compass = new GUICompass(*renderer, window, house, player);
 	guiManager->AddGUIObject(compass, "compass");
 }
@@ -267,31 +325,48 @@ void GameScene::OnActivate()
 	state.seed = 1337;
 	state.segment = 0;
 
-	SegmentDescription desc(0, 10, 2);
-	desc.directionalSteps = 1;
-	desc.maxSteps = 10;
-
 	player->GetComponent<PlayerComp>()->Reset();
-	world.ConstructSegment(state, desc);
-	world.SetPlayer(player);
-	world.SetHouse(house);
+	world.ConstructSegment(state);
+
+	PrintSceneHierarchy(root, 0);
+
 
 	house->GetComponent<NodeWalkerComp>()->InitializePath(world.GetPath());
-	world.MoveHouseAndPlayerToStart();
+	
+	if (house != nullptr && player != nullptr)
+	{
+		std::vector<dx::XMINT2> indexes = world.GetPath().GetIndexes();
+		dx::XMINT2 spawnIndex = indexes[0];
 
+		dx::XMVECTOR position = dx::XMVectorAdd(Chunk::IndexToWorld(spawnIndex, 0.0f), dx::XMVectorSet(CHUNK_SIZE / 2.0f, 0, CHUNK_SIZE / 2.0f, 0));
+		house->GetTransform().SetPosition(position);
+
+		if (house->HasComponent<RigidBodyComponent>())
+			house->GetComponent<RigidBodyComponent>()->SetPosition(position);
+
+		position = dx::XMVectorAdd(position, dx::XMVectorSet(5, 12, 0, 0));
+
+		player->GetTransform().SetPosition(position);
+		player->GetComponent<RigidBodyComponent>()->SetPosition(position);
+	}
 
 
 
 	renderer->AddRenderPass(guiManager);
 
-	
 	Input::Instance().ConfineMouse();
 	Input::Instance().SetMouseMode(dx::Mouse::Mode::MODE_RELATIVE);
 	ShowCursor(false);
 
-
-
+	AudioMaster::Instance().PlaySoundEvent("wind");
 	//this->PrintSceneHierarchy(root, 0);
+
+	//LOADING BASE MONSTER; ADDING SKELETONS TO IT
+	enemyManager = new EnemyManager(resources, player, player->GetComponent<PlayerComp>(), root);
+	enemyManager->InitBaseEnemy();
+	enemyManager->InitChargerEnemy();
+	
+	LightManager::Instance().ForceUpdateBuffers(renderer->GetContext());
 }
 
 void GameScene::OnDeactivate()
@@ -308,11 +383,12 @@ void GameScene::OnDeactivate()
 void GameScene::Update(const float& deltaTime)
 {
 	Scene::Update(deltaTime);
-	world.UpdateRelevantChunks();
-	//world.DrawDebug();
+	world.UpdateRelevantChunks(player->GetTransform(), camera);
+//	world.DrawDebug();
 
 	static_cast<GUIFont*>(guiManager->GetGUIObject("fps"))->SetString(std::to_string((int)GameClock::Instance().GetFramesPerSecond()));
 	guiManager->UpdateAll();
+
 }
 
 void GameScene::FixedUpdate(const float& fixedDeltaTime)
@@ -330,5 +406,3 @@ void GameScene::Render()
 	
 	renderer->RenderFrame(camera, (float)clock.GetSeconds());
 }
-
-
