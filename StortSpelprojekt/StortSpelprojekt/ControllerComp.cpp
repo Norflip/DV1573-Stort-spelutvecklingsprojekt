@@ -169,7 +169,6 @@ void ControllerComp::Update(const float& deltaTime)
 			inDoorRange = false;
 	}
 	
-
 	if (houseWalkComp->GetIsWalking())
 	{
 		// If next to the house

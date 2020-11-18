@@ -76,10 +76,13 @@ void PlayerComp::Update(const float& deltaTime)
 	//temp fix for wierd clock start at 
 	if (frameTime < 5.f)
 	{
-		//loose fuel
-		fuel -= frameTime * fuelBurnPerMeter;
-		// loose food
+		//lose fuel if not inside house
+		if(!GetOwner()->GetComponent<ControllerComp>()->GetInside())
+			fuel -= frameTime * fuelBurnPerMeter;
+
+		// lose food
 		food -= frameTime * foodLossPerSecond;
+
 #if !IMMORTAL
 		// make better later
 		if ((fuel < 0 || health <= 0) && !IMMORTAL)
@@ -110,6 +113,18 @@ void PlayerComp::Update(const float& deltaTime)
 	{
 		HoldObject();
 		DropObject();
+	}
+
+	if (GetOwner()->GetComponent<ControllerComp>()->GetInRange() && !static_cast<GUISprite*>(guiMan->GetGUIObject("door"))->GetVisible())
+	{
+		static_cast<GUISprite*>(guiMan->GetGUIObject("door"))->SetVisible(true);
+		static_cast<GUISprite*>(guiMan->GetGUIObject("dot"))->SetVisible(false);
+	}
+	else if (!GetOwner()->GetComponent<ControllerComp>()->GetInRange() && !static_cast<GUISprite*>(guiMan->GetGUIObject("dot"))->GetVisible()
+		&& !static_cast<GUISprite*>(guiMan->GetGUIObject("fuel"))->GetVisible())
+	{
+		static_cast<GUISprite*>(guiMan->GetGUIObject("door"))->SetVisible(false);
+		static_cast<GUISprite*>(guiMan->GetGUIObject("dot"))->SetVisible(true);
 	}
 }
 
@@ -244,16 +259,22 @@ void PlayerComp::RayCast(const float& deltaTime)
 				{
 					if ((health + temp) <= 100.0f)
 						health += temp;
+					else
+						health = 100.0f;
 				}
 				else if (pickupType == Type::Food)
 				{
 					if ((food + temp) <= 100.0f)
 						food += temp;
+					else
+						food = 100.0f;
 				}
 				else if (pickupType == Type::Fuel)
 				{
 					if ((fuel + temp) <= 100.0f)
 						fuel += temp;
+					else
+						fuel = 100.0f;
 				}
 				
 				if (hit.object->HasComponent<ParticleSystemComponent>())
@@ -335,7 +356,7 @@ void PlayerComp::Reset()
 	// defaulting some shit
 	this->foodLossPerSecond = 0.3f;
 	this->food = 50.0f;
-	this->fuelBurnPerMeter = 0.7f;
+	this->fuelBurnPerMeter = 3.0f;
 	this->fuel = 50.0f;
 	this->healthLossPerSecond = 0.5f;
 

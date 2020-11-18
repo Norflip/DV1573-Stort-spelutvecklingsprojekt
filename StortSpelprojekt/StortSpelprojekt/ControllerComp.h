@@ -94,4 +94,5 @@ public:
 	float GetVelocity() { return this->velocity; }
 	bool GetInRange() { return this->inDoorRange; }
 	void SetInRange(bool state) { this->inDoorRange = state; }
+	bool GetInside() { return this->inside; }
 };
