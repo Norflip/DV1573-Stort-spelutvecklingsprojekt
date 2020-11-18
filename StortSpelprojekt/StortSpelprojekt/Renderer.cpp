@@ -903,7 +903,7 @@ void Renderer::UpdateForwardPlus(CameraComponent* camera)
 	//////DEPTH PASS BEGIN---------------------------
 	DepthPass::BindNull(context);
 	DepthPass::BindDSV(context);
-
+	context->OMSetDepthStencilState(dss, 0);
 	SetCullBack(true);
 	DrawQueueToTarget(opaqueItemQueueDepth, camera);
 	
@@ -930,7 +930,7 @@ void Renderer::UpdateForwardPlus(CameraComponent* camera)
 	context->CSSetUnorderedAccessViews(4, 1, &nullUAV, NULL); //u4
 	context->CSSetUnorderedAccessViews(5, 1, &nullUAV, NULL); //u5
 	context->CSSetUnorderedAccessViews(6, 1, &nullUAV, NULL); //u6
-	
+	context->OMSetDepthStencilState(dss, 0);
 	context->CSSetShaderResources(1, 1, DepthPass::GetDepthSRV());
 	DXHelper::BindStructuredBuffer(context, frustums_buffer, frustum_data.data(), 9, ShaderBindFlag::COMPUTE, &inFrustums_srv);
 	LightManager::Instance().UpdateBuffers(context, camera);
