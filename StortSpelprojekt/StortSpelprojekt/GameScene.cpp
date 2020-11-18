@@ -182,18 +182,18 @@ void GameScene::InitializeObjects()
 	/* Test sign */	
 	rightSign = resources->AssembleObject("LeftDirectionSign", "LeftDirectionSignMaterial");
 	rightSign->GetTransform().SetPosition({ roadSign->GetTransform().GetPosition().m128_f32[0] - 1.0f, roadSign->GetTransform().GetPosition().m128_f32[1], roadSign->GetTransform().GetPosition().m128_f32[2] });
-	rightSign->AddComponent<BoxColliderComponent>(dx::XMFLOAT3{ 0.3f, 0.3f, 0.3f }, dx::XMFLOAT3{ 0, 0, 0 });
-	//leftSign->AddComponent<ClickableComponent>(ClickType::Switch);
-	rightSign->AddComponent<RigidBodyComponent>(10.f, FilterGroups::CLICKABLE, (FilterGroups::EVERYTHING & ~FilterGroups::PLAYER), BodyType::DYNAMIC, true);
+	rightSign->AddComponent<BoxColliderComponent>(dx::XMFLOAT3{ 1.0f, 1.0f, 1.0f }, dx::XMFLOAT3{ 0, 0, 0 });
+	rightSign->AddComponent<ClickableComponent>(ClickType::Switch);
+	rightSign->AddComponent<RigidBodyComponent>(0.0f, FilterGroups::CLICKABLE, (FilterGroups::EVERYTHING & ~FilterGroups::PLAYER), BodyType::STATIC, true);
 	AddObject(rightSign);
 
 	leftSign = new Object("RightDirectionSign");
 
 	leftSign = resources->AssembleObject("RightDirectionSign", "RightDirectionSignMaterial");
 	leftSign->GetTransform().SetPosition({ roadSign->GetTransform().GetPosition().m128_f32[0] + 1.0f, roadSign->GetTransform().GetPosition().m128_f32[1], roadSign->GetTransform().GetPosition().m128_f32[2] });
-	leftSign->AddComponent<BoxColliderComponent>(dx::XMFLOAT3{ 0.3f, 0.3f, 0.3f }, dx::XMFLOAT3{ 0, 0, 0 });
-	//leftSign->AddComponent<ClickableComponent>(ClickType::Switch);
-	leftSign->AddComponent<RigidBodyComponent>(10.f, FilterGroups::CLICKABLE, (FilterGroups::EVERYTHING & ~FilterGroups::PLAYER), BodyType::DYNAMIC, true);
+	leftSign->AddComponent<BoxColliderComponent>(dx::XMFLOAT3{ 1.0f, 1.0f, 1.0f }, dx::XMFLOAT3{ 0, 0, 0 });
+	leftSign->AddComponent<ClickableComponent>(ClickType::Switch);
+	leftSign->AddComponent<RigidBodyComponent>(0.0f, FilterGroups::CLICKABLE, (FilterGroups::EVERYTHING & ~FilterGroups::PLAYER), BodyType::STATIC, true);
 	AddObject(leftSign);
 
 
@@ -306,7 +306,7 @@ void GameScene::OnActivate()
 {
 	
 	SaveState state;
-	state.seed = rand();
+	state.seed = 1337;
 	state.segment = 0;
 
 	player->GetComponent<PlayerComp>()->Reset();
@@ -421,14 +421,20 @@ void GameScene::Update(const float& deltaTime)
 	if (rightSign->GetComponent<ClickableComponent>()->GetActive())
 	{
 		SwitchScene();
-		//rightSign->GetComponent<ClickableComponent>()->SetActive(false); //VIKTOR
+		rightSign->GetComponent<ClickableComponent>()->SetActive(false); //VIKTOR
 
 	}
-	if (KEY_PRESSED(LeftShift) && KEY_PRESSED(P))
+	else if (leftSign->GetComponent<ClickableComponent>()->GetActive())
 	{
-		rightSign; //nånting nånting klicka på skylten
-		//SwitchScene();
+		SwitchScene();
+		leftSign->GetComponent<ClickableComponent>()->SetActive(false); //VIKTOR
+
 	}
+	//if (KEY_PRESSED(LeftShift) && KEY_PRESSED(P))
+	//{
+	//	rightSign; //nånting nånting klicka på skylten
+	//	//SwitchScene();
+	//}
 
 	static_cast<GUIFont*>(guiManager->GetGUIObject("fps"))->SetString(std::to_string((int)GameClock::Instance().GetFramesPerSecond()));
 	guiManager->UpdateAll();

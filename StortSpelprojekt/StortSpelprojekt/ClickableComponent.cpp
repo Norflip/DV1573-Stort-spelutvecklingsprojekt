@@ -1,8 +1,8 @@
 #include "ClickableComponent.h"
 
-ClickableComponent::ClickableComponent(ClickType type)
+ClickableComponent::ClickableComponent(ClickType type) : clickableType(type)
 {
-	this->isActive = true;
+	this->isActive = false;
 }
 
 ClickableComponent::~ClickableComponent()

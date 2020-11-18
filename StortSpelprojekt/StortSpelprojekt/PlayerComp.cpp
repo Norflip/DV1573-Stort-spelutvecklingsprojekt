@@ -259,7 +259,7 @@ void PlayerComp::RayCast(const float& deltaTime)
 				//hit.object->RemoveFlag(ObjectFlag::ENABLED);
 				//currentWeapon->RemoveFlag(ObjectFlag::ENABLED);
 
-				//clickable->GetComponent<ClickableComponent>()->SetActive(true); //VIKTOR
+				clickable->GetComponent<ClickableComponent>()->SetActive(true); //VIKTOR
 
 				/*if (clickable->HasComponent<ParticleSystemComponent>())
 					if (clickable->GetComponent<ParticleSystemComponent>()->GetActive())

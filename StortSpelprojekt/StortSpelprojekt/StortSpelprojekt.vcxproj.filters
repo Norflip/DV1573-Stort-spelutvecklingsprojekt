@@ -289,6 +289,9 @@
     <ClCompile Include="GameHandler.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="ClickableComponent.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="ObjectSpawner.h">
@@ -580,6 +583,9 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="GameHandler.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="ClickableComponent.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>
