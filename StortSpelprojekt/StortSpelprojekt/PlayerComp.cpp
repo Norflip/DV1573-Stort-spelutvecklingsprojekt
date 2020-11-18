@@ -18,7 +18,7 @@
 //	gg = false;
 //}
 
-PlayerComp::PlayerComp(Renderer* renderer, CameraComponent* camComp, Physics* physics, GUIManager* guimanager, float health, float movementSpeed, float radius, float attack, float attackSpeed)
+PlayerComp::PlayerComp(Renderer* renderer, CameraComponent* camComp, Object* house, Physics* physics, GUIManager* guimanager, float health, float movementSpeed, float radius, float attack, float attackSpeed)
 {
 	//attackTimer.Start();
 
@@ -38,13 +38,16 @@ PlayerComp::PlayerComp(Renderer* renderer, CameraComponent* camComp, Physics* ph
 	this->renderer = renderer;
 	this->physics = physics;
 	this->throwStrength = 50;
+	this->hpLossDist = 40;
+	this->maxDist = 90;
 	this->holdAngle = dx::SimpleMath::Vector3( 0.3f, -0.4f, 0.8f );
+	this->house = house;
+	this->hpLossPerDistance = 0.0001f;
 	Reset();
 
 	this->fuelDippingBar = static_cast<GUISprite*>(guiMan->GetGUIObject("fuelDippingBar"));
 	this->foodDippingBar = static_cast<GUISprite*>(guiMan->GetGUIObject("foodDippingBar"));
 	this->healthDippingBar = static_cast<GUISprite*>(guiMan->GetGUIObject("healthDippingBar"));
-
 	this->fuelBar = static_cast<GUISprite*>(guiMan->GetGUIObject("fuelBar"));
 	this->foodBar = static_cast<GUISprite*>(guiMan->GetGUIObject("foodBar"));
 	this->healthBar = static_cast<GUISprite*>(guiMan->GetGUIObject("healthBar"));
@@ -111,6 +114,23 @@ void PlayerComp::Update(const float& deltaTime)
 		HoldObject();
 		DropObject();
 	}
+
+
+}
+
+void PlayerComp::FixedUpdate(const float& fixedDeltaTime)
+{
+	sm::Vector3 housePos = house->GetTransform().GetPosition();
+	sm::Vector3 playerPos = this->GetOwner()->GetTransform().GetPosition();
+	float distance = playerPos.Distance(playerPos, housePos);
+	//std::cout << distance << std::endl;
+	// around 30-50
+	if (distance > hpLossDist)
+		health -= distance * hpLossPerDistance;
+
+	// around 90
+	if (distance > maxDist)
+		health = 0;
 }
 
 void PlayerComp::HoldObject()
