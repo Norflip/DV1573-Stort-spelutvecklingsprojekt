@@ -121,6 +121,7 @@ struct cb_Scene
 	float time;
 	dx::XMFLOAT2 mousePos;
 	dx::XMFLOAT2 screenSize;
+	dx::XMFLOAT4X4 view;
 };
 
 ALIGN16

@@ -274,7 +274,7 @@ void Renderer::RenderFrame(CameraComponent* camera, float time, RenderTexture& t
 	dx::XMStoreFloat3(&data.cameraPosition, camera->GetOwner()->GetTransform().GetPosition());
 	dx::XMStoreFloat4x4(&data.invProjection, dx::XMMatrixTranspose(dx::XMMatrixInverse(NULL, camera->GetProjectionMatrix())));
 	dx::XMStoreFloat4x4(&data.invView, dx::XMMatrixTranspose(dx::XMMatrixInverse(NULL, camera->GetViewMatrix())));
-
+	dx::XMStoreFloat4x4(&data.view, dx::XMMatrixTranspose(camera->GetViewMatrix()));
 	sceneBuffer.SetData(data);
 	sceneBuffer.UpdateBuffer(context);
 
@@ -938,7 +938,7 @@ void Renderer::UpdateForwardPlus(CameraComponent* camera)
 	context->CSSetUnorderedAccessViews(5, 1, &o_LightGrid_tex, NULL); //u5
 
 	context->CSSetUnorderedAccessViews(6, 1, &t_LightGrid_tex, NULL); //u6
-
+	
 	context->Dispatch(numThreadGroups.x, numThreadGroups.y, numThreadGroups.z);
 	context->CSSetUnorderedAccessViews(3, 1, &nullUAV, NULL); //u3
 	context->CSSetUnorderedAccessViews(4, 1, &nullUAV, NULL); //u4

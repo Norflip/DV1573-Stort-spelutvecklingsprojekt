@@ -146,24 +146,22 @@ void main(ComputeShaderInput IN) // light culling everyframe
 	// Clipping plane for minimum depth value 
 	// (used for testing lights within the bounds of opaque geometry).
 	Plane minPlane = { float3(0, 0, 1), minDepthVS }; //made z and minDepthVS positive
-
+	float3 lightPositionVS = mul(float4(light.lightPosition,1), view).xyz;
 	// Cull lights
 	// Each thread in a group will cull 1 light until all lights have been culled.
 	for (uint i = IN.groupIndex; i < LIGHT_COUNT; i += BLOCK_SIZE * BLOCK_SIZE) //BLOCK_SIZE * BLOCK_SIZE IN.groupIndex
 	{
-		
+		//en grupp per tråd, i = 0 i++ alla ljusen.
 		if (Lights[i].enabled)
 		{
 			Light light = Lights[i];
-
+			
 			switch (light.type)
 			{
 			case POINT_LIGHT:
 			{
-				//test
-				o_LightGrid[IN.dispatchThreadID.xy] = uint2(1, 1);
-				//test
-				Sphere sphere = { light.positionVS.xyz, light.range };
+				
+				Sphere sphere = { lightPositionVS, light.range };
 				if (SphereInsideFrustum(sphere, GroupFrustum, nearClipVS, maxDepthVS))
 				{
 					// Add light to light list for transparent geometry.
@@ -215,7 +213,7 @@ void main(ComputeShaderInput IN) // light culling everyframe
 	{
 		// Update light grid for opaque geometry.
 		InterlockedAdd(o_LightIndexCounter[0], o_LightCount, o_LightIndexStartOffset);
-		//o_LightGrid[IN.groupID.xy] = uint2(o_LightIndexStartOffset, o_LightCount);
+		o_LightGrid[IN.groupID.xy] = uint2(o_LightIndexStartOffset, o_LightCount);
 
 		// Update light grid for transparent geometry.
 		InterlockedAdd(t_LightIndexCounter[0], t_LightCount, t_LightIndexStartOffset);

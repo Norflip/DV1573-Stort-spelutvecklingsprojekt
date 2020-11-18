@@ -31,7 +31,7 @@ struct Light
     uint type;
     float paddingThree;
 };
-StructuredBuffer<Light> Lights : register(t8); //not final
+StructuredBuffer<Light> Lights : register(t8); 
 
 cbuffer cb_Object : register(b0)
 {
@@ -64,6 +64,7 @@ cbuffer cb_Scene : register(b2)
     float2 mousePos;
     float2 screenSize;
     float2 pad_cbs;
+    row_major matrix view;
 }
 
 //cbuffer cb_Lights : register(b3)
