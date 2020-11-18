@@ -65,12 +65,14 @@ struct s_Light
 {
 	dx::XMFLOAT4 lightColor;
 	dx::XMFLOAT3 lightPosition;
-	dx::XMFLOAT4 positionVS;
 	float range;
+	dx::XMFLOAT4 positionVS;
 	dx::XMFLOAT3 attenuation;
+	float paddda;
 	dx::XMFLOAT3 lightDirection;
+	float paddda2;
 	float spotlightAngle;
-	bool enabled;
+	UINT enabled;
 	UINT type;
 	float paddingThree;
 };

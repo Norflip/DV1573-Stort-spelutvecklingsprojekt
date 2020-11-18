@@ -22,12 +22,14 @@ struct Light
 {
     float4 lightColor;
     float3 lightPosition;
-    float4 positionVS;
     float range;
+    float4 positionVS;
     float3 attenuation;
+    float paddda;
     float3 lightDirection;
+    float paddda2;
     float spotlightAngle;
-    bool enabled;
+    uint enabled;
     uint type;
     float paddingThree;
 };

@@ -151,12 +151,12 @@ void main(ComputeShaderInput IN) // light culling everyframe
 	// Each thread in a group will cull 1 light until all lights have been culled.
 	for (uint i = 0; i < 5; i += 1) //BLOCK_SIZE * BLOCK_SIZE IN.groupIndex
 	{
-		o_LightGrid[IN.groupID.xy] = uint2(1, 1);
+		
 		//en grupp per tråd, i = 0 i++ alla ljusen.
-		if (Lights[i].enabled)
+		if (Lights[i].enabled==1)
 		{
 			Light light = Lights[i];
-			o_LightGrid[IN.groupID.xy] = uint2(1, 0);
+			
 			switch (light.type)
 			{
 			case POINT_LIGHT:
@@ -168,7 +168,7 @@ void main(ComputeShaderInput IN) // light culling everyframe
 				{
 					// Add light to light list for transparent geometry.
 					t_AppendLight(i);
-					o_LightGrid[IN.groupID.xy] = uint2(0, 1);
+					
 					if (!SphereInsidePlane(sphere, minPlane))
 					{
 						// Add light to light list for opaque geometry.

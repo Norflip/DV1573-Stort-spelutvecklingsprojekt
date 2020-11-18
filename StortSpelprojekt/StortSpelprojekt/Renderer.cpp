@@ -282,7 +282,7 @@ void Renderer::RenderFrame(CameraComponent* camera, float time, RenderTexture& t
 
 
 
-	LightManager::Instance().UpdateBuffers(context,camera);
+	//LightManager::Instance().UpdateBuffers(context,camera);
 
 	UpdateForwardPlus(camera);
 
@@ -877,15 +877,15 @@ void Renderer::InitForwardPlus(CameraComponent* camera, Window* window, Shader& 
 	forwardPlusShader.CompileCS(device);
 	forwardPlusShader.BindToContext(context);
 
-	DXHelper::BindStructuredBuffer(context, frustums_buffer, frustum_data.data(), 9, ShaderBindFlag::COMPUTE, &inFrustums_srv);
+	
 	//opaque_light index counter
 	o_LightIndexCounter.resize(1);
 	DXHelper::CreateStructuredBuffer(device, &o_LightIndexCounter_uavbuffer, o_LightIndexCounter.data(), sizeof(UINT), o_LightIndexCounter.size(), &o_LightIndexCounter_uav);
-	DXHelper::BindStructuredBuffer(context, o_LightIndexCounter_uavbuffer, o_LightIndexCounter.data(), 1, ShaderBindFlag::COMPUTE, &o_LightIndexCounter_uav, nullptr); //u1
+	
 	//transparent_light index counter
 	t_LightIndexCounter.resize(1);
 	DXHelper::CreateStructuredBuffer(device, &t_LightIndexCounter_uavbuffer, t_LightIndexCounter.data(), sizeof(UINT), t_LightIndexCounter.size(), &t_LightIndexCounter_uav);
-	DXHelper::BindStructuredBuffer(context, t_LightIndexCounter_uavbuffer, t_LightIndexCounter.data(), 2, ShaderBindFlag::COMPUTE, &t_LightIndexCounter_uav, nullptr); //u2
+	
 	o_LightIndexList.resize(32); //light block size??
 	DXHelper::CreateStructuredBuffer(device, &o_LightIndexList_uavbuffer, o_LightIndexList.data(), sizeof(UINT), o_LightIndexList.size(), &o_LightIndexList_uav, &o_LightIndexList_srv);
 	t_LightIndexList.resize(32); //lightcount??
@@ -930,7 +930,10 @@ void Renderer::UpdateForwardPlus(CameraComponent* camera)
 	context->CSSetUnorderedAccessViews(6, 1, &nullUAV, NULL); //u6
 	
 	context->CSSetShaderResources(1, 1, DepthPass::GetDepthSRV());
-
+	DXHelper::BindStructuredBuffer(context, frustums_buffer, frustum_data.data(), 9, ShaderBindFlag::COMPUTE, &inFrustums_srv);
+	LightManager::Instance().UpdateBuffers(context, camera);
+	DXHelper::BindStructuredBuffer(context, o_LightIndexCounter_uavbuffer, o_LightIndexCounter.data(), 1, ShaderBindFlag::COMPUTE, &o_LightIndexCounter_uav, nullptr); //u1
+	DXHelper::BindStructuredBuffer(context, t_LightIndexCounter_uavbuffer, t_LightIndexCounter.data(), 2, ShaderBindFlag::COMPUTE, &t_LightIndexCounter_uav, nullptr); //u2
 	DXHelper::BindStructuredBuffer(context, o_LightIndexList_uavbuffer, o_LightIndexList.data(), 3, ShaderBindFlag::COMPUTE, &o_LightIndexList_uav, nullptr); //u3
 	
 	DXHelper::BindStructuredBuffer(context, t_LightIndexList_uavbuffer, t_LightIndexList.data(), 4, ShaderBindFlag::COMPUTE, &t_LightIndexList_uav, nullptr); //u4

@@ -509,6 +509,9 @@ void DXHelper::BindStructuredBuffer(ID3D11DeviceContext* context, ID3D11Buffer* 
 
 	if ((bflag & (int)ShaderBindFlag::GEOMETRY) != 0)
 		context->GSSetShaderResources(slot, 1, srv);
+
+	if ((bflag & (int)ShaderBindFlag::COMPUTE) != 0)
+		context->CSSetShaderResources(slot, 1, srv);
 }
 
 
