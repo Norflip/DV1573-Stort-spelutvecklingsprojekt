@@ -122,7 +122,7 @@ void ObjectPooler::Warm(Pool* pool, size_t amount, bool additive)
 		if (additive)
 			toAdd -= pool->inside.size();
 
-		assert((pool->inside.size() + pool->outside.size() + toAdd) < POOL_MAX_LIMIT);
+		//assert((pool->inside.size() + pool->outside.size() + toAdd) < POOL_MAX_LIMIT);
 
 		for (size_t i = 0; i < toAdd; i++)
 		{

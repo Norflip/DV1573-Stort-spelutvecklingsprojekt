@@ -21,9 +21,11 @@ class WorldGenerator
 
 public:
 
+	typedef std::function<Object* (Chunk*, dx::XMVECTOR)> PropFactory;
+
 	struct EnviromentProp
 	{
-		std::function<void(Object*)> factory;
+		PropFactory* factory;
 		bool onRoad;
 		size_t width;
 		size_t height;
@@ -56,16 +58,16 @@ public:
 	std::unordered_map<int, Chunk*>& GetChunkMap() { return this->chunkMap; }
 	const std::unordered_map<int, Chunk*>& GetChunkMap() const { return this->chunkMap; }
 
-	size_t RegisterEnviromentProp (size_t minSegment, size_t maxSegment, size_t queueCount, std::function<void(Object*)> factory);
+	size_t RegisterEnviromentProp (size_t minSegment, size_t maxSegment, size_t queueCount, PropFactory factory);
 	//size_t RegisterRoadObstacle(size_t minSegment, size_t maxSegment);
 
 private:
-	void AddEnvProps(const SaveState& state, dx::XMINT2 minIndex, dx::XMINT2 maxIndex, std::unordered_map<int, ChunkIndexInfo>& chunkInformation);
+	void SetPathPointsToChunkType(const Path& path, std::unordered_map<int, ChunkIndexInfo>& chunkInformation);
+
+	void AddEnvironmentProps(const size_t& segmentIndex, const WorldDescription& description, dx::XMINT2 minIndex, dx::XMINT2 maxIndex, std::unordered_map<int, ChunkIndexInfo>& chunkInformation);
 	static bool SortProps(const EnviromentProp& propA, const EnviromentProp& propB);
-	void SpawnEnvProps();
 
-
-	Chunk* CreateChunk(const dx::XMINT2& index, Object* root, const WorldDescription& description, ChunkType type);
+	Chunk* CreateChunk(const ChunkIndexInfo& indexInfo, Object* root, const WorldDescription& description);
 	Mesh* GetChunkMesh(ID3D11Device* device);
 
 	void AddChunksFromPath(std::vector<dx::XMINT2>& path, std::unordered_map<int, ChunkIndexInfo>& chunks);

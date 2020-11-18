@@ -14,7 +14,6 @@ enum class ChunkType
 	END,
 	PATH,
 	PUZZEL,
-	NON_PATH,
 	TERRAIN
 };
 
@@ -65,7 +64,7 @@ public:
 	static dx::XMVECTOR IndexToWorld(const dx::XMINT2& index, float y);
 	static dx::XMFLOAT2 IndexToWorldXZ(const dx::XMINT2& index);
 	static dx::XMINT2 WorldToIndex(float x, float z);
-	static int WorldToIndex1D(float x, float z);
+	static int WorldToIndexHash(float x, float z);
 
 	void PhysicRelease();
 

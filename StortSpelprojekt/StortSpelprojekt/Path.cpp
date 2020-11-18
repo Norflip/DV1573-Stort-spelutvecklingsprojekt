@@ -68,6 +68,8 @@ void Path::DrawDebug()
 
 	}
 
+	dx::XMFLOAT3 signWorldPos (signPosition.x, height, signPosition.y);
+	DShape::DrawSphere(signWorldPos, 2.0f, { 1,1,1 });
 
 	for (size_t i = 0; i < lanternPoints.size(); i++)
 	{
@@ -150,6 +152,7 @@ void Path::CreateLineSegments()
 			float y = points[i].z + (-direction.y) * distanceOffset;
 			PathPoint offsetPoint(x, y, points[i].influence);
 			segments.push_back(LineSegment(offsetPoint, points[i]));
+			extraSegments.push_back(LineSegment(offsetPoint, points[i]));
 		}
 
 		segments.push_back(segment);
@@ -166,8 +169,17 @@ void Path::CreateLineSegments()
 	dx::XMFLOAT2 rightDirection = Math::Lerp(direction, right, 0.5f);
 	PathPoint endRight(lastPoint.x + (rightDirection.x) * distanceOffset, lastPoint.z + (rightDirection.y) * distanceOffset, lastPoint.influence);
 
+	
+	// FIXA ROTATION
+	signPosition.x = lastPoint.x + direction.x * distanceOffset;
+	signPosition.y = lastPoint.z + direction.y * distanceOffset;
+
+
 	segments.push_back(LineSegment(lastPoint, endLeft));
 	segments.push_back(LineSegment(lastPoint, endRight));
+
+	extraSegments.push_back(LineSegment(lastPoint, endLeft));
+	extraSegments.push_back(LineSegment(lastPoint, endRight));
 	// add level select here
 
 }

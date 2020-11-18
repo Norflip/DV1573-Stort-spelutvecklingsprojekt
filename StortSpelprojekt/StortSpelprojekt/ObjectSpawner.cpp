@@ -237,8 +237,15 @@ bool ObjectSpawner::ValidSpawnPoint(const dx::XMFLOAT2& point, Chunk* chunk, flo
 	int dx = static_cast<int>(roundf(point.x));
 	int dy = static_cast<int>(roundf(point.y));
 
-	float v = chunk->GetData().influenceMap[dx + dy * (CHUNK_SIZE + 1)];
-	return chunk->GetType() != ChunkType::PUZZEL && v > minInfluence;
+	bool valid = false;
+	size_t index = dx + dy * (CHUNK_SIZE + 1);
+	if (index < (CHUNK_SIZE + 1)* (CHUNK_SIZE + 1))
+	{
+		float v = chunk->GetData().influenceMap[dx + dy * (CHUNK_SIZE + 1)];
+		valid = chunk->GetType() != ChunkType::PUZZEL && v > minInfluence;
+	}
+
+	return valid;
 }
 
 Object* ObjectSpawner::DefaultCreateItem(std::string key, PickupType type, float value)
@@ -290,14 +297,14 @@ void ObjectSpawner::SpawnStatic(std::unordered_map<int, Chunk*>& chunkMap)
 					float height = prop.bounds.GetSize().y;
 					//position.y += ((height / 2.0f) * (1.0f - prop.yOffset));
 
-					dx::XMMATRIX rotation = dx::XMMatrixIdentity();
+					/*dx::XMMATRIX rotation = dx::XMMatrixIdentity();
 					rotation = dx::XMMatrixMultiply(rotation, dx::XMMatrixRotationNormal({0, 0, FCAST(prop.randomRotationAxis.z)}, Random::RadAngle()));
 					rotation = dx::XMMatrixMultiply(rotation, dx::XMMatrixRotationNormal({0, FCAST(prop.randomRotationAxis.y), 0}, Random::RadAngle()));
 					rotation = dx::XMMatrixMultiply(rotation, dx::XMMatrixRotationNormal({ FCAST(prop.randomRotationAxis.x), 0, 0}, Random::RadAngle()));
-				
+				*/
 					dx::XMFLOAT4X4 instancedData;
 					dx::XMMATRIX translation = dx::XMMatrixTranslation(position.x, position.y, position.z);
-					dx::XMStoreFloat4x4(&instancedData, dx::XMMatrixTranspose(translation) * rotation);
+					dx::XMStoreFloat4x4(&instancedData, dx::XMMatrixTranspose(translation));
 
 					data[chunk].positions.push_back(position);
 					data[chunk].instancedData.push_back(instancedData);
@@ -326,8 +333,6 @@ void ObjectSpawner::SpawnStatic(std::unordered_map<int, Chunk*>& chunkMap)
 }
 
 static size_t m_itemIndex = 0;
-static size_t TMP_spawned = 0;
-
 void ObjectSpawner::SpawnItem(Chunk* chunk)
 {
 	if (itemRegistry.size() > 0 && chunk->GetType() == ChunkType::TERRAIN)
@@ -373,12 +378,8 @@ void ObjectSpawner::SpawnItem(Chunk* chunk)
 					spawnCount++;
 				}
 			}
-
-			TMP_spawned += spawnCount;
 		}
 	}
-
-	std::cout << "SPAWNED: " << TMP_spawned << std::endl;
 }
 
 std::vector<dx::XMFLOAT2> ObjectSpawner::CreateSpawnPositions(QuadTree* tree, float spawnRadius, float itemRadius, std::unordered_map<int, Chunk*>& chunkMap) const

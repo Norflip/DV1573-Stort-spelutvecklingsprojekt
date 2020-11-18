@@ -294,7 +294,7 @@ void GameScene::OnActivate()
 	player->GetComponent<PlayerComp>()->Reset();
 	world.ConstructSegment(state);
 
-	PrintSceneHierarchy(root, 0);
+	//PrintSceneHierarchy(root, 0);
 
 
 	house->GetComponent<NodeWalkerComp>()->InitializePath(world.GetPath());

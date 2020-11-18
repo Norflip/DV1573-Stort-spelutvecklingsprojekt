@@ -3,12 +3,16 @@
 
 MeshComponent::MeshComponent(Mesh* mesh, Material* material, Bounds bounds) : bounds(bounds), instanced(false)
 {
+	assert(mesh != nullptr);
+	assert(material != nullptr);
 	meshes.push_back(mesh);
 	materials.push_back(material);
 }
 
 MeshComponent::MeshComponent(Mesh* mesh, Material* material) : bounds(), instanced(false)
 {
+	assert(mesh != nullptr);
+	assert(material != nullptr);
 	meshes.push_back(mesh);
 	materials.push_back(material);
 	bounds.CalculateAABB(meshes);

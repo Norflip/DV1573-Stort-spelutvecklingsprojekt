@@ -21,9 +21,8 @@ void World::Initialize(Object* root, ResourceManager* resources, Renderer* rende
 
 void World::ConstructSegment(const SaveState& state)
 {
-	WorldDescription description(0, 10, 2);
-	description.directionalSteps = 1;
-	description.maxSteps = 10;
+	Random::SetSeed(state.GetSegmentedSeed());
+	this->description = DescriptionFromState(state);
 
 	ObjectSpawner* spawner = generator.GetSpawner();
 	RegisterFood(spawner, description.queueModifier);
@@ -33,7 +32,6 @@ void World::ConstructSegment(const SaveState& state)
 	RegisterStatic(spawner, description.queueModifier);
 
 
-	Random::SetSeed(state.GetSegmentedSeed());
 	generator.Construct(state, description);
 }
 
@@ -135,6 +133,18 @@ void World::GetChunksInRadius(const dx::XMINT2& index, int radius, std::vector<C
 			}
 		}
 	}
+}
+
+WorldDescription World::DescriptionFromState(const SaveState& state) const
+{
+	WorldDescription description(state.seed);
+	description.directionalSteps = 1;
+	description.maxSteps = 10;
+
+	description.minEnviromentProps = 4;
+	description.maxEnviromentProps = 8;
+
+	return description;
 }
 
 dx::XMINT2 World::GetChunkIndex(Object* object) const

@@ -29,8 +29,12 @@ public:
 	void GetChunksInRadius(const dx::XMINT2& index, int radius, std::vector<Chunk*>& chunks) const;
 
 	Path& GetPath() { return this->generator.GetPath(); }
+	WorldDescription& GetDescription() { return this->description; }
+	const WorldDescription& GetDescription() const { return this->description; }
 
 private:
+	WorldDescription DescriptionFromState(const SaveState& state) const;
+
 	dx::XMINT2 GetChunkIndex(Object* object) const;
 	int TryGetQueueCount(std::string key,  const std::map<std::string, int>& queueCountTable, int defaultCount = 1) const;
 	
@@ -42,6 +46,8 @@ private:
 
 private:
 	WorldGenerator generator;
+	WorldDescription description;
+
 	ResourceManager* resources;
 	std::vector<Chunk*> relevant;	
 	dx::XMINT2 lastRelevantIndex;

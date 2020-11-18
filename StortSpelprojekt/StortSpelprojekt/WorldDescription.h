@@ -5,14 +5,16 @@ struct WorldDescription
 {
 	int maxSteps;
 	int directionalSteps;
+
+	int minEnviromentProps;
+	int maxEnviromentProps;
+
 	std::map<std::string, int> queueModifier;
 	Noise::Settings noiseSettings;
 
-	WorldDescription(int noiseSeed, int maxSteps, int directionalSteps)
+	WorldDescription() {}
+	WorldDescription(int noiseSeed)
 	{
-		this->maxSteps = maxSteps;
-		this->directionalSteps = directionalSteps;
-
 		this->noiseSettings = Noise::Settings (noiseSeed);
 		this->noiseSettings.octaves = 5;
 		this->noiseSettings.persistance = 0.5f;
