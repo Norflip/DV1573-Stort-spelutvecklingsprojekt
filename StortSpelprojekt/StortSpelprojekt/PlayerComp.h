@@ -16,10 +16,10 @@ public:
 	//enum NEXT_SCENE { INTRO, LOSE, GAME, WIN };
 
 	//PlayerComp();
-	PlayerComp(Renderer* renderer, CameraComponent* camComp, Physics* physics, GUIManager* guimanager, float health, float movementSpeed, float radius, float attack, float attackSpeed);
+	PlayerComp(Renderer* renderer, CameraComponent* camComp, Object* house, Physics* physics, GUIManager* guimanager, float health, float movementSpeed, float radius, float attack, float attackSpeed);
 	virtual ~PlayerComp();
 	void Update(const float& deltaTime) override;
-
+	void FixedUpdate(const float& fixedDeltaTime) override;
 	float GetHealth() const { return health; }
 	float GetSpeed() const { return movementSpeed; }
 	float GetAttack() const { return attack; }
@@ -68,6 +68,7 @@ private:
 	float rayDistance;	
 	Object* currentWeapon;
 	Object* holding;
+	Object* house;
 	RayHit hit;
 	Physics* physics;
 	CameraComponent* cam;
@@ -76,6 +77,7 @@ private:
 	bool foodEmpty;
 	bool gg;
 	float throwStrength;
+	float hpLossDist, maxDist, hpLossPerDistance;
 	float ReverseAndClamp(float inputValue);
 	float test = 0;
 	void RayCast(const float& deltaTime);
