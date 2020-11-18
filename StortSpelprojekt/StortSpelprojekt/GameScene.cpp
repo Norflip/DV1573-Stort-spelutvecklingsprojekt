@@ -344,7 +344,7 @@ void GameScene::OnActivate()
 
 		dx::XMVECTOR position = dx::XMVectorAdd(Chunk::IndexToWorld(spawnIndex, 0.0f), dx::XMVectorSet(CHUNK_SIZE / 2.0f, 0, CHUNK_SIZE / 2.0f, 0));
 		house->GetTransform().SetPosition(position);
-
+		
 		if (house->HasComponent<RigidBodyComponent>())
 			house->GetComponent<RigidBodyComponent>()->SetPosition(position);
 

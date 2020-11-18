@@ -155,11 +155,12 @@ void main(ComputeShaderInput IN) // light culling everyframe
 		if (Lights[i].enabled)
 		{
 			Light light = Lights[i];
-			
+			o_LightGrid[IN.groupID.xy] = uint2(1, 1);
 			switch (light.type)
 			{
 			case POINT_LIGHT:
 			{
+				o_LightGrid[IN.groupID.xy] = uint2(1, 1);
 				float3 lightPositionVS = mul(float4(light.lightPosition, 1), view).xyz;
 				Sphere sphere = { lightPositionVS, light.range };
 				if (SphereInsideFrustum(sphere, GroupFrustum, nearClipVS, maxDepthVS))

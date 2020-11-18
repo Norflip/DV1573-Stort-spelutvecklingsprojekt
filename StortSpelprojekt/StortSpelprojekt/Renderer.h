@@ -96,7 +96,7 @@ public:
 
 	void RemoveRenderPass(RenderPass*);
 
-	void InitForwardPlus(CameraComponent* camera, Window* window, Shader forwardPlusShader);
+	void InitForwardPlus(CameraComponent* camera, Window* window, Shader& forwardPlusShader);
 	void UpdateForwardPlus(CameraComponent* camera);
 	std::vector<UINT>& cullLightsOnCPU();
 	ALIGN16_ALLOC;

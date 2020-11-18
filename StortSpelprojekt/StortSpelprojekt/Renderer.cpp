@@ -774,7 +774,7 @@ void Renderer::DrawScreenQuad(const Material* material)
 }
 
 
-void Renderer::InitForwardPlus(CameraComponent* camera, Window* window, Shader forwardPlusShader)
+void Renderer::InitForwardPlus(CameraComponent* camera, Window* window, Shader& forwardPlusShader)
 {
 	
 	
@@ -947,35 +947,3 @@ void Renderer::UpdateForwardPlus(CameraComponent* camera)
 	//context->Dispatch(1, 1, 1);
 }
 
-std::vector<UINT>& Renderer::cullLightsOnCPU()
-{
-	
-	//for (int frustum = 0; frustum < frustum_CPU_data.size(); frustum++)
-	//{
-	//	for (int light = 0; light < LightManager::Instance().GetPointLightCount(); light++)
-	//	{
-	//		PointLightComponent* pLight = LightManager::Instance().GetPointLight(light);
-	//		
-	//		Sphere sphere;
-	//		sphere.c = pLight->GetOwner()->GetTransform().GetWorldPosition();
-	//		sphere.r = pLight->GetRange();
-	//		if (DXHelper::SphereInsideFrustum(sphere, frustum_CPU_data[frustum], nearClipVS, maxDepthVS))
-	//		{
-	//			// Add light to light list for transparent geometry.
-	//			t_AppendLight(i);
-
-	//			if (!SphereInsidePlane(sphere, minPlane))
-	//			{
-	//				// Add light to light list for opaque geometry.
-	//				o_AppendLight(i);
-	//			}
-	//		}
-	//	}
-	//}
-
-
-
-
-
-
-}

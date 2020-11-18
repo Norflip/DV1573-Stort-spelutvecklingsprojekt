@@ -536,14 +536,7 @@ bool DXHelper::SphereInsidePlane(Sphere sphere, Plane plane)
 	return dx::XMVectorGetX(dx::XMVector3Dot(plane.N, sphere.c)) - plane.d < -sphere.r;
 }
 
-bool DXHelper::ConeInsidePlane(Cone cone, Plane plane)
-{
-	/*float3 m = cross(cross(plane.N, cone.d), cone.d);
-	float3 Q = cone.T + cone.d * cone.h - m * cone.r;
 
-
-	return PointInsidePlane(cone.T, plane) && PointInsidePlane(Q, plane);*/
-}
 
 bool DXHelper::SphereInsideFrustum(Sphere sphere, Frustum frustum, float zNear, float zFar)
 {
