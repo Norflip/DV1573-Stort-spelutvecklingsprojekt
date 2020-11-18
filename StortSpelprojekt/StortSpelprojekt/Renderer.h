@@ -95,7 +95,7 @@ public:
 
 	void RemoveRenderPass(RenderPass*);
 
-	void InitForwardPlus(CameraComponent* camera, Window* window);
+	void InitForwardPlus(CameraComponent* camera, Window* window, Shader forwardPlusShader);
 	void UpdateForwardPlus(CameraComponent* camera);
 	ALIGN16_ALLOC;
 

@@ -717,7 +717,7 @@ void Renderer::DrawScreenQuad(const Material* material)
 }
 
 
-void Renderer::InitForwardPlus(CameraComponent* camera, Window* window)
+void Renderer::InitForwardPlus(CameraComponent* camera, Window* window, Shader forwardPlusShader)
 {
 	
 	
@@ -816,7 +816,11 @@ void Renderer::InitForwardPlus(CameraComponent* camera, Window* window)
 	DXHelper::CreateStructuredBuffer(device, &o_LightIndexList_uavbuffer, o_LightIndexList.data(), sizeof(UINT), o_LightIndexList.size(), &o_LightIndexList_uav, &o_LightIndexList_srv);
 	t_LightIndexList.resize(32); //lightcount??
 	DXHelper::CreateStructuredBuffer(device, &t_LightIndexList_uavbuffer, t_LightIndexList.data(), sizeof(UINT), t_LightIndexList.size(), &t_LightIndexList_uav, &t_LightIndexList_srv);
+	DepthPass::Init(device, width,height);
 
+	forwardPlusShader.SetComputeShader("Shaders/ForwardPlusRendering.hlsl");
+	forwardPlusShader.CompileCS(device);
+	forwardPlusShader.BindToContext(context);
 }
 
 void Renderer::UpdateForwardPlus(CameraComponent* camera)
@@ -847,8 +851,8 @@ void Renderer::UpdateForwardPlus(CameraComponent* camera)
 	//////DEPTH PASS END-----------------------------------------------
 
 	ID3D11UnorderedAccessView* nullUAV;
-	context->CSSetUnorderedAccessViews(3, 1, &nullUAV, NULL); //u5
-	context->CSSetUnorderedAccessViews(4, 1, &nullUAV, NULL); //u6
+	context->CSSetUnorderedAccessViews(3, 1, &nullUAV, NULL); //u3
+	context->CSSetUnorderedAccessViews(4, 1, &nullUAV, NULL); //u4
 	context->CSSetUnorderedAccessViews(5, 1, &nullUAV, NULL); //u5
 	context->CSSetUnorderedAccessViews(6, 1, &nullUAV, NULL); //u6
 	
