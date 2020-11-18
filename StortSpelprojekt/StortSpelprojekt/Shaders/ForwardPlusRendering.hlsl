@@ -159,6 +159,8 @@ void main(ComputeShaderInput IN) // light culling everyframe
 			{
 			case POINT_LIGHT:
 			{
+				//test
+				o_LightGrid[IN.dispatchThreadID.xy] = uint2(1, 1);
 				Sphere sphere = { light.positionVS.xyz, light.range };
 				if (SphereInsideFrustum(sphere, GroupFrustum, nearClipVS, maxDepthVS))
 				{
