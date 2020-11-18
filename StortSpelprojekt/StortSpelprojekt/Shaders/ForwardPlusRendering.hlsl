@@ -127,9 +127,7 @@ void main(ComputeShaderInput IN) // light culling everyframe
 		t_LightCount = 0;
 		GroupFrustum = in_Frustums[IN.groupID.x + (IN.groupID.y * numThreadGroups.x)];
 	}
-	//test
-	o_LightGrid[IN.dispatchThreadID.xy] = uint2(1, 1);
-	//test
+
 	GroupMemoryBarrierWithGroupSync();
 
 	InterlockedMin(uMinDepth, uDepth);
@@ -151,9 +149,11 @@ void main(ComputeShaderInput IN) // light culling everyframe
 
 	// Cull lights
 	// Each thread in a group will cull 1 light until all lights have been culled.
-	for (uint i = IN.groupIndex; i < LIGHT_COUNT; i += BLOCK_SIZE * BLOCK_SIZE)
+	for (uint i = IN.groupIndex; i < LIGHT_COUNT; i += 1) //BLOCK_SIZE * BLOCK_SIZE
 	{
-		
+		//test
+		o_LightGrid[IN.dispatchThreadID.xy] = uint2(1, 1);
+		//test
 		if (Lights[i].enabled)
 		{
 			Light light = Lights[i];
