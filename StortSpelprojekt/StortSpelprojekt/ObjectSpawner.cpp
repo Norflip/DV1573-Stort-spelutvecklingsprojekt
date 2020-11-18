@@ -395,8 +395,6 @@ std::vector<dx::XMFLOAT2> ObjectSpawner::CreateSpawnPositions(QuadTree* tree, fl
 	size_t fails = 0;
 	size_t cols = 0;
 
-	std::cout << "getting spawn positions ---------------\n";
-
 	for (size_t i = 0; i < points.size(); i++)
 	{
 		dx::XMFLOAT2 point = points[i];

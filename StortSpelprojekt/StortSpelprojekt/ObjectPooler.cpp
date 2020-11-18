@@ -47,6 +47,7 @@ Object* ObjectPooler::GetItem(std::string key)
 
 		pool->outside.insert(obj);
 		obj->AddFlag(ObjectFlag::ENABLED);
+		
 		RigidBodyComponent* body = obj->GetComponent<RigidBodyComponent>();
 		if (body != nullptr)
 			body->GetRigidBody()->setIsActive(true);
@@ -64,8 +65,10 @@ void ObjectPooler::ReturnItem(Object* object)
 		Pool* pool = GetPool(key);
 		if (pool != nullptr)
 		{
+			Transform::ClearFromHierarchy(object->GetTransform());
+			object->Reset();
 			object->RemoveFlag(ObjectFlag::ENABLED);
-			assert(pool->inside.size() + pool->outside.size() > POOL_MAX_LIMIT);
+			assert(pool->inside.size() + pool->outside.size() < POOL_MAX_LIMIT);
 
 			RigidBodyComponent* body = object->GetComponent<RigidBodyComponent>();
 			if (body != nullptr)
@@ -121,8 +124,6 @@ void ObjectPooler::Warm(Pool* pool, size_t amount, bool additive)
 		size_t toAdd = amount;
 		if (additive)
 			toAdd -= pool->inside.size();
-
-		//assert((pool->inside.size() + pool->outside.size() + toAdd) < POOL_MAX_LIMIT);
 
 		for (size_t i = 0; i < toAdd; i++)
 		{

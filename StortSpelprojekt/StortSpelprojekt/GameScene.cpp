@@ -89,6 +89,9 @@ void GameScene::InitializeObjects()
 
 	AddObject(houseBaseObject);
 
+
+
+
 	//Player & Camera
 	dx::XMFLOAT3 playerSpawn = { 10,2,10 };
 	dx::XMFLOAT3 zero = { 0.f, 0.f, 0.f };
@@ -181,6 +184,11 @@ void GameScene::InitializeObjects()
 	testObject2->GetTransform().SetPosition({ 23, 0.5f, 50 });
 	AddObject(testObject2);
 
+	//LOADING BASE MONSTER; ADDING SKELETONS TO IT
+	enemyManager = new EnemyManager();
+	enemyManager->Initialize(player, player->GetComponent<PlayerComp>(), root);
+	enemyManager->InitBaseEnemy();
+	enemyManager->InitChargerEnemy();
 }
 
 void GameScene::InitializeGUI()
@@ -326,11 +334,7 @@ void GameScene::OnActivate()
 
 	AudioMaster::Instance().PlaySoundEvent("wind");
 	//this->PrintSceneHierarchy(root, 0);
-
-	//LOADING BASE MONSTER; ADDING SKELETONS TO IT
-	enemyManager = new EnemyManager(resources, player, player->GetComponent<PlayerComp>(), root);
-	enemyManager->InitBaseEnemy();
-	enemyManager->InitChargerEnemy();
+	enemyManager->SpawnEnemies();
 	
 	LightManager::Instance().ForceUpdateBuffers(renderer->GetContext());
 }

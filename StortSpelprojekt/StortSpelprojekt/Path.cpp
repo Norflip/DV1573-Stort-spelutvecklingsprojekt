@@ -140,11 +140,16 @@ void Path::SetPointsFromIndexes(const std::vector<dx::XMINT2>& indexes)
 void Path::CreateLineSegments()
 {
 	segments.clear();
-	const float distanceOffset = 1000.0f;
+	const float distanceOffset = CHUNK_SIZE * 5.0f;
 
 	for (size_t i = 0; i < points.size() - 1; i++)
 	{
 		LineSegment segment(points[i], points[i + 1]);
+		segment.start.x = roundf(segment.start.x);
+		segment.start.z = roundf(segment.start.z);
+		segment.end.x = roundf(segment.end.x);
+		segment.end.z = roundf(segment.end.z);
+
 		if (i == 0)
 		{
 			dx::XMFLOAT2 direction = segment.Direction();
@@ -158,8 +163,8 @@ void Path::CreateLineSegments()
 		segments.push_back(segment);
 	}
 
-	LineSegment& lastSegment = segments[segments.size() - 1];
-	PathPoint& lastPoint = lastSegment.end;
+	LineSegment lastSegment = segments[segments.size() - 1];
+	PathPoint lastPoint = lastSegment.end;
 	dx::XMFLOAT2 direction = lastSegment.Direction();
 	dx::XMFLOAT2 right = dx::XMFLOAT2(-direction.y, direction.x);
 

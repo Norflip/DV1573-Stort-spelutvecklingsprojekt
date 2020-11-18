@@ -25,7 +25,8 @@ public:
 
 	struct EnviromentProp
 	{
-		PropFactory* factory;
+		std::string key;
+		PropFactory factory;
 		bool onRoad;
 		size_t width;
 		size_t height;
@@ -38,7 +39,7 @@ public:
 	{
 		dx::XMINT2 index;
 		ChunkType type;
-		EnviromentProp* prop;
+		std::string propKey;
 	};
 
 
@@ -58,7 +59,7 @@ public:
 	std::unordered_map<int, Chunk*>& GetChunkMap() { return this->chunkMap; }
 	const std::unordered_map<int, Chunk*>& GetChunkMap() const { return this->chunkMap; }
 
-	size_t RegisterEnviromentProp (size_t minSegment, size_t maxSegment, size_t queueCount, PropFactory factory);
+	size_t RegisterEnviromentProp (std::string key, size_t minSegment, size_t maxSegment, size_t queueCount, PropFactory factory);
 	//size_t RegisterRoadObstacle(size_t minSegment, size_t maxSegment);
 
 private:
@@ -67,7 +68,7 @@ private:
 	void AddEnvironmentProps(const size_t& segmentIndex, const WorldDescription& description, dx::XMINT2 minIndex, dx::XMINT2 maxIndex, std::unordered_map<int, ChunkIndexInfo>& chunkInformation);
 	static bool SortProps(const EnviromentProp& propA, const EnviromentProp& propB);
 
-	Chunk* CreateChunk(const ChunkIndexInfo& indexInfo, Object* root, const WorldDescription& description);
+	Chunk* CreateChunk(ChunkIndexInfo& indexInfo, Object* root, const WorldDescription& description);
 	Mesh* GetChunkMesh(ID3D11Device* device);
 
 	void AddChunksFromPath(std::vector<dx::XMINT2>& path, std::unordered_map<int, ChunkIndexInfo>& chunks);

@@ -3,6 +3,8 @@
 #include "Engine.h"
 
 #include "WeaponComponent.h"
+#include "EnemyManager.h"
+
 //PlayerComp::PlayerComp() 
 //{
 //	health = 100;
@@ -21,7 +23,6 @@
 PlayerComp::PlayerComp(Renderer* renderer, CameraComponent* camComp, Physics* physics, GUIManager* guimanager, float health, float movementSpeed, float radius, float attack, float attackSpeed)
 {
 	//attackTimer.Start();
-
 	this->guiMan = guimanager;
 	this->health = health;
 	this->attack = attack;
@@ -38,7 +39,7 @@ PlayerComp::PlayerComp(Renderer* renderer, CameraComponent* camComp, Physics* ph
 	this->renderer = renderer;
 	this->physics = physics;
 	this->throwStrength = 50;
-	this->holdAngle = dx::SimpleMath::Vector3( 0.3f, -0.4f, 0.8f );
+	this->holdAngle = dx::SimpleMath::Vector3(0.3f, -0.4f, 0.8f);
 	Reset();
 
 	this->fuelDippingBar = static_cast<GUISprite*>(guiMan->GetGUIObject("fuelDippingBar"));
@@ -156,7 +157,7 @@ void PlayerComp::DropObject()
 		if (holding->HasComponent<ParticleSystemComponent>())
 			if (!holding->GetComponent<ParticleSystemComponent>()->GetActive())
 				holding->GetComponent<ParticleSystemComponent>()->SetActive(true);
-						
+
 		float tossSpeed = throwStrength / rbComp->GetMass();
 		objectRb->setLinearVelocity({ dx::XMVectorGetX(camRot) * tossSpeed ,  dx::XMVectorGetY(camRot) * tossSpeed,  dx::XMVectorGetZ(camRot) * tossSpeed });
 		holding = nullptr;
@@ -206,16 +207,16 @@ void PlayerComp::RayCast(const float& deltaTime)
 					if ((fuel + temp) <= 100.0f)
 						fuel += temp;
 				}
-				
+
 				if (hit.object->HasComponent<ParticleSystemComponent>())
-					if(hit.object->GetComponent<ParticleSystemComponent>()->GetActive())
+					if (hit.object->GetComponent<ParticleSystemComponent>()->GetActive())
 						hit.object->GetComponent<ParticleSystemComponent>()->SetActive(false);
-				
+
 
 				hit.object->GetComponent<PickupComponent>()->SetActive(false);
 				RigidBodyComponent* rbComp = hit.object->GetComponent<RigidBodyComponent>();
 				rbComp->Release();
-				
+
 			}
 		}
 
@@ -235,11 +236,11 @@ void PlayerComp::RayCast(const float& deltaTime)
 				hit.object->GetComponent<BoxColliderComponent>()->SetRotation(0, { 5, 5, 5, 5 });
 				//hit.object->RemoveFlag(ObjectFlag::ENABLED);
 				currentWeapon->RemoveFlag(ObjectFlag::ENABLED);
-				
+
 				if (holding->HasComponent<ParticleSystemComponent>())
 					if (holding->GetComponent<ParticleSystemComponent>()->GetActive())
 						holding->GetComponent<ParticleSystemComponent>()->SetActive(false);
-				
+
 			}
 		}
 
@@ -248,26 +249,26 @@ void PlayerComp::RayCast(const float& deltaTime)
 	//ATTACK ENEMIES
 	if (LMOUSE_DOWN && holding == nullptr)
 	{
-		
+
 		if (physics->RaytestSingle(ray, 5.0f, hit, FilterGroups::ENEMIES))
 		{
-			if (hit.object != nullptr && hit.object->HasComponent<EnemyStatsComp>())
+			if (hit.object != nullptr)
 			{
-				if (hit.object->GetComponent<EnemyStatsComp>()->IsEnabled())
-				{
-					if (hit.object->GetComponent<EnemyStatsComp>()->GetHealth() >= 0.0f)
-					{						
-						hit.object->GetComponent<EnemyStatsComp>()->LoseHealth(attack);
-						std::cout << "Hit hit hit" << std::endl;
-						AudioMaster::Instance().PlaySoundEvent("punch");
+				EnemyStatsComp* stats = hit.object->GetComponent<EnemyStatsComp>();
 
-						if (hit.object->GetComponent<EnemyStatsComp>()->GetHealth() <= 0.0f)
-						{
-							RigidBodyComponent* rbComp = hit.object->GetComponent<RigidBodyComponent>();
+				if (stats != nullptr && stats->IsEnabled() && stats->GetHealth() >= 0.0f)
+				{
+					stats->LoseHealth(attack);
+					AudioMaster::Instance().PlaySoundEvent("punch");
+
+					if (stats->GetHealth() <= 0.0f)
+					{
+						stats->GetManager()->RemoveEnemy(hit.object);
+
+							/*RigidBodyComponent* rbComp = hit.object->GetComponent<RigidBodyComponent>();
 							rbComp->Release();
-							Engine::Instance->GetActiveScene()->RemoveObject(hit.object);
-						}						
-					}					
+							Engine::Instance->GetActiveScene()->RemoveObject(hit.object);*/
+					}
 				}
 			}
 		}
@@ -276,7 +277,7 @@ void PlayerComp::RayCast(const float& deltaTime)
 		{
 
 			AudioMaster::Instance().PlaySoundEvent("choptree");
-			
+
 		}
 	}
 
