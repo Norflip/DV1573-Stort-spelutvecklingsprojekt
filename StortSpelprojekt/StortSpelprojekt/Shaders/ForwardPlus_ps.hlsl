@@ -76,7 +76,7 @@ float4 main(VS_OUTPUT input) : SV_TARGET //VS_OUTPUT input = IN
 ////for_alpha_ps.hlsl
 
 //#include "PhongShading.hlsl"
-#include "PSBlendModes.hlsl"
+//#include "PSBlendModes.hlsl"
 //#include "IO.hlsl"
 //Texture2D diffuseMap : register(t0);
 //Texture2D normalMap : register(t1);
