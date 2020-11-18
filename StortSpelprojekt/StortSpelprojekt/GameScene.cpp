@@ -211,7 +211,7 @@ void GameScene::InitializeObjects()
 	/* Different firestuff stuffy stuff  */
 	Object* puzzleFlyTest2 = resources->AssembleObject("PuzzleFlyStatue", "PuzzleFlyStatueMaterial", ObjectFlag::DEFAULT | ObjectFlag::NO_CULL);
 	puzzleFlyTest2->GetTransform().SetPosition({ 28, 1.3f, 52 });
-	//puzzleFlyTest2->AddComponent<FireTextureComponent>(renderer, fireShader);
+	puzzleFlyTest2->AddComponent<FireTextureComponent>(renderer, fireShader);
 	/*FrogPuzzle* frogpuzzle = new FrogPuzzle(resources);
 	frogpuzzle*/
 }

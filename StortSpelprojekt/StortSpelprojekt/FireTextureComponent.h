@@ -8,7 +8,7 @@ class FireTextureComponent : public Component
 public:
 	FireTextureComponent(Renderer* renderer, Shader* shader);
 	virtual ~FireTextureComponent();
-	void Initialize(ID3D11Device* device);
+	void InitializeFire(ID3D11Device* device);
 	void Shutdown();
 
 	void Update(const float& deltaTime) override;
@@ -39,4 +39,7 @@ private:
 	ID3D11Buffer* objectBuffer;
 	ID3D11Buffer* noiseBuffer;
 	ID3D11Buffer* disortionBuffer;
+	dx::XMMATRIX quadMatrix;
+	std::vector<Material*> quadMaterial;
+	std::vector<Mesh*> quadMesh;
 };
