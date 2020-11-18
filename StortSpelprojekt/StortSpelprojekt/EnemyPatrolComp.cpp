@@ -23,13 +23,11 @@ EnemyPatrolComp::~EnemyPatrolComp()
 
 void EnemyPatrolComp::Update(const float& deltaTime)
 {
-
 	//animation not implemented 
 	//switching to another enemy state not implemented
 
 	//update
-	dx::XMVECTOR posVec = GetOwner()->GetTransform().GetPosition();
-	
+	//dx::XMVECTOR posVec = GetOwner()->GetTransform().GetPosition();
 	if (timer >= randomIntervall)
 	{
 		randomIntervall = (rand() % 10);
