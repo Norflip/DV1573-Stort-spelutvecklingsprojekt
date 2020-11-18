@@ -29,13 +29,14 @@ float4 main(VS_OUTPUT input) : SV_TARGET
 
    
 
-	uint2 tileIndex = uint2(floor(input.position.xy / 32));
+	uint2 tileIndex = uint2(floor(input.position.xy / (BLOCK_SIZE * BLOCK_SIZE)));
 
 	uint startOffset = LightGrid[tileIndex].x;
 	uint lightCount = LightGrid[tileIndex].y;
 
 	for (uint i = 0; i < lightCount; i++)
 	{
+		float4 result = float4(0.0f, 0.0f, 0.0f, 0.0f);
 		uint lightIndex = LightIndexList[startOffset + i];
 		Light light = Lights[lightIndex];
 		

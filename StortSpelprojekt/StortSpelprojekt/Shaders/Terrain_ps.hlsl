@@ -42,7 +42,7 @@ float4 main(VS_OUTPUT input) : SV_TARGET
 	float3 normal = normalize(input.normal);
     
 
-    uint2 tileIndex = uint2(floor(input.position.xy / BLOCK_SIZE));
+	uint2 tileIndex = uint2(floor(input.position.xy / (BLOCK_SIZE * BLOCK_SIZE)));
 
 	uint startOffset = LightGrid[tileIndex].x;
 	uint lightCount = LightGrid[tileIndex].y;

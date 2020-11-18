@@ -122,6 +122,7 @@ void GameScene::InitializeObjects()
 
 	dx::XMFLOAT3 lightTranslation = dx::XMFLOAT3(0.0f, 0.0f, 0.0f);
 	testPointLight->GetTransform().SetPosition(dx::XMLoadFloat3(&lightTranslation));
+
 	LightComponent* pLight = testPointLight->AddComponent<LightComponent>(0,dx::XMFLOAT4(0.7f, 0.3f, 0.0f, 1.0f), 7.f);
 	pLight->SetEnabled(true);
 	//pLight->SetIntensity(0.05f);

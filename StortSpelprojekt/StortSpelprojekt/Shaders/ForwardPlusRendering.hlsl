@@ -162,7 +162,8 @@ void main(ComputeShaderInput IN) // light culling everyframe
 			case POINT_LIGHT:
 			{
 
-				float3 lightPositionVS = mul(float4(light.lightPosition.xyz, 1), view).xyz;
+
+				float3 lightPositionVS = mul(light.lightPosition, view).xyz;
 				Sphere sphere = { lightPositionVS, light.range };
 				if (SphereInsideFrustum(sphere, GroupFrustum, nearClipVS, maxDepthVS))
 				{
