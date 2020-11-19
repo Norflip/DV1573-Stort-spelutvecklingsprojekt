@@ -548,7 +548,6 @@ void Renderer::DrawRenderItemParticles(const RenderItem& item, CameraComponent* 
 
 	//context->Draw(item.mesh->GetVertexCount(), 0);
 	context->DrawIndexed(item.mesh->GetIndexCountPart(), 0, 0);
-
 }
 
 void Renderer::DrawBatch(const Batch& batch, CameraComponent* camera)

@@ -298,47 +298,6 @@ void ParticleSystemComponent::UpdateBuffers()
 {
 	/*	Build the vertex array from the particle list array. Each particle is a quad made out of two triangles	*/
 
-	int index = 0;
-	for (int i = 0; i < currentParticleCount; i++)
-	{
-		// Bottom left.
-		vertices[index].position = dx::XMFLOAT3(particleList[i].posx - particleSize, (particleList[i].posy) - particleSize, particleList[i].posz);
-		vertices[index].texcoord = dx::XMFLOAT2(0.0f, 1.0f);
-		vertices[index].color = dx::XMFLOAT4(particleList[i].red, particleList[i].green, particleList[i].blue, 1.0f);
-		index++;
-
-		// Top left.
-		vertices[index].position = dx::XMFLOAT3(particleList[i].posx - particleSize, (particleList[i].posy) + particleSize, particleList[i].posz);
-		vertices[index].texcoord = dx::XMFLOAT2(0.0f, 0.0f);
-		vertices[index].color = dx::XMFLOAT4(particleList[i].red, particleList[i].green, particleList[i].blue, 1.0f);
-		index++;
-
-		// Bottom right.
-		vertices[index].position = dx::XMFLOAT3(particleList[i].posx + particleSize, (particleList[i].posy) - particleSize, particleList[i].posz);
-		vertices[index].texcoord = dx::XMFLOAT2(1.0f, 1.0f);
-		vertices[index].color = dx::XMFLOAT4(particleList[i].red, particleList[i].green, particleList[i].blue, 1.0f);
-		index++;
-
-		// Bottom right.
-		vertices[index].position = dx::XMFLOAT3(particleList[i].posx + particleSize, (particleList[i].posy) - particleSize, particleList[i].posz);
-		vertices[index].texcoord = dx::XMFLOAT2(1.0f, 1.0f);
-		vertices[index].color = dx::XMFLOAT4(particleList[i].red, particleList[i].green, particleList[i].blue, 1.0f);
-		index++;
-
-		// Top left.
-		vertices[index].position = dx::XMFLOAT3(particleList[i].posx - particleSize, (particleList[i].posy) + particleSize, particleList[i].posz);
-		vertices[index].texcoord = dx::XMFLOAT2(0.0f, 0.0f);
-		vertices[index].color = dx::XMFLOAT4(particleList[i].red, particleList[i].green, particleList[i].blue, 1.0f);
-		index++;
-
-		// Top right.
-		vertices[index].position = dx::XMFLOAT3(particleList[i].posx + particleSize, (particleList[i].posy) + particleSize, particleList[i].posz);
-		vertices[index].texcoord = dx::XMFLOAT2(1.0f, 0.0f);
-		vertices[index].color = dx::XMFLOAT4(particleList[i].red, particleList[i].green, particleList[i].blue, 1.0f);
-		index++;
-	}
-
-
 	/*
 		Resource is mapped for writing, the previous contents of the resource will be undefined.
 		Map/Unmap is a common use with temporary buffers. - Dynamic usage of our vertexbuffer. (It is at least prefered)
@@ -349,7 +308,49 @@ void ParticleSystemComponent::UpdateBuffers()
 	assert(SUCCEEDED(result));
 
 	Mesh::VertexColor* verticesPtr = (Mesh::VertexColor*)mappedResource.pData;
-	memcpy(verticesPtr, (void*)vertices, (sizeof(Mesh::VertexColor) * vertexCount));
+
+
+	int index = 0;
+	for (int i = 0; i < maxParticles; i++)
+	{
+		// Bottom left.
+		verticesPtr[index].position = dx::XMFLOAT3(particleList[i].posx - particleSize, (particleList[i].posy) - particleSize, particleList[i].posz);
+		verticesPtr[index].texcoord = dx::XMFLOAT2(0.0f, 1.0f);
+		verticesPtr[index].color = dx::XMFLOAT4(particleList[i].red, particleList[i].green, particleList[i].blue, 1.0f);
+		index++;
+
+		// Top left.
+		verticesPtr[index].position = dx::XMFLOAT3(particleList[i].posx - particleSize, (particleList[i].posy) + particleSize, particleList[i].posz);
+		verticesPtr[index].texcoord = dx::XMFLOAT2(0.0f, 0.0f);
+		verticesPtr[index].color = dx::XMFLOAT4(particleList[i].red, particleList[i].green, particleList[i].blue, 1.0f);
+		index++;
+
+		// Bottom right.
+		verticesPtr[index].position = dx::XMFLOAT3(particleList[i].posx + particleSize, (particleList[i].posy) - particleSize, particleList[i].posz);
+		verticesPtr[index].texcoord = dx::XMFLOAT2(1.0f, 1.0f);
+		verticesPtr[index].color = dx::XMFLOAT4(particleList[i].red, particleList[i].green, particleList[i].blue, 1.0f);
+		index++;
+
+		// Bottom right.
+		verticesPtr[index].position = dx::XMFLOAT3(particleList[i].posx + particleSize, (particleList[i].posy) - particleSize, particleList[i].posz);
+		verticesPtr[index].texcoord = dx::XMFLOAT2(1.0f, 1.0f);
+		verticesPtr[index].color = dx::XMFLOAT4(particleList[i].red, particleList[i].green, particleList[i].blue, 1.0f);
+		index++;
+
+		// Top left.
+		verticesPtr[index].position = dx::XMFLOAT3(particleList[i].posx - particleSize, (particleList[i].posy) + particleSize, particleList[i].posz);
+		verticesPtr[index].texcoord = dx::XMFLOAT2(0.0f, 0.0f);
+		verticesPtr[index].color = dx::XMFLOAT4(particleList[i].red, particleList[i].green, particleList[i].blue, 1.0f);
+		index++;
+
+		// Top right.
+		verticesPtr[index].position = dx::XMFLOAT3(particleList[i].posx + particleSize, (particleList[i].posy) + particleSize, particleList[i].posz);
+		verticesPtr[index].texcoord = dx::XMFLOAT2(1.0f, 0.0f);
+		verticesPtr[index].color = dx::XMFLOAT4(particleList[i].red, particleList[i].green, particleList[i].blue, 1.0f);
+		index++;
+	}
+
+	//memcpy(verticesPtr, (void*)vertices, (sizeof(Mesh::VertexColor) * index));
 
 	mesh->SetVertexCount(vertexCount);
 	renderer->GetContext()->Unmap(vertexBuffer, 0);
