@@ -3,6 +3,8 @@
 #include "Engine.h"
 
 #include "WeaponComponent.h"
+#include "EnemyManager.h"
+
 //PlayerComp::PlayerComp() 
 //{
 //	health = 100;
@@ -21,7 +23,6 @@
 PlayerComp::PlayerComp(Renderer* renderer, CameraComponent* camComp, Object* house, Physics* physics, GUIManager* guimanager, float health, float movementSpeed, float radius, float attack, float attackSpeed)
 {
 	//attackTimer.Start();
-
 	this->guiMan = guimanager;
 	this->health = health;
 	this->attack = attack;
@@ -115,6 +116,7 @@ void PlayerComp::Update(const float& deltaTime)
 	{
 		HoldObject();
 		DropObject();
+		
 	}
 
 	/*if (GetOwner()->GetComponent<ControllerComp>()->GetInRange() && !static_cast<GUISprite*>(guiMan->GetGUIObject("door"))->GetVisible())
@@ -128,6 +130,8 @@ void PlayerComp::Update(const float& deltaTime)
 		static_cast<GUISprite*>(guiMan->GetGUIObject("door"))->SetVisible(false);
 		static_cast<GUISprite*>(guiMan->GetGUIObject("dot"))->SetVisible(true);
 	}*/
+	
+	pickedUpLastFrame = false;
 }
 
 void PlayerComp::FixedUpdate(const float& fixedDeltaTime)
@@ -147,6 +151,7 @@ void PlayerComp::FixedUpdate(const float& fixedDeltaTime)
 
 void PlayerComp::HoldObject()
 {
+	
 	inverseViewMatrix = dx::XMMatrixInverse(nullptr, cam->GetViewMatrix());
 	wepOffTrans.Translation(holdAngle);
 	wepOffRot = wepOffRot.CreateFromAxisAngle(up, dx::XMConvertToRadians(-40.0f));
@@ -162,7 +167,7 @@ void PlayerComp::HoldObject()
 
 void PlayerComp::DropObject()
 {
-	if (KEY_DOWN(T))
+	if (KEY_DOWN(E) && !pickedUpLastFrame)
 	{
 		holding->RemoveFlag(ObjectFlag::NO_CULL);
 		dx::XMVECTOR camRot = cam->GetOwner()->GetTransform().GetRotation();
@@ -183,7 +188,7 @@ void PlayerComp::DropObject()
 		if (holding->HasComponent<ParticleSystemComponent>())
 			if (!holding->GetComponent<ParticleSystemComponent>()->GetActive())
 				holding->GetComponent<ParticleSystemComponent>()->SetActive(true);
-						
+
 		float tossSpeed = throwStrength / rbComp->GetMass();
 		objectRb->setLinearVelocity({ dx::XMVectorGetX(camRot) * tossSpeed ,  dx::XMVectorGetY(camRot) * tossSpeed,  dx::XMVectorGetZ(camRot) * tossSpeed });
 		holding = nullptr;
@@ -268,33 +273,33 @@ void PlayerComp::RayCast(const float& deltaTime)
 			if (hit.object != nullptr)
 			{
 				AudioMaster::Instance().PlaySoundEvent("pickupSound");
-				Type pickupType = hit.object->GetComponent<PickupComponent>()->GetType();
+				PickupType pickupType = hit.object->GetComponent<PickupComponent>()->GetType();
 				float temp = hit.object->GetComponent<PickupComponent>()->GetAmount();
 
-				if (pickupType == Type::Health)
+				if (pickupType == PickupType::Health)
 				{
 					if ((health + temp) <= 100.0f)
 						health += temp;
 					else
 						health = 100.0f;
 				}
-				else if (pickupType == Type::Food)
+				else if (pickupType == PickupType::Food)
 				{
 					if ((food + temp) <= 100.0f)
 						food += temp;
 					else
 						food = 100.0f;
 				}
-				else if (pickupType == Type::Fuel)
+				else if (pickupType == PickupType::Fuel)
 				{
 					if ((fuel + temp) <= 100.0f)
 						fuel += temp;
 					else
 						fuel = 100.0f;
 				}
-				
+
 				if (hit.object->HasComponent<ParticleSystemComponent>())
-					if(hit.object->GetComponent<ParticleSystemComponent>()->GetActive())
+					if (hit.object->GetComponent<ParticleSystemComponent>()->GetActive())
 						hit.object->GetComponent<ParticleSystemComponent>()->SetActive(false);
 				
 				hit.object->GetComponent<PickupComponent>()->SetActive(false);
@@ -308,6 +313,7 @@ void PlayerComp::RayCast(const float& deltaTime)
 		{
 			if (hit.object != nullptr)
 			{
+				pickedUpLastFrame = true;
 				AudioMaster::Instance().PlaySoundEvent("pickupFuel");
 				holding = hit.object;
 				RigidBodyComponent* rbComp = hit.object->GetComponent<RigidBodyComponent>();
@@ -318,36 +324,38 @@ void PlayerComp::RayCast(const float& deltaTime)
 				hit.object->GetComponent<BoxColliderComponent>()->SetRotation(0, { 5, 5, 5, 5 });
 				//hit.object->RemoveFlag(ObjectFlag::ENABLED);
 				currentWeapon->RemoveFlag(ObjectFlag::ENABLED);
-				
+
 				if (holding->HasComponent<ParticleSystemComponent>())
 					if (holding->GetComponent<ParticleSystemComponent>()->GetActive())
 						holding->GetComponent<ParticleSystemComponent>()->SetActive(false);
-				
+
 			}
 		}
 	}
 
 	//ATTACK ENEMIES
 	if (LMOUSE_DOWN && holding == nullptr)
-	{		
+	{
+
 		if (physics->RaytestSingle(ray, 5.0f, hit, FilterGroups::ENEMIES))
 		{
-			if (hit.object != nullptr && hit.object->HasComponent<EnemyStatsComp>())
+			if (hit.object != nullptr)
 			{
-				if (hit.object->GetComponent<EnemyStatsComp>()->IsEnabled())
-				{
-					if (hit.object->GetComponent<EnemyStatsComp>()->GetHealth() >= 0.0f)
-					{						
-						hit.object->GetComponent<EnemyStatsComp>()->LoseHealth(attack);
-						AudioMaster::Instance().PlaySoundEvent("punch");
+				EnemyStatsComp* stats = hit.object->GetComponent<EnemyStatsComp>();
 
-						if (hit.object->GetComponent<EnemyStatsComp>()->GetHealth() <= 0.0f)
-						{
-							RigidBodyComponent* rbComp = hit.object->GetComponent<RigidBodyComponent>();
+				if (stats != nullptr && stats->IsEnabled() && stats->GetHealth() >= 0.0f)
+				{
+					stats->LoseHealth(attack);
+					AudioMaster::Instance().PlaySoundEvent("punch");
+
+					if (stats->GetHealth() <= 0.0f)
+					{
+						stats->GetManager()->RemoveEnemy(hit.object);
+
+							/*RigidBodyComponent* rbComp = hit.object->GetComponent<RigidBodyComponent>();
 							rbComp->Release();
-							Engine::Instance->GetActiveScene()->RemoveObject(hit.object);
-						}						
-					}					
+							Engine::Instance->GetActiveScene()->RemoveObject(hit.object);*/
+					}
 				}
 			}
 		}
@@ -376,5 +384,5 @@ void PlayerComp::Reset()
 
 	this->health = 50.0f; // <------------------ DONT FORGET TO REMOVE THIS LATER!
 	foodEmpty = false;
-	gg = false;
+
 }

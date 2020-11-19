@@ -1,7 +1,7 @@
 #include "stdafx.h"
 #include "PickupComponent.h"
 
-PickupComponent::PickupComponent(Type type, float amount): pickupType(type)
+PickupComponent::PickupComponent(PickupType type, float amount): pickupType(type)
 {	
 	this->value = amount;	
 	this->isActive = true; 

@@ -5,6 +5,8 @@
 #include "Math.h"
 #include "DShape.h"
 #include "Texture.h"
+#include "WorldDescription.h"
+#include "Path.h"
 
 enum class ChunkType
 {
@@ -12,7 +14,6 @@ enum class ChunkType
 	END,
 	PATH,
 	PUZZEL,
-	NON_PATH,
 	TERRAIN
 };
 
@@ -46,12 +47,12 @@ public:
 	};
 
 public:
-	Chunk(dx::XMINT2 index, ChunkType type, const Data& data);
+	Chunk(dx::XMINT2 index, ChunkType type);
 	virtual ~Chunk();
 
 	void Update(const float& deltaTime) override;
 
-	void Create();
+	void Create(const WorldDescription& description, const Path& path, ID3D11Device* device);
 
 	bool TryGetLocalColRow(const float& x, const float& z, int& col, int& row) const;
 	float SampleHeight(const float& x, const float& z) const;
@@ -63,12 +64,16 @@ public:
 	static dx::XMVECTOR IndexToWorld(const dx::XMINT2& index, float y);
 	static dx::XMFLOAT2 IndexToWorldXZ(const dx::XMINT2& index);
 	static dx::XMINT2 WorldToIndex(float x, float z);
-	static int WorldToIndex1D(float x, float z);
+	static int WorldToIndexHash(float x, float z);
 
 	void PhysicRelease();
 
+	const Data& GetData() const { return this->data; }
+	Data& GetData() { return this->data; }
+
 private:
 	void SetupCollisionObject();
+	void CreateChunkData(const WorldDescription& description, const Path& path, ID3D11Device* device);
 
 private:
 	float min, max;
