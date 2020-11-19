@@ -83,3 +83,5 @@ struct cb_fog
 	int dayTime;
 };
 
+
+

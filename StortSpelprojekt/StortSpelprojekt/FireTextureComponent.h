@@ -1,26 +1,48 @@
 #pragma once
 #include "DXHelper.h"
 #include "ResourceManager.h"
+#include "Buffers.h"
 
 class FireTextureComponent : public Component
 {
+private:
+	
+	ALIGN16
+		struct cb_Noise
+	{
+		float frameTime;
+		dx::XMFLOAT3 scrollSpeeds;
+		dx::XMFLOAT3 scales;
+		float padding;
+	};
+
+	ALIGN16
+		struct cb_Disortion
+	{
+		dx::XMFLOAT2 distortion1;
+		dx::XMFLOAT2 distortion2;
+		dx::XMFLOAT2 distortion3;
+		float distortionScale;
+		float distortionBias;
+	};
 
 public:
 	FireTextureComponent(Renderer* renderer, Shader* shader);
 	virtual ~FireTextureComponent();
 	void InitializeFire(ID3D11Device* device);
 	void Shutdown();
-
+	Object* GetFireObject() { return this->fireObject; }
 	void Update(const float& deltaTime) override;
 	void Draw(Renderer* renderer, CameraComponent* camera) override;	
 
 private:
 	void LoadTextures(ID3D11Device* device);
 	void InitializeBuffers(ID3D11Device* device);	
+	void UpdateBuffers();
 
 private:
-	Mesh* mesh;
-	Material* meshMaterial;
+	//Mesh* mesh;
+	//Material* meshMaterial;
 
 	Renderer* renderer;
 	Shader* particlesShader;
@@ -42,4 +64,9 @@ private:
 	dx::XMMATRIX quadMatrix;
 	std::vector<Material*> quadMaterial;
 	std::vector<Mesh*> quadMesh;
+
+	Object* fireObject;
+
+	cb_Noise noise;
+	cb_Disortion disortion;
 };

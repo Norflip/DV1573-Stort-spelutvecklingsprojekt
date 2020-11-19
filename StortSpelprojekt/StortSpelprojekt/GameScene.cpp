@@ -210,10 +210,13 @@ void GameScene::InitializeObjects()
 
 	/* Different firestuff stuffy stuff  */
 	Object* puzzleFlyTest2 = resources->AssembleObject("PuzzleFlyStatue", "PuzzleFlyStatueMaterial", ObjectFlag::DEFAULT | ObjectFlag::NO_CULL);
-	puzzleFlyTest2->GetTransform().SetPosition({ 28, 1.3f, 52 });
+	puzzleFlyTest2->GetTransform().SetPosition({ 28, 1.3f, 48 });
 	puzzleFlyTest2->AddComponent<FireTextureComponent>(renderer, fireShader);
-	/*FrogPuzzle* frogpuzzle = new FrogPuzzle(resources);
-	frogpuzzle*/
+	puzzleFlyTest2->GetComponent<FireTextureComponent>()->InitializeFire(renderer->GetDevice());
+	AddObject(puzzleFlyTest2);
+
+	//Object* fire = puzzleFlyTest2->GetComponent<FireTextureComponent>()->GetFireObject();
+	//AddObject(fire);	
 }
 
 void GameScene::InitializeGUI()

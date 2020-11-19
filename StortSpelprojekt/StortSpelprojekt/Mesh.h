@@ -15,6 +15,12 @@ public:
 		dx::XMFLOAT4X4 instanceWorld;
 	};
 
+	struct VertexTexture
+	{
+		dx::XMFLOAT3 position;
+		dx::XMFLOAT2 texcoord;
+	};
+
 	struct VertexColor
 	{		
 		dx::XMFLOAT3 position;

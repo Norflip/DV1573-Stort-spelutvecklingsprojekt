@@ -4,7 +4,7 @@ Texture2D alphaTexture : register(t2);
 SamplerState sampleType;
 SamplerState sampleType2;
 
-cbuffer DistortionBuffer
+cbuffer DistortionBuffer : register(b0)
 {
 	float2 distortion1;
 	float2 distortion2;

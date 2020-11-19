@@ -23,7 +23,6 @@ VS: Shaders/Particles_vs.hlsl
 PS: Shaders/Particles_ps.hlsl
 
 Name: fireShader
-Input: texture
 VS: Shaders/Fire_vs.hlsl
 PS: Shaders/Fire_ps.hlsl
 
