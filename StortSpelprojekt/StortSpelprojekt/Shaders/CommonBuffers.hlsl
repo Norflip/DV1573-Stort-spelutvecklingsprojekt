@@ -22,7 +22,7 @@ struct Light //slot t8
 {
     float4 lightColor;
     float4 lightPosition;
-    float4 lightPositionVS;
+    //float4 lightPositionVS;
     float3 lightDirection;
     float range;
     float3 attenuation;

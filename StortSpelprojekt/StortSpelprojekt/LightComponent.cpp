@@ -2,7 +2,7 @@
 #include "LightComponent.h"
 #include "LightManager.h"
 
-LightComponent::LightComponent(UINT type, dx::XMFLOAT4 color, float range, dx::XMFLOAT3 attenuation) : type(LightType(type)), lightColor(color), range(range), attenuation(attenuation), lightDirection({ 0, -1, 1 }), spotlightAngle(.4f), enabled(false),intensity(0.2f), dirty(true) {}
+LightComponent::LightComponent(UINT type, dx::XMFLOAT4 color, float range, dx::XMFLOAT3 attenuation) : type(LightType(type)), lightColor(color), range(range), attenuation(attenuation), lightDirection({ 0, -1, 1 }), spotlightAngle(.4f), enabled(false),intensity(0.4f), dirty(true) {}
 LightComponent::~LightComponent() {}
 
 void LightComponent::Initialize()

@@ -16,9 +16,7 @@ float4 main(VS_OUTPUT input) : SV_TARGET
 		input.normal = CalculateNormalMapping(input.normal, input.tangent, normalmap);
 	}
 	float3 normalized = normalize(input.normal);
-
 	float3 viewDirection = cameraPosition - input.worldPosition;
-
 	float4 finalColor = float4(0.0f, 0.0f, 0.0f, 0.0);
 
 	
@@ -29,9 +27,11 @@ float4 main(VS_OUTPUT input) : SV_TARGET
 
 	for (uint i = 0; i < lightCount; i++)
 	{
-		float4 result = float4(0.0f, 0.0f, 0.0f, 0.0f);
 		uint lightIndex = LightIndexList[startOffset + i];
 		Light light = Lights[lightIndex];
+		
+        float4 result = float4(0.0f, 0.0f, 0.0f, 0.0f);
+		
 		switch (light.type)
 		{
 		case DIRECTIONAL_LIGHT:

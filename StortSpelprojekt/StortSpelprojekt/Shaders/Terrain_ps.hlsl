@@ -49,15 +49,16 @@ float4 main(VS_OUTPUT input) : SV_TARGET
 
 	for (uint i = 0; i < lightCount; i++)
 	{
-		float4 result = float4(0.0f, 0.0f, 0.0f, 0.0f);
 		uint lightIndex = LightIndexList[startOffset + i];
 		Light light = Lights[lightIndex];
+		
+        float4 result = float4(0.0f, 0.0f, 0.0f, 0.0f);
+		
 		switch (light.type)
 		{
 		case DIRECTIONAL_LIGHT:
 		{
 			result = CalculateDirectionalLight(light, normal, viewDirection);
-
 		}
 		break;
 		case POINT_LIGHT:
