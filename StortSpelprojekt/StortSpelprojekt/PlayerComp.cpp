@@ -311,11 +311,6 @@ void PlayerComp::RayCast(const float& deltaTime)
 
 			if (RMOUSE_DOWN)
 			{
-				if (holding->HasComponent<PickupComponent>())
-					std::cout << "Has pickup" << std::endl;
-				else
-					std::cout << "Doesnt have pickup: " << std::endl;
-
 				float refill = holding->GetComponent<PickupComponent>()->GetAmount();
 				if ((fuel + refill) <= 100.0f)
 					fuel += refill;
