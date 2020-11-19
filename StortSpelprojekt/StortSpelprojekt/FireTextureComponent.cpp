@@ -76,10 +76,10 @@ void FireTextureComponent::InitializeBuffers(ID3D11Device* device)
 {	
 	// Setup the description of the dynamic noise constant buffer that is in the vertex shader.
 	D3D11_BUFFER_DESC noiseBufferDesc;
-	noiseBufferDesc.Usage = D3D11_USAGE_DEFAULT;
+	noiseBufferDesc.Usage = D3D11_USAGE_DYNAMIC;
 	noiseBufferDesc.ByteWidth = sizeof(cb_Noise);
 	noiseBufferDesc.BindFlags = D3D11_BIND_CONSTANT_BUFFER;
-	noiseBufferDesc.CPUAccessFlags = 0;
+	noiseBufferDesc.CPUAccessFlags = D3D11_CPU_ACCESS_WRITE;
 	noiseBufferDesc.MiscFlags = 0;
 	noiseBufferDesc.StructureByteStride = 0;
 
@@ -88,10 +88,10 @@ void FireTextureComponent::InitializeBuffers(ID3D11Device* device)
 
 	// Setup the description of the dynamic distortion constant buffer that is in the pixel shader.
 	D3D11_BUFFER_DESC distortionBufferDesc;
-	distortionBufferDesc.Usage = D3D11_USAGE_DEFAULT;
+	distortionBufferDesc.Usage = D3D11_USAGE_DYNAMIC;
 	distortionBufferDesc.ByteWidth = sizeof(cb_Disortion);
 	distortionBufferDesc.BindFlags = D3D11_BIND_CONSTANT_BUFFER;
-	distortionBufferDesc.CPUAccessFlags = 0;
+	distortionBufferDesc.CPUAccessFlags = D3D11_CPU_ACCESS_WRITE;
 	distortionBufferDesc.MiscFlags = 0;
 	distortionBufferDesc.StructureByteStride = 0;
 
@@ -132,20 +132,41 @@ void FireTextureComponent::UpdateBuffers()
 	distortionScale = 0.8f;
 	distortionBias = 0.5f;
 
-	noise.frameTime = frameTime;
-	noise.scrollSpeeds = scrollSpeeds;
-	noise.scales = scales;
-	noise.padding = 0.0f;
 
-	renderer->GetContext()->UpdateSubresource(noiseBuffer, 0, nullptr, &noise, 0, 0);
+	// Lock the noise constant buffer so it can be written to.
+	cb_Noise* noise;
+	cb_Disortion* disortion;
+
+	D3D11_MAPPED_SUBRESOURCE mappedResource;
+	HRESULT result = renderer->GetContext()->Map(noiseBuffer, 0, D3D11_MAP_WRITE_DISCARD, 0, &mappedResource);
+	assert(SUCCEEDED(result));
+
+	noise = (cb_Noise*)mappedResource.pData;
+
+	noise->frameTime = frameTime;
+	noise->scrollSpeeds = scrollSpeeds;
+	noise->scales = scales;
+	noise->padding = 0.0f;
+
+	renderer->GetContext()->Unmap(noiseBuffer, 0);
+
+	//renderer->GetContext()->UpdateSubresource(noiseBuffer, 0, nullptr, &noise, 0, 0);	
 	renderer->GetContext()->VSSetConstantBuffers(1, 1, &noiseBuffer);
 	
-	disortion.distortion1 = distortion1;
-	disortion.distortion2 = distortion2;
-	disortion.distortion3 = distortion3;
-	disortion.distortionScale = distortionScale;
-	disortion.distortionBias = distortionBias;
 
-	renderer->GetContext()->UpdateSubresource(disortionBuffer, 0, nullptr, &disortion, 0, 0);
+	result = renderer->GetContext()->Map(noiseBuffer, 0, D3D11_MAP_WRITE_DISCARD, 0, &mappedResource);
+	assert(SUCCEEDED(result));
+
+	disortion = (cb_Disortion*)mappedResource.pData;
+
+	disortion->distortion1 = distortion1;
+	disortion->distortion2 = distortion2;
+	disortion->distortion3 = distortion3;
+	disortion->distortionScale = distortionScale;
+	disortion->distortionBias = distortionBias;
+
+	renderer->GetContext()->Unmap(disortionBuffer, 0);
+
+	//renderer->GetContext()->UpdateSubresource(disortionBuffer, 0, nullptr, &disortion, 0, 0);
 	renderer->GetContext()->PSSetConstantBuffers(0, 1, &disortionBuffer);
 }

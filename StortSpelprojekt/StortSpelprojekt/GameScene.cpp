@@ -206,14 +206,14 @@ void GameScene::InitializeObjects()
 	puzzleFly->GetComponent<ParticleSystemComponent>()->InitializeParticles(renderer->GetDevice(), L"Textures/fire1.png");
 	AddObject(puzzleFly);
 
-	Shader* fireShader = resources->GetShaderResource("fireShader");
+	/*Shader* fireShader = resources->GetShaderResource("fireShader");*/
 
 	/* Different firestuff stuffy stuff  */
-	Object* puzzleFlyTest2 = resources->AssembleObject("PuzzleFlyStatue", "PuzzleFlyStatueMaterial", ObjectFlag::DEFAULT | ObjectFlag::NO_CULL);
+	/*Object* puzzleFlyTest2 = resources->AssembleObject("PuzzleFlyStatue", "PuzzleFlyStatueMaterial", ObjectFlag::DEFAULT | ObjectFlag::NO_CULL);
 	puzzleFlyTest2->GetTransform().SetPosition({ 28, 1.3f, 48 });
 	puzzleFlyTest2->AddComponent<FireTextureComponent>(renderer, fireShader);
 	puzzleFlyTest2->GetComponent<FireTextureComponent>()->InitializeFire(renderer->GetDevice());
-	AddObject(puzzleFlyTest2);
+	AddObject(puzzleFlyTest2);*/
 
 	//Object* fire = puzzleFlyTest2->GetComponent<FireTextureComponent>()->GetFireObject();
 	//AddObject(fire);	
