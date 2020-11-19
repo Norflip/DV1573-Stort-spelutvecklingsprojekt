@@ -119,17 +119,12 @@ void PlayerComp::Update(const float& deltaTime)
 		
 	}
 
-	/*if (GetOwner()->GetComponent<ControllerComp>()->GetInRange() && !static_cast<GUISprite*>(guiMan->GetGUIObject("door"))->GetVisible())
+	if (!static_cast<GUISprite*>(guiMan->GetGUIObject("door"))->GetVisible() && !static_cast<GUISprite*>(guiMan->GetGUIObject("fuel"))->GetVisible())
 	{
-		static_cast<GUISprite*>(guiMan->GetGUIObject("door"))->SetVisible(true);
-		static_cast<GUISprite*>(guiMan->GetGUIObject("dot"))->SetVisible(false);
-	}
-	else if (!GetOwner()->GetComponent<ControllerComp>()->GetInRange() && !static_cast<GUISprite*>(guiMan->GetGUIObject("dot"))->GetVisible()
-		&& !static_cast<GUISprite*>(guiMan->GetGUIObject("fuel"))->GetVisible())
-	{
-		static_cast<GUISprite*>(guiMan->GetGUIObject("door"))->SetVisible(false);
 		static_cast<GUISprite*>(guiMan->GetGUIObject("dot"))->SetVisible(true);
-	}*/
+		static_cast<GUISprite*>(guiMan->GetGUIObject("door"))->SetVisible(false);
+		static_cast<GUISprite*>(guiMan->GetGUIObject("fuel"))->SetVisible(false);
+	}
 	
 	pickedUpLastFrame = false;
 }
@@ -248,7 +243,6 @@ void PlayerComp::RayCast(const float& deltaTime)
 		else
 		{
 			static_cast<GUISprite*>(guiMan->GetGUIObject("fuel"))->SetVisible(false);
-			static_cast<GUISprite*>(guiMan->GetGUIObject("dot"))->SetVisible(true);
 		}
 	}
 

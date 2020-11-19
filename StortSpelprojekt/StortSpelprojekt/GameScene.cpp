@@ -461,21 +461,20 @@ void GameScene::Update(const float& deltaTime)
 	world.UpdateRelevantChunks(player->GetTransform(), camera);
 	//world.DrawDebug();
 
-	if (player->GetComponent<ControllerComp>()->GetInRange() && !static_cast<GUISprite*>(guiManager->GetGUIObject("door"))->GetVisible())
+	// Something CP with controllerComp/player wont allow this to happen inside the playerComp
+	if (player->GetComponent<ControllerComp>()->GetInRange())
 	{
 		static_cast<GUISprite*>(guiManager->GetGUIObject("door"))->SetVisible(true);
 		static_cast<GUISprite*>(guiManager->GetGUIObject("dot"))->SetVisible(false);
 	}
-	else if (!player->GetComponent<ControllerComp>()->GetInRange() && !static_cast<GUISprite*>(guiManager->GetGUIObject("dot"))->GetVisible())
+	else
 	{
 		static_cast<GUISprite*>(guiManager->GetGUIObject("door"))->SetVisible(false);
-		static_cast<GUISprite*>(guiManager->GetGUIObject("dot"))->SetVisible(true);
 	}
 
 	static_cast<GUIFont*>(guiManager->GetGUIObject("fps"))->SetString(std::to_string((int)GameClock::Instance().GetFramesPerSecond()));
 	guiManager->UpdateAll();
 
-	//std::cout << "Pos: " << player->GetTransform().GetPosition().m128_f32[0] << " " << player->GetTransform().GetPosition().m128_f32[1] << " " << player->GetTransform().GetPosition().m128_f32[2] << std::endl;
 }
 
 void GameScene::FixedUpdate(const float& fixedDeltaTime)
