@@ -52,8 +52,6 @@ PlayerComp::PlayerComp(Renderer* renderer, CameraComponent* camComp, Object* hou
 	this->foodBar = static_cast<GUISprite*>(guiMan->GetGUIObject("foodBar"));
 	this->healthBar = static_cast<GUISprite*>(guiMan->GetGUIObject("healthBar"));
 
-
-
 	//this->GetOwner()->GetComponent<CameraComponent>()
 	p.x = renderer->GetOutputWindow()->GetWidth() / 2;
 	p.y = renderer->GetOutputWindow()->GetHeight() / 2;
@@ -80,7 +78,7 @@ void PlayerComp::Update(const float& deltaTime)
 	if (frameTime < 5.f)
 	{
 		//lose fuel if not inside house
-		if(!GetOwner()->GetComponent<ControllerComp>()->GetInside())
+		if(!GetOwner()->GetComponent<ControllerComp>()->GetInside() && fuel > 0.0f)
 			fuel -= frameTime * fuelBurnPerMeter;
 
 		// lose food
@@ -98,6 +96,8 @@ void PlayerComp::Update(const float& deltaTime)
 			health -= frameTime * healthLossPerSecond;
 		}
 	}
+
+	std::cout << "Fuel: " << fuel << std::endl;
 
 	// Fuel drop
 	fuelDippingBar->SetScaleBars(ReverseAndClamp(fuel));
@@ -117,7 +117,7 @@ void PlayerComp::Update(const float& deltaTime)
 		DropObject();
 	}
 
-	if (GetOwner()->GetComponent<ControllerComp>()->GetInRange() && !static_cast<GUISprite*>(guiMan->GetGUIObject("door"))->GetVisible())
+	/*if (GetOwner()->GetComponent<ControllerComp>()->GetInRange() && !static_cast<GUISprite*>(guiMan->GetGUIObject("door"))->GetVisible())
 	{
 		static_cast<GUISprite*>(guiMan->GetGUIObject("door"))->SetVisible(true);
 		static_cast<GUISprite*>(guiMan->GetGUIObject("dot"))->SetVisible(false);
@@ -127,7 +127,7 @@ void PlayerComp::Update(const float& deltaTime)
 	{
 		static_cast<GUISprite*>(guiMan->GetGUIObject("door"))->SetVisible(false);
 		static_cast<GUISprite*>(guiMan->GetGUIObject("dot"))->SetVisible(true);
-	}
+	}*/
 }
 
 void PlayerComp::FixedUpdate(const float& fixedDeltaTime)
@@ -137,7 +137,7 @@ void PlayerComp::FixedUpdate(const float& fixedDeltaTime)
 	float distance = playerPos.Distance(playerPos, housePos);
 	//std::cout << distance << std::endl;
 	// around 30-50
-	if (distance > hpLossDist)
+	if (distance > hpLossDist && !GetOwner()->GetComponent<ControllerComp>()->GetInside())
 		health -= distance * hpLossPerDistance;
 
 	// around 90
