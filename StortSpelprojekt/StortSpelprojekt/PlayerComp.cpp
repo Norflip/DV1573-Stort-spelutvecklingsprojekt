@@ -116,6 +116,7 @@ void PlayerComp::Update(const float& deltaTime)
 	{
 		HoldObject();
 		DropObject();
+		
 	}
 
 	if (GetOwner()->GetComponent<ControllerComp>()->GetInRange() && !static_cast<GUISprite*>(guiMan->GetGUIObject("door"))->GetVisible())
@@ -129,6 +130,7 @@ void PlayerComp::Update(const float& deltaTime)
 		static_cast<GUISprite*>(guiMan->GetGUIObject("door"))->SetVisible(false);
 		static_cast<GUISprite*>(guiMan->GetGUIObject("dot"))->SetVisible(true);
 	}
+	pickedUpLastFrame = false;
 }
 
 void PlayerComp::FixedUpdate(const float& fixedDeltaTime)
@@ -148,6 +150,7 @@ void PlayerComp::FixedUpdate(const float& fixedDeltaTime)
 
 void PlayerComp::HoldObject()
 {
+	
 	inverseViewMatrix = dx::XMMatrixInverse(nullptr, cam->GetViewMatrix());
 	wepOffTrans.Translation(holdAngle);
 	wepOffRot = wepOffRot.CreateFromAxisAngle(up, dx::XMConvertToRadians(-40.0f));
@@ -163,7 +166,7 @@ void PlayerComp::HoldObject()
 
 void PlayerComp::DropObject()
 {
-	if (KEY_DOWN(E))
+	if (KEY_DOWN(E) && !pickedUpLastFrame)
 	{
 		holding->RemoveFlag(ObjectFlag::NO_CULL);
 		dx::XMVECTOR camRot = cam->GetOwner()->GetTransform().GetRotation();
@@ -309,6 +312,7 @@ void PlayerComp::RayCast(const float& deltaTime)
 		{
 			if (hit.object != nullptr)
 			{
+				pickedUpLastFrame = true;
 				AudioMaster::Instance().PlaySoundEvent("pickupFuel");
 				holding = hit.object;
 				RigidBodyComponent* rbComp = hit.object->GetComponent<RigidBodyComponent>();
@@ -379,5 +383,5 @@ void PlayerComp::Reset()
 
 	this->health = 50.0f; // <------------------ DONT FORGET TO REMOVE THIS LATER!
 	foodEmpty = false;
-	gg = false;
+
 }

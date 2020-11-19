@@ -251,12 +251,18 @@ bool ObjectSpawner::ValidSpawnPoint(const dx::XMFLOAT2& point, Chunk* chunk, flo
 Object* ObjectSpawner::DefaultCreateItem(std::string key, PickupType type, float value)
 {
 	Object* object = Engine::Instance->GetResources()->AssembleObject(key, key + "Material");
-	object->AddComponent<BoxColliderComponent>(dx::XMFLOAT3(0.5f, 0.5f, 0.5f), dx::XMFLOAT3(0, 0, 0));
+	
 	object->AddComponent<PickupComponent>(type, value);
-	if(type == PickupType::Fuel)
-		object->AddComponent<RigidBodyComponent>(10.0f, FilterGroups::HOLDABLE, FilterGroups::EVERYTHING &~FilterGroups::PLAYER, BodyType::DYNAMIC, true);
+	if (type == PickupType::Fuel)
+	{
+		object->AddComponent<BoxColliderComponent>(dx::XMFLOAT3(0.3f, 0.35f, 0.15f), dx::XMFLOAT3(0, 0, 0));
+		object->AddComponent<RigidBodyComponent>(10.0f, FilterGroups::HOLDABLE, FilterGroups::EVERYTHING & ~FilterGroups::PLAYER, BodyType::DYNAMIC, true);
+	}
 	else
+	{
+		object->AddComponent<BoxColliderComponent>(dx::XMFLOAT3(0.25f, 0.25f, 0.25f), dx::XMFLOAT3(0, 0, 0));
 		object->AddComponent<RigidBodyComponent>(10.0f, FilterGroups::PICKUPS, FilterGroups::EVERYTHING & ~FilterGroups::PLAYER, BodyType::DYNAMIC, true);
+	}
 	return object;
 }
 
