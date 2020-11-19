@@ -85,7 +85,7 @@ void GameScene::InitializeObjects()
 	
 	Transform::SetParentChild(houseBaseObject->GetTransform(), housesLegsObject->GetTransform());
 
-	NodeWalkerComp* nodeWalker = houseBaseObject->AddComponent<NodeWalkerComp>();
+	nodeWalker = houseBaseObject->AddComponent<NodeWalkerComp>();
 	nodeWalker->InitAnimation();
 	AddObject(houseBaseObject);
 
@@ -183,33 +183,17 @@ void GameScene::InitializeObjects()
 	playerObject->GetComponent<PlayerComp>()->InsertWeapon(axeObject->GetComponent<WeaponComponent>(), axeObject->GetName());
 	AddObject(axeObject);
 	
-	//Road Sign
+
+	//dx::XMFLOAT3 pos3 = { thePath.GetPoint(this->currentNode).x,HEIGHT, thePath.GetPoint(this->currentNode).z };
+
 	roadSign = new Object("Endsign");
-
-	//world.GetPath().GetPoints().back().x, 2.0f, world.GetPath().GetPoints().back().z
-
 	roadSign = resources->AssembleObject("Endsign", "EndsignMaterial");
-	roadSign->GetTransform().SetPosition({ 23, 0.5f, 50 }); //H�MTA SISTA NODEN I PATHEN OCH DESS POSITION F�R ATT S�TTA SKYLTARNAS POSITION.
-	AddObject(roadSign);
-
-	//Right Sign
 	rightSign = new Object("LeftDirectionSign");
-
 	rightSign = resources->AssembleObject("LeftDirectionSign", "LeftDirectionSignMaterial");
-	rightSign->GetTransform().SetPosition({ roadSign->GetTransform().GetPosition().m128_f32[0] - 1.0f, roadSign->GetTransform().GetPosition().m128_f32[1], roadSign->GetTransform().GetPosition().m128_f32[2] });
-	rightSign->AddComponent<BoxColliderComponent>(dx::XMFLOAT3{ 1.0f, 1.0f, 1.0f }, dx::XMFLOAT3{ 0, 0, 0 });
-	rightSign->AddComponent<SelectableComponent>();
-	rightSign->AddComponent<RigidBodyComponent>(0.0f, FilterGroups::CLICKABLE, (FilterGroups::EVERYTHING & ~FilterGroups::PLAYER), BodyType::STATIC, true);
-	AddObject(rightSign);
-
-	//Left Sign
 	leftSign = new Object("RightDirectionSign");
-
 	leftSign = resources->AssembleObject("RightDirectionSign", "RightDirectionSignMaterial");
-	leftSign->GetTransform().SetPosition({ roadSign->GetTransform().GetPosition().m128_f32[0] + 1.0f, roadSign->GetTransform().GetPosition().m128_f32[1], roadSign->GetTransform().GetPosition().m128_f32[2] });
-	leftSign->AddComponent<BoxColliderComponent>(dx::XMFLOAT3{ 1.0f, 1.0f, 1.0f }, dx::XMFLOAT3{ 0, 0, 0 });
-	leftSign->AddComponent<SelectableComponent>();
-	leftSign->AddComponent<RigidBodyComponent>(0.0f, FilterGroups::CLICKABLE, (FilterGroups::EVERYTHING & ~FilterGroups::PLAYER), BodyType::STATIC, true);
+	AddObject(roadSign);
+	AddObject(rightSign);
 	AddObject(leftSign);
 
 	//LOADING BASE MONSTER; ADDING SKELETONS TO IT
@@ -443,6 +427,7 @@ void GameScene::InitializeInterior()
 void GameScene::OnActivate()
 {
 	SaveState state;
+	
 	state.seed = 1337;
 	state.segment = 0;
 
@@ -452,7 +437,11 @@ void GameScene::OnActivate()
 	//PrintSceneHierarchy(root, 0);
 
 	house->GetComponent<NodeWalkerComp>()->InitializePath(world.GetPath());
+
+	InitializeSigns();
 	
+	std::cout << "X: " << rightSign->GetTransform().GetPosition().m128_f32[0] << " Y: " << rightSign->GetTransform().GetPosition().m128_f32[1] << " Z: " << rightSign->GetTransform().GetPosition().m128_f32[2] << std::endl;
+
 	if (house != nullptr && player != nullptr)
 	{
 		std::vector<dx::XMINT2> indexes = world.GetPath().GetIndexes();
@@ -487,6 +476,7 @@ void GameScene::OnDeactivate()
 {
 	world.DeconstructSegment();
 	renderer->RemoveRenderPass(guiManager);
+	enemyManager->DespawnEnemies();
 	
 	//renderer->ClearParticles();
 
@@ -509,6 +499,10 @@ void GameScene::SwitchScene()
 	renderer->SetIdAndColor(fogId, fogCol);
 
 	house->GetComponent<NodeWalkerComp>()->InitializePath(world.GetPath());
+
+	//Place signs
+	InitializeSigns();
+
 
 	if (house != nullptr && player != nullptr)
 	{
@@ -544,6 +538,55 @@ void GameScene::SwitchScene()
 	LightManager::Instance().ForceUpdateBuffers(renderer->GetContext());
 }
 
+void GameScene::InitializeSigns()
+{
+
+
+	dx::XMVECTOR signPosition;
+	//signPosition = { nodeWalker->Getpos3().x, nodeWalker->Getpos3().y - 1, nodeWalker->Getpos3().z }; //FIRST NODE
+	//signPosition = { nodeWalker->GetLastNodePos().x, nodeWalker->GetLastNodePos().y - 1, nodeWalker->GetLastNodePos().z }; //LAST NODE
+	signPosition = { nodeWalker->GetSecondLastNodePos().x, nodeWalker->GetSecondLastNodePos().y - 1, nodeWalker->GetSecondLastNodePos().z }; //SECOND LAST NODE
+
+
+	//std::cout << "X: " << nodeWalker->Getpos3().x << " Y: " << nodeWalker->Getpos3().y << " Z: " << nodeWalker->Getpos3().z << std::endl;
+	//Place signs
+
+	//Road Sign
+	//roadSign = new Object("Endsign");
+
+	//world.GetPath().GetPoints().back().x, 2.0f, world.GetPath().GetPoints().back().z
+	//23, 0.5f, 50
+	//16, 1, 48
+
+
+	//roadSign = resources->AssembleObject("Endsign", "EndsignMaterial");
+	roadSign->GetTransform().SetPosition({signPosition}); //H�MTA SISTA NODEN I PATHEN OCH DESS POSITION F�R ATT S�TTA SKYLTARNAS POSITION.
+	/*AddObject(roadSign);*/
+
+	//Right Sign
+	/*rightSign = new Object("LeftDirectionSign");
+
+	rightSign = resources->AssembleObject("LeftDirectionSign", "LeftDirectionSignMaterial");*/
+	rightSign->GetTransform().SetPosition({ roadSign->GetTransform().GetPosition().m128_f32[0] - 1.0f, roadSign->GetTransform().GetPosition().m128_f32[1], roadSign->GetTransform().GetPosition().m128_f32[2] });
+	rightSign->AddComponent<BoxColliderComponent>(dx::XMFLOAT3{ 1.0f, 1.0f, 1.0f }, dx::XMFLOAT3{ 0, 0, 0 });
+	rightSign->AddComponent<SelectableComponent>();
+	rightSign->AddComponent<RigidBodyComponent>(0.0f, FilterGroups::CLICKABLE, (FilterGroups::EVERYTHING & ~FilterGroups::PLAYER), BodyType::STATIC, true);
+	//AddObject(rightSign);
+
+
+	//Left Sign
+	/*leftSign = new Object("RightDirectionSign");
+
+	leftSign = resources->AssembleObject("RightDirectionSign", "RightDirectionSignMaterial");*/
+	leftSign->GetTransform().SetPosition({ roadSign->GetTransform().GetPosition().m128_f32[0] + 1.0f, roadSign->GetTransform().GetPosition().m128_f32[1], roadSign->GetTransform().GetPosition().m128_f32[2] });
+	leftSign->AddComponent<BoxColliderComponent>(dx::XMFLOAT3{ 1.0f, 1.0f, 1.0f }, dx::XMFLOAT3{ 0, 0, 0 });
+	leftSign->AddComponent<SelectableComponent>();
+	leftSign->AddComponent<RigidBodyComponent>(0.0f, FilterGroups::CLICKABLE, (FilterGroups::EVERYTHING & ~FilterGroups::PLAYER), BodyType::STATIC, true);
+	//AddObject(leftSign);
+
+
+}
+
 void GameScene::Update(const float& deltaTime)
 {
 	Scene::Update(deltaTime);
@@ -573,11 +616,6 @@ void GameScene::Update(const float& deltaTime)
 		leftSign->GetComponent<SelectableComponent>()->SetActive(false); //VIKTOR
 
 	}
-	//if (KEY_PRESSED(LeftShift) && KEY_PRESSED(P))
-	//{
-	//	rightSign; //n�nting n�nting klicka p� skylten
-	//	//SwitchScene();
-	//}
 
 	static_cast<GUIFont*>(guiManager->GetGUIObject("fps"))->SetString(std::to_string((int)GameClock::Instance().GetFramesPerSecond()));
 	guiManager->UpdateAll();

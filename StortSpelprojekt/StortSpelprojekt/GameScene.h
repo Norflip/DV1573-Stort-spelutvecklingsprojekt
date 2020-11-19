@@ -24,6 +24,7 @@ public:
 	void OnActivate() override;
 	void OnDeactivate() override;
 	void SwitchScene();
+	void InitializeSigns();
 
 	void Update(const float& deltaTime) override;
 	void FixedUpdate(const float& fixedDeltaTime) override;
@@ -39,6 +40,7 @@ private:
 	Object* leftSign;
 	Object* rightSign;
 	Object* roadSign;
+	NodeWalkerComp* nodeWalker;
 
 	int fogId;
 	float fogCol;

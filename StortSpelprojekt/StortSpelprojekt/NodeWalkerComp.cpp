@@ -5,6 +5,8 @@ NodeWalkerComp::NodeWalkerComp()
 {
 	this->speed = 1.0f;// 16.2f;
 	this->currentNode = thePath.GetFirstPointIndex();
+	this->lastNode = thePath.GetLastPointIndex();
+	this->secondLastNode = thePath.GetSecondLastPointIndex();
 	this->nextChosen = -1;
 	this->nodeRadius = 0.3f;
 	this->canWalk = false;
@@ -12,6 +14,7 @@ NodeWalkerComp::NodeWalkerComp()
 	this->length = 0.f;
 	//this->lastPos = { 0,0,0 };
 	this->moveVec = { 0,0,0 };
+	this->pos3 = { 0,0,0 };
 	//later generate this nodes 
 	//this->nodes.push_back(Node("start", 0, { 0.f,0.f,0.f }, 1, -1, -1));
 	//this->nodes.push_back(Node("1a", 1, { 5.f,0.f,5.f }, -1, 2, 3));
@@ -35,10 +38,11 @@ void NodeWalkerComp::InitializePath(Path thePath)
 	this->thePath = thePath;
 
 	this->currentNode = thePath.GetFirstPointIndex();
+	this->lastNode = thePath.GetLastPointIndex();
 
 	//std::cout <<"Nr of: "<< thePath.CountPoints() << std::endl;
 	//dx::XMFLOAT3 pos3 = { thePath.GetPoint(this->currentNode).x + offset,HEIGHT, thePath.GetPoint(this->currentNode).y + offset };
-	dx::XMFLOAT3 pos3 = { thePath.GetPoint(this->currentNode).x,HEIGHT, thePath.GetPoint(this->currentNode).z };
+	pos3 = { thePath.GetPoint(this->currentNode).x,HEIGHT, thePath.GetPoint(this->currentNode).z };
 	dx::XMVECTOR startPos = dx::XMLoadFloat3(&pos3);
 	this->GetOwner()->GetTransform().SetPosition(startPos);
 
@@ -47,7 +51,11 @@ void NodeWalkerComp::InitializePath(Path thePath)
 	//this->rbComp->GetRigidBody()->getCollider(0)->getMaterial().setFrictionCoefficient(100.f);
 	//this->rbComp->GetRigidBody()->getCollider(0)->getMaterial().setRollingResistance(100.f);
 	this->rbComp->SetPosition(startPos);
-	
+
+	lastNodePos = { thePath.GetPoint(this->lastNode).x, HEIGHT, thePath.GetPoint(this->lastNode).z };
+	secondLastNodePos = { thePath.GetPoint(this->secondLastNode).x, HEIGHT, thePath.GetPoint(this->secondLastNode).z };
+	std::cout << "LAST NODE POSITION: \nX: " << lastNodePos.x << " Y: " << lastNodePos.y << " Z: " << lastNodePos.z << std::endl;
+	std::cout << "SECOND LAST NODE POSITION: \nX: " << secondLastNodePos.x << " Y: " << secondLastNodePos.y << " Z: " << secondLastNodePos.z << std::endl;
 }
 
 void NodeWalkerComp::InitAnimation()
@@ -131,6 +139,7 @@ void NodeWalkerComp::StopAnim()
 
 void NodeWalkerComp::Update(const float& deltaTime)
 {
+	
 	//dx::XMStoreFloat3(&this->lastPos, GetOwner()->GetTransform().GetPosition());
 	if (playerComp->GetFuel() > 0.0f)
 	{

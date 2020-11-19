@@ -286,10 +286,7 @@
     <ClCompile Include="FrogPuzzle.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="HousePartsComponent.cpp"> 
-        <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="GameHandler.cpp">
+    <ClCompile Include="HousePartsComponent.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="SelectableComponent.cpp">
@@ -592,14 +589,12 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="HousePartsComponent.h">
-          <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="GameHandler.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="SelectableComponent.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="WorldGenerator.h" />
   </ItemGroup>
   <ItemGroup>
     <Filter Include="Header Files">
