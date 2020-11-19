@@ -15,25 +15,23 @@ World::~World()
 void World::Initialize(Object* root, ResourceManager* resources, Renderer* renderer)
 {
 	this->resources = resources;
-	this->spawner = new ObjectSpawner();
-	this->pooler = new ObjectPooler(resources);
-	
-	spawner->Initialize(root, pooler, renderer);
-
-	generator.Initialize(root, resources, spawner, renderer->GetDevice(), renderer->GetContext());
+	generator.Initialize(root, this, renderer);
 	lastRelevantIndex = dx::XMINT2(-5000, -5000);
 }
 
 void World::ConstructSegment(const SaveState& state)
 {
-	SegmentDescription description(0, 10, 2);
-	description.directionalSteps = 1;
-	description.maxSteps = 10;
-
-	RegisterToPool(pooler, spawner, description.queueModifier);
-
-
 	Random::SetSeed(state.GetSegmentedSeed());
+	this->description = DescriptionFromState(state);
+
+	ObjectSpawner* spawner = generator.GetSpawner();
+	RegisterFood(spawner, description.queueModifier);
+	RegisterFuel(spawner, description.queueModifier);
+	RegisterHealth(spawner, description.queueModifier);
+	RegisterWeapon(spawner, description.queueModifier);
+	RegisterStatic(spawner, description.queueModifier);
+
+
 	generator.Construct(state, description);
 }
 
@@ -65,29 +63,11 @@ void World::UpdateRelevantChunks(const Transform& transform, CameraComponent* ca
 			relevant.clear();
 			GetChunksInRadius(lastRelevantIndex, RELEVANT_RADIUS, relevant);
 
-			std::cout << "CHUNKS: " << relevant.size() << std::endl;
-
 			for (auto i : relevant)
 			{
 				i->GetOwner()->AddFlag(ObjectFlag::ENABLED);
-			}		
+			}
 		}
-
-		/*for (auto i : relevant)
-		{
-			Object* obj = i->GetOwner();
-			Bounds bounds = obj->GetComponent<MeshComponent>()->GetBounds();
-			bool inView = camera->InView(bounds, obj->GetTransform().GetWorldMatrix());
-
-			if (inView)
-			{
-				obj->RemoveFlag(ObjectFlag::ENABLED);
-			}
-			else
-			{
-				obj->AddFlag(ObjectFlag::ENABLED);
-			}
-		}*/
 	}
 }
 
@@ -132,6 +112,10 @@ void World::SampleNormal(const float& x, const float& z, dx::XMFLOAT3& normal) c
 	dx::XMVECTOR horizontal = dx::XMVector3Normalize({ 1.0f, 0.0f, hLeft - hRight });
 	dx::XMVECTOR vertical = dx::XMVector3Normalize({ 0.0f, 1.0f, hUp - hDown });
 	dx::XMStoreFloat3(&normal, dx::XMVector3Cross(horizontal, vertical));
+
+	float tmp = normal.y;
+	normal.y = normal.z;
+	normal.z = tmp;
 }
 
 void World::GetChunksInRadius(const dx::XMINT2& index, int radius, std::vector<Chunk*>& chunks) const
@@ -149,6 +133,18 @@ void World::GetChunksInRadius(const dx::XMINT2& index, int radius, std::vector<C
 			}
 		}
 	}
+}
+
+WorldDescription World::DescriptionFromState(const SaveState& state) const
+{
+	WorldDescription description(state.seed);
+	description.directionalSteps = 1;
+	description.maxSteps = 10;
+
+	description.minEnviromentProps = 4;
+	description.maxEnviromentProps = 8;
+
+	return description;
 }
 
 dx::XMINT2 World::GetChunkIndex(Object* object) const
@@ -172,199 +168,81 @@ int World::TryGetQueueCount(std::string key, const std::map<std::string, int>& q
 	return(found != queueCountTable.end()) ? found->second : defaultCount;
 }
 
-void World::RegisterFood(ObjectPooler* pooler, ObjectSpawner* spawner, const std::map<std::string, int>& queueCountTable) const
+void World::RegisterFood(ObjectSpawner* spawner, const std::map<std::string, int>& queueCountTable) const
 {
-	pooler->Register("Baked_beans", 0, [](ResourceManager* resources)
+	spawner->RegisterItem("Baked_beans", TryGetQueueCount("Baked_beans", queueCountTable), [](ResourceManager* resources)
 		{
-			Object* object = resources->AssembleObject("Soup", "SoupMaterial");
-
-			object->AddComponent<BoxColliderComponent>(dx::XMFLOAT3(0.5f, 0.5f, 0.5f), dx::XMFLOAT3(0, 0, 0));
-			object->AddComponent<PickupComponent>(Type::Food, 20.0f);
-			object->AddComponent<RigidBodyComponent>(10.0f, FilterGroups::PICKUPS, FilterGroups::EVERYTHING, BodyType::KINEMATIC, true);
-
-			//Physics::Instance().RegisterRigidBody(rd);
-			return object;
+			return ObjectSpawner::DefaultCreateItem("Soup", PickupType::Food, 25.0f);
 		});
 
-	pooler->Register("Banana", 0, [](ResourceManager* resources)
+	spawner->RegisterItem("Banana", TryGetQueueCount("Banana", queueCountTable), [](ResourceManager* resources)
 		{
-			Object* object = resources->AssembleObject("Banana", "BananaMaterial");
-
-			object->AddComponent<BoxColliderComponent>(dx::XMFLOAT3(0.5f, 0.5f, 0.5f), dx::XMFLOAT3(0, 0, 0));
-			object->AddComponent<PickupComponent>(Type::Food, 10.0f);
-			object->AddComponent<RigidBodyComponent>(10.0f, FilterGroups::PICKUPS, FilterGroups::EVERYTHING, BodyType::KINEMATIC, true);
-
-			//Physics::Instance().RegisterRigidBody(rd);
-			return object;
+			return ObjectSpawner::DefaultCreateItem("Banana", PickupType::Food, 15.0f);
 		});
 
-	pooler->Register("Apple", 0, [](ResourceManager* resources)
+	spawner->RegisterItem("Apple", TryGetQueueCount("Apple", queueCountTable), [](ResourceManager* resources)
 		{
-			Object* object = resources->AssembleObject("Apple", "AppleMaterial");
-
-			object->AddComponent<BoxColliderComponent>(dx::XMFLOAT3(0.5f, 0.5f, 0.5f), dx::XMFLOAT3(0, 0, 0));
-			object->AddComponent<PickupComponent>(Type::Food, 10.0f);
-			object->AddComponent<RigidBodyComponent>(10.0f, FilterGroups::PICKUPS, FilterGroups::EVERYTHING, BodyType::KINEMATIC, true);
-
-			//Physics::Instance().RegisterRigidBody(rd);
-			return object;
+			return ObjectSpawner::DefaultCreateItem("Apple", PickupType::Food, 15.0f);
 		});
 
-	pooler->Register("Fruits", 0, [](ResourceManager* resources)
+	spawner->RegisterItem("Fruits", TryGetQueueCount("Fruits", queueCountTable), [](ResourceManager* resources)
 		{
-			Object* object = resources->AssembleObject("Fruits", "FruitsMaterial");
-
-			object->AddComponent<BoxColliderComponent>(dx::XMFLOAT3(0.5f, 0.5f, 0.5f), dx::XMFLOAT3(0, 0, 0));
-			object->AddComponent<PickupComponent>(Type::Food, 35.0f);
-			object->AddComponent<RigidBodyComponent>(10.0f, FilterGroups::PICKUPS, FilterGroups::EVERYTHING, BodyType::KINEMATIC, true);
-
-			//Physics::Instance().RegisterRigidBody(rd);
-			return object;
+			return ObjectSpawner::DefaultCreateItem("Fruits", PickupType::Food, 35.0f);
 		});
 
-	pooler->Register("Pear", 0, [](ResourceManager* resources)
+	spawner->RegisterItem("Pear", TryGetQueueCount("Pear", queueCountTable), [](ResourceManager* resources)
 		{
-			Object* object = resources->AssembleObject("Pear", "PearMaterial");
-
-			object->AddComponent<BoxColliderComponent>(dx::XMFLOAT3(0.5f, 0.5f, 0.5f), dx::XMFLOAT3(0, 0, 0));
-			object->AddComponent<PickupComponent>(Type::Food, 35.0f);
-			object->AddComponent<RigidBodyComponent>(10.0f, FilterGroups::PICKUPS, FilterGroups::EVERYTHING, BodyType::KINEMATIC, true);
-
-			//Physics::Instance().RegisterRigidBody(rd);
-			return object;
+			return ObjectSpawner::DefaultCreateItem("Pear", PickupType::Food, 35.0f);
 		});
-
-	spawner->RegisterItem("Baked_beans", 1.0f, 1.0f, 0.0f, TryGetQueueCount("Baked_beans", queueCountTable));
-	spawner->RegisterItem("Banana", 1.0f, 1.0f, 0.0f, TryGetQueueCount("Banana", queueCountTable));
-	spawner->RegisterItem("Apple", 1.0f, 1.0f, 0.0f, TryGetQueueCount("Apple", queueCountTable));
-	spawner->RegisterItem("Fruits", 1.0f, 1.0f, 0.0f, TryGetQueueCount("Fruits", queueCountTable));
-	spawner->RegisterItem("Pear", 1.0f, 1.0f, 0.0f, TryGetQueueCount("Pear", queueCountTable));
 }
 
-void World::RegisterFuel(ObjectPooler* pooler, ObjectSpawner* spawner, const std::map<std::string, int>& queueCountTable) const
+void World::RegisterFuel(ObjectSpawner* spawner, const std::map<std::string, int>& queueCountTable) const
 {
-	pooler->Register("FuelGreen", 0, [](ResourceManager* resources)
+	spawner->RegisterItem("FuelGreen", TryGetQueueCount("FuelGreen", queueCountTable), [](ResourceManager* resources)
 		{
-			Object* object = resources->AssembleObject("FuelCanGreen", "FuelCanGreenMaterial");
-
-			object->AddComponent<BoxColliderComponent>(dx::XMFLOAT3(0.5f, 0.5f, 0.5f), dx::XMFLOAT3(0, 0, 0));
-			object->AddComponent<PickupComponent>(Type::Fuel, 20.0f);
-			object->AddComponent<RigidBodyComponent>(10.0f, FilterGroups::HOLDABLE, FilterGroups::EVERYTHING & ~FilterGroups::PLAYER, BodyType::KINEMATIC, true);
-
-			//Physics::Instance().RegisterRigidBody(rd);
-			return object;
+			return ObjectSpawner::DefaultCreateItem("FuelCanGreen", PickupType::Fuel, 20.0f);
 		});
 
-	pooler->Register("FuelBlue", 0, [](ResourceManager* resources)
+	spawner->RegisterItem("FuelBlue", TryGetQueueCount("FuelBlue", queueCountTable), [](ResourceManager* resources)
 		{
-			Object* object = resources->AssembleObject("FuelCanBlue", "FuelCanBlueMaterial");
-
-			object->AddComponent<BoxColliderComponent>(dx::XMFLOAT3(0.5f, 0.5f, 0.5f), dx::XMFLOAT3(0, 0, 0));
-			object->AddComponent<PickupComponent>(Type::Fuel, 20.0f);
-			object->AddComponent<RigidBodyComponent>(10.0f, FilterGroups::HOLDABLE, FilterGroups::EVERYTHING & ~FilterGroups::PLAYER, BodyType::KINEMATIC, true);
-
-			//Physics::Instance().RegisterRigidBody(rd);
-			return object;
+			return ObjectSpawner::DefaultCreateItem("FuelCanBlue", PickupType::Fuel, 20.0f);
 		});
 
-	pooler->Register("FuelRed", 0, [](ResourceManager* resources)
+	spawner->RegisterItem("FuelRed", TryGetQueueCount("FuelRed", queueCountTable), [](ResourceManager* resources)
 		{
-			Object* object = resources->AssembleObject("FuelCanRed", "FuelCanRedMaterial");
-
-			object->AddComponent<BoxColliderComponent>(dx::XMFLOAT3(0.5f, 0.5f, 0.5f), dx::XMFLOAT3(0, 0, 0));
-			object->AddComponent<PickupComponent>(Type::Fuel, 20.0f);
-			object->AddComponent<RigidBodyComponent>(10.0f, FilterGroups::HOLDABLE, FilterGroups::EVERYTHING & ~FilterGroups::PLAYER, BodyType::KINEMATIC, true);
-
-			//Physics::Instance().RegisterRigidBody(rd);
-			return object;
+			return ObjectSpawner::DefaultCreateItem("FuelCanRed", PickupType::Fuel, 20.0f);
 		});
 
-	pooler->Register("Propane", 0, [](ResourceManager* resources)
+	spawner->RegisterItem("Propane", TryGetQueueCount("Propane", queueCountTable), [](ResourceManager* resources)
 		{
-			Object* object = resources->AssembleObject("Propane", "PropaneMaterial");
-
-			object->AddComponent<BoxColliderComponent>(dx::XMFLOAT3(0.5f, 0.5f, 0.5f), dx::XMFLOAT3(0, 0, 0));
-			object->AddComponent<PickupComponent>(Type::Fuel, 35.0f);
-			object->AddComponent<RigidBodyComponent>(10.0f, FilterGroups::HOLDABLE, FilterGroups::EVERYTHING & ~FilterGroups::PLAYER, BodyType::KINEMATIC, true);
-
-			//Physics::Instance().RegisterRigidBody(rd);
-			return object;
+			return ObjectSpawner::DefaultCreateItem("Propane", PickupType::Fuel, 35.0f);
 		});
-
-	spawner->RegisterItem("FuelGreen", 1.0f, 1.0f, 0.0f, TryGetQueueCount("FuelGreen", queueCountTable));
-	spawner->RegisterItem("FuelBlue", 1.0f, 1.0f, 0.0f, TryGetQueueCount("FuelBlue", queueCountTable));
-	spawner->RegisterItem("FuelRed", 1.0f, 1.0f, 0.0f, TryGetQueueCount("FuelRed", queueCountTable));
-	spawner->RegisterItem("Propane", 1.0f, 1.0f, 0.0f, TryGetQueueCount("Propane", queueCountTable));
 }
 
-void World::RegisterHealth(ObjectPooler* pooler, ObjectSpawner* spawner, const std::map<std::string, int>& queueCountTable) const
+void World::RegisterHealth(ObjectSpawner* spawner, const std::map<std::string, int>& queueCountTable) const
 {
-	pooler->Register("Health_kit", 0, [](ResourceManager* resources)
+	spawner->RegisterItem("Health_kit", TryGetQueueCount("Health_kit", queueCountTable), [](ResourceManager* resources)
 		{
-			Object* object = resources->AssembleObject("HealthKit", "HealthKitMaterial");
-
-
-			object->AddComponent<BoxColliderComponent>(dx::XMFLOAT3(0.5f, 0.5f, 0.5f), dx::XMFLOAT3(0, 0, 0));
-			object->AddComponent<PickupComponent>(Type::Health, 40.0f);
-			object->AddComponent<RigidBodyComponent>(10.0f, FilterGroups::PICKUPS, FilterGroups::EVERYTHING, BodyType::KINEMATIC, true);
-
-			//Physics::Instance().RegisterRigidBody(rd);
-
-			return object;
+			return ObjectSpawner::DefaultCreateItem("HealthKit", PickupType::Health, 40.0f);
 		});
-
-	pooler->Register("Pills", 0, [](ResourceManager* resources)
+	spawner->RegisterItem("Pills", TryGetQueueCount("Pills", queueCountTable), [](ResourceManager* resources)
 		{
-			Object* object = resources->AssembleObject("HealthJar", "HealthJarMaterial");
-
-			object->AddComponent<BoxColliderComponent>(dx::XMFLOAT3(0.5f, 0.5f, 0.5f), dx::XMFLOAT3(0, 0, 0));
-			object->AddComponent<PickupComponent>(Type::Health, 25.0f);
-			object->AddComponent<RigidBodyComponent>(10.0f, FilterGroups::PICKUPS, FilterGroups::EVERYTHING, BodyType::KINEMATIC, true);
-
-			//Physics::Instance().RegisterRigidBody(rd);
-
-			return object;
+			return ObjectSpawner::DefaultCreateItem("HealthJar", PickupType::Health, 25.0f);
 		});
-
-	spawner->RegisterItem("Health_kit", 1.0f, 1.0f, 0.0f, TryGetQueueCount("Health_kit", queueCountTable));
-	spawner->RegisterItem("Pills", 1.0f, 1.0f, 0.0f, TryGetQueueCount("Pills", queueCountTable));
 }
 
-void World::RegisterWeapon(ObjectPooler* pooler, ObjectSpawner* spawner, const std::map<std::string, int>& queueCountTable) const
+void World::RegisterWeapon(ObjectSpawner* spawner, const std::map<std::string, int>& queueCountTable) const
 {
 	// Hammer, Axe and Bat here?
 }
 
-void World::RegisterStatic(ObjectPooler* pooler, ObjectSpawner* spawner, const std::map<std::string, int>& queueCountTable) const
+void World::RegisterStatic(ObjectSpawner* spawner, const std::map<std::string, int>& queueCountTable) const
 {
-	spawner->RegisterInstancedItem(resources->GetResource<Mesh>("Rock1"), resources->GetResource<Material>("Rock1Material"), 1.0f, 1.0f, 0.0f, 5, dx::XMUINT3(1, 1, 1));
-	spawner->RegisterInstancedItem(resources->GetResource<Mesh>("Rock2"), resources->GetResource<Material>("Rock2Material"), 1.0f, 1.0f, -0.5f, 5, dx::XMUINT3(1, 1, 1));
-	spawner->RegisterInstancedItem(resources->GetResource<Mesh>("Rock3"), resources->GetResource<Material>("Rock3Material"), 1.0f, 1.0f, 0.0f, 5, dx::XMUINT3(1, 1, 1));
-	spawner->RegisterInstancedItem(resources->GetResource<Mesh>("Log"), resources->GetResource<Material>("LogMaterial"), 1.0f, 1.0f, 0.0f, 1, dx::XMUINT3(0, 1, 0));
+	static const dx::XMUINT3 UP = dx::XMUINT3(0, 1, 0);
 
-	// varf�r?
-	//spawner->RegisterInstancedItem(resources->GetResource<Mesh>("Basket"), resources->GetResource<Material>("BasketMaterial"), 1.0f, 1.0f, 0.0f, 1);
-}
+	spawner->RegisterInstancedItem("Rock1", 0.0f, 1, UP);
+	spawner->RegisterInstancedItem("Rock2", 0.0f, 1, UP);
+	spawner->RegisterInstancedItem("Rock3", 0.0f, 1, UP);
+	spawner->RegisterInstancedItem("Log",	0.0f, 1, UP);
 
-void World::RegisterToPool(ObjectPooler* pooler, ObjectSpawner* spawner, const std::map<std::string, int>& queueCountTable) const
-{
-	RegisterFood(pooler, spawner, queueCountTable);
-	RegisterFuel(pooler, spawner, queueCountTable);
-	RegisterHealth(pooler, spawner, queueCountTable);
-	RegisterWeapon(pooler, spawner, queueCountTable);
-	RegisterStatic(pooler, spawner, queueCountTable);
-
-	/*pooler->Register("static_sphere", 0, [](ResourceManager* resources)
-		{
-			Object* object = resources->AssembleObject("Test", "TestMaterial");
-
-			object->AddComponent<BoxColliderComponent>(dx::XMFLOAT3(0.5f, 0.5f, 0.5f), dx::XMFLOAT3(0, 0, 0));
-
-			RigidBodyComponent* rd = object->AddComponent<RigidBodyComponent>(0.0f, FilterGroups::PROPS, FilterGroups::EVERYTHING, BodyType::STATIC);
-			Physics::Instance().RegisterRigidBody(rd);
-			return object;
-		});*/
-
-		//spawner->RegisterInstancedItem(resources->GetResource<Mesh>("Rock1"), resources->GetResource<Material>("Rock1Material"), 1.0f, 1.0f, 0.0f, 1);
-		//spawner->RegisterInstancedItem(resources->GetResource<Mesh>("Test"), resources->GetResource<Material>("TestMaterial"), 1.0f, 1.0f, 3.0f, 1);
 }

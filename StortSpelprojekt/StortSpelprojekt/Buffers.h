@@ -77,9 +77,4 @@ struct cb_grass
 	float grassDisplacement;
 };
 
-ALIGN16
-struct cb_fog
-{
-	int dayTime;
-};
 

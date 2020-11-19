@@ -39,7 +39,6 @@ void Physics::Initialize(dx::XMFLOAT3 gravity)
 	common.setLogger(logger);
 #endif // LOG_REACT
 
-
 }
 
 void Physics::MutexLock()

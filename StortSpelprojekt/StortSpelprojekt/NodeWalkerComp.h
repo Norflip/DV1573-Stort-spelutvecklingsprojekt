@@ -4,6 +4,7 @@
 #include "Input.h"
 // why are these global?
 constexpr float HEIGHT = 1.f; //height from ground
+class PlayerComp;
 
 namespace dx = DirectX;
 class NodeWalkerComp :public Component
@@ -23,6 +24,7 @@ private:
 	SkeletonMeshComponent* base;
 	SkeletonMeshComponent* legs;
 	RigidBodyComponent* rbComp;
+	PlayerComp* playerComp;
 
 	void StartAnim();
 	void StopAnim();
@@ -34,7 +36,7 @@ public:
 	void Reset(); //is public cus is meant to be called outside of class if needed
 	void Start();
 	void Stop();
-
+	void GetPlayerInfo(PlayerComp* playerComp);
 	void Update(const float& deltaTime);
 	//dx::XMFLOAT3 GetLastPos();
 	dx::XMFLOAT3 GetMoveVec();

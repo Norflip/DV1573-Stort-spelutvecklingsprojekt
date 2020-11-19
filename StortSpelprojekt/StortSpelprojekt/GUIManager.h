@@ -1,7 +1,7 @@
 #pragma once
 #include <SpriteBatch.h>
 #include <SpriteFont.h>
-
+#include <CommonStates.h>
 #include "DirectXHelpers.h"
 #include "Renderer.h"
 #include "RenderPass.h"
@@ -15,7 +15,8 @@ enum class GuiGroup : unsigned int
 	Options = 1 << 2,
 	HowToPlay = 1 << 3,
 	Intro = 1 << 4,
-	Font = 1 << 5
+	Font = 1 << 5,
+	Load = 1 << 6
 	
 };
 DEFINE_ENUM_FLAG_OPERATORS(GuiGroup)
@@ -25,6 +26,7 @@ ALIGN16
 class GUIObject
 {
 public:
+	
 	GUIObject() {};
 	virtual ~GUIObject() {};
 	virtual void Draw(DirectX::SpriteBatch*) = 0;
@@ -64,6 +66,8 @@ public:
 	void UpdateAll();
 
 private:
+
+	std::unique_ptr<DirectX::CommonStates> m_states;
 	GUICompass* compass;
 	ID3D11RasterizerState* testState;
 	ID3D11SamplerState* samplerState;

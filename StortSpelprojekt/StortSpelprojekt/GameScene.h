@@ -19,8 +19,7 @@ public:
 	void Initialize() override;
 	void InitializeObjects() override;
 	void InitializeGUI() override;
-	void InitializeLights();
-
+	void InitializeInterior();
 	void OnActivate() override;
 	void OnDeactivate() override;
 
@@ -33,4 +32,6 @@ public:
 private:
 	World world;
 	Object* house;
+
+	dx::XMFLOAT3 interiorPosition;
 };
