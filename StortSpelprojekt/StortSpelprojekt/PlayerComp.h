@@ -71,6 +71,7 @@ private:
 	Object* currentWeapon;
 	Object* holding;
 	Object* house;
+	Object* clickable;
 	RayHit hit;
 	Physics* physics;
 	CameraComponent* cam;

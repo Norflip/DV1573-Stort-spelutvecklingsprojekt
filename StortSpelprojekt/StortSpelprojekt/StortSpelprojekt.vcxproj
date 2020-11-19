@@ -168,6 +168,7 @@
   <ItemGroup>
     <ClCompile Include="AudioMaster.cpp" />
     <ClCompile Include="AudioEngine.cpp" />
+    <ClCompile Include="SelectableComponent.cpp" />
     <ClCompile Include="EnemyAttackComp.cpp" />
     <ClCompile Include="EnemyIdleComp.cpp" />
     <ClCompile Include="EnemyManager.cpp" />
@@ -184,6 +185,7 @@
     <ClCompile Include="Engine.cpp" />
     <ClCompile Include="FrogPuzzle.cpp" />
     <ClCompile Include="GameClock.cpp" />
+    <ClCompile Include="GameHandler.cpp" />
     <ClCompile Include="GameOverScene.cpp" />
     <ClCompile Include="GameScene.cpp" />
     <ClCompile Include="GrassComponent.cpp" />
@@ -249,6 +251,7 @@
   <ItemGroup>
     <ClInclude Include="AudioMaster.h" />
     <ClInclude Include="AudioEngine.h" />
+    <ClInclude Include="SelectableComponent.h" />
     <ClInclude Include="Defines.h" />
     <ClInclude Include="EnemyAttackComp.h" />
     <ClInclude Include="EnemyIdleComp.h" />
@@ -269,6 +272,7 @@
     <ClInclude Include="DShape.h" />
     <ClInclude Include="FrogPuzzle.h" />
     <ClInclude Include="FXAARenderPass.h" />
+    <ClInclude Include="GameHandler.h" />
     <ClInclude Include="GameOverScene.h" />
     <ClInclude Include="GameScene.h" />
     <ClInclude Include="GUICompass.h">

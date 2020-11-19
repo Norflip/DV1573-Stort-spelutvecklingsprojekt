@@ -41,31 +41,33 @@ float4 main(PixelInputType input) : SV_TARGET
     
     float depth = depthTexture.Sample(defaultSampleType, input.uv).x;
 
+    final = day.Sample(defaultSampleType, depth);
+
     // different id, different lerps between textures
-    if (id == 0)
-    {
-        diff = day.Sample(defaultSampleType, depth);
-        diff2 = dusk.Sample(defaultSampleType, depth);
-        final = lerp(diff, diff2, factor);
-    }
-    if (id == 1)
-    {
-        diff = dusk.Sample(defaultSampleType, depth);
-        diff2 = night.Sample(defaultSampleType, depth);
-        final = lerp(diff, diff2, factor);
-    }
-    if (id == 2)
-    {
-        diff = night.Sample(defaultSampleType, depth);
-        diff2 = endNight.Sample(defaultSampleType, depth);
-        final = lerp(diff, diff2, factor);
-    }
-    if (id == 3) // this one keeps the last texture i place a while longer, wont be needed in the end product when we change id after we change chunk
-    {
-        diff = endNight.Sample(defaultSampleType, depth);
-        diff2 = float4(diff.r, diff.g, diff.b, diff.a);
-        final = lerp(diff, diff2, factor);
-    }
+    //if (id == 0)
+    //{
+    //    diff = day.Sample(defaultSampleType, depth);
+    //    diff2 = dusk.Sample(defaultSampleType, depth);
+    //    final = lerp(diff, diff2, factor);
+    //}
+    //if (id == 1)
+    //{
+    //    diff = dusk.Sample(defaultSampleType, depth);
+    //    diff2 = night.Sample(defaultSampleType, depth);
+    //    final = lerp(diff, diff2, factor);
+    //}
+    //if (id == 2)
+    //{
+    //    diff = night.Sample(defaultSampleType, depth);
+    //    diff2 = endNight.Sample(defaultSampleType, depth);
+    //    final = lerp(diff, diff2, factor);
+    //}
+    //if (id == 3) // this one keeps the last texture i place a while longer, wont be needed in the end product when we change id after we change chunk
+    //{
+    //    diff = endNight.Sample(defaultSampleType, depth);
+    //    diff2 = float4(diff.r, diff.g, diff.b, diff.a);
+    //    final = lerp(diff, diff2, factor);
+    //}
 
     const float start = 30; // FOG START
     const float end = 60; // FOG END

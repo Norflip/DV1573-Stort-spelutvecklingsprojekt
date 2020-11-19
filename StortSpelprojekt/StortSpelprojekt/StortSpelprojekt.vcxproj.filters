@@ -287,6 +287,12 @@
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="HousePartsComponent.cpp"> 
+        <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="GameHandler.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="SelectableComponent.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>
@@ -586,6 +592,12 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="HousePartsComponent.h">
+          <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="GameHandler.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="SelectableComponent.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>

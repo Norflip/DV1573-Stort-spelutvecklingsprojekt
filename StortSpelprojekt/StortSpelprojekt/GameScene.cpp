@@ -8,6 +8,9 @@ void GameScene::RemoveEnemy()
 {
 	enemy->RemoveFlag(ObjectFlag::ENABLED);
 	enemy->AddFlag(ObjectFlag::REMOVED);
+	srand(time(0));
+	fogId = 0;
+	fogCol = 0;
 }
 
 GameScene::GameScene()
@@ -180,22 +183,34 @@ void GameScene::InitializeObjects()
 	playerObject->GetComponent<PlayerComp>()->InsertWeapon(axeObject->GetComponent<WeaponComponent>(), axeObject->GetName());
 	AddObject(axeObject);
 	
+	//Road Sign
+	roadSign = new Object("Endsign");
 
-	/* Test sign */	
-	/*Object* testObject = resources->AssembleObject("LeftDirectionSign", "LeftDirectionSignMaterial");
-	testObject->GetTransform().SetPosition({ 22, 0.5f, 50 });
-	AddObject(testObject);
+	//world.GetPath().GetPoints().back().x, 2.0f, world.GetPath().GetPoints().back().z
 
-	Object* testObject1 = resources->AssembleObject("RightDirectionSign", "RightDirectionSignMaterial"); 
-	testObject1->GetTransform().SetPosition({ 24, 0.5f, 50 });
-	AddObject(testObject1);
+	roadSign = resources->AssembleObject("Endsign", "EndsignMaterial");
+	roadSign->GetTransform().SetPosition({ 23, 0.5f, 50 }); //H�MTA SISTA NODEN I PATHEN OCH DESS POSITION F�R ATT S�TTA SKYLTARNAS POSITION.
+	AddObject(roadSign);
 
-	Object* testObject2 = resources->AssembleObject("Endsign", "EndsignMaterial"); 
-	testObject2->GetTransform().SetPosition({ 23, 0.5f, 50 });
-	AddObject(testObject2);
+	//Right Sign
+	rightSign = new Object("LeftDirectionSign");
 
-	AddObject(testObject2);*/
+	rightSign = resources->AssembleObject("LeftDirectionSign", "LeftDirectionSignMaterial");
+	rightSign->GetTransform().SetPosition({ roadSign->GetTransform().GetPosition().m128_f32[0] - 1.0f, roadSign->GetTransform().GetPosition().m128_f32[1], roadSign->GetTransform().GetPosition().m128_f32[2] });
+	rightSign->AddComponent<BoxColliderComponent>(dx::XMFLOAT3{ 1.0f, 1.0f, 1.0f }, dx::XMFLOAT3{ 0, 0, 0 });
+	rightSign->AddComponent<SelectableComponent>();
+	rightSign->AddComponent<RigidBodyComponent>(0.0f, FilterGroups::CLICKABLE, (FilterGroups::EVERYTHING & ~FilterGroups::PLAYER), BodyType::STATIC, true);
+	AddObject(rightSign);
 
+	//Left Sign
+	leftSign = new Object("RightDirectionSign");
+
+	leftSign = resources->AssembleObject("RightDirectionSign", "RightDirectionSignMaterial");
+	leftSign->GetTransform().SetPosition({ roadSign->GetTransform().GetPosition().m128_f32[0] + 1.0f, roadSign->GetTransform().GetPosition().m128_f32[1], roadSign->GetTransform().GetPosition().m128_f32[2] });
+	leftSign->AddComponent<BoxColliderComponent>(dx::XMFLOAT3{ 1.0f, 1.0f, 1.0f }, dx::XMFLOAT3{ 0, 0, 0 });
+	leftSign->AddComponent<SelectableComponent>();
+	leftSign->AddComponent<RigidBodyComponent>(0.0f, FilterGroups::CLICKABLE, (FilterGroups::EVERYTHING & ~FilterGroups::PLAYER), BodyType::STATIC, true);
+	AddObject(leftSign);
 
 	//LOADING BASE MONSTER; ADDING SKELETONS TO IT
 	enemyManager = new EnemyManager();
@@ -427,6 +442,7 @@ void GameScene::InitializeInterior()
 
 void GameScene::OnActivate()
 {
+	
 	SaveState state;
 	state.seed = 1337;
 	state.segment = 0;
@@ -435,7 +451,6 @@ void GameScene::OnActivate()
 	world.ConstructSegment(state);
 
 	//PrintSceneHierarchy(root, 0);
-
 
 	house->GetComponent<NodeWalkerComp>()->InitializePath(world.GetPath());
 	
@@ -450,7 +465,7 @@ void GameScene::OnActivate()
 		if (house->HasComponent<RigidBodyComponent>())
 			house->GetComponent<RigidBodyComponent>()->SetPosition(position);
 
-		position = dx::XMVectorAdd(position, dx::XMVectorSet(5, 12, 0, 0));
+		position = dx::XMVectorAdd(position, dx::XMVectorSet(0, 12, -5, 0));
 
 		player->GetTransform().SetPosition(position);
 		player->GetComponent<RigidBodyComponent>()->SetPosition(position);
@@ -480,6 +495,57 @@ void GameScene::OnDeactivate()
 	//this->PrintSceneHierarchy(root, 0);
 }
 
+void GameScene::SwitchScene()
+{
+	OnDeactivate();
+	ShowCursor(false);
+	fogId += 0.5f;
+	fogCol += 0.5f; 
+
+	SaveState state;
+	state.seed = rand();
+	state.segment = 0;
+	world.ConstructSegment(state);
+	PrintSceneHierarchy(root, 0);
+	renderer->SetIdAndColor(fogId, fogCol);
+
+	house->GetComponent<NodeWalkerComp>()->InitializePath(world.GetPath());
+
+	if (house != nullptr && player != nullptr)
+	{
+		std::vector<dx::XMINT2> indexes = world.GetPath().GetIndexes();
+		dx::XMINT2 spawnIndex = indexes[0];
+
+		dx::XMVECTOR position = dx::XMVectorAdd(Chunk::IndexToWorld(spawnIndex, 0.0f), dx::XMVectorSet(CHUNK_SIZE / 2.0f, 0, CHUNK_SIZE / 2.0f, 0));
+		house->GetTransform().SetPosition(position);
+
+		if (house->HasComponent<RigidBodyComponent>())
+			house->GetComponent<RigidBodyComponent>()->SetPosition(position);
+
+		position = dx::XMVectorAdd(position, dx::XMVectorSet(0, 12, -5, 0));
+
+		player->GetTransform().SetPosition(position);
+		player->GetComponent<RigidBodyComponent>()->SetPosition(position);
+	}
+
+	renderer->AddRenderPass(guiManager);
+
+	/*
+	Input::Instance().ConfineMouse();
+	Input::Instance().SetMouseMode(dx::Mouse::Mode::MODE_RELATIVE);
+	ShowCursor(false);
+
+	AudioMaster::Instance().PlaySoundEvent("wind");*/
+	//this->PrintSceneHierarchy(root, 0);
+
+	//LOADING BASE MONSTER; ADDING SKELETONS TO IT
+	enemyManager = new EnemyManager(resources, player, player->GetComponent<PlayerComp>(), root);
+	enemyManager->InitBaseEnemy();
+	enemyManager->InitChargerEnemy();
+
+	LightManager::Instance().ForceUpdateBuffers(renderer->GetContext());
+}
+
 void GameScene::Update(const float& deltaTime)
 {
 	Scene::Update(deltaTime);
@@ -496,6 +562,24 @@ void GameScene::Update(const float& deltaTime)
 		static_cast<GUISprite*>(guiManager->GetGUIObject("door"))->SetVisible(false);
 		static_cast<GUISprite*>(guiManager->GetGUIObject("dot"))->SetVisible(true);
 	}
+
+	if (rightSign->GetComponent<SelectableComponent>()->GetActive())
+	{
+		SwitchScene();
+		rightSign->GetComponent<SelectableComponent>()->SetActive(false); //VIKTOR
+
+	}
+	else if (leftSign->GetComponent<SelectableComponent>()->GetActive())
+	{
+		SwitchScene();
+		leftSign->GetComponent<SelectableComponent>()->SetActive(false); //VIKTOR
+
+	}
+	//if (KEY_PRESSED(LeftShift) && KEY_PRESSED(P))
+	//{
+	//	rightSign; //n�nting n�nting klicka p� skylten
+	//	//SwitchScene();
+	//}
 
 	static_cast<GUIFont*>(guiManager->GetGUIObject("fps"))->SetString(std::to_string((int)GameClock::Instance().GetFramesPerSecond()));
 	guiManager->UpdateAll();
