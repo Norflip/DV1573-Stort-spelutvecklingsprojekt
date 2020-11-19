@@ -106,8 +106,18 @@ float4 main(PixelInputType input) : SV_TARGET
     //Math to multiply colors
     fogColor = float4((((f * f * f + .6 * f * f + .5 * f) * color) + color*color).xyz, 1.0f);
 
+    const float amount = 0.4f;
+    const float power = 2.0f;
+   // const float4 vignetteColor = float4(0, 0, 0, 1);
+    const float4 vignetteColor = float4(0, 0, 0, 1);
+    float dis = length(input.uv * 2 - 1);
+    dis = dis / 1.41421;
+    dis = pow(dis, power);
     float4 result = lerp(diffuseColor, fogColor, fogFactor);
+    float4 vigcolor = float4(lerp(result, fogColor, 1.0f - pow(1 - dis * amount, 2)).rgb, 1.0f);
 
-    return result;
+
+
+    return vigcolor;
 
 }
