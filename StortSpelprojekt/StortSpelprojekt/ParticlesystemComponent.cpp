@@ -388,7 +388,7 @@ void ParticleSystemComponent::Draw(Renderer* renderer, CameraComponent* camera)
 		dx::XMMATRIX particlesRotationY = dx::XMMatrixRotationY(rotationPart);
 		dx::XMMATRIX particlesTranslation = dx::XMMatrixTranslation(particlesPosition.x, particlesPosition.y, particlesPosition.z);
 		worldParticles = particlesRotationY * particlesTranslation;
-		worldmatrix = particlesTranslation;
+		worldmatrix = worldParticles;
 
 		renderer->DrawParticles(mesh, mat, worldmatrix);
 	}
