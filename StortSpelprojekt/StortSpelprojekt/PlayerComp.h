@@ -46,7 +46,7 @@ public:
 	void SetFuel(float fuel) { this->fuel = fuel; }
 	void SetFood(float food) { this->fuel = food; }
 	CameraComponent* GetCamera(){ return cam; };
-	
+	void InsertArms(Object* arms);
 	void SetguiMan(GUIManager* guiMan) { this->guiMan = guiMan; }
 	void InsertWeapon(WeaponComponent* weapon, std::string name);
 	void SetInteriorPosition(float x, float y, float z);
@@ -55,6 +55,7 @@ public:
 private:
 	//det h�r skriver en kommentar till hold objekt
 	void HoldObject();
+	void PickUpObject();
 	void DropObject();
 	float health, attack, attackSpeed, fuel, food;
 	//int currentWeapon;
@@ -71,6 +72,7 @@ private:
 	Object* currentWeapon;
 	Object* holding;
 	Object* house;
+	Object* arms;
 	RayHit hit;
 	Physics* physics;
 	CameraComponent* cam;
