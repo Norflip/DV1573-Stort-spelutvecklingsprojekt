@@ -134,7 +134,7 @@ void GameScene::InitializeObjects()
 	healthkitObject->GetComponent<MeshComponent>()->SetBatchable(true);
 	healthkitObject->GetTransform().SetPosition({ 23,2,50 });
 	healthkitObject->AddComponent<BoxColliderComponent>(dx::XMFLOAT3{ 0.5f, 0.5f, 0.5f }, dx::XMFLOAT3{ 0, 0, 0 });
-	healthkitObject->AddComponent<PickupComponent>(Type::Health, 20.0f);
+	healthkitObject->AddComponent<PickupComponent>(PickupType::Health, 20.0f);
 	healthkitObject->AddComponent<RigidBodyComponent>(0.f, FilterGroups::PICKUPS, (FilterGroups::EVERYTHING &~FilterGroups::PLAYER), BodyType::DYNAMIC,true);
 	AddObject(healthkitObject);
 
@@ -144,7 +144,7 @@ void GameScene::InitializeObjects()
 	fuelCanObject->GetComponent<MeshComponent>()->SetBatchable(true);
 	fuelCanObject->GetTransform().SetPosition({ 22,2,52 });
 	fuelCanObject->AddComponent<BoxColliderComponent>(dx::XMFLOAT3{ 0.3f, 0.3f, 0.3f }, dx::XMFLOAT3{ 0, 0, 0 });
-	fuelCanObject->AddComponent<PickupComponent>(Type::Fuel, 20.0f);
+	fuelCanObject->AddComponent<PickupComponent>(PickupType::Fuel, 20.0f);
 	fuelCanObject->AddComponent<RigidBodyComponent>(10.f, FilterGroups::HOLDABLE, (FilterGroups::EVERYTHING &~FilterGroups::PLAYER), BodyType::DYNAMIC, true);
 	AddObject(fuelCanObject);
 
@@ -155,7 +155,7 @@ void GameScene::InitializeObjects()
 	beansObject->GetComponent<MeshComponent>()->SetBatchable(true);
 	beansObject->GetTransform().SetPosition({22, 2.0f, 53 });
 	beansObject->AddComponent<BoxColliderComponent>(dx::XMFLOAT3{ 0.5f, 0.5f, 0.5f }, dx::XMFLOAT3{ 0, 0, 0 });
-	beansObject->AddComponent<PickupComponent>(Type::Food, 20.0f);
+	beansObject->AddComponent<PickupComponent>(PickupType::Food, 20.0f);
 	beansObject->AddComponent<RigidBodyComponent>(0.f, FilterGroups::PICKUPS, (FilterGroups::EVERYTHING & ~FilterGroups::PLAYER), BodyType::DYNAMIC, true);
 
 	beansObject->AddComponent<ParticleSystemComponent>(renderer, particleShader);
@@ -192,9 +192,16 @@ void GameScene::InitializeObjects()
 
 	Object* testObject2 = resources->AssembleObject("Endsign", "EndsignMaterial"); 
 	testObject2->GetTransform().SetPosition({ 23, 0.5f, 50 });
+	AddObject(testObject2);
+
 	AddObject(testObject2);*/
 
 
+	//LOADING BASE MONSTER; ADDING SKELETONS TO IT
+	enemyManager = new EnemyManager();
+	enemyManager->Initialize(player, player->GetComponent<PlayerComp>(), root);
+	enemyManager->InitBaseEnemy();
+	enemyManager->InitChargerEnemy();
 	/* PuzzleModels */
 	//Object* puzzleFrog = resources->AssembleObject("PuzzleFrogStatue", "PuzzleFrogStatueMaterial", ObjectFlag::DEFAULT);
 	////puzzleManager = new PuzzleManager(resources, player, house);
@@ -427,7 +434,7 @@ void GameScene::OnActivate()
 	player->GetComponent<PlayerComp>()->Reset();
 	world.ConstructSegment(state);
 
-	PrintSceneHierarchy(root, 0);
+	//PrintSceneHierarchy(root, 0);
 
 
 	house->GetComponent<NodeWalkerComp>()->InitializePath(world.GetPath());
@@ -457,11 +464,7 @@ void GameScene::OnActivate()
 
 	AudioMaster::Instance().PlaySoundEvent("wind");
 	//this->PrintSceneHierarchy(root, 0);
-
-	//LOADING BASE MONSTER; ADDING SKELETONS TO IT
-	enemyManager = new EnemyManager(resources, player, player->GetComponent<PlayerComp>(), root);
-	enemyManager->InitBaseEnemy();
-	enemyManager->InitChargerEnemy();
+	enemyManager->SpawnEnemies();
 	
 	LightManager::Instance().ForceUpdateBuffers(renderer->GetContext());
 }

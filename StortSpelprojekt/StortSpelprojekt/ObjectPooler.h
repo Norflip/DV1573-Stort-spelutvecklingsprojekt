@@ -5,6 +5,16 @@
 
 constexpr size_t POOL_MAX_LIMIT = 8000;
 
+class PooledItem : public Component
+{
+public:
+	void SetKey(const std::string& key) { this->key = key; }
+	std::string GetKey() const { return this->key; }
+
+private:
+	std::string key;
+};
+
 class ObjectPooler
 {
 	struct Pool
@@ -23,7 +33,7 @@ public:
 	void Unregister(std::string key);
 
 	Object* GetItem(std::string key);
-	void ReturnItem(std::string key, Object* object);
+	void ReturnItem(Object* object);
 	Pool* GetPool(std::string key);
 
 	void Clear();
@@ -34,8 +44,3 @@ private:
 	std::unordered_map<std::string, Pool*> pools;
 	ResourceManager* resourceManager;
 };
-
-/*
-ObjectPool pooler;
-pooler.Register("tree_0", 10, 10, []()->{});
-*/

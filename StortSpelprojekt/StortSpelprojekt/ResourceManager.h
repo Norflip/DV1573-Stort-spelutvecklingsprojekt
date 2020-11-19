@@ -47,5 +47,6 @@ template<typename T>
 inline T* ResourceManager::GetResource(std::string key)
 {
 	Resource* resource = GetResource(key);
+	assert(resource != nullptr);
 	return static_cast<T*>(resource);
 }

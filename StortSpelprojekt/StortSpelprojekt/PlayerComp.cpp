@@ -3,6 +3,8 @@
 #include "Engine.h"
 
 #include "WeaponComponent.h"
+#include "EnemyManager.h"
+
 //PlayerComp::PlayerComp() 
 //{
 //	health = 100;
@@ -21,7 +23,6 @@
 PlayerComp::PlayerComp(Renderer* renderer, CameraComponent* camComp, Object* house, Physics* physics, GUIManager* guimanager, float health, float movementSpeed, float radius, float attack, float attackSpeed)
 {
 	//attackTimer.Start();
-
 	this->guiMan = guimanager;
 	this->health = health;
 	this->attack = attack;
@@ -183,7 +184,7 @@ void PlayerComp::DropObject()
 		if (holding->HasComponent<ParticleSystemComponent>())
 			if (!holding->GetComponent<ParticleSystemComponent>()->GetActive())
 				holding->GetComponent<ParticleSystemComponent>()->SetActive(true);
-						
+
 		float tossSpeed = throwStrength / rbComp->GetMass();
 		objectRb->setLinearVelocity({ dx::XMVectorGetX(camRot) * tossSpeed ,  dx::XMVectorGetY(camRot) * tossSpeed,  dx::XMVectorGetZ(camRot) * tossSpeed });
 		holding = nullptr;
@@ -268,33 +269,33 @@ void PlayerComp::RayCast(const float& deltaTime)
 			if (hit.object != nullptr)
 			{
 				AudioMaster::Instance().PlaySoundEvent("pickupSound");
-				Type pickupType = hit.object->GetComponent<PickupComponent>()->GetType();
+				PickupType pickupType = hit.object->GetComponent<PickupComponent>()->GetType();
 				float temp = hit.object->GetComponent<PickupComponent>()->GetAmount();
 
-				if (pickupType == Type::Health)
+				if (pickupType == PickupType::Health)
 				{
 					if ((health + temp) <= 100.0f)
 						health += temp;
 					else
 						health = 100.0f;
 				}
-				else if (pickupType == Type::Food)
+				else if (pickupType == PickupType::Food)
 				{
 					if ((food + temp) <= 100.0f)
 						food += temp;
 					else
 						food = 100.0f;
 				}
-				else if (pickupType == Type::Fuel)
+				else if (pickupType == PickupType::Fuel)
 				{
 					if ((fuel + temp) <= 100.0f)
 						fuel += temp;
 					else
 						fuel = 100.0f;
 				}
-				
+
 				if (hit.object->HasComponent<ParticleSystemComponent>())
-					if(hit.object->GetComponent<ParticleSystemComponent>()->GetActive())
+					if (hit.object->GetComponent<ParticleSystemComponent>()->GetActive())
 						hit.object->GetComponent<ParticleSystemComponent>()->SetActive(false);
 				
 				hit.object->GetComponent<PickupComponent>()->SetActive(false);
@@ -318,36 +319,38 @@ void PlayerComp::RayCast(const float& deltaTime)
 				hit.object->GetComponent<BoxColliderComponent>()->SetRotation(0, { 5, 5, 5, 5 });
 				//hit.object->RemoveFlag(ObjectFlag::ENABLED);
 				currentWeapon->RemoveFlag(ObjectFlag::ENABLED);
-				
+
 				if (holding->HasComponent<ParticleSystemComponent>())
 					if (holding->GetComponent<ParticleSystemComponent>()->GetActive())
 						holding->GetComponent<ParticleSystemComponent>()->SetActive(false);
-				
+
 			}
 		}
 	}
 
 	//ATTACK ENEMIES
 	if (LMOUSE_DOWN && holding == nullptr)
-	{		
+	{
+
 		if (physics->RaytestSingle(ray, 5.0f, hit, FilterGroups::ENEMIES))
 		{
-			if (hit.object != nullptr && hit.object->HasComponent<EnemyStatsComp>())
+			if (hit.object != nullptr)
 			{
-				if (hit.object->GetComponent<EnemyStatsComp>()->IsEnabled())
-				{
-					if (hit.object->GetComponent<EnemyStatsComp>()->GetHealth() >= 0.0f)
-					{						
-						hit.object->GetComponent<EnemyStatsComp>()->LoseHealth(attack);
-						AudioMaster::Instance().PlaySoundEvent("punch");
+				EnemyStatsComp* stats = hit.object->GetComponent<EnemyStatsComp>();
 
-						if (hit.object->GetComponent<EnemyStatsComp>()->GetHealth() <= 0.0f)
-						{
-							RigidBodyComponent* rbComp = hit.object->GetComponent<RigidBodyComponent>();
+				if (stats != nullptr && stats->IsEnabled() && stats->GetHealth() >= 0.0f)
+				{
+					stats->LoseHealth(attack);
+					AudioMaster::Instance().PlaySoundEvent("punch");
+
+					if (stats->GetHealth() <= 0.0f)
+					{
+						stats->GetManager()->RemoveEnemy(hit.object);
+
+							/*RigidBodyComponent* rbComp = hit.object->GetComponent<RigidBodyComponent>();
 							rbComp->Release();
-							Engine::Instance->GetActiveScene()->RemoveObject(hit.object);
-						}						
-					}					
+							Engine::Instance->GetActiveScene()->RemoveObject(hit.object);*/
+					}
 				}
 			}
 		}
