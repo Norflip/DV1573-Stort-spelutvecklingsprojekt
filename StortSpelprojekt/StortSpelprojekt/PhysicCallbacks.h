@@ -35,8 +35,6 @@ class CollisionEventListener : public rp::EventListener
 {
     virtual void onContact(const CollisionCallback::CallbackData& callbackData) override 
 	{
-		return;
-
         for (size_t p = 0; p < callbackData.getNbContactPairs(); p++) 
 		{
 			rp::CollisionCallback::ContactPair contactPair = callbackData.getContactPair(p);
@@ -46,24 +44,24 @@ class CollisionEventListener : public rp::EventListener
 				Object* object0 = static_cast<Object*>(contactPair.getBody1()->getUserData());
 				Object* object1 = static_cast<Object*>(contactPair.getBody2()->getUserData());
 
-				/*if (object0 != nullptr && object1 != nullptr)
+				if (object0 != nullptr && object1 != nullptr)
 				{
 					CollisionInfo info;
 					
 					RigidBodyComponent* body0 = object0->GetComponent<RigidBodyComponent>();
-					if (body0 != nullptr && body0->IsDynamic())
+					if (body0 != nullptr && body0->GetType() == BodyType::DYNAMIC)
 					{
 						info.other = object1;
 						body0->m_OnCollision(info);
 					}
 
 					RigidBodyComponent* body1 = object1->GetComponent<RigidBodyComponent>();
-					if (body1 != nullptr && body1->IsDynamic())
+					if (body1 != nullptr && body1->GetType() == BodyType::DYNAMIC)
 					{
 						info.other = object0;
 						body1->m_OnCollision(info);
 					}
-				}*/
+				}
             }
         }
     }

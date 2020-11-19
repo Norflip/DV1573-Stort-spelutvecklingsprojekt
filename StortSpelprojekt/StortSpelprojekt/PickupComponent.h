@@ -6,21 +6,21 @@
 namespace dx = DirectX;
 
 
-enum class Type { Health, Fuel, Food };
+enum class PickupType { Health, Fuel, Food };
 
 class PickupComponent:public Component
 {
 private:
 	float value;
-	Type pickupType;
+	PickupType pickupType;
 	bool isActive;
 
 public:
 
-	PickupComponent(Type type, float amount = 25.f);
+	PickupComponent(PickupType type, float amount = 25.f);
 	virtual ~PickupComponent();
 	void SetActive(bool isActive);
 	float GetAmount(){return this->value;}
-	Type GetType() { return this->pickupType; }
+	PickupType GetType() { return this->pickupType; }
 	void Update(const float& deltaTime);
 };

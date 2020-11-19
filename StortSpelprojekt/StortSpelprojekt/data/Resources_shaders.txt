@@ -12,6 +12,10 @@ Input: instance
 VS: Shaders/Instance_vs.hlsl
 PS: Shaders/Default_ps.hlsl
 
+Name: alphaShader
+VS: Shaders/Default_vs.hlsl
+PS: Shaders/Alpha_ps.hlsl
+
 Name: alphaInstanceShader
 Input: instance
 VS: Shaders/Instance_vs.hlsl

@@ -44,8 +44,9 @@ rp::Transform Collider::GetTransform(size_t index) const
     return this->colliderInformations[index].transform;
 }
 
-void Collider::SetRotation(size_t index, dx::XMVECTOR quaternion)
+void Collider::SetRotation(size_t index, dx::XMFLOAT4 quaternion)
 {
     assert(index >= 0 && index < colliderInformations.size());
-    dx::XMStoreFloat4(&colliderInformations[index].rotation, quaternion);
+    colliderInformations[index].rotation = quaternion;
+   // dx::XMStoreFloat4(&colliderInformations[index].rotation, quaternion);
 }

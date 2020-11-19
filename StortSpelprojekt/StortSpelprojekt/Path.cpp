@@ -68,6 +68,8 @@ void Path::DrawDebug()
 
 	}
 
+	dx::XMFLOAT3 signWorldPos (signPosition.x, height, signPosition.y);
+	DShape::DrawSphere(signWorldPos, 2.0f, { 1,1,1 });
 
 	for (size_t i = 0; i < lanternPoints.size(); i++)
 	{
@@ -138,11 +140,16 @@ void Path::SetPointsFromIndexes(const std::vector<dx::XMINT2>& indexes)
 void Path::CreateLineSegments()
 {
 	segments.clear();
-	const float distanceOffset = 1000.0f;
+	const float distanceOffset = CHUNK_SIZE * 5.0f;
 
 	for (size_t i = 0; i < points.size() - 1; i++)
 	{
 		LineSegment segment(points[i], points[i + 1]);
+		segment.start.x = roundf(segment.start.x);
+		segment.start.z = roundf(segment.start.z);
+		segment.end.x = roundf(segment.end.x);
+		segment.end.z = roundf(segment.end.z);
+
 		if (i == 0)
 		{
 			dx::XMFLOAT2 direction = segment.Direction();
@@ -150,13 +157,14 @@ void Path::CreateLineSegments()
 			float y = points[i].z + (-direction.y) * distanceOffset;
 			PathPoint offsetPoint(x, y, points[i].influence);
 			segments.push_back(LineSegment(offsetPoint, points[i]));
+			extraSegments.push_back(LineSegment(offsetPoint, points[i]));
 		}
 
 		segments.push_back(segment);
 	}
 
-	LineSegment& lastSegment = segments[segments.size() - 1];
-	PathPoint& lastPoint = lastSegment.end;
+	LineSegment lastSegment = segments[segments.size() - 1];
+	PathPoint lastPoint = lastSegment.end;
 	dx::XMFLOAT2 direction = lastSegment.Direction();
 	dx::XMFLOAT2 right = dx::XMFLOAT2(-direction.y, direction.x);
 
@@ -166,8 +174,17 @@ void Path::CreateLineSegments()
 	dx::XMFLOAT2 rightDirection = Math::Lerp(direction, right, 0.5f);
 	PathPoint endRight(lastPoint.x + (rightDirection.x) * distanceOffset, lastPoint.z + (rightDirection.y) * distanceOffset, lastPoint.influence);
 
+	
+	// FIXA ROTATION
+	signPosition.x = lastPoint.x + direction.x * distanceOffset;
+	signPosition.y = lastPoint.z + direction.y * distanceOffset;
+
+
 	segments.push_back(LineSegment(lastPoint, endLeft));
 	segments.push_back(LineSegment(lastPoint, endRight));
+
+	extraSegments.push_back(LineSegment(lastPoint, endLeft));
+	extraSegments.push_back(LineSegment(lastPoint, endRight));
 	// add level select here
 
 }

@@ -1,6 +1,8 @@
 #pragma once
 #include "Component.h"
 
+class EnemyManager;
+
 class EnemyStatsComp : public Component
 {
 	public:
@@ -19,7 +21,12 @@ class EnemyStatsComp : public Component
 		void SetAttack(float attack) { this->attack = attack; }
 		void AddAttack(float attack) { this->attack += attack; }
 		void SetAttackSpeed(float attackSpeed) { this->attackSpeed = attackSpeed; }
-	private:
+	
+		void SetManager(EnemyManager* manager) { this->manager = manager; }
+		EnemyManager* GetManager() const { return this->manager; }
+
+private:
+		EnemyManager* manager;
 		float health;
 		float movementSpeed;
 		float chaseRadius;

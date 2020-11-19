@@ -5,22 +5,24 @@
 class EnemyManager
 {
 	public:
-		EnemyManager(ResourceManager* resources, Object* player, PlayerComp* playerComp, Object* root);
-		~EnemyManager() {}
+		EnemyManager();
+		virtual ~EnemyManager();
+
+		void Initialize(Object* player, PlayerComp* playerComp, Object* root);
+
 		std::vector<Object*> GetBaseEnemies() const { return baseEnemies; }
 		void InitBaseEnemy();
 		void InitChargerEnemy();
 		void RemoveEnemy(Object* enemy);
-		ObjectPooler* GetPool() { return enemyPool; }
+		
+		void SpawnEnemies();
+		void DespawnEnemies();
 
 	private:
-		void SpawnEnemy(dx::XMVECTOR position);
-
-		void SpawnChargerEnemy(dx::XMVECTOR position);
+		void SpawnEnemy(std::string key, dx::XMVECTOR position);
 
 		ObjectPooler* enemyPool;
 		std::vector<Object*> baseEnemies;
-		//std::vector<Object*> baseEnemies;
 		Object* player;
 		PlayerComp* playerComp;
 		ResourceManager* resources;
