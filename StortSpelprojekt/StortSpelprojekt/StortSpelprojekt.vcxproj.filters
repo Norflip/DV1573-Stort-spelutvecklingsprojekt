@@ -276,6 +276,9 @@
     </ClCompile>
     <ClCompile Include="PlayerAnimHandlerComp.cpp">
       <Filter>Source Files</Filter>
+    </ClCompile>    
+    <ClCompile Include="FireTextureComponent.cpp">
+    <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="WorldGenerator.cpp">
       <Filter>Source Files\SpawnSystems</Filter>
@@ -584,6 +587,9 @@
     </ClInclude>
     <ClInclude Include="FrogPuzzle.h">
       <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="FireTextureComponent.h">
+    <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="HousePartsComponent.h">
       <Filter>Header Files</Filter>

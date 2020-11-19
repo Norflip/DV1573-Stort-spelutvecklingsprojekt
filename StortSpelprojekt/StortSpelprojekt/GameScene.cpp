@@ -221,6 +221,17 @@ void GameScene::InitializeObjects()
 	puzzleFly->GetComponent<ParticleSystemComponent>()->InitializeParticles(renderer->GetDevice(), L"Textures/fire1.png");
 	AddObject(puzzleFly);
 
+	/*Shader* fireShader = resources->GetShaderResource("fireShader");*/
+
+	/* Different firestuff stuffy stuff  */
+	/*Object* puzzleFlyTest2 = resources->AssembleObject("PuzzleFlyStatue", "PuzzleFlyStatueMaterial", ObjectFlag::DEFAULT | ObjectFlag::NO_CULL);
+	puzzleFlyTest2->GetTransform().SetPosition({ 28, 1.3f, 48 });
+	puzzleFlyTest2->AddComponent<FireTextureComponent>(renderer, fireShader);
+	puzzleFlyTest2->GetComponent<FireTextureComponent>()->InitializeFire(renderer->GetDevice());
+	AddObject(puzzleFlyTest2);*/
+
+	//Object* fire = puzzleFlyTest2->GetComponent<FireTextureComponent>()->GetFireObject();
+	//AddObject(fire);	
 	/*FrogPuzzle* frogpuzzle = new FrogPuzzle(resources);
 	frogpuzzle*/
 	GUICompass* compass = new GUICompass(*renderer, window, house, player);
@@ -388,6 +399,9 @@ void GameScene::InitializeInterior()
 	Object* fireLight = new Object("fireLight");
 	fireLight->AddComponent<PointLightComponent>(dx::XMFLOAT4(1.0f, 0.29f, 0.0f, 1.0f), 1.2f);
 	fireLight->GetTransform().SetPosition({ -7.0f, -99.f, -1.36 });
+	fireLight->AddComponent<ParticleSystemComponent>(renderer, Engine::Instance->GetResources()->GetShaderResource("particleShader"));
+	fireLight->GetComponent<ParticleSystemComponent>()->InitializeFirelikeParticles(renderer->GetDevice(), L"Textures/fire1.png");
+	fireLight->AddFlag(ObjectFlag::DEFAULT | ObjectFlag::NO_CULL);
 	AddObject(fireLight);
 
 	Object* windowLight = new Object("windowLight");
