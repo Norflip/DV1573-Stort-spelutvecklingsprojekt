@@ -21,7 +21,7 @@ Engine::Engine(HINSTANCE hInstance) : window(hInstance), activeScene(nullptr), s
 
 	resourceManager = new ResourceManager();
 	resourceManager->InitializeResources(renderer->GetDevice());
-
+	
 	physics = new Physics();
 	physics->Initialize();
 

@@ -15,6 +15,7 @@ void EnemySMComp::InitAnimation()
 	skeletonComponent =  GetOwner()->GetComponent<SkeletonMeshComponent>();
 	attackComponent = GetOwner()->GetComponent<EnemyAttackComp>();
 	statsComponent = GetOwner()->GetComponent<EnemyStatsComp>();
+	enemyPatrolComp = GetOwner()->GetComponent<EnemyPatrolComp>();
 }
 
 void EnemySMComp::SetState(EnemyState state)
@@ -53,7 +54,7 @@ void EnemySMComp::Animate()
 	}
 	else if (currentState == EnemyState::PATROL)
 	{
-		skeletonComponent->SetTrack(SkeletonStateMachine::WALK, false);
+		skeletonComponent->SetTrack(SkeletonStateMachine::RUN, false);
 	}
 	/*else if (currentState == EnemyState::DEATH)
 	{
@@ -72,9 +73,13 @@ void EnemySMComp::Update(const float& deltaTime)
 	{
 		SetState(EnemyState::ATTACK);		
 	}
-	else if (currentState != EnemyState::IDLE && !attackComponent->ChasePlayer())
+	else if (currentState != EnemyState::IDLE && !attackComponent->ChasePlayer()&& !enemyPatrolComp->GetIsMoving())
 	{
 		SetState(EnemyState::IDLE);
+	}
+	else if (currentState != EnemyState::PATROL && !attackComponent->ChasePlayer() && enemyPatrolComp->GetIsMoving())
+	{
+		SetState(EnemyState::PATROL);
 	}
 
 	if (GetOwner()->HasComponent<SkeletonMeshComponent>())

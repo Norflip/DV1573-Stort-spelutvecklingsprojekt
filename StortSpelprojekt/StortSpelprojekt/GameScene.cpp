@@ -102,7 +102,7 @@ void GameScene::InitializeObjects()
 	forwardPlusShader.CompileCS(renderer->GetDevice());
 	forwardPlusShader.BindToContext(renderer->GetContext());
 	renderer->InitForwardPlus(camera, window, forwardPlusShader);
-
+	//forwardPlusShader.Unbind(renderer->GetContext());
 
 
 
@@ -126,8 +126,9 @@ void GameScene::InitializeObjects()
 	LightComponent* sLight = spotLight->AddComponent<LightComponent>(1, dx::XMFLOAT4(0.7f, 0.7f, 0.4f, 1.0f), 7.f);
 	sLight->SetEnabled(true);
 	sLight->SetIntensity(0.5f);
-	sLight->SetRange(8.f);
-	sLight->SetSpotlightAngle(10.f);
+	//sLight->SetAttenuation();
+	sLight->SetRange(12.f);
+	sLight->SetSpotlightAngle(14.f);
 	sLight->SetDirection({ 1.f, 0.f, 0.f });
 	AddObject(spotLight, playerObject);
 
@@ -314,7 +315,7 @@ void GameScene::InitializeLights()
 	dLight->GetTransform().SetPosition(dx::XMLoadFloat3(&lightTranslation));
 	LightComponent* dLightC = dLight->AddComponent<LightComponent>(2, dx::XMFLOAT4(0.7f, 0.2f, 0.2f, 1.0f), 7.f);
 	dLightC->SetEnabled(true);
-	dLightC->SetIntensity(0.1f);
+	dLightC->SetIntensity(0.2f);
 	dx::XMFLOAT3 sunDirection;
 	dx::XMStoreFloat3(&sunDirection, dx::XMVector3Normalize(dx::XMVectorSet(0, -1, 1, 0)));
 	dLightC->SetDirection(sunDirection);

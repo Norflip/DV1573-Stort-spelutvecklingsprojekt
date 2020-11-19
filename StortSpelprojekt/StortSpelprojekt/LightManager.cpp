@@ -84,7 +84,7 @@ void LightManager::ForceUpdateBuffers(ID3D11DeviceContext* context, CameraCompon
 		//dx::XMStoreFloat4(&the_Lights[i->first].lightPositionVS, viewPos);
 		the_Lights[i->first].lightDirection = i->second->GetDirection();
 		the_Lights[i->first].range = i->second->GetRange();
-		the_Lights[i->first].attenuation = i->second->GetAttenuation();
+		//the_Lights[i->first].attenuation = i->second->GetAttenuation();
 		the_Lights[i->first].spotlightAngle = i->second->GetSpotlightAngle();
 		the_Lights[i->first].enabled = (UINT)i->second->GetEnabled();
 		the_Lights[i->first].type = (UINT)i->second->GetType();

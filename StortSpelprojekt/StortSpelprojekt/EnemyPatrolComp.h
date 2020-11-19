@@ -9,10 +9,13 @@ class EnemyPatrolComp : public Component
 		virtual ~EnemyPatrolComp();
 		void Initialize();
 		void Update(const float& deltaTime) override;
+		bool GetIsMoving()const;
+		void SetMoving(bool moving);
 	private:
 		dx::XMFLOAT3 randomVec; //(target vector)
 		float timer;
 		float randomIntervall;
+		bool isMoving;
 
 		RigidBodyComponent* rbComp;
 		EnemyStatsComp* enemyStatsComp;

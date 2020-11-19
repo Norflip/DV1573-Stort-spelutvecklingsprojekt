@@ -1,5 +1,5 @@
 //static const int POINT_LIGHT_COUNT = 16;
-static const int LIGHT_COUNT = 20;
+static const int LIGHT_COUNT = 40;
 
 #ifndef BLOCK_SIZE
 #pragma message( "BLOCK_SIZE undefined. Default to 32.")
@@ -25,12 +25,12 @@ struct Light //slot t8
     //float4 lightPositionVS;
     float3 lightDirection;
     float range;
-    float3 attenuation;
+    //float3 attenuation;
     float spotlightAngle;
     uint enabled;
     uint type;
     float intensity;
-    float padding;
+    //float padding;
 };
 StructuredBuffer<Light> Lights : register(t8); 
 StructuredBuffer<uint> LightIndexList : register(t10);

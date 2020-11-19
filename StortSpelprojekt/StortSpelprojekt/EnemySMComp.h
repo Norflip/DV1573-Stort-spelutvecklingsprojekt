@@ -24,9 +24,11 @@ class EnemySMComp : public Component
 	public:
 		std::map<EnemyState, EnemyState> switchState =
 		{
-			//{EnemyState::IDLE, EnemyState::PATROL},
+			{EnemyState::IDLE, EnemyState::PATROL},
 			{EnemyState::IDLE, EnemyState::ATTACK},
-			{EnemyState::ATTACK, EnemyState::IDLE}
+			{EnemyState::ATTACK, EnemyState::IDLE},
+			{EnemyState::PATROL, EnemyState::ATTACK},
+			{EnemyState::PATROL, EnemyState::IDLE}
 		};
 
 	public:
@@ -47,4 +49,5 @@ class EnemySMComp : public Component
 		SkeletonMeshComponent* skeletonComponent;
 		EnemyAttackComp* attackComponent;
 		EnemyStatsComp* statsComponent;
+		EnemyPatrolComp* enemyPatrolComp;
 };

@@ -85,7 +85,7 @@ void o_AppendLight(uint lightIndex)
 {
 	uint index; // Index into the visible lights array.
 	InterlockedAdd(o_LightCount, 1, index);
-	if (index < 1024)
+    if (index < 1024)
 	{
 		o_LightList[index] = lightIndex;
 	}
@@ -96,7 +96,7 @@ void t_AppendLight(uint lightIndex)
 {
 	uint index; // Index into the visible lights array.
 	InterlockedAdd(t_LightCount, 1, index);
-	if (index < 1024)
+    if (index < 1024)
 	{
 		t_LightList[index] = lightIndex;
 	}
@@ -162,7 +162,7 @@ void main(ComputeShaderInput IN) // light culling everyframe
 			case POINT_LIGHT:
 			{
 
-				float3 lightPositionVS = mul(float4(light.lightPosition.xyz, 1), view).xyz;
+				float3 lightPositionVS = mul(light.lightPosition, view).xyz;
 				Sphere sphere = { lightPositionVS, light.range };
 				if (SphereInsideFrustum(sphere, GroupFrustum, nearClipVS, maxDepthVS))
 				{
@@ -180,7 +180,7 @@ void main(ComputeShaderInput IN) // light culling everyframe
 			case SPOT_LIGHT:
 			{
 				float coneRadius = tan(radians(light.spotlightAngle)) * light.range;
-				float3 lightPositionVS = mul(float4(light.lightPosition.xyz, 1), view).xyz;
+                float3 lightPositionVS = mul(light.lightPosition, view).xyz;
 				Cone cone = { lightPositionVS, light.range, light.lightDirection, coneRadius };
 				if (ConeInsideFrustum(cone, GroupFrustum, nearClipVS, maxDepthVS))
 				{
@@ -237,11 +237,8 @@ void main(ComputeShaderInput IN) // light culling everyframe
 		t_LightIndexList[t_LightIndexStartOffset + i] = t_LightList[i];
 	}
 
-
 	
 }
-
-
 
 
 // View space frustums for the grid cells.
@@ -293,26 +290,8 @@ void ComputeFrustums(ComputeShaderInput IN) // compute ONCE or when resize windo
         uint index = IN.dispatchThreadID.x + (IN.dispatchThreadID.y * numThreads.x);
         out_Frustums[index] = frustum;
     }
-        //out_Frustums[index].thread.x = 5; // uint(numThreads.x);
-        //out_Frustums[index].thread.y = 7; // uint(numThreads.y);
-        //out_Frustums[index].thread.z = 8;  //uint(numThreads.z);
-        ////out_Frustums[index].thread.w = 0;
-        //out_Frustums[index].tID.x = uint(IN.dispatchThreadID.x);
-        //out_Frustums[index].tID.y = uint(IN.dispatchThreadID.y);
-        //out_Frustums[index].tID.z = uint(IN.dispatchThreadID.z);
-        //out_Frustums[index].tID.w = 0;
-		//   out_Frustums[0].planes[0].N = float3(numThreads.x, numThreads.y, numThreads.z);
-		//   out_Frustums[0].planes[0].d = 99.0222;
-		////out_Frustums[index].planes[1].N = float3(IN.dispatchThreadID.x, IN.dispatchThreadID.y, IN.dispatchThreadID.z);
-		//   out_Frustums[0].planes[1].d = 77.0222;
-		//   out_Frustums[0].planes[2].N = float3(ScreenDimensions.x, ScreenDimensions.y, 9);
-		//   out_Frustums[0].planes[2].d = 0.01222;
+  
 }
-
-
-
-
-
 
 //[numthreads(1, 1, 1)]
 //void main( uint3 DTid : SV_DispatchThreadID )

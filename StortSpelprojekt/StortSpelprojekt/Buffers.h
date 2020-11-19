@@ -12,7 +12,7 @@ constexpr size_t CB_DISPATCH_PARAMS_SLOT = 5;
 constexpr size_t CB_SCREEN_TOVIEW_PARAMS_SLOT = 6;
 
 //constexpr size_t POINT_LIGHT_COUNT = 32;
-constexpr size_t LIGHT_COUNT = 32;
+//constexpr size_t LIGHT_COUNT = 40;
 
 ALIGN16
 struct cb_Object
@@ -68,12 +68,12 @@ struct s_Light //slot t8
 	//dx::XMFLOAT4 lightPositionVS;
 	dx::XMFLOAT3 lightDirection;
 	float range;
-	dx::XMFLOAT3 attenuation;
+	//dx::XMFLOAT3 attenuation;
 	float spotlightAngle;
 	UINT enabled;
 	UINT type;
 	float intensity;
-	float padding;
+	//float padding;
 };
 
 ALIGN16
