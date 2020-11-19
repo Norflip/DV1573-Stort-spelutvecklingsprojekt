@@ -349,8 +349,9 @@ void ParticleSystemComponent::UpdateBuffers()
 	assert(SUCCEEDED(result));
 
 	Mesh::VertexColor* verticesPtr = (Mesh::VertexColor*)mappedResource.pData;
-	memcpy(verticesPtr, (void*)vertices, (sizeof(Mesh::VertexColor) * index));
+	memcpy(verticesPtr, (void*)vertices, (sizeof(Mesh::VertexColor) * vertexCount));
 
+	mesh->SetVertexCount(vertexCount);
 	renderer->GetContext()->Unmap(vertexBuffer, 0);
 }
 

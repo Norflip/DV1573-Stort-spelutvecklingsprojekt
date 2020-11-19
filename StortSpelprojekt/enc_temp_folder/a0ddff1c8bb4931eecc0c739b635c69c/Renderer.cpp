@@ -371,7 +371,7 @@ void Renderer::DrawParticles(const Mesh* mesh, const Material* material, const d
 	part.mesh = mesh;
 	part.material = material;
 	part.world = model;
-	AddItem(part, true);
+	AddItem(part, false);
 }
 
 void Renderer::DrawImmediate(const Mesh* mesh, const Material* material, const CameraComponent* camera, const dx::XMMATRIX& model)

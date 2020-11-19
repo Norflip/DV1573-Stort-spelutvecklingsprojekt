@@ -62,7 +62,7 @@ public:
 	D3D11_PRIMITIVE_TOPOLOGY GetTopology() const { return this->topology; }
 	
 	size_t GetTriangleCount() const { return this->GetIndexCount() / 3; }
-
+	size_t GetVertexCount() const { return this->vertices.size(); }
 
 	std::vector<Vertex>& GetVertices() { return this->vertices; }
 	std::vector<unsigned int>& GetIndices() { return this->indices; }
