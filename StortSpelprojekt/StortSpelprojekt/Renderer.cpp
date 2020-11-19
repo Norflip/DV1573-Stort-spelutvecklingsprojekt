@@ -165,7 +165,7 @@ void Renderer::RenderFrame(CameraComponent* camera, float time, RenderTexture& t
 	//ids = 0;
 	//color = 0.0f;
 
-	//color += (float)0.000005f;
+	//color += (float)0.005f;
 	//if (color > 1.0f)
 	//{
 	//	color -= 1.0f;

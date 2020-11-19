@@ -442,7 +442,6 @@ void GameScene::InitializeInterior()
 
 void GameScene::OnActivate()
 {
-	
 	SaveState state;
 	state.seed = 1337;
 	state.segment = 0;
@@ -506,7 +505,7 @@ void GameScene::SwitchScene()
 	state.seed = rand();
 	state.segment = 0;
 	world.ConstructSegment(state);
-	PrintSceneHierarchy(root, 0);
+	//PrintSceneHierarchy(root, 0);
 	renderer->SetIdAndColor(fogId, fogCol);
 
 	house->GetComponent<NodeWalkerComp>()->InitializePath(world.GetPath());
@@ -540,10 +539,7 @@ void GameScene::SwitchScene()
 
 	//LOADING BASE MONSTER; ADDING SKELETONS TO IT
 
-	enemyManager = new EnemyManager();
-	enemyManager->Initialize(player, player->GetComponent<PlayerComp>(), root);
-	enemyManager->InitBaseEnemy();
-	enemyManager->InitChargerEnemy();
+	enemyManager->SpawnEnemies();
 
 	LightManager::Instance().ForceUpdateBuffers(renderer->GetContext());
 }

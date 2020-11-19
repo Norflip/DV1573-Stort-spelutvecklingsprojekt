@@ -331,24 +331,12 @@ void PlayerComp::RayCast(const float& deltaTime)
 		{
 			if (hit.object != nullptr)
 			{
-
-				//AudioMaster::Instance().PlaySoundEvent("pickupFuel");
 				clickable = hit.object;
 				RigidBodyComponent* rbComp = hit.object->GetComponent<RigidBodyComponent>();
 				rp::RigidBody* objectRb = rbComp->GetRigidBody();
-				//rbComp->RemoveCollidersFromBody(objectRb);
-				//rbComp->SetEnabled(false);
-				//hit.object->GetComponent<BoxColliderComponent>()->SetEnabled(false);
 				hit.object->GetComponent<BoxColliderComponent>()->SetRotation(0, { 5, 5, 5, 5 });
-				//hit.object->RemoveFlag(ObjectFlag::ENABLED);
-				//currentWeapon->RemoveFlag(ObjectFlag::ENABLED);
-
+		
 				clickable->GetComponent<SelectableComponent>()->SetActive(true); //VIKTOR
-
-				/*if (clickable->HasComponent<ParticleSystemComponent>())
-					if (clickable->GetComponent<ParticleSystemComponent>()->GetActive())
-						clickable->GetComponent<ParticleSystemComponent>()->SetActive(false);*/
-
 			}
 		}
 
