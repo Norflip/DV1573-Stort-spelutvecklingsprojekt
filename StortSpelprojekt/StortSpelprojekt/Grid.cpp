@@ -86,16 +86,13 @@ void Grid::FindPath(dx::XMFLOAT2 startPos, dx::XMFLOAT2 endPos)
 				continue;
 			}
 			int newCostToNeighbour = currentNode->gCost + GetDistance(currentNode, neighbour);
-			if (newCostToNeighbour < neighbour->gCost || std::find(openList.begin(), openList.end(), neighbour) != openList.end())
+			if (newCostToNeighbour < neighbour->gCost || std::find(openList.begin(), openList.end(), neighbour) == openList.end())
 			{
+				neighbour = new Node;
 				neighbour->gCost = newCostToNeighbour;
 				neighbour->hCost = GetDistance(neighbour, endNode);
 				neighbour->parent = currentNode;
-				if (std::find(openList.begin(), openList.end(), neighbour) != openList.end())
-				{
-					continue;
-				}
-				else
+				if (std::find(openList.begin(), openList.end(), neighbour) == openList.end())
 				{
 					openList.push_back(neighbour);
 				}

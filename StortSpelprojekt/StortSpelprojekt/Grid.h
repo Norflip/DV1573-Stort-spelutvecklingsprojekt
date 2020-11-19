@@ -3,9 +3,9 @@
 
 struct Node
 {
-	int gCost;
-	int hCost;
-	int fCost;
+	int gCost = 0;
+	int hCost = 0;
+	int fCost = 0;
 	dx::XMFLOAT2 pos;
 	Node* parent;
 	bool operator==(const Node& other)
