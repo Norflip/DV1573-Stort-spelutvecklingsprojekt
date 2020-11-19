@@ -265,9 +265,18 @@ bool ObjectSpawner::ValidSpawnPoint(const dx::XMFLOAT2& point, Chunk* chunk, flo
 Object* ObjectSpawner::DefaultCreateItem(std::string key, PickupType type, float value)
 {
 	Object* object = Engine::Instance->GetResources()->AssembleObject(key, key + "Material");
-	object->AddComponent<BoxColliderComponent>(dx::XMFLOAT3(0.5f, 0.5f, 0.5f), dx::XMFLOAT3(0, 0, 0));
+	
 	object->AddComponent<PickupComponent>(type, value);
-	object->AddComponent<RigidBodyComponent>(10.0f, FilterGroups::PICKUPS, FilterGroups::EVERYTHING, BodyType::KINEMATIC, true);
+	if (type == PickupType::Fuel)
+	{
+		object->AddComponent<BoxColliderComponent>(dx::XMFLOAT3(0.3f, 0.35f, 0.15f), dx::XMFLOAT3(0, 0, 0));
+		object->AddComponent<RigidBodyComponent>(10.0f, FilterGroups::HOLDABLE, FilterGroups::EVERYTHING & ~FilterGroups::PLAYER, BodyType::DYNAMIC, true);
+	}
+	else
+	{
+		object->AddComponent<BoxColliderComponent>(dx::XMFLOAT3(0.25f, 0.25f, 0.25f), dx::XMFLOAT3(0, 0, 0));
+		object->AddComponent<RigidBodyComponent>(10.0f, FilterGroups::PICKUPS, FilterGroups::EVERYTHING & ~FilterGroups::PLAYER, BodyType::DYNAMIC, true);
+	}
 	return object;
 }
 
@@ -315,7 +324,8 @@ void ObjectSpawner::SpawnStatic(std::unordered_map<int, Chunk*>& chunkMap)
 
 					//position.y += ((height / 2.0f) * (1.0f - prop.yOffset));
 
-					/*dx::XMMATRIX rotation = dx::XMMatrixIdentity();
+					/*
+					dx::XMMATRIX rotation = dx::XMMatrixIdentity();
 					rotation = dx::XMMatrixMultiply(rotation, dx::XMMatrixRotationNormal({0, 0, FCAST(prop.randomRotationAxis.z)}, Random::RadAngle()));
 					rotation = dx::XMMatrixMultiply(rotation, dx::XMMatrixRotationNormal({0, FCAST(prop.randomRotationAxis.y), 0}, Random::RadAngle()));
 					rotation = dx::XMMatrixMultiply(rotation, dx::XMMatrixRotationNormal({ FCAST(prop.randomRotationAxis.x), 0, 0}, Random::RadAngle()));
