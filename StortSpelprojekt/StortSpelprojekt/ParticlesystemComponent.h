@@ -56,10 +56,12 @@ private:
 	bool active;
 
 	/* Particle stuffy stuff */
+	dx::XMFLOAT3 particlesPosition;
 	float differenceOnX, differenceOnY, differenceOnZ;
 	float particleVelocity, particleVelocityVariation;
 	float particleSize;
 	int maxParticles;
 	int currentParticleCount;
 	float accumulatedTime;
+	bool fire;
 };

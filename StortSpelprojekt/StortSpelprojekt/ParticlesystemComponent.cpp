@@ -30,6 +30,8 @@ ParticleSystemComponent::ParticleSystemComponent(Renderer* renderer, Shader* sha
 
 	this->worldmatrix = dx::XMMatrixIdentity();
 	this->active = true;
+
+	this->fire = false;
 }
 
 ParticleSystemComponent::~ParticleSystemComponent()
@@ -102,6 +104,10 @@ void ParticleSystemComponent::InitializeFirelikeParticles(ID3D11Device* device, 
 		particleList[i].active = false;
 
 
+	particlesPosition.x = GetOwner()->GetTransform().GetPosition().m128_f32[0];
+	particlesPosition.y = GetOwner()->GetTransform().GetPosition().m128_f32[1] - 0.1f;
+	particlesPosition.z = GetOwner()->GetTransform().GetPosition().m128_f32[2];
+	fire = true;
 	/* Init and pass it to mesh, can do a initializefunction in mesh later.. or something. */
 	InitializeBuffers(device);
 	mesh->SetVertexBuffer(vertexBuffer);
@@ -375,22 +381,34 @@ void ParticleSystemComponent::Update(const float& deltaTime)
 void ParticleSystemComponent::Draw(Renderer* renderer, CameraComponent* camera)
 {
 	if (active)
-	{
-		dx::XMFLOAT3 particlesPosition;
-		dx::XMStoreFloat3(&particlesPosition, GetOwner()->GetTransform().GetWorldPosition());
-		particlesPosition.y += 0.4f;
-
-		dx::XMFLOAT3 pos;
-		dx::XMStoreFloat3(&pos, camera->GetOwner()->GetTransform().GetPosition());
-		
-		float rotationPart = atan2(particlesPosition.x - pos.x, particlesPosition.z - pos.z);// *(180.0 / dx::XM_PI);
-		//float rotationPart = (float)anglepart * Math::ToRadians;
-
+	{		
 		dx::XMMATRIX worldParticles = dx::XMMatrixIdentity();
-		dx::XMMATRIX particlesRotationY = dx::XMMatrixRotationY(rotationPart);
-		dx::XMMATRIX particlesTranslation = dx::XMMatrixTranslation(particlesPosition.x, particlesPosition.y, particlesPosition.z);
-		worldParticles = particlesRotationY * particlesTranslation;
-		worldmatrix = worldParticles;
+
+		if (!fire)
+		{
+			dx::XMStoreFloat3(&particlesPosition, GetOwner()->GetTransform().GetWorldPosition());
+			particlesPosition.y += 0.4f;
+
+			dx::XMFLOAT3 pos;
+			dx::XMStoreFloat3(&pos, camera->GetOwner()->GetTransform().GetPosition());
+
+			float rotationPart = atan2(particlesPosition.x - pos.x, particlesPosition.z - pos.z);// *(180.0 / dx::XM_PI);
+			//float rotationPart = (float)anglepart * Math::ToRadians;
+
+			dx::XMMATRIX worldParticles = dx::XMMatrixIdentity();
+			dx::XMMATRIX particlesRotationY = dx::XMMatrixRotationY(rotationPart);
+			dx::XMMATRIX particlesTranslation = dx::XMMatrixTranslation(particlesPosition.x, particlesPosition.y, particlesPosition.z);
+			worldParticles = particlesRotationY * particlesTranslation;
+			worldmatrix = worldParticles;
+		}
+		else
+		{
+			dx::XMMATRIX particlesFireTranslation = dx::XMMatrixTranslation(particlesPosition.x, particlesPosition.y, particlesPosition.z);
+			dx::XMMATRIX particlesFireRotationY = dx::XMMatrixRotationY(45);
+			worldParticles = particlesFireRotationY * particlesFireTranslation;
+			worldmatrix = worldParticles;
+		}
+		
 
 		renderer->DrawParticles(mesh, mat, worldmatrix);
 	}
