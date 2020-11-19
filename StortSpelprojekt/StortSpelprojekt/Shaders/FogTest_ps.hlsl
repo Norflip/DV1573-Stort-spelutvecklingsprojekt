@@ -78,8 +78,7 @@ float4 main(PixelInputType input) : SV_TARGET
     float fogFactor = saturate(((D * far) - start) / (end - start));
         
     float2 st = input.uv.xy;// / float2(1600, 800) * 3.;
-    
-    //st += st * abs(sin(time * 0.1)*3.0);
+
 
     float2 q = float2(0,0);
     q.x = fbm(st + 0.00 * time + (mousePos / 690));
@@ -92,50 +91,23 @@ float4 main(PixelInputType input) : SV_TARGET
     float f = fbm(st + r + (mousePos / 690));
     float3 color = float3(0,0,0);
 
-    //color = lerp(float3(0.101961, 0.319608, 0.266667),
-    //    float3(0.266667, 0.266667, 0.198039),
-    //    clamp((f * f) * 4.0, 0.0, 1.0));
-
-    //color = lerp(color,
-    //    float3(0, 0, 0.164706),
-    //    clamp(length(q), 0.0, 1.0));
-
-    //color = lerp(color,
-    //    float3(0.266667, 1, 1),
-    //    clamp(length(r.x), 0.0, 1.0));
-
-
-    //return float4(I, I, I, 1.0f);
-   // return diffuseColor;
-
-
     float4 depthSample = depthTexture.Sample(defaultSampleType, input.uv);
 
     depthSample.x = 1.f - depthSample.x;
     depthSample.x = (far) * depthSample.x;
-    // POW POW Looks good at 3.0 with 2 coil
     depthSample.x = abs(depthSample.x);
     depthSample.x = pow(depthSample.x, 3.0f);
-    //depthSample.x = depthSample.x * depthSample.x;
-    
-    float wtf = clamp(depthSample.x, 0.f, 0.999f);
-    
-    float4 colorSample = gradient.Sample(defaultSampleType, (1.f, wtf));
-    //depthSample = depthSample * 100.f;
-
+     
+    float4 colorSample = gradient.Sample(defaultSampleType, (1.f, clamp(depthSample.x, 0.f, 0.999f)));
     color += colorSample; //Add ramp texture color to fog
-   // color += depthSample;
-   //float4 fogColor = float4(0.1f, 0.1f, 0.4f, 1.0f);
+
     float4 fogColor = float4(1, 1, 1, 1.0f);
 
+    //Math to multiply colors
     fogColor = float4((((f * f * f + .6 * f * f + .5 * f) * color) + color*color).xyz, 1.0f);
 
-    //fogColor = (f * f * f + .6 * f * f + .5 * f) * fogColor;
-    //diffuseColor = diffuseColor + (background*0.3f);
-    //fogColor = fogColor + (background * 0.5f); //Här färgas dimman om
-    //fogColor = fogColor * colorSample;
     float4 result = lerp(diffuseColor, fogColor, fogFactor);
-    //result = result * colorSample;
+
     return result;
-    //return diffuseColor + float4(d, d, d, 1.0f);
+
 }
