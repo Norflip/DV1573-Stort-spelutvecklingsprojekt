@@ -49,7 +49,7 @@ public:
 
 	dx::XMFLOAT3 Getpos3() { return this->pos3; }
 	dx::XMFLOAT3 GetLastNodePos() { return this->lastNodePos; }
-	dx::XMFLOAT3 GetSecondLastNodePos() { return this->lastNodePos; }
+	dx::XMFLOAT3 GetSecondLastNodePos() { return this->secondLastNodePos; }
 	//void SetPosition(dx::XMVECTOR pos);
 
 };

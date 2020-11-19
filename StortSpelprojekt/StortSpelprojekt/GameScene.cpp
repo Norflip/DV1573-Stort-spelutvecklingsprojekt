@@ -540,51 +540,35 @@ void GameScene::SwitchScene()
 
 void GameScene::InitializeSigns()
 {
-
+	//skapa riktningsvektor från näst sista noden och sista noden för att flytta fram skyltarna lite så de hamnar i grenen.
 
 	dx::XMVECTOR signPosition;
+	dx::XMVECTOR lastNodePos = { nodeWalker->GetLastNodePos().x, nodeWalker->GetLastNodePos().y - 1, nodeWalker->GetLastNodePos().z };
+	dx::XMVECTOR secondLastNodePos = { nodeWalker->GetSecondLastNodePos().x, nodeWalker->GetSecondLastNodePos().y - 1, nodeWalker->GetSecondLastNodePos().z };
+	dx::XMVECTOR nodeVector = { 
+	 secondLastNodePos.m128_f32[0] - lastNodePos.m128_f32[0],
+	 secondLastNodePos.m128_f32[1] - lastNodePos.m128_f32[1] ,
+	 secondLastNodePos.m128_f32[2] - lastNodePos.m128_f32[2] };
+
+	//signPosition = { nodeVector.m128_f32[0] * 1.5f, nodeVector.m128_f32[1] * 1.5f, nodeVector.m128_f32[2] * 1.5f, };
+
 	//signPosition = { nodeWalker->Getpos3().x, nodeWalker->Getpos3().y - 1, nodeWalker->Getpos3().z }; //FIRST NODE
-	//signPosition = { nodeWalker->GetLastNodePos().x, nodeWalker->GetLastNodePos().y - 1, nodeWalker->GetLastNodePos().z }; //LAST NODE
-	signPosition = { nodeWalker->GetSecondLastNodePos().x, nodeWalker->GetSecondLastNodePos().y - 1, nodeWalker->GetSecondLastNodePos().z }; //SECOND LAST NODE
+	signPosition = { nodeWalker->GetLastNodePos().x, nodeWalker->GetLastNodePos().y - 1, nodeWalker->GetLastNodePos().z }; //LAST NODE
+	//signPosition = { nodeWalker->GetSecondLastNodePos().x, nodeWalker->GetSecondLastNodePos().y - 1, nodeWalker->GetSecondLastNodePos().z }; //SECOND LAST NODE
 
-
-	//std::cout << "X: " << nodeWalker->Getpos3().x << " Y: " << nodeWalker->Getpos3().y << " Z: " << nodeWalker->Getpos3().z << std::endl;
-	//Place signs
-
-	//Road Sign
-	//roadSign = new Object("Endsign");
-
-	//world.GetPath().GetPoints().back().x, 2.0f, world.GetPath().GetPoints().back().z
-	//23, 0.5f, 50
-	//16, 1, 48
-
-
-	//roadSign = resources->AssembleObject("Endsign", "EndsignMaterial");
-	roadSign->GetTransform().SetPosition({signPosition}); //H�MTA SISTA NODEN I PATHEN OCH DESS POSITION F�R ATT S�TTA SKYLTARNAS POSITION.
-	/*AddObject(roadSign);*/
+	roadSign->GetTransform().SetPosition({signPosition}); 
 
 	//Right Sign
-	/*rightSign = new Object("LeftDirectionSign");
-
-	rightSign = resources->AssembleObject("LeftDirectionSign", "LeftDirectionSignMaterial");*/
 	rightSign->GetTransform().SetPosition({ roadSign->GetTransform().GetPosition().m128_f32[0] - 1.0f, roadSign->GetTransform().GetPosition().m128_f32[1], roadSign->GetTransform().GetPosition().m128_f32[2] });
 	rightSign->AddComponent<BoxColliderComponent>(dx::XMFLOAT3{ 1.0f, 1.0f, 1.0f }, dx::XMFLOAT3{ 0, 0, 0 });
 	rightSign->AddComponent<SelectableComponent>();
 	rightSign->AddComponent<RigidBodyComponent>(0.0f, FilterGroups::CLICKABLE, (FilterGroups::EVERYTHING & ~FilterGroups::PLAYER), BodyType::STATIC, true);
-	//AddObject(rightSign);
-
 
 	//Left Sign
-	/*leftSign = new Object("RightDirectionSign");
-
-	leftSign = resources->AssembleObject("RightDirectionSign", "RightDirectionSignMaterial");*/
 	leftSign->GetTransform().SetPosition({ roadSign->GetTransform().GetPosition().m128_f32[0] + 1.0f, roadSign->GetTransform().GetPosition().m128_f32[1], roadSign->GetTransform().GetPosition().m128_f32[2] });
 	leftSign->AddComponent<BoxColliderComponent>(dx::XMFLOAT3{ 1.0f, 1.0f, 1.0f }, dx::XMFLOAT3{ 0, 0, 0 });
 	leftSign->AddComponent<SelectableComponent>();
 	leftSign->AddComponent<RigidBodyComponent>(0.0f, FilterGroups::CLICKABLE, (FilterGroups::EVERYTHING & ~FilterGroups::PLAYER), BodyType::STATIC, true);
-	//AddObject(leftSign);
-
-
 }
 
 void GameScene::Update(const float& deltaTime)
