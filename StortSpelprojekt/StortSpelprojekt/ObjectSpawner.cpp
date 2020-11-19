@@ -175,7 +175,8 @@ void ObjectSpawner::AddTreesToChunk(Chunk* chunk) const
 
 			std::vector<dx::XMFLOAT3> colliderPositions;
 			std::vector<dx::XMFLOAT3> colliderExtends;
-
+			std::vector<dx::XMFLOAT4> colliderRotations;
+			
 			for (size_t i = 0; i < nrOfInstancedStyTrees; i++)
 			{
 				float y = chunk->SampleHeight(posXZ.x + validPoints[i].x, posXZ.y + validPoints[i].y) - TREE_HEIGHT_ADJUSTMENT_FACTOR;
@@ -183,15 +184,20 @@ void ObjectSpawner::AddTreesToChunk(Chunk* chunk) const
 
 				dx::XMFLOAT3 position(posXZ.x + validPoints[i].x, y, posXZ.y + validPoints[i].y);
 
-
-
 				dx::XMFLOAT3 normal;
 				world->SampleNormal(position.x, position.z, normal);
 
 				float angleRotation = Random::Range(tree.minRotation, tree.maxRotation) * Math::ToRadians;
-				dx::XMMATRIX xzRotation = dx::XMMatrixRotationNormal(dx::XMLoadFloat3(&normal), angleRotation);
-				dx::XMMATRIX yRotation = dx::XMMatrixRotationQuaternion(dx::XMQuaternionRotationAxis({ 0,1,0 }, Random::RadAngle()));
-				dx::XMMATRIX rotation = dx::XMMatrixMultiply(yRotation, xzRotation);
+
+				dx::XMVECTOR normalAngleRotation = dx::XMQuaternionRotationNormal(dx::XMLoadFloat3(&normal), angleRotation);
+				dx::XMVECTOR randomYRotation = dx::XMQuaternionRotationAxis({ 0,1,0 }, Random::RadAngle());
+
+				//dx::XMMATRIX xzRotation = dx::XMMatrixRotationNormal(dx::XMLoadFloat3(&normal), angleRotation);
+				//dx::XMMATRIX yRotation = dx::XMMatrixRotationQuaternion(dx::XMQuaternionRotationAxis({ 0,1,0 }, Random::RadAngle()));
+				//dx::XMMATRIX rotation = dx::XMMatrixMultiply(yRotation, xzRotation);
+
+				dx::XMVECTOR combinedRot = dx::XMQuaternionMultiply(randomYRotation, normalAngleRotation);
+				dx::XMMATRIX rotation = dx::XMMatrixRotationQuaternion(combinedRot);
 
 				float scale = Random::Range(tree.minScale, tree.maxScale);
 				dx::XMMATRIX translation = dx::XMMatrixScaling(scale, scale, scale) * rotation * dx::XMMatrixTranslation(position.x, position.y, position.z);
@@ -199,6 +205,10 @@ void ObjectSpawner::AddTreesToChunk(Chunk* chunk) const
 
 				colliderPositions.push_back(position);
 				colliderExtends.push_back(extends);
+
+				dx::XMFLOAT4 rot;
+				dx::XMStoreFloat4(&rot, combinedRot);
+				colliderRotations.push_back(rot);
 			}
 
 			Object* treeObject = new Object("tree", ObjectFlag::DEFAULT | ObjectFlag::NO_CULL);
@@ -209,7 +219,11 @@ void ObjectSpawner::AddTreesToChunk(Chunk* chunk) const
 			MeshComponent* meshComp = treeObject->AddComponent<MeshComponent>(tree.meshes, tree.materials);
 			meshComp->SetInstanceable(0, treesInstanced, nrOfInstancedStyTrees, renderer->GetDevice());
 
-			treeObject->AddComponent<BoxColliderComponent>(colliderExtends, colliderPositions);
+			BoxColliderComponent* colliders = treeObject->AddComponent<BoxColliderComponent>(colliderExtends, colliderPositions);
+			for (size_t i = 0; i < nrOfInstancedStyTrees; i++)
+				colliders->SetRotation(i, colliderRotations[i]);
+			
+
 			treeObject->AddComponent<RigidBodyComponent>(0.f, FilterGroups::DEFAULT, FilterGroups::EVERYTHING, BodyType::STATIC, true);
 		}
 	}
@@ -277,6 +291,7 @@ void ObjectSpawner::SpawnStatic(std::unordered_map<int, Chunk*>& chunkMap)
 			Prop* prop;
 			std::vector<dx::XMFLOAT4X4> instancedData;
 			std::vector<dx::XMFLOAT3> positions;
+			std::vector<dx::XMFLOAT4> rotations;
 		};
 
 		std::unordered_map<Chunk*, TempData> data;
@@ -304,6 +319,9 @@ void ObjectSpawner::SpawnStatic(std::unordered_map<int, Chunk*>& chunkMap)
 					dx::XMFLOAT3 position = dx::XMFLOAT3(pos.x, y, pos.y);
 
 					float height = prop.bounds.GetSize().y;
+
+					dx::XMVECTOR randomYRotation = dx::XMQuaternionRotationAxis({ 0,1,0 }, Random::RadAngle());
+
 					//position.y += ((height / 2.0f) * (1.0f - prop.yOffset));
 
 					/*
@@ -311,9 +329,13 @@ void ObjectSpawner::SpawnStatic(std::unordered_map<int, Chunk*>& chunkMap)
 					rotation = dx::XMMatrixMultiply(rotation, dx::XMMatrixRotationNormal({0, 0, FCAST(prop.randomRotationAxis.z)}, Random::RadAngle()));
 					rotation = dx::XMMatrixMultiply(rotation, dx::XMMatrixRotationNormal({0, FCAST(prop.randomRotationAxis.y), 0}, Random::RadAngle()));
 					rotation = dx::XMMatrixMultiply(rotation, dx::XMMatrixRotationNormal({ FCAST(prop.randomRotationAxis.x), 0, 0}, Random::RadAngle()));
-					*/
+				*/
+					dx::XMFLOAT4 rot;
+					dx::XMStoreFloat4(&rot, randomYRotation);
+					data[chunk].rotations.push_back(rot);
+
 					dx::XMFLOAT4X4 instancedData;
-					dx::XMMATRIX translation = dx::XMMatrixTranslation(position.x, position.y, position.z);
+					dx::XMMATRIX translation = dx::XMMatrixScaling(1.0f, 1.0f, 1.0f) * dx::XMMatrixRotationQuaternion(randomYRotation) * dx::XMMatrixTranslation(position.x, position.y, position.z);
 					dx::XMStoreFloat4x4(&instancedData, dx::XMMatrixTranspose(translation));
 
 					data[chunk].positions.push_back(position);
@@ -334,7 +356,10 @@ void ObjectSpawner::SpawnStatic(std::unordered_map<int, Chunk*>& chunkMap)
 			MeshComponent* mc = props->AddComponent<MeshComponent>(i.second.prop->mesh, i.second.prop->material);
 			mc->SetInstanceable(0, i.second.instancedData, i.second.instancedData.size(), renderer->GetDevice());
 
-			props->AddComponent<MeshCollider>(i.second.prop->mesh, i.second.positions);
+			MeshCollider* meshCollider = props->AddComponent<MeshCollider>(i.second.prop->mesh, i.second.positions);
+			for (size_t j = 0; j < i.second.rotations.size(); j++)
+				meshCollider->SetRotation(j, i.second.rotations[j]);
+
 			props->AddComponent<RigidBodyComponent>(0.f, FilterGroups::PROPS, FilterGroups::EVERYTHING, BodyType::STATIC, true);
 
 			Transform::SetParentChild(i.first->GetOwner()->GetTransform(), props->GetTransform());
