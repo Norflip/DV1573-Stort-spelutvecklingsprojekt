@@ -23,7 +23,7 @@ void Grid::DrawGrid()
 	{
 		for (int j = 0; j < gridPath.size(); j++)
 		{
-			if (allNodes[i].pos.x == gridPath[j].pos.x && allNodes[i].pos.y == gridPath[j].pos.y)
+			if (allNodes[i]->pos.x == gridPath[j]->pos.x && allNodes[i]->pos.y == gridPath[j]->pos.y)
 			{
 				checkNode = true;
 				break;
@@ -34,9 +34,9 @@ void Grid::DrawGrid()
 			}
 		}
 		if (checkNode)
-			box.DrawBox(dx::XMFLOAT3((allNodes[i].pos.x * nodeSize) + 5, 4, (allNodes[i].pos.y * nodeSize) + 5), dx::XMFLOAT3(2, 2, 2), dx::XMFLOAT3(0, 1, 0));
+			box.DrawBox(dx::XMFLOAT3((allNodes[i]->pos.x * nodeSize) + 5, 4, (allNodes[i]->pos.y * nodeSize) + 5), dx::XMFLOAT3(2, 2, 2), dx::XMFLOAT3(0, 1, 0));
 		else
-			box.DrawBox(dx::XMFLOAT3((allNodes[i].pos.x * nodeSize) + 5, 4, (allNodes[i].pos.y * nodeSize) + 5), dx::XMFLOAT3(2, 2, 2), dx::XMFLOAT3(1, 0, 0));
+			box.DrawBox(dx::XMFLOAT3((allNodes[i]->pos.x * nodeSize) + 5, 4, (allNodes[i]->pos.y * nodeSize) + 5), dx::XMFLOAT3(2, 2, 2), dx::XMFLOAT3(1, 0, 0));
 		checkNode = false;
 	}
 
@@ -48,15 +48,15 @@ void Grid::DrawGrid()
 
 void Grid::FindPath(dx::XMFLOAT2 startPos, dx::XMFLOAT2 endPos)
 {
-	Node startNode;
-	Node endNode;
-	Node currentNode;
+	Node* startNode = new Node;
+	Node* endNode = new Node;
+	Node* currentNode = new Node;
 	int erasePos = 0;
 
-	startNode.pos.x = startPos.x;
-	startNode.pos.y = startPos.y;
-	endNode.pos.x = endPos.x;
-	endNode.pos.y = endPos.y;
+	startNode->pos.x = startPos.x;
+	startNode->pos.y = startPos.y;
+	endNode->pos.x = endPos.x;
+	endNode->pos.y = endPos.y;
 
 	openList.push_back(startNode);
 	while (openList.size() > 0)
@@ -64,7 +64,7 @@ void Grid::FindPath(dx::XMFLOAT2 startPos, dx::XMFLOAT2 endPos)
 		currentNode = openList[0];
 		for (int i = 1; i < openList.size(); i++)
 		{
-			if (openList[i].fCost < currentNode.fCost || openList[i].fCost == currentNode.fCost && openList[i].hCost < currentNode.hCost)
+			if (openList[i]->fCost < currentNode->fCost || openList[i]->fCost == currentNode->fCost && openList[i]->hCost < currentNode->hCost)
 			{
 				currentNode = openList[i];
 				erasePos = i;
@@ -73,7 +73,7 @@ void Grid::FindPath(dx::XMFLOAT2 startPos, dx::XMFLOAT2 endPos)
 		openList.erase(openList.begin() + erasePos);
 		openList.shrink_to_fit();
 		closedList.push_back(currentNode);
-		if (currentNode.pos.x == endNode.pos.x && currentNode.pos.y == endNode.pos.y)
+		if (currentNode->pos.x == endNode->pos.x && currentNode->pos.y == endNode->pos.y)
 		{
 			RetracePath(startNode, endNode);
 			return;
@@ -85,16 +85,12 @@ void Grid::FindPath(dx::XMFLOAT2 startPos, dx::XMFLOAT2 endPos)
 			{
 				continue;
 			}
-			int newCostToNeighbour = currentNode.gCost + GetDistance(currentNode, neighbour);
-			if (newCostToNeighbour < neighbour.gCost || std::find(openList.begin(), openList.end(), neighbour) != closedList.end())
+			int newCostToNeighbour = currentNode->gCost + GetDistance(currentNode, neighbour);
+			if (newCostToNeighbour < neighbour->gCost || std::find(openList.begin(), openList.end(), neighbour) != openList.end())
 			{
-				continue;
-			}
-			else
-			{
-				neighbour.gCost = newCostToNeighbour;
-				neighbour.hCost = GetDistance(neighbour, endNode);
-				neighbour.parent = &currentNode;
+				neighbour->gCost = newCostToNeighbour;
+				neighbour->hCost = GetDistance(neighbour, endNode);
+				neighbour->parent = currentNode;
 				if (std::find(openList.begin(), openList.end(), neighbour) != openList.end())
 				{
 					continue;
@@ -126,31 +122,31 @@ void Grid::CalculatePath()
 	{
 		for (int z = 0; z < rows; z++)
 		{
-			Node temp;
-			temp.pos.x = x;
-			temp.pos.y = z;
+			Node* temp = new Node;
+			temp->pos.x = x;
+			temp->pos.y = z;
 			allNodes.push_back(temp);
 		}
 	}
 }
 
-std::vector<Node> Grid::GetNeighbours(Node node)
+std::vector<Node*> Grid::GetNeighbours(Node* node)
 {
-	std::vector<Node> neighbours;
+	std::vector<Node*> neighbours;
 	for (int x = -1; x <= 1; x++)
 	{
 		for (int y = -1; y <= 1; y++)
 		{
 			if ((x + y) == 0)
 				continue;
-			int checkX = node.pos.x + x;
-			int checkY = node.pos.y + y;
+			int checkX = node->pos.x + x;
+			int checkY = node->pos.y + y;
 
 			if (checkX >= 0 && checkX < gridSize && checkY >= 0 && checkY < gridSize)
 			{
-				Node neighbour;
-				neighbour.pos.x = checkX;
-				neighbour.pos.y = checkY;
+				Node* neighbour = new Node;
+				neighbour->pos.x = checkX;
+				neighbour->pos.y = checkY;
 				neighbours.push_back(neighbour);
 			}
 		}
@@ -158,10 +154,10 @@ std::vector<Node> Grid::GetNeighbours(Node node)
 	return neighbours;
 }
 
-int Grid::GetDistance(Node nodeA, Node nodeB)
+int Grid::GetDistance(Node* nodeA, Node* nodeB)
 {
-	int distX = abs(nodeA.pos.x - nodeB.pos.x);
-	int distY = abs(nodeA.pos.y - nodeB.pos.y);
+	int distX = abs(nodeA->pos.x - nodeB->pos.x);
+	int distY = abs(nodeA->pos.y - nodeB->pos.y);
 
 	if (distX > distY)
 		return 14 * distY + 10 * (distX - distY);
@@ -169,15 +165,16 @@ int Grid::GetDistance(Node nodeA, Node nodeB)
 	return 14 * distX + 10 * (distY - distX);
 }
 
-void Grid::RetracePath(Node startNode, Node endNode)
+void Grid::RetracePath(Node* startNode, Node* endNode)
 {
-	std::vector<Node> path;
-	Node currentNode = endNode;
+	std::vector<Node*> path;
+	Node* currentNode = new Node;
+	currentNode = endNode;
 
 	while (currentNode != startNode)
 	{
 		path.push_back(currentNode);
-		currentNode = *currentNode.parent;
+		currentNode = currentNode->parent;
 	}
 	
 	std::reverse(path.begin(), path.end());

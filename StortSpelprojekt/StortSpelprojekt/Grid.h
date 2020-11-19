@@ -28,9 +28,9 @@ class Grid
 		void DrawGrid();
 	private:
 		void FindPath(dx::XMFLOAT2 startPos, dx::XMFLOAT2 endPos);
-		std::vector<Node> GetNeighbours(Node node);
-		int GetDistance(Node nodeA, Node nodeB);
-		void RetracePath(Node startNode, Node endNode);
+		std::vector<Node*> GetNeighbours(Node* node);
+		int GetDistance(Node* nodeA, Node* nodeB);
+		void RetracePath(Node* startNode, Node* endNode);
 
 		int rows;
 		float nodeSize;
@@ -38,8 +38,8 @@ class Grid
 		int gridSize;
 		Object* object;
 		DShape box;
-		std::vector<Node> openList;
-		std::vector<Node> closedList;
-		std::vector<Node> gridPath;
-		std::vector<Node> allNodes;
+		std::vector<Node*> openList;
+		std::vector<Node*> closedList;
+		std::vector<Node*> gridPath;
+		std::vector<Node*> allNodes;
 };
