@@ -141,7 +141,7 @@ void Renderer::Initialize(Window* window)
 	LightManager::Instance().Initialize(device);
 
 
-	sceneBuffer.Initialize(CB_SCENE_SLOT, ShaderBindFlag::PIXEL | ShaderBindFlag::DOMAINS | ShaderBindFlag::VERTEX, device);
+	sceneBuffer.Initialize(CB_SCENE_SLOT, ShaderBindFlag::PIXEL | ShaderBindFlag::DOMAINS | ShaderBindFlag::VERTEX|ShaderBindFlag::COMPUTE, device);
 	objectBuffer.Initialize(CB_OBJECT_SLOT, ShaderBindFlag::VERTEX, device);
 	materialBuffer.Initialize(CB_MATERIAL_SLOT, ShaderBindFlag::PIXEL, device);
 
@@ -268,7 +268,7 @@ void Renderer::RenderFrame(CameraComponent* camera, float time, RenderTexture& t
 	yPos += (float)Input::Instance().GetPrevMousePosRelative().x;
 	data.mousePos = { xPos,yPos };
 	data.screenSize = { (float)outputWindow->GetWidth(), (float)outputWindow->GetHeight() };
-
+	data.nrOfLights = LightManager::Instance().GetLightCount();
 	//data.mousePos = { (float)Input::Instance().GetMousePos().x, (float)Input::Instance().GetMousePos().y };
 	// put in mouse pos delta here
 	dx::XMStoreFloat3(&data.cameraPosition, camera->GetOwner()->GetTransform().GetPosition());
@@ -785,9 +785,9 @@ void Renderer::InitForwardPlus(CameraComponent* camera, Window* window, Shader& 
 	int screenWidth = std::max(window->GetWidth(), 1u);
 	int screenHeight = std::max(window->GetHeight(), 1u);
 	int lightCullingBlockSize = 32;
-	dx::XMUINT4 numThreads = dx::XMUINT4(std::ceil((float)screenWidth / (float)lightCullingBlockSize), std::ceil((float)screenHeight / (float)lightCullingBlockSize),1, 1);
+	numThreads = dx::XMUINT4(std::ceil((float)screenWidth / (float)lightCullingBlockSize), std::ceil((float)screenHeight / (float)lightCullingBlockSize),1, 1);
 	this->numThreadGroups = dx::XMUINT3(std::ceil((float)numThreads.x / (float)lightCullingBlockSize), std::ceil((float)numThreads.y / (float)lightCullingBlockSize), 1);
-	UINT count = numThreadGroups.x * numThreadGroups.y * numThreadGroups.z;
+	UINT count = numThreads.x * numThreads.y * numThreads.z;
 
 	//Dispatch Forward+
 	dispatchParamsBuffer.Initialize(CB_DISPATCH_PARAMS_SLOT, ShaderBindFlag::COMPUTE, device);
@@ -814,10 +814,10 @@ void Renderer::InitForwardPlus(CameraComponent* camera, Window* window, Shader& 
 	DXHelper::CreateStructuredBuffer(device, &frustums_buffer, frustum_data.data(), sizeof(s_Frustum), frustum_data.size(), &outFrustums_uav, &inFrustums_srv);
 	DXHelper::BindStructuredBuffer(context, frustums_buffer, frustum_data.data(), 0, ShaderBindFlag::COMPUTE, &outFrustums_uav, nullptr); //u0
 
-	context->Dispatch(numThreadGroups.x, numThreadGroups.y, numThreadGroups.z);
+	context->Dispatch(numThreads.x, numThreads.y, numThreads.z);
 	//context->Dispatch(1, 1, 1);
 
-	D3D11_MAPPED_SUBRESOURCE resource;
+	/*D3D11_MAPPED_SUBRESOURCE resource;
 	HRESULT hr = context->Map(frustums_buffer, 0, D3D11_MAP_READ_WRITE, 0, &resource);
 	assert(SUCCEEDED(hr));
 	s_Frustum* someFrustums;
@@ -831,13 +831,13 @@ void Renderer::InitForwardPlus(CameraComponent* camera, Window* window, Shader& 
 	}
 
 
-	context->Unmap(frustums_buffer, 0);
+	context->Unmap(frustums_buffer, 0);*/
 	ID3D11Texture2D* tex2D = nullptr;
 	ID3D11Texture2D* tex2D2 = nullptr;
 	D3D11_TEXTURE2D_DESC desc = {};
 
-	desc.Width = numThreadGroups.x;
-	desc.Height = numThreadGroups.y;
+	desc.Width = numThreads.x;
+	desc.Height = numThreads.y;
 	desc.MipLevels = 1;
 	desc.ArraySize = 1;
 	desc.Format = DXGI_FORMAT_R32G32_UINT;
@@ -882,13 +882,13 @@ void Renderer::InitForwardPlus(CameraComponent* camera, Window* window, Shader& 
 	t_LightIndexCounter.push_back(0);
 	DXHelper::CreateStructuredBuffer(device, &t_LightIndexCounter_uavbuffer, t_LightIndexCounter.data(), sizeof(UINT), t_LightIndexCounter.size(), &t_LightIndexCounter_uav);
 	
-	o_LightIndexList.resize(32); //light block size?
-	t_LightIndexList.resize(32); //lightcount??
-	for (int index = 0; index < 32; index++)
+	o_LightIndexList.resize(count*30);
+	t_LightIndexList.resize(count*30);
+	/*for (int index = 0; index < 32; index++)
 	{
 		o_LightIndexList[index] = 0;
 		t_LightIndexList[index] = 0;
-	}
+	}*/
 	DXHelper::CreateStructuredBuffer(device, &o_LightIndexList_uavbuffer, o_LightIndexList.data(), sizeof(UINT), o_LightIndexList.size(), &o_LightIndexList_uav, &o_LightIndexList_srv);
 	
 	DXHelper::CreateStructuredBuffer(device, &t_LightIndexList_uavbuffer, t_LightIndexList.data(), sizeof(UINT), t_LightIndexList.size(), &t_LightIndexList_uav, &t_LightIndexList_srv);
@@ -932,7 +932,7 @@ void Renderer::UpdateForwardPlus(CameraComponent* camera)
 	context->CSSetUnorderedAccessViews(6, 1, &nullUAV, NULL); //u6
 	context->OMSetDepthStencilState(dss, 0);
 	context->CSSetShaderResources(1, 1, DepthPass::GetDepthSRV());
-	DXHelper::BindStructuredBuffer(context, frustums_buffer, frustum_data.data(), 9, ShaderBindFlag::COMPUTE, &inFrustums_srv);
+	DXHelper::BindStructuredBuffer(context, 9, ShaderBindFlag::COMPUTE, &inFrustums_srv);
 	LightManager::Instance().UpdateBuffers(context, camera);
 	DXHelper::BindStructuredBuffer(context, o_LightIndexCounter_uavbuffer, o_LightIndexCounter.data(), 1, ShaderBindFlag::COMPUTE, &o_LightIndexCounter_uav, nullptr); //u1
 	DXHelper::BindStructuredBuffer(context, t_LightIndexCounter_uavbuffer, t_LightIndexCounter.data(), 2, ShaderBindFlag::COMPUTE, &t_LightIndexCounter_uav, nullptr); //u2
@@ -944,7 +944,7 @@ void Renderer::UpdateForwardPlus(CameraComponent* camera)
 
 	context->CSSetUnorderedAccessViews(6, 1, &t_LightGrid_tex, NULL); //u6
 	
-	context->Dispatch(numThreadGroups.x, numThreadGroups.y, numThreadGroups.z);
+	context->Dispatch(numThreads.x, numThreads.y, numThreads.z);
 	context->CSSetUnorderedAccessViews(3, 1, &nullUAV, NULL); //u3
 	context->CSSetUnorderedAccessViews(4, 1, &nullUAV, NULL); //u4
 	context->CSSetUnorderedAccessViews(5, 1, &nullUAV, NULL); //u5
