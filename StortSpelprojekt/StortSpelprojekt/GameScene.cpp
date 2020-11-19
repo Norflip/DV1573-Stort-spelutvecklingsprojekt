@@ -168,6 +168,7 @@ void GameScene::InitializeObjects()
 	SkeletonMeshComponent* armsSkeleton = resources->GetResource<SkeletonMeshComponent>("PlayerArmsSkeleton");
 	playerArms->AddComponent<SkeletonMeshComponent>(armsSkeleton);
 	playerArms->AddComponent<PlayerAnimHandlerComp>(playerArms->GetComponent<SkeletonMeshComponent>(), cameraObject, player);
+	player->GetComponent< PlayerComp>()->InsertArms(playerArms);
 	AddObject(playerArms);
 
 	//Axe
