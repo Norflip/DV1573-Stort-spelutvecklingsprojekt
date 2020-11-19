@@ -132,14 +132,14 @@ void ParticleSystemComponent::LoadTexture(ID3D11Device* device, LPCWSTR textureF
 
 void ParticleSystemComponent::InitializeBuffers(ID3D11Device* device)
 {
-	unsigned long* indices;
+	unsigned int* indices;
 	HRESULT result;
 
 	vertexCount = maxParticles * 6;
 	indexCount = vertexCount;
 
 	vertices = new Mesh::VertexColor[vertexCount];
-	indices = new unsigned long[indexCount];
+	indices = new unsigned int[indexCount];
 
 	for (int i = 0; i < indexCount; i++) {
 		indices[i] = i;
@@ -169,7 +169,7 @@ void ParticleSystemComponent::InitializeBuffers(ID3D11Device* device)
 	D3D11_BUFFER_DESC indexBufferDesc;
 	ZeroMemory(&indexBufferDesc, sizeof(D3D11_BUFFER_DESC));
 	indexBufferDesc.Usage = D3D11_USAGE_DEFAULT;
-	indexBufferDesc.ByteWidth = sizeof(unsigned long) * indexCount;
+	indexBufferDesc.ByteWidth = sizeof(unsigned int) * indexCount;
 	indexBufferDesc.BindFlags = D3D11_BIND_INDEX_BUFFER;
 	indexBufferDesc.CPUAccessFlags = 0;
 	indexBufferDesc.MiscFlags = 0;
@@ -297,6 +297,7 @@ void ParticleSystemComponent::DeleteParticles()
 void ParticleSystemComponent::UpdateBuffers()
 {
 	/*	Build the vertex array from the particle list array. Each particle is a quad made out of two triangles	*/
+
 	int index = 0;
 	for (int i = 0; i < currentParticleCount; i++)
 	{
@@ -348,7 +349,7 @@ void ParticleSystemComponent::UpdateBuffers()
 	assert(SUCCEEDED(result));
 
 	Mesh::VertexColor* verticesPtr = (Mesh::VertexColor*)mappedResource.pData;
-	memcpy(verticesPtr, (void*)vertices, (sizeof(Mesh::VertexColor) * vertexCount));
+	memcpy(verticesPtr, (void*)vertices, (sizeof(Mesh::VertexColor) * index));
 
 	renderer->GetContext()->Unmap(vertexBuffer, 0);
 }
@@ -374,21 +375,20 @@ void ParticleSystemComponent::Draw(Renderer* renderer, CameraComponent* camera)
 	if (active)
 	{
 		dx::XMFLOAT3 particlesPosition;
-		particlesPosition.x = GetOwner()->GetTransform().GetPosition().m128_f32[0];
-		particlesPosition.y = GetOwner()->GetTransform().GetPosition().m128_f32[1] + 0.4f;
-		particlesPosition.z = GetOwner()->GetTransform().GetPosition().m128_f32[2];
+		dx::XMStoreFloat3(&particlesPosition, GetOwner()->GetTransform().GetWorldPosition());
+		particlesPosition.y += 0.4f;
 
-		dx::XMVECTOR cam = camera->GetOwner()->GetTransform().GetPosition();
-		float xPos = cam.m128_f32[0];
-		float zPos = cam.m128_f32[2];
-		double anglepart = atan2(particlesPosition.x - xPos, particlesPosition.z - zPos) * (180.0 / dx::XM_PI);
-		float rotationPart = (float)anglepart * 0.0174532925f;
+		dx::XMFLOAT3 pos;
+		dx::XMStoreFloat3(&pos, camera->GetOwner()->GetTransform().GetPosition());
+		
+		float rotationPart = atan2(particlesPosition.x - pos.x, particlesPosition.z - pos.z);// *(180.0 / dx::XM_PI);
+		//float rotationPart = (float)anglepart * Math::ToRadians;
 
 		dx::XMMATRIX worldParticles = dx::XMMatrixIdentity();
 		dx::XMMATRIX particlesRotationY = dx::XMMatrixRotationY(rotationPart);
 		dx::XMMATRIX particlesTranslation = dx::XMMatrixTranslation(particlesPosition.x, particlesPosition.y, particlesPosition.z);
 		worldParticles = particlesRotationY * particlesTranslation;
-		worldmatrix = worldParticles;
+		worldmatrix = particlesTranslation;
 
 		renderer->DrawParticles(mesh, mat, worldmatrix);
 	}
