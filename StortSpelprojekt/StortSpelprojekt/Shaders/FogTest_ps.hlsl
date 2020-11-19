@@ -128,7 +128,7 @@ float4 main(PixelInputType input) : SV_TARGET
    //float4 fogColor = float4(0.1f, 0.1f, 0.4f, 1.0f);
     float4 fogColor = float4(1, 1, 1, 1.0f);
 
-    fogColor = float4((((f * f * f + .6 * f * f + .5 * f) * color)+color).xyz, 1.0f);
+    fogColor = float4((((f * f * f + .6 * f * f + .5 * f) * color) + color*color).xyz, 1.0f);
 
     //fogColor = (f * f * f + .6 * f * f + .5 * f) * fogColor;
     //diffuseColor = diffuseColor + (background*0.3f);
