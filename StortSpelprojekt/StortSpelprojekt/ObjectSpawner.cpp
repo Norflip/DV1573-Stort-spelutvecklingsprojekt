@@ -253,7 +253,10 @@ Object* ObjectSpawner::DefaultCreateItem(std::string key, PickupType type, float
 	Object* object = Engine::Instance->GetResources()->AssembleObject(key, key + "Material");
 	object->AddComponent<BoxColliderComponent>(dx::XMFLOAT3(0.5f, 0.5f, 0.5f), dx::XMFLOAT3(0, 0, 0));
 	object->AddComponent<PickupComponent>(type, value);
-	object->AddComponent<RigidBodyComponent>(10.0f, FilterGroups::PICKUPS, FilterGroups::EVERYTHING, BodyType::KINEMATIC, true);
+	if(type == PickupType::Fuel)
+		object->AddComponent<RigidBodyComponent>(10.0f, FilterGroups::HOLDABLE, FilterGroups::EVERYTHING &~FilterGroups::PLAYER, BodyType::DYNAMIC, true);
+	else
+		object->AddComponent<RigidBodyComponent>(10.0f, FilterGroups::PICKUPS, FilterGroups::EVERYTHING & ~FilterGroups::PLAYER, BodyType::DYNAMIC, true);
 	return object;
 }
 
@@ -297,11 +300,12 @@ void ObjectSpawner::SpawnStatic(std::unordered_map<int, Chunk*>& chunkMap)
 					float height = prop.bounds.GetSize().y;
 					//position.y += ((height / 2.0f) * (1.0f - prop.yOffset));
 
-					/*dx::XMMATRIX rotation = dx::XMMatrixIdentity();
+					/*
+					dx::XMMATRIX rotation = dx::XMMatrixIdentity();
 					rotation = dx::XMMatrixMultiply(rotation, dx::XMMatrixRotationNormal({0, 0, FCAST(prop.randomRotationAxis.z)}, Random::RadAngle()));
 					rotation = dx::XMMatrixMultiply(rotation, dx::XMMatrixRotationNormal({0, FCAST(prop.randomRotationAxis.y), 0}, Random::RadAngle()));
 					rotation = dx::XMMatrixMultiply(rotation, dx::XMMatrixRotationNormal({ FCAST(prop.randomRotationAxis.x), 0, 0}, Random::RadAngle()));
-				*/
+					*/
 					dx::XMFLOAT4X4 instancedData;
 					dx::XMMATRIX translation = dx::XMMatrixTranslation(position.x, position.y, position.z);
 					dx::XMStoreFloat4x4(&instancedData, dx::XMMatrixTranspose(translation));

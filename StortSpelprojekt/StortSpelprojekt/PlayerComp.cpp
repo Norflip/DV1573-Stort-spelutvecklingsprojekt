@@ -163,7 +163,7 @@ void PlayerComp::HoldObject()
 
 void PlayerComp::DropObject()
 {
-	if (KEY_DOWN(T))
+	if (KEY_DOWN(E))
 	{
 		holding->RemoveFlag(ObjectFlag::NO_CULL);
 		dx::XMVECTOR camRot = cam->GetOwner()->GetTransform().GetRotation();
