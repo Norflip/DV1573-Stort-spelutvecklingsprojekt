@@ -55,7 +55,7 @@ void GameScene::InitializeObjects()
 	SkeletonMeshComponent* legsComponent = resources->GetResource<SkeletonMeshComponent>("HouseLegsSkeleton");
 
 	houseBaseObject->GetTransform().SetScale({ 0.5f, 0.5f, 0.5f });
-	
+
 	//WALLS
 	houseBaseObject->AddComponent<BoxColliderComponent>(dx::XMFLOAT3(2.0f, 3.5f, 2.3f), dx::XMFLOAT3(0.f, 0.9f, -1.0f));
 	//PORCH
@@ -95,17 +95,17 @@ void GameScene::InitializeObjects()
 	Object* cameraObject = new Object("camera", ObjectFlag::ENABLED);
 	this->player = playerObject;
 	camera = cameraObject->AddComponent<CameraComponent>(window->GetWidth(), window->GetHeight(), 60.0f);
-	
+
 	Shader forwardPlusShader;// = 
 
 	forwardPlusShader.SetComputeShader("Shaders/ForwardPlusRendering.hlsl", "ComputeFrustums");
 	forwardPlusShader.CompileCS(renderer->GetDevice());
 	forwardPlusShader.BindToContext(renderer->GetContext());
-	renderer->InitForwardPlus(camera, window,forwardPlusShader);
+	renderer->InitForwardPlus(camera, window, forwardPlusShader);
 
 
-	
-	
+
+
 
 	cameraObject->GetTransform().SetPosition(playerSpawnVec);
 	playerObject->GetTransform().SetPosition(playerSpawnVec);
@@ -113,7 +113,7 @@ void GameScene::InitializeObjects()
 	playerObject->AddComponent<RigidBodyComponent>(50.f, FilterGroups::PLAYER, (FilterGroups::EVERYTHING), BodyType::DYNAMIC, true);
 
 	playerObject->AddComponent<PlayerComp>(renderer, camera, Engine::Instance->GetPhysics(), guiManager, 100.f, 2.f, 20.f, 50.f, 3.f);
-	playerObject->AddComponent<ControllerComp>(cameraObject, houseBaseObject); 
+	playerObject->AddComponent<ControllerComp>(cameraObject, houseBaseObject);
 
 	AddObject(cameraObject, playerObject);
 	AddObject(playerObject);
@@ -123,12 +123,12 @@ void GameScene::InitializeObjects()
 	dx::XMFLOAT3 lightTranslation = dx::XMFLOAT3(0.0f, 0.f, 0.0f);
 	spotLight->GetTransform().SetPosition(dx::XMLoadFloat3(&lightTranslation));
 
-	LightComponent* sLight = spotLight->AddComponent<LightComponent>(1,dx::XMFLOAT4(0.7f, 0.7f, 0.4f, 1.0f), 7.f);
+	LightComponent* sLight = spotLight->AddComponent<LightComponent>(1, dx::XMFLOAT4(0.7f, 0.7f, 0.4f, 1.0f), 7.f);
 	sLight->SetEnabled(true);
 	sLight->SetIntensity(0.5f);
 	sLight->SetRange(8.f);
 	sLight->SetSpotlightAngle(10.f);
-	sLight->SetDirection({ 1.f,0.f,0.f });
+	sLight->SetDirection({ 1.f, 0.f, 0.f });
 	AddObject(spotLight, playerObject);
 
 
