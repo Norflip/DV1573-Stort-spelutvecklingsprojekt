@@ -345,6 +345,7 @@ void GameScene::InitializeInterior()
 	fireplace->GetTransform().SetPosition({ this->interiorPosition.x, this->interiorPosition.y, this->interiorPosition.z });
 	fireplace->AddComponent<BoxColliderComponent>(dx::XMFLOAT3(1.5f, 5.0f, 1.0f), dx::XMFLOAT3(-8.1f, 0, -1.3f));
 	fireplace->AddComponent<RigidBodyComponent>(0.0f, FilterGroups::PROPS, FilterGroups::PLAYER, BodyType::STATIC, true);
+	
 	AddObject(fireplace);
 
 	Object* logs = resources->AssembleObject("Logs", "LogsMaterial");
@@ -398,6 +399,9 @@ void GameScene::InitializeInterior()
 	Object* fireLight = new Object("fireLight");
 	fireLight->AddComponent<PointLightComponent>(dx::XMFLOAT4(1.0f, 0.29f, 0.0f, 1.0f), 1.2f);
 	fireLight->GetTransform().SetPosition({ -7.0f, -99.f, -1.36 });
+	fireLight->AddComponent<ParticleSystemComponent>(renderer, Engine::Instance->GetResources()->GetShaderResource("particleShader"));
+	fireLight->GetComponent<ParticleSystemComponent>()->InitializeFirelikeParticles(renderer->GetDevice(), L"Textures/fire1.png");
+	fireLight->AddFlag(ObjectFlag::DEFAULT | ObjectFlag::NO_CULL);
 	AddObject(fireLight);
 
 	Object* windowLight = new Object("windowLight");
