@@ -60,16 +60,14 @@ void WorldGenerator::Construct(const SaveState& state, const WorldDescription& d
 		RegisterEnviromentProp("test", 0, 10, 4, [](Chunk* chunk, dx::XMVECTOR rootPosition)  
 			{
 				Object* root = new Object("puzzel_root");
-				root->GetTransform().SetWorldPosition(rootPosition);
-
 				Object* puzzelModel = Engine::Instance->GetResources()->AssembleObject("Propane", "PropaneMaterial");
 				Transform::SetParentChild(root->GetTransform(), puzzelModel->GetTransform());
 
-				puzzelModel->GetTransform().SetLocalPosition({ 0.0f, 10.0f, 0.0f });
+				puzzelModel->GetTransform().SetLocalPosition({ CHUNK_SIZE / 2.0f, 5.0f, CHUNK_SIZE / 2.0f });
 				puzzelModel->GetTransform().SetScale({ 10, 10, 10 });
 
-				dx::XMFLOAT3 pos;
-				dx::XMStoreFloat3(&pos, rootPosition);
+				//dx::XMFLOAT3 pos;
+				//dx::XMStoreFloat3(&pos, rootPosition);
 				//std::cout << "PAAZZL: " << pos.x << ", " << pos.y << ", " << pos.z << "\n";
 
 				return root;

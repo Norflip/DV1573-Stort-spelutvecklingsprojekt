@@ -7,6 +7,9 @@
 #include "ResourceManager.h"
 #include "PickupComponent.h"
 
+#include <DirectXMath.h>
+namespace dx = DirectX;
+
 #define SPAWN_ITEMS TRUE
 
 class World;
