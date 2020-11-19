@@ -105,7 +105,7 @@ void ParticleSystemComponent::InitializeFirelikeParticles(ID3D11Device* device, 
 
 
 	particlesPosition.x = GetOwner()->GetTransform().GetPosition().m128_f32[0];
-	particlesPosition.y = GetOwner()->GetTransform().GetPosition().m128_f32[1] - 0.1f;
+	particlesPosition.y = GetOwner()->GetTransform().GetPosition().m128_f32[1] - 0.02f;
 	particlesPosition.z = GetOwner()->GetTransform().GetPosition().m128_f32[2];
 	fire = true;
 	/* Init and pass it to mesh, can do a initializefunction in mesh later.. or something. */
