@@ -156,6 +156,8 @@ void ObjectSpawner::SpawnSpecific(std::vector<dx::XMFLOAT2> positions, dx::XMVEC
 			obj->GetTransform().SetWorldRotation(dx::XMQuaternionRotationNormal(axis, angles[i]));
 			
 			modifier(obj);
+
+			
 		}
 	}
 }

@@ -136,7 +136,7 @@ private:
 	UINT height;//F+
 
 	dx::XMUINT3 numThreadGroups;
-
+	dx::XMUINT4 numThreads;
 	//Frustums
 	
 	std::vector<s_Frustum> frustum_data;

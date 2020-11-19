@@ -3,7 +3,7 @@
 struct ComputeShaderInput
 {
 	uint3 groupID           : SV_GroupID;           // 3D index of the thread group in the dispatch.
-	//uint3 groupThreadID     : SV_GroupThreadID;     // 3D index of local thread ID in a thread group.
+	uint3 groupThreadID     : SV_GroupThreadID;     // 3D index of local thread ID in a thread group.
 	uint3 dispatchThreadID  : SV_DispatchThreadID;  // 3D index of global thread ID in the dispatch.
 	uint  groupIndex        : SV_GroupIndex;        // Flattened local index of the thread within a thread group.
 };
@@ -19,7 +19,7 @@ cbuffer ScreenToViewParams : register(b6)
 {
     float4x4 InverseProjection;
     float2 ScreenDimensions;
-    //float2 pad;
+	
 }
 // Convert clip space coordinates to view space
 float4 ClipToView(float4 clip)
@@ -73,19 +73,19 @@ groupshared Frustum GroupFrustum;
 // Opaque geometry light lists.
 groupshared uint o_LightCount;
 groupshared uint o_LightIndexStartOffset;
-groupshared uint o_LightList[32];
+groupshared uint o_LightList[1024];
 
 // Transparent geometry light lists.
 groupshared uint t_LightCount;
 groupshared uint t_LightIndexStartOffset;
-groupshared uint t_LightList[32];
+groupshared uint t_LightList[1024];
 
 // Add the light to the visible light list for opaque geometry.
 void o_AppendLight(uint lightIndex)
 {
 	uint index; // Index into the visible lights array.
 	InterlockedAdd(o_LightCount, 1, index);
-	if (index < 32)
+	if (index < 1024)
 	{
 		o_LightList[index] = lightIndex;
 	}
@@ -96,7 +96,7 @@ void t_AppendLight(uint lightIndex)
 {
 	uint index; // Index into the visible lights array.
 	InterlockedAdd(t_LightCount, 1, index);
-	if (index < 32)
+	if (index < 1024)
 	{
 		t_LightList[index] = lightIndex;
 	}
@@ -162,8 +162,7 @@ void main(ComputeShaderInput IN) // light culling everyframe
 			case POINT_LIGHT:
 			{
 
-
-				float3 lightPositionVS = mul(light.lightPosition, view).xyz;
+				float3 lightPositionVS = mul(float4(light.lightPosition.xyz, 1), view).xyz;
 				Sphere sphere = { lightPositionVS, light.range };
 				if (SphereInsideFrustum(sphere, GroupFrustum, nearClipVS, maxDepthVS))
 				{
@@ -181,7 +180,7 @@ void main(ComputeShaderInput IN) // light culling everyframe
 			case SPOT_LIGHT:
 			{
 				float coneRadius = tan(radians(light.spotlightAngle)) * light.range;
-                float3 lightPositionVS = mul(float4(light.lightPosition.xyz, 1), view).xyz;
+				float3 lightPositionVS = mul(float4(light.lightPosition.xyz, 1), view).xyz;
 				Cone cone = { lightPositionVS, light.range, light.lightDirection, coneRadius };
 				if (ConeInsideFrustum(cone, GroupFrustum, nearClipVS, maxDepthVS))
 				{

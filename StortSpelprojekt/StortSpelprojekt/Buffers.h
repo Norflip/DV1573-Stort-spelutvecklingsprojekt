@@ -88,6 +88,7 @@ struct cb_ScreenToViewParams
 {
 	dx::XMFLOAT4X4 inverseProjection;
 	dx::XMFLOAT2 screenDimensions;
+	
 };
 
 //ALIGN16
@@ -123,6 +124,8 @@ struct cb_Scene
 	dx::XMFLOAT2 mousePos;
 	dx::XMFLOAT2 screenSize;
 	dx::XMFLOAT4X4 view;
+	UINT nrOfLights;
+	dx::XMUINT3 p;
 };
 
 ALIGN16
