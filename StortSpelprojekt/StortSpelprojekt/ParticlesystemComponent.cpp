@@ -104,7 +104,7 @@ void ParticleSystemComponent::InitializeFirelikeParticles(ID3D11Device* device, 
 		particleList[i].active = false;
 
 
-	particlesPosition.x = GetOwner()->GetTransform().GetPosition().m128_f32[0];
+	particlesPosition.x = GetOwner()->GetTransform().GetPosition().m128_f32[0]-0.05f;
 	particlesPosition.y = GetOwner()->GetTransform().GetPosition().m128_f32[1] - 0.02f;
 	particlesPosition.z = GetOwner()->GetTransform().GetPosition().m128_f32[2];
 	fire = true;
@@ -404,7 +404,7 @@ void ParticleSystemComponent::Draw(Renderer* renderer, CameraComponent* camera)
 		else
 		{
 			dx::XMMATRIX particlesFireTranslation = dx::XMMatrixTranslation(particlesPosition.x, particlesPosition.y, particlesPosition.z);
-			dx::XMMATRIX particlesFireRotationY = dx::XMMatrixRotationY(45);
+			dx::XMMATRIX particlesFireRotationY = dx::XMMatrixRotationY(46);
 			worldParticles = particlesFireRotationY * particlesFireTranslation;
 			worldmatrix = worldParticles;
 		}
