@@ -55,6 +55,7 @@ public:
 private:
 	//det h�r skriver en kommentar till hold objekt
 	void HoldObject();
+	void PickUpObject();
 	void DropObject();
 	float health, attack, attackSpeed, fuel, food;
 	//int currentWeapon;

@@ -73,7 +73,7 @@ PlayerComp::~PlayerComp()
 
 void PlayerComp::Update(const float& deltaTime)
 {
-	RayCast(deltaTime);
+
 
 	float frameTime = FCAST(GameClock::Instance().GetFrameTime() / 1000.0);
 
@@ -112,12 +112,12 @@ void PlayerComp::Update(const float& deltaTime)
 	healthDippingBar->SetScaleBars(ReverseAndClamp(health));
 	healthBar->SetScaleColor(ReverseAndClamp(health));
 
-	if (holding != nullptr)
-	{
+
 		HoldObject();
+		PickUpObject();
 		DropObject();
-		
-	}
+
+	RayCast(deltaTime);
 
 	if (GetOwner()->GetComponent<ControllerComp>()->GetInRange() && !static_cast<GUISprite*>(guiMan->GetGUIObject("door"))->GetVisible())
 	{
@@ -150,51 +150,136 @@ void PlayerComp::FixedUpdate(const float& fixedDeltaTime)
 
 void PlayerComp::HoldObject()
 {
-	
-	inverseViewMatrix = dx::XMMatrixInverse(nullptr, cam->GetViewMatrix());
-	wepOffTrans.Translation(holdAngle);
-	wepOffRot = wepOffRot.CreateFromAxisAngle(up, dx::XMConvertToRadians(-40.0f));
-	wepWorld = wepOffRot * wepOffTrans * inverseViewMatrix;
-	holding->AddFlag(ObjectFlag::NO_CULL);
-	//something here doesn work properly
-	//GetOwner()->AddFlag(ObjectFlag::NO_CULL);
-	wepWorld.Decompose(weaponScale, weaponRot, weaponPos);
-	holding->GetTransform().SetPosition(weaponPos);
-	holding->GetTransform().SetRotation(weaponRot);
-	holding->GetTransform().SetScale(weaponScale);
+	if (holding != nullptr)
+	{
+		inverseViewMatrix = dx::XMMatrixInverse(nullptr, cam->GetViewMatrix());
+		wepOffTrans.Translation(holdAngle);
+		wepOffRot = wepOffRot.CreateFromAxisAngle(up, dx::XMConvertToRadians(-40.0f));
+		wepWorld = wepOffRot * wepOffTrans * inverseViewMatrix;
+		holding->AddFlag(ObjectFlag::NO_CULL);
+		//something here doesn work properly
+		//GetOwner()->AddFlag(ObjectFlag::NO_CULL);
+		wepWorld.Decompose(weaponScale, weaponRot, weaponPos);
+		holding->GetTransform().SetPosition(weaponPos);
+		holding->GetTransform().SetRotation(weaponRot);
+		holding->GetTransform().SetScale(weaponScale);
+	}
+}
+
+void PlayerComp::PickUpObject()
+{
+	if (holding == nullptr)
+	{
+		Ray ray = cam->MouseToRay(p.x, p.y);
+		// Check fuel
+		if (KEY_DOWN(E) && !pickedUpLastFrame)
+		{
+			if (physics->RaytestSingle(ray, rayDistance, hit, FilterGroups::HOLDABLE) && holding == nullptr)
+			{
+				if (hit.object != nullptr)
+				{
+					pickedUpLastFrame = true;
+					AudioMaster::Instance().PlaySoundEvent("pickupFuel");
+					holding = hit.object;
+					RigidBodyComponent* rbComp = hit.object->GetComponent<RigidBodyComponent>();
+					rp::RigidBody* objectRb = rbComp->GetRigidBody();
+					//rbComp->RemoveCollidersFromBody(objectRb);
+					rbComp->SetEnabled(false);
+					//hit.object->GetComponent<BoxColliderComponent>()->SetEnabled(false);
+					hit.object->GetComponent<BoxColliderComponent>()->SetRotation(0, { 5, 5, 5, 5 });
+					//hit.object->RemoveFlag(ObjectFlag::ENABLED);
+					currentWeapon->RemoveFlag(ObjectFlag::ENABLED);
+					arms->RemoveFlag(ObjectFlag::ENABLED);
+					arms->GetComponent<PlayerAnimHandlerComp>()->SetEnabled(false);
+					if (holding->HasComponent<ParticleSystemComponent>())
+						if (holding->GetComponent<ParticleSystemComponent>()->GetActive())
+							holding->GetComponent<ParticleSystemComponent>()->SetActive(false);
+
+				}
+			}
+		}
+		// Pick up health and food
+		if (KEY_DOWN(E) && !pickedUpLastFrame)
+		{
+			if (physics->RaytestSingle(ray, rayDistance, hit, FilterGroups::PICKUPS))
+			{
+				if (hit.object != nullptr)
+				{
+					AudioMaster::Instance().PlaySoundEvent("pickupSound");
+					PickupType pickupType = hit.object->GetComponent<PickupComponent>()->GetType();
+					float temp = hit.object->GetComponent<PickupComponent>()->GetAmount();
+
+					if (pickupType == PickupType::Health)
+					{
+						if ((health + temp) <= 100.0f)
+							health += temp;
+						else
+							health = 100.0f;
+					}
+					else if (pickupType == PickupType::Food)
+					{
+						if ((food + temp) <= 100.0f)
+							food += temp;
+						else
+							food = 100.0f;
+					}
+					else if (pickupType == PickupType::Fuel)
+					{
+						if ((fuel + temp) <= 100.0f)
+							fuel += temp;
+						else
+							fuel = 100.0f;
+					}
+
+					if (hit.object->HasComponent<ParticleSystemComponent>())
+						if (hit.object->GetComponent<ParticleSystemComponent>()->GetActive())
+							hit.object->GetComponent<ParticleSystemComponent>()->SetActive(false);
+
+
+					hit.object->GetComponent<PickupComponent>()->SetActive(false);
+					//RigidBodyComponent* rbComp = hit.object->GetComponent<RigidBodyComponent>();
+					//rbComp->Release();
+				}
+			}
+		}
+	}
 }
 
 void PlayerComp::DropObject()
 {
-	if (KEY_DOWN(E) && !pickedUpLastFrame)
+	if (holding != nullptr)
 	{
-		holding->RemoveFlag(ObjectFlag::NO_CULL);
-		dx::XMVECTOR camRot = cam->GetOwner()->GetTransform().GetRotation();
-		camRot = cam->GetOwner()->GetTransform().TransformDirectionCustomRotation({ 0,0,1 }, camRot);
+		if (KEY_DOWN(E) && !pickedUpLastFrame)
+		{
+			holding->RemoveFlag(ObjectFlag::NO_CULL);
+			dx::XMVECTOR camRot = cam->GetOwner()->GetTransform().GetRotation();
+			camRot = cam->GetOwner()->GetTransform().TransformDirectionCustomRotation({ 0,0,1 }, camRot);
 
-		RigidBodyComponent* rbComp = holding->GetComponent<RigidBodyComponent>();
-		rp::RigidBody* objectRb = rbComp->GetRigidBody();
+			RigidBodyComponent* rbComp = holding->GetComponent<RigidBodyComponent>();
+			rp::RigidBody* objectRb = rbComp->GetRigidBody();
 
-		cam->GetOwner()->GetTransform().GetRotation();
-		wepWorld = wepOffRot * wepOffTrans * inverseViewMatrix;
-		wepWorld.Decompose(weaponScale, weaponRot, weaponPos);
-		rbComp->SetEnabled(true);
-		objectRb->setAngularVelocity({ 0,0,0 });
-		rbComp->SetPosition(weaponPos);
-		rbComp->SetRotation(weaponRot);
-		//objectRb->setLinearVelocity({ dx::XMVectorGetX(camRot) * forceAmount ,  dx::XMVectorGetY(camRot) * forceAmount,  dx::XMVectorGetZ(camRot) * forceAmount });
+			cam->GetOwner()->GetTransform().GetRotation();
+			wepWorld = wepOffRot * wepOffTrans * inverseViewMatrix;
+			wepWorld.Decompose(weaponScale, weaponRot, weaponPos);
+			rbComp->SetEnabled(true);
+			objectRb->setAngularVelocity({ 0,0,0 });
+			rbComp->SetPosition(weaponPos);
+			rbComp->SetRotation(weaponRot);
+			//objectRb->setLinearVelocity({ dx::XMVectorGetX(camRot) * forceAmount ,  dx::XMVectorGetY(camRot) * forceAmount,  dx::XMVectorGetZ(camRot) * forceAmount });
 
-		if (holding->HasComponent<ParticleSystemComponent>())
-			if (!holding->GetComponent<ParticleSystemComponent>()->GetActive())
-				holding->GetComponent<ParticleSystemComponent>()->SetActive(true);
+			if (holding->HasComponent<ParticleSystemComponent>())
+				if (!holding->GetComponent<ParticleSystemComponent>()->GetActive())
+					holding->GetComponent<ParticleSystemComponent>()->SetActive(true);
 
-		float tossSpeed = throwStrength / rbComp->GetMass();
-		objectRb->setLinearVelocity({ dx::XMVectorGetX(camRot) * tossSpeed ,  dx::XMVectorGetY(camRot) * tossSpeed,  dx::XMVectorGetZ(camRot) * tossSpeed });
-		holding = nullptr;
-		currentWeapon->AddFlag(ObjectFlag::ENABLED);
-		arms->AddFlag(ObjectFlag::ENABLED);
-		arms->GetComponent<PlayerAnimHandlerComp>()->SetEnabled(true);
+			float tossSpeed = throwStrength / rbComp->GetMass();
+			objectRb->setLinearVelocity({ dx::XMVectorGetX(camRot) * tossSpeed ,  dx::XMVectorGetY(camRot) * tossSpeed,  dx::XMVectorGetZ(camRot) * tossSpeed });
+			holding = nullptr;
+			currentWeapon->AddFlag(ObjectFlag::ENABLED);
+			arms->AddFlag(ObjectFlag::ENABLED);
+			arms->GetComponent<PlayerAnimHandlerComp>()->SetEnabled(true);
+		}
 	}
+
 }
 
 void PlayerComp::InsertArms(Object* arms)
@@ -224,7 +309,7 @@ void PlayerComp::RayCast(const float& deltaTime)
 	Ray ray = cam->MouseToRay(p.x, p.y);
 
 	// Check fireplace 
-	if (physics->RaytestSingle(ray, rayDistance, hit, FilterGroups::FIRE) && holding)
+	if (physics->RaytestSingle(ray, rayDistance, hit, FilterGroups::FIRE))
 	{
 		if (hit.object != nullptr)
 		{
@@ -270,75 +355,7 @@ void PlayerComp::RayCast(const float& deltaTime)
 		}
 	}
 
-	// Pick up health and food
-	if (KEY_DOWN(E))
-	{
-		if (physics->RaytestSingle(ray, rayDistance, hit, FilterGroups::PICKUPS))
-		{
-			if (hit.object != nullptr)
-			{
-				AudioMaster::Instance().PlaySoundEvent("pickupSound");
-				PickupType pickupType = hit.object->GetComponent<PickupComponent>()->GetType();
-				float temp = hit.object->GetComponent<PickupComponent>()->GetAmount();
 
-				if (pickupType == PickupType::Health)
-				{
-					if ((health + temp) <= 100.0f)
-						health += temp;
-					else
-						health = 100.0f;
-				}
-				else if (pickupType == PickupType::Food)
-				{
-					if ((food + temp) <= 100.0f)
-						food += temp;
-					else
-						food = 100.0f;
-				}
-				else if (pickupType == PickupType::Fuel)
-				{
-					if ((fuel + temp) <= 100.0f)
-						fuel += temp;
-					else
-						fuel = 100.0f;
-				}
-
-				if (hit.object->HasComponent<ParticleSystemComponent>())
-					if (hit.object->GetComponent<ParticleSystemComponent>()->GetActive())
-						hit.object->GetComponent<ParticleSystemComponent>()->SetActive(false);
-				
-				
-				hit.object->GetComponent<PickupComponent>()->SetActive(false);
-				//RigidBodyComponent* rbComp = hit.object->GetComponent<RigidBodyComponent>();
-				//rbComp->Release();
-			}
-		}
-
-		// Check fuel
-		if (physics->RaytestSingle(ray, rayDistance, hit, FilterGroups::HOLDABLE))
-		{
-			if (hit.object != nullptr)
-			{
-				pickedUpLastFrame = true;
-				AudioMaster::Instance().PlaySoundEvent("pickupFuel");
-				holding = hit.object;
-				RigidBodyComponent* rbComp = hit.object->GetComponent<RigidBodyComponent>();
-				rp::RigidBody* objectRb = rbComp->GetRigidBody();
-				//rbComp->RemoveCollidersFromBody(objectRb);
-				rbComp->SetEnabled(false);
-				//hit.object->GetComponent<BoxColliderComponent>()->SetEnabled(false);
-				hit.object->GetComponent<BoxColliderComponent>()->SetRotation(0, { 5, 5, 5, 5 });
-				//hit.object->RemoveFlag(ObjectFlag::ENABLED);
-				currentWeapon->RemoveFlag(ObjectFlag::ENABLED);
-				arms->RemoveFlag(ObjectFlag::ENABLED);
-				arms->GetComponent<PlayerAnimHandlerComp>()->SetEnabled(false);
-				if (holding->HasComponent<ParticleSystemComponent>())
-					if (holding->GetComponent<ParticleSystemComponent>()->GetActive())
-						holding->GetComponent<ParticleSystemComponent>()->SetActive(false);
-
-			}
-		}
-	}
 
 	//ATTACK ENEMIES
 	if (LMOUSE_DOWN && holding == nullptr)
