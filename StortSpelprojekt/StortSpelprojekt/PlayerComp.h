@@ -77,7 +77,7 @@ private:
 	//GameClock attackTimer;
 
 	bool foodEmpty;
-	bool gg;
+	bool pickedUpLastFrame;
 	float throwStrength;
 	float hpLossDist, maxDist, hpLossPerDistance;
 	float ReverseAndClamp(float inputValue);
