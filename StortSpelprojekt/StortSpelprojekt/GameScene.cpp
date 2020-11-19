@@ -539,7 +539,9 @@ void GameScene::SwitchScene()
 	//this->PrintSceneHierarchy(root, 0);
 
 	//LOADING BASE MONSTER; ADDING SKELETONS TO IT
-	enemyManager = new EnemyManager(resources, player, player->GetComponent<PlayerComp>(), root);
+
+	enemyManager = new EnemyManager();
+	enemyManager->Initialize(player, player->GetComponent<PlayerComp>(), root);
 	enemyManager->InitBaseEnemy();
 	enemyManager->InitChargerEnemy();
 
