@@ -53,8 +53,6 @@ PlayerComp::PlayerComp(Renderer* renderer, CameraComponent* camComp, Object* hou
 	this->foodBar = static_cast<GUISprite*>(guiMan->GetGUIObject("foodBar"));
 	this->healthBar = static_cast<GUISprite*>(guiMan->GetGUIObject("healthBar"));
 
-
-
 	//this->GetOwner()->GetComponent<CameraComponent>()
 	p.x = renderer->GetOutputWindow()->GetWidth() / 2;
 	p.y = renderer->GetOutputWindow()->GetHeight() / 2;
@@ -81,7 +79,7 @@ void PlayerComp::Update(const float& deltaTime)
 	if (frameTime < 5.f)
 	{
 		//lose fuel if not inside house
-		if(!GetOwner()->GetComponent<ControllerComp>()->GetInside())
+		if(!GetOwner()->GetComponent<ControllerComp>()->GetInside() && fuel > 0.0f)
 			fuel -= frameTime * fuelBurnPerMeter;
 
 		// lose food
@@ -112,24 +110,19 @@ void PlayerComp::Update(const float& deltaTime)
 	healthDippingBar->SetScaleBars(ReverseAndClamp(health));
 	healthBar->SetScaleColor(ReverseAndClamp(health));
 
-
-		HoldObject();
-		PickUpObject();
-		DropObject();
+	HoldObject();
+	PickUpObject();
+	DropObject();
 
 	RayCast(deltaTime);
 
-	if (GetOwner()->GetComponent<ControllerComp>()->GetInRange() && !static_cast<GUISprite*>(guiMan->GetGUIObject("door"))->GetVisible())
+	if (!static_cast<GUISprite*>(guiMan->GetGUIObject("door"))->GetVisible() && !static_cast<GUISprite*>(guiMan->GetGUIObject("fuel"))->GetVisible())
 	{
-		static_cast<GUISprite*>(guiMan->GetGUIObject("door"))->SetVisible(true);
-		static_cast<GUISprite*>(guiMan->GetGUIObject("dot"))->SetVisible(false);
-	}
-	else if (!GetOwner()->GetComponent<ControllerComp>()->GetInRange() && !static_cast<GUISprite*>(guiMan->GetGUIObject("dot"))->GetVisible()
-		&& !static_cast<GUISprite*>(guiMan->GetGUIObject("fuel"))->GetVisible())
-	{
-		static_cast<GUISprite*>(guiMan->GetGUIObject("door"))->SetVisible(false);
 		static_cast<GUISprite*>(guiMan->GetGUIObject("dot"))->SetVisible(true);
+		static_cast<GUISprite*>(guiMan->GetGUIObject("door"))->SetVisible(false);
+		static_cast<GUISprite*>(guiMan->GetGUIObject("fuel"))->SetVisible(false);
 	}
+	
 	pickedUpLastFrame = false;
 }
 
@@ -140,7 +133,7 @@ void PlayerComp::FixedUpdate(const float& fixedDeltaTime)
 	float distance = playerPos.Distance(playerPos, housePos);
 	//std::cout << distance << std::endl;
 	// around 30-50
-	if (distance > hpLossDist)
+	if (distance > hpLossDist && !GetOwner()->GetComponent<ControllerComp>()->GetInside())
 		health -= distance * hpLossPerDistance;
 
 	// around 90
@@ -309,14 +302,14 @@ void PlayerComp::RayCast(const float& deltaTime)
 	Ray ray = cam->MouseToRay(p.x, p.y);
 
 	// Check fireplace 
-	if (physics->RaytestSingle(ray, rayDistance, hit, FilterGroups::FIRE))
+	if (physics->RaytestSingle(ray, rayDistance, hit, FilterGroups::FIRE) && holding)
 	{
 		if (hit.object != nullptr)
 		{
 			static_cast<GUISprite*>(guiMan->GetGUIObject("fuel"))->SetVisible(true);
 			static_cast<GUISprite*>(guiMan->GetGUIObject("dot"))->SetVisible(false);
 
-			if (KEY_DOWN(E))
+			if (RMOUSE_DOWN)
 			{
 				float refill = holding->GetComponent<PickupComponent>()->GetAmount();
 				if ((fuel + refill) <= 100.0f)
@@ -331,6 +324,10 @@ void PlayerComp::RayCast(const float& deltaTime)
 				holding->GetComponent<PickupComponent>()->SetActive(false);
 				holding = nullptr;
 				currentWeapon->AddFlag(ObjectFlag::ENABLED);
+
+				arms->AddFlag(ObjectFlag::ENABLED);
+				arms->GetComponent<PlayerAnimHandlerComp>()->SetEnabled(true);
+
 				static_cast<GUISprite*>(guiMan->GetGUIObject("fuel"))->SetVisible(false);
 				static_cast<GUISprite*>(guiMan->GetGUIObject("dot"))->SetVisible(true);
 			}
@@ -338,7 +335,6 @@ void PlayerComp::RayCast(const float& deltaTime)
 		else
 		{
 			static_cast<GUISprite*>(guiMan->GetGUIObject("fuel"))->SetVisible(false);
-			static_cast<GUISprite*>(guiMan->GetGUIObject("dot"))->SetVisible(true);
 		}
 	}
 
@@ -354,8 +350,6 @@ void PlayerComp::RayCast(const float& deltaTime)
 			this->GetOwner()->GetComponent<ControllerComp>()->SetInRange(false);
 		}
 	}
-
-
 
 	//ATTACK ENEMIES
 	if (LMOUSE_DOWN && holding == nullptr)

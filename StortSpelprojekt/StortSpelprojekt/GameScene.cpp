@@ -339,20 +339,19 @@ void GameScene::InitializeInterior()
 	houseInterior->AddComponent<BoxColliderComponent>(dx::XMFLOAT3(1.5f, 10.0f, 10.0f), dx::XMFLOAT3(-9.0f, 0, 0)); // Left wall
 	houseInterior->AddComponent<BoxColliderComponent>(dx::XMFLOAT3(10.0f, 10.0f, 1.5f), dx::XMFLOAT3(0, 0, 7.0f)); // Front wall
 	houseInterior->AddComponent<BoxColliderComponent>(dx::XMFLOAT3(10.0f, 10.0f, 1.5f), dx::XMFLOAT3(0, 0, -8.0f)); // Back wall
-	houseInterior->AddComponent<RigidBodyComponent>(0.0f, FilterGroups::PROPS, FilterGroups::PLAYER, BodyType::STATIC, true); // RB
+	houseInterior->AddComponent<RigidBodyComponent>(0.0f, FilterGroups::PROPS, FilterGroups::EVERYTHING, BodyType::STATIC, true); // RB
 	AddObject(houseInterior);
 
 	Object* fireplace = resources->AssembleObject("Fireplace", "FireplaceMaterial");
 	fireplace->GetTransform().SetPosition({ this->interiorPosition.x, this->interiorPosition.y, this->interiorPosition.z });
 	fireplace->AddComponent<BoxColliderComponent>(dx::XMFLOAT3(1.5f, 5.0f, 1.0f), dx::XMFLOAT3(-8.1f, 0, -1.3f));
-	fireplace->AddComponent<RigidBodyComponent>(0.0f, FilterGroups::PROPS, FilterGroups::PLAYER, BodyType::STATIC, true);
-	
+	fireplace->AddComponent<RigidBodyComponent>(0.0f, FilterGroups::PROPS, FilterGroups::EVERYTHING, BodyType::STATIC, true);
 	AddObject(fireplace);
 
 	Object* logs = resources->AssembleObject("Logs", "LogsMaterial");
 	logs->GetTransform().SetPosition({ this->interiorPosition.x, this->interiorPosition.y, this->interiorPosition.z });
 	logs->AddComponent<BoxColliderComponent>(dx::XMFLOAT3(1.0f, 1.0f, 1.0f), dx::XMFLOAT3(-8.1f, 1.0f, -1.3f));
-	logs->AddComponent<RigidBodyComponent>(0.0f, FilterGroups::FIRE, FilterGroups::PLAYER, BodyType::STATIC, true);
+	logs->AddComponent<RigidBodyComponent>(0.0f, FilterGroups::FIRE, FilterGroups::EVERYTHING, BodyType::STATIC, true);
 	AddObject(logs);
 
 	Object* flowerpot = resources->AssembleObject("Flowerpot", "FlowerpotMaterial");
@@ -364,37 +363,37 @@ void GameScene::InitializeInterior()
 	Object* bed = resources->AssembleObject("Bed", "BedMaterial");
 	bed->GetTransform().SetPosition({ this->interiorPosition.x, this->interiorPosition.y, this->interiorPosition.z });
 	bed->AddComponent<BoxColliderComponent>(dx::XMFLOAT3(2.5f, 1.0f, 2.0f), dx::XMFLOAT3(-2.0f, 1.0f, 5.f));
-	bed->AddComponent<RigidBodyComponent>(0.0f, FilterGroups::PROPS, FilterGroups::PLAYER, BodyType::STATIC, true);
+	bed->AddComponent<RigidBodyComponent>(0.0f, FilterGroups::PROPS, FilterGroups::EVERYTHING, BodyType::STATIC, true);
 	AddObject(bed);
 
 	Object* bookShelf = resources->AssembleObject("BookShelf", "BookShelfMaterial");
 	bookShelf->GetTransform().SetPosition({ this->interiorPosition.x, this->interiorPosition.y, this->interiorPosition.z });
 	bookShelf->AddComponent<BoxColliderComponent>(dx::XMFLOAT3(1.0f, 5.0f, 1.5f), dx::XMFLOAT3(1.0f, 1.0f, -7.f));
-	bookShelf->AddComponent<RigidBodyComponent>(0.0f, FilterGroups::PROPS, FilterGroups::PLAYER, BodyType::STATIC, true);
+	bookShelf->AddComponent<RigidBodyComponent>(0.0f, FilterGroups::PROPS, FilterGroups::EVERYTHING, BodyType::STATIC, true);
 	AddObject(bookShelf);
 
 	Object* chair = resources->AssembleObject("Chair", "ChairMaterial");
 	chair->GetTransform().SetPosition({ this->interiorPosition.x, this->interiorPosition.y, this->interiorPosition.z });
 	chair->AddComponent<BoxColliderComponent>(dx::XMFLOAT3(0.5f, 2.0f, 1.0f), dx::XMFLOAT3(-4.0f, 1.0f, 1.5f));
-	chair->AddComponent<RigidBodyComponent>(0.0f, FilterGroups::PROPS, FilterGroups::PLAYER, BodyType::STATIC, true);
+	chair->AddComponent<RigidBodyComponent>(0.0f, FilterGroups::PROPS, FilterGroups::EVERYTHING, BodyType::STATIC, true);
 	AddObject(chair);
 
 	Object* sink = resources->AssembleObject("Sink", "SinkMaterial");
 	sink->GetTransform().SetPosition({ this->interiorPosition.x, this->interiorPosition.y, this->interiorPosition.z });
 	sink->AddComponent<BoxColliderComponent>(dx::XMFLOAT3(0.5f, 2.0f, 1.5f), dx::XMFLOAT3(-1.5f, 1.0f, -7.f));
-	sink->AddComponent<RigidBodyComponent>(0.0f, FilterGroups::PROPS, FilterGroups::PLAYER, BodyType::STATIC, true);
+	sink->AddComponent<RigidBodyComponent>(0.0f, FilterGroups::PROPS, FilterGroups::EVERYTHING, BodyType::STATIC, true);
 	AddObject(sink);
 
 	Object* stove = resources->AssembleObject("Stove", "StoveMaterial");
 	stove->GetTransform().SetPosition({ this->interiorPosition.x, this->interiorPosition.y, this->interiorPosition.z });
 	stove->AddComponent<BoxColliderComponent>(dx::XMFLOAT3(0.5f, 2.0f, 1.5f), dx::XMFLOAT3(-2.5f, 1.0f, -7.f));
-	stove->AddComponent<RigidBodyComponent>(0.0f, FilterGroups::PROPS, FilterGroups::PLAYER, BodyType::STATIC, true);
+	stove->AddComponent<RigidBodyComponent>(0.0f, FilterGroups::PROPS, FilterGroups::EVERYTHING, BodyType::STATIC, true);
 	AddObject(stove);
 
 	Object* insideDoor = resources->AssembleObject("InsideDoor", "InsideDoorMaterial");
 	insideDoor->GetTransform().SetPosition({ this->interiorPosition.x, this->interiorPosition.y, this->interiorPosition.z });
 	insideDoor->AddComponent<BoxColliderComponent>(dx::XMFLOAT3(0.2f, 2.0f, 1.5f), dx::XMFLOAT3(3.0f, 2.0f, -3.0f));
-	insideDoor->AddComponent<RigidBodyComponent>(0.0f, FilterGroups::DOOR, FilterGroups::PLAYER, BodyType::STATIC, true);
+	insideDoor->AddComponent<RigidBodyComponent>(0.0f, FilterGroups::DOOR, FilterGroups::EVERYTHING, BodyType::STATIC, true);
 	AddObject(insideDoor);
 
 	Object* fireLight = new Object("fireLight");
@@ -477,21 +476,20 @@ void GameScene::Update(const float& deltaTime)
 	world.UpdateRelevantChunks(player->GetTransform(), camera);
 	//world.DrawDebug();
 
-	if (player->GetComponent<ControllerComp>()->GetInRange() && !static_cast<GUISprite*>(guiManager->GetGUIObject("door"))->GetVisible())
+	// Something CP with controllerComp/player wont allow this to happen inside the playerComp
+	if (player->GetComponent<ControllerComp>()->GetInRange())
 	{
 		static_cast<GUISprite*>(guiManager->GetGUIObject("door"))->SetVisible(true);
 		static_cast<GUISprite*>(guiManager->GetGUIObject("dot"))->SetVisible(false);
 	}
-	else if (!player->GetComponent<ControllerComp>()->GetInRange() && !static_cast<GUISprite*>(guiManager->GetGUIObject("dot"))->GetVisible())
+	else
 	{
 		static_cast<GUISprite*>(guiManager->GetGUIObject("door"))->SetVisible(false);
-		static_cast<GUISprite*>(guiManager->GetGUIObject("dot"))->SetVisible(true);
 	}
 
 	static_cast<GUIFont*>(guiManager->GetGUIObject("fps"))->SetString(std::to_string((int)GameClock::Instance().GetFramesPerSecond()));
 	guiManager->UpdateAll();
 
-	//std::cout << "Pos: " << player->GetTransform().GetPosition().m128_f32[0] << " " << player->GetTransform().GetPosition().m128_f32[1] << " " << player->GetTransform().GetPosition().m128_f32[2] << std::endl;
 }
 
 void GameScene::FixedUpdate(const float& fixedDeltaTime)

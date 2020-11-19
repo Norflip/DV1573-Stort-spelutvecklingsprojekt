@@ -180,10 +180,11 @@ void ControllerComp::Update(const float& deltaTime)
 		if (length < playerComp->GetRadius() && length > 7.0f && !inside)
 			houseWalkComp->Start();
 
-		if (LMOUSE_DOWN)
+		if (RMOUSE_DOWN)
 		{
 			if (inside && inDoorRange)
 			{
+				GetOwner()->GetTransform().SetPosition(dx::XMVECTOR{ this->outsidePos.x, this->outsidePos.y, this->outsidePos.z, 0 });
 				rbComp->SetPosition(dx::XMVECTOR{ this->outsidePos.x, this->outsidePos.y, this->outsidePos.z, 0 });
 				inside = false;
 			}
@@ -194,6 +195,7 @@ void ControllerComp::Update(const float& deltaTime)
 				this->outsidePos = { current.m128_f32[0], current.m128_f32[1], current.m128_f32[2] };
 				dx::XMFLOAT3 interior = this->playerComp->GetInteriorPosition();
 
+				GetOwner()->GetTransform().SetPosition(dx::XMVECTOR{ this->outsidePos.x, this->outsidePos.y, this->outsidePos.z, 0 });
 				rbComp->SetPosition({ interior.x, interior.y + 3.0f, interior.z, 0.0f });
 
 				inside = true;
