@@ -38,10 +38,13 @@ public:
 	virtual void Draw(DirectX::SpriteBatch*) override;
 	virtual void Draw();
 	void SetPosition(float xPos, float yPos);
-	float GetWidth() { return width; };
+
+	float GetWidth() { return FCAST(width); };
+	float GetHeight() { return FCAST(width); };
+
 	float GetXpos() { return xPos; };
 	float GetYpos() { return yPos; };
-	float GetHeight() { return width; };
+	
 	void SetWICSprite(ID3D11Device* device, std::string spriteFile);
 	void SetColor(sm::Vector4 color);
 	sm::Vector4 GetColor() { return baseColor; };

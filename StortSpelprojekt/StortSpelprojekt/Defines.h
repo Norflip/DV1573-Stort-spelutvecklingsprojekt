@@ -8,6 +8,7 @@
 #define ICAST(T) static_cast<int>(T)
 #define UICAST(T) static_cast<unsigned int>(T)
 
+
 #define BEFORE_MERGE(msg) std::cout << "BEFORE_MERGE: \"" << msg << "\" @" << __LINE__ << " in " << __FILE__ << "\n";
 
 
@@ -23,4 +24,5 @@
 				eBLOB->Release(); \
 			}} \
 
-#define DRAW_COLLIDERS FALSE
+#define MULTITHREAD_PHYSICS FALSE
+#define DRAW_COLLIDERS TRUE

@@ -13,7 +13,6 @@
 constexpr int FIXED_FPS = 60;
 constexpr float TARGET_FIXED_DELTA = 1.0f / FIXED_FPS;
 
-#define MULTITHREAD_PHYSICS FALSE
 enum SceneIndex { INTRO = 0, GAME_OVER = 1, GAME = 2, WIN = 3 };
 
 class Engine
