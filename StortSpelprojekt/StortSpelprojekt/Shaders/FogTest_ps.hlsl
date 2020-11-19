@@ -8,6 +8,7 @@ Texture2D day : register(t2);
 Texture2D dusk : register(t3);	
 Texture2D night : register(t4);		
 Texture2D endNight : register (t5);
+Texture2D gradient : register(t6);
 
 SamplerState defaultSampleType : register (s0);
 
@@ -44,12 +45,12 @@ float4 main(PixelInputType input) : SV_TARGET
     final = day.Sample(defaultSampleType, depth);
 
     // different id, different lerps between textures
-    //if (id == 0)
+   // if (id == 0)
     //{
-    //    diff = day.Sample(defaultSampleType, depth);
-    //    diff2 = dusk.Sample(defaultSampleType, depth);
-    //    final = lerp(diff, diff2, factor);
-    //}
+        diff = day.Sample(defaultSampleType, depth);
+        diff2 = dusk.Sample(defaultSampleType, depth);
+        final = lerp(diff, diff2, 0.3f);
+  //  }
     //if (id == 1)
     //{
     //    diff = dusk.Sample(defaultSampleType, depth);
@@ -69,8 +70,8 @@ float4 main(PixelInputType input) : SV_TARGET
     //    final = lerp(diff, diff2, factor);
     //}
 
-    const float start = 30; // FOG START
-    const float end = 60; // FOG END
+    const float start = 1; // FOG START
+    const float end = 120; // FOG END
 
     const float near = 0.01f; // NEAR PLANE
     const float far = 500.0f; // FAR PLANE
@@ -79,8 +80,7 @@ float4 main(PixelInputType input) : SV_TARGET
     float fogFactor = saturate(((D * far) - start) / (end - start));
         
     float2 st = input.uv.xy;// / float2(1600, 800) * 3.;
-    
-    //st += st * abs(sin(time * 0.1)*3.0);
+
 
     float2 q = float2(0,0);
     q.x = fbm(st + 0.00 * time + (mousePos / 690));
@@ -93,31 +93,23 @@ float4 main(PixelInputType input) : SV_TARGET
     float f = fbm(st + r + (mousePos / 690));
     float3 color = float3(0,0,0);
 
-    //color = lerp(float3(0.101961, 0.919608, 0.666667),
-    //    float3(0.666667, 0.666667, 0.498039),
-    //    clamp((f * f) * 4.0, 0.0, 1.0));
+    float4 depthSample = depthTexture.Sample(defaultSampleType, input.uv);
 
-    //color = lerp(color,
-    //    float3(0, 0, 0.164706),
-    //    clamp(length(q), 0.0, 1.0));
+    depthSample.x = 1.f - depthSample.x;
+    depthSample.x = (far) * depthSample.x;
+    depthSample.x = abs(depthSample.x);
+    depthSample.x = pow(depthSample.x, 3.0f);
+     
+    float4 colorSample = gradient.Sample(defaultSampleType, (1.f, clamp(depthSample.x, 0.f, 0.999f)));
+    color += colorSample; //Add ramp texture color to fog
 
-    //color = lerp(color,
-    //    float3(0.666667, 1, 1),
-    //    clamp(length(r.x), 0.0, 1.0));
-
-
-    //return float4(I, I, I, 1.0f);
-   // return diffuseColor;
-
-    color += final; //Add ramp texture color to fog
-   //float4 fogColor = float4(0.1f, 0.1f, 0.4f, 1.0f);
     float4 fogColor = float4(1, 1, 1, 1.0f);
-    fogColor = float4(((f * f * f + .6 * f * f + .5 * f) * color).xyz, 1.0f);
 
-    //fogColor = (f * f * f + .6 * f * f + .5 * f) * fogColor;
-    //diffuseColor = diffuseColor + (background*0.3f);
-    //fogColor = fogColor + (background * 0.5f); //Här färgas dimman om
+    //Math to multiply colors
+    fogColor = float4((((f * f * f + .6 * f * f + .5 * f) * color) + color*color).xyz, 1.0f);
+
     float4 result = lerp(diffuseColor, fogColor, fogFactor);
+
     return result;
-    //return diffuseColor + float4(d, d, d, 1.0f);
+
 }
