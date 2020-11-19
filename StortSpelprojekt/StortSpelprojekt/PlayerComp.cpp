@@ -98,8 +98,6 @@ void PlayerComp::Update(const float& deltaTime)
 		}
 	}
 
-	std::cout << "Fuel: " << fuel << std::endl;
-
 	// Fuel drop
 	fuelDippingBar->SetScaleBars(ReverseAndClamp(fuel));
 	fuelBar->SetScaleColor(ReverseAndClamp(fuel));
@@ -112,10 +110,9 @@ void PlayerComp::Update(const float& deltaTime)
 	healthDippingBar->SetScaleBars(ReverseAndClamp(health));
 	healthBar->SetScaleColor(ReverseAndClamp(health));
 
-
-		HoldObject();
-		PickUpObject();
-		DropObject();
+	HoldObject();
+	PickUpObject();
+	DropObject();
 
 	RayCast(deltaTime);
 
@@ -305,15 +302,20 @@ void PlayerComp::RayCast(const float& deltaTime)
 	Ray ray = cam->MouseToRay(p.x, p.y);
 
 	// Check fireplace 
-	if (physics->RaytestSingle(ray, rayDistance, hit, FilterGroups::FIRE))
+	if (physics->RaytestSingle(ray, rayDistance, hit, FilterGroups::FIRE) && holding)
 	{
 		if (hit.object != nullptr)
 		{
 			static_cast<GUISprite*>(guiMan->GetGUIObject("fuel"))->SetVisible(true);
 			static_cast<GUISprite*>(guiMan->GetGUIObject("dot"))->SetVisible(false);
 
-			if (KEY_DOWN(E))
+			if (RMOUSE_DOWN)
 			{
+				if (holding->HasComponent<PickupComponent>())
+					std::cout << "Has pickup" << std::endl;
+				else
+					std::cout << "Doesnt have pickup: " << std::endl;
+
 				float refill = holding->GetComponent<PickupComponent>()->GetAmount();
 				if ((fuel + refill) <= 100.0f)
 					fuel += refill;
@@ -327,6 +329,10 @@ void PlayerComp::RayCast(const float& deltaTime)
 				holding->GetComponent<PickupComponent>()->SetActive(false);
 				holding = nullptr;
 				currentWeapon->AddFlag(ObjectFlag::ENABLED);
+
+				arms->AddFlag(ObjectFlag::ENABLED);
+				arms->GetComponent<PlayerAnimHandlerComp>()->SetEnabled(true);
+
 				static_cast<GUISprite*>(guiMan->GetGUIObject("fuel"))->SetVisible(false);
 				static_cast<GUISprite*>(guiMan->GetGUIObject("dot"))->SetVisible(true);
 			}
@@ -349,8 +355,6 @@ void PlayerComp::RayCast(const float& deltaTime)
 			this->GetOwner()->GetComponent<ControllerComp>()->SetInRange(false);
 		}
 	}
-
-
 
 	//ATTACK ENEMIES
 	if (LMOUSE_DOWN && holding == nullptr)

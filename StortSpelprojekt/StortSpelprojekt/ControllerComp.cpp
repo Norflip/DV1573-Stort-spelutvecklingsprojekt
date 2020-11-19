@@ -180,7 +180,7 @@ void ControllerComp::Update(const float& deltaTime)
 		if (length < playerComp->GetRadius() && length > 7.0f && !inside)
 			houseWalkComp->Start();
 
-		if (LMOUSE_DOWN)
+		if (RMOUSE_DOWN)
 		{
 			if (inside && inDoorRange)
 			{
