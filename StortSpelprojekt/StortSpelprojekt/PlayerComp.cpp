@@ -130,7 +130,7 @@ void PlayerComp::FixedUpdate(const float& fixedDeltaTime)
 {
 	sm::Vector3 housePos = house->GetTransform().GetPosition();
 	sm::Vector3 playerPos = this->GetOwner()->GetTransform().GetPosition();
-	float distance = playerPos.Distance(playerPos, housePos);
+	distance = playerPos.Distance(playerPos, housePos);
 	//std::cout << distance << std::endl;
 	// around 30-50
 	if (distance > hpLossDist && !GetOwner()->GetComponent<ControllerComp>()->GetInside())
@@ -139,6 +139,8 @@ void PlayerComp::FixedUpdate(const float& fixedDeltaTime)
 	// around 90
 	if (distance > maxDist && !GetOwner()->GetComponent<ControllerComp>()->GetInside())
 		health = 0;
+
+
 }
 
 void PlayerComp::HoldObject()
@@ -407,6 +409,14 @@ void PlayerComp::RayCast(const float& deltaTime)
 
 	// Health dipping when hit by enemy
 	//healthDippingBar->SetScaleDipping(0);
+}
+
+float PlayerComp::GetDangerDistance() 
+{
+	if (distance > 60.f)
+		return distance;
+	else
+		return 0;
 }
 
 void PlayerComp::Reset()
