@@ -6,7 +6,6 @@ NodeWalkerComp::NodeWalkerComp()
 	this->speed = 1.0f;// 16.2f;
 	this->currentNode = thePath.GetFirstPointIndex();
 	this->lastNode = thePath.GetLastPointIndex();
-	this->secondLastNode = thePath.GetSecondLastPointIndex();
 	this->nextChosen = -1;
 	this->nodeRadius = 0.3f;
 	this->canWalk = false;
@@ -39,7 +38,6 @@ void NodeWalkerComp::InitializePath(Path thePath)
 
 	this->currentNode = thePath.GetFirstPointIndex();
 	this->lastNode = thePath.GetLastPointIndex();
-	this->secondLastNode = thePath.GetSecondLastPointIndex();
 
 	//std::cout <<"Nr of: "<< thePath.CountPoints() << std::endl;
 	//dx::XMFLOAT3 pos3 = { thePath.GetPoint(this->currentNode).x + offset,HEIGHT, thePath.GetPoint(this->currentNode).y + offset };
@@ -52,11 +50,6 @@ void NodeWalkerComp::InitializePath(Path thePath)
 	//this->rbComp->GetRigidBody()->getCollider(0)->getMaterial().setFrictionCoefficient(100.f);
 	//this->rbComp->GetRigidBody()->getCollider(0)->getMaterial().setRollingResistance(100.f);
 	this->rbComp->SetPosition(startPos);
-
-	lastNodePos = { thePath.GetPoint(this->lastNode).x, HEIGHT, thePath.GetPoint(this->lastNode).z };
-	secondLastNodePos = { thePath.GetPoint(this->secondLastNode).x, HEIGHT, thePath.GetPoint(this->secondLastNode).z };
-	std::cout << "LAST NODE POSITION: \nX: " << lastNodePos.x << " Y: " << lastNodePos.y << " Z: " << lastNodePos.z << std::endl;
-	std::cout << "SECOND LAST NODE POSITION: \nX: " << secondLastNodePos.x << " Y: " << secondLastNodePos.y << " Z: " << secondLastNodePos.z << std::endl;
 }
 
 void NodeWalkerComp::InitAnimation()
