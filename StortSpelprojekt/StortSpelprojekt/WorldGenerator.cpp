@@ -2,7 +2,7 @@
 #include <algorithm>
 #include "WorldGenerator.h"
 #include "Engine.h"
-
+#include "LightComponent.h"
 
 WorldGenerator::WorldGenerator() : constructed(false), treePoints(dx::XMFLOAT2(0, 0), dx::XMFLOAT2(0, 0))
 {
@@ -101,12 +101,13 @@ void WorldGenerator::Construct(const SaveState& state, const WorldDescription& d
 			{
 				obj->GetTransform().SetScale({ 1.2f, 1.2f, 1.2f });
 
-
-
-				/*Object* light = new Object("lantern_pointLight");
+				Object* light = new Object("lantern_pointLight");
 				light->GetTransform().SetPosition({ 0,2,0 });
-				light->AddComponent<PointLightComponent>(dx::XMFLOAT4(0.3f, 0.3f, 0.3f, 1.0f), 4.0f);
-				Transform::SetParentChild(obj->GetTransform(), light->GetTransform());*/
+				LightComponent* lc = light->AddComponent<LightComponent>(LightType::POINT_LIGHT, dx::XMFLOAT4(0.3f, 0.3f, 0.3f, 1.0f), 12.0f);
+				lc->SetEnabled(true);
+				lc->SetIntensity(2.0f);
+
+				Transform::SetParentChild(obj->GetTransform(), light->GetTransform());
 
 			});
 
