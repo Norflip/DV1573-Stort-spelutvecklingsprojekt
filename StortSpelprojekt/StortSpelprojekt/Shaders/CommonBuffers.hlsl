@@ -1,5 +1,5 @@
 //static const int POINT_LIGHT_COUNT = 16;
-static const int LIGHT_COUNT = 40;
+static const int LIGHT_COUNT = 200;
 
 #ifndef BLOCK_SIZE
 #pragma message( "BLOCK_SIZE undefined. Default to 32.")
