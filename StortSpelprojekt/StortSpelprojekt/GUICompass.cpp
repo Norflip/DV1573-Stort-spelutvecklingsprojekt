@@ -13,7 +13,7 @@ GUICompass::GUICompass(Renderer& renderer, Window* window, Object* houseObj, Obj
 	backgroundBar->Move({ 0.f, 30.f });
 	compassYpos = backgroundBar->GetYpos();
 	compassXpos = backgroundBar->GetXpos();
-
+	this->distance = 0;
 	cam = playerObj->GetComponent<PlayerComp>()->GetCamera();
 }
 void GUICompass::Update()
@@ -25,7 +25,7 @@ void GUICompass::Update()
 	playerPos = playerObj->GetTransform().GetPosition();
 	housePos = houseObj->GetTransform().GetPosition();
 	////////////////////////////////////////////////////////
-	float distance = playerPos.Distance(playerPos, housePos);
+	distance = playerPos.Distance(playerPos, housePos);
 	//Clamps scale between 0.4 and 1
 	float scale = Math::Clamp((10 / pow(distance, 0.7f)), 0.4f, 1.f);
 	house->SetScale(scale, scale);
