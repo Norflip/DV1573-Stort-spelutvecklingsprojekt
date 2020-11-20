@@ -31,7 +31,7 @@ float3 WorldPosFromDepth(float depth, float2 uv) {
 
 float4 main(PixelInputType input) : SV_TARGET
 {
-      float someValue = 400;
+    float someValue = 400;
     float4 diff;
     float4 diff2;
     float4 final;
