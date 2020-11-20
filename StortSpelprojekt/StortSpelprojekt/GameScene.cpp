@@ -583,13 +583,13 @@ void GameScene::Update(const float& deltaTime)
 	if (rightSign->GetComponent<SelectableComponent>()->GetActive())
 	{
 		SwitchScene();
-		rightSign->GetComponent<SelectableComponent>()->SetActive(false); //VIKTOR
+		rightSign->GetComponent<SelectableComponent>()->SetActive(false);
 
 	}
 	else if (leftSign->GetComponent<SelectableComponent>()->GetActive())
 	{
 		SwitchScene();
-		leftSign->GetComponent<SelectableComponent>()->SetActive(false); //VIKTOR
+		leftSign->GetComponent<SelectableComponent>()->SetActive(false);
 
 	}
 
