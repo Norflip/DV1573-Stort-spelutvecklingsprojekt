@@ -98,7 +98,7 @@ public:
 
 	void InitForwardPlus(CameraComponent* camera, Window* window, Shader& forwardPlusShader);
 	void UpdateForwardPlus(CameraComponent* camera);
-	std::vector<UINT>& cullLightsOnCPU();
+	//std::vector<UINT>& cullLightsOnCPU();
 	void SetIdAndColor(int id, float color);
 
 	ALIGN16_ALLOC;

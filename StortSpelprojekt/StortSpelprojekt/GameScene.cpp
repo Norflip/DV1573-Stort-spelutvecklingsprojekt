@@ -574,7 +574,7 @@ void GameScene::SwitchScene()
 
 	enemyManager->SpawnEnemies();
 
-	LightManager::Instance().ForceUpdateBuffers(renderer->GetContext());
+	LightManager::Instance().ForceUpdateBuffers(renderer->GetContext(),camera);
 }
 
 void GameScene::InitializeSigns()
