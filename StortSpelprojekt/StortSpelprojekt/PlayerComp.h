@@ -29,11 +29,11 @@ public:
 	float GetSprintSpeed()const { return SprintSpeed; }
 	float GetCrouchSpeed()const { return crouchSpeed; }
 	float GetMovementspeed()const { return movementSpeed; }
-
+	float GetDangerDistance();
 	float GetRadius() const { return radius; }
 
 	void Reset();
-
+	
 	void LoseHealth(float damage) { health -= damage; }	
 	void AddHealth(float health) { this->health += health; }	
 	void AddAttack(float attack) { this->attack += attack; }
@@ -62,6 +62,7 @@ private:
 	float movementSpeed, crouchSpeed, SprintSpeed;
 	float foodLossPerSecond, fuelBurnPerMeter, healthLossPerSecond;
 	float radius;
+	float distance;
 	GUIManager* guiMan;
 	GUISprite* fuelDippingBar, * foodDippingBar, * healthDippingBar, * fuelBar, * foodBar, * healthBar;
 	Renderer* renderer;
@@ -84,6 +85,7 @@ private:
 	float hpLossDist, maxDist, hpLossPerDistance;
 	float ReverseAndClamp(float inputValue);
 	float test = 0;
+
 	void RayCast(const float& deltaTime);
 	sm::Vector3 holdAngle;
 	sm::Vector3 toYAW;

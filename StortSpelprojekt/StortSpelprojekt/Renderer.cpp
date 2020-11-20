@@ -137,7 +137,7 @@ void Renderer::DrawQueueToTarget(RenderQueue& queue, CameraComponent* camera)
 }
 
 
-void Renderer::RenderFrame(CameraComponent* camera, float time)
+void Renderer::RenderFrame(CameraComponent* camera, float time, float distance)
 {
 	// UPDATE SCENE
 	if (KEY_PRESSED(Y) && isFullScreen == true)
@@ -148,13 +148,13 @@ void Renderer::RenderFrame(CameraComponent* camera, float time)
 	{
 		isFullScreen = true;
 	}
-	RenderFrame(camera, time, backbuffer, true, true);
+	RenderFrame(camera, time, distance, backbuffer, true, true);
 	HRESULT hr = swapchain->Present(0, 0); //1 here?
 	swapchain->SetFullscreenState(isFullScreen, nullptr);
 	assert(SUCCEEDED(hr));
 }
 
-void Renderer::RenderFrame(CameraComponent* camera, float time, RenderTexture& target, bool drawGUI, bool applyRenderPasses)
+void Renderer::RenderFrame(CameraComponent* camera, float time, float distance, RenderTexture& target, bool drawGUI, bool applyRenderPasses)
 {
 
 
@@ -180,6 +180,7 @@ void Renderer::RenderFrame(CameraComponent* camera, float time, RenderTexture& t
 	data.id = ids;
 	data.factor = color;
 	data.time = time;
+	data.distanceToHouse = distance;
 	//std::cout << xPos << std::endl;
 	//std::cout << yPos << std::endl;
 	xPos += (float)Input::Instance().GetPrevMousePosRelative().y;

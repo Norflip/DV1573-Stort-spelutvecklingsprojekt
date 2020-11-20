@@ -31,14 +31,15 @@ cbuffer cb_Scene : register(b2)
 {
 	row_major matrix invProjection;
 	row_major matrix invView;
-
 	float3 cameraPosition;
 	int id;
 	float factor;
 	float time;
 	float2 mousePos;
 	float2 screenSize;
-	float2 pad_cbs;
+	float distanceToHouse;
+	float pad_cbs;
+
 }
 
 cbuffer cb_Lights : register(b3)

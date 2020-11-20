@@ -14,7 +14,7 @@ public:
     GUICompass(Renderer& renderer, Window* window, Object* houseObj, Object* playerObj);
     void Update() override;
     virtual void Draw(DirectX::SpriteBatch*) override;
-
+    float GetDistance()const { return distance; }
     virtual void SetPosition(float x, float y) override;
 
     ALIGN16_ALLOC;
@@ -26,6 +26,7 @@ private:
     GUISprite* fuelTest;;
     Renderer* renderer;
     Window* window;
+    float distance;
     float compassYpos;
     float compassXpos;
     sm::Vector3 playerPos;

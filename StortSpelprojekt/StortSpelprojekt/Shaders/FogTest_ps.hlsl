@@ -48,7 +48,7 @@ float4 main(PixelInputType input) : SV_TARGET
         diff = day.Sample(defaultSampleType, depth);
         diff2 = dusk.Sample(defaultSampleType, depth);
         final = lerp(diff, diff2, 0.3f);
-  //  }
+    //}
     //if (id == 1)
     //{
     //    diff = dusk.Sample(defaultSampleType, depth);
@@ -105,9 +105,11 @@ float4 main(PixelInputType input) : SV_TARGET
 
     //Math to multiply colors
     fogColor = float4((((f * f * f + .6 * f * f + .5 * f) * color) + color*color).xyz, 1.0f);
+    
+
 
     const float amount = 0.2f;  // higher = more intensity 
-    const float power = 6.0f;   // higher = less space on screen
+    const float power = (1/ distanceToHouse)*100;   // higher = less space on screen
     const float4 vignetteColor = float4(.3f, .5f, 0, 3.f); //ugly green shit
     float dis = length(input.uv * 2 - 1);
     dis = dis / 1.41421;
