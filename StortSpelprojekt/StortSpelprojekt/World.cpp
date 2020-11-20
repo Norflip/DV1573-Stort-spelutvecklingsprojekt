@@ -139,7 +139,7 @@ WorldDescription World::DescriptionFromState(const SaveState& state) const
 {
 	WorldDescription description(state.seed);
 	description.directionalSteps = 1;
-	description.maxSteps = 4;
+	description.maxSteps = 8;
 
 	description.minEnviromentProps = 4;
 	description.maxEnviromentProps = 8;
