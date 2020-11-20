@@ -351,7 +351,6 @@ void PlayerComp::RayCast(const float& deltaTime)
 			this->GetOwner()->GetComponent<ControllerComp>()->SetInRange(false);
 		}
 	}
-	/////////////////////////////
 
 	//Click signs
 	if (KEY_DOWN(E))
