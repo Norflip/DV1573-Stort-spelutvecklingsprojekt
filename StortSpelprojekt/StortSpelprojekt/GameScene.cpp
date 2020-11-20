@@ -474,7 +474,7 @@ void GameScene::Update(const float& deltaTime)
 {
 	Scene::Update(deltaTime);
 	world.UpdateRelevantChunks(player->GetTransform(), camera);
-	world.DrawDebug();
+	//world.DrawDebug();
 
 	// Something CP with controllerComp/player wont allow this to happen inside the playerComp
 	if (player->GetComponent<ControllerComp>()->GetInRange())
