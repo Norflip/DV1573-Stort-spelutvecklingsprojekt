@@ -22,7 +22,6 @@ public:
 	void InitializeInterior();
 	void OnActivate() override;
 	void OnDeactivate() override;
-	void SwitchScene();
 	void InitializeSigns();
 
 	void Update(const float& deltaTime) override;

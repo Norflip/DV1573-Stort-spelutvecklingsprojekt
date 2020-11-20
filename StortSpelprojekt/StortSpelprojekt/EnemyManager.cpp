@@ -66,7 +66,7 @@ void EnemyManager::RemoveEnemy(Object* enemy)
 void EnemyManager::SpawnEnemies()
 {
 	// whyyyy
-	nrOfEnemies = 3;
+	nrOfEnemies = 0;
 
 	for (int i = 0; i < nrOfEnemies; i++)
 	{
