@@ -31,6 +31,7 @@ float3 WorldPosFromDepth(float depth, float2 uv) {
 
 float4 main(PixelInputType input) : SV_TARGET
 {
+      float someValue = 400;
     float4 diff;
     float4 diff2;
     float4 final;
@@ -52,16 +53,16 @@ float4 main(PixelInputType input) : SV_TARGET
 
     float2 st = input.uv.xy;// / float2(1600, 800) * 3.;
 
-
+  
     float2 q = float2(0,0);
-    q.x = fbm(st + 0.00 * time + (mousePos / 690));
-    q.y = fbm(st + float2(1.0, 0.0) + (mousePos / 690));
+    q.x = fbm(st + 0.00 * time + (mousePos / someValue));
+    q.y = fbm(st + float2(1.0, 0.0) + (mousePos / someValue));
 
     float2 r = float2(0, 0);
-    r.x = fbm(st + 1.0 * q + float2(1.7, 9.2) + 0.15 * time + (mousePos / 690)); //2pi r
-    r.y = fbm(st + 1.0 * q + float2(8.3, 2.8) + 0.126 * time + (mousePos / 690)); //2pi r
+    r.x = fbm(st + 1.0 * q + float2(1.7, 9.2) + 0.15 * time + (mousePos / (someValue))); //2pi r
+    r.y = fbm(st + 1.0 * q + float2(8.3, 2.8) + 0.126 * time + (mousePos / (someValue))); //2pi r
 
-    float f = fbm(st + r + (mousePos / 690));
+    float f = fbm(st + r + (mousePos / (someValue)));
     float3 color = float3(0,0,0);
 
     float4 depthSample = depthTexture.Sample(defaultSampleType, input.uv);
