@@ -294,10 +294,7 @@
     <ClCompile Include="HousePartsComponent.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="LightComponent.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="DepthPass.cpp">
+    <ClCompile Include="SelectableComponent.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>
@@ -596,16 +593,10 @@
     <ClInclude Include="HousePartsComponent.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="SelectableComponent.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
     <ClInclude Include="WorldGenerator.h" />
-    <ClInclude Include="LightComponent.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="ThirdParty\quickhull\ConvexHull.hpp">
-      <Filter>ThirdParty</Filter>
-    </ClInclude>
-    <ClInclude Include="DepthPass.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <Filter Include="Header Files">

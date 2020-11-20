@@ -99,6 +99,8 @@ public:
 	void InitForwardPlus(CameraComponent* camera, Window* window, Shader& forwardPlusShader);
 	void UpdateForwardPlus(CameraComponent* camera);
 	std::vector<UINT>& cullLightsOnCPU();
+	void SetIdAndColor(int id, float color);
+
 	ALIGN16_ALLOC;
 
 private:
@@ -203,6 +205,10 @@ private:
 
 	float xPos= 0;
 	float yPos =0;
+
+	int ids;
+	float color;
+
 	//rasterizer
 	ID3D11RasterizerState* rasterizerStateCullBack;
 	ID3D11RasterizerState* rasterizerStateCullNone;
