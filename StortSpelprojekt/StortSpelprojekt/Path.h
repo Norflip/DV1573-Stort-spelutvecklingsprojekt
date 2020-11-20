@@ -90,6 +90,7 @@ public:
 
 	size_t GetFirstPointIndex() const { return 0; }
 	size_t GetLastPointIndex() const { return points.size() - 1; }
+	size_t GetSecondLastPointIndex() const { return points.size() - 2; }
 	void DrawDebug();
 
 private:
