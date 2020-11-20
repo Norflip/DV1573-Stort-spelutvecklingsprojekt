@@ -131,13 +131,13 @@ float4 main(PixelInputType input) : SV_TARGET
     float4 fogColor = float4(1, 1, 1, 1.0f);
 
     //Math to multiply colors
-    fogColor = float4((((f * f * f + .6 * f * f + .5 * f) * color) + color*color).xyz, 1.0f);
+    fogColor = float4((((f * f * f *f+ .6 * f * f *f  + .5 * f *f) * color) + color*color*color).xyz, 1.0f);
     
 
 
     const float amount = 0.2f;  // higher = more intensity 
     const float power = (1/ distanceToHouse)*100;   // higher = less space on screen
-    const float4 vignetteColor = float4(.3f, .5f, 0, 3.f); //ugly green shit
+    const float4 vignetteColor = float4(.8f, .3f, 0, 3.f); //ugly green shit
     float dis = length(input.uv * 2 - 1);
     dis = dis / 1.41421;
     dis = pow(dis, power);
