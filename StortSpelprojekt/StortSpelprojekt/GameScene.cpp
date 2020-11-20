@@ -659,5 +659,5 @@ void GameScene::Render()
 	//worldGenerator.DrawShapes();
 	//world.DrawDebug();
 	
-	renderer->RenderFrame(camera, (float)clock.GetSeconds());
+	renderer->RenderFrame(camera, (float)clock.GetSeconds(),player->GetComponent<PlayerComp>()->GetDangerDistance() );
 }

@@ -115,17 +115,27 @@ ALIGN16
 struct cb_Scene
 {
 	dx::XMFLOAT4X4 invProjection;
+
 	dx::XMFLOAT4X4 invView;
 
 	dx::XMFLOAT3 cameraPosition;
 	int id;
+
 	float factor;
 	float time;
 	dx::XMFLOAT2 mousePos;
+
 	dx::XMFLOAT2 screenSize;
+	float distanceToHouse;
+	float pad_cbs;
+
 	dx::XMFLOAT4X4 view;
+	
 	UINT nrOfLights;
 	dx::XMUINT3 p;
+
+
+
 };
 
 ALIGN16
