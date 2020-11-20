@@ -2,7 +2,33 @@
 #include "LightComponent.h"
 #include "LightManager.h"
 
-LightComponent::LightComponent(UINT type, dx::XMFLOAT4 color, float range) : type(LightType(type)), lightColor(color), range(range), lightDirection({ 0, -1, 0}), spotlightAngle(15.0f), enabled(false), intensity(0.4f), dirty(true) {}
+LightComponent::LightComponent(UINT type, dx::XMFLOAT4 color, float range) 
+{
+	this->type = (LightType)type; 
+	this->lightColor = color;
+	this->range = range;
+	
+	this->lightDirection = dx::XMFLOAT3({ 0, -1, 0 });
+	this->spotlightAngle = 15.0f;
+	this->enabled = false;
+	this->intensity = 0.5f;
+	this->dirty=true;
+	this->elapsedTime = 0.f;
+}
+LightComponent::LightComponent(LightType type, dx::XMFLOAT4 color, float range) 
+{
+	this->type = type;
+	this->lightColor = color;
+	this->range = range;
+
+	this->lightDirection = dx::XMFLOAT3({ 0, -1, 0 });
+	this->spotlightAngle = 15.0f;
+	this->enabled = false;
+	this->intensity = 0.5f;
+	this->dirty = true;
+	this->elapsedTime = 0.f;
+}
+
 LightComponent::~LightComponent() {}
 
 void LightComponent::Initialize()

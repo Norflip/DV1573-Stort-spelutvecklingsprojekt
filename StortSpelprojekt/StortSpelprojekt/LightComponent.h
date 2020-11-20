@@ -18,6 +18,7 @@ class LightComponent : public Component
 public:
 
 	LightComponent(UINT type, dx::XMFLOAT4 color, float range);// , dx::XMFLOAT3 attenuation = POINT_DEFAULT_ATTENUATION);
+	LightComponent(LightType type, dx::XMFLOAT4 color, float range);
 	virtual ~LightComponent();
 
 	virtual void Initialize() override;

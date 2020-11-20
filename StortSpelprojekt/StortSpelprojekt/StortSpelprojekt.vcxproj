@@ -197,6 +197,7 @@
     <ClCompile Include="HousePartsComponent.cpp" />
     <ClCompile Include="Input.cpp" />
     <ClCompile Include="IntroScene.cpp" />
+    <ClCompile Include="LightComponent.cpp" />
     <ClCompile Include="LightManager.cpp" />
     <ClCompile Include="main.cpp" />
     <ClCompile Include="Material.cpp" />
@@ -220,7 +221,6 @@
     <ClCompile Include="PlayerAttackComp.cpp" />
     <ClCompile Include="PuzzleManager.cpp" />
     <ClCompile Include="QuadTree.cpp" />
-    <ClCompile Include="PointLightComponent.cpp" />
     <ClCompile Include="Renderer.cpp" />
     <ClCompile Include="RigidBodyComponent.cpp" />
     <ClCompile Include="ResourceManager.cpp" />

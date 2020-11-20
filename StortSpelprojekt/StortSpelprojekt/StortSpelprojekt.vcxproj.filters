@@ -138,9 +138,6 @@
     <ClCompile Include="MoveComponent.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="PointLightComponent.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="Physics.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
@@ -281,9 +278,9 @@
     </ClCompile>
     <ClCompile Include="PlayerAnimHandlerComp.cpp">
       <Filter>Source Files</Filter>
-    </ClCompile>    
+    </ClCompile>
     <ClCompile Include="FireTextureComponent.cpp">
-    <Filter>Source Files</Filter>
+      <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="WorldGenerator.cpp">
       <Filter>Source Files\SpawnSystems</Filter>
@@ -294,7 +291,13 @@
     <ClCompile Include="FrogPuzzle.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="HousePartsComponent.cpp"> 
+    <ClCompile Include="HousePartsComponent.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="LightComponent.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="DepthPass.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>
@@ -536,9 +539,6 @@
     <ClInclude Include="MeshCollider.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="ThirdParty\quickhull\ConvexHull.hpp">
-      <Filter>ThirdParty</Filter>
-    </ClInclude>
     <ClInclude Include="ThirdParty\quickhull\HalfEdgeMesh.hpp">
       <Filter>ThirdParty</Filter>
     </ClInclude>
@@ -591,9 +591,19 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="FireTextureComponent.h">
-    <Filter>Header Files</Filter>
+      <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="HousePartsComponent.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="WorldGenerator.h" />
+    <ClInclude Include="LightComponent.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="ThirdParty\quickhull\ConvexHull.hpp">
+      <Filter>ThirdParty</Filter>
+    </ClInclude>
+    <ClInclude Include="DepthPass.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>

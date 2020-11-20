@@ -137,10 +137,10 @@ void GameScene::InitializeObjects()
 	AddObject(spotLight, playerObject);
 
 
-	Object* dLight = new Object("dLight");
+	Object* dLight = new Object("dirLight"); //directional light
 
-	dx::XMFLOAT3 lightTranslation = dx::XMFLOAT3(0.0f, 0.0f, 0.0f);
-	dLight->GetTransform().SetPosition(dx::XMLoadFloat3(&lightTranslation));
+	dx::XMFLOAT3 lightTranslationD = dx::XMFLOAT3(0.0f, 0.0f, 0.0f);
+	dLight->GetTransform().SetPosition(dx::XMLoadFloat3(&lightTranslationD));
 	LightComponent* dLightC = dLight->AddComponent<LightComponent>(2, dx::XMFLOAT4(0.7f, 0.2f, 0.2f, 1.0f), 7.f);
 	dLightC->SetEnabled(true);
 	dLightC->SetIntensity(0.2f);
@@ -153,13 +153,13 @@ void GameScene::InitializeObjects()
 	Object* spotLight2 = new Object("spotLight2");
 
 	dx::XMFLOAT3 lightTranslation2 = dx::XMFLOAT3(0.0f, 30.f, 0.0f);
-	spotLight2->GetTransform().SetPosition(dx::XMLoadFloat3(&lightTranslation));
-	LightComponent* sLight = spotLight2->AddComponent<LightComponent>(1, dx::XMFLOAT4(0.2f, 0.6f, 1.0f, 1.0f), 7.f);
-	sLight->SetEnabled(true);
-	sLight->SetIntensity(0.8f);
-	sLight->SetRange(60.f);
-	sLight->SetSpotlightAngle(10.f);
-	sLight->SetDirection({ 0.f,-1.f,0.f });
+	spotLight2->GetTransform().SetPosition(dx::XMLoadFloat3(&lightTranslation2));
+	LightComponent* sLight2 = spotLight2->AddComponent<LightComponent>(1, dx::XMFLOAT4(0.2f, 0.6f, 1.0f, 1.0f), 7.f);
+	sLight2->SetEnabled(true);
+	sLight2->SetIntensity(0.8f);
+	sLight2->SetRange(60.f);
+	sLight2->SetSpotlightAngle(10.f);
+	sLight2->SetDirection({ 0.f,-1.f,0.f });
 	AddObject(spotLight2);
 
 
@@ -442,21 +442,25 @@ void GameScene::InitializeInterior()
 	AddObject(insideDoor);
 
 	Object* fireLight = new Object("fireLight");
-	fireLight->AddComponent<PointLightComponent>(dx::XMFLOAT4(1.0f, 0.29f, 0.0f, 1.0f), 1.2f);
+	LightComponent* fLight = fireLight->AddComponent<LightComponent>(LightType::POINT_LIGHT,dx::XMFLOAT4(1.0f, 0.29f, 0.0f, 1.0f), 1.7f);
 	fireLight->GetTransform().SetPosition({ -7.0f, -99.f, -1.36 });
 	fireLight->AddComponent<ParticleSystemComponent>(renderer, Engine::Instance->GetResources()->GetShaderResource("particleShader"));
 	fireLight->GetComponent<ParticleSystemComponent>()->InitializeFirelikeParticles(renderer->GetDevice(), L"Textures/fire1.png");
 	fireLight->AddFlag(ObjectFlag::DEFAULT | ObjectFlag::NO_CULL);
+	fLight->SetEnabled(true);
+	fLight->SetIntensity(1.f);
 	AddObject(fireLight);
 
 	Object* windowLight = new Object("windowLight");
-	windowLight->AddComponent<PointLightComponent>(dx::XMFLOAT4(0.3f, 0.41f, 0.8f, 1.0f), 5.0f);
-	windowLight->GetTransform().SetPosition({3.0f, -98.f, 3 });
+	windowLight->GetTransform().SetPosition({ 3.0f, -98.f, 3 });
+	LightComponent * wLight1 = windowLight->AddComponent<LightComponent>(LightType::POINT_LIGHT,dx::XMFLOAT4(0.3f, 0.41f, 0.8f, 1.0f), 5.0f);
+	wLight1->SetEnabled(true);
 	AddObject(windowLight);
 
 	Object* windowLight2 = new Object("windowLight2");
-	windowLight2->AddComponent<PointLightComponent>(dx::XMFLOAT4(0.3f, 0.41f, 0.8f, 1.0f), 5.0f);
 	windowLight2->GetTransform().SetPosition({ -7, -98.f, 3 });
+	LightComponent* wLight2 = windowLight2->AddComponent<LightComponent>(LightType::POINT_LIGHT,dx::XMFLOAT4(0.3f, 0.41f, 0.8f, 1.0f), 5.0f);
+	wLight2->SetEnabled(true);
 	AddObject(windowLight2);
 }
 
