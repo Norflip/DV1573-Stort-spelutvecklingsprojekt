@@ -66,20 +66,20 @@ void EnemyManager::RemoveEnemy(Object* enemy)
 void EnemyManager::SpawnEnemies()
 {
 	// whyyyy
-	nrOfEnemies = 3;
+	nrOfEnemies = 0;
 
 	for (int i = 0; i < nrOfEnemies; i++)
 	{
 		dx::XMFLOAT3 playerPos;
 		dx::XMStoreFloat3(&playerPos, player->GetTransform().GetPosition());
-		SpawnEnemy("baseEnemy", { playerPos.x, playerPos.y + 6, (float)(playerPos.z + i * 5) });
+		SpawnEnemy("baseEnemy", { playerPos.x + i * 5 , playerPos.y + 6, (float)(playerPos.z + i * 5) });
 	}
 
 	for (int i = 0; i < nrOfEnemies; i++)
 	{
 		dx::XMFLOAT3 playerPos;
 		dx::XMStoreFloat3(&playerPos, player->GetTransform().GetPosition());
-		SpawnEnemy("chargerEnemy", { playerPos.x, playerPos.y, (float)(playerPos.z + i * 5) });
+		SpawnEnemy("chargerEnemy", { playerPos.x - i * 5, playerPos.y + 6, (float)(playerPos.z - i * 5) });
 	}
 }
 

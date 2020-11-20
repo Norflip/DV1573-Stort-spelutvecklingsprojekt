@@ -6,40 +6,42 @@ struct Node
 	int gCost = 0;
 	int hCost = 0;
 	int fCost = 0;
-	dx::XMFLOAT2 pos;
+	int posX;
+	int posY;
+	bool correctPath = false;
 	Node* parent;
 	bool operator==(const Node& other)
 	{
-		return pos.x == other.pos.x && pos.y == other.pos.y;
+		return gCost == other.gCost && hCost == other.hCost && parent == other.parent &&
+			posX == other.posX && posY == other.posY;
 	}
 	bool operator!=(const Node& other)
 	{
-		return pos.x != other.pos.x && pos.y != other.pos.y;
+		return gCost != other.gCost && hCost != other.hCost && parent != other.parent &&
+			posX != other.posX && posY != other.posY;
 	}
 };
 
 class Grid
 {
-	public:
-		Grid(Object* object);
-		~Grid();
-		void Init();
-		void CalculatePath();
-		void DrawGrid();
-	private:
-		void FindPath(dx::XMFLOAT2 startPos, dx::XMFLOAT2 endPos);
-		std::vector<Node*> GetNeighbours(Node* node);
-		int GetDistance(Node* nodeA, Node* nodeB);
-		void RetracePath(Node* startNode, Node* endNode);
+public:
+	Grid();
+	~Grid();
+	void Init();
+	void DrawNodes();
 
-		int rows;
-		float nodeSize;
-		int objectOffset;
-		int gridSize;
-		Object* object;
-		DShape box;
-		std::vector<Node*> openList;
-		std::vector<Node*> closedList;
-		std::vector<Node*> gridPath;
-		std::vector<Node*> allNodes;
+private:
+	void FindPath(dx::XMFLOAT2 startPos, dx::XMFLOAT2 endPos);
+	std::vector<Node*> GetNeighbours(Node* node);
+	int GetDistance(Node* nodeA, Node* nodeB);
+	void RetracePath(Node* startNode, Node* endNode);
+
+	int rows;
+	int columns;
+	int gridSize;
+	std::vector<Node*> allNodes;
+	std::vector<Node*> openList;
+	std::vector<Node*> closedList;
+	std::vector<Node*> gridPath;
+	DShape box;
 };
