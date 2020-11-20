@@ -8,15 +8,16 @@ void GameScene::RemoveEnemy()
 {
 	enemy->RemoveFlag(ObjectFlag::ENABLED);
 	enemy->AddFlag(ObjectFlag::REMOVED);
-	srand(time(0));
-	fogId = 0;
-	fogCol = 0;
-	start = true;
+	
 }
 
 GameScene::GameScene()
 {
 	this->interiorPosition = { 0.0f, -100.0f, 0.0f };
+	srand(time(0));
+	fogId = 0;
+	fogCol = 0;
+	start = true;
 }
 
 GameScene::~GameScene()
