@@ -36,7 +36,6 @@ void NodeWalkerComp::InitializePath(Path thePath)
 	this->thePath = thePath;
 
 	this->currentNode = thePath.GetFirstPointIndex();
-	this->lastNode = thePath.GetLastPointIndex();
 
 	//std::cout <<"Nr of: "<< thePath.CountPoints() << std::endl;
 	//dx::XMFLOAT3 pos3 = { thePath.GetPoint(this->currentNode).x + offset,HEIGHT, thePath.GetPoint(this->currentNode).y + offset };
