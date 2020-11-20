@@ -8,13 +8,11 @@ void GameScene::RemoveEnemy()
 {
 	enemy->RemoveFlag(ObjectFlag::ENABLED);
 	enemy->AddFlag(ObjectFlag::REMOVED);
-	
 }
 
 GameScene::GameScene()
 {
 	this->interiorPosition = { 0.0f, -100.0f, 0.0f };
-	srand(time(0));
 	fogId = 0;
 	fogCol = 0;
 	start = true;
@@ -129,8 +127,6 @@ void GameScene::InitializeObjects()
 	nodeWalker->GetPlayerInfo(playerObject->GetComponent<PlayerComp>());
 
 	world.Initialize(root, resources, renderer);
-	
-	
 
 	/* PICKUP STUFF DONT DELETE THESEEE */
 	Object* healthkitObject = resources->AssembleObject("HealthKit", "HealthKitMaterial");
@@ -414,7 +410,7 @@ void GameScene::InitializeInterior()
 void GameScene::OnActivate()
 {
 	SaveState state;
-	state.seed = rand();
+	state.seed = 1337;
 	state.segment = 0;
 
 	if (!start)
