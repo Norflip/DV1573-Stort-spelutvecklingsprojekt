@@ -47,10 +47,10 @@ void IntroScene::InitializeGUI()
 	GUISprite* loreSprite = new GUISprite(*renderer, "Textures/Lore.png", 100, 550, 0, DrawDirection::Default, ClickFunction::Clickable);
 	GUISprite* quitSprite = new GUISprite(*renderer, "Textures/Exit.png", 100, 700, 0, DrawDirection::Default, ClickFunction::Clickable);
 	GUISprite* backSprite = new GUISprite(*renderer, "Textures/BackButton.png", 100, 100, 0, DrawDirection::Default, ClickFunction::Clickable,GuiGroup::HowToPlay);
-
+	GUISprite* loadSprite = new GUISprite(*renderer, "Textures/Loading.png", 0, 0, 0, DrawDirection::Default, ClickFunction::NotClickable, GuiGroup::Load);
 	GUISprite* musicSprite = new GUISprite(*renderer, "Textures/Music.png", 110, 250, 0, DrawDirection::Default, ClickFunction::NotClickable, GuiGroup::Options);
 	musicSprite->SetVisible(false);
-
+	loadSprite->SetVisible(false);
 	GUISprite* soundEffectsSprite = new GUISprite(*renderer, "Textures/SoundeffectsButton.png", 160, 400, 0, DrawDirection::Default, ClickFunction::NotClickable, GuiGroup::Options);	
 	soundEffectsSprite->SetVisible(false);
 
@@ -114,6 +114,7 @@ void IntroScene::InitializeGUI()
 	backSprite->AddGroup(GuiGroup::HowToPlay);
 	backSprite->AddGroup(GuiGroup::Options);
 	guiManager = new GUIManager(renderer, 100);
+	guiManager->AddGUIObject(loadSprite, "loading");
 	guiManager->AddGUIObject(titleSprite, "title");
 	guiManager->AddGUIObject(startSprite, "startSprite");
 	guiManager->AddGUIObject(backSprite, "backSprite");
@@ -157,13 +158,14 @@ void IntroScene::OnDeactivate()
 
 void IntroScene::Update(const float& deltaTime)
 {
-	Scene::Update(deltaTime);
 
+	Scene::Update(deltaTime);
 	//Cleanup Later
 	static_cast<GUIFont*>(guiManager->GetGUIObject("fps"))->SetString(std::to_string((int)GameClock::Instance().GetFramesPerSecond()));
 
 	if (static_cast<GUISprite*>(guiManager->GetGUIObject("startSprite"))->IsClicked())
 	{
+		guiManager->ChangeGuiGroup(GuiGroup::Load);
 		AudioMaster::Instance().StopSoundEvent("menusound");
 		Engine::Instance->SwitchScene(SceneIndex::GAME);
 		return;
@@ -246,5 +248,6 @@ void IntroScene::Update(const float& deltaTime)
 
 void IntroScene::FixedUpdate(const float& fixedDeltaTime)
 {
-	//Scene::FixedUpdate(fixedDeltaTime);
+	AnimateIcon();
+	Scene::FixedUpdate(fixedDeltaTime);
 }

@@ -78,9 +78,11 @@ public:
 	float SampleInfluence(const dx::XMFLOAT2& position) const;
 
 	std::vector<LineSegment> GetLineSegments() const { return this->segments; }
+	std::vector< LineSegment> GetExtraSegments() const { return this->extraSegments; }
 	std::vector<PathPoint> GetPoints() const { return this->points; }
 	PathPoint GetPoint(size_t index) { return this->points[index]; }
 	size_t CountPoints() const { return this->points.size(); }
+	dx::XMFLOAT2 GetSignPosition() const { return this->signPosition; }
 
 	std::vector<dx::XMINT2> GetIndexes() const { return this->indexes; }
 	
@@ -103,6 +105,8 @@ private:
 	std::vector<dx::XMINT2> indexes;
 	std::vector<PathPoint> points;
 	std::vector<LineSegment> segments;
+	std::vector<LineSegment> extraSegments;
+	dx::XMFLOAT2 signPosition;
 
 	std::vector<dx::XMFLOAT2> lanternPoints;
 	std::vector<float> lanternAxisAngle;

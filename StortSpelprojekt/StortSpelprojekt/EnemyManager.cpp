@@ -1,9 +1,19 @@
 #include "stdafx.h"
 #include "EnemyManager.h"
+#include "Engine.h"
 
-EnemyManager::EnemyManager(ResourceManager* resources, Object* player, PlayerComp* playerComp, Object* root)
-	: resources(resources), player(player), playerComp(playerComp), root(root), nrOfEnemies(2)
+EnemyManager::EnemyManager() {}
+
+EnemyManager::~EnemyManager()
 {
+}
+
+void EnemyManager::Initialize(Object* player, PlayerComp* playerComp, Object* root)
+{
+	this->resources = Engine::Instance->GetResources();
+	this->player = player;
+	this->playerComp = playerComp;
+	this->root = root;
 	this->enemyPool = new ObjectPooler(resources);
 }
 
@@ -25,12 +35,6 @@ void EnemyManager::InitBaseEnemy()
 		return object;
 	});
 
-	for (int i = 0; i < nrOfEnemies; i++)
-	{
-		dx::XMFLOAT3 playerPos;
-		dx::XMStoreFloat3(&playerPos, player->GetTransform().GetPosition());
-		SpawnEnemy({ playerPos.x - i - 5 * 10, playerPos.y, (float)(playerPos.z - i - 5 * 5 )});
-	}
 }
 
 void EnemyManager::InitChargerEnemy()
@@ -52,36 +56,47 @@ void EnemyManager::InitChargerEnemy()
 		//stateMachine->RegisterState(EnemyChargerState::DEATH, object->GetComponent<EnemyStatsComp>());	// Death component or something something???
 		return object;
 	});
+}
+
+void EnemyManager::RemoveEnemy(Object* enemy)
+{
+	enemyPool->ReturnItem(enemy);
+}
+
+void EnemyManager::SpawnEnemies()
+{
+	// whyyyy
+	nrOfEnemies = 3;
 
 	for (int i = 0; i < nrOfEnemies; i++)
 	{
 		dx::XMFLOAT3 playerPos;
 		dx::XMStoreFloat3(&playerPos, player->GetTransform().GetPosition());
-		SpawnChargerEnemy({ playerPos.x + i + 1 * 10, playerPos.y, (float)(playerPos.z + i + 1 * 10) });
+		SpawnEnemy("baseEnemy", { playerPos.x, playerPos.y + 6, (float)(playerPos.z + i * 5) });
+	}
+
+	for (int i = 0; i < nrOfEnemies; i++)
+	{
+		dx::XMFLOAT3 playerPos;
+		dx::XMStoreFloat3(&playerPos, player->GetTransform().GetPosition());
+		SpawnEnemy("chargerEnemy", { playerPos.x, playerPos.y, (float)(playerPos.z + i * 5) });
 	}
 }
 
-void EnemyManager::RemoveEnemy(Object* enemy)
+void EnemyManager::DespawnEnemies()
 {
-	enemyPool->ReturnItem("baseEnemy", enemy);
 }
 
-void EnemyManager::SpawnEnemy(dx::XMVECTOR position)
+void EnemyManager::SpawnEnemy(std::string key, dx::XMVECTOR position)
 {
-	Object* enemy = enemyPool->GetItem("baseEnemy");
+	Object* enemy = enemyPool->GetItem(key);
 	EnemySMComp* stateMachine = enemy->GetComponent<EnemySMComp>();
 	enemy->GetComponent<EnemyAttackComp>()->SetPlayer(playerComp);
 	stateMachine->InitAnimation();
-	enemy->GetComponent<RigidBodyComponent>()->SetPosition(position);
-	Transform::SetParentChild(root->GetTransform(), enemy->GetTransform());
-}
 
-void EnemyManager::SpawnChargerEnemy(dx::XMVECTOR position)
-{
-	Object* enemy = enemyPool->GetItem("chargerEnemy");
-	EnemySMComp* stateMachine = enemy->GetComponent<EnemySMComp>();
-	enemy->GetComponent<EnemyAttackComp>()->SetPlayer(playerComp);
-	stateMachine->InitAnimation();
+
 	enemy->GetComponent<RigidBodyComponent>()->SetPosition(position);
 	Transform::SetParentChild(root->GetTransform(), enemy->GetTransform());
+
+	enemy->GetComponent<EnemyStatsComp>()->SetManager(this);
 }

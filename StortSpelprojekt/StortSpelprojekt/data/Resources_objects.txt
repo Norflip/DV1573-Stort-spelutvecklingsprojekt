@@ -1,4 +1,4 @@
-Objects: 35
+Objects: 49
 
 Charger: Models/Enemies/Charger_Model.ZWEB
 Shader: skeletonShader
@@ -91,7 +91,7 @@ Shader: defaultShader
 FuelCanBlue: Models/Pickups/Fuel_Can_Blue.ZWEB
 Shader: defaultShader
 
-FuelCanRed: Models/Pickups/Fuel_Can_Red.ZWEWB
+FuelCanRed: Models/Pickups/Fuel_Can_Red.ZWEB
 Shader: defaultShader
 
 Hammer: Models/Weapons/Hammer.ZWEB
@@ -118,6 +118,39 @@ Shader: instanceShader
 Rock3: Models/Props/Rock_3.ZWEB
 Shader: instanceShader
 
+Curtains: Models/House/Curtains.ZWEB
+Shader: defaultShader
+
+Fireplace: Models/House/Fireplace.ZWEB
+Shader: defaultShader
+
+Logs: Models/House/Logs.ZWEB
+Shader: defaultShader
+
+Flowerpot: Models/House/Flowerpot.ZWEB
+Shader: defaultShader
+
+Bed: Models/House/Bed.ZWEB
+Shader: defaultShader
+
+BookShelf: Models/House/BookShelf.ZWEB
+Shader: defaultShader
+
+Chair: Models/House/Chair.ZWEB
+Shader: defaultShader
+
+HouseInterior: Models/House/HouseInterior.ZWEB
+Shader: defaultShader
+
+Sink: Models/House/Sink.ZWEB
+Shader: defaultShader
+
+Stove: Models/House/Stove.ZWEB
+Shader: defaultShader
+
+InsideDoor: Models/House/InsideDoor.ZWEB
+Shader: defaultShader
+
 Endsign: Models/Props/Endsign.ZWEB
 Shader: defaultShader
 
@@ -127,8 +160,17 @@ Shader: defaultShader
 RightDirectionSign: Models/Props/RightDirectionSign.ZWEB
 Shader: defaultShader
 
+HouseDoor: Models/House/House_Door.ZWEB
+Shader: defaultShader
+
 PuzzleFlyStatue: Models/Puzzles/Puzzle_Fly_Statue.ZWEB
 Shader: defaultShader
 
 PuzzleFrogStatue: Models/Puzzles/Puzzle_Frog_statue.ZWEB
+Shader: defaultShader
+
+Quad: Models/Quad.ZWEB
+Shader: fireShader
+
+HouseExterior: Models/House/House_Exterior.ZWEB
 Shader: defaultShader

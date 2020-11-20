@@ -183,17 +183,18 @@
     <ClCompile Include="DXHelper.cpp" />
     <ClCompile Include="DShape.cpp" />
     <ClCompile Include="Engine.cpp" />
+    <ClCompile Include="FireTextureComponent.cpp" />
     <ClCompile Include="FrogPuzzle.cpp" />
     <ClCompile Include="GameClock.cpp" />
     <ClCompile Include="GameOverScene.cpp" />
     <ClCompile Include="GameScene.cpp" />
     <ClCompile Include="GrassComponent.cpp" />
-    <ClCompile Include="ChunkGrid.cpp" />
     <ClCompile Include="GUICompass.cpp">
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">false</ExcludedFromBuild>
     </ClCompile>
     <ClCompile Include="GUIManager.cpp" />
     <ClCompile Include="GUISprite.cpp" />
+    <ClCompile Include="HousePartsComponent.cpp" />
     <ClCompile Include="Input.cpp" />
     <ClCompile Include="IntroScene.cpp" />
     <ClCompile Include="LightManager.cpp" />
@@ -219,13 +220,12 @@
     <ClCompile Include="PlayerAttackComp.cpp" />
     <ClCompile Include="PuzzleManager.cpp" />
     <ClCompile Include="QuadTree.cpp" />
-    <ClCompile Include="PossionDiscSampler.cpp" />
-    <ClCompile Include="LightComponent.cpp" />
+    <ClCompile Include="PointLightComponent.cpp" />
     <ClCompile Include="Renderer.cpp" />
     <ClCompile Include="RigidBodyComponent.cpp" />
     <ClCompile Include="ResourceManager.cpp" />
     <ClCompile Include="Scene.cpp" />
-    <ClCompile Include="SegmentGenerator.cpp" />
+    <ClCompile Include="WorldGenerator.cpp" />
     <ClCompile Include="Shader.cpp" />
     <ClCompile Include="GUIFont.cpp" />
     <ClCompile Include="EnemySMComp.cpp" />
@@ -270,14 +270,15 @@
     <ClInclude Include="ControllerComp.h" />
     <ClInclude Include="DebugBoxShapeComponent.h" />
     <ClInclude Include="DShape.h" />
+    <ClInclude Include="FireTextureComponent.h" />
     <ClInclude Include="FrogPuzzle.h" />
     <ClInclude Include="FXAARenderPass.h" />
     <ClInclude Include="GameOverScene.h" />
     <ClInclude Include="GameScene.h" />
-    <ClInclude Include="ChunkGrid.h" />
     <ClInclude Include="GUICompass.h">
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">false</ExcludedFromBuild>
     </ClInclude>
+    <ClInclude Include="HousePartsComponent.h" />
     <ClInclude Include="IntroScene.h" />
     <ClInclude Include="FogRenderPass.h" />
     <ClInclude Include="MeshCollider.h" />
@@ -296,8 +297,8 @@
     <ClInclude Include="Random.h" />
     <ClInclude Include="Resource.h" />
     <ClInclude Include="ResourceManager.h" />
-    <ClInclude Include="SegmentDescription.h" />
-    <ClInclude Include="SegmentGenerator.h" />
+    <ClInclude Include="WorldDescription.h" />
+    <ClInclude Include="WorldGenerator.h" />
     <ClInclude Include="Shapes.h" />
     <ClInclude Include="GameClock.h" />
     <ClInclude Include="GrassComponent.h" />
@@ -541,6 +542,9 @@
   <ItemGroup>
     <None Include="cpp.hint" />
     <None Include="packages.config" />
+  </ItemGroup>
+  <ItemGroup>
+    <ResourceCompile Include="icons.rc" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

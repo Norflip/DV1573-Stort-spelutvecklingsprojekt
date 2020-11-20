@@ -1,13 +1,18 @@
 #include "stdafx.h"
 #include "QuadTree.h"
 
-QuadTree::QuadTree(dx::XMFLOAT2 min, dx::XMFLOAT2 max, size_t maxLevels, size_t maxItems) 
-	: QuadTree(0, min, max, maxLevels, maxItems) 
+QuadTree::QuadTree(Bounds bounds, size_t maxLevels, size_t maxItems)
+	: QuadTree(0, dx::XMFLOAT2(bounds.GetMin().x, bounds.GetMin().z), dx::XMFLOAT2(bounds.GetMax().x, bounds.GetMax().z), maxLevels, maxItems)
+{
+}
+
+QuadTree::QuadTree(dx::XMFLOAT2 min, dx::XMFLOAT2 max, size_t maxLevels, size_t maxItems)
+	: QuadTree(0, min, max, maxLevels, maxItems)
 {
 
 }
 
-QuadTree::QuadTree(size_t level, dx::XMFLOAT2 min, dx::XMFLOAT2 max, size_t maxLevels, size_t maxItems) 
+QuadTree::QuadTree(size_t level, dx::XMFLOAT2 min, dx::XMFLOAT2 max, size_t maxLevels, size_t maxItems)
 	: level(level), children(nullptr), maxLevels(maxLevels), maxItems(maxItems)
 {
 	SetMinMax(min, max);
@@ -15,62 +20,66 @@ QuadTree::QuadTree(size_t level, dx::XMFLOAT2 min, dx::XMFLOAT2 max, size_t maxL
 
 QuadTree::~QuadTree() {}
 
-void QuadTree::Insert(const Bounds& bounds, const dx::XMMATRIX& transform)
+void QuadTree::Insert(size_t id, const Bounds& bounds, const dx::XMMATRIX& transform, void* data)
 {
 	dx::XMFLOAT3 min, max;
 	bounds.TransformMinMax(transform, min, max);
-	Insert(dx::XMFLOAT2(min.x, min.z), dx::XMFLOAT2(max.x, max.z));
+	Insert(id, dx::XMFLOAT2(min.x, min.z), dx::XMFLOAT2(max.x, max.z), data);
 }
 
-void QuadTree::Insert(dx::XMFLOAT2 point)
+void QuadTree::Insert(size_t id, dx::XMFLOAT2 point, float radius, void* data)
 {
-	Insert(point, point);
+	dx::XMFLOAT2 min(point.x - radius, point.y - radius);
+	dx::XMFLOAT2 max(point.x + radius, point.y + radius);
+	Insert(id, min, max, data);
 }
 
-void QuadTree::Insert(dx::XMFLOAT2 min, dx::XMFLOAT2 max)
+void QuadTree::Insert(size_t id, dx::XMFLOAT2 min, dx::XMFLOAT2 max, void* data)
 {
-	Quad quad;
-	quad.min = min;
-	quad.max = max;
-	Insert(quad);
+	Node node;
+	node.id = id;
+	node.min = min;
+	node.max = max;
+	node.data = data;
+	Insert(node);
 }
 
-void QuadTree::Insert(Quad quad)
+void QuadTree::Insert(Node node)
 {
 	if (children != nullptr)
 	{
-		int index = GetChildIndex(quad);
+		int index = GetChildIndex(node);
 		for (int b = 0; b < 4 && index != -1; b++)
 		{
 			if ((index & (1 << b)) == (1 << b))
 			{
-				children[b]->Insert(min, max);
+				children[b]->Insert(node);
 			}
 		}
 		return;
 	}
 
-	quads.push_back(quad);
+	nodes.push_back(node);
 
-	if (quads.size() >= maxItems && level < maxLevels)
+	if (nodes.size() >= maxItems && level < maxLevels)
 	{
 		if (children == nullptr)
 			Split();
 
-		for (int i = quads.size() - 1; i >= 0; i--)
+		for (int i = nodes.size() - 1; i >= 0; i--)
 		{
-			int index = GetChildIndex(quads[i]);
+			int index = GetChildIndex(nodes[i]);
 			if (index != -1)
-				children[index]->Insert(quad);
+				children[index]->Insert(node);
 		}
 
-		quads.clear();
+		nodes.clear();
 	}
 }
 
 void QuadTree::Clear()
 {
-	quads.clear();
+	nodes.clear();
 
 	if (children != nullptr)
 	{
@@ -85,24 +94,65 @@ void QuadTree::Clear()
 	}
 }
 
+void QuadTree::Remove(Node node)
+{
+	if (children != nullptr)
+	{
+		int index = GetChildIndex(node);
+		for (int b = 0; b < 4 && index != -1; b++)
+		{
+			if ((index & (1 << b)) == (1 << b))
+			{
+				children[b]->Remove(node);
+			}
+		}
+	}
+	else
+	{
+		bool found = false;
+		for (size_t i = 0; i < nodes.size() && !found; i++)
+		{
+			if (nodes[i].id == node.id && 
+				nodes[i].min.x != node.min.x && nodes[i].min.y != node.min.y && 
+				nodes[i].max.x != node.max.x && nodes[i].max.y != node.max.y)
+			{
+				found = true;
+				nodes.erase(nodes.begin() + i);
+			}
+		}
+	}
+}
+
 void QuadTree::SetMinMax(dx::XMFLOAT2 min, dx::XMFLOAT2 max)
 {
 	this->min = min;
 	this->max = max;
 }
 
-std::vector<QuadTree::Quad> QuadTree::GetInArea(dx::XMFLOAT2 min, dx::XMFLOAT2 max) const
+std::vector<QuadTree::Node> QuadTree::GetNodesInArea(dx::XMFLOAT2 min, dx::XMFLOAT2 max) const
 {
-	std::vector<Quad> quads;
-	RecursiveAddToArea(min, max, quads);
-	return quads;
+	std::vector<Node> nodes;
+	RecursiveAddToArea(min, max, nodes);
+	return nodes;
+}
+
+std::vector<size_t> QuadTree::GetIDsInArea(dx::XMFLOAT2 min, dx::XMFLOAT2 max) const
+{
+	std::vector<Node> nodes;
+	RecursiveAddToArea(min, max, nodes);
+
+	const size_t size = nodes.size();
+	std::vector<size_t> ids(size);
+	for (size_t i = 0; i < size; i++)
+		ids[i] = nodes[i].id;
+	return ids;
 }
 
 size_t QuadTree::CountInRange(dx::XMFLOAT2 point, float radius) const
 {
-	std::vector<QuadTree::Quad> inArea = GetInArea(dx::XMFLOAT2(point.x - radius, point.y - radius), dx::XMFLOAT2(point.x + radius, point.y + radius));
-	std::vector<QuadTree::Quad> inRange;
-	
+	std::vector<QuadTree::Node> inArea = GetNodesInArea(dx::XMFLOAT2(point.x - radius, point.y - radius), dx::XMFLOAT2(point.x + radius, point.y + radius));
+	std::vector<QuadTree::Node> inRange;
+
 	for (size_t i = 0; i < inArea.size(); i++)
 	{
 		float distance = DistanceToBox(point, inArea[i].min, inArea[i].max);
@@ -135,32 +185,34 @@ void QuadTree::DebugDraw(dx::XMFLOAT3 offset)
 	}
 	else
 	{
-		for (int i = quads.size() - 1; i >= 0; i--)
+		for (int i = nodes.size() - 1; i >= 0; i--)
 		{
-			float x = Math::Lerp(quads[i].min.x, quads[i].max.x, 0.5f);
-			float z = Math::Lerp(quads[i].min.y, quads[i].max.y, 0.5f);
+			float x = Math::Lerp(nodes[i].min.x, nodes[i].max.x, 0.5f);
+			float z = Math::Lerp(nodes[i].min.y, nodes[i].max.y, 0.5f);
 			dx::XMFLOAT3 position = dx::XMFLOAT3(offset.x + x, offset.y, offset.z + z);
-			DShape::DrawSphere(position, 0.1f, dx::XMFLOAT3(1, 0, 1));
+
+			DShape::DrawWireBox(position, dx::XMFLOAT3(1.0f, 1.0f, 1.0f), dx::XMFLOAT3(1, 0, 1));
+
 		}
 	}
 }
 
-void QuadTree::RecursiveAddToArea(dx::XMFLOAT2 min, dx::XMFLOAT2 max, std::vector<Quad>& foundQuads) const
+void QuadTree::RecursiveAddToArea(dx::XMFLOAT2 min, dx::XMFLOAT2 max, std::vector<Node>& found) const
 {
 	if (children != nullptr)
 	{
 		for (size_t i = 0; i < 4; i++)
 		{
 			if (BoxBoxOverlap(min, max, children[i]->min, children[i]->max))
-				children[i]->RecursiveAddToArea(min, max, foundQuads);
+				children[i]->RecursiveAddToArea(min, max, found);
 		}
 	}
 	else
 	{
-		for (int i = quads.size() - 1; i >= 0; i--)
+		for (int i = nodes.size() - 1; i >= 0; i--)
 		{
-			if (BoxBoxOverlap(min, max, quads[i].min, quads[i].max))
-				foundQuads.push_back(quads[i]);
+			if (BoxBoxOverlap(min, max, nodes[i].min, nodes[i].max))
+				found.push_back(nodes[i]);
 		}
 	}
 }
@@ -219,7 +271,7 @@ void QuadTree::GetChildrenBounds(dx::XMFLOAT2 minmax[]) const
 	minmax[7] = dx::XMFLOAT2(max.x, max.y);
 }
 
-int QuadTree::GetChildIndex(const Quad& quad) const
+int QuadTree::GetChildIndex(const Node& node) const
 {
 	int index = -1;
 	dx::XMFLOAT2 minMax[8];
@@ -227,8 +279,8 @@ int QuadTree::GetChildIndex(const Quad& quad) const
 
 	for (int i = 0; i < 4 && index == -1; i++)
 	{
-		if (BoxBoxOverlap(minMax[i * 2], minMax[i * 2 + 1], quad.min, quad.max))
-			index != (1 << i);
+		if (BoxBoxOverlap(minMax[i * 2], minMax[i * 2 + 1], node.min, node.max))
+			index |= (1 << i);
 	}
 
 	return index;

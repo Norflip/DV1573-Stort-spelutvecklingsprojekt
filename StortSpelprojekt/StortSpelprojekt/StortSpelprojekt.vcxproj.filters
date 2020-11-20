@@ -138,7 +138,7 @@
     <ClCompile Include="MoveComponent.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="PossionDiscSampler.cpp">
+    <ClCompile Include="PointLightComponent.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="Physics.cpp">
@@ -231,9 +231,6 @@
     <ClCompile Include="ObjectSpawner.cpp">
       <Filter>Source Files\SpawnSystems</Filter>
     </ClCompile>
-    <ClCompile Include="SegmentGenerator.cpp">
-      <Filter>Source Files\SpawnSystems</Filter>
-    </ClCompile>
     <ClCompile Include="World.cpp">
       <Filter>Source Files\SpawnSystems</Filter>
     </ClCompile>
@@ -242,9 +239,6 @@
     </ClCompile>
     <ClCompile Include="AudioMaster.cpp">
       <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="ChunkGrid.cpp">
-      <Filter>Source Files\SpawnSystems</Filter>
     </ClCompile>
     <ClCompile Include="Path.cpp">
       <Filter>Source Files\SpawnSystems</Filter>
@@ -287,13 +281,20 @@
     </ClCompile>
     <ClCompile Include="PlayerAnimHandlerComp.cpp">
       <Filter>Source Files</Filter>
+    </ClCompile>    
+    <ClCompile Include="FireTextureComponent.cpp">
+    <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="PuzzleManager.cpp" />
-    <ClCompile Include="FrogPuzzle.cpp" />
-    <ClCompile Include="DepthPass.cpp">
+    <ClCompile Include="WorldGenerator.cpp">
+      <Filter>Source Files\SpawnSystems</Filter>
+    </ClCompile>
+    <ClCompile Include="PuzzleManager.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="LightComponent.cpp">
+    <ClCompile Include="FrogPuzzle.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="HousePartsComponent.cpp"> 
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>
@@ -301,19 +302,7 @@
     <ClInclude Include="ObjectSpawner.h">
       <Filter>Source Files\SpawnSystems</Filter>
     </ClInclude>
-    <ClInclude Include="Random.h">
-      <Filter>Source Files\SpawnSystems</Filter>
-    </ClInclude>
-    <ClInclude Include="SegmentDescription.h">
-      <Filter>Source Files\SpawnSystems</Filter>
-    </ClInclude>
-    <ClInclude Include="SegmentGenerator.h">
-      <Filter>Source Files\SpawnSystems</Filter>
-    </ClInclude>
     <ClInclude Include="World.h">
-      <Filter>Source Files\SpawnSystems</Filter>
-    </ClInclude>
-    <ClInclude Include="ChunkGrid.h">
       <Filter>Source Files\SpawnSystems</Filter>
     </ClInclude>
     <ClInclude Include="Path.h">
@@ -583,16 +572,28 @@
     <ClInclude Include="PlayerAnimHandlerComp.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="WorldGenerator.h">
+      <Filter>Source Files\SpawnSystems</Filter>
+    </ClInclude>
+    <ClInclude Include="WorldDescription.h">
+      <Filter>Source Files\SpawnSystems</Filter>
+    </ClInclude>
+    <ClInclude Include="Random.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="WorldGenerator.h">
+      <Filter>Source Files\SpawnSystems</Filter>
+    </ClInclude>
     <ClInclude Include="PuzzleManager.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="FrogPuzzle.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="DepthPass.h">
-      <Filter>Header Files</Filter>
+    <ClInclude Include="FireTextureComponent.h">
+    <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="LightComponent.h">
+    <ClInclude Include="HousePartsComponent.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>
@@ -620,5 +621,10 @@
     <None Include="cpp.hint">
       <Filter>Source Files</Filter>
     </None>
+  </ItemGroup>
+  <ItemGroup>
+    <ResourceCompile Include="icons.rc">
+      <Filter>Resource Files</Filter>
+    </ResourceCompile>
   </ItemGroup>
 </Project>

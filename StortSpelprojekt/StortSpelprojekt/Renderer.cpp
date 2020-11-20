@@ -125,8 +125,8 @@ void Renderer::Initialize(Window* window)
 	this->outputWindow = window;
 
 	DXHelper::CreateSwapchain(*window, &device, &context, &swapchain);
-	this->backbuffer = DXHelper::CreateBackbuffer(window->GetWidth(), window->GetHeight(), device, swapchain);
-	this->midbuffer = DXHelper::CreateRenderTexture(window->GetWidth(), window->GetHeight(), device, context, &dss);
+	this->backbuffer = DXHelper::CreateBackbuffer(window->GetWidth() , window->GetHeight(), device, swapchain);
+	this->midbuffer = DXHelper::CreateRenderTexture(window->GetWidth() , window->GetHeight(), device, context, &dss);
 	this->renderPassSwapBuffers[0] = DXHelper::CreateRenderTexture(window->GetWidth(), window->GetHeight(), device, context, &dss);
 	this->renderPassSwapBuffers[1] = DXHelper::CreateRenderTexture(window->GetWidth(), window->GetHeight(), device, context, &dss);
 	srv_skeleton_data.resize(60);
@@ -222,17 +222,17 @@ void Renderer::DrawQueueToTarget(RenderQueue& queue, CameraComponent* camera)
 void Renderer::RenderFrame(CameraComponent* camera, float time)
 {
 	// UPDATE SCENE
-	if (KEY_PRESSED(Y) && isFullScreen == true)
+	/*if (KEY_PRESSED(Y) && isFullScreen == true)
 	{
 		isFullScreen = false;
 	}
 	else if (KEY_PRESSED(Y) && isFullScreen == false)
 	{
 		isFullScreen = true;
-	}
+	}*/
 	RenderFrame(camera, time, backbuffer, true, true);
 	HRESULT hr = swapchain->Present(0, 0); //1 here?
-	swapchain->SetFullscreenState(isFullScreen, nullptr);
+	//swapchain->SetFullscreenState(isFullScreen, nullptr);
 	assert(SUCCEEDED(hr));
 }
 
@@ -661,8 +661,8 @@ void Renderer::DrawRenderItemParticles(const RenderItem& item, CameraComponent* 
 	//SetCBuffers(context, camera);
 	//particlesShader->BindToContext(context);
 
+	//context->Draw(item.mesh->GetVertexCount(), 0);
 	context->DrawIndexed(item.mesh->GetIndexCountPart(), 0, 0);
-
 }
 
 void Renderer::DrawBatch(const Batch& batch, CameraComponent* camera)

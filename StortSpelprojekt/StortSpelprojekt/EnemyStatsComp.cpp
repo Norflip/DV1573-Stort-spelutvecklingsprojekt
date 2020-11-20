@@ -1,7 +1,8 @@
 #include "stdafx.h"
 #include "EnemyStatsComp.h"
+#include "EnemyManager.h"
 
-EnemyStatsComp::EnemyStatsComp()
+EnemyStatsComp::EnemyStatsComp() : manager(nullptr)
 {
 	health = 0;
 	movementSpeed = 0;
@@ -11,7 +12,7 @@ EnemyStatsComp::EnemyStatsComp()
 }
 
 EnemyStatsComp::EnemyStatsComp(float health, float movementSpeed, float chaseRadius, float attack, float attackSpeed, float attackRadius)
-	: health(health), movementSpeed(movementSpeed), chaseRadius(chaseRadius), attack(attack), attackSpeed(attackSpeed), attackRadius(attackRadius)
+	: manager(manager), health(health), movementSpeed(movementSpeed), chaseRadius(chaseRadius), attack(attack), attackSpeed(attackSpeed), attackRadius(attackRadius)
 {
 }
 

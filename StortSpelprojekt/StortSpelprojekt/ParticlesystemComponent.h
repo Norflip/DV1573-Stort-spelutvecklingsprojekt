@@ -18,6 +18,8 @@ public:
 	void Shutdown();
 
 	void InitializeParticles(ID3D11Device* device, LPCWSTR textureFilename);
+	void InitializeFirelikeParticles(ID3D11Device* device, LPCWSTR textureFilename);
+
 	void Update(const float& deltaTime) override;
 	void Draw(Renderer* renderer, CameraComponent* camera) override;
 
@@ -54,10 +56,12 @@ private:
 	bool active;
 
 	/* Particle stuffy stuff */
+	dx::XMFLOAT3 particlesPosition;
 	float differenceOnX, differenceOnY, differenceOnZ;
 	float particleVelocity, particleVelocityVariation;
 	float particleSize;
 	int maxParticles;
 	int currentParticleCount;
 	float accumulatedTime;
+	bool fire;
 };

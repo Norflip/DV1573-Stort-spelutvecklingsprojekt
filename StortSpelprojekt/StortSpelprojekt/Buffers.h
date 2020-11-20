@@ -137,10 +137,6 @@ struct cb_grass
 	float grassDisplacement;
 };
 
-//ALIGN16
-//struct cb_fog
-//{
-//	int dayTime;
-//	dx::XMINT3 pad;
-//};
+
+
 

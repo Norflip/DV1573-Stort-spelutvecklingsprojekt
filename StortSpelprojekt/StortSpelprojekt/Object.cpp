@@ -18,7 +18,6 @@ Object::~Object()
 	auto children = transform.GetChildren();
 	for (auto i = children.begin(); i < children.end(); i++)
 		delete (*i)->GetOwner();
-
 	components.clear();
 }
 

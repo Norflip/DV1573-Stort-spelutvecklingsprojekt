@@ -34,7 +34,8 @@ float4 main(VS_OUTPUT input) : SV_TARGET
 	float4 textureColor = lerp(road, grass, t);
 	textureColor.a = 1.0f;
 
-	//return d;
+	// Make the terrain darker if we would like here
+	textureColor -= float4(0.1f, 0.1f, 0.1f, 0.0f);
 
 	float3 viewDirection = cameraPosition - input.worldPosition;
 	float4 finalColor = float4(0,0,0,1);
