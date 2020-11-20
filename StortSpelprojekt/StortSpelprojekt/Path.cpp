@@ -176,8 +176,8 @@ void Path::CreateLineSegments()
 
 	
 	// FIXA ROTATION
-	signPosition.x = lastPoint.x + direction.x * distanceOffset;
-	signPosition.y = lastPoint.z + direction.y * distanceOffset;
+	signPosition.x = lastPoint.x + direction.x * MAX_INFLUENCE;
+	signPosition.y = lastPoint.z + direction.y * MAX_INFLUENCE;
 
 
 	segments.push_back(LineSegment(lastPoint, endLeft));

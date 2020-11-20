@@ -95,6 +95,8 @@ public:
 
 	void RemoveRenderPass(RenderPass*);
 
+	void SetIdAndColor(int id, float color);
+
 	ALIGN16_ALLOC;
 
 private:
@@ -154,6 +156,10 @@ private:
 
 	float xPos= 0;
 	float yPos =0;
+
+	int ids;
+	float color;
+
 	//rasterizer
 	ID3D11RasterizerState* rasterizerStateCullBack;
 	ID3D11RasterizerState* rasterizerStateCullNone;

@@ -338,6 +338,7 @@ void PlayerComp::RayCast(const float& deltaTime)
 		}
 	}
 
+	//KANSKE FPR LÄGGAS OM SEDAN
 	// Check door
 	if (physics->RaytestSingle(ray, rayDistance, hit, FilterGroups::DOOR))
 	{
@@ -348,6 +349,24 @@ void PlayerComp::RayCast(const float& deltaTime)
 		else
 		{
 			this->GetOwner()->GetComponent<ControllerComp>()->SetInRange(false);
+		}
+	}
+	/////////////////////////////
+
+	//Click signs
+	if (KEY_DOWN(E))
+	{
+		if (physics->RaytestSingle(ray, rayDistance, hit, FilterGroups::CLICKABLE))
+		{
+			if (hit.object != nullptr)
+			{
+				clickable = hit.object;
+				RigidBodyComponent* rbComp = hit.object->GetComponent<RigidBodyComponent>();
+				rp::RigidBody* objectRb = rbComp->GetRigidBody();
+				hit.object->GetComponent<BoxColliderComponent>()->SetRotation(0, { 5, 5, 5, 5 });
+		
+				clickable->GetComponent<SelectableComponent>()->SetActive(true);
+			}
 		}
 	}
 

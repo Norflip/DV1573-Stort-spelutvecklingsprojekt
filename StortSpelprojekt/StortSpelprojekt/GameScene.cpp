@@ -13,6 +13,9 @@ void GameScene::RemoveEnemy()
 GameScene::GameScene()
 {
 	this->interiorPosition = { 0.0f, -100.0f, 0.0f };
+	fogId = 0;
+	fogCol = 0;
+	start = true;
 }
 
 GameScene::~GameScene()
@@ -37,6 +40,7 @@ void GameScene::Initialize()
 	InitializeGUI();
 	InitializeObjects();
 	InitializeInterior();
+	start = true;
 }
 
 void GameScene::InitializeObjects()
@@ -80,7 +84,7 @@ void GameScene::InitializeObjects()
 	
 	Transform::SetParentChild(houseBaseObject->GetTransform(), housesLegsObject->GetTransform());
 
-	NodeWalkerComp* nodeWalker = houseBaseObject->AddComponent<NodeWalkerComp>();
+	nodeWalker = houseBaseObject->AddComponent<NodeWalkerComp>();
 	nodeWalker->InitAnimation();
 	AddObject(houseBaseObject);
 
@@ -123,8 +127,6 @@ void GameScene::InitializeObjects()
 	nodeWalker->GetPlayerInfo(playerObject->GetComponent<PlayerComp>());
 
 	world.Initialize(root, resources, renderer);
-	
-	
 
 	/* PICKUP STUFF DONT DELETE THESEEE */
 	Object* healthkitObject = resources->AssembleObject("HealthKit", "HealthKitMaterial");
@@ -179,22 +181,12 @@ void GameScene::InitializeObjects()
 	playerObject->GetComponent<PlayerComp>()->InsertWeapon(axeObject->GetComponent<WeaponComponent>(), axeObject->GetName());
 	AddObject(axeObject);
 	
-
-	/* Test sign */	
-	/*Object* testObject = resources->AssembleObject("LeftDirectionSign", "LeftDirectionSignMaterial");
-	testObject->GetTransform().SetPosition({ 22, 0.5f, 50 });
-	AddObject(testObject);
-
-	Object* testObject1 = resources->AssembleObject("RightDirectionSign", "RightDirectionSignMaterial"); 
-	testObject1->GetTransform().SetPosition({ 24, 0.5f, 50 });
-	AddObject(testObject1);
-
-	Object* testObject2 = resources->AssembleObject("Endsign", "EndsignMaterial"); 
-	testObject2->GetTransform().SetPosition({ 23, 0.5f, 50 });
-	AddObject(testObject2);
-
-	AddObject(testObject2);*/
-
+	roadSign = resources->AssembleObject("Endsign", "EndsignMaterial");
+	rightSign = resources->AssembleObject("LeftDirectionSign", "LeftDirectionSignMaterial");
+	leftSign = resources->AssembleObject("RightDirectionSign", "RightDirectionSignMaterial");
+	AddObject(roadSign);
+	AddObject(rightSign);
+	AddObject(leftSign);
 
 	//LOADING BASE MONSTER; ADDING SKELETONS TO IT
 	enemyManager = new EnemyManager();
@@ -421,13 +413,29 @@ void GameScene::OnActivate()
 	state.seed = 1337;
 	state.segment = 0;
 
-	player->GetComponent<PlayerComp>()->Reset();
+	if (!start)
+	{
+		fogId += 0.5f;
+		fogCol += 0.5f;
+		renderer->SetIdAndColor(fogId, fogCol);
+	}
+	if (start)
+	{
+		player->GetComponent<PlayerComp>()->Reset();
+		Input::Instance().ConfineMouse();
+		Input::Instance().SetMouseMode(dx::Mouse::Mode::MODE_RELATIVE);
+		ShowCursor(false);
+		AudioMaster::Instance().PlaySoundEvent("wind");
+		start = false;
+	}
+	
 	world.ConstructSegment(state);
 
 	//PrintSceneHierarchy(root, 0);
-
-
 	house->GetComponent<NodeWalkerComp>()->InitializePath(world.GetPath());
+
+	//Place signs
+	InitializeSigns();
 	
 	if (house != nullptr && player != nullptr)
 	{
@@ -440,7 +448,7 @@ void GameScene::OnActivate()
 		if (house->HasComponent<RigidBodyComponent>())
 			house->GetComponent<RigidBodyComponent>()->SetPosition(position);
 
-		position = dx::XMVectorAdd(position, dx::XMVectorSet(5, 12, 0, 0));
+		position = dx::XMVectorAdd(position, dx::XMVectorSet(0, 12, -5, 0));
 
 		player->GetTransform().SetPosition(position);
 		player->GetComponent<RigidBodyComponent>()->SetPosition(position);
@@ -448,11 +456,6 @@ void GameScene::OnActivate()
 
 	renderer->AddRenderPass(guiManager);
 
-	Input::Instance().ConfineMouse();
-	Input::Instance().SetMouseMode(dx::Mouse::Mode::MODE_RELATIVE);
-	ShowCursor(false);
-
-	AudioMaster::Instance().PlaySoundEvent("wind");
 	//this->PrintSceneHierarchy(root, 0);
 	enemyManager->SpawnEnemies();
 	
@@ -463,11 +466,31 @@ void GameScene::OnDeactivate()
 {
 	world.DeconstructSegment();
 	renderer->RemoveRenderPass(guiManager);
+	enemyManager->DespawnEnemies();
 	
 	//renderer->ClearParticles();
 
 	ShowCursor(true);
 	//this->PrintSceneHierarchy(root, 0);
+}
+
+void GameScene::InitializeSigns()
+{
+	dx::XMFLOAT3 signPosition;
+	signPosition = dx::XMFLOAT3{ world.GetPath().GetSignPosition().x , 1.0f ,world.GetPath().GetSignPosition().y };
+	roadSign->GetTransform().SetPosition({signPosition.x, signPosition.y - 1.0f, signPosition.z });
+
+	//Right Sign
+	rightSign->GetTransform().SetPosition({ signPosition.x - 1.0f, signPosition.y - 1.0f, signPosition.z });
+	rightSign->AddComponent<BoxColliderComponent>(dx::XMFLOAT3{ 1.0f, 1.0f, 1.0f }, dx::XMFLOAT3{ 0, 0, 0 });
+	rightSign->AddComponent<SelectableComponent>();
+	rightSign->AddComponent<RigidBodyComponent>(0.0f, FilterGroups::CLICKABLE, (FilterGroups::EVERYTHING & ~FilterGroups::PLAYER), BodyType::STATIC, true);
+
+	//Left Sign
+	leftSign->GetTransform().SetPosition({ signPosition.x + 1.0f, signPosition.y -1.0f, signPosition.z });
+	leftSign->AddComponent<BoxColliderComponent>(dx::XMFLOAT3{ 1.0f, 1.0f, 1.0f }, dx::XMFLOAT3{ 0, 0, 0 });
+	leftSign->AddComponent<SelectableComponent>();
+	leftSign->AddComponent<RigidBodyComponent>(0.0f, FilterGroups::CLICKABLE, (FilterGroups::EVERYTHING & ~FilterGroups::PLAYER), BodyType::STATIC, true);
 }
 
 void GameScene::Update(const float& deltaTime)
@@ -485,6 +508,21 @@ void GameScene::Update(const float& deltaTime)
 	else
 	{
 		static_cast<GUISprite*>(guiManager->GetGUIObject("door"))->SetVisible(false);
+	}
+
+	if (rightSign->GetComponent<SelectableComponent>()->GetActive())
+	{
+		OnDeactivate();
+		ShowCursor(false);
+		OnActivate();
+		rightSign->GetComponent<SelectableComponent>()->SetActive(false);
+	}
+	else if (leftSign->GetComponent<SelectableComponent>()->GetActive())
+	{
+		OnDeactivate();
+		ShowCursor(false);
+		OnActivate();
+		leftSign->GetComponent<SelectableComponent>()->SetActive(false);
 	}
 
 	static_cast<GUIFont*>(guiManager->GetGUIObject("fps"))->SetString(std::to_string((int)GameClock::Instance().GetFramesPerSecond()));
