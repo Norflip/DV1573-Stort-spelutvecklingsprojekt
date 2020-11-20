@@ -19,12 +19,17 @@ private:
 	bool canWalk;
 	bool isWalking;
 	float length;
+	int lastNode;
+	int secondLastNode;
 	//dx::XMFLOAT3 lastPos;
 	dx::XMFLOAT3 moveVec;
 	SkeletonMeshComponent* base;
 	SkeletonMeshComponent* legs;
 	RigidBodyComponent* rbComp;
 	PlayerComp* playerComp;
+	dx::XMFLOAT3 pos3;
+	dx::XMFLOAT3 lastNodePos;
+	dx::XMFLOAT3 secondLastNodePos;
 
 	void StartAnim();
 	void StopAnim();
@@ -42,6 +47,9 @@ public:
 	dx::XMFLOAT3 GetMoveVec();
 	bool GetIsWalking() const { return isWalking; };
 
+	dx::XMFLOAT3 Getpos3() { return this->pos3; }
+	dx::XMFLOAT3 GetLastNodePos() { return this->lastNodePos; }
+	dx::XMFLOAT3 GetSecondLastNodePos() { return this->secondLastNodePos; }
 	//void SetPosition(dx::XMVECTOR pos);
 
 };

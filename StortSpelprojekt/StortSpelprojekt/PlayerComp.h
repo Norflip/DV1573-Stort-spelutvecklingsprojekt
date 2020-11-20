@@ -73,6 +73,7 @@ private:
 	Object* holding;
 	Object* house;
 	Object* arms;
+	Object* clickable;
 	RayHit hit;
 	Physics* physics;
 	CameraComponent* cam;
