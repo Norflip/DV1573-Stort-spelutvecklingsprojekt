@@ -545,16 +545,22 @@ void GameScene::InitializeSigns()
 	dx::XMVECTOR signPosition;
 	dx::XMVECTOR lastNodePos = { nodeWalker->GetLastNodePos().x, nodeWalker->GetLastNodePos().y - 1, nodeWalker->GetLastNodePos().z };
 	dx::XMVECTOR secondLastNodePos = { nodeWalker->GetSecondLastNodePos().x, nodeWalker->GetSecondLastNodePos().y - 1, nodeWalker->GetSecondLastNodePos().z };
-	dx::XMVECTOR nodeVector = { 
-	 secondLastNodePos.m128_f32[0] - lastNodePos.m128_f32[0],
-	 secondLastNodePos.m128_f32[1] - lastNodePos.m128_f32[1] ,
-	 secondLastNodePos.m128_f32[2] - lastNodePos.m128_f32[2] };
+	//dx::XMVECTOR nodeVector = { 
+	// secondLastNodePos.m128_f32[0] - lastNodePos.m128_f32[0],
+	// secondLastNodePos.m128_f32[1] - lastNodePos.m128_f32[1] ,
+	// secondLastNodePos.m128_f32[2] - lastNodePos.m128_f32[2] };
 
+	//dx::XMVECTOR nodeVector = {
+	// lastNodePos.m128_f32[0] + 5.0f,
+	// lastNodePos.m128_f32[1] ,
+	// lastNodePos.m128_f32[2] + 5.0f};
 	//signPosition = { nodeVector.m128_f32[0] * 1.5f, nodeVector.m128_f32[1] * 1.5f, nodeVector.m128_f32[2] * 1.5f, };
 
 	//signPosition = { nodeWalker->Getpos3().x, nodeWalker->Getpos3().y - 1, nodeWalker->Getpos3().z }; //FIRST NODE
-	signPosition = { nodeWalker->GetLastNodePos().x, nodeWalker->GetLastNodePos().y - 1, nodeWalker->GetLastNodePos().z }; //LAST NODE
+	//signPosition = { nodeWalker->GetLastNodePos().x, nodeWalker->GetLastNodePos().y - 1, nodeWalker->GetLastNodePos().z }; //LAST NODE
 	//signPosition = { nodeWalker->GetSecondLastNodePos().x, nodeWalker->GetSecondLastNodePos().y - 1, nodeWalker->GetSecondLastNodePos().z }; //SECOND LAST NODE
+
+	signPosition = { world.GetPath().GetSignPosition().x , 1.0f ,world.GetPath().GetSignPosition().y };
 
 	roadSign->GetTransform().SetPosition({signPosition}); 
 
