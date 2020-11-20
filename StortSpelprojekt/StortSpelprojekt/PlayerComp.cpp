@@ -87,7 +87,7 @@ void PlayerComp::Update(const float& deltaTime)
 
 		if(!IMMORTAL)
 			if ((health <= 0))
-				//Engine::Instance->SwitchScene(SceneIndex::GAME_OVER);
+				Engine::Instance->SwitchScene(SceneIndex::GAME_OVER);
 
 		if (food < 0)
 			foodEmpty = true;

@@ -43,4 +43,5 @@ private:
 
 	int fogId;
 	float fogCol;
+	bool start;
 };

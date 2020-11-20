@@ -11,6 +11,7 @@ void GameScene::RemoveEnemy()
 	srand(time(0));
 	fogId = 0;
 	fogCol = 0;
+	start = true;
 }
 
 GameScene::GameScene()
@@ -40,6 +41,7 @@ void GameScene::Initialize()
 	InitializeGUI();
 	InitializeObjects();
 	InitializeInterior();
+	start = true;
 }
 
 void GameScene::InitializeObjects()
@@ -411,17 +413,31 @@ void GameScene::InitializeInterior()
 void GameScene::OnActivate()
 {
 	SaveState state;
-	
-	state.seed = 1337;
+	state.seed = rand();
 	state.segment = 0;
 
-	player->GetComponent<PlayerComp>()->Reset();
+	if (!start)
+	{
+		fogId += 0.5f;
+		fogCol += 0.5f;
+		renderer->SetIdAndColor(fogId, fogCol);
+	}
+	if (start)
+	{
+		player->GetComponent<PlayerComp>()->Reset();
+		Input::Instance().ConfineMouse();
+		Input::Instance().SetMouseMode(dx::Mouse::Mode::MODE_RELATIVE);
+		ShowCursor(false);
+		AudioMaster::Instance().PlaySoundEvent("wind");
+		start = false;
+	}
+	
 	world.ConstructSegment(state);
 
 	//PrintSceneHierarchy(root, 0);
-
 	house->GetComponent<NodeWalkerComp>()->InitializePath(world.GetPath());
 
+	//Place signs
 	InitializeSigns();
 	
 	if (house != nullptr && player != nullptr)
@@ -443,11 +459,6 @@ void GameScene::OnActivate()
 
 	renderer->AddRenderPass(guiManager);
 
-	Input::Instance().ConfineMouse();
-	Input::Instance().SetMouseMode(dx::Mouse::Mode::MODE_RELATIVE);
-	ShowCursor(false);
-
-	AudioMaster::Instance().PlaySoundEvent("wind");
 	//this->PrintSceneHierarchy(root, 0);
 	enemyManager->SpawnEnemies();
 	
@@ -464,60 +475,6 @@ void GameScene::OnDeactivate()
 
 	ShowCursor(true);
 	//this->PrintSceneHierarchy(root, 0);
-}
-
-void GameScene::SwitchScene()
-{
-	OnDeactivate();
-	ShowCursor(false);
-	fogId += 0.5f;
-	fogCol += 0.5f; 
-
-	SaveState state;
-	state.seed = rand();
-	state.segment = 0;
-	world.ConstructSegment(state);
-	//PrintSceneHierarchy(root, 0);
-	renderer->SetIdAndColor(fogId, fogCol);
-
-	house->GetComponent<NodeWalkerComp>()->InitializePath(world.GetPath());
-
-	//Place signs
-	InitializeSigns();
-
-
-	if (house != nullptr && player != nullptr)
-	{
-		std::vector<dx::XMINT2> indexes = world.GetPath().GetIndexes();
-		dx::XMINT2 spawnIndex = indexes[0];
-
-		dx::XMVECTOR position = dx::XMVectorAdd(Chunk::IndexToWorld(spawnIndex, 0.0f), dx::XMVectorSet(CHUNK_SIZE / 2.0f, 0, CHUNK_SIZE / 2.0f, 0));
-		house->GetTransform().SetPosition(position);
-
-		if (house->HasComponent<RigidBodyComponent>())
-			house->GetComponent<RigidBodyComponent>()->SetPosition(position);
-
-		position = dx::XMVectorAdd(position, dx::XMVectorSet(0, 12, -5, 0));
-
-		player->GetTransform().SetPosition(position);
-		player->GetComponent<RigidBodyComponent>()->SetPosition(position);
-	}
-
-	renderer->AddRenderPass(guiManager);
-
-	/*
-	Input::Instance().ConfineMouse();
-	Input::Instance().SetMouseMode(dx::Mouse::Mode::MODE_RELATIVE);
-	ShowCursor(false);
-
-	AudioMaster::Instance().PlaySoundEvent("wind");*/
-	//this->PrintSceneHierarchy(root, 0);
-
-	//LOADING BASE MONSTER; ADDING SKELETONS TO IT
-
-	enemyManager->SpawnEnemies();
-
-	LightManager::Instance().ForceUpdateBuffers(renderer->GetContext());
 }
 
 void GameScene::InitializeSigns()
@@ -558,15 +515,17 @@ void GameScene::Update(const float& deltaTime)
 
 	if (rightSign->GetComponent<SelectableComponent>()->GetActive())
 	{
-		SwitchScene();
+		OnDeactivate();
+		ShowCursor(false);
+		OnActivate();
 		rightSign->GetComponent<SelectableComponent>()->SetActive(false);
-
 	}
 	else if (leftSign->GetComponent<SelectableComponent>()->GetActive())
 	{
-		SwitchScene();
+		OnDeactivate();
+		ShowCursor(false);
+		OnActivate();
 		leftSign->GetComponent<SelectableComponent>()->SetActive(false);
-
 	}
 
 	static_cast<GUIFont*>(guiManager->GetGUIObject("fps"))->SetString(std::to_string((int)GameClock::Instance().GetFramesPerSecond()));
