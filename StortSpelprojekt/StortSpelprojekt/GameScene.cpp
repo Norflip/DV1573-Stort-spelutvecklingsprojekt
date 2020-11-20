@@ -477,10 +477,9 @@ void GameScene::OnActivate()
 
 	house->GetComponent<NodeWalkerComp>()->InitializePath(world.GetPath());
 
+	//Place sign
 	InitializeSigns();
 	
-	std::cout << "X: " << rightSign->GetTransform().GetPosition().m128_f32[0] << " Y: " << rightSign->GetTransform().GetPosition().m128_f32[1] << " Z: " << rightSign->GetTransform().GetPosition().m128_f32[2] << std::endl;
-
 	if (house != nullptr && player != nullptr)
 	{
 		std::vector<dx::XMINT2> indexes = world.GetPath().GetIndexes();
