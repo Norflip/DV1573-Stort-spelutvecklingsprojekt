@@ -18,6 +18,7 @@
 #include "CapsuleColliderComponent.h"
 #include "DebugBoxShapeComponent.h"
 #include "PickupComponent.h"
+#include "SelectableComponent.h"
 #include "ParticlesystemComponent.h"
 //Might need to yeet
 #include "ResourceManager.h"
@@ -26,6 +27,7 @@
 #include "EnemyManager.h"
 #include <wchar.h>
 #include "PlayerAnimHandlerComp.h"
+#include "FireTextureComponent.h"
 #include "HousePartsComponent.h"
 
 class GUIFont;

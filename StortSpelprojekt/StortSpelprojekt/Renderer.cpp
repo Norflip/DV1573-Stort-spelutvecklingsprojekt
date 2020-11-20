@@ -140,17 +140,18 @@ void Renderer::DrawQueueToTarget(RenderQueue& queue, CameraComponent* camera)
 void Renderer::RenderFrame(CameraComponent* camera, float time, float distance)
 {
 	// UPDATE SCENE
-	if (KEY_PRESSED(Y) && isFullScreen == true)
+	
+	/*if (KEY_PRESSED(Y) && isFullScreen == true)
 	{
 		isFullScreen = false;
 	}
 	else if (KEY_PRESSED(Y) && isFullScreen == false)
 	{
 		isFullScreen = true;
-	}
+	}*/
 	RenderFrame(camera, time, distance, backbuffer, true, true);
 	HRESULT hr = swapchain->Present(0, 0); //1 here?
-	swapchain->SetFullscreenState(isFullScreen, nullptr);
+	//swapchain->SetFullscreenState(isFullScreen, nullptr);
 	assert(SUCCEEDED(hr));
 }
 
@@ -162,10 +163,10 @@ void Renderer::RenderFrame(CameraComponent* camera, float time, float distance, 
 	// ----------
 
 	// Tempor�rt f�r att �ndra skybox texture
-	static int ids = 0;
-	static float color = 0.0f;
+	//ids = 0;
+	//color = 0.0f;
 
-	color += (float)0.0005f;
+	//color += (float)0.005f;
 	if (color > 1.0f)
 	{
 		color -= 1.0f;
@@ -430,6 +431,12 @@ void Renderer::RemoveRenderPass(RenderPass* pass)
 	passes.erase(it);
 }
 
+void Renderer::SetIdAndColor(int id, float color)
+{
+	this->ids = id;
+	this->color = color;
+}
+
 void Renderer::AddItem(const RenderItem& item, bool transparent)
 {
 	if (transparent)
@@ -547,8 +554,8 @@ void Renderer::DrawRenderItemParticles(const RenderItem& item, CameraComponent* 
 	//SetCBuffers(context, camera);
 	//particlesShader->BindToContext(context);
 
+	//context->Draw(item.mesh->GetVertexCount(), 0);
 	context->DrawIndexed(item.mesh->GetIndexCountPart(), 0, 0);
-
 }
 
 void Renderer::DrawBatch(const Batch& batch, CameraComponent* camera)
