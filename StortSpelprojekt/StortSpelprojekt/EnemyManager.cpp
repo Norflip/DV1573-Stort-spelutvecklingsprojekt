@@ -72,7 +72,7 @@ void EnemyManager::SpawnEnemies()
 	{
 		dx::XMFLOAT3 playerPos;
 		dx::XMStoreFloat3(&playerPos, player->GetTransform().GetPosition());
-		SpawnEnemy("baseEnemy", { playerPos.x + (i +1) * 10.0f, playerPos.y + 1, (float)(playerPos.z + i * 5) });
+		SpawnEnemy("baseEnemy", { playerPos.x + (i +2) * 10.0f, playerPos.y + 5, (float)(playerPos.z + i * 5) });
 		
 	}
 
@@ -80,7 +80,7 @@ void EnemyManager::SpawnEnemies()
 	{
 		dx::XMFLOAT3 playerPos;
 		dx::XMStoreFloat3(&playerPos, player->GetTransform().GetPosition());
-		SpawnEnemy("chargerEnemy", { playerPos.x +(i+1) * 10.0f, playerPos.y, (float)(playerPos.z + i * 5) });
+		SpawnEnemy("chargerEnemy", { playerPos.x +(i+2) * 10.0f, playerPos.y+5, (float)(playerPos.z - i * 5) });
 	}
 
 
