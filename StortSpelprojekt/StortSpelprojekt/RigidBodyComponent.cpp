@@ -67,7 +67,7 @@ void RigidBodyComponent::SetPosition(dx::XMVECTOR position)
 	rp::Transform transform = body->getTransform();
 	transform.setPosition(rp::Vector3(pos.x, pos.y, pos.z));
 	body->setTransform(transform);
-	GetOwner()->GetTransform().MarkAsChanged();
+	GetOwner()->GetTransform().SetChanged(true);
 }
 
 dx::XMVECTOR RigidBodyComponent::GetPosition() const
@@ -85,7 +85,7 @@ void RigidBodyComponent::SetRotation(dx::XMVECTOR rotation)
 	rp::Transform transform = body->getTransform();
 	transform.setOrientation(rp::Quaternion(rot.x, rot.y, rot.z, rot.w));
 	body->setTransform(transform);
-	GetOwner()->GetTransform().MarkAsChanged();
+	GetOwner()->GetTransform().SetChanged(true);
 }
 
 dx::XMVECTOR RigidBodyComponent::GetRotation() const
@@ -139,10 +139,11 @@ void RigidBodyComponent::AddCollidersToBody(Object* obj, rp::RigidBody* body)
 	//std::cout << (GetOwner()->GetName() + " has " + std::to_string(colliders.size()) + " colliders\n");
 
 	//CHILDREN
-	const std::vector<Transform*>& children = GetOwner()->GetTransform().GetChildren();
+
+	const std::vector<Object*>& children = GetOwner()->GetChildren();
 	for (size_t i = 0; i < children.size(); i++)
 	{
-		AddCollidersToBody(children[i]->GetOwner(), body);
+		AddCollidersToBody(children[i], body);
 	}
 }
 

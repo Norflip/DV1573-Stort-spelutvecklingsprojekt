@@ -67,13 +67,8 @@
     <FxCompile Include="Shaders\FogTest_ps.hlsl">
       <Filter>Resource Files</Filter>
     </FxCompile>
+    <FxCompile Include="ForwardPlusRendering.hlsl" />
     <FxCompile Include="Shaders\FractionalBrownianMotion.hlsl">
-      <Filter>Resource Files</Filter>
-    </FxCompile>
-    <FxCompile Include="Shaders\ForwardPlusRendering.hlsl">
-      <Filter>Resource Files</Filter>
-    </FxCompile>
-    <FxCompile Include="Shaders\ForwardPlus_ps.hlsl">
       <Filter>Resource Files</Filter>
     </FxCompile>
   </ItemGroup>
@@ -136,6 +131,9 @@
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="MoveComponent.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="PointLightComponent.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="Physics.cpp">
@@ -297,12 +295,6 @@
     <ClCompile Include="SelectableComponent.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="LightComponent.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="DepthPass.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="ObjectSpawner.h">
@@ -461,6 +453,9 @@
     <ClInclude Include="PlayerComp.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="PointLightComponent.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
     <ClInclude Include="PossionDiscSampler.h">
       <Filter>Header Files</Filter>
     </ClInclude>
@@ -542,6 +537,9 @@
     <ClInclude Include="MeshCollider.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="ThirdParty\quickhull\ConvexHull.hpp">
+      <Filter>ThirdParty</Filter>
+    </ClInclude>
     <ClInclude Include="ThirdParty\quickhull\HalfEdgeMesh.hpp">
       <Filter>ThirdParty</Filter>
     </ClInclude>
@@ -604,15 +602,6 @@
     </ClInclude>
     <ClInclude Include="WorldGenerator.h" />
     <ClInclude Include="WorldGenerator.h" />
-    <ClInclude Include="ThirdParty\quickhull\ConvexHull.hpp">
-      <Filter>ThirdParty</Filter>
-    </ClInclude>
-    <ClInclude Include="LightComponent.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="DepthPass.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <Filter Include="Header Files">

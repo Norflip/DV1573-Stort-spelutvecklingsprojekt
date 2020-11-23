@@ -40,7 +40,7 @@ ALIGN16
 class Scene
 {
 public:
-	Scene();
+	Scene(const std::string& debugName = "[DEFAULT_SCENE]");
 	virtual ~Scene();
 
 	virtual void SetDepedencies(ResourceManager* manager, Renderer* renderer, Physics* physics, Window* window);
@@ -57,16 +57,15 @@ public:
 	virtual void Render();
 	
 	// Add object to the scene hierarchy
-	void AddObject(Object* object);
-
-	// Add object as a child to another object
-	void AddObject(Object* object, Object* parent);
-
-	void RemoveObject(Object* object);
+	void AddObjectToRoot(Object* object);
 	Object* GetRoot() const { return this->root; }
 
 	void PrintSceneHierarchy(Object* object, size_t level) const;
 	virtual void AnimateIcon();
+
+private:
+	void DebugCheckForObjectIDConflict(Object* current, std::unordered_set<size_t>& registry, size_t& conflicCounter) const;
+
 protected:
 	int amountOfFrames = 8;
 	int currentframe = 0;
@@ -85,10 +84,8 @@ protected:
 	GameClock clock;
 
 	Input& input;
-	Object* enemy;
 	Object* player;
 	EnemyManager* enemyManager;
-
-	ObjectPooler* pooler;
 	GUIManager* guiManager;		
+	std::string debugName;
 };

@@ -5,7 +5,7 @@
 #include "GUIFont.h"
 #include "Engine.h"
 
-WinScene::WinScene() : Scene()
+WinScene::WinScene() : Scene("WinScene")
 {
 	
 }
@@ -26,7 +26,7 @@ void WinScene::InitializeObjects()
 	camera = cameraObject->AddComponent<CameraComponent>(window->GetWidth(), window->GetHeight(),60.0f);
 	this->player = cameraObject;
 	//cameraObject3->AddComponent<ControllerComponent>();
-	AddObject(cameraObject);
+	AddObjectToRoot(cameraObject);
 
 	ShowCursor(true);
 	Input::Instance().SetMouseMode(dx::Mouse::MODE_ABSOLUTE);
@@ -78,11 +78,6 @@ void WinScene::Update(const float& deltaTime)
 	}
 
 	guiManager->UpdateAll();
-}
-
-void WinScene::FixedUpdate(const float& fixedDeltaTime)
-{
-	Scene::FixedUpdate(fixedDeltaTime);
 }
 
 void WinScene::Render()
