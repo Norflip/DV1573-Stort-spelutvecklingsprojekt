@@ -10,7 +10,7 @@ public:
     void Initialize();
     void Update(const float& deltaTime) override;
     bool GetIsMoving()const;
-    void SetMoving(bool moving);
+    void SetMoving(const bool & moving);
 private:
     dx::XMFLOAT3 randomVec; //(target vector)
     float timer;

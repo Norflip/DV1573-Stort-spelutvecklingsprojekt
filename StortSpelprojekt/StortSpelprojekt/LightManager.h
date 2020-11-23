@@ -32,7 +32,7 @@ public:
 	void UpdateBuffers(ID3D11DeviceContext* context, CameraComponent* camComp);
 	void ForceUpdateBuffers(ID3D11DeviceContext* context, CameraComponent* camComp);
 	void Clear();
-	const UINT GetLightCount(){ return (UINT)lightMap.size(); }
+	const UINT GetLightCount()const{ return (UINT)lightMap.size(); }
 private:
 	//ID3D11ShaderResourceView* lightsSRV = nullptr;
 	//ID3D11Buffer* lightsSRVBfr = nullptr;

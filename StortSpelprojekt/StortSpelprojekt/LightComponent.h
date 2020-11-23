@@ -22,23 +22,23 @@ public:
 	virtual ~LightComponent();
 
 	virtual void Initialize() override;
-	dx::XMFLOAT4 GetColor();
-	void SetColor(dx::XMFLOAT4 color);
-	float GetRange();
-	void SetRange(float range);
+	dx::XMFLOAT4 GetColor()const;
+	void SetColor(const dx::XMFLOAT4 & color);
+	float GetRange()const;
+	void SetRange(const float & range);
 	//dx::XMFLOAT3 GetAttenuation();
 	//void SetAttenuation(dx::XMFLOAT3 attenuation);
 
-	dx::XMFLOAT3 GetDirection();
-	void SetDirection(dx::XMFLOAT3 direction);
-	float GetSpotlightAngle();
-	void SetSpotlightAngle(float angle);
-	bool GetEnabled();
-	void SetEnabled(bool enabled);
-	LightType GetType();
-	void SetType(LightType type); //pointlight 0, spotlight 1, directional 2
-	float GetIntensity();
-	void SetIntensity(float intensity);
+	dx::XMFLOAT3 GetDirection()const;
+	void SetDirection(const dx::XMFLOAT3 & direction);
+	float GetSpotlightAngle()const;
+	void SetSpotlightAngle(const float & angle);
+	bool GetEnabled()const;
+	void SetEnabled(const bool & enabled);
+	LightType GetType()const;
+	void SetType(const LightType & type); //pointlight 0, spotlight 1, directional 2
+	float GetIntensity()const;
+	void SetIntensity(const float & intensity);
 
 	bool IsDirty() { return this->dirty || GetOwner()->GetTransform().ChangedThisFrame(); }
 	void MarkAsNotDirty() { this->dirty = false; }

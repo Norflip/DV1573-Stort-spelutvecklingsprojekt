@@ -36,23 +36,23 @@ void LightComponent::Initialize()
 	LightManager::Instance().RegisterLight(this);
 }
 
-dx::XMFLOAT4 LightComponent::GetColor()
+dx::XMFLOAT4 LightComponent::GetColor()const
 {
 	return this->lightColor;
 }
 
-void LightComponent::SetColor(dx::XMFLOAT4 color)
+void LightComponent::SetColor(const dx::XMFLOAT4 & color)
 {
 	this->dirty = true;
 	this->lightColor = color;
 }
 
-float LightComponent::GetRange()
+float LightComponent::GetRange()const
 {
 	return this->range;
 }
 
-void LightComponent::SetRange(float range)
+void LightComponent::SetRange(const float & range)
 {
 	this->dirty = true;
 	this->range = range;
@@ -69,55 +69,55 @@ void LightComponent::SetRange(float range)
 //	this->attenuation = attenuation;
 //}
 
-dx::XMFLOAT3 LightComponent::GetDirection()
+dx::XMFLOAT3 LightComponent::GetDirection()const
 {
 	return this->lightDirection;
 }
 
-void LightComponent::SetDirection(dx::XMFLOAT3 direction)
+void LightComponent::SetDirection(const dx::XMFLOAT3 & direction)
 {
 	this->dirty = true;
 	this->lightDirection = direction;
 }
 
-float LightComponent::GetSpotlightAngle()
+float LightComponent::GetSpotlightAngle()const
 {
 	return this->spotlightAngle;
 }
 
-void LightComponent::SetSpotlightAngle(float angle)
+void LightComponent::SetSpotlightAngle(const float & angle)
 {
 	this->dirty = true;
 	this->spotlightAngle = angle;
 }
 
-bool LightComponent::GetEnabled()
+bool LightComponent::GetEnabled()const
 {
 	return this->enabled;
 }
 
-void LightComponent::SetEnabled(bool enabled)
+void LightComponent::SetEnabled(const bool & enabled)
 {
 	this->dirty = true;
 	this->enabled = enabled;
 }
 
-LightType LightComponent::GetType()
+LightType LightComponent::GetType()const
 {
 	return this->type;
 }
-void LightComponent::SetType(LightType type)
+void LightComponent::SetType(const LightType & type)
 {
 	this->dirty = true;
 	this->type = type;
 }
 
-float LightComponent::GetIntensity()
+float LightComponent::GetIntensity()const
 {
 	return this->intensity;
 }
 
-void LightComponent::SetIntensity(float intensity)
+void LightComponent::SetIntensity(const float & intensity)
 {
 	this->dirty = true;
 	this->intensity = intensity;

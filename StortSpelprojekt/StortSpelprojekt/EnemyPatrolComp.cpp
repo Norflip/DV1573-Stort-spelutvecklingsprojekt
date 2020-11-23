@@ -64,7 +64,7 @@ bool EnemyPatrolComp::GetIsMoving() const
     return this->isMoving;
 }
 
-void EnemyPatrolComp::SetMoving(bool moving)
+void EnemyPatrolComp::SetMoving(const bool& moving)
 {
     this->isMoving = moving;
 }

@@ -300,7 +300,6 @@
     <ClInclude Include="Resource.h" />
     <ClInclude Include="ResourceManager.h" />
     <ClInclude Include="WorldDescription.h" />
-    <ClInclude Include="WorldGenerator.h" />
     <ClInclude Include="Shapes.h" />
     <ClInclude Include="GameClock.h" />
     <ClInclude Include="GrassComponent.h" />
@@ -350,7 +349,6 @@
     <ClInclude Include="Window.h" />
     <ClInclude Include="WinScene.h" />
     <ClInclude Include="World.h" />
-    <ClInclude Include="WorldGenerator.h" />
     <ClInclude Include="ZWEBLoader.h" />
   </ItemGroup>
   <ItemGroup>
