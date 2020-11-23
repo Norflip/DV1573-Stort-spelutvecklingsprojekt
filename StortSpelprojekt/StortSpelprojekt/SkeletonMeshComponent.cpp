@@ -107,7 +107,7 @@ void SkeletonMeshComponent::RunAnimation(const float& deltaTime)
 	}
 	else if (currentAni == SkeletonStateMachine::BLENDED)
 	{
-		finalTransforms = skeletonAnimations[5].Makeglobal(time, dx::XMMatrixIdentity(), *skeletonAnimations[4].GetRootKeyJoints());
+		finalTransforms = skeletonAnimations[5].Makeglobal(time, dx::XMMatrixIdentity(), *skeletonAnimations[5].GetRootKeyJoints());
 	}
 	else if (currentAni == SkeletonStateMachine::LOAD)
 	{
@@ -124,7 +124,7 @@ void SkeletonMeshComponent::FindChildren(SkeletonAni& track, unsigned int& index
 	std::string& secondName)
 {
 	//EMILS HARDCODED STUFF
-/*
+
 	for (unsigned int i = 0; i < track.GetKeyFrames().size(); i++)
 	{
 		std::string parentName = track.GetKeyFrames()[i][0].parentName;
@@ -157,27 +157,27 @@ void SkeletonMeshComponent::FindChildren(SkeletonAni& track, unsigned int& index
 			}
 		}
 	}
-	*/
+	
 
-	for (unsigned int i = 0; i < track.GetKeyFrames().size(); i++)
-	{
-		std::string rootName = track.GetKeyFrames()[0][0].name;
-		std::string parentName = track.GetKeyFrames()[i][0].parentName;
-		std::string childName = track.GetKeyFrames()[index][0].name;
-		std::cout << parentName << std::endl;
+	//for (unsigned int i = 0; i < track.GetKeyFrames().size(); i++)
+	//{
+	//	//std::string rootName = track.GetKeyFrames()[0][0].name;
+	//	std::string parentName = track.GetKeyFrames()[i][0].parentName;
+	//	std::string childName = track.GetKeyFrames()[index][0].name;
+	//	std::cout << parentName << std::endl;
 
-		//if (parentName == name)
-		//{
-		//	continue;
-		//}
-		//if (parentName == childName)
-		//{
-		//	map.insert({ parentName, i - 1 });
-		//	FindChildren(track, i, map, name, secondName);
-		//}
+	//	if (parentName == name)
+	//	{
+	//		continue;
+	//	}
+	//	if (parentName == childName)
+	//	{
+	//		map.insert({ parentName, i - 1 });
+	//		FindChildren(track, i, map, name, secondName);
+	//	}
 
-			
-	}
+	//		
+	//}
 }
 
 
@@ -423,7 +423,7 @@ void SkeletonMeshComponent::BlendAnimations()
 	std::map<std::string, unsigned int> map2;
 
 	//EMILS HARDCODED BLEND
-	/*
+	
 	//run animation
 	for (unsigned int i = 0; i < skeletonAnimations[2].GetKeyFrames().size(); i++)
 	{
@@ -479,62 +479,66 @@ void SkeletonMeshComponent::BlendAnimations()
 			map1.insert({ childName, 0 });
 		}
 	}
-	*/ 
+	 
 
-	//run animation
-	for (unsigned int i = 0; i < skeletonAnimations[2].GetKeyFrames().size(); i++)
-	{
-		std::string rootName = skeletonAnimations[2].GetKeyFrames()[0][0].name;
-		//std::cout << rootName << std::endl;
-		std::string name = skeletonAnimations[2].GetKeyFrames()[i][0].parentName;
-		std::string errorName = "spine01";
-		std::string errorName2 = "null";
-		//std::cout << name << std::endl;
-		//if (name == errorName)
-		//{
-		//	continue;
-		//}
-		if (name == rootName)
-		{
+	////run animation
+	//for (unsigned int i = 0; i < skeletonAnimations[2].GetKeyFrames().size(); i++)
+	//{
+	//	std::string rootName = skeletonAnimations[2].GetKeyFrames()[0][0].name;
+	//	//std::cout << rootName << std::endl;
+	//	std::string name = skeletonAnimations[2].GetKeyFrames()[i][0].parentName;
+	//	std::string errorName = "spine01";
+	//	std::string errorName2 = "null";
+	//	//std::cout << name << std::endl;
+	//	//if (name == errorName)
+	//	//{
+	//	//	continue;
+	//	//}
+	//	if (name == rootName)
+	//	{
 
-			map1.insert({ name, i - 1 });
-			FindChildren(skeletonAnimations[2], i, map1, rootName, errorName2);
+	//		map1.insert({ name, i - 1 });
+	//		FindChildren(skeletonAnimations[2], i, map1, rootName, errorName2);
 
-		}
-		
-			map2.insert({ name, 0 });
-		
+	//	}
+	//	
+	//		map2.insert({ name, 0 });
+	//	
 
-	}
-	// attack animation
-	for (unsigned int i = 0; i < skeletonAnimations[3].GetKeyFrames().size(); i++)
-	{
-		std::string errorName = "rightLeg";
-		std::string errorName2 = "leftLeg";
-		std::string name = skeletonAnimations[3].GetKeyFrames()[i][0].parentName;
-		if (name == "rightLeg" || name == "leftLeg")
-		{
-			continue;
-		}
+	//}
+	//// attack animation
+	//for (unsigned int i = 0; i < skeletonAnimations[3].GetKeyFrames().size(); i++)
+	//{
+	//	std::string errorName = "rightLeg";
+	//	std::string errorName2 = "leftLeg";
+	//	std::string name = skeletonAnimations[3].GetKeyFrames()[i][0].parentName;
+	//	if (name == "rightLeg" || name == "leftLeg")
+	//	{
+	//		continue;
+	//	}
 
-		std::string childName = skeletonAnimations[3].GetKeyFrames()[0][0].name;
-		if (name == childName)
-		{
-			if (name != "root")
-			{
-				map2.insert({ name, i - 1 });
-			}
+	//	std::string childName = skeletonAnimations[3].GetKeyFrames()[0][0].name;
+	//	if (name == childName)
+	//	{
+	//		if (name != "root")
+	//		{
+	//			map2.insert({ name, i - 1 });
+	//		}
 
 
-			FindChildren(skeletonAnimations[3], i, map2, errorName, errorName2);
-		}
-		if (childName == "leftPinky02" || childName == "leftMiddle02" || childName == "leftRing02" ||
-			childName == "leftThumb02" || childName == "leftIndex02" || childName == "rightPinky02" || childName == "rightMiddle02" || childName == "rightRing02" ||
-			childName == "rightThumb02" || childName == "rightIndex02" || childName == "head")
-		{
-			map1.insert({ childName, 0 });
-		}
-	}
+	//		FindChildren(skeletonAnimations[3], i, map2, errorName, errorName2);
+	//	}
+	//	if (childName == "leftPinky02" || childName == "leftMiddle02" || childName == "leftRing02" ||
+	//		childName == "leftThumb02" || childName == "leftIndex02" || childName == "rightPinky02" || childName == "rightMiddle02" || childName == "rightRing02" ||
+	//		childName == "rightThumb02" || childName == "rightIndex02" || childName == "head")
+	//	{
+	//		map1.insert({ childName, 0 });
+	//	}
+	//}
+
+	
+	//dx::SimpleMath::Quaternion blah = skeletonAnimations[2].GetKeyFrames()[0][0].rotationQuaternion + skeletonAnimations[4].GetKeyFrames()[6][0].rotationQuaternion;
+
 
 	SkeletonAni blended;
 
@@ -581,3 +585,8 @@ bool& SkeletonMeshComponent::SetAndGetDoneUp()
 {
 	return doneUp;
 }
+
+//void SkeletonMeshComponent::SetAnimationTransforms(std::vector<dx::XMFLOAT4X4> transform)
+//{
+//	this->finalTransforms = transform;
+//}

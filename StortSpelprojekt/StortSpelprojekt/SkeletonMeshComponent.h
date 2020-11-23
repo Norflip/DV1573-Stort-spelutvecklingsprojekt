@@ -54,6 +54,7 @@ public:
 	float GetTimeScale() { return this->timeScale; }
 
 	std::vector<dx::XMFLOAT4X4> GetAnimationTransforms() { return this->finalTransforms; }
+	//void SetAnimationTransforms(std::vector<dx::XMFLOAT4X4> transform);
 	std::vector<SkeletonAni> GetAnimations() { return this->skeletonAnimations; }
 	std::unordered_map<SkeletonStateMachine, unsigned int> GetTrackMap() { return this->trackMap; }
 	SkeletonStateMachine GetCurrentAnimation() { return this->currentAni; }

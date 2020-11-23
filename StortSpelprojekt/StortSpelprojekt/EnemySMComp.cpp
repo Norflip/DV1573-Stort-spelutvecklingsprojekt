@@ -48,7 +48,7 @@ void EnemySMComp::Animate()
 
 		if (attackComponent->GetIsAttacking())
 		{
-			skeletonComponent->SetTrack(SkeletonStateMachine::ATTACK, false);
+			skeletonComponent->SetTrack(SkeletonStateMachine::BLENDED, false);
 		}
 	}
 	else if (currentState == EnemyState::PATROL)
