@@ -88,10 +88,11 @@ void PlayerComp::Update(const float& deltaTime)
 		// lose food
 		food -= frameTime * foodLossPerSecond;
 
-		if(!IMMORTAL)
-			if ((health <= 0))
-				Engine::Instance->SwitchScene(SceneIndex::GAME_OVER);
-
+#if  !IMMORTAL
+		if ((health <= 0))
+			Engine::Instance->SwitchScene(SceneIndex::GAME_OVER);
+#endif //  !IMMORTAL
+		
 		if (food < 0)
 			foodEmpty = true;
 
@@ -119,11 +120,11 @@ void PlayerComp::Update(const float& deltaTime)
 
 	RayCast(deltaTime);
 
-	if (!static_cast<GUISprite*>(guiMan->GetGUIObject("door"))->GetVisible() && !static_cast<GUISprite*>(guiMan->GetGUIObject("fuel"))->GetVisible())
+	if (!guiMan->GetGUIObject("door")->GetVisible() && !guiMan->GetGUIObject("fuel")->GetVisible())
 	{
-		static_cast<GUISprite*>(guiMan->GetGUIObject("dot"))->SetVisible(true);
-		static_cast<GUISprite*>(guiMan->GetGUIObject("door"))->SetVisible(false);
-		static_cast<GUISprite*>(guiMan->GetGUIObject("fuel"))->SetVisible(false);
+		guiMan->GetGUIObject("dot")->SetVisible(true);
+		guiMan->GetGUIObject("door")->SetVisible(false);
+		guiMan->GetGUIObject("fuel")->SetVisible(false);
 	}
 	
 	pickedUpLastFrame = false;
@@ -193,7 +194,6 @@ void PlayerComp::PickUpObject()
 					arms->RemoveFlag(ObjectFlag::ENABLED);
 					arms->GetComponent<PlayerAnimHandlerComp>()->SetEnabled(false);
 					if (holding->HasComponent<ParticleSystemComponent>())
-						if (holding->GetComponent<ParticleSystemComponent>()->GetActive())
 							holding->GetComponent<ParticleSystemComponent>()->SetActive(false);
 
 				}
@@ -239,9 +239,7 @@ void PlayerComp::PickUpObject()
 					}*/
 
 					if (hit.object->HasComponent<ParticleSystemComponent>())
-						if (hit.object->GetComponent<ParticleSystemComponent>()->GetActive())
 							hit.object->GetComponent<ParticleSystemComponent>()->SetActive(false);
-
 
 					hit.object->GetComponent<PickupComponent>()->SetActive(false);
 					//RigidBodyComponent* rbComp = hit.object->GetComponent<RigidBodyComponent>();
@@ -275,7 +273,6 @@ void PlayerComp::DropObject()
 			//objectRb->setLinearVelocity({ dx::XMVectorGetX(camRot) * forceAmount ,  dx::XMVectorGetY(camRot) * forceAmount,  dx::XMVectorGetZ(camRot) * forceAmount });
 
 			if (holding->HasComponent<ParticleSystemComponent>())
-				if (!holding->GetComponent<ParticleSystemComponent>()->GetActive())
 					holding->GetComponent<ParticleSystemComponent>()->SetActive(true);
 
 			float tossSpeed = throwStrength / rbComp->GetMass();
@@ -327,9 +324,8 @@ void PlayerComp::RayCast(const float& deltaTime)
 	{
 		if (hit.object != nullptr)
 		{
-
-			static_cast<GUISprite*>(guiMan->GetGUIObject("fuel"))->SetVisible(true);
-			static_cast<GUISprite*>(guiMan->GetGUIObject("dot"))->SetVisible(false);
+			guiMan->GetGUIObject("fuel")->SetVisible(true);
+			guiMan->GetGUIObject("dot")->SetVisible(false);
 
 			if (RMOUSE_DOWN)
 			{
@@ -340,7 +336,6 @@ void PlayerComp::RayCast(const float& deltaTime)
 					fuel = 100.0f;
 
 				if (holding->HasComponent<ParticleSystemComponent>())
-					if (holding->GetComponent<ParticleSystemComponent>()->GetActive())
 						holding->GetComponent<ParticleSystemComponent>()->SetActive(false);
 
 				holding->GetComponent<PickupComponent>()->SetActive(false);
@@ -350,8 +345,8 @@ void PlayerComp::RayCast(const float& deltaTime)
 				arms->AddFlag(ObjectFlag::ENABLED);
 				arms->GetComponent<PlayerAnimHandlerComp>()->SetEnabled(true);
 
-				static_cast<GUISprite*>(guiMan->GetGUIObject("fuel"))->SetVisible(false);
-				static_cast<GUISprite*>(guiMan->GetGUIObject("dot"))->SetVisible(true);
+				guiMan->GetGUIObject("fuel")->SetVisible(false);
+				guiMan->GetGUIObject("dot")->SetVisible(true);
 
 				if (!fuelTutorial)
 					fuelTutorial = true;
@@ -359,7 +354,7 @@ void PlayerComp::RayCast(const float& deltaTime)
 		}
 		else
 		{
-			static_cast<GUISprite*>(guiMan->GetGUIObject("fuel"))->SetVisible(false);
+			guiMan->GetGUIObject("fuel")->SetVisible(false);
 		}
 	}
 
@@ -452,6 +447,7 @@ void PlayerComp::Reset()
 	this->fuelBurnPerMeter = 0.7f;
 	this->fuel = 50.0f;
 	this->healthLossPerSecond = 0.5f;
+	this->holding = nullptr;
 
 	this->health = 50.0f; // <------------------ DONT FORGET TO REMOVE THIS LATER!
 	foodEmpty = false;

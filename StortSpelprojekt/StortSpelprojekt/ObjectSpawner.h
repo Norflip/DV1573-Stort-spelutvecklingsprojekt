@@ -45,7 +45,7 @@ class ObjectSpawner
 	const float TREE_SPAWN_FACTOR = 0.4f;
 	const float TREE_RADIUS = 1.0f;
 	const float TREE_HEIGHT_ADJUSTMENT_FACTOR = 0.9f;
-	const float NO_TREE_CHANCE = 0.1f;
+	const float NO_TREE_CHANCE = 0.5f;
 
 public:
 	ObjectSpawner();

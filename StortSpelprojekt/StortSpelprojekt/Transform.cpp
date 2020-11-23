@@ -7,12 +7,12 @@ Transform::Transform(Object* owner) : Transform(owner,dx::XMVectorZero(), dx::XM
 	changedThisFrame = false;
 }
 
-Transform::Transform(Object* owner, dx::XMVECTOR position, dx::XMVECTOR rotation, dx::XMVECTOR scale) : owner(owner), parent(nullptr)
+Transform::Transform(Object* owner, dx::XMVECTOR position, dx::XMVECTOR rotation, dx::XMVECTOR scale) : owner(owner)
 {
 	dx::XMStoreFloat3(&this->localPosition, position);
 	dx::XMStoreFloat4(&this->localRotation, rotation);
 	dx::XMStoreFloat3(&this->scale, scale);
-	MarkAsChanged();
+	SetChanged(true);
 }
 
 Transform::~Transform()
@@ -28,7 +28,7 @@ void Transform::Translate(float x, float y, float z)
 		localPosition.x += x;
 		localPosition.y += y;
 		localPosition.z += z;
-		MarkAsChanged();
+		SetChanged(true);
 	}
 }
 
@@ -44,77 +44,9 @@ void Transform::Rotate(float pitch, float yaw, float roll)
 		//dx::XMVECTOR eulerRotation = dx::XMQuaternionRotationRollPitchYaw(pitch, yaw, roll);
 		dx::XMVECTOR newRotation = dx::XMQuaternionMultiply(dx::XMLoadFloat4(&localRotation), eulerRotation);
 		dx::XMStoreFloat4(&localRotation, newRotation);
-		MarkAsChanged();
+		SetChanged(true);
 	}
 }
-
-void Transform::AddChild(Transform* child)
-{
-	if (child != nullptr)
-	{
-		this->children.push_back(child);
-	}
-}
-
-void Transform::RemoveChild(Transform* child)
-{
-	for (auto i = children.begin(); i < children.end(); i++)
-	{
-		if ((*i) == child)
-		{
-			children.erase(i);
-			break;
-		}
-	}
-}
-
-bool Transform::ContainsChild(Transform* child) const
-{
-	bool contains = false;
-	for (auto i = children.cbegin(); i < children.cend() && !contains; i++)
-	{
-		contains = ((*i) == child);
-	}
-	return contains;
-}
-
-void Transform::SetParentChild(Transform& parent, Transform& child)
-{
-	parent.AddChild(&child);
-	child.SetParent(&parent);
-}
-
-void Transform::RemoveParentChild(Transform& parent, Transform& child)
-{
-	parent.RemoveChild(&child);
-	child.SetParent(nullptr);
-}
-
-void Transform::ClearFromHierarchy(Transform& transform)
-{
-	if (transform.parent != nullptr)
-	{
-		transform.parent->RemoveChild(&transform);
-		transform.parent = nullptr;
-	}
-}
-
-void Transform::ResetChanged()
-{
-	this->changedThisFrame = false;
-	for (size_t i = 0; i < children.size(); i++)
-		children[i]->ResetChanged();
-}
-
-void Transform::MarkAsChanged()
-{
-	this->changedThisFrame = true;
-	for (size_t i = 0; i < children.size(); i++)
-		children[i]->MarkAsChanged();
-}
-
-
-
 
 dx::XMVECTOR Transform::GetLocalPosition()
 {
@@ -132,16 +64,17 @@ void Transform::SetLocalPosition(dx::XMVECTOR position)
 {
 	ASSERT_STATIC_OBJECT;
 	dx::XMStoreFloat3(&this->localPosition, position);
-	MarkAsChanged();
+	SetChanged(true);
 }
 
 void Transform::SetWorldPosition(dx::XMVECTOR position)
 {
 	dx::XMVECTOR pos = position;
 
-	if (parent != nullptr)
+	if (GetOwner()->GetParent() != nullptr)
 	{
-		dx::XMMATRIX invWorld = dx::XMMatrixInverse(nullptr, parent->GetWorldMatrix());
+		const Transform& parent = GetOwner()->GetParent()->GetTransform();
+		dx::XMMATRIX invWorld = dx::XMMatrixInverse(nullptr, parent.GetWorldMatrix());
 		pos = dx::XMVector3Transform(pos, invWorld);
 	}
 
@@ -165,18 +98,21 @@ void Transform::SetLocalRotation(dx::XMVECTOR rotation)
 {
 	ASSERT_STATIC_OBJECT;
 	dx::XMStoreFloat4(&this->localRotation, rotation);
-	MarkAsChanged();
+	SetChanged(true);
 }
 
 void Transform::SetWorldRotation(dx::XMVECTOR rotation)
 {
 	dx::XMVECTOR rot = rotation;
 
-	if (parent != nullptr)
+	if (GetOwner()->GetParent() != nullptr)
 	{
-		dx::XMMATRIX invWorld = dx::XMMatrixInverse(nullptr, parent->GetWorldMatrix());
-		dx::XMVECTOR parentRot = dx::XMQuaternionInverse(parent->GetWorldRotation());
+		const Transform& parentTransform = GetOwner()->GetParent()->GetTransform();
+
+		dx::XMMATRIX invWorld = dx::XMMatrixInverse(nullptr, parentTransform.GetWorldMatrix());
+		dx::XMVECTOR parentRot = dx::XMQuaternionInverse(parentTransform.GetWorldRotation());
 		rot = dx::XMQuaternionMultiply(rot, parentRot);
+
 	}
 
 	SetLocalRotation(rot);
@@ -186,7 +122,7 @@ void Transform::SetScale(dx::XMVECTOR scale)
 {
 	ASSERT_STATIC_OBJECT;
 	dx::XMStoreFloat3(&this->scale, scale);
-	MarkAsChanged();
+	SetChanged(true);
 }
 
 void Transform::SmoothRotation(dx::XMFLOAT3 endPos, float deltaTime, bool changeDir)
@@ -206,13 +142,15 @@ void Transform::SmoothRotation(dx::XMFLOAT3 endPos, float deltaTime, bool change
 	//	SetRotation({ 0, DirectX::XMVectorGetByIndex(GetRotation(), 1) - Math::PI * 2, 0 });
 }
 
-
-
 dx::XMMATRIX Transform::GetWorldMatrix() const
 {
 	dx::XMMATRIX worldMatrix = GetLocalWorldMatrix();
-	if (parent != nullptr)
-		worldMatrix = dx::XMMatrixMultiply(worldMatrix, parent->GetWorldMatrix());
+
+	if (GetOwner()->GetParent() != nullptr)
+	{
+		const Transform& parent = GetOwner()->GetParent()->GetTransform();
+		worldMatrix = dx::XMMatrixMultiply(worldMatrix, parent.GetWorldMatrix());
+	}
 
 	return worldMatrix;
 }

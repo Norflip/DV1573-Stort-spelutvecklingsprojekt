@@ -61,8 +61,7 @@ void WorldGenerator::Construct(const SaveState& state, const WorldDescription& d
 			{
 				Object* root = new Object("puzzel_root");
 				Object* puzzelModel = Engine::Instance->GetResources()->AssembleObject("Propane", "PropaneMaterial");
-				Transform::SetParentChild(root->GetTransform(), puzzelModel->GetTransform());
-
+				Object::AddToHierarchy(root, puzzelModel);
 				puzzelModel->GetTransform().SetLocalPosition({ CHUNK_SIZE / 2.0f, 5.0f, CHUNK_SIZE / 2.0f });
 				puzzelModel->GetTransform().SetScale({ 10, 10, 10 });
 
@@ -121,7 +120,7 @@ void WorldGenerator::Deconstruct()
 		for (auto i : chunkMap)
 		{
 			i.second->PhysicRelease();
-			Transform::ClearFromHierarchy(i.second->GetOwner()->GetTransform());
+			Object::RemoveFromHierarchy(i.second->GetOwner());
 			delete i.second;
 		}
 
@@ -242,7 +241,7 @@ Chunk* WorldGenerator::CreateChunk(ChunkIndexInfo& indexInfo, Object* root, cons
 
 	dx::XMVECTOR chunkPosition = Chunk::IndexToWorld(indexInfo.index, 0.0f);
 	chunkObject->GetTransform().SetPosition(chunkPosition);
-	Transform::SetParentChild(root->GetTransform(), chunkObject->GetTransform());
+	Object::AddToHierarchy(root, chunkObject);
 	chunk->Create(description, path, renderer->GetDevice());
 
 	Material* material = new Material(chunkShader);
@@ -266,7 +265,7 @@ Chunk* WorldGenerator::CreateChunk(ChunkIndexInfo& indexInfo, Object* root, cons
 		}
 
 		Object* object = prop.factory(chunk, chunkPosition);
-		Transform::SetParentChild(chunk->GetOwner()->GetTransform(), object->GetTransform());
+		Object::AddToHierarchy(chunk->GetOwner(), object);
 		//std::cout << " CREATED PUZZEL " << std::endl;
 		prop.usedCount++;
 	}

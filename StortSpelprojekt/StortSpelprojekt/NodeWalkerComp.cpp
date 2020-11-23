@@ -55,7 +55,7 @@ void NodeWalkerComp::InitAnimation()
 	if (GetOwner()->HasComponent<SkeletonMeshComponent>())
 	{
 		this->base = GetOwner()->GetComponent<SkeletonMeshComponent>();
-		this->legs = GetOwner()->GetTransform().GetChildren()[0]->GetOwner()->GetComponent<SkeletonMeshComponent>();
+		this->legs = GetOwner()->GetChild(0)->GetComponent<SkeletonMeshComponent>();
 	}
 	else
 	{
