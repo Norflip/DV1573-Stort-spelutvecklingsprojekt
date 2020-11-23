@@ -191,7 +191,7 @@ bool SphereInsideFrustum(Sphere sphere, Frustum frustum, float zNear, float zFar
 	// far depth value will be approaching -infinity.
     if (sphere.c.z - sphere.r > zFar || sphere.c.z + sphere.r < zNear ) //Switched places for zNear and zFar
     {
-        result = false;
+        //result = false;
     }
 
 	// Then check frustum planes
@@ -215,7 +215,7 @@ bool ConeInsideFrustum(Cone cone, Frustum frustum, float zNear, float zFar)
 	// First check the near and far clipping planes.
     if (ConeInsidePlane(cone, nearPlane) || ConeInsidePlane(cone, farPlane))
     {
-        result = false;
+        //result = false;
     }
 
 	// Then check frustum planes
