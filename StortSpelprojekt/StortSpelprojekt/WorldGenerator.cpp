@@ -106,7 +106,7 @@ void WorldGenerator::Construct(const SaveState& state, const WorldDescription& d
 				lc->SetEnabled(true);
 				lc->SetIntensity(2.0f);
 				lc->SetSpotlightAngle(20.0f);
-				Transform::SetParentChild(obj->GetTransform(), light->GetTransform());
+				Object::AddToHierarchy(obj, light);
 
 			});
 
