@@ -29,8 +29,8 @@ void EnemyManager::InitBaseEnemy()
 		object->AddComponent<CapsuleColliderComponent>(1.6f, 1.8f, zero);
 		object->AddComponent<RigidBodyComponent>(10.f, FilterGroups::ENEMIES, (FilterGroups::EVERYTHING & ~FilterGroups::PICKUPS) & ~FilterGroups::HOLDABLE, BodyType::KINEMATIC, true);
 		EnemySMComp* stateMachine = object->AddComponent<EnemySMComp>(EnemyState::IDLE);
+		stateMachine->RegisterState(EnemyState::PATROL, object->AddComponent<EnemyPatrolComp>());
 		stateMachine->RegisterState(EnemyState::IDLE, object->AddComponent<EnemyIdleComp>());
-		//stateMachine->RegisterState(EnemyState::PATROL, enemy->AddComponent<EnemyPatrolComp>());
 		stateMachine->RegisterState(EnemyState::ATTACK, object->AddComponent<EnemyAttackComp>(nullptr));
 		return object;
 	});
@@ -49,9 +49,9 @@ void EnemyManager::InitChargerEnemy()
 		object->AddComponent<RigidBodyComponent>(10.f, FilterGroups::ENEMIES, (FilterGroups::EVERYTHING & ~FilterGroups::PICKUPS) & ~FilterGroups::HOLDABLE, BodyType::KINEMATIC, true);
 		
 		EnemySMComp* stateMachine = object->AddComponent<EnemySMComp>(EnemyState::IDLE);
+		stateMachine->RegisterState(EnemyState::PATROL, object->AddComponent<EnemyPatrolComp>());
 		stateMachine->RegisterState(EnemyState::IDLE, object->AddComponent<EnemyIdleComp>());
 		stateMachine->RegisterState(EnemyState::ATTACK, object->AddComponent<EnemyAttackComp>(nullptr));
-		//stateMachine->RegisterState(EnemyState::PATROL, enemy->AddComponent<EnemyPatrolComp>());
 		stateMachine->RegisterState(EnemyState::RUN, object->AddComponent<EnemyAttackComp>(nullptr));
 		//stateMachine->RegisterState(EnemyChargerState::DEATH, object->GetComponent<EnemyStatsComp>());	// Death component or something something???
 		return object;
@@ -66,7 +66,7 @@ void EnemyManager::RemoveEnemy(Object* enemy)
 void EnemyManager::SpawnEnemies()
 {
 	// whyyyy
-	nrOfEnemies = 0;
+	nrOfEnemies = 2;
 
 	for (int i = 0; i < nrOfEnemies; i++)
 	{
