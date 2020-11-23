@@ -154,7 +154,13 @@ void ResourceManager::ReadObjects(ID3D11Device* device)
 					}
 				}
 
-				skeletonMesh->BlendAnimations();
+				
+				
+				skeletonMesh->BlendAnimations(); //VIKTOR försök få så att bara base fienden blendar
+				
+				
+				
+				
 				AddResource(name+"Skeleton", skeletonMesh);
 			}
 			// Ugly presumption that we load a Tree at some point
