@@ -50,12 +50,15 @@ void Grid::FindPath(dx::XMFLOAT2 startPos, dx::XMFLOAT2 endPos)
 	openList.push_back(startNode);
 	while (openList.size() > 0)
 	{
+		std::cout << "Open list: " << openList.size() << std::endl;
+		std::cout << "Closed list: " << closedList.size() << std::endl;
 		Node* currentNode = openList[0];
 		for (int i = 1; i < openList.size(); i++)
 		{
 			if (openList[i]->fCost < currentNode->fCost || openList[i]->fCost == currentNode->fCost && openList[i]->hCost < currentNode->hCost)
 			{
 				currentNode = openList[i];
+				erasePos = i;
 			}
 		}
 
@@ -91,6 +94,7 @@ void Grid::FindPath(dx::XMFLOAT2 startPos, dx::XMFLOAT2 endPos)
 			}
 		}
 	}
+	RetracePath(startNode, endNode);
 }
 
 std::vector<Node*> Grid::GetNeighbours(Node* node)
