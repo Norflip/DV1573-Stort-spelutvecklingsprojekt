@@ -153,12 +153,8 @@ void ResourceManager::ReadObjects(ID3D11Device* device)
 						skeletonMesh->SetAnimationTrack(animation, (SkeletonStateMachine)type);
 					}
 				}
-
 				
-				
-				skeletonMesh->BlendAnimations(); //VIKTOR försök få så att bara base fienden blendar
-				
-				
+					skeletonMesh->BlendAnimations();
 				
 				
 				AddResource(name+"Skeleton", skeletonMesh);

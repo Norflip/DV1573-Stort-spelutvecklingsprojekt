@@ -166,10 +166,15 @@ void SkeletonMeshComponent::FindChildren(SkeletonAni& track, unsigned int& index
 		std::string childName = track.GetKeyFrames()[index][0].name;
 		std::cout << parentName << std::endl;
 
-		if (rootName == parentName)
-		{
-
-		}
+		//if (parentName == name)
+		//{
+		//	continue;
+		//}
+		//if (parentName == childName)
+		//{
+		//	map.insert({ parentName, i - 1 });
+		//	FindChildren(track, i, map, name, secondName);
+		//}
 
 			
 	}
