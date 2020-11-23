@@ -49,6 +49,7 @@ void GameScene::InitializeObjects()
 	Object* housesLegsObject = new Object("houseLegs");
 	Object* houseDoor = resources->AssembleObject("HouseDoor", "HouseDoorMaterial");
 	Object* houseExterior = resources->AssembleObject("HouseExterior", "HouseExteriorMaterial");
+	Object* houseDoorRigid = new Object("doorRigid");
 
 	houseBaseObject->GetTransform().Rotate(0, -90.0f * Math::ToRadians, 0.0);
 
@@ -70,7 +71,7 @@ void GameScene::InitializeObjects()
 	//FENCE RIGHT
 	houseBaseObject->AddComponent<BoxColliderComponent>(dx::XMFLOAT3(3.f, 0.625f, 0.1f), dx::XMFLOAT3(0.f, 3.f, -3.f));
 	//FENCE LEFT
-	houseBaseObject->AddComponent<BoxColliderComponent>(dx::XMFLOAT3(5.375f, 0.625f, 0.15f), dx::XMFLOAT3(0.f, 3.f, 3.f));
+	houseBaseObject->AddComponent<BoxColliderComponent>(dx::XMFLOAT3(3.3f, 0.625f, 0.15f), dx::XMFLOAT3(0.f, 3.f, 3.f));
 	// RB
 	houseBaseObject->AddComponent<RigidBodyComponent>(0.0f, FilterGroups::PROPS, FilterGroups::EVERYTHING, BodyType::STATIC, true);
 
@@ -91,8 +92,13 @@ void GameScene::InitializeObjects()
 	houseDoor->AddComponent<HousePartsComponent>(houseBaseObject->GetComponent<SkeletonMeshComponent>());
 	houseExterior->AddComponent<HousePartsComponent>(houseBaseObject->GetComponent<SkeletonMeshComponent>());
 
+	houseDoorRigid->AddComponent<BoxColliderComponent>(dx::XMFLOAT3(0.3f, 0.85f, 0.3f), dx::XMFLOAT3(-1, -1, 1));
+	houseDoorRigid->AddComponent<RigidBodyComponent>(0.0f, FilterGroups::DOOR, FilterGroups::EVERYTHING, BodyType::STATIC, true);
+	houseDoorRigid->AddComponent<HousePartsComponent>(houseBaseObject->GetComponent<SkeletonMeshComponent>());
+
 	AddObject(houseDoor);
 	AddObject(houseExterior);
+	AddObject(houseDoorRigid);
 
 	//Player & Camera
 	dx::XMFLOAT3 playerSpawn = { 10,2,10 };
@@ -434,6 +440,8 @@ void GameScene::OnActivate()
 	//PrintSceneHierarchy(root, 0);
 	house->GetComponent<NodeWalkerComp>()->InitializePath(world.GetPath());
 
+	house->GetComponent<NodeWalkerComp>()->SetWorld(&world);
+
 	//Place signs
 	InitializeSigns();
 	
@@ -524,6 +532,8 @@ void GameScene::Update(const float& deltaTime)
 		OnActivate();
 		leftSign->GetComponent<SelectableComponent>()->SetActive(false);
 	}
+
+	//std::cout << "PlayerPos: " << player->GetTransform().GetPosition().m128_f32[0] << " " << player->GetTransform().GetPosition().m128_f32[1] << " " << player->GetTransform().GetPosition().m128_f32[2] << std::endl;
 
 	static_cast<GUIFont*>(guiManager->GetGUIObject("fps"))->SetString(std::to_string((int)GameClock::Instance().GetFramesPerSecond()));
 	guiManager->UpdateAll();

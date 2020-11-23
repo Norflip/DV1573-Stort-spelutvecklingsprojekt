@@ -160,13 +160,8 @@ void ControllerComp::Update(const float& deltaTime)
 	if (!inside)
 	{
 		// Check length from player
-		dx::XMVECTOR offset = { 2.0f, 0.0f, 2.0f, 0.0f };
-		lengthVec = dx::XMVector3Length(dx::XMVectorSubtract(dx::XMVectorAdd(houseWalkComp->GetOwner()->GetTransform().GetPosition(), offset), GetOwner()->GetTransform().GetPosition()));;
+		lengthVec = dx::XMVector3Length(dx::XMVectorSubtract(houseWalkComp->GetOwner()->GetTransform().GetPosition(), GetOwner()->GetTransform().GetPosition()));
 		dx::XMStoreFloat(&length, lengthVec);
-		if (length <= 2.2f)
-			inDoorRange = true;
-		else
-			inDoorRange = false;
 	}
 	
 	if (houseWalkComp->GetIsWalking())
