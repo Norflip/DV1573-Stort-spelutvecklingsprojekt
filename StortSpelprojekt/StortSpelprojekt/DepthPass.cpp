@@ -1,8 +1,7 @@
 #include "stdafx.h"
 #include "DepthPass.h"
 
-ID3D11DepthStencilView* DepthPass::depthDSV;
-ID3D11ShaderResourceView* DepthPass::depthSRV;
+
 
 void DepthPass::Init(ID3D11Device* device, UINT width, UINT height)
 {

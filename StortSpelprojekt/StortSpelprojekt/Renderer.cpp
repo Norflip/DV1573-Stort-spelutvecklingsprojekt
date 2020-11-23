@@ -32,91 +32,24 @@ Renderer::~Renderer()
 	
 
 	delete[] tmpBatchInstanceData;
-	if (o_LightGrid_tex)
-	{
-		o_LightGrid_tex->Release();
-	}
-	if (o_LightGrid_texSRV)
-	{
-		o_LightGrid_texSRV->Release();
-	}
-	if (t_LightGrid_tex)
-	{
-		t_LightGrid_tex->Release();
-	}
-	if (t_LightGrid_texSRV)
-	{
-		t_LightGrid_texSRV->Release();
-	}
+	RELEASE(o_LightGrid_tex);
+	RELEASE(o_LightGrid_texSRV);
+	RELEASE(t_LightGrid_tex);
+	RELEASE(t_LightGrid_texSRV);
+	RELEASE(frustums_buffer);
+	RELEASE(inFrustums_srv);
+	RELEASE(outFrustums_uav);
+	RELEASE(o_LightIndexCounter_uavbuffer);
+	RELEASE(o_LightIndexCounter_uav);
+	RELEASE(t_LightIndexCounter_uavbuffer);
+	RELEASE(t_LightIndexCounter_uav);
+	RELEASE(o_LightIndexList_uavbuffer);
+	RELEASE(o_LightIndexList_srv);
+	RELEASE(o_LightIndexList_uav);
+	RELEASE(t_LightIndexList_uavbuffer);
+	RELEASE(t_LightIndexList_srv);
+	RELEASE(t_LightIndexList_uav);
 	
-	
-	
-	if (frustums_buffer)
-	{
-		frustums_buffer->Release();
-	}
-	if (inFrustums_srv)
-	{
-		inFrustums_srv->Release();
-	}
-	if (outFrustums_uav)
-	{
-		outFrustums_uav->Release();
-	}
-	
-	
-	
-	
-	if (o_LightIndexCounter_uavbuffer)
-	{
-		o_LightIndexCounter_uavbuffer->Release();
-	}
-	if (o_LightIndexCounter_uav)
-	{
-		o_LightIndexCounter_uav->Release();
-	}
-	
-	
-	if (t_LightIndexCounter_uavbuffer)
-	{
-		t_LightIndexCounter_uavbuffer->Release();
-	}
-	if (t_LightIndexCounter_uav)
-	{
-		t_LightIndexCounter_uav->Release();
-	}
-	
-	
-	if (o_LightIndexList_uavbuffer)
-	{
-		o_LightIndexList_uavbuffer->Release();
-	}
-	if (o_LightIndexList_srv)
-	{
-		o_LightIndexList_srv->Release();
-	}
-	
-	
-	
-	if (o_LightIndexList_uav)
-	{
-		o_LightIndexList_uav->Release();
-	}
-	if (t_LightIndexList_uavbuffer)
-	{
-		t_LightIndexList_uavbuffer->Release();
-	}
-	if (t_LightIndexList_srv)
-	{
-		t_LightIndexList_srv->Release();
-	}
-	
-	
-	
-	if (t_LightIndexList_uav)
-	{
-		t_LightIndexList_uav->Release();
-	}
 
 }
 
@@ -901,7 +834,7 @@ void Renderer::InitForwardPlus(CameraComponent* camera, Window* window, Shader& 
 	DXHelper::CreateStructuredBuffer(device, &o_LightIndexList_uavbuffer, o_LightIndexList.data(), sizeof(UINT), o_LightIndexList.size(), &o_LightIndexList_uav, &o_LightIndexList_srv);
 	
 	DXHelper::CreateStructuredBuffer(device, &t_LightIndexList_uavbuffer, t_LightIndexList.data(), sizeof(UINT), t_LightIndexList.size(), &t_LightIndexList_uav, &t_LightIndexList_srv);
-	DepthPass::Init(device, width,height);
+	depthPass.Init(device, width,height);
 	
 	
 }
@@ -911,8 +844,8 @@ void Renderer::UpdateForwardPlus(CameraComponent* camera)
 	//this is to be run for lightculling compute shader
 	//////DEPTH PASS BEGIN---------------------------
 	
-	DepthPass::BindNull(context);
-	DepthPass::BindDSV(context);
+	depthPass.BindNull(context);
+	depthPass.BindDSV(context);
 	context->OMSetDepthStencilState(dss, 0);
 	SetCullBack(true);
 	DrawQueueToTarget(opaqueItemQueueDepth, camera);
@@ -931,7 +864,7 @@ void Renderer::UpdateForwardPlus(CameraComponent* camera)
 
 	SetCullBack(true);
 
-	DepthPass::BindNull(context);
+	depthPass.BindNull(context);
 	//////DEPTH PASS END-----------------------------------------------
 	ClearRenderTarget(midbuffer);
 	SetRenderTarget(midbuffer);
@@ -941,7 +874,7 @@ void Renderer::UpdateForwardPlus(CameraComponent* camera)
 	context->CSSetUnorderedAccessViews(5, 1, &nullUAV, NULL); //u5
 	context->CSSetUnorderedAccessViews(6, 1, &nullUAV, NULL); //u6
 	context->OMSetDepthStencilState(dss, 0);
-	context->CSSetShaderResources(1, 1, DepthPass::GetDepthSRV());
+	context->CSSetShaderResources(1, 1, depthPass.GetDepthSRV());
 	DXHelper::BindStructuredBuffer(context, 9, ShaderBindFlag::COMPUTE, &inFrustums_srv);
 	LightManager::Instance().UpdateBuffers(context, camera);
 	o_LightIndexCounter[0] = 0;

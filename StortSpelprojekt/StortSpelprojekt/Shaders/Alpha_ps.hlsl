@@ -25,34 +25,8 @@ float4 main(VS_OUTPUT input) : SV_TARGET
 	uint startOffset = LightGrid[tileIndex].x;
 	uint lightCount = LightGrid[tileIndex].y;
 
-	for (uint i = 0; i < lightCount; i++)
-	{
-		uint lightIndex = LightIndexList[startOffset + i];
-		Light light = Lights[lightIndex];
-		
-        float4 result = float4(0.0f, 0.0f, 0.0f, 0.0f);
-		
-		switch (light.type)
-		{
-		case DIRECTIONAL_LIGHT:
-		{
-			result = CalculateDirectionalLight(light, normalized, viewDirection);
-			
-		}
-		break;
-		case POINT_LIGHT:
-		{
-			result = CalculatePointLight(light, normalized, input.worldPosition, viewDirection);
-		}
-		break;
-		case SPOT_LIGHT:
-		{
-			result = CalculateSpotLight(light, normalized, input.worldPosition, viewDirection);
-		}
-		break;
-		}
-		finalColor += result;
-	}
+	finalColor = IterateLights(startOffset,lightCount,finalColor, normalized,  input.worldPosition,  viewDirection);
+
 	finalColor.a = 1;
 	textureColor.a = alphaMap.Sample(defaultSampleType, input.uv).r;
 	finalColor = saturate(finalColor * textureColor);
