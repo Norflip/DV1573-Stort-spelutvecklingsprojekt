@@ -6,19 +6,21 @@ struct Node
 	int gCost = 0;
 	int hCost = 0;
 	int fCost = 0;
-	int posX;
-	int posY;
+	int posX = 0;
+	int posY = 0;
+	bool openList = false;
+	bool closedList = false;
 	bool correctPath = false;
-	Node* parent;
+	std::vector<Node*> neighbors;
+	Node* previous = nullptr;
+	Node* parent = nullptr;
 	bool operator==(const Node& other)
 	{
-		return gCost == other.gCost && hCost == other.hCost && parent == other.parent &&
-			posX == other.posX && posY == other.posY;
+		return posX == other.posX && posY == other.posY;
 	}
 	bool operator!=(const Node& other)
 	{
-		return gCost != other.gCost && hCost != other.hCost && parent != other.parent &&
-			posX != other.posX && posY != other.posY;
+		return posX != other.posX && posY != other.posY;
 	}
 };
 
@@ -35,6 +37,13 @@ private:
 	std::vector<Node*> GetNeighbours(Node* node);
 	int GetDistance(Node* nodeA, Node* nodeB);
 	void RetracePath(Node* startNode, Node* endNode);
+	
+	void FindPath2();
+	void AddNeighbors(Node* node);
+	int Heuristic(Node* neighbor, Node* end);
+	bool Includes(std::vector<Node*> checkVector, Node* node);
+
+	void TestNodes();
 
 	int rows;
 	int columns;
