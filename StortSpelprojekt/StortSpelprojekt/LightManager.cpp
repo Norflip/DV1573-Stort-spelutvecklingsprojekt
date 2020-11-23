@@ -31,7 +31,7 @@ size_t LightManager::RegisterLight(LightComponent* light)
 		return this->index++;
 	}
 	else
-		return this->index;
+		return -1;
 }
 
 LightComponent* LightManager::GetLight(size_t index)
