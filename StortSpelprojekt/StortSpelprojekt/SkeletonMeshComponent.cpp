@@ -180,6 +180,7 @@ void SkeletonMeshComponent::PlayOnce(const float& deltaTime)
 {
 	float time = 0.0f;
 	bool doneOnce = false;
+	
 
 	if (currentAni == SkeletonStateMachine::IDLE)
 	{
@@ -323,12 +324,14 @@ void SkeletonMeshComponent::PlayOnce(const float& deltaTime)
 	}
 	else if (currentAni == SkeletonStateMachine::DEATH)
 	{
+	
 		if (!doneOnce)
 		{
 			elapsedTime += deltaTime;
 			time = elapsedTime;
 			time *= timeScale;
 
+			//Get the playtime for the animation in seconds.
 			float animLength = skeletonAnimations[4].GetAniLength() / skeletonAnimations[4].GetFPS();
 
 			if (time <= animLength)
@@ -338,6 +341,7 @@ void SkeletonMeshComponent::PlayOnce(const float& deltaTime)
 			}
 			else
 			{
+				doneDeath = true;
 				elapsedTime = 0.0f;
 				doneOnce = true;
 			}

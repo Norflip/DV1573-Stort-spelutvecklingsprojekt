@@ -60,13 +60,24 @@ void EnemyManager::InitChargerEnemy()
 
 void EnemyManager::RemoveEnemy(Object* enemy)
 {
-	enemyPool->ReturnItem(enemy);
+	SkeletonMeshComponent* skeleton = enemy->GetComponent<SkeletonMeshComponent>();
+	
+	skeleton->SetTrack(SkeletonStateMachine::DEATH, true);
+	if (!skeleton)
+	{
+		std::cout << "GGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGG" << std::endl;
+	}
+	if (skeleton->GetDoneDeath())
+	{
+		enemyPool->ReturnItem(enemy);
+	}
+	
 }
 
 void EnemyManager::SpawnEnemies()
 {
 	// whyyyy
-	nrOfEnemies = 0;
+	nrOfEnemies = 1;
 
 	for (int i = 0; i < nrOfEnemies; i++)
 	{
