@@ -36,15 +36,7 @@ struct cb_Material
 	float paddingTwo;
 };
 
-//ALIGN16
-//struct s_PointLight
-//{
-//	dx::XMFLOAT4 lightColor;
-//	dx::XMFLOAT3 lightPosition;
-//	float range;
-//	dx::XMFLOAT3 attenuation;
-//	float paddingThree;
-//};
+
 
 ALIGN16
 struct s_Plane
@@ -131,9 +123,7 @@ struct cb_Scene
 
 	dx::XMFLOAT4X4 view;
 	
-	UINT nrOfLights;
-	dx::XMUINT3 p;
-	dx::XMFLOAT4X4 projection;
+	
 
 
 };

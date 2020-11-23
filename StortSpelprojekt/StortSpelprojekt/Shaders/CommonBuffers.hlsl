@@ -73,9 +73,7 @@ cbuffer cb_Scene : register(b2)
 
     row_major matrix view;
 
-    uint nrOfLights;
-    uint3 p;
-    row_major matrix projection;
+   
 }
 
 //cbuffer cb_Lights : register(b3)

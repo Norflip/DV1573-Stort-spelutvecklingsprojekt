@@ -270,7 +270,6 @@ void Renderer::RenderFrame(CameraComponent* camera, float time, float distance, 
 	yPos += (float)Input::Instance().GetPrevMousePosRelative().x;
 	data.mousePos = { xPos,yPos };
 	data.screenSize = { (float)outputWindow->GetWidth(), (float)outputWindow->GetHeight() };
-	data.nrOfLights = LightManager::Instance().GetLightCount();
 	//data.mousePos = { (float)Input::Instance().GetMousePos().x, (float)Input::Instance().GetMousePos().y };
 	// put in mouse pos delta here
 	dx::XMStoreFloat3(&data.cameraPosition, camera->GetOwner()->GetTransform().GetPosition());
@@ -787,11 +786,7 @@ void Renderer::DrawScreenQuad(const Material* material)
 
 void Renderer::InitForwardPlus(CameraComponent* camera, Window* window, Shader& forwardPlusShader)
 {
-	cb_Scene sceneData = sceneBuffer.GetData();
-
-	dx::XMStoreFloat4x4(&sceneData.projection, dx::XMMatrixTranspose(camera->GetProjectionMatrix()));
-	sceneBuffer.SetData(sceneData);
-	sceneBuffer.UpdateBuffer(context);
+	
 	
 	this->width = window->GetWidth();
 	this->height = window->GetHeight();
