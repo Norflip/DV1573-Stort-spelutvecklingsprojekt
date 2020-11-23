@@ -65,8 +65,8 @@ public:
 	void Initialize(Window* window);
 
 	void DrawQueueToTarget(RenderQueue& queue, CameraComponent* camera);
-	void RenderFrame(CameraComponent* camera, float time);
-	void RenderFrame(CameraComponent* camera, float time, RenderTexture& target, bool drawGUI = false, bool applyRenderPasses = true);
+	void RenderFrame(CameraComponent* camera, float time, float distance = 0.f);
+	void RenderFrame(CameraComponent* camera, float time, float distance, RenderTexture& target, bool drawGUI = false, bool applyRenderPasses = true);
 
 	void AddRenderPass(RenderPass*);
 	
@@ -94,6 +94,8 @@ public:
 	RenderTexture& GetMidbuffer() { return this->midbuffer; }
 
 	void RemoveRenderPass(RenderPass*);
+
+	void SetIdAndColor(int id, float color);
 
 	ALIGN16_ALLOC;
 
@@ -154,6 +156,10 @@ private:
 
 	float xPos= 0;
 	float yPos =0;
+
+	int ids;
+	float color;
+
 	//rasterizer
 	ID3D11RasterizerState* rasterizerStateCullBack;
 	ID3D11RasterizerState* rasterizerStateCullNone;

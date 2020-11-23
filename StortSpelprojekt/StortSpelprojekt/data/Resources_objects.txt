@@ -1,4 +1,4 @@
-Objects: 48
+Objects: 49
 
 Charger: Models/Enemies/Charger_Model.ZWEB
 Shader: skeletonShader
@@ -91,7 +91,7 @@ Shader: defaultShader
 FuelCanBlue: Models/Pickups/Fuel_Can_Blue.ZWEB
 Shader: defaultShader
 
-FuelCanRed: Models/Pickups/Fuel_Can_Red.ZWEWB
+FuelCanRed: Models/Pickups/Fuel_Can_Red.ZWEB
 Shader: defaultShader
 
 Hammer: Models/Weapons/Hammer.ZWEB
@@ -168,6 +168,9 @@ Shader: defaultShader
 
 PuzzleFrogStatue: Models/Puzzles/Puzzle_Frog_statue.ZWEB
 Shader: defaultShader
+
+Quad: Models/Quad.ZWEB
+Shader: fireShader
 
 HouseExterior: Models/House/House_Exterior.ZWEB
 Shader: defaultShader

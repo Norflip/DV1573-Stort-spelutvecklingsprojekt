@@ -72,7 +72,8 @@ void EnemyManager::SpawnEnemies()
 	{
 		dx::XMFLOAT3 playerPos;
 		dx::XMStoreFloat3(&playerPos, player->GetTransform().GetPosition());
-		SpawnEnemy("baseEnemy", { playerPos.x + i * 5 , playerPos.y + 6, (float)(playerPos.z + i * 5) });
+		SpawnEnemy("baseEnemy", { playerPos.x, playerPos.y + 6, (float)(playerPos.z + i * 5) });
+		
 	}
 
 	for (int i = 0; i < nrOfEnemies; i++)
@@ -81,10 +82,17 @@ void EnemyManager::SpawnEnemies()
 		dx::XMStoreFloat3(&playerPos, player->GetTransform().GetPosition());
 		SpawnEnemy("chargerEnemy", { playerPos.x - i * 5, playerPos.y + 6, (float)(playerPos.z - i * 5) });
 	}
+
+
 }
 
 void EnemyManager::DespawnEnemies()
 {
+	for (int i = 0; i < enemyVector.size(); i++)
+	{
+		RemoveEnemy(enemyVector[i]);
+	}
+	
 }
 
 void EnemyManager::SpawnEnemy(std::string key, dx::XMVECTOR position)
@@ -99,4 +107,6 @@ void EnemyManager::SpawnEnemy(std::string key, dx::XMVECTOR position)
 	Transform::SetParentChild(root->GetTransform(), enemy->GetTransform());
 
 	enemy->GetComponent<EnemyStatsComp>()->SetManager(this);
+
+	enemyVector.push_back(enemy);
 }

@@ -10,7 +10,7 @@ class EnemyManager
 
 		void Initialize(Object* player, PlayerComp* playerComp, Object* root);
 
-		std::vector<Object*> GetBaseEnemies() const { return baseEnemies; }
+		std::vector<Object*> GetEnemies() const { return enemyVector; }
 		void InitBaseEnemy();
 		void InitChargerEnemy();
 		void RemoveEnemy(Object* enemy);
@@ -22,7 +22,7 @@ class EnemyManager
 		void SpawnEnemy(std::string key, dx::XMVECTOR position);
 
 		ObjectPooler* enemyPool;
-		std::vector<Object*> baseEnemies;
+		std::vector<Object*> enemyVector;
 		Object* player;
 		PlayerComp* playerComp;
 		ResourceManager* resources;

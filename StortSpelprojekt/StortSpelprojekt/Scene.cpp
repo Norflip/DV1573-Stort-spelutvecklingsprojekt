@@ -15,8 +15,10 @@ Scene::Scene() : input(Input::Instance())
 
 Scene::~Scene()
 {
-	delete root;
-	root = nullptr;	
+	// skapar en krasch atm, vet inte riktigt varför. 
+	// Ska lägga in namnet för varje scene för att lättare hitta vilken scen som kraschar.
+//	delete root;
+//	root = nullptr;	
 }
 
 void Scene::SetDepedencies(ResourceManager* resources, Renderer* renderer, Physics* physics, Window* window)

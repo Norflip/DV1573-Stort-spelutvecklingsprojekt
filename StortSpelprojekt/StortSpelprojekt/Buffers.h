@@ -7,8 +7,6 @@ constexpr size_t CB_MATERIAL_SLOT = 1;
 constexpr size_t CB_SCENE_SLOT = 2; 
 constexpr size_t CB_LIGHT_SLOT = 3;
 constexpr size_t CB_GRASS_PARAMETERS_SLOT = 4;
-constexpr size_t CB_FOG_SLOT = 5;
-
 
 constexpr size_t POINT_LIGHT_COUNT = 32;
 
@@ -58,14 +56,20 @@ ALIGN16
 struct cb_Scene
 {
 	dx::XMFLOAT4X4 invProjection;
+
 	dx::XMFLOAT4X4 invView;
 
 	dx::XMFLOAT3 cameraPosition;
 	int id;
+
 	float factor;
 	float time;
 	dx::XMFLOAT2 mousePos;
+
 	dx::XMFLOAT2 screenSize;
+	float distanceToHouse;
+	float pad_cbs;
+
 };
 
 ALIGN16
@@ -76,5 +80,7 @@ struct cb_grass
 	float grassRadius;
 	float grassDisplacement;
 };
+
+
 
 

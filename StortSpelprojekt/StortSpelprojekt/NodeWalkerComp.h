@@ -25,6 +25,7 @@ private:
 	SkeletonMeshComponent* legs;
 	RigidBodyComponent* rbComp;
 	PlayerComp* playerComp;
+	dx::XMFLOAT3 pos3;
 
 	void StartAnim();
 	void StopAnim();
@@ -41,8 +42,6 @@ public:
 	//dx::XMFLOAT3 GetLastPos();
 	dx::XMFLOAT3 GetMoveVec();
 	bool GetIsWalking() const { return isWalking; };
-
-	//void SetPosition(dx::XMVECTOR pos);
 
 };
 

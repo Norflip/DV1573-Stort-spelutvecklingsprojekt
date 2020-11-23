@@ -29,11 +29,11 @@ public:
 	float GetSprintSpeed()const { return SprintSpeed; }
 	float GetCrouchSpeed()const { return crouchSpeed; }
 	float GetMovementspeed()const { return movementSpeed; }
-
+	float GetDangerDistance();
 	float GetRadius() const { return radius; }
 
 	void Reset();
-
+	
 	void LoseHealth(float damage) { health -= damage; }	
 	void AddHealth(float health) { this->health += health; }	
 	void AddAttack(float attack) { this->attack += attack; }
@@ -46,7 +46,7 @@ public:
 	void SetFuel(float fuel) { this->fuel = fuel; }
 	void SetFood(float food) { this->fuel = food; }
 	CameraComponent* GetCamera(){ return cam; };
-	
+	void InsertArms(Object* arms);
 	void SetguiMan(GUIManager* guiMan) { this->guiMan = guiMan; }
 	void InsertWeapon(WeaponComponent* weapon, std::string name);
 	void SetInteriorPosition(float x, float y, float z);
@@ -55,12 +55,14 @@ public:
 private:
 	//det h�r skriver en kommentar till hold objekt
 	void HoldObject();
+	void PickUpObject();
 	void DropObject();
 	float health, attack, attackSpeed, fuel, food;
 	//int currentWeapon;
 	float movementSpeed, crouchSpeed, SprintSpeed;
 	float foodLossPerSecond, fuelBurnPerMeter, healthLossPerSecond;
 	float radius;
+	float distance;
 	GUIManager* guiMan;
 	GUISprite* fuelDippingBar, * foodDippingBar, * healthDippingBar, * fuelBar, * foodBar, * healthBar;
 	Renderer* renderer;
@@ -71,6 +73,8 @@ private:
 	Object* currentWeapon;
 	Object* holding;
 	Object* house;
+	Object* arms;
+	Object* clickable;
 	RayHit hit;
 	Physics* physics;
 	CameraComponent* cam;
@@ -82,6 +86,7 @@ private:
 	float hpLossDist, maxDist, hpLossPerDistance;
 	float ReverseAndClamp(float inputValue);
 	float test = 0;
+
 	void RayCast(const float& deltaTime);
 	sm::Vector3 holdAngle;
 	sm::Vector3 toYAW;
