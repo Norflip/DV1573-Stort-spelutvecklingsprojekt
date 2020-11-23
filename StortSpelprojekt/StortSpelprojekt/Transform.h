@@ -22,26 +22,9 @@ public:
 	void Translate(float x, float y, float z);
 	void Rotate(float pitch, float yaw, float roll);
 
-	bool HasParent() const { return this->parent != nullptr; }
-	void SetParent(Transform* parent) { this->parent = parent; changedThisFrame = true; }
-
-	void AddChild(Transform* child);
-	void RemoveChild(Transform* child);
-	bool ContainsChild(Transform* child) const;
-
-	size_t CountChildren() const { return this->children.size(); }
-	std::vector<Transform*> GetChildren() const { return this->children; }
-
-	static void SetParentChild(Transform& parent, Transform& child);
-	static void RemoveParentChild(Transform& parent, Transform& child);
-	static void ClearFromHierarchy(Transform& transform);
-
-	Transform* GetParent() const { return this->parent; }
 	Object* GetOwner() const { return this->owner; }
-
 	bool ChangedThisFrame() const { return this->changedThisFrame; }
-	void ResetChanged();
-	void MarkAsChanged();
+	void SetChanged(bool changed) { this->changedThisFrame = changed; }
 
 	dx::XMVECTOR GetPosition() const { return this->GetWorldPosition(); }
 	dx::XMVECTOR GetLocalPosition();
@@ -57,18 +40,13 @@ public:
 	void SetLocalRotation(dx::XMVECTOR rotation);
 	void SetWorldRotation(dx::XMVECTOR rotation);
 	
-
 	dx::XMVECTOR GetScale() const { return dx::XMLoadFloat3(&this->scale); }
 	void SetScale(dx::XMVECTOR scale);
 
-
 	void SmoothRotation(dx::XMFLOAT3 endPos, float deltaTime, bool changeDir);
-	
 
 private:
 	bool changedThisFrame;
-	std::vector<Transform*> children;
-	Transform* parent;
 	Object* owner;
 
 	dx::XMFLOAT3 localPosition;

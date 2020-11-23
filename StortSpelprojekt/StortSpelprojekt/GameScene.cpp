@@ -4,13 +4,8 @@
 #include "GUIFont.h"
 #include "Engine.h"
 #include "GUICompass.h"
-void GameScene::RemoveEnemy()
-{
-	enemy->RemoveFlag(ObjectFlag::ENABLED);
-	enemy->AddFlag(ObjectFlag::REMOVED);
-}
 
-GameScene::GameScene()
+GameScene::GameScene() : Scene("GameScene")
 {
 	this->interiorPosition = { 0.0f, -100.0f, 0.0f };
 	fogId = 0;
@@ -24,19 +19,6 @@ GameScene::~GameScene()
 
 void GameScene::Initialize()
 {
-	pooler->Register("test_body_cube", 10, [](ResourceManager* resources) {
-
-		Object* object = new Object("physics_cube");
-
-		Mesh* mesh1 = resources->GetResource<Mesh>("Test");
-		Material* material1 = resources->GetResource<Material>("TestMaterial");
-		
-		object->AddComponent<MeshComponent>(mesh1, material1);
-		object->AddComponent<BoxColliderComponent>(dx::XMFLOAT3(0.5f, 0.5f, 0.5f), dx::XMFLOAT3(0, 0, 0));
-		object->AddComponent<RigidBodyComponent>(10.0f, FilterGroups::DEFAULT, FilterGroups::EVERYTHING, BodyType::DYNAMIC, true);
-		return object;
-	});
-
 	InitializeGUI();
 	InitializeObjects();
 	InitializeInterior();
@@ -59,7 +41,7 @@ void GameScene::InitializeObjects()
 	SkeletonMeshComponent* legsComponent = resources->GetResource<SkeletonMeshComponent>("HouseLegsSkeleton");
 
 	houseBaseObject->GetTransform().SetScale({ 0.5f, 0.5f, 0.5f });
-	
+
 	//WALLS
 	houseBaseObject->AddComponent<BoxColliderComponent>(dx::XMFLOAT3(2.0f, 3.5f, 2.3f), dx::XMFLOAT3(0.f, 0.9f, -1.0f));
 	//PORCH
@@ -82,12 +64,12 @@ void GameScene::InitializeObjects()
 
 	houseBaseObject->AddComponent<SkeletonMeshComponent>(baseComponent);
 	housesLegsObject->AddComponent<SkeletonMeshComponent>(legsComponent);
-	
-	Transform::SetParentChild(houseBaseObject->GetTransform(), housesLegsObject->GetTransform());
+
+	Object::AddToHierarchy(houseBaseObject, housesLegsObject);
 
 	nodeWalker = houseBaseObject->AddComponent<NodeWalkerComp>();
 	nodeWalker->InitAnimation();
-	AddObject(houseBaseObject);
+	AddObjectToRoot(houseBaseObject);
 
 	houseDoor->AddComponent<HousePartsComponent>(houseBaseObject->GetComponent<SkeletonMeshComponent>());
 	houseExterior->AddComponent<HousePartsComponent>(houseBaseObject->GetComponent<SkeletonMeshComponent>());
@@ -96,9 +78,9 @@ void GameScene::InitializeObjects()
 	houseDoorRigid->AddComponent<RigidBodyComponent>(0.0f, FilterGroups::DOOR, FilterGroups::EVERYTHING, BodyType::STATIC, true);
 	houseDoorRigid->AddComponent<HousePartsComponent>(houseBaseObject->GetComponent<SkeletonMeshComponent>());
 
-	AddObject(houseDoor);
-	AddObject(houseExterior);
-	AddObject(houseDoorRigid);
+	AddObjectToRoot(houseDoor);
+	AddObjectToRoot(houseExterior);
+	AddObjectToRoot(houseDoorRigid);
 
 	//Player & Camera
 	dx::XMFLOAT3 playerSpawn = { 10,2,10 };
@@ -108,18 +90,19 @@ void GameScene::InitializeObjects()
 	Object* cameraObject = new Object("camera", ObjectFlag::ENABLED);
 	this->player = playerObject;
 	camera = cameraObject->AddComponent<CameraComponent>(window->GetWidth(), window->GetHeight(), 60.0f);
-	
+
 	cameraObject->GetTransform().SetPosition(playerSpawnVec);
 	playerObject->GetTransform().SetPosition(playerSpawnVec);
 	playerObject->AddComponent<CapsuleColliderComponent>(0.5f, 1.5f, zero);
 	playerObject->AddComponent<RigidBodyComponent>(50.f, FilterGroups::PLAYER, (FilterGroups::EVERYTHING), BodyType::DYNAMIC, true);
-	
+
 	playerObject->AddComponent<PlayerComp>(renderer, camera, house, Engine::Instance->GetPhysics(), guiManager, 100.f, 2.f, 20.f, 50.f, 3.f);
-	playerObject->AddComponent<ControllerComp>(cameraObject, houseBaseObject); 
+	playerObject->AddComponent<ControllerComp>(cameraObject, houseBaseObject);
 	playerObject->GetComponent<PlayerComp>()->SetInteriorPosition(this->interiorPosition.x, this->interiorPosition.y, this->interiorPosition.z);
-	
-	AddObject(cameraObject, playerObject);
-	AddObject(playerObject);
+
+
+	Object::AddToHierarchy(playerObject, cameraObject);
+	AddObjectToRoot(playerObject);
 
 	Object* testPointLight = new Object("body_pointLight");
 
@@ -127,7 +110,7 @@ void GameScene::InitializeObjects()
 	testPointLight->GetTransform().SetPosition(dx::XMLoadFloat3(&lightTranslation));
 	testPointLight->AddComponent<PointLightComponent>(dx::XMFLOAT4(0.3f, 0.3f, 0.3f, 1.0f), 7.f);
 
-	AddObject(testPointLight, playerObject);
+	Object::AddToHierarchy(playerObject, testPointLight);
 
 	/* For fuel info from playercomp */
 	nodeWalker->GetPlayerInfo(playerObject->GetComponent<PlayerComp>());
@@ -141,8 +124,8 @@ void GameScene::InitializeObjects()
 	healthkitObject->GetTransform().SetPosition({ 23,2,50 });
 	healthkitObject->AddComponent<BoxColliderComponent>(dx::XMFLOAT3{ 0.5f, 0.5f, 0.5f }, dx::XMFLOAT3{ 0, 0, 0 });
 	healthkitObject->AddComponent<PickupComponent>(PickupType::Health, 20.0f);
-	healthkitObject->AddComponent<RigidBodyComponent>(0.f, FilterGroups::PICKUPS, (FilterGroups::EVERYTHING &~FilterGroups::PLAYER), BodyType::DYNAMIC,true);
-	AddObject(healthkitObject);
+	healthkitObject->AddComponent<RigidBodyComponent>(0.f, FilterGroups::PICKUPS, (FilterGroups::EVERYTHING & ~FilterGroups::PLAYER), BodyType::DYNAMIC, true);
+	AddObjectToRoot(healthkitObject);
 
 	///* Fuel pickup stuff temporary */
 	Object* fuelCanObject = resources->AssembleObject("FuelCanGreen", "FuelCanGreenMaterial");
@@ -151,25 +134,22 @@ void GameScene::InitializeObjects()
 	fuelCanObject->GetTransform().SetPosition({ 22,2,52 });
 	fuelCanObject->AddComponent<BoxColliderComponent>(dx::XMFLOAT3{ 0.3f, 0.3f, 0.3f }, dx::XMFLOAT3{ 0, 0, 0 });
 	fuelCanObject->AddComponent<PickupComponent>(PickupType::Fuel, 20.0f);
-	fuelCanObject->AddComponent<RigidBodyComponent>(10.f, FilterGroups::HOLDABLE, (FilterGroups::EVERYTHING &~FilterGroups::PLAYER), BodyType::DYNAMIC, true);
-	AddObject(fuelCanObject);
+	fuelCanObject->AddComponent<RigidBodyComponent>(10.f, FilterGroups::HOLDABLE, (FilterGroups::EVERYTHING & ~FilterGroups::PLAYER), BodyType::DYNAMIC, true);
+	AddObjectToRoot(fuelCanObject);
 
 	///* Banana pickup stuff temporary */
 	Shader* particleShader = resources->GetShaderResource("particleShader");
 	Object* beansObject = resources->AssembleObject("Soup", "SoupMaterial");
 	beansObject->AddFlag(ObjectFlag::DEFAULT);
 	beansObject->GetComponent<MeshComponent>()->SetBatchable(true);
-	beansObject->GetTransform().SetPosition({22, 2.0f, 53 });
+	beansObject->GetTransform().SetPosition({ 22, 2.0f, 53 });
 	beansObject->AddComponent<BoxColliderComponent>(dx::XMFLOAT3{ 0.5f, 0.5f, 0.5f }, dx::XMFLOAT3{ 0, 0, 0 });
 	beansObject->AddComponent<PickupComponent>(PickupType::Food, 20.0f);
 	beansObject->AddComponent<RigidBodyComponent>(0.f, FilterGroups::PICKUPS, (FilterGroups::EVERYTHING & ~FilterGroups::PLAYER), BodyType::DYNAMIC, true);
 
 	beansObject->AddComponent<ParticleSystemComponent>(renderer, particleShader);
 	beansObject->GetComponent<ParticleSystemComponent>()->InitializeParticles(renderer->GetDevice(), L"Textures/starstar.png");
-	AddObject(beansObject);		
-	//Has to be made in end of objects in order to use them
-
-	AddObject(beansObject);
+	AddObjectToRoot(beansObject);
 
 	//Player Arms
 	Object* playerArms = new Object("PlayerArms", ObjectFlag::DEFAULT | ObjectFlag::NO_CULL);
@@ -177,7 +157,7 @@ void GameScene::InitializeObjects()
 	playerArms->AddComponent<SkeletonMeshComponent>(armsSkeleton);
 	playerArms->AddComponent<PlayerAnimHandlerComp>(playerArms->GetComponent<SkeletonMeshComponent>(), cameraObject, player);
 	player->GetComponent< PlayerComp>()->InsertArms(playerArms);
-	AddObject(playerArms);
+	AddObjectToRoot(playerArms);
 
 	//Axe
 	Object* axeObject = resources->AssembleObject("Axe", "AxeMaterial", ObjectFlag::DEFAULT | ObjectFlag::NO_CULL);
@@ -185,14 +165,14 @@ void GameScene::InitializeObjects()
 	axeObject->GetTransform().SetScale({ 1.0f, 1.0f, 1.0f });
 	axeObject->AddComponent<WeaponComponent>(playerArms->GetComponent<SkeletonMeshComponent>());
 	playerObject->GetComponent<PlayerComp>()->InsertWeapon(axeObject->GetComponent<WeaponComponent>(), axeObject->GetName());
-	AddObject(axeObject);
-	
+	AddObjectToRoot(axeObject);
+
 	roadSign = resources->AssembleObject("Endsign", "EndsignMaterial");
 	rightSign = resources->AssembleObject("LeftDirectionSign", "LeftDirectionSignMaterial");
 	leftSign = resources->AssembleObject("RightDirectionSign", "RightDirectionSignMaterial");
-	AddObject(roadSign);
-	AddObject(rightSign);
-	AddObject(leftSign);
+	AddObjectToRoot(roadSign);
+	AddObjectToRoot(rightSign);
+	AddObjectToRoot(leftSign);
 
 	//LOADING BASE MONSTER; ADDING SKELETONS TO IT
 	enemyManager = new EnemyManager();
@@ -208,7 +188,7 @@ void GameScene::InitializeObjects()
 	///*puzzleFrog->AddComponent<BoxColliderComponent>(dx::XMFLOAT3{ 2.0f, 2.0f, 2.0f }, dx::XMFLOAT3{ 0, 0, 0 });
 	//puzzleFrog->AddComponent<RigidBodyComponent>(50.f, FilterGroups::PROPS, (FilterGroups::EVERYTHING), BodyType::DYNAMIC, true);*/
 	//AddObject(puzzleFrog);
-	
+
 	Object* puzzleFly = resources->AssembleObject("PuzzleFlyStatue", "PuzzleFlyStatueMaterial", ObjectFlag::DEFAULT | ObjectFlag::NO_CULL);
 	puzzleFly->GetTransform().SetPosition({ 28, 1.3f, 50 });
 	puzzleFly->AddComponent<BoxColliderComponent>(dx::XMFLOAT3{ 1.0f, 1.0f, 1.0f }, dx::XMFLOAT3{ 0, 0, 0 });
@@ -217,7 +197,7 @@ void GameScene::InitializeObjects()
 	puzzleFly->GetComponent<ParticleSystemComponent>()->SetMaxParticles(50);
 	puzzleFly->GetComponent<ParticleSystemComponent>()->SetParticleSize(0.1f);
 	puzzleFly->GetComponent<ParticleSystemComponent>()->InitializeParticles(renderer->GetDevice(), L"Textures/fire1.png");
-	AddObject(puzzleFly);
+	AddObjectToRoot(puzzleFly);
 
 	/*Shader* fireShader = resources->GetShaderResource("fireShader");*/
 
@@ -240,7 +220,7 @@ void GameScene::InitializeGUI()
 {
 	float windowWidth = FCAST(window->GetWidth());
 	float windowHeight = FCAST(window->GetHeight());
-	
+
 	//INFO, WE ARE DRAWING BACK TO FRONT. IF YOU WANT SOMETHING TO BE IN FRONT. SET VALUE TO 0. IF YOU WANT IT IN BACK USE 0.1 -> 1
 
 	//BUTTONS AT LEFT SIDE
@@ -270,7 +250,7 @@ void GameScene::InitializeGUI()
 	//COMPASS
 
 	//FONTS
-	GUIFont* fpsDisplay = new GUIFont(*renderer, "fps",30, 30);
+	GUIFont* fpsDisplay = new GUIFont(*renderer, "fps", 30, 30);
 	//GUIFont* healthDisplay = new GUIFont(*renderer, "playerHealth", 50, 100);
 	//GUIFont* enemyDisplay = new GUIFont(*renderer, "enemyHealth", 50, 150);
 
@@ -338,113 +318,115 @@ void GameScene::InitializeInterior()
 	houseInterior->AddComponent<BoxColliderComponent>(dx::XMFLOAT3(10.0f, 10.0f, 1.5f), dx::XMFLOAT3(0, 0, 7.0f)); // Front wall
 	houseInterior->AddComponent<BoxColliderComponent>(dx::XMFLOAT3(10.0f, 10.0f, 1.5f), dx::XMFLOAT3(0, 0, -8.0f)); // Back wall
 	houseInterior->AddComponent<RigidBodyComponent>(0.0f, FilterGroups::PROPS, FilterGroups::EVERYTHING, BodyType::STATIC, true); // RB
-	AddObject(houseInterior);
+	AddObjectToRoot(houseInterior);
 
 	Object* fireplace = resources->AssembleObject("Fireplace", "FireplaceMaterial");
 	fireplace->GetTransform().SetPosition({ this->interiorPosition.x, this->interiorPosition.y, this->interiorPosition.z });
 	fireplace->AddComponent<BoxColliderComponent>(dx::XMFLOAT3(1.5f, 5.0f, 1.0f), dx::XMFLOAT3(-8.1f, 0, -1.3f));
 	fireplace->AddComponent<RigidBodyComponent>(0.0f, FilterGroups::PROPS, FilterGroups::EVERYTHING, BodyType::STATIC, true);
-	AddObject(fireplace);
+	AddObjectToRoot(fireplace);
 
 	Object* logs = resources->AssembleObject("Logs", "LogsMaterial");
 	logs->GetTransform().SetPosition({ this->interiorPosition.x, this->interiorPosition.y, this->interiorPosition.z });
 	logs->AddComponent<BoxColliderComponent>(dx::XMFLOAT3(1.0f, 1.0f, 1.0f), dx::XMFLOAT3(-8.1f, 1.0f, -1.3f));
 	logs->AddComponent<RigidBodyComponent>(0.0f, FilterGroups::FIRE, FilterGroups::EVERYTHING, BodyType::STATIC, true);
-	AddObject(logs);
+	AddObjectToRoot(logs);
 
 	Object* flowerpot = resources->AssembleObject("Flowerpot", "FlowerpotMaterial");
-	AddObject(flowerpot, houseInterior);
+	Object::AddToHierarchy(houseInterior, flowerpot);
 
 	Object* curtains = resources->AssembleObject("Curtains", "CurtainsMaterial");
-	AddObject(curtains, houseInterior);
+	Object::AddToHierarchy(houseInterior, curtains);
 
 	Object* bed = resources->AssembleObject("Bed", "BedMaterial");
 	bed->GetTransform().SetPosition({ this->interiorPosition.x, this->interiorPosition.y, this->interiorPosition.z });
 	bed->AddComponent<BoxColliderComponent>(dx::XMFLOAT3(2.5f, 1.0f, 2.0f), dx::XMFLOAT3(-2.0f, 1.0f, 5.f));
 	bed->AddComponent<RigidBodyComponent>(0.0f, FilterGroups::PROPS, FilterGroups::EVERYTHING, BodyType::STATIC, true);
-	AddObject(bed);
+	AddObjectToRoot(bed);
 
 	Object* bookShelf = resources->AssembleObject("BookShelf", "BookShelfMaterial");
 	bookShelf->GetTransform().SetPosition({ this->interiorPosition.x, this->interiorPosition.y, this->interiorPosition.z });
 	bookShelf->AddComponent<BoxColliderComponent>(dx::XMFLOAT3(1.0f, 5.0f, 1.5f), dx::XMFLOAT3(1.0f, 1.0f, -7.f));
 	bookShelf->AddComponent<RigidBodyComponent>(0.0f, FilterGroups::PROPS, FilterGroups::EVERYTHING, BodyType::STATIC, true);
-	AddObject(bookShelf);
+	AddObjectToRoot(bookShelf);
 
 	Object* chair = resources->AssembleObject("Chair", "ChairMaterial");
 	chair->GetTransform().SetPosition({ this->interiorPosition.x, this->interiorPosition.y, this->interiorPosition.z });
 	chair->AddComponent<BoxColliderComponent>(dx::XMFLOAT3(0.5f, 2.0f, 1.0f), dx::XMFLOAT3(-4.0f, 1.0f, 1.5f));
 	chair->AddComponent<RigidBodyComponent>(0.0f, FilterGroups::PROPS, FilterGroups::EVERYTHING, BodyType::STATIC, true);
-	AddObject(chair);
+	AddObjectToRoot(chair);
 
 	Object* sink = resources->AssembleObject("Sink", "SinkMaterial");
 	sink->GetTransform().SetPosition({ this->interiorPosition.x, this->interiorPosition.y, this->interiorPosition.z });
 	sink->AddComponent<BoxColliderComponent>(dx::XMFLOAT3(0.5f, 2.0f, 1.5f), dx::XMFLOAT3(-1.5f, 1.0f, -7.f));
 	sink->AddComponent<RigidBodyComponent>(0.0f, FilterGroups::PROPS, FilterGroups::EVERYTHING, BodyType::STATIC, true);
-	AddObject(sink);
+	AddObjectToRoot(sink);
 
 	Object* stove = resources->AssembleObject("Stove", "StoveMaterial");
 	stove->GetTransform().SetPosition({ this->interiorPosition.x, this->interiorPosition.y, this->interiorPosition.z });
 	stove->AddComponent<BoxColliderComponent>(dx::XMFLOAT3(0.5f, 2.0f, 1.5f), dx::XMFLOAT3(-2.5f, 1.0f, -7.f));
 	stove->AddComponent<RigidBodyComponent>(0.0f, FilterGroups::PROPS, FilterGroups::EVERYTHING, BodyType::STATIC, true);
-	AddObject(stove);
+	AddObjectToRoot(stove);
 
 	Object* insideDoor = resources->AssembleObject("InsideDoor", "InsideDoorMaterial");
 	insideDoor->GetTransform().SetPosition({ this->interiorPosition.x, this->interiorPosition.y, this->interiorPosition.z });
 	insideDoor->AddComponent<BoxColliderComponent>(dx::XMFLOAT3(0.2f, 2.0f, 1.5f), dx::XMFLOAT3(3.0f, 2.0f, -3.0f));
 	insideDoor->AddComponent<RigidBodyComponent>(0.0f, FilterGroups::DOOR, FilterGroups::EVERYTHING, BodyType::STATIC, true);
-	AddObject(insideDoor);
+	AddObjectToRoot(insideDoor);
 
 	Object* fireLight = new Object("fireLight");
 	fireLight->AddComponent<PointLightComponent>(dx::XMFLOAT4(1.0f, 0.29f, 0.0f, 1.0f), 1.2f);
-	fireLight->GetTransform().SetPosition({ -7.0f, -99.f, -1.36 });
+	fireLight->GetTransform().SetPosition({ -7.0f, -99.f, -1.36f });
 	fireLight->AddComponent<ParticleSystemComponent>(renderer, Engine::Instance->GetResources()->GetShaderResource("particleShader"));
 	fireLight->GetComponent<ParticleSystemComponent>()->InitializeFirelikeParticles(renderer->GetDevice(), L"Textures/fire1.png");
 	fireLight->AddFlag(ObjectFlag::DEFAULT | ObjectFlag::NO_CULL);
-	AddObject(fireLight);
+	AddObjectToRoot(fireLight);
 
 	Object* windowLight = new Object("windowLight");
 	windowLight->AddComponent<PointLightComponent>(dx::XMFLOAT4(0.3f, 0.41f, 0.8f, 1.0f), 5.0f);
-	windowLight->GetTransform().SetPosition({3.0f, -98.f, 3 });
-	AddObject(windowLight);
+	windowLight->GetTransform().SetPosition({ 3.0f, -98.f, 3 });
+	AddObjectToRoot(windowLight);
 
 	Object* windowLight2 = new Object("windowLight2");
 	windowLight2->AddComponent<PointLightComponent>(dx::XMFLOAT4(0.3f, 0.41f, 0.8f, 1.0f), 5.0f);
 	windowLight2->GetTransform().SetPosition({ -7, -98.f, 3 });
-	AddObject(windowLight2);
+	AddObjectToRoot(windowLight2);
 }
 
 void GameScene::OnActivate()
 {
+	std::cout << "Game Scene activated" << std::endl;
 	SaveState state;
 	state.seed = 1337;
 	state.segment = 0;
 
 	if (!start)
 	{
-		fogId += 0.5f;
+		fogId++;
 		fogCol += 0.5f;
 		renderer->SetIdAndColor(fogId, fogCol);
 	}
+
 	if (start)
-	{
-		player->GetComponent<PlayerComp>()->Reset();
-		Input::Instance().ConfineMouse();
-		Input::Instance().SetMouseMode(dx::Mouse::Mode::MODE_RELATIVE);
-		ShowCursor(false);
-		AudioMaster::Instance().PlaySoundEvent("wind");
 		start = false;
-	}
-	
+
+	LightManager::Instance().ForceUpdateBuffers(renderer->GetContext());
+
+	player->GetComponent<PlayerComp>()->Reset();
+	Input::Instance().ConfineMouse();
+	Input::Instance().SetMouseMode(dx::Mouse::Mode::MODE_RELATIVE);
+	ShowCursor(false);
+	AudioMaster::Instance().PlaySoundEvent("wind");
+
 	world.ConstructSegment(state);
 
 	//PrintSceneHierarchy(root, 0);
 	house->GetComponent<NodeWalkerComp>()->InitializePath(world.GetPath());
-
 	house->GetComponent<NodeWalkerComp>()->SetWorld(&world);
 
 	//Place signs
-	InitializeSigns();
-	
+	SetSignPositions();
+
 	if (house != nullptr && player != nullptr)
 	{
 		std::vector<dx::XMINT2> indexes = world.GetPath().GetIndexes();
@@ -466,27 +448,29 @@ void GameScene::OnActivate()
 
 	//this->PrintSceneHierarchy(root, 0);
 	enemyManager->SpawnEnemies();
-	
-	LightManager::Instance().ForceUpdateBuffers(renderer->GetContext());
+
+
 }
 
 void GameScene::OnDeactivate()
 {
+
+	std::cout << "Game Scene deactivated" << std::endl;
 	world.DeconstructSegment();
 	renderer->RemoveRenderPass(guiManager);
 	enemyManager->DespawnEnemies();
-	
+
 	//renderer->ClearParticles();
 
 	ShowCursor(true);
 	//this->PrintSceneHierarchy(root, 0);
 }
 
-void GameScene::InitializeSigns()
+void GameScene::SetSignPositions()
 {
 	dx::XMFLOAT3 signPosition;
 	signPosition = dx::XMFLOAT3{ world.GetPath().GetSignPosition().x , 1.0f ,world.GetPath().GetSignPosition().y };
-	roadSign->GetTransform().SetPosition({signPosition.x, signPosition.y - 1.0f, signPosition.z });
+	roadSign->GetTransform().SetPosition({ signPosition.x, signPosition.y - 1.0f, signPosition.z });
 
 	//Right Sign
 	rightSign->GetTransform().SetPosition({ signPosition.x - 1.0f, signPosition.y - 1.0f, signPosition.z });
@@ -495,7 +479,7 @@ void GameScene::InitializeSigns()
 	rightSign->AddComponent<RigidBodyComponent>(0.0f, FilterGroups::CLICKABLE, (FilterGroups::EVERYTHING & ~FilterGroups::PLAYER), BodyType::STATIC, true);
 
 	//Left Sign
-	leftSign->GetTransform().SetPosition({ signPosition.x + 1.0f, signPosition.y -1.0f, signPosition.z });
+	leftSign->GetTransform().SetPosition({ signPosition.x + 1.0f, signPosition.y - 1.0f, signPosition.z });
 	leftSign->AddComponent<BoxColliderComponent>(dx::XMFLOAT3{ 1.0f, 1.0f, 1.0f }, dx::XMFLOAT3{ 0, 0, 0 });
 	leftSign->AddComponent<SelectableComponent>();
 	leftSign->AddComponent<RigidBodyComponent>(0.0f, FilterGroups::CLICKABLE, (FilterGroups::EVERYTHING & ~FilterGroups::PLAYER), BodyType::STATIC, true);
@@ -507,15 +491,43 @@ void GameScene::Update(const float& deltaTime)
 	world.UpdateRelevantChunks(player->GetTransform(), camera);
 	//world.DrawDebug();
 
+	dx::XMFLOAT3 playerPos;
+	dx::XMStoreFloat3(&playerPos, player->GetTransform().GetWorldPosition());
+
+	if (KEY_DOWN(X))
+		std::cout << "pos: " << playerPos.x << ", " << playerPos.y << ", " << playerPos.z << std::endl;
+
+	if (KEY_DOWN(B))
+	{
+		std::cout << "RESETTINGS PLAYER" << std::endl;
+		
+		playerPos.x = 0.0f;
+		playerPos.z = 0.0f;
+		playerPos.y = 20.0f;
+		player->GetComponent<RigidBodyComponent>()->SetPosition(dx::XMLoadFloat3(&playerPos));
+		//player->GetTransform().SetWorldPosition();
+	}
+
+	if (KEY_DOWN(M))
+	{
+		std::cout << "damaging player" << std::endl;
+		player->GetComponent<PlayerComp>()->LoseHealth(200.0f);
+	}
+
+	if (KEY_DOWN(N))
+	{
+		this->PrintSceneHierarchy(root, 0);
+	}
+
 	// Something CP with controllerComp/player wont allow this to happen inside the playerComp
 	if (player->GetComponent<ControllerComp>()->GetInRange())
 	{
-		static_cast<GUISprite*>(guiManager->GetGUIObject("door"))->SetVisible(true);
-		static_cast<GUISprite*>(guiManager->GetGUIObject("dot"))->SetVisible(false);
+		guiManager->GetGUIObject("door")->SetVisible(true);
+		guiManager->GetGUIObject("dot")->SetVisible(false);
 	}
 	else
 	{
-		static_cast<GUISprite*>(guiManager->GetGUIObject("door"))->SetVisible(false);
+		guiManager->GetGUIObject("door")->SetVisible(false);
 	}
 
 	if (rightSign->GetComponent<SelectableComponent>()->GetActive())
@@ -552,6 +564,6 @@ void GameScene::Render()
 	root->Draw(renderer, camera);
 	//worldGenerator.DrawShapes();
 	//world.DrawDebug();
-	
-	renderer->RenderFrame(camera, (float)clock.GetSeconds(),player->GetComponent<PlayerComp>()->GetDangerDistance() );
+
+	renderer->RenderFrame(camera, (float)clock.GetSeconds(), player->GetComponent<PlayerComp>()->GetDangerDistance());
 }

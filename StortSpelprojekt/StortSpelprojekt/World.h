@@ -9,6 +9,7 @@ class World
 {
 	typedef std::unordered_map<int, Chunk*> ChunkMap;
 	const int RELEVANT_RADIUS = 2;
+	const int DEFAULT_RELEVANT_INDEX = -100000;
 
 public:
 	World();
@@ -19,6 +20,7 @@ public:
 	void ConstructSegment(const SaveState& state);
 	void DeconstructSegment();
 	
+	void ResetRelevanceIndex();
 	void UpdateRelevantChunks (const Transform& transform, CameraComponent* camera);
 	void DrawDebug();
 

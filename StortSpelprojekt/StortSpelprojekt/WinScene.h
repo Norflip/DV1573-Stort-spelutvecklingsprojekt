@@ -21,7 +21,6 @@ public:
 	void OnDeactivate() override;
 
 	void Update(const float& deltaTime) override;
-	void FixedUpdate(const float& fixedDeltaTime) override;
 	void Render() override;
 
 	ALIGN16_ALLOC;

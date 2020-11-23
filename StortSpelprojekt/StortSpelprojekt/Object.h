@@ -71,11 +71,33 @@ public:
 	size_t GetID() const { return this->id; }
 	ALIGN16_ALLOC;
 
+
+	bool HasParent() const { return this->parent != nullptr; }
+	void SetParent(Object* parent) { this->parent = parent; transform.SetChanged(true); }
+
+	void AddChild(Object* child);
+	bool RemoveChild(Object* child);
+	bool ContainsChild(Object* child) const;
+
+	size_t CountChildren() const { return this->children.size(); }
+	std::vector<Object*> GetChildren() const { return this->children; }
+	Object* GetChild(size_t index) const { assert(index >= 0 && index < children.size()); return this->children[index]; }
+
+	static void AddToHierarchy(Object* root, Object* obj);
+	static void RemoveFromHierarchy(Object* obj);
+
+	Object* GetParent() const { return this->parent; }
+
+
+
 private:
 	ObjectFlag flags;
 	Transform transform;
 	std::string name;
 	size_t id;
+
+	Object* parent;
+	std::vector<Object*> children;
 
 	std::vector<Component*> components;
 	ComponentArray componentArray;

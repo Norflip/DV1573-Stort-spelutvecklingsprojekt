@@ -5,20 +5,28 @@
 size_t Object::idCounter = 0;
 
 
-Object::Object(const std::string& name, ObjectFlag flag) : name(name), flags(flag), transform(this), id(idCounter++)
+Object::Object(const std::string& name, ObjectFlag flag) : name(name), flags(flag), transform(this), id(idCounter++), parent(nullptr)
 {
-
+	assert(!name.empty());
 }
 
 Object::~Object()
 {
 	for (auto i = components.begin(); i < components.end(); i++)
 		delete (*i);
-
-	auto children = transform.GetChildren();
-	for (auto i = children.begin(); i < children.end(); i++)
-		delete (*i)->GetOwner();
 	components.clear();
+
+	size_t childCount = children.size();
+	if (childCount > 0)
+	{
+		for (size_t i = 0; i < childCount; i++)
+		{
+			delete children[i];
+			children[i] = nullptr;
+		}
+		
+		children.clear();
+	}
 }
 
 void Object::Update(const float& deltaTime)
@@ -31,9 +39,8 @@ void Object::Update(const float& deltaTime)
 				(*i)->Update(deltaTime);
 		}
 
-		auto children = transform.GetChildren();
 		for (auto i = children.begin(); i < children.end(); i++)
-			(*i)->GetOwner()->Update(deltaTime);
+			(*i)->Update(deltaTime);
 	}
 }
 
@@ -44,9 +51,8 @@ void Object::FixedUpdate(const float& fixedDeltaTime)
 		for (auto i = components.begin(); i < components.end(); i++)
 			(*i)->FixedUpdate(fixedDeltaTime);
 
-		auto children = transform.GetChildren();
 		for (auto i = children.begin(); i < children.end(); i++)
-			(*i)->GetOwner()->FixedUpdate(fixedDeltaTime);
+			(*i)->FixedUpdate(fixedDeltaTime);
 	}
 }
 
@@ -60,9 +66,8 @@ void Object::Draw(Renderer* renderer, CameraComponent* camera)
 				(*i)->Draw(renderer, camera);
 		}
 
-		auto children = transform.GetChildren();
 		for (auto i = children.begin(); i < children.end(); i++)
-			(*i)->GetOwner()->Draw(renderer, camera);
+			(*i)->Draw(renderer, camera);
 	}
 }
 
@@ -71,9 +76,8 @@ void Object::Reset()
 	for (auto i = components.begin(); i < components.end(); i++)
 		(*i)->Reset();
 
-	auto children = transform.GetChildren();
 	for (auto i = children.begin(); i < children.end(); i++)
-		(*i)->GetOwner()->Reset();
+		(*i)->Reset();
 }
 
 bool Object::HasFlag(ObjectFlag flag) const
@@ -100,4 +104,41 @@ void Object::RemoveFlag(ObjectFlag flag)
 		//(*i)->OnOwnerFlagChanged(old, this->flags);
 }
 
+void Object::AddChild(Object* child)
+{
+	assert(child != nullptr);
+	this->children.push_back(child);
+}
 
+bool Object::RemoveChild(Object* child)
+{
+	bool removed = false;
+	auto foundObj = std::find(children.begin(), children.end(), child);
+	if (foundObj != children.end())
+	{
+		removed = true;
+		children.erase(foundObj);
+	}
+	return removed;
+}
+
+bool Object::ContainsChild(Object* child) const
+{
+	return std::find(children.begin(), children.end(), child) != children.end();
+}
+
+void Object::AddToHierarchy(Object* root, Object* obj)
+{
+	assert(root != nullptr && obj != nullptr);
+	root->AddChild(obj);
+	obj->SetParent(root);
+}
+
+void Object::RemoveFromHierarchy(Object* obj)
+{
+	if (obj->parent != nullptr)
+	{
+		obj->parent->RemoveChild(obj);
+		obj->SetParent(nullptr);
+	}
+}
