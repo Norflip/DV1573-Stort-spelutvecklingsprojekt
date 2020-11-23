@@ -14,6 +14,8 @@ constexpr int FIXED_FPS = 60;
 constexpr float TARGET_FIXED_DELTA = 1.0f / FIXED_FPS;
 
 enum SceneIndex { INTRO = 0, GAME_OVER = 1, GAME = 2, WIN = 3 };
+constexpr size_t SCENE_COUNT = 4;
+
 enum DayTime {DAY =0, DUSK = 1, NIGHT = 2, END = 3};
 
 class Engine
@@ -26,11 +28,11 @@ public:
 	void Exit();
 	bool IsRunning() const { return this->running; }
 
-	Scene* GetActiveScene() const { return this->activeScene; }
-	void RegisterScene(size_t id, Scene* scene);
+	Scene* GetActiveScene() const;
+	void SetScene(size_t id, Scene* scene);
 	void UnregisterScene(size_t id);
 	void SwitchScene(size_t id);
-
+	
 	Physics* GetPhysics() const { return this->physics; }
 	ResourceManager* GetResources () const { return this->resourceManager; }
 
@@ -45,8 +47,8 @@ private:
 
 private:
 	bool running;
-	std::unordered_map<size_t, Scene*> scenes;
-	Scene* activeScene;
+	Scene* scenes[SCENE_COUNT];
+	int activeSceneIndex;
 	bool pause;
 
 	Window window;

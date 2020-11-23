@@ -27,5 +27,5 @@ class EnemyManager
 		PlayerComp* playerComp;
 		ResourceManager* resources;
 		Object* root;
-		int nrOfEnemies;
+		size_t nrOfEnemies;
 };
