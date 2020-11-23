@@ -432,6 +432,29 @@ void GameScene::OnActivate()
 		Input::Instance().SetMouseMode(dx::Mouse::Mode::MODE_RELATIVE);
 		ShowCursor(false);
 		AudioMaster::Instance().PlaySoundEvent("wind");
+
+		Object* tutorialFood = resources->AssembleObject("Fruits", "FruitsMaterial");
+		tutorialFood->GetTransform().SetPosition({ -5.65f, interiorPosition.y + 3.0f, -4.8f, 0.0f });
+		tutorialFood->AddComponent<PickupComponent>(PickupType::Food, 40.0f);
+		tutorialFood->AddComponent<BoxColliderComponent>(dx::XMFLOAT3(0.25f, 0.25f, 0.25f), dx::XMFLOAT3(0, 0, 0));
+		tutorialFood->AddComponent<RigidBodyComponent>(10.0f, FilterGroups::PICKUPS, FilterGroups::EVERYTHING & ~FilterGroups::PLAYER, BodyType::DYNAMIC, true);
+
+		Object* tutorialHealth = resources->AssembleObject("HealthKit", "HealthKitMaterial");
+		tutorialHealth->GetTransform().SetPosition({3.0f, interiorPosition.y + 3.0f, 3.2f, 0.0f });
+		tutorialHealth->AddComponent<PickupComponent>(PickupType::Health, 40.0f);
+		tutorialHealth->AddComponent<BoxColliderComponent>(dx::XMFLOAT3(0.25f, 0.25f, 0.25f), dx::XMFLOAT3(0, 0, 0));
+		tutorialHealth->AddComponent<RigidBodyComponent>(10.0f, FilterGroups::PICKUPS, FilterGroups::EVERYTHING & ~FilterGroups::PLAYER, BodyType::DYNAMIC, true);
+
+		Object* tutorialFuel = resources->AssembleObject("FuelCanRed", "FuelCanRedMaterial");
+		tutorialFuel->GetTransform().SetPosition({ 2.0f, interiorPosition.y + 3.0f, -1.11f, 0.0f });
+		tutorialFuel->AddComponent<PickupComponent>(PickupType::Fuel, 20.0f);
+		tutorialFuel->AddComponent<BoxColliderComponent>(dx::XMFLOAT3(0.3f, 0.35f, 0.15f), dx::XMFLOAT3(0, 0, 0));
+		tutorialFuel->AddComponent<RigidBodyComponent>(10.0f, FilterGroups::HOLDABLE, FilterGroups::EVERYTHING & ~FilterGroups::PLAYER, BodyType::DYNAMIC, true);
+
+		AddObject(tutorialFuel);
+		AddObject(tutorialFood);
+		AddObject(tutorialHealth);
+
 		start = false;
 	}
 	
@@ -456,17 +479,23 @@ void GameScene::OnActivate()
 		if (house->HasComponent<RigidBodyComponent>())
 			house->GetComponent<RigidBodyComponent>()->SetPosition(position);
 
-		position = dx::XMVectorAdd(position, dx::XMVectorSet(0, 12, -5, 0));
+		dx::XMVECTOR playerPos = { this->interiorPosition.x, this->interiorPosition.y + 3.0f, this->interiorPosition.z, 0.0f };
 
-		player->GetTransform().SetPosition(position);
-		player->GetComponent<RigidBodyComponent>()->SetPosition(position);
+		position = dx::XMVectorAdd(dx::XMVECTOR({ 0.0f, 1.0f, 5.0f, 0.0f }), position);
+
+		player->GetComponent<PlayerComp>()->SetStartPosition(position);
+
+		player->GetTransform().SetPosition(playerPos);
+		player->GetComponent<RigidBodyComponent>()->SetPosition(playerPos);
+
+		player->GetComponent<ControllerComp>()->SetInside(true);
 	}
 
 	renderer->AddRenderPass(guiManager);
 
 	//this->PrintSceneHierarchy(root, 0);
 	enemyManager->SpawnEnemies();
-	
+
 	LightManager::Instance().ForceUpdateBuffers(renderer->GetContext());
 }
 

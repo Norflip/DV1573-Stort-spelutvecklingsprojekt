@@ -66,21 +66,22 @@ void EnemyManager::RemoveEnemy(Object* enemy)
 void EnemyManager::SpawnEnemies()
 {
 	// whyyyy
-	nrOfEnemies = 0;
+	nrOfEnemies = 3;
 
 	for (int i = 0; i < nrOfEnemies; i++)
 	{
-		dx::XMFLOAT3 playerPos;
-		dx::XMStoreFloat3(&playerPos, player->GetTransform().GetPosition());
-		SpawnEnemy("baseEnemy", { playerPos.x, playerPos.y + 6, (float)(playerPos.z + i * 5) });
+		dx::XMFLOAT3 playerPos = player->GetComponent<PlayerComp>()->GetStartPosition();
+		//dx::XMFLOAT3 playerPos({ pos.x, pos.y, pos.z, 0.0f });
+		//dx::XMStoreFloat3(&playerPos, player->GetComponent<PlayerComp>()->GetStartPosition());
+		SpawnEnemy("baseEnemy", { playerPos.x + i * 2.0f, playerPos.y + 3, (float)(playerPos.z + i * 10.0f) });
 		
 	}
 
 	for (int i = 0; i < nrOfEnemies; i++)
 	{
-		dx::XMFLOAT3 playerPos;
-		dx::XMStoreFloat3(&playerPos, player->GetTransform().GetPosition());
-		SpawnEnemy("chargerEnemy", { playerPos.x, playerPos.y, (float)(playerPos.z + i * 5) });
+		dx::XMFLOAT3 playerPos = player->GetComponent<PlayerComp>()->GetStartPosition();
+		//dx::XMStoreFloat3(&playerPos, player->GetTransform().GetPosition());
+		SpawnEnemy("chargerEnemy", { playerPos.x + i * 2.0f, playerPos.y + 3, (float)(playerPos.z + i * 10.0f) });
 	}
 
 

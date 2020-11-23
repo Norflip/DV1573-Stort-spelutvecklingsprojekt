@@ -62,6 +62,11 @@ PlayerComp::PlayerComp(Renderer* renderer, CameraComponent* camComp, Object* hou
 	this->rayDistance = 2.0f;
 	up = { 0.0f, 1.0f, 1.0f };
 	holding = nullptr;
+
+	finishedTutorial = false;
+	foodTutorial = false;
+	fuelTutorial = false;
+	healthTutorial = false;
 }
 
 PlayerComp::~PlayerComp()
@@ -71,8 +76,6 @@ PlayerComp::~PlayerComp()
 
 void PlayerComp::Update(const float& deltaTime)
 {
-
-
 	float frameTime = FCAST(GameClock::Instance().GetFrameTime() / 1000.0);
 
 	//temp fix for wierd clock start at 
@@ -124,6 +127,10 @@ void PlayerComp::Update(const float& deltaTime)
 	}
 	
 	pickedUpLastFrame = false;
+
+	if (!finishedTutorial)
+		if (foodTutorial && fuelTutorial && healthTutorial)
+			finishedTutorial = true;
 }
 
 void PlayerComp::FixedUpdate(const float& fixedDeltaTime)
@@ -139,7 +146,6 @@ void PlayerComp::FixedUpdate(const float& fixedDeltaTime)
 	// around 90
 	if (distance > maxDist && !GetOwner()->GetComponent<ControllerComp>()->GetInside())
 		health = 0;
-
 
 }
 
@@ -202,29 +208,35 @@ void PlayerComp::PickUpObject()
 				{
 					AudioMaster::Instance().PlaySoundEvent("pickupSound");
 					PickupType pickupType = hit.object->GetComponent<PickupComponent>()->GetType();
-					float temp = hit.object->GetComponent<PickupComponent>()->GetAmount();
+					float value = hit.object->GetComponent<PickupComponent>()->GetAmount();
 
 					if (pickupType == PickupType::Health)
 					{
-						if ((health + temp) <= 100.0f)
-							health += temp;
+						if ((health + value) <= 100.0f)
+							health += value;
 						else
 							health = 100.0f;
+
+						if (!healthTutorial)
+							healthTutorial = true;
 					}
 					else if (pickupType == PickupType::Food)
 					{
-						if ((food + temp) <= 100.0f)
-							food += temp;
+						if ((food + value) <= 100.0f)
+							food += value;
 						else
 							food = 100.0f;
+
+						if (!foodTutorial)
+							foodTutorial = true;
 					}
-					else if (pickupType == PickupType::Fuel)
+					/*else if (pickupType == PickupType::Fuel)
 					{
-						if ((fuel + temp) <= 100.0f)
-							fuel += temp;
+						if ((fuel + value) <= 100.0f)
+							fuel += value;
 						else
 							fuel = 100.0f;
-					}
+					}*/
 
 					if (hit.object->HasComponent<ParticleSystemComponent>())
 						if (hit.object->GetComponent<ParticleSystemComponent>()->GetActive())
@@ -294,6 +306,13 @@ void PlayerComp::SetInteriorPosition(float x, float y, float z)
 	this->interiorPosition = { x, y, z };
 }
 
+void PlayerComp::SetStartPosition(dx::XMVECTOR pos)
+{
+	this->startPos.x = dx::XMVectorGetX(pos);
+	this->startPos.y = dx::XMVectorGetY(pos);
+	this->startPos.z = dx::XMVectorGetZ(pos);
+}
+
 float PlayerComp::ReverseAndClamp(float inputValue)
 {
 	return 1.0f - (inputValue / 100.0f);
@@ -308,6 +327,7 @@ void PlayerComp::RayCast(const float& deltaTime)
 	{
 		if (hit.object != nullptr)
 		{
+
 			static_cast<GUISprite*>(guiMan->GetGUIObject("fuel"))->SetVisible(true);
 			static_cast<GUISprite*>(guiMan->GetGUIObject("dot"))->SetVisible(false);
 
@@ -332,6 +352,9 @@ void PlayerComp::RayCast(const float& deltaTime)
 
 				static_cast<GUISprite*>(guiMan->GetGUIObject("fuel"))->SetVisible(false);
 				static_cast<GUISprite*>(guiMan->GetGUIObject("dot"))->SetVisible(true);
+
+				if (!fuelTutorial)
+					fuelTutorial = true;
 			}
 		}
 		else
@@ -344,13 +367,16 @@ void PlayerComp::RayCast(const float& deltaTime)
 	// Check door
 	if (physics->RaytestSingle(ray, rayDistance, hit, FilterGroups::DOOR))
 	{
-		if (hit.object != nullptr)
+		if (finishedTutorial)
 		{
-			this->GetOwner()->GetComponent<ControllerComp>()->SetInRange(true);
-		}
-		else
-		{
-			this->GetOwner()->GetComponent<ControllerComp>()->SetInRange(false);
+			if (hit.object != nullptr)
+			{
+				this->GetOwner()->GetComponent<ControllerComp>()->SetInRange(true);
+			}
+			else
+			{
+				this->GetOwner()->GetComponent<ControllerComp>()->SetInRange(false);
+			}
 		}
 	}
 
@@ -374,7 +400,6 @@ void PlayerComp::RayCast(const float& deltaTime)
 	//ATTACK ENEMIES
 	if (LMOUSE_DOWN && holding == nullptr)
 	{
-
 		if (physics->RaytestSingle(ray, 5.0f, hit, FilterGroups::ENEMIES))
 		{
 			if (hit.object != nullptr)
@@ -413,7 +438,7 @@ void PlayerComp::RayCast(const float& deltaTime)
 
 float PlayerComp::GetDangerDistance() 
 {
-	if (distance > 60.f)
+	if (distance > 60.f && !GetOwner()->GetComponent<ControllerComp>()->GetInside())
 		return distance;
 	else
 		return 0;
@@ -431,4 +456,5 @@ void PlayerComp::Reset()
 	this->health = 50.0f; // <------------------ DONT FORGET TO REMOVE THIS LATER!
 	foodEmpty = false;
 
+	holding = nullptr;
 }
