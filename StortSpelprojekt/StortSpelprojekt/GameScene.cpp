@@ -127,7 +127,7 @@ void GameScene::InitializeObjects()
 	/*sLight->SetRange(12.f);
 	sLight->SetSpotlightAngle(14.f);
 	sLight->SetDirection({ 1.f, 0.f, 0.f });*/
-	AddObject(spotLight, playerObject);
+	Object::AddToHierarchy(playerObject,spotLight );
 
 
 	Object* dLight = new Object("dirLight"); //directional light
@@ -140,22 +140,12 @@ void GameScene::InitializeObjects()
 	dx::XMFLOAT3 sunDirection;
 	dx::XMStoreFloat3(&sunDirection, dx::XMVector3Normalize(dx::XMVectorSet(0, -1, 1, 0)));
 	dLightC->SetDirection(sunDirection);
-	AddObject(dLight);
+	AddObjectToRoot(dLight);
 
 
-	Object* spotLight2 = new Object("spotLight2");
+	
 
-	dx::XMFLOAT3 lightTranslation2 = dx::XMFLOAT3(0.0f, 30.f, 0.0f);
-	spotLight2->GetTransform().SetPosition(dx::XMLoadFloat3(&lightTranslation2));
-	LightComponent* sLight2 = spotLight2->AddComponent<LightComponent>(1, dx::XMFLOAT4(0.2f, 0.6f, 1.0f, 1.0f), 7.f);
-	sLight2->SetEnabled(true);
-	sLight2->SetIntensity(0.8f);
-	sLight2->SetRange(60.f);
-	sLight2->SetSpotlightAngle(10.f);
-	sLight2->SetDirection({ 0.f,-1.f,0.f });
-	AddObject(spotLight2);
-
-	Object::AddToHierarchy(playerObject, testPointLight);
+	
 
 	/* For fuel info from playercomp */
 	nodeWalker->GetPlayerInfo(playerObject->GetComponent<PlayerComp>());
@@ -428,13 +418,13 @@ void GameScene::InitializeInterior()
 	fireLight->AddFlag(ObjectFlag::DEFAULT | ObjectFlag::NO_CULL);
 	fLight->SetEnabled(true);
 	fLight->SetIntensity(1.f);
-	AddObject(fireLight);
+	AddObjectToRoot(fireLight);
 
 	Object* windowLight = new Object("windowLight");
 	windowLight->GetTransform().SetPosition({ 3.0f, -98.f, 3 });
 	LightComponent * wLight1 = windowLight->AddComponent<LightComponent>(LightType::POINT_LIGHT,dx::XMFLOAT4(0.3f, 0.41f, 0.8f, 1.0f), 5.0f);
 	wLight1->SetEnabled(true);
-	AddObject(windowLight);
+	AddObjectToRoot(windowLight);
 
 	Object* windowLight2 = new Object("windowLight2");
 	windowLight2->GetTransform().SetPosition({ -7, -98.f, 3 });
@@ -460,7 +450,7 @@ void GameScene::OnActivate()
 	if (start)
 		start = false;
 
-	LightManager::Instance().ForceUpdateBuffers(renderer->GetContext());
+	LightManager::Instance().ForceUpdateBuffers(renderer->GetContext(),camera);
 
 	player->GetComponent<PlayerComp>()->Reset();
 	Input::Instance().ConfineMouse();
