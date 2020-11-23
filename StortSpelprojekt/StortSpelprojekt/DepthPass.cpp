@@ -61,5 +61,5 @@ void DepthPass::BindNull(ID3D11DeviceContext* context)
 	ID3D11DepthStencilView* nullDSV = nullptr;
 	ID3D11RenderTargetView* nullRTV = nullptr;
 	context->OMSetRenderTargets(1, &nullRTV, nullDSV);
-	context->CSSetShaderResources(6, 1, &nullSRV);
+	context->CSSetShaderResources(1, 1, &nullSRV);
 }

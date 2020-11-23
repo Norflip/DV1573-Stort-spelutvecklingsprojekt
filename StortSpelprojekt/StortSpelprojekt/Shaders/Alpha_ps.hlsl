@@ -57,7 +57,7 @@ float4 main(VS_OUTPUT input) : SV_TARGET
 	textureColor.a = alphaMap.Sample(defaultSampleType, input.uv).r;
 	finalColor = saturate(finalColor * textureColor);
 	
-	if (finalColor.a <= 0.0f)
+	if (textureColor.a <= 0.0f)
 		discard;
 
 	finalColor.a = 1.0f;

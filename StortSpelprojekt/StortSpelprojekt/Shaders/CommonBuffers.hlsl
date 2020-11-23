@@ -75,6 +75,7 @@ cbuffer cb_Scene : register(b2)
 
     uint nrOfLights;
     uint3 p;
+    row_major matrix projection;
 }
 
 //cbuffer cb_Lights : register(b3)
@@ -191,7 +192,7 @@ bool SphereInsideFrustum(Sphere sphere, Frustum frustum, float zNear, float zFar
 	// far depth value will be approaching -infinity.
     if (sphere.c.z - sphere.r > zFar || sphere.c.z + sphere.r < zNear ) //Switched places for zNear and zFar
     {
-        //result = false;
+        result = false;
     }
 
 	// Then check frustum planes
@@ -209,13 +210,13 @@ bool ConeInsideFrustum(Cone cone, Frustum frustum, float zNear, float zFar)
 {
     bool result = true;
 
-    Plane nearPlane = { float3(0, 0, -1), -zNear };
-    Plane farPlane = { float3(0, 0, 1), zFar };
+    Plane nearPlane = { float3(0, 0, /*-*/1), /*-*/zNear };
+    Plane farPlane = { float3(0, 0, 1), -zFar };
 
 	// First check the near and far clipping planes.
     if (ConeInsidePlane(cone, nearPlane) || ConeInsidePlane(cone, farPlane))
     {
-        //result = false;
+        result = false;
     }
 
 	// Then check frustum planes

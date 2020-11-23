@@ -130,13 +130,13 @@ void GameScene::InitializeObjects()
 	dx::XMFLOAT3 lightTranslation = dx::XMFLOAT3(0.0f, 0.f, 0.0f);
 	spotLight->GetTransform().SetPosition(dx::XMLoadFloat3(&lightTranslation));
 
-	LightComponent* sLight = spotLight->AddComponent<LightComponent>(1, dx::XMFLOAT4(0.7f, 0.7f, 0.4f, 1.0f), 7.f);
+	LightComponent* sLight = spotLight->AddComponent<LightComponent>(0, dx::XMFLOAT4(0.7f, 0.7f, 0.4f, 1.0f), 7.f);
 	sLight->SetEnabled(true);
 	sLight->SetIntensity(0.5f);
 	//sLight->SetAttenuation();
-	sLight->SetRange(12.f);
+	/*sLight->SetRange(12.f);
 	sLight->SetSpotlightAngle(14.f);
-	sLight->SetDirection({ 1.f, 0.f, 0.f });
+	sLight->SetDirection({ 1.f, 0.f, 0.f });*/
 	AddObject(spotLight, playerObject);
 
 

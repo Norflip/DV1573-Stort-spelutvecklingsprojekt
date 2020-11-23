@@ -133,7 +133,7 @@ struct cb_Scene
 	
 	UINT nrOfLights;
 	dx::XMUINT3 p;
-
+	dx::XMFLOAT4X4 projection;
 
 
 };

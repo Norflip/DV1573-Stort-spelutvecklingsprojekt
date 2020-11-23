@@ -116,7 +116,7 @@ void main(ComputeShaderInput IN) // light culling everyframe
 	// Calculate min & max depth in threadgroup / tile.
 	int2 texCoord = IN.dispatchThreadID.xy;
 	float fDepth = depthTexture.Load(int3(texCoord, 0)).r;
-
+	//fDepth = (0.5 * projection[3][2]) / (fDepth + 0.5 * projection[2][2] - 0.5);
 	uint uDepth = asuint(fDepth);
 
 	if (IN.groupIndex == 0) // Avoid contention by other threads in the group.
@@ -145,12 +145,12 @@ void main(ComputeShaderInput IN) // light culling everyframe
 
 	// Clipping plane for minimum depth value 
 	// (used for testing lights within the bounds of opaque geometry).
-	Plane minPlane = { float3(0, 0, 1), minDepthVS }; //made z and minDepthVS positive
+	Plane minPlane = { float3(0, 0, 1), -minDepthVS }; //made z  positive
 	
 	// Cull lights
 	// Each thread in a group will cull 1 light until all lights have been culled.
 
-	for (uint i = IN.groupIndex; i < LIGHT_COUNT; i += BLOCK_SIZE * BLOCK_SIZE)
+	for (uint i = IN.groupIndex; i < LIGHT_COUNT; i += BLOCK_SIZE * BLOCK_SIZE)//LIGHT_COUNT
 	{
 
 		if (Lights[i].enabled)

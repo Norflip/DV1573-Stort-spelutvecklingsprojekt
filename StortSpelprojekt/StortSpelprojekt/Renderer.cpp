@@ -273,9 +273,9 @@ void Renderer::RenderFrame(CameraComponent* camera, float time, float distance, 
 	//data.mousePos = { (float)Input::Instance().GetMousePos().x, (float)Input::Instance().GetMousePos().y };
 	// put in mouse pos delta here
 	dx::XMStoreFloat3(&data.cameraPosition, camera->GetOwner()->GetTransform().GetPosition());
-	dx::XMStoreFloat4x4(&data.invProjection, dx::XMMatrixTranspose(dx::XMMatrixInverse(NULL, camera->GetProjectionMatrix())));
+	dx::XMStoreFloat4x4(&data.invProjection, dx::XMMatrixInverse(NULL, camera->GetProjectionMatrix()));
 	dx::XMStoreFloat4x4(&data.invView, dx::XMMatrixTranspose(dx::XMMatrixInverse(NULL, camera->GetViewMatrix())));
-	dx::XMStoreFloat4x4(&data.view, dx::XMMatrixTranspose(camera->GetViewMatrix()));
+	dx::XMStoreFloat4x4(&data.view, camera->GetViewMatrix());
 	sceneBuffer.SetData(data);
 	sceneBuffer.UpdateBuffer(context);
 
@@ -786,7 +786,11 @@ void Renderer::DrawScreenQuad(const Material* material)
 
 void Renderer::InitForwardPlus(CameraComponent* camera, Window* window, Shader& forwardPlusShader)
 {
-	
+	cb_Scene sceneData = sceneBuffer.GetData();
+
+	dx::XMStoreFloat4x4(&sceneData.projection, dx::XMMatrixTranspose(camera->GetProjectionMatrix()));
+	sceneBuffer.SetData(sceneData);
+	sceneBuffer.UpdateBuffer(context);
 	
 	this->width = window->GetWidth();
 	this->height = window->GetHeight();
@@ -809,7 +813,7 @@ void Renderer::InitForwardPlus(CameraComponent* camera, Window* window, Shader& 
 	screenToViewParams.Initialize(CB_SCREEN_TOVIEW_PARAMS_SLOT, ShaderBindFlag::COMPUTE, device);
 	cb_ScreenToViewParams& dataSVP = screenToViewParams.GetData();
 	dx::XMFLOAT4X4 inverse;
-	dx::XMStoreFloat4x4(&inverse, dx::XMMatrixTranspose(dx::XMMatrixInverse(nullptr, camera->GetProjectionMatrix()))); //transposed matrix.
+	dx::XMStoreFloat4x4(&inverse, dx::XMMatrixInverse(nullptr, camera->GetProjectionMatrix())); //transposed matrix.
 	dataSVP.inverseProjection = inverse;
 	dataSVP.screenDimensions.x = window->GetWidth();
 	dataSVP.screenDimensions.y = window->GetHeight();
@@ -879,12 +883,12 @@ void Renderer::InitForwardPlus(CameraComponent* camera, Window* window, Shader& 
 
 	
 	//opaque_light index counter
-	o_LightIndexCounter.resize(1);
+	
 	o_LightIndexCounter.push_back(0);
 	DXHelper::CreateStructuredBuffer(device, &o_LightIndexCounter_uavbuffer, o_LightIndexCounter.data(), sizeof(UINT), o_LightIndexCounter.size(), &o_LightIndexCounter_uav);
 	
 	//transparent_light index counter
-	t_LightIndexCounter.resize(1);
+	
 	t_LightIndexCounter.push_back(0);
 	DXHelper::CreateStructuredBuffer(device, &t_LightIndexCounter_uavbuffer, t_LightIndexCounter.data(), sizeof(UINT), t_LightIndexCounter.size(), &t_LightIndexCounter_uav);
 	
