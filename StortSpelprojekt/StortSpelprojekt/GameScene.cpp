@@ -422,7 +422,7 @@ void GameScene::InitializeInterior()
 
 	Object* fireLight = new Object("fireLight");
 	LightComponent* fLight = fireLight->AddComponent<LightComponent>(LightType::POINT_LIGHT,dx::XMFLOAT4(1.0f, 0.29f, 0.0f, 1.0f), 1.7f);
-	fireLight->GetTransform().SetPosition({ -7.0f, -99.f, -1.36 });
+	fireLight->GetTransform().SetPosition({ -7.0f, -99.f, -1.36f });
 	fireLight->AddComponent<ParticleSystemComponent>(renderer, Engine::Instance->GetResources()->GetShaderResource("particleShader"));
 	fireLight->GetComponent<ParticleSystemComponent>()->InitializeFirelikeParticles(renderer->GetDevice(), L"Textures/fire1.png");
 	fireLight->AddFlag(ObjectFlag::DEFAULT | ObjectFlag::NO_CULL);

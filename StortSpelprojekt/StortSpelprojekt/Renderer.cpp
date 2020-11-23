@@ -793,8 +793,8 @@ void Renderer::InitForwardPlus(CameraComponent* camera, Window* window, Shader& 
 	int screenWidth = std::max(window->GetWidth(), 1u);
 	int screenHeight = std::max(window->GetHeight(), 1u);
 	int lightCullingBlockSize = 32;
-	this->numThreads = dx::XMUINT3(std::ceil((float)screenWidth / (float)lightCullingBlockSize), std::ceil((float)screenHeight / (float)lightCullingBlockSize), 1);
-	this->numThreadGroups = dx::XMUINT3(std::ceil((float)numThreads.x / (float)lightCullingBlockSize), std::ceil((float)numThreads.y / (float)lightCullingBlockSize), 1);
+	this->numThreads = dx::XMUINT3(UICAST(std::ceil((float)screenWidth / (float)lightCullingBlockSize)), UICAST(std::ceil((float)screenHeight / (float)lightCullingBlockSize)), 1);
+	this->numThreadGroups = dx::XMUINT3(UICAST(std::ceil((float)numThreads.x / (float)lightCullingBlockSize)), UICAST(std::ceil((float)numThreads.y / (float)lightCullingBlockSize)), 1);
 	UINT count = numThreads.x * numThreads.y * numThreads.z;
 
 	//Dispatch Forward+
@@ -811,8 +811,8 @@ void Renderer::InitForwardPlus(CameraComponent* camera, Window* window, Shader& 
 	dx::XMFLOAT4X4 inverse;
 	dx::XMStoreFloat4x4(&inverse, dx::XMMatrixInverse(nullptr, camera->GetProjectionMatrix())); //transposed matrix.
 	dataSVP.inverseProjection = inverse;
-	dataSVP.screenDimensions.x = window->GetWidth();
-	dataSVP.screenDimensions.y = window->GetHeight();
+	dataSVP.screenDimensions.x = FCAST(window->GetWidth());
+	dataSVP.screenDimensions.y = FCAST(window->GetHeight());
 	screenToViewParams.SetData(dataSVP);
 	screenToViewParams.UpdateBuffer(context);
 

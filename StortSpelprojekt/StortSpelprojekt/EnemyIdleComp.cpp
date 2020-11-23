@@ -3,7 +3,7 @@
 
 EnemyIdleComp::EnemyIdleComp()
 {
-    randomIntervall = (rand() % 4);
+    randomIntervall = FCAST(rand() % 4);
     timer = 0.f;
     //this->enemyPatrolComp->SetMoving(true);
 }
@@ -24,7 +24,7 @@ void EnemyIdleComp::Update(const float& deltaTime)
     if (timer >= randomIntervall)
     {
         timer = 0;
-        randomIntervall = (rand() % 4);
+        randomIntervall = FCAST(rand() % 4);
         this->enemyPatrolComp->SetMoving(true);
 
     }

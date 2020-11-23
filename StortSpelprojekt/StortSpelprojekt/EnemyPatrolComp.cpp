@@ -28,9 +28,9 @@ void EnemyPatrolComp::Update(const float& deltaTime)
     if (timer >= randomIntervall)
     {
         timer = 0.f;
-        randomIntervall = (rand() % 10);
-        randomVec.x = (rand() % 20 - 10);
-        randomVec.z = (rand() % 20 - 10);
+        randomIntervall = FCAST(rand() % 10);
+        randomVec.x = FCAST(rand() % 20 - 10);
+        randomVec.z = FCAST(rand() % 20 - 10);
         this->isMoving = true;
         if (abs(randomVec.x) < 3.f && abs(randomVec.y) < 3.f)
         {
