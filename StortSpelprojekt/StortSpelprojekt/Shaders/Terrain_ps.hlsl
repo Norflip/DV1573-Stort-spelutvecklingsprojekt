@@ -41,13 +41,40 @@ float4 main(VS_OUTPUT input) : SV_TARGET
 	float4 finalColor = float4(0,0,0,1);
 
 	float3 normal = normalize(input.normal);
-	finalColor += CalculateDirectionalLight(sunDirection, normal, viewDirection);
+    
 
-	for (int i = 0; i < nrOfPointLights; i++)
+    uint2 tileIndex = uint2(floor(input.position.xy / (BLOCK_SIZE)));
+
+	uint startOffset = LightGrid[tileIndex].x;
+	uint lightCount = LightGrid[tileIndex].y;
+
+	for (uint i = 0; i < lightCount; i++)
 	{
-		finalColor += CalculatePointLight(pointLights[i], normal, input.worldPosition, viewDirection);
+		uint lightIndex = LightIndexList[startOffset + i];
+		Light light = Lights[lightIndex];
+		
+        float4 result = float4(0.0f, 0.0f, 0.0f, 0.0f);
+		
+		switch (light.type)
+		{
+		case DIRECTIONAL_LIGHT:
+		{
+			result = CalculateDirectionalLight(light, normal, viewDirection);
+		}
+		break;
+		case POINT_LIGHT:
+		{
+			result = CalculatePointLight(light, normal, input.worldPosition, viewDirection);
+		}
+		break;
+		case SPOT_LIGHT:
+		{
+			result = CalculateSpotLight(light, normal, input.worldPosition, viewDirection);
+		}
+		break;
+		}
+		finalColor += result;
 	}
-
 	finalColor = saturate(textureColor * finalColor);
 	finalColor.a = 1.0f;
 

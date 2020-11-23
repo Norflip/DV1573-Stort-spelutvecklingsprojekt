@@ -368,6 +368,86 @@ ID3D11SamplerState* DXHelper::CreateSampler(D3D11_FILTER filter, D3D11_TEXTURE_A
 	return m_samplerCache[hash];
 }
 
+void DXHelper::CreateCopyBuffer(ID3D11Device* device, ID3D11Buffer** buffer, unsigned int byteStride, unsigned int arraySize)
+{
+	D3D11_BUFFER_DESC outputDesc = {};
+	outputDesc.ByteWidth = byteStride * arraySize;
+	outputDesc.StructureByteStride = byteStride;
+	outputDesc.MiscFlags = D3D11_RESOURCE_MISC_BUFFER_STRUCTURED;
+
+	outputDesc.Usage = D3D11_USAGE_STAGING;
+	outputDesc.BindFlags = 0;
+	outputDesc.CPUAccessFlags = D3D11_CPU_ACCESS_READ | D3D11_CPU_ACCESS_WRITE;
+
+	HRESULT hr = (device->CreateBuffer(&outputDesc, 0, buffer));
+	assert(SUCCEEDED(hr));
+}
+
+void DXHelper::CreateStructuredBuffer(ID3D11Device* device, ID3D11Buffer** buffer, void* data, unsigned int byteStride, unsigned int arraySize, ID3D11UnorderedAccessView** uav)
+{
+	D3D11_BUFFER_DESC sBufferDesc = {};
+	D3D11_SUBRESOURCE_DATA sBufferSub = {};
+
+	sBufferDesc.Usage = D3D11_USAGE_DEFAULT;
+	sBufferDesc.ByteWidth = byteStride * arraySize; //sizeofStruct*nrOfElements
+	sBufferDesc.BindFlags = D3D11_BIND_UNORDERED_ACCESS; //D3D11_BIND_UNORDERED_ACCESS
+	sBufferDesc.CPUAccessFlags = D3D11_CPU_ACCESS_READ | D3D11_CPU_ACCESS_WRITE;// 0; //D3D11_CPU_ACCESS_WRITE
+	sBufferDesc.StructureByteStride = byteStride; //sizeofStruct
+	sBufferDesc.MiscFlags = D3D11_RESOURCE_MISC_BUFFER_STRUCTURED;
+	sBufferSub.pSysMem = data;
+
+	HRESULT hr = device->CreateBuffer(&sBufferDesc, &sBufferSub, buffer);
+	assert(SUCCEEDED(hr));
+
+	D3D11_UNORDERED_ACCESS_VIEW_DESC uavDesc = {};
+	uavDesc.Format = DXGI_FORMAT_UNKNOWN;
+	uavDesc.ViewDimension = D3D11_UAV_DIMENSION_BUFFER;
+	uavDesc.Buffer.FirstElement = 0;
+	uavDesc.Buffer.Flags = 0;
+	uavDesc.Buffer.NumElements = arraySize;
+	hr = device->CreateUnorderedAccessView(*buffer, &uavDesc, uav);
+
+	assert(SUCCEEDED(hr));
+}
+
+void DXHelper::CreateStructuredBuffer(ID3D11Device* device, ID3D11Buffer** buffer, void* data, unsigned int byteStride, unsigned int arraySize, ID3D11UnorderedAccessView** uav, ID3D11ShaderResourceView** srv)
+{
+	D3D11_BUFFER_DESC sBufferDesc = {};
+	D3D11_SUBRESOURCE_DATA sBufferSub = {};
+
+	sBufferDesc.Usage = D3D11_USAGE_DEFAULT;
+	sBufferDesc.ByteWidth = byteStride * arraySize; //sizeofStruct*nrOfElements
+	sBufferDesc.BindFlags = D3D11_BIND_UNORDERED_ACCESS | D3D11_BIND_SHADER_RESOURCE; //D3D11_BIND_UNORDERED_ACCESS
+	sBufferDesc.CPUAccessFlags = D3D11_CPU_ACCESS_READ | D3D11_CPU_ACCESS_WRITE;// 0; //D3D11_CPU_ACCESS_WRITE
+	sBufferDesc.StructureByteStride = byteStride; //sizeofStruct
+	sBufferDesc.MiscFlags = D3D11_RESOURCE_MISC_BUFFER_STRUCTURED;
+	sBufferSub.pSysMem = data;
+
+	HRESULT hr = device->CreateBuffer(&sBufferDesc, &sBufferSub, buffer);
+	assert(SUCCEEDED(hr));
+
+	D3D11_UNORDERED_ACCESS_VIEW_DESC uavDesc = {};
+	uavDesc.Format = DXGI_FORMAT_UNKNOWN;
+	uavDesc.ViewDimension = D3D11_UAV_DIMENSION_BUFFER;
+	uavDesc.Buffer.FirstElement = 0;
+	uavDesc.Buffer.Flags = 0;
+	uavDesc.Buffer.NumElements = arraySize;
+	hr = device->CreateUnorderedAccessView(*buffer, &uavDesc, uav);
+
+	assert(SUCCEEDED(hr));
+
+	D3D11_SHADER_RESOURCE_VIEW_DESC srvDesc = {};
+	srvDesc.Format = DXGI_FORMAT_UNKNOWN;
+	srvDesc.ViewDimension = D3D11_SRV_DIMENSION_BUFFEREX;
+	srvDesc.BufferEx.FirstElement = 0;
+	srvDesc.BufferEx.Flags = 0;
+	srvDesc.BufferEx.NumElements = arraySize;
+	hr = device->CreateShaderResourceView(*buffer, &srvDesc, srv);
+
+	assert(SUCCEEDED(hr));
+
+}
+
 void DXHelper::CreateStructuredBuffer(ID3D11Device* device, ID3D11Buffer** buffer, void* data, unsigned int byteStride, unsigned int arraySize, ID3D11ShaderResourceView** srv)
 {
 	D3D11_BUFFER_DESC sBufferDesc = {};
@@ -395,6 +475,18 @@ void DXHelper::CreateStructuredBuffer(ID3D11Device* device, ID3D11Buffer** buffe
 	assert(SUCCEEDED(hr));
 }
 
+void DXHelper::BindStructuredBuffer(ID3D11DeviceContext* context, ID3D11Buffer* buffer, void* data, size_t slot, ShaderBindFlag flag, ID3D11UnorderedAccessView** uav, const UINT* count)
+{
+	assert(buffer != 0);
+
+	context->UpdateSubresource(buffer, 0, 0, data, 0, 0);
+
+	int bflag = static_cast<int>(flag);
+
+	if ((bflag & (int)ShaderBindFlag::COMPUTE) != 0)
+		context->CSSetUnorderedAccessViews(slot, 1, uav, count);
+}
+
 void DXHelper::BindStructuredBuffer(ID3D11DeviceContext* context, ID3D11Buffer* buffer, void* data, size_t slot, ShaderBindFlag flag, ID3D11ShaderResourceView** srv)
 {
 	assert(buffer != 0);
@@ -417,7 +509,35 @@ void DXHelper::BindStructuredBuffer(ID3D11DeviceContext* context, ID3D11Buffer* 
 
 	if ((bflag & (int)ShaderBindFlag::GEOMETRY) != 0)
 		context->GSSetShaderResources(slot, 1, srv);
+
+	if ((bflag & (int)ShaderBindFlag::COMPUTE) != 0)
+		context->CSSetShaderResources(slot, 1, srv);
 }
+
+void DXHelper::BindStructuredBuffer(ID3D11DeviceContext* context, size_t slot, ShaderBindFlag flag, ID3D11ShaderResourceView** srv)
+{
+	int bflag = static_cast<int>(flag);
+
+	if ((bflag & (int)ShaderBindFlag::PIXEL) != 0)
+		context->PSSetShaderResources(slot, 1, srv);
+
+	if ((bflag & (int)ShaderBindFlag::VERTEX) != 0)
+		context->VSSetShaderResources(slot, 1, srv);
+
+	if ((bflag & (int)ShaderBindFlag::HULL) != 0)
+		context->HSSetShaderResources(slot, 1, srv);
+
+	if ((bflag & (int)ShaderBindFlag::DOMAINS) != 0)
+		context->DSSetShaderResources(slot, 1, srv);
+
+	if ((bflag & (int)ShaderBindFlag::GEOMETRY) != 0)
+		context->GSSetShaderResources(slot, 1, srv);
+
+	if ((bflag & (int)ShaderBindFlag::COMPUTE) != 0)
+		context->CSSetShaderResources(slot, 1, srv);
+}
+
+
 
 
 ID3D11RasterizerState* DXHelper::CreateRasterizerState(D3D11_CULL_MODE cullMode, D3D11_FILL_MODE fillMode, ID3D11Device* device)
@@ -437,6 +557,8 @@ ID3D11RasterizerState* DXHelper::CreateRasterizerState(D3D11_CULL_MODE cullMode,
 
 	return rasterizerState;
 }
+
+
 
 
 void DXHelper::CreateInstanceBuffer(ID3D11Device* device, size_t instanceCount, size_t instanceDataSize, void* instanceData, ID3D11Buffer** instanceBuffer)

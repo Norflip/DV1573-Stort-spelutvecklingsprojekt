@@ -7,7 +7,7 @@
 #include "MoveComponent.h"
 #include "ControllerComp.h"
 #include "SkeletonMeshComponent.h"
-#include "PointLightComponent.h"
+#include "LightComponent.h"
 #include "NodeWalkerComp.h"
 #include "PlayerAttackComp.h"
 #include "SaveState.h"

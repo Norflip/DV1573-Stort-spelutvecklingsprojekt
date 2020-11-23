@@ -59,7 +59,7 @@ void GameScene::InitializeObjects()
 	SkeletonMeshComponent* legsComponent = resources->GetResource<SkeletonMeshComponent>("HouseLegsSkeleton");
 
 	houseBaseObject->GetTransform().SetScale({ 0.5f, 0.5f, 0.5f });
-	
+
 	//WALLS
 	houseBaseObject->AddComponent<BoxColliderComponent>(dx::XMFLOAT3(2.0f, 3.5f, 2.3f), dx::XMFLOAT3(0.f, 0.9f, -1.0f));
 	//PORCH
@@ -108,7 +108,18 @@ void GameScene::InitializeObjects()
 	Object* cameraObject = new Object("camera", ObjectFlag::ENABLED);
 	this->player = playerObject;
 	camera = cameraObject->AddComponent<CameraComponent>(window->GetWidth(), window->GetHeight(), 60.0f);
-	
+
+	Shader forwardPlusShader;// = 
+
+	forwardPlusShader.SetComputeShader("Shaders/ForwardPlusRendering.hlsl", "ComputeFrustums");
+	forwardPlusShader.CompileCS(renderer->GetDevice());
+	forwardPlusShader.BindToContext(renderer->GetContext());
+	renderer->InitForwardPlus(camera, window, forwardPlusShader);
+	//forwardPlusShader.Unbind(renderer->GetContext());
+
+
+
+
 	cameraObject->GetTransform().SetPosition(playerSpawnVec);
 	playerObject->GetTransform().SetPosition(playerSpawnVec);
 	playerObject->AddComponent<CapsuleColliderComponent>(0.5f, 1.5f, zero);
@@ -121,13 +132,46 @@ void GameScene::InitializeObjects()
 	AddObject(cameraObject, playerObject);
 	AddObject(playerObject);
 
-	Object* testPointLight = new Object("body_pointLight");
+	Object* spotLight = new Object("body_spotLight");
 
-	dx::XMFLOAT3 lightTranslation = dx::XMFLOAT3(0.0f, 0.0f, 0.0f);
-	testPointLight->GetTransform().SetPosition(dx::XMLoadFloat3(&lightTranslation));
-	testPointLight->AddComponent<PointLightComponent>(dx::XMFLOAT4(0.3f, 0.3f, 0.3f, 1.0f), 7.f);
+	dx::XMFLOAT3 lightTranslation = dx::XMFLOAT3(0.0f, 0.f, 0.0f);
+	spotLight->GetTransform().SetPosition(dx::XMLoadFloat3(&lightTranslation));
 
-	AddObject(testPointLight, playerObject);
+	LightComponent* sLight = spotLight->AddComponent<LightComponent>(0, dx::XMFLOAT4(0.7f, 0.7f, 0.4f, 1.0f), 7.f);
+	sLight->SetEnabled(true);
+	sLight->SetIntensity(0.5f);
+	//sLight->SetAttenuation();
+	/*sLight->SetRange(12.f);
+	sLight->SetSpotlightAngle(14.f);
+	sLight->SetDirection({ 1.f, 0.f, 0.f });*/
+	AddObject(spotLight, playerObject);
+
+
+	Object* dLight = new Object("dirLight"); //directional light
+
+	dx::XMFLOAT3 lightTranslationD = dx::XMFLOAT3(0.0f, 0.0f, 0.0f);
+	dLight->GetTransform().SetPosition(dx::XMLoadFloat3(&lightTranslationD));
+	LightComponent* dLightC = dLight->AddComponent<LightComponent>(2, dx::XMFLOAT4(0.7f, 0.2f, 0.2f, 1.0f), 7.f);
+	dLightC->SetEnabled(true);
+	dLightC->SetIntensity(0.2f);
+	dx::XMFLOAT3 sunDirection;
+	dx::XMStoreFloat3(&sunDirection, dx::XMVector3Normalize(dx::XMVectorSet(0, -1, 1, 0)));
+	dLightC->SetDirection(sunDirection);
+	AddObject(dLight);
+
+
+	Object* spotLight2 = new Object("spotLight2");
+
+	dx::XMFLOAT3 lightTranslation2 = dx::XMFLOAT3(0.0f, 30.f, 0.0f);
+	spotLight2->GetTransform().SetPosition(dx::XMLoadFloat3(&lightTranslation2));
+	LightComponent* sLight2 = spotLight2->AddComponent<LightComponent>(1, dx::XMFLOAT4(0.2f, 0.6f, 1.0f, 1.0f), 7.f);
+	sLight2->SetEnabled(true);
+	sLight2->SetIntensity(0.8f);
+	sLight2->SetRange(60.f);
+	sLight2->SetSpotlightAngle(10.f);
+	sLight2->SetDirection({ 0.f,-1.f,0.f });
+	AddObject(spotLight2);
+
 
 	/* For fuel info from playercomp */
 	nodeWalker->GetPlayerInfo(playerObject->GetComponent<PlayerComp>());
@@ -329,6 +373,7 @@ void GameScene::InitializeGUI()
 
 void GameScene::InitializeInterior()
 {
+	//_____________________________________________________________________________________________________________________________________
 	// Inside house
 	Object* houseInterior = resources->AssembleObject("HouseInterior", "HouseInteriorMaterial");
 	houseInterior->GetTransform().SetPosition({ this->interiorPosition.x, this->interiorPosition.y, this->interiorPosition.z, 0 });
@@ -395,21 +440,25 @@ void GameScene::InitializeInterior()
 	AddObject(insideDoor);
 
 	Object* fireLight = new Object("fireLight");
-	fireLight->AddComponent<PointLightComponent>(dx::XMFLOAT4(1.0f, 0.29f, 0.0f, 1.0f), 1.2f);
+	LightComponent* fLight = fireLight->AddComponent<LightComponent>(LightType::POINT_LIGHT,dx::XMFLOAT4(1.0f, 0.29f, 0.0f, 1.0f), 1.7f);
 	fireLight->GetTransform().SetPosition({ -7.0f, -99.f, -1.36 });
 	fireLight->AddComponent<ParticleSystemComponent>(renderer, Engine::Instance->GetResources()->GetShaderResource("particleShader"));
 	fireLight->GetComponent<ParticleSystemComponent>()->InitializeFirelikeParticles(renderer->GetDevice(), L"Textures/fire1.png");
 	fireLight->AddFlag(ObjectFlag::DEFAULT | ObjectFlag::NO_CULL);
+	fLight->SetEnabled(true);
+	fLight->SetIntensity(1.f);
 	AddObject(fireLight);
 
 	Object* windowLight = new Object("windowLight");
-	windowLight->AddComponent<PointLightComponent>(dx::XMFLOAT4(0.3f, 0.41f, 0.8f, 1.0f), 5.0f);
-	windowLight->GetTransform().SetPosition({3.0f, -98.f, 3 });
+	windowLight->GetTransform().SetPosition({ 3.0f, -98.f, 3 });
+	LightComponent * wLight1 = windowLight->AddComponent<LightComponent>(LightType::POINT_LIGHT,dx::XMFLOAT4(0.3f, 0.41f, 0.8f, 1.0f), 5.0f);
+	wLight1->SetEnabled(true);
 	AddObject(windowLight);
 
 	Object* windowLight2 = new Object("windowLight2");
-	windowLight2->AddComponent<PointLightComponent>(dx::XMFLOAT4(0.3f, 0.41f, 0.8f, 1.0f), 5.0f);
 	windowLight2->GetTransform().SetPosition({ -7, -98.f, 3 });
+	LightComponent* wLight2 = windowLight2->AddComponent<LightComponent>(LightType::POINT_LIGHT,dx::XMFLOAT4(0.3f, 0.41f, 0.8f, 1.0f), 5.0f);
+	wLight2->SetEnabled(true);
 	AddObject(windowLight2);
 }
 
@@ -452,7 +501,7 @@ void GameScene::OnActivate()
 
 		dx::XMVECTOR position = dx::XMVectorAdd(Chunk::IndexToWorld(spawnIndex, 0.0f), dx::XMVectorSet(CHUNK_SIZE / 2.0f, 0, CHUNK_SIZE / 2.0f, 0));
 		house->GetTransform().SetPosition(position);
-
+		
 		if (house->HasComponent<RigidBodyComponent>())
 			house->GetComponent<RigidBodyComponent>()->SetPosition(position);
 
@@ -467,7 +516,7 @@ void GameScene::OnActivate()
 	//this->PrintSceneHierarchy(root, 0);
 	enemyManager->SpawnEnemies();
 	
-	LightManager::Instance().ForceUpdateBuffers(renderer->GetContext());
+	LightManager::Instance().ForceUpdateBuffers(renderer->GetContext(),camera);
 }
 
 void GameScene::OnDeactivate()
