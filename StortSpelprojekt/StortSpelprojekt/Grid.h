@@ -52,5 +52,6 @@ private:
 	std::vector<Node*> openList;
 	std::vector<Node*> closedList;
 	std::vector<Node*> gridPath;
+	std::vector<std::vector<Node*>> testGrid;
 	DShape box;
 };

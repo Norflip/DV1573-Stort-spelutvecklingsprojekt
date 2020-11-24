@@ -168,6 +168,8 @@
   <ItemGroup>
     <ClCompile Include="AudioMaster.cpp" />
     <ClCompile Include="AudioEngine.cpp" />
+    <ClCompile Include="NodeClass.cpp" />
+    <ClCompile Include="Pathfinding.cpp" />
     <ClCompile Include="SelectableComponent.cpp" />
     <ClCompile Include="EnemyAttackComp.cpp" />
     <ClCompile Include="EnemyIdleComp.cpp" />
@@ -252,6 +254,8 @@
   <ItemGroup>
     <ClInclude Include="AudioMaster.h" />
     <ClInclude Include="AudioEngine.h" />
+    <ClInclude Include="NodeClass.h" />
+    <ClInclude Include="Pathfinding.h" />
     <ClInclude Include="SelectableComponent.h" />
     <ClInclude Include="Defines.h" />
     <ClInclude Include="EnemyAttackComp.h" />

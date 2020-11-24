@@ -279,9 +279,9 @@
     </ClCompile>
     <ClCompile Include="PlayerAnimHandlerComp.cpp">
       <Filter>Source Files</Filter>
-    </ClCompile>    
+    </ClCompile>
     <ClCompile Include="FireTextureComponent.cpp">
-    <Filter>Source Files</Filter>
+      <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="WorldGenerator.cpp">
       <Filter>Source Files\SpawnSystems</Filter>
@@ -296,6 +296,12 @@
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="SelectableComponent.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="Pathfinding.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="NodeClass.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>
@@ -598,7 +604,7 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="FireTextureComponent.h">
-    <Filter>Header Files</Filter>
+      <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="HousePartsComponent.h">
       <Filter>Header Files</Filter>
@@ -607,6 +613,13 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="WorldGenerator.h" />
+    <ClInclude Include="WorldGenerator.h" />
+    <ClInclude Include="Pathfinding.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="NodeClass.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <Filter Include="Header Files">

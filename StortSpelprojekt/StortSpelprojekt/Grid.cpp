@@ -12,14 +12,16 @@ Grid::~Grid()
 
 void Grid::Init()
 {
-	for (int z = 0; z < rows; z++)
+	for (int z = 0; z < columns; z++)
 	{
+		testGrid.push_back(std::vector<Node*>());
 		for (int x = 0; x < rows; x++)
 		{
 			Node* temp = new Node;
 			temp->posX = x;
 			temp->posY = z;
 			allNodes.push_back(temp);
+			testGrid[z].push_back(temp);
 		}
 	}
 

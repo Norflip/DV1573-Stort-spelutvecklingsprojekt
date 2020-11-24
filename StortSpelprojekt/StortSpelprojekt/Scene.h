@@ -26,6 +26,7 @@
 #include "WeaponComponent.h"
 #include "EnemyManager.h"
 #include "Grid.h"
+#include "Pathfinding.h"
 #include <wchar.h>
 #include "PlayerAnimHandlerComp.h"
 #include "FireTextureComponent.h"
@@ -90,6 +91,7 @@ protected:
 	Object* player;
 	EnemyManager* enemyManager;
 	Grid* grid;
+	Pathfinding* pathfinding;
 
 	ObjectPooler* pooler;
 	GUIManager* guiManager;		

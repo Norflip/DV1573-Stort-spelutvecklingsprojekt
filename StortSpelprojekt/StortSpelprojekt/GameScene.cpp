@@ -459,11 +459,17 @@ void GameScene::OnActivate()
 
 	//this->PrintSceneHierarchy(root, 0);
 
+
+
 	//LOADING BASE MONSTER; ADDING SKELETONS TO IT
-	grid = new Grid();
-	grid->Init();
 	enemyManager->SpawnEnemies();
 	
+	//Pathfinding
+	//grid = new Grid();
+	//grid->Init();
+	pathfinding = new Pathfinding();
+	pathfinding->Init();
+
 	LightManager::Instance().ForceUpdateBuffers(renderer->GetContext());
 }
 
@@ -530,7 +536,8 @@ void GameScene::Update(const float& deltaTime)
 		leftSign->GetComponent<SelectableComponent>()->SetActive(false);
 	}
 
-	grid->DrawNodes();
+	//grid->DrawNodes();
+	pathfinding->DrawGrid();
 
 	static_cast<GUIFont*>(guiManager->GetGUIObject("fps"))->SetString(std::to_string((int)GameClock::Instance().GetFramesPerSecond()));
 	dx::XMFLOAT3 playerPosF;
