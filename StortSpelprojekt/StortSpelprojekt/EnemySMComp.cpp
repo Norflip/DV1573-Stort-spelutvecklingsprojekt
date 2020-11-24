@@ -44,18 +44,17 @@ void EnemySMComp::Animate()
 	
 	if (currentState == EnemyState::ATTACK)
 	{
-		skeletonComponent->SetTrack(SkeletonStateMachine::RUN, false);
+		skeletonComponent->SetTrack(SkeletonStateMachine::RUN, SkeletonStateMachine::NONE, false);
 
 		if (attackComponent->GetIsAttacking())
 		{
-			skeletonComponent->SetSmoothTransition(SkeletonStateMachine::RUN, SkeletonStateMachine::BLENDED);
-			skeletonComponent->SetTrack(SkeletonStateMachine::SMOOTH, false);
-			//skeletonComponent->SetTrack(SkeletonStateMachine::BLENDED, false);
+			
+			skeletonComponent->SetTrack(SkeletonStateMachine::TRANSITION, SkeletonStateMachine::NONE, false);
 		}
 	}
 	else if (currentState == EnemyState::PATROL)
 	{
-		skeletonComponent->SetTrack(SkeletonStateMachine::WALK, false);
+		skeletonComponent->SetTrack(SkeletonStateMachine::WALK, SkeletonStateMachine::NONE,false);
 	}
 	/*else if (currentState == EnemyState::DEATH)
 	{
@@ -63,7 +62,7 @@ void EnemySMComp::Animate()
 	}*/
 	else
 	{
-		skeletonComponent->SetTrack(SkeletonStateMachine::IDLE,false);
+		skeletonComponent->SetTrack(SkeletonStateMachine::IDLE, SkeletonStateMachine::NONE,false);
 	}
 	
 }

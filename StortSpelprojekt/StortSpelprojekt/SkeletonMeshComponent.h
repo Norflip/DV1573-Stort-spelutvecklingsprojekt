@@ -22,7 +22,7 @@ enum class SkeletonStateMachine
 	BLENDED,
 	LOAD,
 	UNLOAD,
-	SMOOTH,
+	TRANSITION,
 };
 
 
@@ -46,9 +46,10 @@ public:
 
 	std::vector<dx::XMFLOAT4X4>& GetFinalTransforms() { return this->finalTransforms; }
 
-	void SetTrack(const SkeletonStateMachine& type, bool playOnce);
-	void SetSmoothTransition(SkeletonStateMachine firstAnim, SkeletonStateMachine secondAnim);
+	void SetTrack(const SkeletonStateMachine& type, const SkeletonStateMachine& type2, bool playOnce);
+	
 	void BlendAnimations();
+	void CreateSmoothTransition();
 	bool GetIsDone();
 	void SetisDone(bool);
 	bool& SetAndGetDoneDown();
@@ -74,6 +75,7 @@ private:
 	std::unordered_map<SkeletonStateMachine, unsigned int> trackMap;
 	std::vector<dx::XMFLOAT4X4> finalTransforms;
 	SkeletonStateMachine currentAni = SkeletonStateMachine::NONE;
+	SkeletonStateMachine nextAni = SkeletonStateMachine::NONE;
 	Bounds bounds;
 	float componentDeltaTime = 0.0f;
 	GameClock timer;

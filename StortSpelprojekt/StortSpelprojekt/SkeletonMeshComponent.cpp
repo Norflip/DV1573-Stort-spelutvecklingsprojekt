@@ -105,10 +105,10 @@ void SkeletonMeshComponent::RunAnimation(const float& deltaTime)
 	{
 		finalTransforms = skeletonAnimations[4].Makeglobal(time, dx::XMMatrixIdentity(), *skeletonAnimations[4].GetRootKeyJoints());
 	}
-	else if (currentAni == SkeletonStateMachine::BLENDED)
-	{
-		finalTransforms = skeletonAnimations[5].Makeglobal(time, dx::XMMatrixIdentity(), *skeletonAnimations[5].GetRootKeyJoints());
-	}
+	//else if (currentAni == SkeletonStateMachine::BLENDED)
+	//{
+	//	finalTransforms = skeletonAnimations[5].Makeglobal(time, dx::XMMatrixIdentity(), *skeletonAnimations[5].GetRootKeyJoints());
+	//}
 	else if (currentAni == SkeletonStateMachine::LOAD)
 	{
 		finalTransforms = skeletonAnimations[1].Makeglobal(time, dx::XMMatrixIdentity(), *skeletonAnimations[1].GetRootKeyJoints());
@@ -117,9 +117,9 @@ void SkeletonMeshComponent::RunAnimation(const float& deltaTime)
 	{
 		finalTransforms = skeletonAnimations[4].Makeglobal(time, dx::XMMatrixIdentity(), *skeletonAnimations[4].GetRootKeyJoints());
 	}
-	else if (currentAni == SkeletonStateMachine::SMOOTH)
+	else if (currentAni == SkeletonStateMachine::TRANSITION)
 	{
-		finalTransforms = skeletonAnimations[6].Makeglobal(time, dx::XMMatrixIdentity(), *skeletonAnimations[6].GetRootKeyJoints());
+		finalTransforms = skeletonAnimations[5].Makeglobal(time, dx::XMMatrixIdentity(), *skeletonAnimations[5].GetRootKeyJoints());
 	}
 
 }
@@ -213,91 +213,36 @@ SkeletonAni& SkeletonMeshComponent::GetAnimationTrack(unsigned int trackNr)
 	return skeletonAnimations[trackNr];
 }
 
-void SkeletonMeshComponent::SetTrack(const SkeletonStateMachine& type, bool playOnce)
+void SkeletonMeshComponent::SetTrack(const SkeletonStateMachine& type, const SkeletonStateMachine& type2, bool playOnce)
 {
 	currentAni = type;
+	if (type2 != SkeletonStateMachine::NONE)
+	{
+		nextAni = type2;
+	}
 	this->playOnce = playOnce;
 }
 
-void SkeletonMeshComponent::SetSmoothTransition(SkeletonStateMachine firstAnim, SkeletonStateMachine secondAnim)
+void SkeletonMeshComponent::CreateSmoothTransition()
 {
-	this->playOnce = playOnce;
-	float firstIndex = 0;
-	float secondIndex = 0;
-	SkeletonAni smooth;
+	//LITE PROGRESS
+	SkeletonAni transitionAnim;
 
-	//std::map<std::string, unsigned int> map1;
-	//std::map<std::string, unsigned int> map2;
+	transitionAnim = skeletonAnimations[2];
 
-	if (firstAnim == SkeletonStateMachine::IDLE)
-		firstIndex = 0;
-	else if (firstAnim == SkeletonStateMachine::WALK)
-		firstIndex = 1;
-	else if (firstAnim == SkeletonStateMachine::RUN)
-		firstIndex = 2;
-	else if (firstAnim == SkeletonStateMachine::ATTACK)
-		firstIndex = 3;
-	else if (firstAnim == SkeletonStateMachine::DEATH)
-		firstIndex = 4;
-	else if (firstAnim == SkeletonStateMachine::BLENDED)
-		firstIndex = 5;
+	std::vector<std::vector<Bone>> keyframes(41);
 
-	if (secondAnim == SkeletonStateMachine::IDLE)
-		secondIndex = 0;
-	else if (secondAnim == SkeletonStateMachine::WALK)
-		secondIndex = 1;
-	else if (secondAnim == SkeletonStateMachine::RUN)
-		secondIndex = 2;
-	else if (secondAnim == SkeletonStateMachine::ATTACK)
-		secondIndex = 3;
-	else if (secondAnim == SkeletonStateMachine::DEATH)
-		secondIndex = 4;
-	else if (secondAnim == SkeletonStateMachine::BLENDED)
-		secondIndex = 5;
+	for (int i = 0; i < skeletonAnimations[2].GetKeyFrames().size(); i++)
+	{
 
-	smooth = skeletonAnimations[5];
-
-	//for (int i = 0; i < skeletonAnimations[firstIndex].GetKeyFrames().size(); i++)
-	//{
-
-	//
-	//	///std::cout << i << " keyframe" << std::endl;
-	//	
-	//	//skeletonAnimations[firstIndex].SetOffsetsDirect(skeletonAnimations[secondIndex].GetOffsets());
-	//	smooth.SetOffsetsDirect(skeletonAnimations[secondIndex].GetOffsets());
-	//	
-	//}
-
-	//if (firstIndex != secondIndex)
-	//{
-	//	smooth = skeletonAnimations[firstIndex];
-	//	smooth.GetCurrentFrame()* skeletonAnimations[secondIndex].GetKeyFrames();
-	//}
-
-	//std::vector<dx::SimpleMath::Matrix> offsets(41);
-	//std::vector<std::vector<Bone>> keyframes(41);
-	//for (std::pair<std::string, unsigned int> map : map1)
-	//{
-	//	offsets[map.second] = skeletonAnimations[firstIndex].GetOffsets()[map.second];
-
-	//	keyframes[map.second] = skeletonAnimations[firstIndex].GetKeyFrames()[map.second];
-
-	//}
-
-	//for (std::pair<std::string, unsigned int> map : map2)
-	//{
-	//	offsets[map.second] = skeletonAnimations[secondIndex].GetOffsets()[map.second];
-
-	//	keyframes[map.second] = skeletonAnimations[secondIndex].GetKeyFrames()[map.second];
-	//}
-
-	//smooth.SetUpIDMapAndFrames(skeletonAnimations[firstIndex].GetBoneIDMap(), skeletonAnimations[firstIndex].GetFPS(), skeletonAnimations[firstIndex].GetAniLength());
-	//smooth.SetOffsetsDirect(offsets);
-	//smooth.SetKeyFramesDirect(keyframes);
-
+		keyframes[i] = skeletonAnimations[3].GetKeyFrames()[i];
 	
-	//currentAni = secondAnim;
-	SetAnimationTrack(smooth, SkeletonStateMachine::SMOOTH);
+	}
+
+	transitionAnim.SetUpIDMapAndFrames(skeletonAnimations[2].GetBoneIDMap(), skeletonAnimations[2].GetFPS(), skeletonAnimations[2].GetAniLength());
+	transitionAnim.SetOffsetsDirect(skeletonAnimations[3].GetOffsets());
+	transitionAnim.SetKeyFramesDirect(keyframes);
+	SetAnimationTrack(transitionAnim, SkeletonStateMachine::TRANSITION);
 	
 }
 
@@ -513,29 +458,29 @@ void SkeletonMeshComponent::PlayOnce(const float& deltaTime)
 		}
 	}
 
-	else if (currentAni == SkeletonStateMachine::SMOOTH)
-	{
-	if (!doneOnce)
-	{
-		elapsedTime += deltaTime;
-		time = elapsedTime;
-		time *= timeScale;
+	//else if (currentAni == SkeletonStateMachine::TRANSITION)
+	//{
+	//	if (!doneOnce)
+	//	{
+	//		elapsedTime += deltaTime;
+	//		time = elapsedTime;
+	//		time *= timeScale;
 
-		//Get the playtime for the animation in seconds.
-		float animLength = skeletonAnimations[6].GetAniLength() / skeletonAnimations[6].GetFPS();
+	//		//Get the playtime for the animation in seconds.
+	//		float animLength = skeletonAnimations[5].GetAniLength() / skeletonAnimations[5].GetFPS();
 
-		if (time <= animLength)
-		{
-			//std::cout << time << std::endl;
-			finalTransforms = skeletonAnimations[6].Makeglobal(time, dx::XMMatrixIdentity(), *skeletonAnimations[6].GetRootKeyJoints());
-		}
-		else
-		{
-			elapsedTime = 0.0f;
-			doneOnce = true;
-		}
-	}
-	}
+	//		if (time <= animLength)
+	//		{
+	//			//std::cout << time << std::endl;
+	//			finalTransforms = skeletonAnimations[5].Makeglobal(time, dx::XMMatrixIdentity(), *skeletonAnimations[5].GetRootKeyJoints());
+	//		}
+	//		else
+	//		{
+	//			elapsedTime = 0.0f;
+	//			doneOnce = true;
+	//		}
+	//	}
+	//}
 }
 
 void SkeletonMeshComponent::BlendAnimations()
@@ -681,7 +626,7 @@ void SkeletonMeshComponent::BlendAnimations()
 	blended.SetOffsetsDirect(offsets);
 	blended.SetKeyFramesDirect(keyframes);
 
-	SetAnimationTrack(blended, SkeletonStateMachine::BLENDED);
+	//SetAnimationTrack(blended, SkeletonStateMachine::BLENDED);
 }
 
 bool SkeletonMeshComponent::GetIsDone()
