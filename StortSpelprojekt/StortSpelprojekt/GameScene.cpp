@@ -195,10 +195,10 @@ void GameScene::InitializeObjects()
 	AddObjectToRoot(leftSign);
 
 	//LOADING BASE MONSTER; ADDING SKELETONS TO IT
-	//enemyManager = new EnemyManager();
-	//enemyManager->Initialize(player, player->GetComponent<PlayerComp>(), root);
-	//enemyManager->InitBaseEnemy();
-	//enemyManager->InitChargerEnemy();
+	enemyManager = new EnemyManager();
+	enemyManager->Initialize(player, player->GetComponent<PlayerComp>(), root);
+	enemyManager->InitBaseEnemy();
+	enemyManager->InitChargerEnemy();
 
 	/* PuzzleModels */
 	//Object* puzzleFrog = resources->AssembleObject("PuzzleFrogStatue", "PuzzleFrogStatueMaterial", ObjectFlag::DEFAULT);
@@ -502,7 +502,7 @@ void GameScene::OnActivate()
 	renderer->AddRenderPass(guiManager);
 
 	//this->PrintSceneHierarchy(root, 0);
-	//enemyManager->SpawnEnemies();
+	enemyManager->SpawnEnemies();
 
 }
 
