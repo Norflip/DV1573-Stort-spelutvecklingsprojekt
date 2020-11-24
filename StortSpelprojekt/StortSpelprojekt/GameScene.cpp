@@ -4,11 +4,11 @@
 #include "GUIFont.h"
 #include "Engine.h"
 #include "GUICompass.h"
+#include "SaveHandler.h"
 
 GameScene::GameScene() : Scene("GameScene")
 {
 	this->interiorPosition = { 0.0f, -100.0f, 0.0f };
-	fogId = 0;
 	fogCol = 0;
 	start = true;
 }
@@ -99,9 +99,6 @@ void GameScene::InitializeObjects()
 	renderer->InitForwardPlus(camera, window, forwardPlusShader);
 	//forwardPlusShader.Unbind(renderer->GetContext());
 
-
-
-
 	cameraObject->GetTransform().SetPosition(playerSpawnVec);
 	playerObject->GetTransform().SetPosition(playerSpawnVec);
 	playerObject->AddComponent<CapsuleColliderComponent>(0.5f, 1.5f, zero);
@@ -111,41 +108,29 @@ void GameScene::InitializeObjects()
 	playerObject->AddComponent<ControllerComp>(cameraObject, houseBaseObject);
 	playerObject->GetComponent<PlayerComp>()->SetInteriorPosition(this->interiorPosition.x, this->interiorPosition.y, this->interiorPosition.z);
 
-
 	Object::AddToHierarchy(playerObject, cameraObject);
 	AddObjectToRoot(playerObject);
 
-	Object* spotLight = new Object("body_spotLight");
-
+	// Light around player
+	Object* playerLight = new Object("playerLight");
 	dx::XMFLOAT3 lightTranslation = dx::XMFLOAT3(0.0f, 0.f, 0.0f);
-	spotLight->GetTransform().SetPosition(dx::XMLoadFloat3(&lightTranslation));
+	playerLight->GetTransform().SetPosition(dx::XMLoadFloat3(&lightTranslation));
+	LightComponent* playerLightComponent = playerLight->AddComponent<LightComponent>(0, dx::XMFLOAT4(0.5f, 0.5f, 0.5f, 1.0f), 4.f);
+	playerLightComponent->SetEnabled(true);
+	playerLightComponent->SetIntensity(1.0f);
+	Object::AddToHierarchy(playerObject, playerLight);
 
-	LightComponent* sLight = spotLight->AddComponent<LightComponent>(0, dx::XMFLOAT4(0.7f, 0.7f, 0.4f, 1.0f), 7.f);
-	sLight->SetEnabled(true);
-	sLight->SetIntensity(0.5f);
-	//sLight->SetAttenuation();
-	/*sLight->SetRange(12.f);
-	sLight->SetSpotlightAngle(14.f);
-	sLight->SetDirection({ 1.f, 0.f, 0.f });*/
-	Object::AddToHierarchy(playerObject,spotLight );
-
-
-	Object* dLight = new Object("dirLight"); //directional light
-
-	dx::XMFLOAT3 lightTranslationD = dx::XMFLOAT3(0.0f, 0.0f, 0.0f);
-	dLight->GetTransform().SetPosition(dx::XMLoadFloat3(&lightTranslationD));
-	LightComponent* dLightC = dLight->AddComponent<LightComponent>(2, dx::XMFLOAT4(0.7f, 0.2f, 0.2f, 1.0f), 7.f);
-	dLightC->SetEnabled(true);
-	dLightC->SetIntensity(0.2f);
+	// Sunlight
+	Object* sunLight = new Object("sunLight");
+	dx::XMFLOAT3 sunTranslation = dx::XMFLOAT3(0.0f, 0.0f, 0.0f);
+	sunLight->GetTransform().SetPosition(dx::XMLoadFloat3(&sunTranslation));
+	LightComponent* sunComponent = sunLight->AddComponent<LightComponent>(2, dx::XMFLOAT4(0.5f, 0.5f, 0.5f, 1.0f), 7.f);
+	sunComponent->SetEnabled(true);
+	sunComponent->SetIntensity(0.1f);
 	dx::XMFLOAT3 sunDirection;
 	dx::XMStoreFloat3(&sunDirection, dx::XMVector3Normalize(dx::XMVectorSet(0, -1, 1, 0)));
-	dLightC->SetDirection(sunDirection);
-	AddObjectToRoot(dLight);
-
-
-	
-
-	
+	sunComponent->SetDirection(sunDirection);
+	AddObjectToRoot(sunLight);
 
 	/* For fuel info from playercomp */
 	nodeWalker->GetPlayerInfo(playerObject->GetComponent<PlayerComp>());
@@ -214,6 +199,7 @@ void GameScene::InitializeObjects()
 	enemyManager->Initialize(player, player->GetComponent<PlayerComp>(), root);
 	enemyManager->InitBaseEnemy();
 	enemyManager->InitChargerEnemy();
+
 	/* PuzzleModels */
 	//Object* puzzleFrog = resources->AssembleObject("PuzzleFrogStatue", "PuzzleFrogStatueMaterial", ObjectFlag::DEFAULT);
 	////puzzleManager = new PuzzleManager(resources, player, house);
@@ -259,35 +245,34 @@ void GameScene::InitializeGUI()
 	//INFO, WE ARE DRAWING BACK TO FRONT. IF YOU WANT SOMETHING TO BE IN FRONT. SET VALUE TO 0. IF YOU WANT IT IN BACK USE 0.1 -> 1
 
 	//BUTTONS AT LEFT SIDE
-	//spriteBatch = new DirectX::SpriteBatch(renderer->GetContext());
 	GUISprite* equimpmentSprite1 = new GUISprite(*renderer, "Textures/EquipmentBox.png", 10, 10, 0, DrawDirection::BottomLeft, ClickFunction::NotClickable);
 	GUISprite* equimpmentSprite2 = new GUISprite(*renderer, "Textures/EquipmentBox.png", 90, 10, 0, DrawDirection::BottomLeft, ClickFunction::NotClickable);
 	GUISprite* equimpmentSprite3 = new GUISprite(*renderer, "Textures/EquipmentBox.png", 170, 10, 0, DrawDirection::BottomLeft, ClickFunction::NotClickable);
 	GUISprite* equimpmentSprite4 = new GUISprite(*renderer, "Textures/EquipmentBox.png", 250, 10, 0, DrawDirection::BottomLeft, ClickFunction::NotClickable);
 
-	//BARS THAT SCALING 
+	//BARS THAT SCALE
 	GUISprite* fuelScalingBar = new GUISprite(*renderer, "Textures/DippingBar.png", 170, 10, 0.5, DrawDirection::BottomRight, ClickFunction::NotClickable);
 	GUISprite* foodScalingBar = new GUISprite(*renderer, "Textures/DippingBar.png", 90, 10, 0.5, DrawDirection::BottomRight, ClickFunction::NotClickable);
 	GUISprite* healthScalingBar = new GUISprite(*renderer, "Textures/DippingBar.png", 10, 10, 0.5, DrawDirection::BottomRight, ClickFunction::NotClickable);
 
-	//BARS AR RIGHT SIDE
+	//BARS AT RIGHT SIDE
 	GUISprite* fuelBar = new GUISprite(*renderer, "Textures/Health_Fuel_Food.png", 170, 10, 1, DrawDirection::BottomRight, ClickFunction::NotClickable);
 	GUISprite* foodBar = new GUISprite(*renderer, "Textures/Health_Fuel_Food.png", 90, 10, 1, DrawDirection::BottomRight, ClickFunction::NotClickable);
 	GUISprite* healthBar = new GUISprite(*renderer, "Textures/Health_Fuel_Food.png", 10, 10, 1, DrawDirection::BottomRight, ClickFunction::NotClickable);
 
 	//ICONS ON TOP OF ITEMS
 	GUISprite* equimpmentSpriteAxe = new GUISprite(*renderer, "Textures/AxeIcon2.png", 10, 10, 0, DrawDirection::BottomLeft, ClickFunction::NotClickable);
+
 	//ICONS ON TOP OF BARS
 	GUISprite* fuelSprite = new GUISprite(*renderer, "Textures/FireIcon.png", 170, 10, 0, DrawDirection::BottomRight, ClickFunction::NotClickable);
 	GUISprite* foodSprite = new GUISprite(*renderer, "Textures/FoodIcon.png", 90, 10, 0, DrawDirection::BottomRight, ClickFunction::NotClickable);
 	GUISprite* healthSprite = new GUISprite(*renderer, "Textures/HealthIcon.png", 10, 10, 0, DrawDirection::BottomRight, ClickFunction::NotClickable);
 
-	//COMPASS
+	// Info gui on the door
+	GUISprite* infoSprite = new GUISprite(*renderer, "Textures/Info.png", 0, 0, 0.0f, DrawDirection::Default, ClickFunction::NotClickable);
 
 	//FONTS
 	GUIFont* fpsDisplay = new GUIFont(*renderer, "fps", 30, 30);
-	//GUIFont* healthDisplay = new GUIFont(*renderer, "playerHealth", 50, 100);
-	//GUIFont* enemyDisplay = new GUIFont(*renderer, "enemyHealth", 50, 150);
 
 	//CROSSHAIR
 	GUISprite* dot = new GUISprite(*renderer, "Textures/TestFix2.png", (windowWidth / 2) - 6, (windowHeight / 2) - 6, 0, DrawDirection::BottomLeft, ClickFunction::NotClickable);
@@ -295,18 +280,14 @@ void GameScene::InitializeGUI()
 	GUISprite* doorSprite = new GUISprite(*renderer, "Textures/DoorSprite.png", (windowWidth / 2) - 6, (windowHeight / 2) - 6, 0, DrawDirection::BottomLeft, ClickFunction::NotClickable);
 	GUISprite* fuel = new GUISprite(*renderer, "Textures/Fuel_Icon.png", (windowWidth / 2) - 6, (windowHeight / 2) - 6, 0, DrawDirection::BottomLeft, ClickFunction::NotClickable);
 
-	//dot->SetVisible(false);
 	crosshair->SetVisible(false);
 	doorSprite->SetVisible(false);
 	fuel->SetVisible(false);
+	infoSprite->SetVisible(false);
 
 	// INSERTIONS
 	guiManager = new GUIManager(renderer, 0);
 	guiManager->AddGUIObject(fpsDisplay, "fps");
-	//guiManager->AddGUIObject(healthDisplay, "playerHealth");
-	//guiManager->AddGUIObject(enemyDisplay, "enemyHealth");
-	//COMPASS
-
 
 	//BASE OF EQUIPMENT
 	guiManager->AddGUIObject(equimpmentSprite1, "equimpmentSprite1");
@@ -324,6 +305,7 @@ void GameScene::InitializeGUI()
 
 	//ICON OF EQUIPMENT
 	guiManager->AddGUIObject(equimpmentSpriteAxe, "equimpmentSpriteAxe");
+
 	//BASE OF BARS
 	guiManager->AddGUIObject(fuelBar, "fuelBar");
 	guiManager->AddGUIObject(foodBar, "foodBar");
@@ -333,6 +315,9 @@ void GameScene::InitializeGUI()
 	guiManager->AddGUIObject(fuelSprite, "fuelSprite");
 	guiManager->AddGUIObject(foodSprite, "foodSprite");
 	guiManager->AddGUIObject(healthSprite, "healthSprite");
+
+	// Info gui on the door
+	guiManager->AddGUIObject(infoSprite, "infoSprite");
 
 	//CROSSHAIR
 	guiManager->AddGUIObject(dot, "dot");
@@ -410,6 +395,27 @@ void GameScene::InitializeInterior()
 	insideDoor->AddComponent<RigidBodyComponent>(0.0f, FilterGroups::DOOR, FilterGroups::EVERYTHING, BodyType::STATIC, true);
 	AddObjectToRoot(insideDoor);
 
+	Object* tutorialFood = resources->AssembleObject("Fruits", "FruitsMaterial");
+	tutorialFood->GetTransform().SetPosition({ -5.65f, interiorPosition.y + 3.0f, -4.8f, 0.0f });
+	tutorialFood->AddComponent<PickupComponent>(PickupType::Food, 40.0f);
+	tutorialFood->AddComponent<BoxColliderComponent>(dx::XMFLOAT3(0.25f, 0.25f, 0.25f), dx::XMFLOAT3(0, 0, 0));
+	tutorialFood->AddComponent<RigidBodyComponent>(10.0f, FilterGroups::PICKUPS, FilterGroups::EVERYTHING & ~FilterGroups::PLAYER, BodyType::DYNAMIC, true);
+	AddObjectToRoot(tutorialFood);
+
+	Object* tutorialHealth = resources->AssembleObject("HealthKit", "HealthKitMaterial");
+	tutorialHealth->GetTransform().SetPosition({ 3.0f, interiorPosition.y + 3.0f, 3.2f, 0.0f });
+	tutorialHealth->AddComponent<PickupComponent>(PickupType::Health, 40.0f);
+	tutorialHealth->AddComponent<BoxColliderComponent>(dx::XMFLOAT3(0.25f, 0.25f, 0.25f), dx::XMFLOAT3(0, 0, 0));
+	tutorialHealth->AddComponent<RigidBodyComponent>(10.0f, FilterGroups::PICKUPS, FilterGroups::EVERYTHING & ~FilterGroups::PLAYER, BodyType::DYNAMIC, true);
+	AddObjectToRoot(tutorialHealth);
+
+	Object* tutorialFuel = resources->AssembleObject("FuelCanRed", "FuelCanRedMaterial");
+	tutorialFuel->GetTransform().SetPosition({ 2.0f, interiorPosition.y + 3.0f, -1.11f, 0.0f });
+	tutorialFuel->AddComponent<PickupComponent>(PickupType::Fuel, 20.0f);
+	tutorialFuel->AddComponent<BoxColliderComponent>(dx::XMFLOAT3(0.3f, 0.35f, 0.15f), dx::XMFLOAT3(0, 0, 0));
+	tutorialFuel->AddComponent<RigidBodyComponent>(10.0f, FilterGroups::HOLDABLE, FilterGroups::EVERYTHING & ~FilterGroups::PLAYER, BodyType::DYNAMIC, true);
+	AddObjectToRoot(tutorialFuel);
+
 	Object* fireLight = new Object("fireLight");
 	LightComponent* fLight = fireLight->AddComponent<LightComponent>(LightType::POINT_LIGHT,dx::XMFLOAT4(1.0f, 0.29f, 0.0f, 1.0f), 1.7f);
 	fireLight->GetTransform().SetPosition({ -7.0f, -99.f, -1.36f });
@@ -436,15 +442,12 @@ void GameScene::InitializeInterior()
 void GameScene::OnActivate()
 {
 	std::cout << "Game Scene activated" << std::endl;
-	SaveState state;
-	state.seed = 1337;
-	state.segment = 0;
+	SaveState& state = SaveHandler::LoadOrCreate();
 
 	if (!start)
 	{
-		fogId++;
 		fogCol += 0.5f;
-		renderer->SetIdAndColor(fogId, fogCol);
+		renderer->SetIdAndColor(state.segment, fogCol);
 	}
 
 	if (start)
@@ -452,7 +455,7 @@ void GameScene::OnActivate()
 
 	LightManager::Instance().ForceUpdateBuffers(renderer->GetContext(),camera);
 
-	player->GetComponent<PlayerComp>()->Reset();
+	player->GetComponent<PlayerComp>()->SetStatsFromState(state);
 	Input::Instance().ConfineMouse();
 	Input::Instance().SetMouseMode(dx::Mouse::Mode::MODE_RELATIVE);
 	ShowCursor(false);
@@ -478,17 +481,22 @@ void GameScene::OnActivate()
 		if (house->HasComponent<RigidBodyComponent>())
 			house->GetComponent<RigidBodyComponent>()->SetPosition(position);
 
-		position = dx::XMVectorAdd(position, dx::XMVectorSet(0, 12, -5, 0));
+		dx::XMVECTOR playerPos = { this->interiorPosition.x, this->interiorPosition.y + 3.0f, this->interiorPosition.z, 0.0f };
 
-		player->GetTransform().SetPosition(position);
-		player->GetComponent<RigidBodyComponent>()->SetPosition(position);
+		position = dx::XMVectorAdd(dx::XMVECTOR({ 0.0f, 1.0f, 5.0f, 0.0f }), position);
+
+		player->GetComponent<PlayerComp>()->SetStartPosition(position);
+
+		player->GetTransform().SetPosition(playerPos);
+		player->GetComponent<RigidBodyComponent>()->SetPosition(playerPos);
+
+		player->GetComponent<ControllerComp>()->SetInside(true);
 	}
 
 	renderer->AddRenderPass(guiManager);
 
 	//this->PrintSceneHierarchy(root, 0);
 	enemyManager->SpawnEnemies();
-
 
 }
 

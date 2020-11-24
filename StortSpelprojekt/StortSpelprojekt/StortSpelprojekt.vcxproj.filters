@@ -572,9 +572,6 @@
     <ClInclude Include="PlayerAnimHandlerComp.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="WorldGenerator.h">
-      <Filter>Source Files\SpawnSystems</Filter>
-    </ClInclude>
     <ClInclude Include="WorldDescription.h">
       <Filter>Source Files\SpawnSystems</Filter>
     </ClInclude>
@@ -608,6 +605,9 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="LightComponent.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="SaveHandler.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>

@@ -1,49 +1,29 @@
 #pragma once
-#include <functional>
-#include "Random.h"
 
-//const int SLOTS = 1;
-//const int REGISTRY_MAX_SIZE = 64;
-//
-//struct SaveData
-//{
-//	size_t slot;
-//	size_t levelIndex;
-//	int seed;
-//
-//	size_t keyCount;
-//	size_t keys[REGISTRY_MAX_SIZE];
-//	float value[REGISTRY_MAX_SIZE];
-//};
-//
-//class SaveState
-//{
-//public:
-//	SaveState();
-//	SaveState(size_t slot, bool loaded, const SaveStateData& data);
-//
-//	SaveStateData& GetData() { return this->data; }
-//
-//	static SaveState Load(size_t slot = 0);
-//	static void Save(SaveState state, size_t slot = 0);
-//	static bool Contains(size_t slot = 0);
-//	static void DeleteSlot(size_t slot = 0);
-//
-//private:
-//	size_t slot;
-//	bool loaded;
-//	SaveStateData data;
-//};
-//
+constexpr float PLAYER_DEFAULT_HEALTH	= 100.0f;
+constexpr float PLAYER_DEFAULT_FUEL		= 50.0f;
+constexpr float PLAYER_DEFAULT_FOOD		= 50.0f;
 
 struct SaveState
 {
 	int seed;
-	size_t segment;
-	std::vector<int> m_generatedSeeds;
+	unsigned int segment;
+	float playerHealth;
+	float playerFuel;
+	float playerFood;
+	bool showTutortial;
 
-	inline int GetSegmentedSeed() const
+	static SaveState Default ()
 	{
-		return 	seed ^ std::hash<int>()(segment);
+		SaveState state;
+		state.playerHealth = PLAYER_DEFAULT_HEALTH;
+		state.playerFuel = PLAYER_DEFAULT_FUEL;
+		state.playerFood = PLAYER_DEFAULT_FOOD;
+		state.showTutortial = true;
+		state.segment = 0;
+		state.seed = rand();
+		return state;
 	}
+
+	inline int GetSegmentedSeed() const { return seed ^ std::hash<int>()(segment); }
 };
