@@ -28,45 +28,37 @@ void Grid::Init()
 		AddNeighbors(allNodes[i]);
 	}
 	//TestNodes();
-	//FindPath(dx::XMFLOAT2(0, 0), dx::XMFLOAT2(8, 8));
-	FindPath2();
+	FindPath();
+	//FindPath2();
 }
 
 void Grid::DrawNodes()
 {
-	//for (int i = 0; i < allNodes.size(); i++)
-	//{
-	//	if (allNodes[i]->correctPath)
-	//		box.DrawBox(dx::XMFLOAT3(allNodes[i]->posX * 4, 8, allNodes[i]->posY * 4), dx::XMFLOAT3(2, 2, 2), dx::XMFLOAT3(0, 1, 0));
-	//	else
-	//		box.DrawBox(dx::XMFLOAT3(allNodes[i]->posX * 4, 8, allNodes[i]->posY * 4), dx::XMFLOAT3(2, 2, 2), dx::XMFLOAT3(1, 0, 0));
-	//}
-
 	for (int i = 0; i < allNodes.size(); i++)
 	{
+		dx::XMFLOAT3 color;
 		if (allNodes[i]->openList)
-			box.DrawBox(dx::XMFLOAT3(allNodes[i]->posX * 4, 5, allNodes[i]->posY * 5), dx::XMFLOAT3(2, 2, 2), dx::XMFLOAT3(0, 1, 0));
-		else if(allNodes[i]->closedList)
-			box.DrawBox(dx::XMFLOAT3(allNodes[i]->posX * 4, 5, allNodes[i]->posY * 5), dx::XMFLOAT3(2, 2, 2), dx::XMFLOAT3(1, 0, 0));
+			color = dx::XMFLOAT3(0, 1, 0);
+		else if (allNodes[i]->closedList)
+			color = dx::XMFLOAT3(1, 0, 0);
 		else if (allNodes[i]->correctPath)
-			box.DrawBox(dx::XMFLOAT3(allNodes[i]->posX * 4, 5, allNodes[i]->posY * 5), dx::XMFLOAT3(2, 2, 2), dx::XMFLOAT3(0, 0, 1));
+			color = dx::XMFLOAT3(0, 0, 1);
 		else
-			box.DrawBox(dx::XMFLOAT3(allNodes[i]->posX * 4, 5, allNodes[i]->posY * 5), dx::XMFLOAT3(2, 2, 2), dx::XMFLOAT3(1, 1, 1));
+			color = dx::XMFLOAT3(1, 1, 1);
+
+		box.DrawBox(dx::XMFLOAT3(allNodes[i]->posX * 4, 5, allNodes[i]->posY * 5), dx::XMFLOAT3(2, 2, 2), color);
 	}
 }
 
-void Grid::FindPath(dx::XMFLOAT2 startPos, dx::XMFLOAT2 endPos)
+void Grid::FindPath()
 {
 	Node* startNode = new Node;
 	Node* endNode = new Node;
 	int erasePos = 0;
-	//startNode->posX = startPos.x;
-	//startNode->posY = startPos.y;
 	startNode = allNodes[0];
-	//endNode->posX = endPos.x;
-	//endNode->posY = endPos.y;
-	endNode = allNodes[2];
+	endNode = allNodes[12];
 	openList.push_back(startNode);
+	allNodes[startNode->posX + (startNode->posY * rows)]->openList = true;
 	while (openList.size() > 0)
 	{
 		std::cout << "Open list: " << openList.size() << std::endl;
@@ -83,7 +75,9 @@ void Grid::FindPath(dx::XMFLOAT2 startPos, dx::XMFLOAT2 endPos)
 
 		openList.erase(openList.begin() + erasePos);
 		openList.shrink_to_fit();
+		allNodes[currentNode->posX + (currentNode->posY * rows)]->openList = false;
 		closedList.push_back(currentNode);
+		allNodes[currentNode->posX + (currentNode->posY * rows)]->closedList = true;
 
 		if (currentNode == endNode)
 		{
@@ -109,6 +103,7 @@ void Grid::FindPath(dx::XMFLOAT2 startPos, dx::XMFLOAT2 endPos)
 				if (std::find(openList.begin(), openList.end(), neighbour) == openList.end())
 				{
 					openList.push_back(neighbour);
+					allNodes[neighbour->posX + (neighbour->posY * rows)]->openList = true;
 				}
 			}
 		}

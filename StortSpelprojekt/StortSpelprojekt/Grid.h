@@ -33,7 +33,7 @@ public:
 	void DrawNodes();
 
 private:
-	void FindPath(dx::XMFLOAT2 startPos, dx::XMFLOAT2 endPos);
+	void FindPath();
 	std::vector<Node*> GetNeighbours(Node* node);
 	int GetDistance(Node* nodeA, Node* nodeB);
 	void RetracePath(Node* startNode, Node* endNode);
