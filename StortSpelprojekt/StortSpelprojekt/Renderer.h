@@ -8,8 +8,9 @@
 #include "CameraComponent.h"
 #include "LightManager.h"
 #include "ConstantBuffer.h"
-
+#include "DepthPass.h"
 #include <time.h>
+
 
 
 inline int GetBatchID(const Material* material, const Mesh* mesh)
@@ -95,12 +96,15 @@ public:
 
 	void RemoveRenderPass(RenderPass*);
 
+	void InitForwardPlus(CameraComponent* camera, Window* window, Shader& forwardPlusShader);
+	void UpdateForwardPlus(CameraComponent* camera);
+	//std::vector<UINT>& cullLightsOnCPU();
 	void SetIdAndColor(int id, float color);
 
 	ALIGN16_ALLOC;
 
 private:
-	void AddItem(const RenderItem& item, bool transparent);
+	void AddItem(const RenderItem& item, bool transparent, bool cullDepth);
 	void DrawRenderItem(const RenderItem& item, CameraComponent* camera);
 	void DrawRenderItemInstanced(const RenderItem& item, CameraComponent* camera);
 	void DrawRenderItemSkeleton(const RenderItem& item, CameraComponent* camera);
@@ -110,6 +114,7 @@ private:
 
 	void SetObjectBufferValues(const CameraComponent* camera, dx::XMMATRIX world, bool transpose);
 	Mesh* CreateScreenQuad();
+
 
 private:
 	IDXGISwapChain* swapchain;
@@ -126,7 +131,47 @@ private:
 	ConstantBuffer<cb_Object> objectBuffer;
 	ConstantBuffer<cb_Scene> sceneBuffer;
 	ConstantBuffer<cb_Material> materialBuffer;
+	ConstantBuffer<cb_DispatchParams> dispatchParamsBuffer; //F+
+	ConstantBuffer<cb_ScreenToViewParams> screenToViewParams;//F+
+
+	UINT width; //F+
+	UINT height;//F+
+
+	dx::XMUINT3 numThreadGroups;
+	dx::XMUINT3 numThreads;
+	//Frustums
 	
+	std::vector<s_Frustum> frustum_data;
+	ID3D11Buffer* frustums_buffer = 0;
+	ID3D11ShaderResourceView* inFrustums_srv = 0;
+	ID3D11UnorderedAccessView* outFrustums_uav = 0;
+
+	//light index counter
+	std::vector<UINT> o_LightIndexCounter;
+	ID3D11Buffer* o_LightIndexCounter_uavbuffer = 0;
+	ID3D11UnorderedAccessView* o_LightIndexCounter_uav = 0;
+	std::vector<UINT> t_LightIndexCounter;
+	ID3D11Buffer* t_LightIndexCounter_uavbuffer = 0;
+	ID3D11UnorderedAccessView* t_LightIndexCounter_uav = 0;
+	
+	//light index list
+	std::vector<UINT> o_LightIndexList;
+	ID3D11Buffer* o_LightIndexList_uavbuffer = 0;
+	ID3D11ShaderResourceView* o_LightIndexList_srv = 0;
+	ID3D11UnorderedAccessView* o_LightIndexList_uav = 0;
+	std::vector<UINT> t_LightIndexList;
+	ID3D11Buffer* t_LightIndexList_uavbuffer = 0;
+	ID3D11ShaderResourceView* t_LightIndexList_srv = 0;
+	ID3D11UnorderedAccessView* t_LightIndexList_uav = 0;
+
+	//light grid
+	
+	ID3D11UnorderedAccessView* o_LightGrid_tex = 0;
+	ID3D11ShaderResourceView* o_LightGrid_texSRV = 0;
+	ID3D11UnorderedAccessView* t_LightGrid_tex = 0;
+	ID3D11ShaderResourceView* t_LightGrid_texSRV = 0;
+
+
 	std::vector<dx::XMFLOAT4X4> srv_skeleton_data;
 	ID3D11Buffer* skeleton_srvbuffer;
 	ID3D11ShaderResourceView* skeleton_srv;
@@ -140,6 +185,10 @@ private:
 
 	RenderQueue opaqueItemQueue;
 	RenderQueue transparentItemQueue;
+	RenderQueue opaqueItemQueueDepth;
+	RenderQueue transparentItemQueueDepth;
+	std::unordered_map<int, Batch> opaqueBatchesDepth;
+	std::unordered_map<int, Batch> transparentBatchesDepth;
 	std::vector<RenderPass*> passes;
 
 	//blendstate
@@ -147,7 +196,7 @@ private:
 	ID3D11BlendState* blendStateOff;
 
 	ID3D11DepthStencilState* dss;
-
+	DepthPass depthPass;
 	const float BLENDSTATEMASK[4] = { 0.0f };
 	
 	bool drawShapes = true;

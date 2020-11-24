@@ -1,14 +1,22 @@
 #pragma once
 #include "Object.h"
+#include "EnemyStatsComp.h"
 
 class EnemyPatrolComp : public Component
 {
-	public:
-		EnemyPatrolComp();
-		virtual ~EnemyPatrolComp();
+public:
+    EnemyPatrolComp();
+    virtual ~EnemyPatrolComp();
+    void Initialize();
+    void Update(const float& deltaTime) override;
+    bool GetIsMoving()const;
+    void SetMoving(const bool & moving);
+private:
+    dx::XMFLOAT3 randomVec; //(target vector)
+    float timer;
+    float randomIntervall;
+    bool isMoving;
 
-		void Update(const float& deltaTime) override;
-	private:
-		dx::XMFLOAT3 direction;
-		float positionA = 3.0f, positionB = -3.0f;
+    RigidBodyComponent* rbComp;
+    EnemyStatsComp* enemyStatsComp;
 };
