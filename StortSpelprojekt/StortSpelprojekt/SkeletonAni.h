@@ -46,6 +46,7 @@ public:
 	std::map<std::string, unsigned int>& GetBoneIDMap();
 	std::vector<std::vector<Bone>>& GetKeyFrames();
 	std::vector<dx::SimpleMath::Matrix>& GetOffsets();
+	float GetCurrentFrame() { return this->currentFrame; }
 	float GetFPS();
 	float GetAniLength();
 	void SetOffsetsDirect(std::vector<dx::SimpleMath::Matrix>& directOffsets);
