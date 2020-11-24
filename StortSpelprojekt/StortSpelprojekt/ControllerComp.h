@@ -58,6 +58,7 @@ private:
 	bool isGrounded;
 	bool inside;
 	bool inDoorRange;
+	bool first;
 
 	dx::XMFLOAT3 houseVelocity;
 	dx::XMFLOAT3 jumpDir; 
@@ -99,4 +100,5 @@ public:
 	bool GetInRange() { return this->inDoorRange; }
 	void SetInRange(bool state) { this->inDoorRange = state; }
 	bool GetInside() { return this->inside; }
+	void SetInside(bool state) { this->inside = state; }
 };
