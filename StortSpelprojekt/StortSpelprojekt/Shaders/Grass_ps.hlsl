@@ -36,7 +36,7 @@ float4 main(GS_OUTPUT_GRASS input) : SV_TARGET
     
     //float3 normalized = normalize(input.normal);
     
-    float3 normalized = input.normal - float3(0, 0.8, 0);
+    float3 normalized = input.normal;//  -float3(0, 0.8, 0);
     float3 viewDirection = cameraPosition - worldPosition.xyz;
   
     float4 finalColor = float4(0.0f, 0.0f, 0.0f, 0.0);
