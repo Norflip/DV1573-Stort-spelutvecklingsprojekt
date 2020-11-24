@@ -99,9 +99,6 @@ void GameScene::InitializeObjects()
 	renderer->InitForwardPlus(camera, window, forwardPlusShader);
 	//forwardPlusShader.Unbind(renderer->GetContext());
 
-
-
-
 	cameraObject->GetTransform().SetPosition(playerSpawnVec);
 	playerObject->GetTransform().SetPosition(playerSpawnVec);
 	playerObject->AddComponent<CapsuleColliderComponent>(0.5f, 1.5f, zero);
@@ -111,41 +108,29 @@ void GameScene::InitializeObjects()
 	playerObject->AddComponent<ControllerComp>(cameraObject, houseBaseObject);
 	playerObject->GetComponent<PlayerComp>()->SetInteriorPosition(this->interiorPosition.x, this->interiorPosition.y, this->interiorPosition.z);
 
-
 	Object::AddToHierarchy(playerObject, cameraObject);
 	AddObjectToRoot(playerObject);
 
-	Object* spotLight = new Object("body_spotLight");
-
+	// Light around player
+	Object* playerLight = new Object("playerLight");
 	dx::XMFLOAT3 lightTranslation = dx::XMFLOAT3(0.0f, 0.f, 0.0f);
-	spotLight->GetTransform().SetPosition(dx::XMLoadFloat3(&lightTranslation));
+	playerLight->GetTransform().SetPosition(dx::XMLoadFloat3(&lightTranslation));
+	LightComponent* playerLightComponent = playerLight->AddComponent<LightComponent>(0, dx::XMFLOAT4(0.5f, 0.5f, 0.5f, 1.0f), 5.f);
+	playerLightComponent->SetEnabled(true);
+	playerLightComponent->SetIntensity(0.3f);
+	Object::AddToHierarchy(playerObject, playerLight);
 
-	LightComponent* sLight = spotLight->AddComponent<LightComponent>(0, dx::XMFLOAT4(0.7f, 0.7f, 0.4f, 1.0f), 7.f);
-	sLight->SetEnabled(true);
-	sLight->SetIntensity(0.5f);
-	//sLight->SetAttenuation();
-	/*sLight->SetRange(12.f);
-	sLight->SetSpotlightAngle(14.f);
-	sLight->SetDirection({ 1.f, 0.f, 0.f });*/
-	Object::AddToHierarchy(playerObject,spotLight );
-
-
-	Object* dLight = new Object("dirLight"); //directional light
-
-	dx::XMFLOAT3 lightTranslationD = dx::XMFLOAT3(0.0f, 0.0f, 0.0f);
-	dLight->GetTransform().SetPosition(dx::XMLoadFloat3(&lightTranslationD));
-	LightComponent* dLightC = dLight->AddComponent<LightComponent>(2, dx::XMFLOAT4(0.7f, 0.2f, 0.2f, 1.0f), 7.f);
-	dLightC->SetEnabled(true);
-	dLightC->SetIntensity(0.2f);
+	// Sunlight
+	Object* sunLight = new Object("sunLight");
+	dx::XMFLOAT3 sunTranslation = dx::XMFLOAT3(0.0f, 0.0f, 0.0f);
+	sunLight->GetTransform().SetPosition(dx::XMLoadFloat3(&sunTranslation));
+	LightComponent* sunComponent = sunLight->AddComponent<LightComponent>(2, dx::XMFLOAT4(0.5f, 0.5f, 0.5f, 1.0f), 7.f);
+	sunComponent->SetEnabled(true);
+	sunComponent->SetIntensity(0.1f);
 	dx::XMFLOAT3 sunDirection;
 	dx::XMStoreFloat3(&sunDirection, dx::XMVector3Normalize(dx::XMVectorSet(0, -1, 1, 0)));
-	dLightC->SetDirection(sunDirection);
-	AddObjectToRoot(dLight);
-
-
-	
-
-	
+	sunComponent->SetDirection(sunDirection);
+	AddObjectToRoot(sunLight);
 
 	/* For fuel info from playercomp */
 	nodeWalker->GetPlayerInfo(playerObject->GetComponent<PlayerComp>());
