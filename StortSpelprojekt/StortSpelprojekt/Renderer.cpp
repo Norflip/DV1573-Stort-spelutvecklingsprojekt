@@ -45,16 +45,11 @@ void Renderer::Initialize(Window* window)
 	this->renderPassSwapBuffers[1] = DXHelper::CreateRenderTexture(window->GetWidth(), window->GetHeight(), device, context, &dss);
 	srv_skeleton_data.resize(60);
 
-	dx::XMFLOAT4X4 bone;
-	dx::XMStoreFloat4x4(&bone, dx::XMMatrixIdentity());
+	
 
 	DXHelper::CreateRSState(device, &rasterizerStateCullBack, &rasterizerStateCullNone, &rasterizerStateCCWO);
 
 
-	for (int boneNr = 0; boneNr < 60; boneNr++) //set id matrix as default for the bones. So if no animation is happening the character is not funky.
-	{
-		srv_skeleton_data[boneNr] = bone;//set id matrix as default for the bones. So if no animation is happening the character is not funky. I need to bind them as well.
-	}
 
 	LightManager::Instance().Initialize(device);
 
