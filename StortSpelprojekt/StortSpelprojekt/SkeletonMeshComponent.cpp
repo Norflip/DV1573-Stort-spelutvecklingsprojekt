@@ -9,6 +9,7 @@ timeScale(timeScale)
 	finalTransforms.resize(60);
 	doneDown = false;
 	doneUp = false;
+	doneDeath = false;
 	dx::XMMATRIX id = dx::XMMatrixIdentity();
 	for (int bone = 0; bone < 60; bone++)
 	{
@@ -324,28 +325,27 @@ void SkeletonMeshComponent::PlayOnce(const float& deltaTime)
 	}
 	else if (currentAni == SkeletonStateMachine::DEATH)
 	{
-	
 		if (!doneOnce)
 		{
-			elapsedTime += deltaTime;
-			time = elapsedTime;
+			timer.Start();
+			timer.Update();
+			time = (float)timer.GetSeconds();
 			time *= timeScale;
-
-			//Get the playtime for the animation in seconds.
-			float animLength = skeletonAnimations[4].GetAniLength() / skeletonAnimations[4].GetFPS();
-
-			if (time <= animLength)
+			float animationTime = time * skeletonAnimations[4].GetFPS();
+			float currentFrame = fmodf(animationTime, skeletonAnimations[4].GetAniLength());
+			
+			count += deltaTime;
+			finalTransforms = skeletonAnimations[4].Makeglobal(time, dx::XMMatrixIdentity(), *skeletonAnimations[4].GetRootKeyJoints());
+			if (count >= skeletonAnimations[4].GetAniLength() / skeletonAnimations[4].GetFPS())
 			{
-				//std::cout << time << std::endl;
-				finalTransforms = skeletonAnimations[4].Makeglobal(time, dx::XMMatrixIdentity(), *skeletonAnimations[4].GetRootKeyJoints());
-			}
-			else
-			{
-				doneDeath = true;
-				elapsedTime = 0.0f;
+				timer.Stop();
 				doneOnce = true;
+				doneDeath = true;
+				count = 0.0f;
 			}
+			
 		}
+		
 	}
 	else if (currentAni == SkeletonStateMachine::LOAD)
 	{

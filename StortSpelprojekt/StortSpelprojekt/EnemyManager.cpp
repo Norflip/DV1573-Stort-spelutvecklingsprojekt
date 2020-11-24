@@ -62,18 +62,8 @@ void EnemyManager::InitChargerEnemy()
 
 void EnemyManager::RemoveEnemy(Object* enemy)
 {
-	SkeletonMeshComponent* skeleton = enemy->GetComponent<SkeletonMeshComponent>();
 	
-	skeleton->SetTrack(SkeletonStateMachine::DEATH, true);
-	if (!skeleton)
-	{
-		std::cout << "GGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGG" << std::endl;
-	}
-	if (skeleton->GetDoneDeath())
-	{
-		enemyPool->ReturnItem(enemy);
-	}
-	
+	enemyPool->ReturnItem(enemy);
 }
 
 void EnemyManager::SpawnEnemies()
@@ -105,7 +95,7 @@ void EnemyManager::DespawnEnemies()
 	{
 		RemoveEnemy(enemyVector[i]);
 	}
-	
+
 }
 
 void EnemyManager::SpawnEnemy(std::string key, dx::XMVECTOR position)
@@ -125,3 +115,5 @@ void EnemyManager::SpawnEnemy(std::string key, dx::XMVECTOR position)
 
 	enemyVector.push_back(enemy);
 }
+
+

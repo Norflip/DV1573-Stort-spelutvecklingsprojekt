@@ -21,6 +21,7 @@ float4 main(GS_OUTPUT_GRASS input) : SV_TARGET
 
 	finalColor = IterateLights(startOffset, lightCount, finalColor, normalized, input.posToEye, viewDirection);
     //textureColor *= float4(0.4, 0.4, 0.4, 1.0);
+
     finalColor*= textureColor;
     return finalColor;
 	
