@@ -115,9 +115,9 @@ void GameScene::InitializeObjects()
 	Object* playerLight = new Object("playerLight");
 	dx::XMFLOAT3 lightTranslation = dx::XMFLOAT3(0.0f, 0.f, 0.0f);
 	playerLight->GetTransform().SetPosition(dx::XMLoadFloat3(&lightTranslation));
-	LightComponent* playerLightComponent = playerLight->AddComponent<LightComponent>(0, dx::XMFLOAT4(0.5f, 0.5f, 0.5f, 1.0f), 5.f);
+	LightComponent* playerLightComponent = playerLight->AddComponent<LightComponent>(0, dx::XMFLOAT4(0.5f, 0.5f, 0.5f, 1.0f), 4.f);
 	playerLightComponent->SetEnabled(true);
-	playerLightComponent->SetIntensity(0.3f);
+	playerLightComponent->SetIntensity(1.0f);
 	Object::AddToHierarchy(playerObject, playerLight);
 
 	// Sunlight
@@ -245,35 +245,34 @@ void GameScene::InitializeGUI()
 	//INFO, WE ARE DRAWING BACK TO FRONT. IF YOU WANT SOMETHING TO BE IN FRONT. SET VALUE TO 0. IF YOU WANT IT IN BACK USE 0.1 -> 1
 
 	//BUTTONS AT LEFT SIDE
-	//spriteBatch = new DirectX::SpriteBatch(renderer->GetContext());
 	GUISprite* equimpmentSprite1 = new GUISprite(*renderer, "Textures/EquipmentBox.png", 10, 10, 0, DrawDirection::BottomLeft, ClickFunction::NotClickable);
 	GUISprite* equimpmentSprite2 = new GUISprite(*renderer, "Textures/EquipmentBox.png", 90, 10, 0, DrawDirection::BottomLeft, ClickFunction::NotClickable);
 	GUISprite* equimpmentSprite3 = new GUISprite(*renderer, "Textures/EquipmentBox.png", 170, 10, 0, DrawDirection::BottomLeft, ClickFunction::NotClickable);
 	GUISprite* equimpmentSprite4 = new GUISprite(*renderer, "Textures/EquipmentBox.png", 250, 10, 0, DrawDirection::BottomLeft, ClickFunction::NotClickable);
 
-	//BARS THAT SCALING 
+	//BARS THAT SCALE
 	GUISprite* fuelScalingBar = new GUISprite(*renderer, "Textures/DippingBar.png", 170, 10, 0.5, DrawDirection::BottomRight, ClickFunction::NotClickable);
 	GUISprite* foodScalingBar = new GUISprite(*renderer, "Textures/DippingBar.png", 90, 10, 0.5, DrawDirection::BottomRight, ClickFunction::NotClickable);
 	GUISprite* healthScalingBar = new GUISprite(*renderer, "Textures/DippingBar.png", 10, 10, 0.5, DrawDirection::BottomRight, ClickFunction::NotClickable);
 
-	//BARS AR RIGHT SIDE
+	//BARS AT RIGHT SIDE
 	GUISprite* fuelBar = new GUISprite(*renderer, "Textures/Health_Fuel_Food.png", 170, 10, 1, DrawDirection::BottomRight, ClickFunction::NotClickable);
 	GUISprite* foodBar = new GUISprite(*renderer, "Textures/Health_Fuel_Food.png", 90, 10, 1, DrawDirection::BottomRight, ClickFunction::NotClickable);
 	GUISprite* healthBar = new GUISprite(*renderer, "Textures/Health_Fuel_Food.png", 10, 10, 1, DrawDirection::BottomRight, ClickFunction::NotClickable);
 
 	//ICONS ON TOP OF ITEMS
 	GUISprite* equimpmentSpriteAxe = new GUISprite(*renderer, "Textures/AxeIcon2.png", 10, 10, 0, DrawDirection::BottomLeft, ClickFunction::NotClickable);
+
 	//ICONS ON TOP OF BARS
 	GUISprite* fuelSprite = new GUISprite(*renderer, "Textures/FireIcon.png", 170, 10, 0, DrawDirection::BottomRight, ClickFunction::NotClickable);
 	GUISprite* foodSprite = new GUISprite(*renderer, "Textures/FoodIcon.png", 90, 10, 0, DrawDirection::BottomRight, ClickFunction::NotClickable);
 	GUISprite* healthSprite = new GUISprite(*renderer, "Textures/HealthIcon.png", 10, 10, 0, DrawDirection::BottomRight, ClickFunction::NotClickable);
 
-	//COMPASS
+	// Info gui on the door
+	GUISprite* infoSprite = new GUISprite(*renderer, "Textures/Info.png", 0, 0, 0.0f, DrawDirection::Default, ClickFunction::NotClickable);
 
 	//FONTS
 	GUIFont* fpsDisplay = new GUIFont(*renderer, "fps", 30, 30);
-	//GUIFont* healthDisplay = new GUIFont(*renderer, "playerHealth", 50, 100);
-	//GUIFont* enemyDisplay = new GUIFont(*renderer, "enemyHealth", 50, 150);
 
 	//CROSSHAIR
 	GUISprite* dot = new GUISprite(*renderer, "Textures/TestFix2.png", (windowWidth / 2) - 6, (windowHeight / 2) - 6, 0, DrawDirection::BottomLeft, ClickFunction::NotClickable);
@@ -281,18 +280,14 @@ void GameScene::InitializeGUI()
 	GUISprite* doorSprite = new GUISprite(*renderer, "Textures/DoorSprite.png", (windowWidth / 2) - 6, (windowHeight / 2) - 6, 0, DrawDirection::BottomLeft, ClickFunction::NotClickable);
 	GUISprite* fuel = new GUISprite(*renderer, "Textures/Fuel_Icon.png", (windowWidth / 2) - 6, (windowHeight / 2) - 6, 0, DrawDirection::BottomLeft, ClickFunction::NotClickable);
 
-	//dot->SetVisible(false);
 	crosshair->SetVisible(false);
 	doorSprite->SetVisible(false);
 	fuel->SetVisible(false);
+	infoSprite->SetVisible(false);
 
 	// INSERTIONS
 	guiManager = new GUIManager(renderer, 0);
 	guiManager->AddGUIObject(fpsDisplay, "fps");
-	//guiManager->AddGUIObject(healthDisplay, "playerHealth");
-	//guiManager->AddGUIObject(enemyDisplay, "enemyHealth");
-	//COMPASS
-
 
 	//BASE OF EQUIPMENT
 	guiManager->AddGUIObject(equimpmentSprite1, "equimpmentSprite1");
@@ -310,6 +305,7 @@ void GameScene::InitializeGUI()
 
 	//ICON OF EQUIPMENT
 	guiManager->AddGUIObject(equimpmentSpriteAxe, "equimpmentSpriteAxe");
+
 	//BASE OF BARS
 	guiManager->AddGUIObject(fuelBar, "fuelBar");
 	guiManager->AddGUIObject(foodBar, "foodBar");
@@ -319,6 +315,9 @@ void GameScene::InitializeGUI()
 	guiManager->AddGUIObject(fuelSprite, "fuelSprite");
 	guiManager->AddGUIObject(foodSprite, "foodSprite");
 	guiManager->AddGUIObject(healthSprite, "healthSprite");
+
+	// Info gui on the door
+	guiManager->AddGUIObject(infoSprite, "infoSprite");
 
 	//CROSSHAIR
 	guiManager->AddGUIObject(dot, "dot");

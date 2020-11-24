@@ -90,7 +90,6 @@ void EnemyManager::DespawnEnemies()
 	{
 		RemoveEnemy(enemyVector[i]);
 	}
-	
 }
 
 void EnemyManager::SpawnEnemy(std::string key, dx::XMVECTOR position)
@@ -101,7 +100,6 @@ void EnemyManager::SpawnEnemy(std::string key, dx::XMVECTOR position)
 	EnemySMComp* stateMachine = enemy->GetComponent<EnemySMComp>();
 	enemy->GetComponent<EnemyAttackComp>()->SetPlayer(playerComp);
 	stateMachine->InitAnimation();
-
 
 	enemy->GetComponent<RigidBodyComponent>()->SetPosition(position);
 	Object::AddToHierarchy(root, enemy);

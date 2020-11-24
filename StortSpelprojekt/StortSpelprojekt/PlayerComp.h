@@ -53,6 +53,7 @@ public:
 	dx::XMFLOAT3 GetInteriorPosition() { return this->interiorPosition; }
 	void SetStartPosition(dx::XMVECTOR pos);
 	dx::XMFLOAT3 GetStartPosition() { return this->startPos; }
+	bool GetIsReading() { return this->reading; }
 
 private:
 	//det h�r skriver en kommentar till hold objekt
@@ -88,6 +89,7 @@ private:
 	bool healthTutorial;
 	bool fuelTutorial;
 	bool finishedTutorial;
+	bool reading;
 
 	float throwStrength;
 	float hpLossDist, maxDist, hpLossPerDistance;

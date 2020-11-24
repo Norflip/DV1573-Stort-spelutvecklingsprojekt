@@ -59,14 +59,15 @@ PlayerComp::PlayerComp(Renderer* renderer, CameraComponent* camComp, Object* hou
 
 	cam = camComp;
 	// per frame shit
-	this->rayDistance = 2.0f;
 	up = { 0.0f, 1.0f, 1.0f };
+	this->rayDistance = 2.0f;
 	holding = nullptr;
 
-	finishedTutorial = false;
+	finishedTutorial = true; // Change to false if you wanna use the tutorial
 	foodTutorial = false;
 	fuelTutorial = false;
 	healthTutorial = false;
+	reading = false;
 }
 
 PlayerComp::~PlayerComp()
@@ -120,7 +121,8 @@ void PlayerComp::Update(const float& deltaTime)
 
 	RayCast(deltaTime);
 
-	if (!guiMan->GetGUIObject("door")->GetVisible() && !guiMan->GetGUIObject("fuel")->GetVisible())
+	if (!guiMan->GetGUIObject("door")->GetVisible() && !guiMan->GetGUIObject("fuel")->GetVisible()
+		&& !guiMan->GetGUIObject("infoSprite")->GetVisible())
 	{
 		guiMan->GetGUIObject("dot")->SetVisible(true);
 		guiMan->GetGUIObject("door")->SetVisible(false);
@@ -371,6 +373,27 @@ void PlayerComp::RayCast(const float& deltaTime)
 			else
 			{
 				this->GetOwner()->GetComponent<ControllerComp>()->SetInRange(false);
+			}
+		}
+		else
+		{
+			if (RMOUSE_DOWN)
+			{
+				if (hit.object != nullptr)
+				{
+					if (guiMan->GetGUIObject("infoSprite")->GetVisible())
+					{
+						guiMan->GetGUIObject("infoSprite")->SetVisible(false);
+						guiMan->GetGUIObject("dot")->SetVisible(true);
+						reading = false;
+					}
+					else
+					{
+						guiMan->GetGUIObject("infoSprite")->SetVisible(true);
+						guiMan->GetGUIObject("dot")->SetVisible(false);
+						reading = true;
+					}
+				}
 			}
 		}
 	}

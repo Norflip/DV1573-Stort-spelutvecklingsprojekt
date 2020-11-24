@@ -30,8 +30,9 @@ float4 CalculatePointLight(Light light, float3 normal, float3 objectPosition, fl
         diffuse = saturate(diffuseFactor * matDiffuse * light.lightColor * attenuationFactor);
         specular = saturate(shine * matSpecular * light.lightColor * attenuationFactor);
     }
+
 	finalColor = ambient + diffuse + specular;
-    return finalColor * light.intensity;
+	return finalColor;// *light.intensity;
 }
 
 // Calculate normalmapping
@@ -73,7 +74,7 @@ float3 CalculateNormalMapping(float3 normal, float3 tangent, float4 normalmap)
 
 	float3x3 TBN = float3x3(tangent, biTangent, normal);
 
-	normal = mul(normalmap.xyz, TBN); //.xyz??
+	normal = mul(normalmap.xyz, TBN); //.xyz?? 
 
 	return normal;
 }
@@ -95,9 +96,9 @@ float4 CalculateDirectionalLight(Light light, float3 normal, float3 viewDirectio
 	if (diffuseFactor > 0.0f)
 	{
         float3 reflection = reflect(lightDirection, normal);
-		float spec = pow(max(dot(viewDirection, reflection), 0.0f), 1.0f);
+		float spec = pow(max(dot(viewDirection, reflection), 0.0f), 0.1f);
 
-        //ambient = saturate(matAmbient * light.lightColor * attenuationFactor);
+        ambient = saturate(matAmbient * sunColor);
 		diffuse = diffuseFactor * sunColor * matDiffuse;
 		specular = spec * sunColor * matSpecular;
 	}
@@ -105,6 +106,7 @@ float4 CalculateDirectionalLight(Light light, float3 normal, float3 viewDirectio
 	finalColor = ambient + diffuse + specular;
 	return finalColor * light.intensity;
 }
+
 float DoSpotCone(Light light, float3 L)
 {
     float minCos = cos(radians(light.spotlightAngle));
