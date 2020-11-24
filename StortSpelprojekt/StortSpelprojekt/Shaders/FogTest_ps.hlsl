@@ -31,7 +31,7 @@ float3 WorldPosFromDepth(float depth, float2 uv) {
 
 float4 main(PixelInputType input) : SV_TARGET
 {
-    float someValue = 400;
+    float someValue = 300;
     float4 diff;
     float4 diff2;
     float4 final;
@@ -52,8 +52,7 @@ float4 main(PixelInputType input) : SV_TARGET
     float fogFactor = saturate(((D * far) - start) / (end - start));
 
     float2 st = input.uv.xy;// / float2(1600, 800) * 3.;
-
-  
+    st.y = st.y * (9.f / 16.f);
     float2 q = float2(0,0);
     q.x = fbm(st + 0.00 * time + (mousePos / someValue));
     q.y = fbm(st + float2(1.0, 0.0) + (mousePos / someValue));
