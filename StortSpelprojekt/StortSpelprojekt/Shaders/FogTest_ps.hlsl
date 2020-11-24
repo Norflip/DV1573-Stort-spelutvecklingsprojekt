@@ -111,10 +111,11 @@ float4 main(PixelInputType input) : SV_TARGET
 
    const float amount = 0.2f;  // higher = more intensity 
    const float power = (1 / distanceToHouse) * 100;   // higher = less space on screen
-   const float4 vignetteColor = float4(.8f, .3f, 0, 3.f); //ugly green shit
+   const float4 vignetteColor = float4(.8f, .3f, 0, 3.f); 
    float dis = length(input.uv * 2 - 1);
    dis = dis / 1.41421;
    dis = pow(dis, power);
+   
    float4 result = lerp(diffuseColor, fogColor, fogFactor);
    float4 vigcolor = float4(lerp(result, vignetteColor, 1.0f - pow(1 - dis * amount, 2)).rgb, 1.0f);
 
