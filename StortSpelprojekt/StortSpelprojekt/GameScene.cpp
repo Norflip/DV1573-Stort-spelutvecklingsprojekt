@@ -179,6 +179,7 @@ void GameScene::InitializeObjects()
 	enemyManager->Initialize(player, player->GetComponent<PlayerComp>(), root);
 	enemyManager->InitBaseEnemy();
 	enemyManager->InitChargerEnemy();
+
 	/* PuzzleModels */
 	//Object* puzzleFrog = resources->AssembleObject("PuzzleFrogStatue", "PuzzleFrogStatueMaterial", ObjectFlag::DEFAULT);
 	////puzzleManager = new PuzzleManager(resources, player, house);
@@ -379,18 +380,21 @@ void GameScene::InitializeInterior()
 	tutorialFood->AddComponent<PickupComponent>(PickupType::Food, 40.0f);
 	tutorialFood->AddComponent<BoxColliderComponent>(dx::XMFLOAT3(0.25f, 0.25f, 0.25f), dx::XMFLOAT3(0, 0, 0));
 	tutorialFood->AddComponent<RigidBodyComponent>(10.0f, FilterGroups::PICKUPS, FilterGroups::EVERYTHING & ~FilterGroups::PLAYER, BodyType::DYNAMIC, true);
+	AddObjectToRoot(tutorialFood);
 
 	Object* tutorialHealth = resources->AssembleObject("HealthKit", "HealthKitMaterial");
-	tutorialHealth->GetTransform().SetPosition({3.0f, interiorPosition.y + 3.0f, 3.2f, 0.0f });
+	tutorialHealth->GetTransform().SetPosition({ 3.0f, interiorPosition.y + 3.0f, 3.2f, 0.0f });
 	tutorialHealth->AddComponent<PickupComponent>(PickupType::Health, 40.0f);
 	tutorialHealth->AddComponent<BoxColliderComponent>(dx::XMFLOAT3(0.25f, 0.25f, 0.25f), dx::XMFLOAT3(0, 0, 0));
 	tutorialHealth->AddComponent<RigidBodyComponent>(10.0f, FilterGroups::PICKUPS, FilterGroups::EVERYTHING & ~FilterGroups::PLAYER, BodyType::DYNAMIC, true);
+	AddObjectToRoot(tutorialHealth);
 
 	Object* tutorialFuel = resources->AssembleObject("FuelCanRed", "FuelCanRedMaterial");
 	tutorialFuel->GetTransform().SetPosition({ 2.0f, interiorPosition.y + 3.0f, -1.11f, 0.0f });
 	tutorialFuel->AddComponent<PickupComponent>(PickupType::Fuel, 20.0f);
 	tutorialFuel->AddComponent<BoxColliderComponent>(dx::XMFLOAT3(0.3f, 0.35f, 0.15f), dx::XMFLOAT3(0, 0, 0));
 	tutorialFuel->AddComponent<RigidBodyComponent>(10.0f, FilterGroups::HOLDABLE, FilterGroups::EVERYTHING & ~FilterGroups::PLAYER, BodyType::DYNAMIC, true);
+	AddObjectToRoot(tutorialFuel);
 
 	Object* fireLight = new Object("fireLight");
 	fireLight->AddComponent<PointLightComponent>(dx::XMFLOAT4(1.0f, 0.29f, 0.0f, 1.0f), 1.2f);
