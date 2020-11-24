@@ -10,8 +10,14 @@ LightManager::LightManager()
 
 LightManager::~LightManager()
 {
-	//lightsSRV->Release();
-	//lightsSRVBfr->Release();
+	
+	RELEASE(the_Light_srv);
+	RELEASE(the_Light_srvbuffer);
+
+	for (std::pair<size_t, LightComponent*> lights : lightMap)
+	{
+		delete lights.second;
+	}
 }
 
 

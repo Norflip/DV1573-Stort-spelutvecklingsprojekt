@@ -18,7 +18,7 @@ struct GrassStraw
 ALIGN16
 class GrassComponent : public Component
 {
-	const size_t MAX_STRANDS = 64;
+	const size_t MAX_STRANDS = 128;
 
 
 public:
