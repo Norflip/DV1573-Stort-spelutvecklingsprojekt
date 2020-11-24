@@ -18,21 +18,6 @@ Engine::Engine(HINSTANCE hInstance) : window(hInstance), activeSceneIndex(-1), s
 
 	window.Open(1920, 1080);
 
-	SaveState state;
-	if (SaveHandler::TryLoad(state))
-	{
-		std::cout << "seed: " << state.seed << std::endl;
-
-		std::cout << "FOOD: " << state.playerFood << std::endl;
-		std::cout << "FUEL: " << state.playerFuel << std::endl;
-		std::cout << "HP: " << state.playerHealth << std::endl;
-	}
-	else
-	{
-		SaveHandler::CreateNew();
-	}
-	
-
 	renderer = new Renderer();
 	renderer->Initialize(&window);
 
