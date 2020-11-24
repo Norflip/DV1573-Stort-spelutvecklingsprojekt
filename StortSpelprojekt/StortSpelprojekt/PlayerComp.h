@@ -18,6 +18,7 @@ public:
 	//PlayerComp();
 	PlayerComp(Renderer* renderer, CameraComponent* camComp, Object* house, Physics* physics, GUIManager* guimanager, float health, float movementSpeed, float radius, float attack, float attackSpeed);
 	virtual ~PlayerComp();
+
 	void Update(const float& deltaTime) override;
 	void FixedUpdate(const float& fixedDeltaTime) override;
 	float GetHealth() const { return health; }
@@ -32,8 +33,8 @@ public:
 	float GetDangerDistance();
 	float GetRadius() const { return radius; }
 
-	void Reset();
-	
+	void SetStatsFromState(const SaveState& state);
+
 	void LoseHealth(float damage) { health -= damage; }	
 	void AddHealth(float health) { this->health += health; }	
 	void AddAttack(float attack) { this->attack += attack; }

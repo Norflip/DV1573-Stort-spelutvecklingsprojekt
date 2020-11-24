@@ -4,11 +4,11 @@
 #include "GUIFont.h"
 #include "Engine.h"
 #include "GUICompass.h"
+#include "SaveHandler.h"
 
 GameScene::GameScene() : Scene("GameScene")
 {
 	this->interiorPosition = { 0.0f, -100.0f, 0.0f };
-	fogId = 0;
 	fogCol = 0;
 	start = true;
 }
@@ -436,15 +436,12 @@ void GameScene::InitializeInterior()
 void GameScene::OnActivate()
 {
 	std::cout << "Game Scene activated" << std::endl;
-	SaveState state;
-	state.seed = 1337;
-	state.segment = 0;
+	SaveState& state = SaveHandler::LoadOrCreate();
 
 	if (!start)
 	{
-		fogId++;
 		fogCol += 0.5f;
-		renderer->SetIdAndColor(fogId, fogCol);
+		renderer->SetIdAndColor(state.segment, fogCol);
 	}
 
 	if (start)
@@ -452,7 +449,7 @@ void GameScene::OnActivate()
 
 	LightManager::Instance().ForceUpdateBuffers(renderer->GetContext(),camera);
 
-	player->GetComponent<PlayerComp>()->Reset();
+	player->GetComponent<PlayerComp>()->SetStatsFromState(state);
 	Input::Instance().ConfineMouse();
 	Input::Instance().SetMouseMode(dx::Mouse::Mode::MODE_RELATIVE);
 	ShowCursor(false);
