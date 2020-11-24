@@ -29,8 +29,8 @@ void EnemyManager::InitBaseEnemy()
 		object->AddComponent<CapsuleColliderComponent>(1.6f, 1.8f, zero);
 		object->AddComponent<RigidBodyComponent>(10.f, FilterGroups::ENEMIES, (FilterGroups::EVERYTHING & ~FilterGroups::PICKUPS) & ~FilterGroups::HOLDABLE, BodyType::KINEMATIC, true);
 		EnemySMComp* stateMachine = object->AddComponent<EnemySMComp>(EnemyState::IDLE);
+		stateMachine->RegisterState(EnemyState::PATROL, object->AddComponent<EnemyPatrolComp>());
 		stateMachine->RegisterState(EnemyState::IDLE, object->AddComponent<EnemyIdleComp>());
-		//stateMachine->RegisterState(EnemyState::PATROL, enemy->AddComponent<EnemyPatrolComp>());
 		stateMachine->RegisterState(EnemyState::ATTACK, object->AddComponent<EnemyAttackComp>(nullptr));
 		return object;
 	});
@@ -51,9 +51,9 @@ void EnemyManager::InitChargerEnemy()
 		object->AddComponent<RigidBodyComponent>(10.f, FilterGroups::ENEMIES, (FilterGroups::EVERYTHING & ~FilterGroups::PICKUPS) & ~FilterGroups::HOLDABLE, BodyType::KINEMATIC, true);
 		
 		EnemySMComp* stateMachine = object->AddComponent<EnemySMComp>(EnemyState::IDLE);
+		stateMachine->RegisterState(EnemyState::PATROL, object->AddComponent<EnemyPatrolComp>());
 		stateMachine->RegisterState(EnemyState::IDLE, object->AddComponent<EnemyIdleComp>());
 		stateMachine->RegisterState(EnemyState::ATTACK, object->AddComponent<EnemyAttackComp>(nullptr));
-		//stateMachine->RegisterState(EnemyState::PATROL, enemy->AddComponent<EnemyPatrolComp>());
 		stateMachine->RegisterState(EnemyState::RUN, object->AddComponent<EnemyAttackComp>(nullptr));
 		//stateMachine->RegisterState(EnemyChargerState::DEATH, object->GetComponent<EnemyStatsComp>());	// Death component or something something???
 		return object;
@@ -74,7 +74,7 @@ void EnemyManager::SpawnEnemies()
 	{
 		dx::XMFLOAT3 playerPos;
 		dx::XMStoreFloat3(&playerPos, player->GetTransform().GetPosition());
-		SpawnEnemy("baseEnemy", { playerPos.x, playerPos.y + 6, (float)(playerPos.z + i * 5) });
+		SpawnEnemy("baseEnemy", { playerPos.x + (i +2) * 10.0f, playerPos.y + 5, (float)(playerPos.z + i * 5) });
 		
 	}
 
@@ -82,7 +82,7 @@ void EnemyManager::SpawnEnemies()
 	{
 		dx::XMFLOAT3 playerPos;
 		dx::XMStoreFloat3(&playerPos, player->GetTransform().GetPosition());
-		SpawnEnemy("chargerEnemy", { playerPos.x, playerPos.y, (float)(playerPos.z + i * 5) });
+		SpawnEnemy("chargerEnemy", { playerPos.x +(i+2) * 10.0f, playerPos.y+5, (float)(playerPos.z - i * 5) });
 	}
 
 

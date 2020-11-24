@@ -74,6 +74,7 @@ public:
 	void SetGeometryShader(std::string path, LPCSTR entry = "main");
 	void SetHullShader(std::string path, LPCSTR entry = "main");
 	void SetDomainShader(std::string path, LPCSTR entry = "main");
+	void SetComputeShader(std::string path, LPCSTR entry = "main");
 
 	void SetInputLayoutStructure(size_t arraySize, D3D11_INPUT_ELEMENT_DESC* inputLayoutDesc);
 
@@ -85,14 +86,15 @@ public:
 	void CompileGS(ID3D11Device*);
 	void CompileHS(ID3D11Device*);
 	void CompileDS(ID3D11Device*);
+	void CompileCS(ID3D11Device*);
 	ALIGN16_ALLOC;
 
 private:
 	// Had to change from LPCWSTR to regular strings, since LPCWSTR wouldnt save the data when compiling the shaders
-	std::string pixelPath, vertexPath, geometryPath, hullPath, domainPath;
+	std::string pixelPath, vertexPath, geometryPath, hullPath, domainPath, computePath;
 
 	//LPCWSTR pixelPath, vertexPath, geometryPath;
-	LPCSTR pixelEntry, vertexEntry, geometryEntry, hullEntry, domainEntry;;
+	LPCSTR pixelEntry, vertexEntry, geometryEntry, hullEntry, domainEntry, computeEntry;
 
 	DWORD shaderCompilationFlag;
 	ShaderBindFlag shaderFlags;
@@ -107,5 +109,6 @@ private:
 	ID3D11GeometryShader* geometryShader;
 	ID3D11HullShader* hullShader;
 	ID3D11DomainShader* domainShader;
+	ID3D11ComputeShader* computeShader;
 
 };

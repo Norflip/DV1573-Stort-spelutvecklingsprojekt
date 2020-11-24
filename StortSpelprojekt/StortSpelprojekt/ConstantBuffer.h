@@ -82,4 +82,7 @@ inline void ConstantBuffer<T>::UpdateBuffer(ID3D11DeviceContext* context)
 
 	if ((bflag & (int)ShaderBindFlag::DOMAINS) != 0)
 		context->DSSetConstantBuffers(slot, 1, &cbuffer);
+
+	if ((bflag & (int)ShaderBindFlag::COMPUTE) != 0)
+		context->CSSetConstantBuffers(slot, 1, &cbuffer);
 }
