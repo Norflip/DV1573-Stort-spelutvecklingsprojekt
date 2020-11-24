@@ -9,13 +9,20 @@ SamplerState defaultSampleType : register (s0);
 
 float4 main(VS_OUTPUT input) : SV_TARGET
 {
+    Material mat;
+    mat.matAmbient = matAmbient;
+    mat.matDiffuse = matDiffuse;
+    mat.matSpecular = matSpecular;
+    mat.hasAlbedo = hasAlbedo;
+    mat.hasNormalMap = hasNormalMap;
+	
 	float4 textureColor = float4(0.5f, 0.5f, 0.5f, 1.0f);
 	float4 normalmap = float4(1.0f, 1.0f, 1.0f, 1.0f);
 	
-	if (hasAlbedo)
+	if (mat.hasAlbedo)
 		textureColor = diffuseMap.Sample(defaultSampleType, input.uv);
 
-	if (hasNormalMap)
+	if (mat.hasNormalMap)
 	{
 		normalmap = normalMap.Sample(defaultSampleType, input.uv);
 		input.normal = CalculateNormalMapping(input.normal, input.tangent, normalmap);
@@ -34,7 +41,7 @@ float4 main(VS_OUTPUT input) : SV_TARGET
 	uint startOffset = LightGrid[tileIndex].x;
 	uint lightCount = LightGrid[tileIndex].y;
 
-	finalColor = IterateLights(startOffset, lightCount, finalColor, normalized, input.worldPosition, viewDirection);
+	finalColor = IterateLights(mat, startOffset, lightCount, finalColor, normalized, input.worldPosition, viewDirection);
 
 	finalColor = saturate(finalColor * textureColor);
 	finalColor.a = 1.0f;

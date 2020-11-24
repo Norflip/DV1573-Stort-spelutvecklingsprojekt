@@ -21,6 +21,13 @@ SamplerState m_textureSamplerState : register(s1);
 
 float4 main(VS_OUTPUT input) : SV_TARGET
 {
+    Material mat;
+    mat.matAmbient = matAmbient;
+    mat.matDiffuse = matDiffuse;
+    mat.matSpecular = matSpecular;
+    mat.hasAlbedo = hasAlbedo;
+    mat.hasNormalMap = hasNormalMap;
+	
 	const float UV_SCALE = 8.0f;
 
 	float4 data = testTexture.Sample(m_dataSamplerState, input.uv);
@@ -48,7 +55,7 @@ float4 main(VS_OUTPUT input) : SV_TARGET
 	uint startOffset = LightGrid[tileIndex].x;
 	uint lightCount = LightGrid[tileIndex].y;
 
-	finalColor = IterateLights(startOffset, lightCount, finalColor, normal, input.worldPosition, viewDirection);
+	finalColor = IterateLights(mat, startOffset, lightCount, finalColor, normal, input.worldPosition, viewDirection);
 	finalColor = saturate(textureColor * finalColor);
 	finalColor.a = 1.0f;
 

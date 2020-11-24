@@ -75,7 +75,7 @@ void Renderer::Initialize(Window* window)
 
 
 	sceneBuffer.Initialize(CB_SCENE_SLOT, ShaderBindFlag::PIXEL | ShaderBindFlag::DOMAINS | ShaderBindFlag::VERTEX|ShaderBindFlag::COMPUTE, device);
-	objectBuffer.Initialize(CB_OBJECT_SLOT, ShaderBindFlag::VERTEX, device);
+	objectBuffer.Initialize(CB_OBJECT_SLOT,ShaderBindFlag::GEOMETRY | ShaderBindFlag::DOMAINS | ShaderBindFlag::VERTEX | ShaderBindFlag::PIXEL, device);
 	materialBuffer.Initialize(CB_MATERIAL_SLOT, ShaderBindFlag::PIXEL, device);
 
 	DXHelper::CreateStructuredBuffer(device, &skeleton_srvbuffer, srv_skeleton_data.data(), sizeof(dx::XMFLOAT4X4), srv_skeleton_data.size(), &skeleton_srv);

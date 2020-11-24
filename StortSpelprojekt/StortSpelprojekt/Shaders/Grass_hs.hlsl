@@ -30,12 +30,12 @@ HS_CONSTANT_DATA_OUTPUT_GRASS hsPerIsoLinePatch(InputPatch<VS_OUTPUT_GRASS,1> in
 	float3 normal3 = grassStraws[v3].normal.xyz;
 
 	float3 normal = (normal1 + normal2 + normal2) / 3.0f;
-	float3 viewNormal = mul(float4(normal, 0.0f), wv).xyz;
+	//float3 viewNormal = mul(float4(normal, 0.0f), wv).xyz;
 
-	//if (viewNormal.z >= 0.3f)
-	//{
-	//	//output.edgeTesselation[0] = 0;
-	//}
+    //if (viewNormal.z >= 0.3f)
+    //{
+    //    output.edgeTesselation[0] = 0;
+    //}
 
 	float2 uv1 = grassStraws[v1].uv.xy;
 	float2 uv2 = grassStraws[v2].uv.xy;
