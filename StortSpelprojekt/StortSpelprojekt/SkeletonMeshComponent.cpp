@@ -225,22 +225,26 @@ void SkeletonMeshComponent::SetTrack(const SkeletonStateMachine& type, const Ske
 
 void SkeletonMeshComponent::CreateSmoothTransition()
 {
+	int anim1 = 2;
+	int anim2 = 3;
+
 	//LITE PROGRESS
 	SkeletonAni transitionAnim;
 
-	transitionAnim = skeletonAnimations[2];
+	transitionAnim = skeletonAnimations[anim1];
 
-	std::vector<std::vector<Bone>> keyframes(41);
+	std::vector<std::vector<Bone>> keyframes(skeletonAnimations[anim1].GetKeyFrames().size());
 
-	for (int i = 0; i < skeletonAnimations[2].GetKeyFrames().size(); i++)
+	for (int i = 0; i < skeletonAnimations[anim1].GetKeyFrames().size(); i++)
 	{
 
-		keyframes[i] = skeletonAnimations[3].GetKeyFrames()[i];
+		keyframes[i] = skeletonAnimations[anim2].GetKeyFrames()[i];
 	
 	}
 
-	transitionAnim.SetUpIDMapAndFrames(skeletonAnimations[2].GetBoneIDMap(), skeletonAnimations[2].GetFPS(), skeletonAnimations[2].GetAniLength());
-	transitionAnim.SetOffsetsDirect(skeletonAnimations[3].GetOffsets());
+	//Set the bones that are going to be affected, the speed of the animation and the length.
+	transitionAnim.SetUpIDMapAndFrames(skeletonAnimations[anim1].GetBoneIDMap(), skeletonAnimations[anim1].GetFPS(), skeletonAnimations[anim1].GetAniLength());
+	transitionAnim.SetOffsetsDirect(skeletonAnimations[anim2].GetOffsets()); //Set the offsets
 	transitionAnim.SetKeyFramesDirect(keyframes);
 	SetAnimationTrack(transitionAnim, SkeletonStateMachine::TRANSITION);
 	
