@@ -6,14 +6,14 @@
 float4 main(GS_OUTPUT_GRASS input) : SV_TARGET
 {
     Material mat;
-    mat.matAmbient = float4(0.5f, 0.5f, 0.5f, 1);
+    mat.matAmbient = float4(0.5f, 0.5f, 0.5f, 1); //float4(1, 1, 1, 1); //
     mat.matDiffuse = float4(0.5f, 0.5f, 0.5f, 1);
     mat.matSpecular = float4(0.1f, 0.1f, 0.1f, 0.1f);
     mat.hasAlbedo = false;
     mat.hasNormalMap = false;
     
-    float4 textureColor = input.colour;
-    //float4 textureColor = float4(0.05, 0.2, 0, 1); //
+    //float4 textureColor = input.colour;
+    float4 textureColor = float4(0.05, 0.2, 0, 1); //
     
     
 	//float3 colour = input.colour.rgb;
@@ -50,11 +50,11 @@ float4 main(GS_OUTPUT_GRASS input) : SV_TARGET
     uint lightCount = LightGrid[tileIndex].y;
 
     finalColor = IterateLights(mat, startOffset, lightCount, finalColor, normalized, worldPosition.xyz, viewDirection);
-    finalColor = saturate(finalColor * textureColor);
+    finalColor = saturate( finalColor * textureColor);
     finalColor.a = 1.0f;
 
 
     return finalColor;
 	
-    //return normalize(float4(input.normal, 1));
+    //return float4(input.normal, 1);
 }
