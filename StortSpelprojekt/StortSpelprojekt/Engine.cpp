@@ -4,6 +4,9 @@
 #include "FXAARenderPass.h"
 #include "SkyboxRenderPass.h"
 
+
+#include "SaveHandler.h"
+
 Engine* Engine::Instance = nullptr;
 
 Engine::Engine(HINSTANCE hInstance) : window(hInstance), activeSceneIndex(-1), sceneSwitch(-1)
@@ -14,7 +17,6 @@ Engine::Engine(HINSTANCE hInstance) : window(hInstance), activeSceneIndex(-1), s
 	assert(SUCCEEDED(hr));
 
 	window.Open(1920, 1080);
-
 
 	renderer = new Renderer();
 	renderer->Initialize(&window);

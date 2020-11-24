@@ -462,18 +462,18 @@ float PlayerComp::GetDangerDistance()
 		return 0;
 }
 
-void PlayerComp::Reset()
+void PlayerComp::SetStatsFromState(const SaveState& state)
 {
+	this->food = state.playerFood;
+	this->fuel = state.playerFuel;
+	this->health = state.playerHealth;
+
 	// defaulting some shit
 	this->foodLossPerSecond = 0.3f;
-	this->food = 50.0f;
 	this->fuelBurnPerMeter = 0.7f;
-	this->fuel = 50.0f;
 	this->healthLossPerSecond = 0.5f;
 	this->holding = nullptr;
-
-	this->health = 50.0f; // <------------------ DONT FORGET TO REMOVE THIS LATER!
-	foodEmpty = false;
-
-	holding = nullptr;
+	this->foodEmpty = false;
 }
+
+
