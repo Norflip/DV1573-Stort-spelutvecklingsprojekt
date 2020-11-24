@@ -101,10 +101,11 @@ void WorldGenerator::Construct(const SaveState& state, const WorldDescription& d
 				obj->GetTransform().SetScale({ 1.2f, 1.2f, 1.2f });
 
 				Object* light = new Object("lantern_pointLight");
-				light->GetTransform().SetPosition({ 0,2,0 });
-				LightComponent* lc = light->AddComponent<LightComponent>(LightType::POINT_LIGHT, dx::XMFLOAT4(1.0f, 1.0f, 0.0f, 1.0f), 12.0f);
+				
+				light->GetTransform().SetPosition({ 1,3,0 });
+				LightComponent* lc = light->AddComponent<LightComponent>(LightType::POINT_LIGHT, dx::XMFLOAT4(1.0f, 1.0f, 0.0f, 1.0f), 8.f);
 				lc->SetEnabled(true);
-				lc->SetIntensity(2.0f);
+				lc->SetIntensity(1.0f);
 				lc->SetSpotlightAngle(20.0f);
 				Object::AddToHierarchy(obj, light);
 

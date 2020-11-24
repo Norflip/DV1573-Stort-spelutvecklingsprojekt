@@ -97,7 +97,7 @@ float4 CalculateDirectionalLight(Light light, Material mat, float3 normal, float
         float3 reflection = reflect(lightDirection, normal);
 		float spec = pow(max(dot(viewDirection, reflection), 0.0f), 1.0f);
 
-        //ambient = saturate(matAmbient * light.lightColor * attenuationFactor);
+        ambient = saturate(matAmbient * light.lightColor );
         diffuse = diffuseFactor * light.lightColor * mat.matDiffuse;
         specular = spec * light.lightColor * mat.matSpecular;
     }

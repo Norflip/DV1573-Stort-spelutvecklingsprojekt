@@ -13,7 +13,7 @@ float4 main(GS_OUTPUT_GRASS input) : SV_TARGET
     mat.hasNormalMap = false;
     
     //float4 textureColor = input.colour;
-    float4 textureColor = float4(0.05, 0.2, 0, 1); //
+    float4 textureColor = float4(0.05, 0.3, 0, 1); //
     
     
 	//float3 colour = input.colour.rgb;
