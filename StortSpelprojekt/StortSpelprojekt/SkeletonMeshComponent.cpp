@@ -219,7 +219,7 @@ void SkeletonMeshComponent::SetTrack(const SkeletonStateMachine& type, bool play
 	this->playOnce = playOnce;
 }
 
-void SkeletonMeshComponent::SetSmoothTransition(SkeletonStateMachine firstAnim, SkeletonStateMachine secondAnim, bool playOnce)
+void SkeletonMeshComponent::SetSmoothTransition(SkeletonStateMachine firstAnim, SkeletonStateMachine secondAnim)
 {
 	this->playOnce = playOnce;
 	float firstIndex = 0;
@@ -255,21 +255,18 @@ void SkeletonMeshComponent::SetSmoothTransition(SkeletonStateMachine firstAnim, 
 	else if (secondAnim == SkeletonStateMachine::BLENDED)
 		secondIndex = 5;
 
-	smooth = skeletonAnimations[firstIndex];
+	smooth = skeletonAnimations[5];
 
-	for (int i = 0; i < skeletonAnimations[firstIndex].GetKeyFrames().size(); i++)
-	{
+	//for (int i = 0; i < skeletonAnimations[firstIndex].GetKeyFrames().size(); i++)
+	//{
 
-		if (smooth.GetCurrentFrame() == i)
-		{
-			std::cout << "lerp here" << std::endl;
-		}
-		///std::cout << i << " keyframe" << std::endl;
-		
-		//skeletonAnimations[firstIndex].SetOffsetsDirect(skeletonAnimations[secondIndex].GetOffsets());
-		smooth.SetOffsetsDirect(skeletonAnimations[secondIndex].GetOffsets());
-		
-	}
+	//
+	//	///std::cout << i << " keyframe" << std::endl;
+	//	
+	//	//skeletonAnimations[firstIndex].SetOffsetsDirect(skeletonAnimations[secondIndex].GetOffsets());
+	//	smooth.SetOffsetsDirect(skeletonAnimations[secondIndex].GetOffsets());
+	//	
+	//}
 
 	//if (firstIndex != secondIndex)
 	//{
@@ -299,7 +296,7 @@ void SkeletonMeshComponent::SetSmoothTransition(SkeletonStateMachine firstAnim, 
 	//smooth.SetKeyFramesDirect(keyframes);
 
 	
-		//currentAni = firstAnim;
+	//currentAni = secondAnim;
 	SetAnimationTrack(smooth, SkeletonStateMachine::SMOOTH);
 	
 }

@@ -47,7 +47,7 @@ public:
 	std::vector<dx::XMFLOAT4X4>& GetFinalTransforms() { return this->finalTransforms; }
 
 	void SetTrack(const SkeletonStateMachine& type, bool playOnce);
-	void SetSmoothTransition(SkeletonStateMachine firstAnim, SkeletonStateMachine secondAnim, bool playOnce);
+	void SetSmoothTransition(SkeletonStateMachine firstAnim, SkeletonStateMachine secondAnim);
 	void BlendAnimations();
 	bool GetIsDone();
 	void SetisDone(bool);
