@@ -5,7 +5,7 @@
 #include "GUIFont.h"
 #include "Engine.h"
 
-IntroScene::IntroScene()
+IntroScene::IntroScene() : Scene("IntroScene")
 {
 	
 }
@@ -27,7 +27,7 @@ void IntroScene::InitializeObjects()
 	camera = cameraObject->AddComponent<CameraComponent>(window->GetWidth(), window->GetHeight(), 60.0f);
 	//cameraObject2->AddComponent<ControllerComponent>();
 	this->player = cameraObject;
-	AddObject(cameraObject);
+	AddObjectToRoot(cameraObject);
 
 	ShowCursor(true); 
 

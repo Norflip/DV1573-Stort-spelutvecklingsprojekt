@@ -83,13 +83,15 @@ void ObjectSpawner::SpawnSpecific(std::vector<dx::XMFLOAT2> positions, dx::XMVEC
 		if (chunk != nullptr)
 		{
 			Object* obj = Engine::Instance->GetResources()->AssembleObject(modelName, modelName + "Material");
-			Transform::SetParentChild(chunk->GetOwner()->GetTransform(), obj->GetTransform());
+			Object::AddToHierarchy(chunk->GetOwner(), obj);
 
 			float height = chunk->SampleHeight(positions[i].x, positions[i].y);
 			obj->GetTransform().SetWorldPosition({ positions[i].x, height, positions[i].y });
 			obj->GetTransform().SetWorldRotation(dx::XMQuaternionRotationNormal(axis, angles[i]));
 
 			modifier(obj);
+
+			
 		}
 	}
 }
@@ -212,7 +214,8 @@ void ObjectSpawner::AddTreesToChunk(Chunk* chunk) const
 			}
 
 			Object* treeObject = new Object("tree", ObjectFlag::DEFAULT | ObjectFlag::NO_CULL);
-			Transform::SetParentChild(chunk->GetOwner()->GetTransform(), treeObject->GetTransform());
+			Object::AddToHierarchy(chunk->GetOwner(), treeObject);
+
 			treeObject->GetTransform().SetPosition({ 0,0,0 });
 			treeObject->GetTransform().SetWorldPosition({ 0,0,0 });
 
@@ -362,7 +365,7 @@ void ObjectSpawner::SpawnStatic(std::unordered_map<int, Chunk*>& chunkMap)
 
 			props->AddComponent<RigidBodyComponent>(0.f, FilterGroups::PROPS, FilterGroups::EVERYTHING, BodyType::STATIC, true);
 
-			Transform::SetParentChild(i.first->GetOwner()->GetTransform(), props->GetTransform());
+			Object::AddToHierarchy(i.first->GetOwner(), props);
 		}
 	}
 }
@@ -400,7 +403,7 @@ void ObjectSpawner::SpawnItem(Chunk* chunk)
 					object->GetComponent<RigidBodyComponent>()->SetPosition(position);
 					object->GetComponent<RigidBodyComponent>()->GetRigidBody()->setIsActive(true);
 
-					Transform::SetParentChild(root->GetTransform(), object->GetTransform());
+					Object::AddToHierarchy(root, object);
 					activeItems.push_back(object);
 
 					/* Particles */

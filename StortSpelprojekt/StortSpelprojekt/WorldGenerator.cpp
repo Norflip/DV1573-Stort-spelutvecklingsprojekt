@@ -2,7 +2,7 @@
 #include <algorithm>
 #include "WorldGenerator.h"
 #include "Engine.h"
-
+#include "LightComponent.h"
 
 WorldGenerator::WorldGenerator() : constructed(false), treePoints(dx::XMFLOAT2(0, 0), dx::XMFLOAT2(0, 0))
 {
@@ -61,8 +61,7 @@ void WorldGenerator::Construct(const SaveState& state, const WorldDescription& d
 			{
 				Object* root = new Object("puzzel_root");
 				Object* puzzelModel = Engine::Instance->GetResources()->AssembleObject("Propane", "PropaneMaterial");
-				Transform::SetParentChild(root->GetTransform(), puzzelModel->GetTransform());
-
+				Object::AddToHierarchy(root, puzzelModel);
 				puzzelModel->GetTransform().SetLocalPosition({ CHUNK_SIZE / 2.0f, 5.0f, CHUNK_SIZE / 2.0f });
 				puzzelModel->GetTransform().SetScale({ 10, 10, 10 });
 
@@ -101,12 +100,13 @@ void WorldGenerator::Construct(const SaveState& state, const WorldDescription& d
 			{
 				obj->GetTransform().SetScale({ 1.2f, 1.2f, 1.2f });
 
-
-
-				/*Object* light = new Object("lantern_pointLight");
+				Object* light = new Object("lantern_pointLight");
 				light->GetTransform().SetPosition({ 0,2,0 });
-				light->AddComponent<PointLightComponent>(dx::XMFLOAT4(0.3f, 0.3f, 0.3f, 1.0f), 4.0f);
-				Transform::SetParentChild(obj->GetTransform(), light->GetTransform());*/
+				LightComponent* lc = light->AddComponent<LightComponent>(LightType::SPOT_LIGHT, dx::XMFLOAT4(1.0f, 1.0f, 0.0f, 1.0f), 12.0f);
+				lc->SetEnabled(true);
+				lc->SetIntensity(2.0f);
+				lc->SetSpotlightAngle(20.0f);
+				Object::AddToHierarchy(obj, light);
 
 			});
 
@@ -121,7 +121,7 @@ void WorldGenerator::Deconstruct()
 		for (auto i : chunkMap)
 		{
 			i.second->PhysicRelease();
-			Transform::ClearFromHierarchy(i.second->GetOwner()->GetTransform());
+			Object::RemoveFromHierarchy(i.second->GetOwner());
 			delete i.second;
 		}
 
@@ -242,7 +242,7 @@ Chunk* WorldGenerator::CreateChunk(ChunkIndexInfo& indexInfo, Object* root, cons
 
 	dx::XMVECTOR chunkPosition = Chunk::IndexToWorld(indexInfo.index, 0.0f);
 	chunkObject->GetTransform().SetPosition(chunkPosition);
-	Transform::SetParentChild(root->GetTransform(), chunkObject->GetTransform());
+	Object::AddToHierarchy(root, chunkObject);
 	chunk->Create(description, path, renderer->GetDevice());
 
 	Material* material = new Material(chunkShader);
@@ -266,7 +266,7 @@ Chunk* WorldGenerator::CreateChunk(ChunkIndexInfo& indexInfo, Object* root, cons
 		}
 
 		Object* object = prop.factory(chunk, chunkPosition);
-		Transform::SetParentChild(chunk->GetOwner()->GetTransform(), object->GetTransform());
+		Object::AddToHierarchy(chunk->GetOwner(), object);
 		//std::cout << " CREATED PUZZEL " << std::endl;
 		prop.usedCount++;
 	}
