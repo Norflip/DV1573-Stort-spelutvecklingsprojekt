@@ -31,7 +31,7 @@ float3 WorldPosFromDepth(float depth, float2 uv) {
 
 float4 main(PixelInputType input) : SV_TARGET
 {
-    float someValue = 300;
+    float someValue = 343; //1080/pi unsure on math here
     float4 diff;
     float4 diff2;
     float4 final;
@@ -51,15 +51,15 @@ float4 main(PixelInputType input) : SV_TARGET
     float D = ((2.0f * near) / (far + near - depth * (far - near)));
     float fogFactor = saturate(((D * far) - start) / (end - start));
 
-    float2 st = input.uv.xy;// / float2(1600, 800) * 3.;
-    st.y = st.y * (9.f / 16.f);
+    float2 st = input.uv.xy; 
+    st.y = st.y * (9.f / 16.f);// divides uv with screen aspect ratio
     float2 q = float2(0,0);
     q.x = fbm(st + 0.00 * time + (mousePos / someValue));
     q.y = fbm(st + float2(1.0, 0.0) + (mousePos / someValue));
 
     float2 r = float2(0, 0);
-    r.x = fbm(st + 1.0 * q + float2(1.7, 9.2) + 0.15 * time + (mousePos / (someValue))); //2pi r
-    r.y = fbm(st + 1.0 * q + float2(8.3, 2.8) + 0.126 * time + (mousePos / (someValue))); //2pi r
+    r.x = fbm(st + 1.0 * q + float2(1.7, 9.2) + 0.15 * time + (mousePos / (someValue)));
+    r.y = fbm(st + 1.0 * q + float2(8.3, 2.8) + 0.126 * time + (mousePos / (someValue))); 
 
     float f = fbm(st + r + (mousePos / (someValue)));
     float3 color = float3(0,0,0);
