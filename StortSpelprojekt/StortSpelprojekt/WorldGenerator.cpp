@@ -101,12 +101,10 @@ void WorldGenerator::Construct(const SaveState& state, const WorldDescription& d
 				obj->GetTransform().SetScale({ 1.2f, 1.2f, 1.2f });
 
 				Object* light = new Object("lantern_pointLight");
-				
-				light->GetTransform().SetPosition({ 1,3,0 });
-				LightComponent* lc = light->AddComponent<LightComponent>(LightType::POINT_LIGHT, dx::XMFLOAT4(1.0f, 1.0f, 0.0f, 1.0f), 8.f);
+				light->GetTransform().SetPosition({ 1.0f, 3.0f, 0.f });
+				LightComponent* lc = light->AddComponent<LightComponent>(LightType::POINT_LIGHT, dx::XMFLOAT4(0.5f, 0.5f, 0.0f, 1.0f), 5.0f);
 				lc->SetEnabled(true);
-				lc->SetIntensity(1.0f);
-				lc->SetSpotlightAngle(20.0f);
+				lc->SetIntensity(0.7f);
 				Object::AddToHierarchy(obj, light);
 
 			});
@@ -188,7 +186,7 @@ void WorldGenerator::AddEnvironmentProps(const size_t& segmentIndex, const World
 	if (enviromentProps.empty())
 		return;
 
-	// hitta alla props som passar in på segment  INdex
+	// hitta alla props som passar in pï¿½ segment  INdex
 	size_t nrOfProps = Random::Range(description.minEnviromentProps, description.maxEnviromentProps);	// flytta till description? 
 	size_t FOUND = 0;
 
@@ -201,7 +199,7 @@ void WorldGenerator::AddEnvironmentProps(const size_t& segmentIndex, const World
 
 	if (!validProps.empty())
 	{
-		// sortera dom baserat på usage  <- detta måste sparas sen
+		// sortera dom baserat pï¿½ usage  <- detta mï¿½ste sparas sen
 		std::sort(validProps.begin(), validProps.end(), SortProps);
 
 		size_t indexesFound = 0;
@@ -421,13 +419,13 @@ void WorldGenerator::UpdateDirection(dx::XMINT2& direction)
 	{
 		float value = Random::Value();
 
-		// 50% att den går rakt vertikalt
+		// 50% att den gï¿½r rakt vertikalt
 		if (value < 0.5f)
 		{
 			direction.x = 0;
 			direction.y = 1;
 		}
-		// 50% att den går helt åt sidan
+		// 50% att den gï¿½r helt ï¿½t sidan
 		else if (value >= 0.5f)
 		{
 			direction.y = 1;
@@ -438,7 +436,7 @@ void WorldGenerator::UpdateDirection(dx::XMINT2& direction)
 		// 50% om den byter riktning i x
 		direction.x = (Random::Value() < 0.5f) ? -1 : 1;
 
-		// 50% om den börjar gå horizontal
+		// 50% om den bï¿½rjar gï¿½ horizontal
 		if (Random::Value() < 0.5f)
 		{
 			direction.y = 0;
