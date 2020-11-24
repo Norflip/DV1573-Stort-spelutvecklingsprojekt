@@ -55,7 +55,7 @@ void NodeWalkerComp::InitAnimation()
 	if (GetOwner()->HasComponent<SkeletonMeshComponent>())
 	{
 		this->base = GetOwner()->GetComponent<SkeletonMeshComponent>();
-		this->legs = GetOwner()->GetTransform().GetChildren()[0]->GetOwner()->GetComponent<SkeletonMeshComponent>();
+		this->legs = GetOwner()->GetChild(0)->GetComponent<SkeletonMeshComponent>();
 	}
 	else
 	{
@@ -151,8 +151,10 @@ void NodeWalkerComp::Update(const float& deltaTime)
 		{
 			if (canWalk)
 			{
+				float y = this->world->SampleHeight(thePath.GetPoint(this->currentNode).x, thePath.GetPoint(this->currentNode).z);
+
 				//DirectX::XMFLOAT3 dir = { 0.f,0.f,0.f };
-				dx::XMFLOAT3 nextPoint = { thePath.GetPoint(this->currentNode).x,HEIGHT, thePath.GetPoint(this->currentNode).z };
+				dx::XMFLOAT3 nextPoint = { thePath.GetPoint(this->currentNode).x, y, thePath.GetPoint(this->currentNode).z };
 				dx::XMVECTOR vdir = dx::XMVectorSubtract(dx::XMLoadFloat3(&nextPoint), GetOwner()->GetTransform().GetPosition());
 				dx::XMStoreFloat(&this->length, dx::XMVector3Length(vdir));
 				if (this->length < nodeRadius)

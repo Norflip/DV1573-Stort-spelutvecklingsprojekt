@@ -8,10 +8,7 @@ class SpriteRenderPass;
 
 ALIGN16
 class GameScene : public Scene
-{
-private:
-	void RemoveEnemy();
-	
+{	
 public:
 	GameScene();
 	virtual ~GameScene();
@@ -22,7 +19,7 @@ public:
 	void InitializeInterior();
 	void OnActivate() override;
 	void OnDeactivate() override;
-	void InitializeSigns();
+	void SetSignPositions();
 
 	void Update(const float& deltaTime) override;
 	void FixedUpdate(const float& fixedDeltaTime) override;

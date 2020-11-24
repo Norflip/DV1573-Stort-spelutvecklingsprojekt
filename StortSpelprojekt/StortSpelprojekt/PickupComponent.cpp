@@ -15,10 +15,9 @@ void PickupComponent::SetActive(bool isAct)
 {
 	this->isActive = isAct;
 	if (!isActive)
-	{
-		this->GetOwner()->AddFlag(ObjectFlag::REMOVED);
 		this->GetOwner()->RemoveFlag(ObjectFlag::ENABLED);
-	}
+	else
+		this->GetOwner()->AddFlag(ObjectFlag::ENABLED);
 }
 
 void PickupComponent::Update(const float& deltaTime)

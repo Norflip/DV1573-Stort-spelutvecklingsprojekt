@@ -5,7 +5,7 @@
 #include "GUIFont.h"
 #include "Engine.h"
 
-GameOverScene::GameOverScene()
+GameOverScene::GameOverScene() : Scene("GameOverScene")
 {
 }
 
@@ -26,7 +26,7 @@ void GameOverScene::InitializeObjects()
 	camera = cameraObject->AddComponent<CameraComponent>(window->GetWidth(), window->GetHeight(),60.0f);
 	this->player = cameraObject;
 	//cameraObject3->AddComponent<ControllerComponent>();
-	AddObject(cameraObject);
+	AddObjectToRoot(cameraObject);
 }
 
 void GameOverScene::InitializeGUI()
