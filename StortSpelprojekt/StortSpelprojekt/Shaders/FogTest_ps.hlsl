@@ -106,7 +106,7 @@ float4 main(PixelInputType input) : SV_TARGET
    float4 fogColor = float4(1, 1, 1, 1.0f);
 
    //Math to multiply colors
-   fogColor = float4((((f * f * f * f + .6 * f * f * f + .5 * f * f) * color) + color * color * color).xyz, 1.0f);
+   fogColor = float4((((pow(f,4) + .6 * pow(f,3) + .5 * f * f) * color) + pow(color, 3)).xyz, 1.0f);
 
 
    const float amount = 0.2f;  // higher = more intensity 
