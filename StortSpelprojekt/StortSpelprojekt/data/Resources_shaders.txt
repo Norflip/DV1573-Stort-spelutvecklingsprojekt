@@ -1,4 +1,4 @@
-Shaders: 14
+Shaders: 15
 
 Name: default
 
@@ -61,3 +61,7 @@ PS: Shaders/FogTest_ps.hlsl
 Name: FXAAShader
 VS: Shaders/ScreenQuad_vs.hlsl
 PS: Shaders/FXAA_ps.hlsl
+
+Name: GlowShader
+VS: Shaders/Glow_vs.hlsl
+PS: Shaders/Glow_ps.hlsl

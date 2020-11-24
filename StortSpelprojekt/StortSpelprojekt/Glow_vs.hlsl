@@ -1,21 +1,13 @@
-struct GlowVS_in
-{
-    float3 pos : POSITION;
-    float2 texcoord : TEXCOORD;
-};
+#include "CommonBuffers.hlsl"
+#include "IO.hlsl"
 
-struct GlowVS_out
-{
-    float4 pos : SV_Position;
-    float2 texcoord : TEXCOORD;
-};
 
-GlowVS_out GlowVS_main(GlowVS_in input)
+VS_OUTPUT_GLOW GlowVS_main(VS_INPUT_GLOW input)
 {
-    GlowVS_out output = (GlowVS_out) 0;
+    VS_OUTPUT_GLOW output/* = (VS_OUTPUT_GLOW) 0*/;
     
-    output.pos = float4(input.pos, 1.0f);
-    output.texcoord = input.texcoord;
+    output.position = float4(input.position, 1.0f);
+    output.uv = input.uv;
     
     return output;
 }

@@ -608,6 +608,10 @@
     </ClInclude>
     <ClInclude Include="WorldGenerator.h" />
     <ClInclude Include="WorldGenerator.h" />
+    <ClInclude Include="WorldGenerator.h" />
+    <ClInclude Include="GlowRenderPass.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <Filter Include="Header Files">

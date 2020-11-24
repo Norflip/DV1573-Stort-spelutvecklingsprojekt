@@ -36,6 +36,8 @@ Renderer::~Renderer()
 
 void Renderer::Initialize(Window* window)
 {
+
+
 	this->outputWindow = window;
 
 	DXHelper::CreateSwapchain(*window, &device, &context, &swapchain);
@@ -67,6 +69,11 @@ void Renderer::Initialize(Window* window)
 	DXHelper::BindStructuredBuffer(context, skeleton_srvbuffer, srv_skeleton_data.data(), BONES_SRV_SLOT, ShaderBindFlag::VERTEX, &skeleton_srv);
 	DXHelper::CreateBlendState(device, &blendStateOn, &blendStateOff);
 
+	//Material* glowMaterial;
+	//Shader* glowShader = new Shader;
+
+	//glowMaterial = new Material(glowShader);
+	//glowMaterial->SetSampler(DXHelper::CreateSampler(D3D11_FILTER_MIN_MAG_MIP_LINEAR, D3D11_TEXTURE_ADDRESS_CLAMP, device), 0, ShaderBindFlag::VERTEX);
 
 	/* Screenquad shader */
 	Shader* screenQuadShader = new Shader;

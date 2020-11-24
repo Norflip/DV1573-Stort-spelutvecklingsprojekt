@@ -21,6 +21,12 @@ struct VS_INPUT_SKELETON
 	uint id	: SV_InstanceID;
 };
 
+struct VS_INPUT_GLOW
+{
+    float3 position : POSITION;
+    float2 uv : TEXCOORD;
+};
+
 struct VS_OUTPUT
 {
 	float4 position		 : SV_POSITION;
@@ -60,6 +66,12 @@ struct VS_OUTPUT_GRASS
 	float2 uv			 : TEXCOORD0;
 	float3 worldPosition : POSITION;
 	float tessFactor	 : TESSFACTOR;
+};
+
+struct VS_OUTPUT_GLOW
+{
+    float4 position : SV_Position;
+    float2 uv : TEXCOORD0;
 };
 
 struct HS_CONSTANT_DATA_OUTPUT_GRASS
