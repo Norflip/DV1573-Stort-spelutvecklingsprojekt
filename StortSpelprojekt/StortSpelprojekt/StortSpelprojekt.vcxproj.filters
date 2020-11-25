@@ -71,10 +71,10 @@
     <FxCompile Include="Shaders\FractionalBrownianMotion.hlsl">
       <Filter>Resource Files</Filter>
     </FxCompile>
-    <FxCompile Include="Glow_vs.hlsl">
+    <FxCompile Include="Shaders\Glow_ps.hlsl">
       <Filter>Resource Files</Filter>
     </FxCompile>
-    <FxCompile Include="Glow_ps.hlsl">
+    <FxCompile Include="Shaders\Glow_vs.hlsl">
       <Filter>Resource Files</Filter>
     </FxCompile>
   </ItemGroup>
@@ -612,6 +612,7 @@
     <ClInclude Include="GlowRenderPass.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="WorldGenerator.h" />
     <ClInclude Include="WorldGenerator.h" />
   </ItemGroup>
   <ItemGroup>
