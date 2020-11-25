@@ -1,23 +1,37 @@
 #pragma once
 #include "Object.h"
-#include"NodeClass.h"
 
 class Pathfinding
 {
 	public:
 		Pathfinding();
-		~Pathfinding() {}
+		~Pathfinding();
 		void Init();
 		void DrawGrid();
 	private:
+		struct Node
+		{
+			dx::XMFLOAT2 pos = { 0,0 };
+			int gCost = 0;
+			int hCost = 0;
+			int fCost = 0;
+			bool obstacle = false;
+			bool openSet = false;
+			bool closedSet = false;
+			bool correctPath = false;
+			Node* previous = nullptr;
+			std::vector<Node*> neighbors;
+		};
+
 		void AStar();
-		void AddNeighbors(NodeClass* node);
-		int GetDistance(NodeClass* nodeA, NodeClass* nodeB);
+		void AddNeighbors(Node* node);
+		void AddNeighbors2(Node* node);
+		int GetDistance(Node* nodeA, Node* nodeB);
+		void AddObstacles();
+		void ResetPath();
 
 		int cols;
 		int rows;
-		std::vector<NodeClass*> openSet;
-		std::vector<NodeClass*> closedSet;
-		NodeClass* grid[32][32];
+		Node* grid[32][32];
 		DShape box;
 };

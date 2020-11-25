@@ -465,8 +465,6 @@ void GameScene::OnActivate()
 	enemyManager->SpawnEnemies();
 	
 	//Pathfinding
-	//grid = new Grid();
-	//grid->Init();
 	pathfinding = new Pathfinding();
 	pathfinding->Init();
 
@@ -536,7 +534,6 @@ void GameScene::Update(const float& deltaTime)
 		leftSign->GetComponent<SelectableComponent>()->SetActive(false);
 	}
 
-	//grid->DrawNodes();
 	pathfinding->DrawGrid();
 
 	static_cast<GUIFont*>(guiManager->GetGUIObject("fps"))->SetString(std::to_string((int)GameClock::Instance().GetFramesPerSecond()));

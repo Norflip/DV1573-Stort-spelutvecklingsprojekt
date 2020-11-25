@@ -25,7 +25,6 @@
 #include "ObjectPooler.h"
 #include "WeaponComponent.h"
 #include "EnemyManager.h"
-#include "Grid.h"
 #include "Pathfinding.h"
 #include <wchar.h>
 #include "PlayerAnimHandlerComp.h"
@@ -90,7 +89,6 @@ protected:
 	Object* enemy;
 	Object* player;
 	EnemyManager* enemyManager;
-	Grid* grid;
 	Pathfinding* pathfinding;
 
 	ObjectPooler* pooler;

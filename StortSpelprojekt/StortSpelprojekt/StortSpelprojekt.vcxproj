@@ -168,7 +168,6 @@
   <ItemGroup>
     <ClCompile Include="AudioMaster.cpp" />
     <ClCompile Include="AudioEngine.cpp" />
-    <ClCompile Include="NodeClass.cpp" />
     <ClCompile Include="Pathfinding.cpp" />
     <ClCompile Include="SelectableComponent.cpp" />
     <ClCompile Include="EnemyAttackComp.cpp" />
@@ -191,7 +190,6 @@
     <ClCompile Include="GameOverScene.cpp" />
     <ClCompile Include="GameScene.cpp" />
     <ClCompile Include="GrassComponent.cpp" />
-    <ClCompile Include="Grid.cpp" />
     <ClCompile Include="GUICompass.cpp">
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">false</ExcludedFromBuild>
     </ClCompile>
@@ -254,7 +252,6 @@
   <ItemGroup>
     <ClInclude Include="AudioMaster.h" />
     <ClInclude Include="AudioEngine.h" />
-    <ClInclude Include="NodeClass.h" />
     <ClInclude Include="Pathfinding.h" />
     <ClInclude Include="SelectableComponent.h" />
     <ClInclude Include="Defines.h" />
@@ -280,7 +277,6 @@
     <ClInclude Include="FXAARenderPass.h" />
     <ClInclude Include="GameOverScene.h" />
     <ClInclude Include="GameScene.h" />
-    <ClInclude Include="Grid.h" />
     <ClInclude Include="GUICompass.h">
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">false</ExcludedFromBuild>
     </ClInclude>

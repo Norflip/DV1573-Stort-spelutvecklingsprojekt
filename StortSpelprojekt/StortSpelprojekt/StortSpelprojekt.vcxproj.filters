@@ -271,9 +271,6 @@
     <ClCompile Include="GUICompass.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="Grid.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="QuadTree.cpp">
       <Filter>Source Files\SpawnSystems</Filter>
     </ClCompile>
@@ -299,9 +296,6 @@
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="Pathfinding.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="NodeClass.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>
@@ -576,9 +570,6 @@
     <ClInclude Include="FXAARenderPass.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="Grid.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
     <ClInclude Include="QuadTree.h">
       <Filter>Source Files\SpawnSystems</Filter>
     </ClInclude>
@@ -617,9 +608,7 @@
     <ClInclude Include="Pathfinding.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="NodeClass.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
+    <ClInclude Include="WorldGenerator.h" />
   </ItemGroup>
   <ItemGroup>
     <Filter Include="Header Files">
