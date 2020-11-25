@@ -39,6 +39,7 @@ class ObjectSpawner
 		float maxRotation;
 		std::vector<Mesh*> meshes;
 		std::vector<Material*> materials;
+
 	};
 
 	const float SPAWN_HEIGHT = 12.0f;

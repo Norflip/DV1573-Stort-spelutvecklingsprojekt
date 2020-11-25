@@ -40,7 +40,7 @@ PlayerComp::PlayerComp(Renderer* renderer, CameraComponent* camComp, Object* hou
 	this->physics = physics;
 	this->throwStrength = 50;
 	this->hpLossDist = 40;
-	this->maxDist = 90;
+	this->maxDist = 300;
 	this->holdAngle = dx::SimpleMath::Vector3( 0.3f, -0.4f, 0.8f );
 	this->house = house;
 	this->hpLossPerDistance = 0.0001f;
@@ -456,7 +456,7 @@ void PlayerComp::RayCast(const float& deltaTime)
 
 float PlayerComp::GetDangerDistance() 
 {
-	if (distance > 60.f && !GetOwner()->GetComponent<ControllerComp>()->GetInside())
+	if (distance > 200.f && !GetOwner()->GetComponent<ControllerComp>()->GetInside())
 		return distance;
 	else
 		return 0;

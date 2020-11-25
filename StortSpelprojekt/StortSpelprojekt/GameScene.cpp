@@ -329,7 +329,7 @@ void GameScene::InitializeGUI()
 
 void GameScene::InitializeInterior()
 {
-	//_____________________________________________________________________________________________________________________________________
+
 	// Inside house
 	Object* houseInterior = resources->AssembleObject("HouseInterior", "HouseInteriorMaterial");
 	houseInterior->GetTransform().SetPosition({ this->interiorPosition.x, this->interiorPosition.y, this->interiorPosition.z, 0 });
@@ -443,6 +443,19 @@ void GameScene::InitializeInterior()
 	LightComponent* wLight2 = windowLight2->AddComponent<LightComponent>(LightType::POINT_LIGHT,dx::XMFLOAT4(0.3f, 0.41f, 0.8f, 1.0f), 5.0f);
 	wLight2->SetEnabled(true);
 	AddObjectToRoot(windowLight2);
+
+	/*Object* tree = resources->AssembleObject("Tree", "TreeMaterial");
+	Object* leaves = resources->AssembleObject("leaves", "leavesMaterial");
+	Object* puzzle = resources->AssembleObject("TreePuzzle", "TreePuzzleMaterial");
+
+	tree->GetTransform().SetPosition({ this->interiorPosition.x, this->interiorPosition.y, this->interiorPosition.z });
+	leaves->GetTransform().SetPosition({ this->interiorPosition.x, this->interiorPosition.y, this->interiorPosition.z });
+	puzzle->GetTransform().SetPosition({ this->interiorPosition.x, this->interiorPosition.y, this->interiorPosition.z });
+
+	AddObjectToRoot(tree);
+	AddObjectToRoot(leaves);
+	AddObjectToRoot(puzzle);*/
+
 }
 
 void GameScene::OnActivate()

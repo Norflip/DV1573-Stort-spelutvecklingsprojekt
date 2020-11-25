@@ -23,10 +23,12 @@ void ObjectSpawner::Initialize(Object* root, World* world, Renderer* renderer)
 	this->world = world;
 
 	// DEFAULT TREE
-	tree.meshes.push_back(resources->GetResource<Mesh>("Tree"));
-	tree.meshes.push_back(resources->GetResource<Mesh>("leaves"));
-	tree.materials.push_back(resources->GetResource<Material>("TreeMaterial"));
-	tree.materials.push_back(resources->GetResource<Material>("leavesMaterial"));
+	tree.meshes.push_back(resources->GetResource<Mesh>("instancedTree"));
+	tree.meshes.push_back(resources->GetResource<Mesh>("instancedleaves"));
+	//tree.meshes.push_back(resources->GetResource<Mesh>("TreePuzzle"));
+	tree.materials.push_back(resources->GetResource<Material>("instancedTreeMaterial"));
+	tree.materials.push_back(resources->GetResource<Material>("instancedleavesMaterial"));
+	//tree.materials.push_back(resources->GetResource<Material>("TreePuzzleMaterial"));
 	tree.materials[1]->SetTransparent(true);
 
 	tree.minScale = 1.4f;
@@ -90,8 +92,6 @@ void ObjectSpawner::SpawnSpecific(std::vector<dx::XMFLOAT2> positions, dx::XMVEC
 			obj->GetTransform().SetWorldRotation(dx::XMQuaternionRotationNormal(axis, angles[i]));
 
 			modifier(obj);
-
-			
 		}
 	}
 }
@@ -213,21 +213,35 @@ void ObjectSpawner::AddTreesToChunk(Chunk* chunk) const
 				colliderRotations.push_back(rot);
 			}
 
+			ResourceManager* resources = Engine::Instance->GetResources();
+
 			Object* treeObject = new Object("tree", ObjectFlag::DEFAULT | ObjectFlag::NO_CULL);
+			//Object* treePuzzle = resources->AssembleObject("TreePuzzle", "TreePuzzleMaterial");
+
 			Object::AddToHierarchy(chunk->GetOwner(), treeObject);
+			//Object::AddToHierarchy(chunk->GetOwner(), treePuzzle);
 
 			treeObject->GetTransform().SetPosition({ 0,0,0 });
 			treeObject->GetTransform().SetWorldPosition({ 0,0,0 });
+			//treePuzzle->GetTransform().SetPosition({ 0,0,0 });
+			//treePuzzle->GetTransform().SetWorldPosition({ 0,0,0 });
 
 			MeshComponent* meshComp = treeObject->AddComponent<MeshComponent>(tree.meshes, tree.materials);
 			meshComp->SetInstanceable(0, treesInstanced, nrOfInstancedStyTrees, renderer->GetDevice());
+
+			//MeshComponent* puzzlemeshComp = treePuzzle->AddComponent<MeshComponent>(tree.meshes, tree.materials);
+			//treePuzzle->GetComponent<MeshComponent>()->SetInstanceable(0, treesInstanced, nrOfInstancedStyTrees, renderer->GetDevice());
 
 			BoxColliderComponent* colliders = treeObject->AddComponent<BoxColliderComponent>(colliderExtends, colliderPositions);
 			for (size_t i = 0; i < nrOfInstancedStyTrees; i++)
 				colliders->SetRotation(i, colliderRotations[i]);
 			
+			//BoxColliderComponent* puzzlecolliders = treePuzzle->AddComponent<BoxColliderComponent>(dx::XMFLOAT3(3, 3, 3), dx::XMFLOAT3(0, 0, 0));// colliderPositions);
+			//for (size_t i = 0; i < nrOfInstancedStyTrees; i++)
+				//colliders->SetRotation(i, colliderRotations[i]);
 
 			treeObject->AddComponent<RigidBodyComponent>(0.f, FilterGroups::DEFAULT, FilterGroups::EVERYTHING, BodyType::STATIC, true);
+			//treePuzzle->AddComponent<RigidBodyComponent>(0.f, FilterGroups::DEFAULT, FilterGroups::EVERYTHING, BodyType::STATIC, true);
 		}
 	}
 }

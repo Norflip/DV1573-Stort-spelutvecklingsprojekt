@@ -57,20 +57,68 @@ void WorldGenerator::Construct(const SaveState& state, const WorldDescription& d
 		AddChunksFromPath(indexes, chunks);
 		AddPadding(CHUNK_PADDING, indexes, chunks, minIndex, maxIndex);
 
-		RegisterEnviromentProp("test", 0, 10, 4, [](Chunk* chunk, dx::XMVECTOR rootPosition)  
-			{
-				Object* root = new Object("puzzel_root");
-				Object* puzzelModel = Engine::Instance->GetResources()->AssembleObject("Propane", "PropaneMaterial");
-				Object::AddToHierarchy(root, puzzelModel);
-				puzzelModel->GetTransform().SetLocalPosition({ CHUNK_SIZE / 2.0f, 5.0f, CHUNK_SIZE / 2.0f });
-				puzzelModel->GetTransform().SetScale({ 10, 10, 10 });
+		//RegisterEnviromentProp("test", 0, 10, 4, [](Chunk* chunk, dx::XMVECTOR rootPosition)  
+		//	{
+		//		Object* root = new Object("puzzel_root");
+		//		Object* puzzelModel = Engine::Instance->GetResources()->AssembleObject("Propane", "PropaneMaterial");
+		//		Object::AddToHierarchy(root, puzzelModel);
+		//		puzzelModel->GetTransform().SetLocalPosition({ CHUNK_SIZE / 2.0f, 5.0f, CHUNK_SIZE / 2.0f });
+		//		puzzelModel->GetTransform().SetScale({ 10, 10, 10 });
 
-				//dx::XMFLOAT3 pos;
-				//dx::XMStoreFloat3(&pos, rootPosition);
-				//std::cout << "PAAZZL: " << pos.x << ", " << pos.y << ", " << pos.z << "\n";
+		//		//dx::XMFLOAT3 pos;
+		//		//dx::XMStoreFloat3(&pos, rootPosition);
+		//		//std::cout << "PAAZZL: " << pos.x << ", " << pos.y << ", " << pos.z << "\n";
 
-				return root;
-			});
+		//		return root;
+		//	});
+
+		RegisterEnviromentProp("PuzzleTree", 0, 10, 10, [](Chunk* chunk, dx::XMVECTOR rootPosition)
+		{
+			Object* root = new Object("puzzel_root");
+			Object* tree =  Engine::Instance->GetResources()->AssembleObject("Tree", "TreeMaterial");
+			Object* leaves = Engine::Instance->GetResources()->AssembleObject("leaves", "leavesMaterial");
+			Object* puzzle = Engine::Instance->GetResources()->AssembleObject("TreePuzzle", "TreePuzzleMaterial");
+
+			//Object::AddToHierarchy(root, tree);
+			//Object::AddToHierarchy(tree, leaves);
+			//Object::AddToHierarchy(chunk->GetOwner(), puzzle);
+
+			//tree->GetTransform().SetLocalPosition({ CHUNK_SIZE / 2.0f, 3.0f, CHUNK_SIZE / 2.0f });
+			//tree->GetTransform().SetScale({ 3, 3, 3 });
+
+			//puzzle->GetTransform().SetLocalPosition({ CHUNK_SIZE / 2.0f, 3.0f, CHUNK_SIZE / 2.0f });
+			//puzzle->GetTransform().SetScale({ 3, 3, 3 });
+
+			// bounding box for tree calculations
+			Bounds bbInfo;
+			bbInfo.CalculateAABB(tree->GetComponent<MeshComponent>()->GetMeshes());
+			dx::XMFLOAT3 extends = bbInfo.GetExtends();
+
+			// For tree
+			BoxColliderComponent* colliders = tree->AddComponent<BoxColliderComponent>(extends, dx::XMFLOAT3(0, 0, 0));
+			RigidBodyComponent* trb = tree->AddComponent<RigidBodyComponent>(0.f, FilterGroups::DEFAULT, FilterGroups::EVERYTHING, BodyType::STATIC, true);
+
+			// For puzzle
+			RigidBodyComponent* prb = puzzle->AddComponent<RigidBodyComponent>(0.f, FilterGroups::DEFAULT, FilterGroups::EVERYTHING, BodyType::STATIC, true);
+
+			// Position for puzzle
+			dx::XMVECTOR position(dx::XMVectorAdd(rootPosition, dx::XMVECTOR({ CHUNK_SIZE / 2.0f, 3.0f, CHUNK_SIZE / 2.0f })));
+
+			// Testing printing shit to find puzzle
+			dx::XMFLOAT3 pos;
+			dx::XMStoreFloat3(&pos, position);
+			std::cout << "PAAZZL: " << pos.x << ", " << pos.y << ", " << pos.z << "\n";
+
+			Object::AddToHierarchy(chunk->GetOwner(), tree);
+			Object::AddToHierarchy(tree, leaves);
+			Object::AddToHierarchy(chunk->GetOwner(), puzzle);
+
+			// Set the positions for RB
+			trb->SetPosition(position);
+			prb->SetPosition(position);
+
+			return root;
+		});
 
 		path = Path(indexes);
 		SetPathPointsToChunkType(path, chunks);
