@@ -10,8 +10,11 @@ LightManager::LightManager()
 
 LightManager::~LightManager()
 {
-	//lightsSRV->Release();
-	//lightsSRVBfr->Release();
+	
+	RELEASE(the_Light_srv);
+	RELEASE(the_Light_srvbuffer);
+
+	lightMap.clear();
 }
 
 

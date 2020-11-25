@@ -423,20 +423,23 @@ void PlayerComp::RayCast(const float& deltaTime)
 			if (hit.object != nullptr)
 			{
 				EnemyStatsComp* stats = hit.object->GetComponent<EnemyStatsComp>();
-
+				SkeletonMeshComponent* skeleton = hit.object->GetComponent<SkeletonMeshComponent>();
 				if (stats != nullptr && stats->IsEnabled() && stats->GetHealth() >= 0.0f)
 				{
 					stats->LoseHealth(attack);
 					AudioMaster::Instance().PlaySoundEvent("punch");
 
-					if (stats->GetHealth() <= 0.0f)
-					{
-						stats->GetManager()->RemoveEnemy(hit.object);
+					//if (stats->GetHealth() <= 0.0f)
+					//{
 
-							/*RigidBodyComponent* rbComp = hit.object->GetComponent<RigidBodyComponent>();
-							rbComp->Release();
-							Engine::Instance->GetActiveScene()->RemoveObject(hit.object);*/
-					}
+					//	skeleton->SetTrack(SkeletonStateMachine::DEATH, true);
+					//	stats->GetManager()->RemoveEnemy(hit.object);
+					//	
+
+					//		/*RigidBodyComponent* rbComp = hit.object->GetComponent<RigidBodyComponent>();
+					//		rbComp->Release();
+					//		Engine::Instance->GetActiveScene()->RemoveObject(hit.object);*/
+					//}
 				}
 			}
 		}

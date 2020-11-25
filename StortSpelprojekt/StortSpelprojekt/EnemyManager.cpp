@@ -62,6 +62,7 @@ void EnemyManager::InitChargerEnemy()
 
 void EnemyManager::RemoveEnemy(Object* enemy)
 {
+	
 	enemyPool->ReturnItem(enemy);
 }
 
@@ -108,3 +109,5 @@ void EnemyManager::SpawnEnemy(std::string key, dx::XMVECTOR position)
 
 	enemyVector.push_back(enemy);
 }
+
+

@@ -6,7 +6,7 @@
 #include "EnemyAttackComp.h"
 #include "Input.h"
 #include <unordered_map>
-
+#include "EnemyManager.h"
 enum class EnemyState
 {
     NONE,
@@ -18,6 +18,8 @@ enum class EnemyState
     UNLOAD,
     DEATH
 };
+
+
 
 class EnemySMComp : public Component
 {
@@ -50,4 +52,5 @@ private:
     EnemyAttackComp* attackComponent;
     EnemyStatsComp* statsComponent;
     EnemyPatrolComp* enemyPatrolComp;
+    
 };

@@ -20,7 +20,6 @@ class EnemyManager
 
 	private:
 		void SpawnEnemy(std::string key, dx::XMVECTOR position);
-
 		ObjectPooler* enemyPool;
 		std::vector<Object*> enemyVector;
 		Object* player;

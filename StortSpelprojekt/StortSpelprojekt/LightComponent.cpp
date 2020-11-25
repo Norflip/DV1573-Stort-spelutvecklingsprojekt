@@ -29,7 +29,10 @@ LightComponent::LightComponent(LightType type, dx::XMFLOAT4 color, float range)
 	this->elapsedTime = 0.f;
 }
 
-LightComponent::~LightComponent() {}
+LightComponent::~LightComponent() 
+{
+
+}
 
 void LightComponent::Initialize()
 {
