@@ -316,9 +316,11 @@ void ControllerComp::Update(const float& deltaTime)
 				{
 					if (this->velocity > 0.f) //is more decrease
 						acceleration = -WALK_ACCELERATION;
-
-					AudioMaster::Instance().StopSoundEvent("walk");
-					AudioMaster::Instance().StopSoundEvent("run");
+					if (!inside)
+					{
+						AudioMaster::Instance().StopSoundEvent("walk");
+						AudioMaster::Instance().StopSoundEvent("run");
+					}
 				}
 				else if (isMoving == WALKING)
 				{
@@ -330,8 +332,11 @@ void ControllerComp::Update(const float& deltaTime)
 					// Kan lägga in ljud för att gå på plankor här med, ha en bool för "onHouse" t.ex.
 					if (isGrounded)
 					{
-						AudioMaster::Instance().StopSoundEvent("run");
-						AudioMaster::Instance().PlaySoundEvent("walk");
+						if (!inside)
+						{
+							AudioMaster::Instance().StopSoundEvent("run");
+							AudioMaster::Instance().PlaySoundEvent("walk");
+						}
 					}
 				}
 				else if (isMoving == SPRINTING)
@@ -344,8 +349,11 @@ void ControllerComp::Update(const float& deltaTime)
 
 					if (isGrounded)
 					{
-						AudioMaster::Instance().PlaySoundEvent("run");
-						AudioMaster::Instance().StopSoundEvent("walk");
+						if (!inside)
+						{
+							AudioMaster::Instance().PlaySoundEvent("run");
+							AudioMaster::Instance().StopSoundEvent("walk");
+						}
 					}
 				}
 				else if (isMoving == CROUCHING)
