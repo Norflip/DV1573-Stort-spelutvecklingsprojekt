@@ -48,6 +48,7 @@ public:
 	void SetFood(float food) { this->fuel = food; }
 	CameraComponent* GetCamera(){ return cam; };
 	void InsertArms(Object* arms);
+	Object* GetArms() { return this->arms; }
 	void SetguiMan(GUIManager* guiMan) { this->guiMan = guiMan; }
 	void InsertWeapon(WeaponComponent* weapon, std::string name);
 	void SetInteriorPosition(float x, float y, float z);
@@ -106,5 +107,6 @@ private:
 
 	dx::XMFLOAT3 interiorPosition;
 	dx::XMFLOAT3 startPos;
+		 
 };
 
