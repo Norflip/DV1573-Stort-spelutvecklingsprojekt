@@ -321,6 +321,10 @@ void ControllerComp::Update(const float& deltaTime)
 						AudioMaster::Instance().StopSoundEvent("walk");
 						AudioMaster::Instance().StopSoundEvent("run");
 					}
+					else
+					{
+						AudioMaster::Instance().StopSoundEvent("insideWalk");
+					}
 				}
 				else if (isMoving == WALKING)
 				{
@@ -337,22 +341,30 @@ void ControllerComp::Update(const float& deltaTime)
 							AudioMaster::Instance().StopSoundEvent("run");
 							AudioMaster::Instance().PlaySoundEvent("walk");
 						}
+						else
+						{
+							AudioMaster::Instance().PlaySoundEvent("insideWalk");
+						}
 					}
 				}
 				else if (isMoving == SPRINTING)
 				{
-					if (this->velocity + RUN_ACCELERATION < RUN_VELOCITY) //is less increase
-						acceleration = RUN_ACCELERATION;
-
-					else if (this->velocity > RUN_VELOCITY)//is more decrease
-						acceleration = -RUN_ACCELERATION;
-
-					if (isGrounded)
+					if (!inside)
 					{
-						if (!inside)
+						if (this->velocity + RUN_ACCELERATION < RUN_VELOCITY) //is less increase
+							acceleration = RUN_ACCELERATION;
+
+						else if (this->velocity > RUN_VELOCITY)//is more decrease
+							acceleration = -RUN_ACCELERATION;
+
+						if (isGrounded)
 						{
-							AudioMaster::Instance().PlaySoundEvent("run");
-							AudioMaster::Instance().StopSoundEvent("walk");
+							//if (!inside)
+							//{
+								AudioMaster::Instance().PlaySoundEvent("run");
+								AudioMaster::Instance().StopSoundEvent("walk");
+							//}
+
 						}
 					}
 				}
@@ -447,7 +459,7 @@ void ControllerComp::Update(const float& deltaTime)
 		this->CalcVelocity(acceleration);
 		AudioMaster::Instance().StopSoundEvent("walk");
 		AudioMaster::Instance().StopSoundEvent("run");
-
+		AudioMaster::Instance().StopSoundEvent("insideWalk");
 
 		dx::XMVECTOR direction = dx::XMLoadFloat3(&dir);
 		//direction = dx::XMVector3Normalize(direction);
