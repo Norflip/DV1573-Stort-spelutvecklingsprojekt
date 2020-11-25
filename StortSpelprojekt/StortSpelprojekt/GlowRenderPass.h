@@ -12,8 +12,9 @@ public:
 	{
 		Shader* shader = resources->GetShaderResource("GlowShader");
 		glowMaterial = new Material(shader);
+		shader->SetVertexShader("Shaders/Glow_vs.hlsl");
 		LoadTextureGlow(device);
-		
+		shader->Compile(device);
 	}
 	
 	void Pass(Renderer* renderer, CameraComponent* camera, RenderTexture& current, RenderTexture& target) override
@@ -34,7 +35,7 @@ public:
 		const LPCWSTR GLOW_TEXTURE_PATH = L"Textures/lampa_glowMap.png";
 
 		glowTexture = Texture::LoadTexture(device, GLOW_TEXTURE_PATH);
-		glowMaterial->SetTexture(glowTexture, 0, ShaderBindFlag::PIXEL);
+		glowMaterial->SetTexture(glowTexture, 1, ShaderBindFlag::PIXEL);
 
 		glowMaterial->SetSampler(DXHelper::CreateSampler(D3D11_FILTER_MIN_MAG_MIP_LINEAR, D3D11_TEXTURE_ADDRESS_WRAP, device), 0, ShaderBindFlag::PIXEL);
 	}

@@ -27,8 +27,8 @@ Engine::Engine(HINSTANCE hInstance) : window(hInstance), activeScene(nullptr), s
 	physics->Initialize();
 
 	renderer->AddRenderPass(new SkyboxRenderPass(-10, resourceManager));
-	//renderer->AddRenderPass(new FogRenderPass(0, resourceManager));
-	//renderer->AddRenderPass(new FXAARenderPass(1, resourceManager));
+	renderer->AddRenderPass(new FogRenderPass(0, resourceManager));
+	renderer->AddRenderPass(new FXAARenderPass(1, resourceManager));
 	renderer->AddRenderPass(new GlowRenderPass(2, resourceManager));
 
 	RegisterScene(SceneIndex::INTRO,	new IntroScene());

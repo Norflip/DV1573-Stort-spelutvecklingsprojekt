@@ -21,11 +21,11 @@ struct VS_INPUT_SKELETON
 	uint id	: SV_InstanceID;
 };
 
-struct VS_INPUT_GLOW
-{
-    float3 position : POSITION;
-    float2 uv : TEXCOORD;
-};
+//struct VS_INPUT_GLOW
+//{
+//    float3 position : POSITION;
+//    float2 uv : TEXCOORD0;
+//};
 
 struct VS_OUTPUT
 {
