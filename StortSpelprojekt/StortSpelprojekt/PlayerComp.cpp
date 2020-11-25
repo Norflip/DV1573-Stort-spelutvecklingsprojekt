@@ -59,9 +59,15 @@ PlayerComp::PlayerComp(Renderer* renderer, CameraComponent* camComp, Object* hou
 
 	cam = camComp;
 	// per frame shit
-	this->rayDistance = 2.0f;
 	up = { 0.0f, 1.0f, 1.0f };
+	this->rayDistance = 2.0f;
 	holding = nullptr;
+
+	finishedTutorial = true; // Change to false if you wanna use the tutorial
+	foodTutorial = false;
+	fuelTutorial = false;
+	healthTutorial = false;
+	reading = false;
 }
 
 PlayerComp::~PlayerComp()
@@ -71,8 +77,6 @@ PlayerComp::~PlayerComp()
 
 void PlayerComp::Update(const float& deltaTime)
 {
-
-
 	float frameTime = FCAST(GameClock::Instance().GetFrameTime() / 1000.0);
 
 	//temp fix for wierd clock start at 
@@ -117,7 +121,8 @@ void PlayerComp::Update(const float& deltaTime)
 
 	RayCast(deltaTime);
 
-	if (!guiMan->GetGUIObject("door")->GetVisible() && !guiMan->GetGUIObject("fuel")->GetVisible())
+	if (!guiMan->GetGUIObject("door")->GetVisible() && !guiMan->GetGUIObject("fuel")->GetVisible()
+		&& !guiMan->GetGUIObject("infoSprite")->GetVisible())
 	{
 		guiMan->GetGUIObject("dot")->SetVisible(true);
 		guiMan->GetGUIObject("door")->SetVisible(false);
@@ -125,6 +130,10 @@ void PlayerComp::Update(const float& deltaTime)
 	}
 	
 	pickedUpLastFrame = false;
+
+	if (!finishedTutorial)
+		if (foodTutorial && fuelTutorial && healthTutorial)
+			finishedTutorial = true;
 }
 
 void PlayerComp::FixedUpdate(const float& fixedDeltaTime)
@@ -140,7 +149,6 @@ void PlayerComp::FixedUpdate(const float& fixedDeltaTime)
 	// around 90
 	if (distance > maxDist && !GetOwner()->GetComponent<ControllerComp>()->GetInside())
 		health = 0;
-
 
 }
 
@@ -202,29 +210,35 @@ void PlayerComp::PickUpObject()
 				{
 					AudioMaster::Instance().PlaySoundEvent("pickupSound");
 					PickupType pickupType = hit.object->GetComponent<PickupComponent>()->GetType();
-					float temp = hit.object->GetComponent<PickupComponent>()->GetAmount();
+					float value = hit.object->GetComponent<PickupComponent>()->GetAmount();
 
 					if (pickupType == PickupType::Health)
 					{
-						if ((health + temp) <= 100.0f)
-							health += temp;
+						if ((health + value) <= 100.0f)
+							health += value;
 						else
 							health = 100.0f;
+
+						if (!healthTutorial)
+							healthTutorial = true;
 					}
 					else if (pickupType == PickupType::Food)
 					{
-						if ((food + temp) <= 100.0f)
-							food += temp;
+						if ((food + value) <= 100.0f)
+							food += value;
 						else
 							food = 100.0f;
+
+						if (!foodTutorial)
+							foodTutorial = true;
 					}
-					else if (pickupType == PickupType::Fuel)
+					/*else if (pickupType == PickupType::Fuel)
 					{
-						if ((fuel + temp) <= 100.0f)
-							fuel += temp;
+						if ((fuel + value) <= 100.0f)
+							fuel += value;
 						else
 							fuel = 100.0f;
-					}
+					}*/
 
 					if (hit.object->HasComponent<ParticleSystemComponent>())
 							hit.object->GetComponent<ParticleSystemComponent>()->SetActive(false);
@@ -291,6 +305,13 @@ void PlayerComp::SetInteriorPosition(float x, float y, float z)
 	this->interiorPosition = { x, y, z };
 }
 
+void PlayerComp::SetStartPosition(dx::XMVECTOR pos)
+{
+	this->startPos.x = dx::XMVectorGetX(pos);
+	this->startPos.y = dx::XMVectorGetY(pos);
+	this->startPos.z = dx::XMVectorGetZ(pos);
+}
+
 float PlayerComp::ReverseAndClamp(float inputValue)
 {
 	return 1.0f - (inputValue / 100.0f);
@@ -328,6 +349,9 @@ void PlayerComp::RayCast(const float& deltaTime)
 
 				guiMan->GetGUIObject("fuel")->SetVisible(false);
 				guiMan->GetGUIObject("dot")->SetVisible(true);
+
+				if (!fuelTutorial)
+					fuelTutorial = true;
 			}
 		}
 		else
@@ -340,13 +364,37 @@ void PlayerComp::RayCast(const float& deltaTime)
 	// Check door
 	if (physics->RaytestSingle(ray, rayDistance, hit, FilterGroups::DOOR))
 	{
-		if (hit.object != nullptr)
+		if (finishedTutorial)
 		{
-			this->GetOwner()->GetComponent<ControllerComp>()->SetInRange(true);
+			if (hit.object != nullptr)
+			{
+				this->GetOwner()->GetComponent<ControllerComp>()->SetInRange(true);
+			}
+			else
+			{
+				this->GetOwner()->GetComponent<ControllerComp>()->SetInRange(false);
+			}
 		}
 		else
 		{
-			this->GetOwner()->GetComponent<ControllerComp>()->SetInRange(false);
+			if (RMOUSE_DOWN)
+			{
+				if (hit.object != nullptr)
+				{
+					if (guiMan->GetGUIObject("infoSprite")->GetVisible())
+					{
+						guiMan->GetGUIObject("infoSprite")->SetVisible(false);
+						guiMan->GetGUIObject("dot")->SetVisible(true);
+						reading = false;
+					}
+					else
+					{
+						guiMan->GetGUIObject("infoSprite")->SetVisible(true);
+						guiMan->GetGUIObject("dot")->SetVisible(false);
+						reading = true;
+					}
+				}
+			}
 		}
 	}
 
@@ -370,7 +418,6 @@ void PlayerComp::RayCast(const float& deltaTime)
 	//ATTACK ENEMIES
 	if (LMOUSE_DOWN && holding == nullptr)
 	{
-
 		if (physics->RaytestSingle(ray, 5.0f, hit, FilterGroups::ENEMIES))
 		{
 			if (hit.object != nullptr)
@@ -412,23 +459,24 @@ void PlayerComp::RayCast(const float& deltaTime)
 
 float PlayerComp::GetDangerDistance() 
 {
-	if (distance > 60.f)
+	if (distance > 60.f && !GetOwner()->GetComponent<ControllerComp>()->GetInside())
 		return distance;
 	else
 		return 0;
 }
 
-void PlayerComp::Reset()
+void PlayerComp::SetStatsFromState(const SaveState& state)
 {
+	this->food = state.playerFood;
+	this->fuel = state.playerFuel;
+	this->health = state.playerHealth;
+
 	// defaulting some shit
 	this->foodLossPerSecond = 0.3f;
-	this->food = 50.0f;
 	this->fuelBurnPerMeter = 0.7f;
-	this->fuel = 50.0f;
 	this->healthLossPerSecond = 0.5f;
 	this->holding = nullptr;
-
-	this->health = 50.0f; // <------------------ DONT FORGET TO REMOVE THIS LATER!
-	foodEmpty = false;
-
+	this->foodEmpty = false;
 }
+
+

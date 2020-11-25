@@ -37,7 +37,6 @@ private:
 	Object* roadSign;
 	NodeWalkerComp* nodeWalker;
 
-	int fogId;
 	float fogCol;
 	bool start;
 };

@@ -73,20 +73,16 @@ void EnemyManager::SpawnEnemies()
 
 	for (size_t i = 0; i < nrOfEnemies; i++)
 	{
-		dx::XMFLOAT3 playerPos;
-		dx::XMStoreFloat3(&playerPos, player->GetTransform().GetPosition());
-		SpawnEnemy("baseEnemy", { playerPos.x + (i +2) * 10.0f, playerPos.y + 5, (float)(playerPos.z + i * 5) });
+		dx::XMFLOAT3 playerPos = player->GetComponent<PlayerComp>()->GetStartPosition();
+		SpawnEnemy("baseEnemy", { (float)playerPos.x + (i + 2) * 10.0f, playerPos.y + 3.0f, (float)(playerPos.z + i * 5.0f) });
 		
 	}
-
+	
 	for (size_t i = 0; i < nrOfEnemies; i++)
 	{
-		dx::XMFLOAT3 playerPos;
-		dx::XMStoreFloat3(&playerPos, player->GetTransform().GetPosition());
-		SpawnEnemy("chargerEnemy", { playerPos.x +(i+2) * 10.0f, playerPos.y+5, (float)(playerPos.z - i * 5) });
+		dx::XMFLOAT3 playerPos = player->GetComponent<PlayerComp>()->GetStartPosition();
+		SpawnEnemy("chargerEnemy", { (float)playerPos.x + (i + 2) * 10.0f, playerPos.y + 5.0f, (float)(playerPos.z + i * 5.0f) });
 	}
-
-
 }
 
 void EnemyManager::DespawnEnemies()
@@ -95,7 +91,6 @@ void EnemyManager::DespawnEnemies()
 	{
 		RemoveEnemy(enemyVector[i]);
 	}
-
 }
 
 void EnemyManager::SpawnEnemy(std::string key, dx::XMVECTOR position)
@@ -106,7 +101,6 @@ void EnemyManager::SpawnEnemy(std::string key, dx::XMVECTOR position)
 	EnemySMComp* stateMachine = enemy->GetComponent<EnemySMComp>();
 	enemy->GetComponent<EnemyAttackComp>()->SetPlayer(playerComp);
 	stateMachine->InitAnimation();
-
 
 	enemy->GetComponent<RigidBodyComponent>()->SetPosition(position);
 	Object::AddToHierarchy(root, enemy);
