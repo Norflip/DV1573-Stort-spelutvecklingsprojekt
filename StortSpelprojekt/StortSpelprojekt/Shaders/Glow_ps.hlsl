@@ -1,4 +1,5 @@
 #include "CommonBuffers.hlsl"
+
 Texture2D rgbTexture : register(t0);
 Texture2D glowTexture : register(t1);
 
