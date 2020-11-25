@@ -394,7 +394,7 @@ void Renderer::DrawGrass(const Mesh* mesh, const Material* material, const dx::X
 	item.mesh = mesh;
 	item.material = material;
 	item.world = model;
-	AddItem(item, false, false);
+	AddItem(item, false, true);
 }
 
 void Renderer::DrawParticles(const Mesh* mesh, const Material* material, const dx::XMMATRIX& model)

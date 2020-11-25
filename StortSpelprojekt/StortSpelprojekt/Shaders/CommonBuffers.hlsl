@@ -163,7 +163,7 @@ bool PointInsidePlane(float3 p, Plane plane)
 // Source: Real-time collision detection, Christer Ericson (2005)
 bool SphereInsidePlane(Sphere sphere, Plane plane)
 {
-    return dot(plane.N, sphere.c) - plane.d < -sphere.r;
+    return dot(plane.N, sphere.c) - plane.d < -(sphere.r * 20);
 }
 
 // Check to see if a cone if fully behind (inside the negative halfspace of) a plane.
@@ -188,7 +188,7 @@ bool SphereInsideFrustum(Sphere sphere, Frustum frustum, float zNear, float zFar
 	// First check depth
 	// Note: Here, the view vector points in the -Z axis so the 
 	// far depth value will be approaching -infinity.
-    if (sphere.c.z - sphere.r > zFar   || sphere.c.z + sphere.r < zNear) //Switched places for zNear and zFar
+    if (sphere.c.z - (sphere.r*20) > zFar  || sphere.c.z + (sphere.r * 20) < zNear) //Switched places for zNear and zFar
     {
         result = false;
     }
