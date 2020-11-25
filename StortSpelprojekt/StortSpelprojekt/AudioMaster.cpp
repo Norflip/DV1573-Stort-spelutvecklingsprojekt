@@ -13,15 +13,19 @@ AudioMaster::AudioMaster()
 	/* Create different soundchannels */
 	engine->GetAudioMaster()->CreateSubmixVoice(&soundsSubmix, 1, 44100, 0, 0, 0, 0);
 	engine->GetAudioMaster()->CreateSubmixVoice(&musicSubmix, 1, 44100, 0, 0, 0, 0);
+	engine->GetAudioMaster()->CreateSubmixVoice(&environmentSubmix, 1, 44100, 0, 0, 0, 0);
 
 	sendSounds = { 0, soundsSubmix };
 	soundsSendList = { 1, &sendSounds };
 	sendMusic = { 0, musicSubmix };
 	musicSendList = { 1, &sendMusic };
+	sendEnvironment = { 0, environmentSubmix };
+	environmentSendList = { 1, &sendEnvironment };
 
 	/* Volume for both channels */
 	soundsSubmix->SetVolume(soundEffectsVolume);
 	musicSubmix->SetVolume(musicVolume);
+	environmentSubmix->SetVolume(environmentVolume);
 
 	/* Load tracks */
 	LoadFile(L"Sounds/jakestuff.mp3", "menusound", menuTest, AudioTypes::Music, true);
@@ -31,13 +35,13 @@ AudioMaster::AudioMaster()
 	LoadFile(L"Sounds/Punch.wav", "punch", punchSound, AudioTypes::Sound, false);
 	LoadFile(L"Sounds/walking.wav", "walk", walkSound, AudioTypes::Sound, true);
 	LoadFile(L"Sounds/running.mp3", "run", runSound, AudioTypes::Sound, true);
-	LoadFile(L"Sounds/windyLoop.mp3", "wind", windSound, AudioTypes::Sound, true);
+	LoadFile(L"Sounds/windyLoop.mp3", "wind", windSound, AudioTypes::Environment, true);
 	//LoadFile(L"Sounds/choptree.mp3", "choptree", chop, AudioTypes::Sound, false);
 	LoadFile(L"Sounds/insideWalk.mp3", "insideWalk", insideWalk, AudioTypes::Sound, true);
 
 	SetVolume(AudioTypes::Music, 0.7f);
 	SetVolume(AudioTypes::Sound, 0.7f);
-
+	SetVolume(AudioTypes::Environment, 0.7f);
 }
 
 AudioMaster::~AudioMaster()
@@ -63,6 +67,8 @@ void AudioMaster::LoadFile(const std::wstring fileName, std::string name, SoundE
 		loadFile = engine->GetAudioMaster()->CreateSourceVoice(&soundEvent.sourceVoice, &soundEvent.waveFormat, 0, XAUDIO2_DEFAULT_FREQ_RATIO, nullptr, &soundsSendList, NULL);
 	else if (soundType == AudioTypes::Music)
 		loadFile = engine->GetAudioMaster()->CreateSourceVoice(&soundEvent.sourceVoice, &soundEvent.waveFormat, 0, XAUDIO2_DEFAULT_FREQ_RATIO, nullptr, &musicSendList, NULL);
+	else if (soundType == AudioTypes::Environment)
+		loadFile = engine->GetAudioMaster()->CreateSourceVoice(&soundEvent.sourceVoice, &soundEvent.waveFormat, 0, XAUDIO2_DEFAULT_FREQ_RATIO, nullptr, &environmentSendList, NULL);
 	if (FAILED(loadFile))
 		OutputDebugStringW(L"Critical error: Unable to create source voice!");
 
@@ -191,8 +197,11 @@ float AudioMaster::GetVolume(const AudioTypes& audioType) const
 	return 1.0f;
 }
 
-void AudioMaster::Update(std::string file)
+void AudioMaster::PlayerOutside(bool state)
 {
-
-
+	if(state)
+		environmentSubmix->SetVolume(soundEffectsVolume);
+	else
+		environmentSubmix->SetVolume(0.2f);
 }
+

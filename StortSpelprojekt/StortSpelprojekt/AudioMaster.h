@@ -1,7 +1,7 @@
 #pragma once
 #include "AudioEngine.h"
 
-enum AudioTypes { Music, Sound };
+enum AudioTypes { Music, Sound, Environment };
 
 struct SoundEvent
 {
@@ -32,15 +32,19 @@ private:
 	// Expand this shit
 	XAUDIO2_VOICE_SENDS soundsSendList;
 	XAUDIO2_VOICE_SENDS musicSendList;
+	XAUDIO2_VOICE_SENDS environmentSendList;
 	XAUDIO2_SEND_DESCRIPTOR sendSounds;
 	XAUDIO2_SEND_DESCRIPTOR sendMusic;
+	XAUDIO2_SEND_DESCRIPTOR sendEnvironment;
 
 	// Submix voices
 	IXAudio2SubmixVoice* soundsSubmix;	
 	IXAudio2SubmixVoice* musicSubmix;
+	IXAudio2SubmixVoice* environmentSubmix;
 
 	float soundEffectsVolume = 1.0f;
 	float musicVolume = 1.0f;
+	float environmentVolume = 1.0f;
 
 	SoundEvent menuTest, pickupSound, pickupFuel, axeSwingSound, punchSound, walkSound, runSound, windSound, chop, insideWalk;
 
@@ -57,8 +61,8 @@ public:
 	void SetVolume(const AudioTypes& audioType, const float volume);
 	float GetVolume(const AudioTypes& audioType) const;
 
-	void Update(std::string file);
-
+	void PlayerOutside(bool state);
+		
 	static AudioMaster& Instance()
 	{
 		static AudioMaster instance;

@@ -211,6 +211,11 @@ void ControllerComp::Update(const float& deltaTime)
 		}
 	}
 	
+	if (!inside)	
+		AudioMaster::Instance().PlayerOutside(true);	
+	else	
+		AudioMaster::Instance().PlayerOutside(false);
+	
 	if (!playerComp->GetIsReading())
 	{
 		if (this->canRotate)
