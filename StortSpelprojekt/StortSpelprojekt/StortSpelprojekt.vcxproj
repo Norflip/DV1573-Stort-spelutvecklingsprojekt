@@ -184,7 +184,6 @@
     <ClCompile Include="DXHelper.cpp" />
     <ClCompile Include="DShape.cpp" />
     <ClCompile Include="Engine.cpp" />
-    <ClCompile Include="FireTextureComponent.cpp" />
     <ClCompile Include="FrogPuzzle.cpp" />
     <ClCompile Include="GameClock.cpp" />
     <ClCompile Include="GameOverScene.cpp" />
@@ -273,7 +272,6 @@
     <ClInclude Include="ControllerComp.h" />
     <ClInclude Include="DebugBoxShapeComponent.h" />
     <ClInclude Include="DShape.h" />
-    <ClInclude Include="FireTextureComponent.h" />
     <ClInclude Include="FrogPuzzle.h" />
     <ClInclude Include="FXAARenderPass.h" />
     <ClInclude Include="GameOverScene.h" />

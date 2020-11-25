@@ -318,6 +318,7 @@ void ControllerComp::Update(const float& deltaTime)
 						acceleration = -WALK_ACCELERATION;
 					if (!inside)
 					{
+						AudioMaster::Instance().StopSoundEvent("insideWalk");
 						AudioMaster::Instance().StopSoundEvent("walk");
 						AudioMaster::Instance().StopSoundEvent("run");
 					}
@@ -338,6 +339,7 @@ void ControllerComp::Update(const float& deltaTime)
 					{
 						if (!inside)
 						{
+							AudioMaster::Instance().StopSoundEvent("insideWalk");
 							AudioMaster::Instance().StopSoundEvent("run");
 							AudioMaster::Instance().PlaySoundEvent("walk");
 						}
@@ -361,6 +363,7 @@ void ControllerComp::Update(const float& deltaTime)
 						{
 							//if (!inside)
 							//{
+								AudioMaster::Instance().StopSoundEvent("insideWalk");
 								AudioMaster::Instance().PlaySoundEvent("run");
 								AudioMaster::Instance().StopSoundEvent("walk");
 							//}

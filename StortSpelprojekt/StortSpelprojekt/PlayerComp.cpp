@@ -445,10 +445,10 @@ void PlayerComp::RayCast(const float& deltaTime)
 			}
 		}
 
-		else if (physics->RaytestSingle(ray, 5.0f, hit, FilterGroups::PROPS))
+		/*else if (physics->RaytestSingle(ray, 5.0f, hit, FilterGroups::PROPS))
 		{
 			AudioMaster::Instance().PlaySoundEvent("choptree");			
-		}
+		}*/
 	}
 
 	// Health drop

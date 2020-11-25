@@ -27,7 +27,6 @@
 #include "EnemyManager.h"
 #include <wchar.h>
 #include "PlayerAnimHandlerComp.h"
-#include "FireTextureComponent.h"
 #include "HousePartsComponent.h"
 
 class GUIFont;
