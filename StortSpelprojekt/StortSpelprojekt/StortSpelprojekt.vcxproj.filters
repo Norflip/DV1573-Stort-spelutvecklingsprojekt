@@ -612,6 +612,7 @@
     <ClInclude Include="GlowRenderPass.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="WorldGenerator.h" />
   </ItemGroup>
   <ItemGroup>
     <Filter Include="Header Files">
