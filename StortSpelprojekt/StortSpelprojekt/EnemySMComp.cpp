@@ -15,6 +15,7 @@ void EnemySMComp::InitAnimation()
 	skeletonComponent =  GetOwner()->GetComponent<SkeletonMeshComponent>();
 	attackComponent = GetOwner()->GetComponent<EnemyAttackComp>();
 	statsComponent = GetOwner()->GetComponent<EnemyStatsComp>();
+	skeletonComponent->CreateBlendAnimation();
 }
 
 void EnemySMComp::SetState(EnemyState state)
@@ -37,6 +38,7 @@ void EnemySMComp::Start()
 
 void EnemySMComp::Initialize()
 {
+	
 }
 
 void EnemySMComp::Animate()
@@ -44,12 +46,14 @@ void EnemySMComp::Animate()
 	
 	if (currentState == EnemyState::ATTACK)
 	{
-		skeletonComponent->SetTrack(SkeletonStateMachine::RUN, SkeletonStateMachine::NONE, false);
+		
+		skeletonComponent->SetTrack(SkeletonStateMachine::RUN, SkeletonStateMachine::NONE, true);
 
 		if (attackComponent->GetIsAttacking())
 		{
 			
-			skeletonComponent->SetTrack(SkeletonStateMachine::TRANSITION, SkeletonStateMachine::NONE, false);
+			skeletonComponent->SetTrack(SkeletonStateMachine::BLENDED, SkeletonStateMachine::NONE, true);
+			//skeletonComponent->SetTrack(SkeletonStateMachine::BLENDED, SkeletonStateMachine::NONE, true);
 		}
 	}
 	else if (currentState == EnemyState::PATROL)

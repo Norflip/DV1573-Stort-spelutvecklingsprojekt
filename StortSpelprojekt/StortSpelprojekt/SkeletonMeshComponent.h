@@ -8,6 +8,7 @@
 #include "Object.h"
 #include "GameClock.h"
 #include "Resource.h"
+#include <cmath>
 
 enum class SkeletonStateMachine
 {
@@ -49,7 +50,7 @@ public:
 	void SetTrack(const SkeletonStateMachine& type, const SkeletonStateMachine& type2, bool playOnce);
 	
 	void BlendAnimations();
-	void CreateSmoothTransition();
+	void CreateBlendAnimation();
 	bool GetIsDone();
 	void SetisDone(bool);
 	bool& SetAndGetDoneDown();

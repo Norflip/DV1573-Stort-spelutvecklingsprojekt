@@ -31,7 +31,7 @@ private:
 	dx::SimpleMath::Quaternion rotQ;
 	dx::SimpleMath::Matrix RT;
 	std::vector<dx::XMFLOAT4X4> bones;
-	dx::SimpleMath::Matrix& Lerp(float elapsedTime, std::vector<Bone>& keys);
+	
 	
 public:
 	SkeletonAni();
@@ -46,13 +46,14 @@ public:
 	std::map<std::string, unsigned int>& GetBoneIDMap();
 	std::vector<std::vector<Bone>>& GetKeyFrames();
 	std::vector<dx::SimpleMath::Matrix>& GetOffsets();
-	float GetCurrentFrame() { return this->currentFrame; }
+	//float GetCurrentFrame() { return this->currentFrame; }
 	float GetFPS();
 	float GetAniLength();
 	void SetOffsetsDirect(std::vector<dx::SimpleMath::Matrix>& directOffsets);
 	void SetKeyFramesDirect(std::vector<std::vector<Bone>>& directKeys);
 
 	std::vector<dx::XMFLOAT4X4> GetBones() { return this->bones; }
+	dx::SimpleMath::Matrix& Lerp(float elapsedTime, std::vector<Bone>& keys);
 	
 };
 

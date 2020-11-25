@@ -154,7 +154,7 @@ void ResourceManager::ReadObjects(ID3D11Device* device)
 					}
 				}
 				
-					skeletonMesh->CreateSmoothTransition();
+					
 					//skeletonMesh->BlendAnimations();
 				
 				
