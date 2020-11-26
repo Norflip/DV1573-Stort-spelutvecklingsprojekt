@@ -1,7 +1,7 @@
 #include "CommonBuffers.hlsl"
 
 // Calculate light with the given pointlight
-float4 CalculatePointLight(Light light, float3 normal, float3 objectPosition, float3 viewDirection)
+float4 CalculatePointLight(Light light,float3 normal, float3 objectPosition, float3 viewDirection)
 {
 	float4 ambient = float4(0.0f, 0.0f, 0.0f, 0.0f);
 	float4 specular = float4(0.0f, 0.0f, 0.0f, 0.0f);
@@ -87,7 +87,7 @@ float4 CalculateDirectionalLight(Light light, float3 normal, float3 viewDirectio
 	float4 finalColor = float4(0.0f, 0.0f, 0.0f, 0.0f);
 
 	// Can change from white to wanted color here
-	float4 sunColor = float4(1.0f, 1.0f, 1.0f, 1.0f);
+	//float4 sunColor = float4(1.0f, 1.0f, 1.0f, 1.0f);
 
 	float3 lightDirection = normalize(light.lightDirection);
 
@@ -98,10 +98,10 @@ float4 CalculateDirectionalLight(Light light, float3 normal, float3 viewDirectio
         float3 reflection = reflect(lightDirection, normal);
 		float spec = pow(max(dot(viewDirection, reflection), 0.0f), 0.1f);
 
-        ambient = saturate(matAmbient * sunColor);
-		diffuse = diffuseFactor * sunColor * matDiffuse;
-		specular = spec * sunColor * matSpecular;
-	}
+        ambient = saturate(matAmbient * light.lightColor );
+        diffuse = diffuseFactor * light.lightColor * matDiffuse;
+        specular = spec * light.lightColor * matSpecular;
+    }
 
 	finalColor = ambient + diffuse + specular;
 	return finalColor * light.intensity;

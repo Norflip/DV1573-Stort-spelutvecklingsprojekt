@@ -9,14 +9,6 @@ static const int LIGHT_COUNT = 200;
 #define POINT_LIGHT 0
 #define SPOT_LIGHT 1
 #define DIRECTIONAL_LIGHT 2
-//struct PointLight
-//{
-//    float4 lightColor;
-//    float3 lightPosition;
-//	float range;
-//    float3 attenuation;
-//	float paddingThree;
-//};
 
 struct Light //slot t8
 {
@@ -42,6 +34,16 @@ cbuffer cb_Object : register(b0)
     row_major matrix vp;
     row_major matrix wv;
 };
+
+//struct Material 
+//{
+//    float4 matAmbient;
+//    float4 matDiffuse;
+//    float4 matSpecular;
+	
+//    bool hasAlbedo;
+//    bool hasNormalMap;
+//};
 
 cbuffer cb_Material : register(b1)
 {
@@ -75,24 +77,6 @@ cbuffer cb_Scene : register(b2)
 
    
 }
-
-//cbuffer cb_Lights : register(b3)
-//{
-//	PointLight pointLights[POINT_LIGHT_COUNT];
-//	int nrOfPointLights;
-//	float3 sunDirection;
-//	float sunIntensity;
-//	float3 pad3;
-//};
-
-//cbuffer cb_Lights : register(b3)
-//{
-//    Light lights[LIGHT_COUNT];
-//    int nrOfLights;
-//    float3 sunDirection;
-//    float sunIntensity;
-//    float3 pad_cbl;
-//};
 
 StructuredBuffer<float4x4> bones : register(t2);
 

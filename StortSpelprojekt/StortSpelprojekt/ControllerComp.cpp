@@ -18,8 +18,9 @@ void ControllerComp::CheckGrounded()
 	phy->RaytestSingle(ray, distance, hitTerrain, FilterGroups::TERRAIN);
 	phy->RaytestSingle(ray, distance, hitProps, FilterGroups::PROPS);
 	
+	
 	this->isGrounded = false;
-	if (hitTerrain.object != nullptr || (hitProps.object != nullptr && hitProps.object->GetName() == "HouseInterior"))// != nullptr )//&& hitProps.object->GetName() == "houseBase"))
+	if (hitTerrain.object != nullptr || hitProps.object != nullptr) //(hitProps.object != nullptr && hitProps.object->GetName() == "HouseInterior"))// != nullptr )//&& hitProps.object->GetName() == "houseBase"))
 	{
 		//this->houseVelocity = { 0.f,0.f,0.f };
 		/*if (hitProps.object != nullptr && hitProps.object->GetName() == "houseBase")
@@ -59,7 +60,7 @@ ControllerComp::ControllerComp(Object* cameraObject, Object* houseObject)
 	this->houseVelocity = { 0.f,0.f,0.f };
 	this->jumpDir = { 0.f,0.f,0.f };
 	this->cameraOffset = { 0.f,0.f,0.f };
-	this->cameraEuler = { 0.f,0.f,0.f }; //TODO_: fix start angle (looks down or up at start)
+	this->cameraEuler = { 0.f,45.f,0.f }; //TODO_: fix start angle (looks down or up at start)
 
 	this->cameraObject = cameraObject;
 	this->houseWalkComp = houseObject->GetComponent<NodeWalkerComp>();

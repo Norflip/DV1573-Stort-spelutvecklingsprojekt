@@ -25,5 +25,5 @@ float4 main(GS_OUTPUT_GRASS input) : SV_TARGET
     //finalColor*= textureColor;
     return textureColor;
 	
-	
+    //return float4(input.normal, 1);
 }
