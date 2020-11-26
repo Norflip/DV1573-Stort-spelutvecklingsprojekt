@@ -416,35 +416,39 @@ void PlayerComp::RayCast(const float& deltaTime)
 	}
 
 	//ATTACK ENEMIES
-	if (LMOUSE_DOWN && holding == nullptr)
+	if (LMOUSE_DOWN && holding == nullptr && 
+		arms->GetComponent< PlayerAnimHandlerComp>()->GetCooldown() > 1.0f)
 	{
 		if (physics->RaytestSingle(ray, 5.0f, hit, FilterGroups::ENEMIES))
 		{
 			if (hit.object != nullptr)
 			{
 				EnemyStatsComp* stats = hit.object->GetComponent<EnemyStatsComp>();
-
+				SkeletonMeshComponent* skeleton = hit.object->GetComponent<SkeletonMeshComponent>();
 				if (stats != nullptr && stats->IsEnabled() && stats->GetHealth() >= 0.0f)
 				{
 					stats->LoseHealth(attack);
 					AudioMaster::Instance().PlaySoundEvent("punch");
 
-					if (stats->GetHealth() <= 0.0f)
-					{
-						stats->GetManager()->RemoveEnemy(hit.object);
+					//if (stats->GetHealth() <= 0.0f)
+					//{
 
-							/*RigidBodyComponent* rbComp = hit.object->GetComponent<RigidBodyComponent>();
-							rbComp->Release();
-							Engine::Instance->GetActiveScene()->RemoveObject(hit.object);*/
-					}
+					//	skeleton->SetTrack(SkeletonStateMachine::DEATH, true);
+					//	stats->GetManager()->RemoveEnemy(hit.object);
+					//	
+
+					//		/*RigidBodyComponent* rbComp = hit.object->GetComponent<RigidBodyComponent>();
+					//		rbComp->Release();
+					//		Engine::Instance->GetActiveScene()->RemoveObject(hit.object);*/
+					//}
 				}
 			}
 		}
 
-		else if (physics->RaytestSingle(ray, 5.0f, hit, FilterGroups::PROPS))
+		/*else if (physics->RaytestSingle(ray, 5.0f, hit, FilterGroups::PROPS))
 		{
 			AudioMaster::Instance().PlaySoundEvent("choptree");			
-		}
+		}*/
 	}
 
 	// Health drop
@@ -462,18 +466,18 @@ float PlayerComp::GetDangerDistance()
 		return 0;
 }
 
-void PlayerComp::Reset()
+void PlayerComp::SetStatsFromState(const SaveState& state)
 {
+	this->food = state.playerFood;
+	this->fuel = state.playerFuel;
+	this->health = state.playerHealth;
+
 	// defaulting some shit
 	this->foodLossPerSecond = 0.3f;
-	this->food = 50.0f;
 	this->fuelBurnPerMeter = 0.7f;
-	this->fuel = 50.0f;
 	this->healthLossPerSecond = 0.5f;
 	this->holding = nullptr;
-
-	this->health = 50.0f; // <------------------ DONT FORGET TO REMOVE THIS LATER!
-	foodEmpty = false;
-
-	holding = nullptr;
+	this->foodEmpty = false;
 }
+
+

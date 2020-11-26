@@ -75,7 +75,7 @@ void Renderer::Initialize(Window* window)
 
 
 	sceneBuffer.Initialize(CB_SCENE_SLOT, ShaderBindFlag::PIXEL | ShaderBindFlag::DOMAINS | ShaderBindFlag::VERTEX|ShaderBindFlag::COMPUTE, device);
-	objectBuffer.Initialize(CB_OBJECT_SLOT,ShaderBindFlag::GEOMETRY | ShaderBindFlag::DOMAINS | ShaderBindFlag::VERTEX | ShaderBindFlag::PIXEL, device);
+	objectBuffer.Initialize(CB_OBJECT_SLOT, ShaderBindFlag::VERTEX | ShaderBindFlag::DOMAINS|ShaderBindFlag::GEOMETRY, device);
 	materialBuffer.Initialize(CB_MATERIAL_SLOT, ShaderBindFlag::PIXEL, device);
 
 	DXHelper::CreateStructuredBuffer(device, &skeleton_srvbuffer, srv_skeleton_data.data(), sizeof(dx::XMFLOAT4X4), srv_skeleton_data.size(), &skeleton_srv);
@@ -206,9 +206,9 @@ void Renderer::RenderFrame(CameraComponent* camera, float time, float distance, 
 	//data.mousePos = { (float)Input::Instance().GetMousePos().x, (float)Input::Instance().GetMousePos().y };
 	// put in mouse pos delta here
 	dx::XMStoreFloat3(&data.cameraPosition, camera->GetOwner()->GetTransform().GetPosition());
-	dx::XMStoreFloat4x4(&data.invProjection, dx::XMMatrixInverse(NULL, camera->GetProjectionMatrix()));
+	dx::XMStoreFloat4x4(&data.invProjection, dx::XMMatrixTranspose(dx::XMMatrixInverse(NULL, camera->GetProjectionMatrix())));
 	dx::XMStoreFloat4x4(&data.invView, dx::XMMatrixTranspose(dx::XMMatrixInverse(NULL, camera->GetViewMatrix())));
-	dx::XMStoreFloat4x4(&data.view, camera->GetViewMatrix());
+	dx::XMStoreFloat4x4(&data.view, dx::XMMatrixTranspose(camera->GetViewMatrix()));
 	sceneBuffer.SetData(data);
 	sceneBuffer.UpdateBuffer(context);
 
@@ -742,7 +742,7 @@ void Renderer::InitForwardPlus(CameraComponent* camera, Window* window, Shader& 
 	screenToViewParams.Initialize(CB_SCREEN_TOVIEW_PARAMS_SLOT, ShaderBindFlag::COMPUTE, device);
 	cb_ScreenToViewParams& dataSVP = screenToViewParams.GetData();
 	dx::XMFLOAT4X4 inverse;
-	dx::XMStoreFloat4x4(&inverse, dx::XMMatrixInverse(nullptr, camera->GetProjectionMatrix())); //transposed matrix.
+	dx::XMStoreFloat4x4(&inverse, dx::XMMatrixTranspose(dx::XMMatrixInverse(nullptr, camera->GetProjectionMatrix())));
 	dataSVP.inverseProjection = inverse;
 	dataSVP.screenDimensions.x = FCAST(window->GetWidth());
 	dataSVP.screenDimensions.y = FCAST(window->GetHeight());

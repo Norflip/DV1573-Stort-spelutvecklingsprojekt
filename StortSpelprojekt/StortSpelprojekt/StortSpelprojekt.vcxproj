@@ -168,7 +168,6 @@
   <ItemGroup>
     <ClCompile Include="AudioMaster.cpp" />
     <ClCompile Include="AudioEngine.cpp" />
-    <ClCompile Include="CreditsScene.cpp" />
     <ClCompile Include="DepthPass.cpp" />
     <ClCompile Include="SelectableComponent.cpp" />
     <ClCompile Include="EnemyAttackComp.cpp" />
@@ -185,7 +184,6 @@
     <ClCompile Include="DXHelper.cpp" />
     <ClCompile Include="DShape.cpp" />
     <ClCompile Include="Engine.cpp" />
-    <ClCompile Include="FireTextureComponent.cpp" />
     <ClCompile Include="FrogPuzzle.cpp" />
     <ClCompile Include="GameClock.cpp" />
     <ClCompile Include="GameOverScene.cpp" />
@@ -253,7 +251,7 @@
   <ItemGroup>
     <ClInclude Include="AudioMaster.h" />
     <ClInclude Include="AudioEngine.h" />
-    <ClInclude Include="CreditsScene.h" />
+    <ClInclude Include="SaveHandler.h" />
     <ClInclude Include="SelectableComponent.h" />
     <ClInclude Include="Defines.h" />
     <ClInclude Include="DepthPass.h" />
@@ -274,7 +272,6 @@
     <ClInclude Include="ControllerComp.h" />
     <ClInclude Include="DebugBoxShapeComponent.h" />
     <ClInclude Include="DShape.h" />
-    <ClInclude Include="FireTextureComponent.h" />
     <ClInclude Include="FrogPuzzle.h" />
     <ClInclude Include="FXAARenderPass.h" />
     <ClInclude Include="GameOverScene.h" />

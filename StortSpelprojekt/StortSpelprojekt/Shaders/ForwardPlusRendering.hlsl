@@ -145,7 +145,7 @@ void main(ComputeShaderInput IN) // light culling everyframe
 
 	// Clipping plane for minimum depth value 
 	// (used for testing lights within the bounds of opaque geometry).
-	Plane minPlane = { float3(0, 0, 1), -minDepthVS }; //made z  positive
+	Plane minPlane = { float3(0, 0, 1), minDepthVS }; //made z  positive
 	
 	// Cull lights
 	// Each thread in a group will cull 1 light until all lights have been culled.

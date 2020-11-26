@@ -212,6 +212,11 @@ void ControllerComp::Update(const float& deltaTime)
 		}
 	}
 	
+	if (!inside)	
+		AudioMaster::Instance().PlayerOutside(true);	
+	else	
+		AudioMaster::Instance().PlayerOutside(false);
+	
 	if (!playerComp->GetIsReading())
 	{
 		if (this->canRotate)
@@ -317,9 +322,16 @@ void ControllerComp::Update(const float& deltaTime)
 				{
 					if (this->velocity > 0.f) //is more decrease
 						acceleration = -WALK_ACCELERATION;
-
-					AudioMaster::Instance().StopSoundEvent("walk");
-					AudioMaster::Instance().StopSoundEvent("run");
+					if (!inside)
+					{
+						AudioMaster::Instance().StopSoundEvent("insideWalk");
+						AudioMaster::Instance().StopSoundEvent("walk");
+						AudioMaster::Instance().StopSoundEvent("run");
+					}
+					else
+					{
+						AudioMaster::Instance().StopSoundEvent("insideWalk");
+					}
 				}
 				else if (isMoving == WALKING)
 				{
@@ -331,22 +343,38 @@ void ControllerComp::Update(const float& deltaTime)
 					// Kan lägga in ljud för att gå på plankor här med, ha en bool för "onHouse" t.ex.
 					if (isGrounded)
 					{
-						AudioMaster::Instance().StopSoundEvent("run");
-						AudioMaster::Instance().PlaySoundEvent("walk");
+						if (!inside)
+						{
+							AudioMaster::Instance().StopSoundEvent("insideWalk");
+							AudioMaster::Instance().StopSoundEvent("run");
+							AudioMaster::Instance().PlaySoundEvent("walk");
+						}
+						else
+						{
+							AudioMaster::Instance().PlaySoundEvent("insideWalk");
+						}
 					}
 				}
 				else if (isMoving == SPRINTING)
 				{
-					if (this->velocity + RUN_ACCELERATION < RUN_VELOCITY) //is less increase
-						acceleration = RUN_ACCELERATION;
-
-					else if (this->velocity > RUN_VELOCITY)//is more decrease
-						acceleration = -RUN_ACCELERATION;
-
-					if (isGrounded)
+					if (!inside)
 					{
-						AudioMaster::Instance().PlaySoundEvent("run");
-						AudioMaster::Instance().StopSoundEvent("walk");
+						if (this->velocity + RUN_ACCELERATION < RUN_VELOCITY) //is less increase
+							acceleration = RUN_ACCELERATION;
+
+						else if (this->velocity > RUN_VELOCITY)//is more decrease
+							acceleration = -RUN_ACCELERATION;
+
+						if (isGrounded)
+						{
+							//if (!inside)
+							//{
+								AudioMaster::Instance().StopSoundEvent("insideWalk");
+								AudioMaster::Instance().PlaySoundEvent("run");
+								AudioMaster::Instance().StopSoundEvent("walk");
+							//}
+
+						}
 					}
 				}
 				else if (isMoving == CROUCHING)
@@ -440,7 +468,7 @@ void ControllerComp::Update(const float& deltaTime)
 		this->CalcVelocity(acceleration);
 		AudioMaster::Instance().StopSoundEvent("walk");
 		AudioMaster::Instance().StopSoundEvent("run");
-
+		AudioMaster::Instance().StopSoundEvent("insideWalk");
 
 		dx::XMVECTOR direction = dx::XMLoadFloat3(&dir);
 		//direction = dx::XMVector3Normalize(direction);

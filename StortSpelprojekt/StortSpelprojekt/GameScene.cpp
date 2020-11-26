@@ -4,11 +4,11 @@
 #include "GUIFont.h"
 #include "Engine.h"
 #include "GUICompass.h"
+#include "SaveHandler.h"
 
 GameScene::GameScene() : Scene("GameScene")
 {
 	this->interiorPosition = { 0.0f, -100.0f, 0.0f };
-	fogId = 0;
 	fogCol = 0;
 	start = true;
 }
@@ -235,6 +235,8 @@ void GameScene::InitializeObjects()
 	frogpuzzle*/
 	GUICompass* compass = new GUICompass(*renderer, window, house, player);
 	guiManager->AddGUIObject(compass, "compass");
+
+	
 }
 
 void GameScene::InitializeGUI()
@@ -372,7 +374,7 @@ void GameScene::InitializeInterior()
 	AddObjectToRoot(bookShelf);
 
 	Object* chair = resources->AssembleObject("Chair", "ChairMaterial");
-	chair->GetTransform().SetPosition({ this->interiorPosition.x, this->interiorPosition.y, this->interiorPosition.z });
+	chair->GetTransform().SetPosition({ this->interiorPosition.x - 2.0f, this->interiorPosition.y, this->interiorPosition.z + 2.0f});
 	chair->AddComponent<BoxColliderComponent>(dx::XMFLOAT3(0.5f, 2.0f, 1.0f), dx::XMFLOAT3(-4.0f, 1.0f, 1.5f));
 	chair->AddComponent<RigidBodyComponent>(0.0f, FilterGroups::PROPS, FilterGroups::EVERYTHING, BodyType::STATIC, true);
 	AddObjectToRoot(chair);
@@ -395,23 +397,29 @@ void GameScene::InitializeInterior()
 	insideDoor->AddComponent<RigidBodyComponent>(0.0f, FilterGroups::DOOR, FilterGroups::EVERYTHING, BodyType::STATIC, true);
 	AddObjectToRoot(insideDoor);
 
+	Object* table = resources->AssembleObject("Table", "TableMaterial");
+	table->GetTransform().SetPosition({ this->interiorPosition.x, this->interiorPosition.y, this->interiorPosition.z});
+	table->AddComponent<BoxColliderComponent>(dx::XMFLOAT3(2.0f, 1.4f, 2.0f), dx::XMFLOAT3(-6.5f, 0.0f, -5.8f));
+	table->AddComponent<RigidBodyComponent>(0.0f, FilterGroups::PROPS, FilterGroups::EVERYTHING, BodyType::STATIC, true);
+	AddObjectToRoot(table);
+
 	Object* tutorialFood = resources->AssembleObject("Fruits", "FruitsMaterial");
-	tutorialFood->GetTransform().SetPosition({ -5.65f, interiorPosition.y + 3.0f, -4.8f, 0.0f });
-	tutorialFood->AddComponent<PickupComponent>(PickupType::Food, 40.0f);
+	tutorialFood->GetTransform().SetPosition({ -5.65f, interiorPosition.y + 1.0f, -4.6f, 0.0f });
+	tutorialFood->AddComponent<PickupComponent>(PickupType::Food, 30.0f);
 	tutorialFood->AddComponent<BoxColliderComponent>(dx::XMFLOAT3(0.25f, 0.25f, 0.25f), dx::XMFLOAT3(0, 0, 0));
 	tutorialFood->AddComponent<RigidBodyComponent>(10.0f, FilterGroups::PICKUPS, FilterGroups::EVERYTHING & ~FilterGroups::PLAYER, BodyType::DYNAMIC, true);
 	AddObjectToRoot(tutorialFood);
 
 	Object* tutorialHealth = resources->AssembleObject("HealthKit", "HealthKitMaterial");
-	tutorialHealth->GetTransform().SetPosition({ 3.0f, interiorPosition.y + 3.0f, 3.2f, 0.0f });
-	tutorialHealth->AddComponent<PickupComponent>(PickupType::Health, 40.0f);
-	tutorialHealth->AddComponent<BoxColliderComponent>(dx::XMFLOAT3(0.25f, 0.25f, 0.25f), dx::XMFLOAT3(0, 0, 0));
+	tutorialHealth->GetTransform().SetPosition({ -5.0f, interiorPosition.y + 1.0f, -4.4f, 0.0f });
+	tutorialHealth->AddComponent<PickupComponent>(PickupType::Health, 30.0f);
+	tutorialHealth->AddComponent<BoxColliderComponent>(dx::XMFLOAT3(0.25f, 0.1f, 0.25f), dx::XMFLOAT3(0, 0, 0));
 	tutorialHealth->AddComponent<RigidBodyComponent>(10.0f, FilterGroups::PICKUPS, FilterGroups::EVERYTHING & ~FilterGroups::PLAYER, BodyType::DYNAMIC, true);
 	AddObjectToRoot(tutorialHealth);
 
 	Object* tutorialFuel = resources->AssembleObject("FuelCanRed", "FuelCanRedMaterial");
-	tutorialFuel->GetTransform().SetPosition({ 2.0f, interiorPosition.y + 3.0f, -1.11f, 0.0f });
-	tutorialFuel->AddComponent<PickupComponent>(PickupType::Fuel, 20.0f);
+	tutorialFuel->GetTransform().SetPosition({ -5.0f, interiorPosition.y + 3.0f, 0.11f, 0.0f });
+	tutorialFuel->AddComponent<PickupComponent>(PickupType::Fuel, 30.0f);
 	tutorialFuel->AddComponent<BoxColliderComponent>(dx::XMFLOAT3(0.3f, 0.35f, 0.15f), dx::XMFLOAT3(0, 0, 0));
 	tutorialFuel->AddComponent<RigidBodyComponent>(10.0f, FilterGroups::HOLDABLE, FilterGroups::EVERYTHING & ~FilterGroups::PLAYER, BodyType::DYNAMIC, true);
 	AddObjectToRoot(tutorialFuel);
@@ -442,15 +450,12 @@ void GameScene::InitializeInterior()
 void GameScene::OnActivate()
 {
 	std::cout << "Game Scene activated" << std::endl;
-	SaveState state;
-	state.seed = 1337;
-	state.segment = 0;
+	SaveState& state = SaveHandler::LoadOrCreate();
 
 	if (!start)
 	{
-		fogId++;
 		fogCol += 0.5f;
-		renderer->SetIdAndColor(fogId, fogCol);
+		renderer->SetIdAndColor(state.segment, fogCol);
 	}
 
 	if (start)
@@ -458,11 +463,10 @@ void GameScene::OnActivate()
 
 	LightManager::Instance().ForceUpdateBuffers(renderer->GetContext(),camera);
 
-	player->GetComponent<PlayerComp>()->Reset();
+	player->GetComponent<PlayerComp>()->SetStatsFromState(state);
 	Input::Instance().ConfineMouse();
 	Input::Instance().SetMouseMode(dx::Mouse::Mode::MODE_RELATIVE);
 	ShowCursor(false);
-	AudioMaster::Instance().PlaySoundEvent("wind");
 
 	world.ConstructSegment(state);
 
@@ -501,6 +505,10 @@ void GameScene::OnActivate()
 	//this->PrintSceneHierarchy(root, 0);
 	enemyManager->SpawnEnemies();
 
+	AudioMaster::Instance().PlaySoundEvent("wind");
+
+	/* Ugly solution */
+	player->GetComponent<PlayerComp>()->GetArms()->GetComponent< PlayerAnimHandlerComp>()->SetStarted(true);
 }
 
 void GameScene::OnDeactivate()
@@ -515,6 +523,7 @@ void GameScene::OnDeactivate()
 
 	ShowCursor(true);
 	//this->PrintSceneHierarchy(root, 0);
+	player->GetComponent<PlayerComp>()->GetArms()->GetComponent< PlayerAnimHandlerComp>()->SetStarted(false);
 }
 
 void GameScene::SetSignPositions()
@@ -596,7 +605,7 @@ void GameScene::Update(const float& deltaTime)
 		leftSign->GetComponent<SelectableComponent>()->SetActive(false);
 	}
 
-	//std::cout << "PlayerPos: " << player->GetTransform().GetPosition().m128_f32[0] << " " << player->GetTransform().GetPosition().m128_f32[1] << " " << player->GetTransform().GetPosition().m128_f32[2] << std::endl;
+	std::cout << "PlayerPos: " << player->GetTransform().GetPosition().m128_f32[0] << " " << player->GetTransform().GetPosition().m128_f32[1] << " " << player->GetTransform().GetPosition().m128_f32[2] << std::endl;
 
 	static_cast<GUIFont*>(guiManager->GetGUIObject("fps"))->SetString(std::to_string((int)GameClock::Instance().GetFramesPerSecond()));
 	guiManager->UpdateAll();
