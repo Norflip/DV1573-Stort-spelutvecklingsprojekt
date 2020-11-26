@@ -14,7 +14,7 @@ std::string CreditsScene::GetCreditsString()
 	std::string tab = "    ";
 	std::string gameName = "Once upon a Time in Katrineholm";
 	std::string credits = "Staff Credits";
-	std::string course = std::string("Kurs/Course\n") + "DV1573 H20 lp12 Stort spelutvecklingsprojekt i grupp med agil metodik\n" + tab +"(The Great Gameproject course)";
+	std::string course = std::string("Kurs/Course\n") + "DV1573 H20 lp12 "+"\n"+"Stort spelutvecklingsprojekt i grupp med agil metodik\n" + tab +"(The Great Gameproject course)";
 	std::string school = "BTH - Blekinge Tekniska Hogskola";
 
 	std::string gameIdea = "Game Idea by"; 
@@ -32,8 +32,8 @@ std::string CreditsScene::GetCreditsString()
 
 	std::string thirdParty = std::string("Third Party: \n")
 		+ tab + "React physics 3D" + "\n"
-		+ tab + " ZWEBLoader by Emil" + "\n"
-		+ tab + " DirectX 11" + "\n"
+		+ tab + "ZWEB-Loader by Emil" + "\n"
+		+ tab + "DirectX 11" + "\n"
 		+ tab + "sound-lib" + "\n";
 	std::string specialThanks = "Special Thanks";
 	std::string testing;
@@ -115,7 +115,7 @@ void CreditsScene::InitializeObjects()
 	camera = cameraObject->AddComponent<CameraComponent>(window->GetWidth(), window->GetHeight(), 60.0f);
 	this->player = cameraObject;
 	AddObjectToRoot(cameraObject);
-	ShowCursor(true);
+	//ShowCursor(true);
 }
 
 void CreditsScene::InitializeGUI()
@@ -130,7 +130,7 @@ void CreditsScene::InitializeGUI()
 	quit->SetActivated();
 
 	guiManager = new GUIManager(renderer, 100);
-	creditsPos = { windowWidth / 2-300, 1080 };
+	creditsPos = { windowWidth / 2-500, 1080 };
 	std::string text = GetCreditsString();
 
 	GUIFont* title_credits = new GUIFont(*renderer, text, creditsPos.x, creditsPos.y);//gameName, credits,course, school, //change text
@@ -147,7 +147,7 @@ void CreditsScene::InitializeGUI()
 
 	guiManager->AddGUIObject(fpsDisplay, "fps");
 	guiManager->AddGUIObject(returnToMenu, "returnToMenu");
-	guiManager->AddGUIObject(quit, "quit0");
+	guiManager->AddGUIObject(quit, "quit");
 	guiManager->AddGUIObject(title_credits, "credits");
 
 }
@@ -173,14 +173,18 @@ void CreditsScene::Update(const float& deltaTime)
 
 
 
-	if (static_cast<GUISprite*>(guiManager->GetGUIObject("quit0"))->IsClicked())
+	if (static_cast<GUISprite*>(guiManager->GetGUIObject("quit"))->IsClicked())
 	{
+		AudioMaster::Instance().StopSoundEvent("menusound");
 		Engine::Instance->Exit();
+		return;
 	}
 
 	if (static_cast<GUISprite*>(guiManager->GetGUIObject("returnToMenu"))->IsClicked())
 	{
+		AudioMaster::Instance().StopSoundEvent("menusound");
 		Engine::Instance->SwitchScene(SceneIndex::INTRO);
+		return;
 	}
 
 	guiManager->UpdateAll();

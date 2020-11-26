@@ -168,6 +168,7 @@
   <ItemGroup>
     <ClCompile Include="AudioMaster.cpp" />
     <ClCompile Include="AudioEngine.cpp" />
+    <ClCompile Include="CreditsScene.cpp" />
     <ClCompile Include="DepthPass.cpp" />
     <ClCompile Include="SelectableComponent.cpp" />
     <ClCompile Include="EnemyAttackComp.cpp" />
@@ -251,6 +252,7 @@
   <ItemGroup>
     <ClInclude Include="AudioMaster.h" />
     <ClInclude Include="AudioEngine.h" />
+    <ClInclude Include="CreditsScene.h" />
     <ClInclude Include="SaveHandler.h" />
     <ClInclude Include="SelectableComponent.h" />
     <ClInclude Include="Defines.h" />
