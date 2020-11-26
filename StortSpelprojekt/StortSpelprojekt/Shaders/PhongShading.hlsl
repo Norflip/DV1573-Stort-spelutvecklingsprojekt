@@ -1,7 +1,7 @@
 #include "CommonBuffers.hlsl"
 
 // Calculate light with the given pointlight
-float4 CalculatePointLight(Light light,Material mat, float3 normal, float3 objectPosition, float3 viewDirection)
+float4 CalculatePointLight(Light light,float3 normal, float3 objectPosition, float3 viewDirection)
 {
 	float4 ambient = float4(0.0f, 0.0f, 0.0f, 0.0f);
 	float4 specular = float4(0.0f, 0.0f, 0.0f, 0.0f);
@@ -26,9 +26,9 @@ float4 CalculatePointLight(Light light,Material mat, float3 normal, float3 objec
         float3 reflection = reflect(-lightVec, normal);
         float shine = pow(max(dot(reflection, viewDirection), 0.0f), 0.1f);
 
-        ambient = saturate(mat.matAmbient * light.lightColor * attenuationFactor);
-        diffuse = saturate(diffuseFactor * mat.matDiffuse * light.lightColor * attenuationFactor);
-        specular = saturate(shine * mat.matSpecular * light.lightColor * attenuationFactor);
+        ambient = saturate(matAmbient * light.lightColor * attenuationFactor);
+        diffuse = saturate(diffuseFactor * matDiffuse * light.lightColor * attenuationFactor);
+        specular = saturate(shine * matSpecular * light.lightColor * attenuationFactor);
     }
 
 	finalColor = ambient + diffuse + specular;
@@ -79,7 +79,7 @@ float3 CalculateNormalMapping(float3 normal, float3 tangent, float4 normalmap)
 	return normal;
 }
 // Calculate light with the sun
-float4 CalculateDirectionalLight(Light light, Material mat, float3 normal, float3 viewDirection)
+float4 CalculateDirectionalLight(Light light, float3 normal, float3 viewDirection)
 {
 	float4 ambient = float4(0.0f, 0.0f, 0.0f, 0.0f);
 	float4 specular = float4(0.0f, 0.0f, 0.0f, 0.0f);
@@ -99,8 +99,8 @@ float4 CalculateDirectionalLight(Light light, Material mat, float3 normal, float
 		float spec = pow(max(dot(viewDirection, reflection), 0.0f), 0.1f);
 
         ambient = saturate(matAmbient * light.lightColor );
-        diffuse = diffuseFactor * light.lightColor * mat.matDiffuse;
-        specular = spec * light.lightColor * mat.matSpecular;
+        diffuse = diffuseFactor * light.lightColor * matDiffuse;
+        specular = spec * light.lightColor * matSpecular;
     }
 
 	finalColor = ambient + diffuse + specular;
@@ -116,7 +116,7 @@ float DoSpotCone(Light light, float3 L)
     return smoothstep(minCos, maxCos, cosAngle); //use clamp??
 }
 
-float4 CalculateSpotLight(Light light, Material mat, float3 normal, float3 objectPosition, float3 viewDirection)
+float4 CalculateSpotLight(Light light, float3 normal, float3 objectPosition, float3 viewDirection)
 {
     float4 ambient = float4(0.0f, 0.0f, 0.0f, 0.0f);
     float4 specular = float4(0.0f, 0.0f, 0.0f, 0.0f);
@@ -146,15 +146,15 @@ float4 CalculateSpotLight(Light light, Material mat, float3 normal, float3 objec
         float3 reflection = reflect(-lightVec, normal);
         float shine = pow(max(dot(reflection, viewDirection), 0.0f), 0.1f); //matSpecular.w);
 
-        ambient = saturate(mat.matAmbient * light.lightColor * attenuationFactor * spotIntensity);
-        diffuse = saturate(diffuseFactor * mat.matDiffuse * light.lightColor * attenuationFactor * spotIntensity);
-        specular = saturate(shine * mat.matSpecular * light.lightColor * attenuationFactor *spotIntensity);
+        ambient = saturate(matAmbient * light.lightColor * attenuationFactor * spotIntensity);
+        diffuse = saturate(diffuseFactor * matDiffuse * light.lightColor * attenuationFactor * spotIntensity);
+        specular = saturate(shine * matSpecular * light.lightColor * attenuationFactor *spotIntensity);
 	}
     finalColor = ambient + diffuse + specular;
     return finalColor * light.intensity;
 }
 
-float4 IterateLights(Material mat,uint startOffset, uint lightCount,float4 finalColor, float3 normalized, float3 worldPosition, float3 viewDirection)
+float4 IterateLights(uint startOffset, uint lightCount,float4 finalColor, float3 normalized, float3 worldPosition, float3 viewDirection)
 {
 	for (uint i = 0; i < lightCount; i++)
 	{
@@ -167,18 +167,18 @@ float4 IterateLights(Material mat,uint startOffset, uint lightCount,float4 final
 		{
 		case DIRECTIONAL_LIGHT:
 		{
-			result = CalculateDirectionalLight(light,mat, normalized, viewDirection);
+			result = CalculateDirectionalLight(light, normalized, viewDirection);
 
 		}
 		break;
 		case POINT_LIGHT:
 		{
-			result = CalculatePointLight(light,mat, normalized, worldPosition, viewDirection);
+			result = CalculatePointLight(light, normalized, worldPosition, viewDirection);
 		}
 		break;
 		case SPOT_LIGHT:
 		{
-			result = CalculateSpotLight(light,mat, normalized, worldPosition, viewDirection);
+			result = CalculateSpotLight(light, normalized, worldPosition, viewDirection);
 		}
 		break;
 		}

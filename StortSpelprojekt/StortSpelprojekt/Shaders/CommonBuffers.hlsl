@@ -35,15 +35,15 @@ cbuffer cb_Object : register(b0)
     row_major matrix wv;
 };
 
-struct Material 
-{
-    float4 matAmbient;
-    float4 matDiffuse;
-    float4 matSpecular;
+//struct Material 
+//{
+//    float4 matAmbient;
+//    float4 matDiffuse;
+//    float4 matSpecular;
 	
-    bool hasAlbedo;
-    bool hasNormalMap;
-};
+//    bool hasAlbedo;
+//    bool hasNormalMap;
+//};
 
 cbuffer cb_Material : register(b1)
 {
