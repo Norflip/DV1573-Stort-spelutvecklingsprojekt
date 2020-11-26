@@ -106,6 +106,9 @@ void WorldGenerator::Construct(const SaveState& state, const WorldDescription& d
 			RigidBodyComponent* prb = puzzle->AddComponent<RigidBodyComponent>(0.f, FilterGroups::PUZZLE, FilterGroups::EVERYTHING, BodyType::STATIC, true);
 
 
+			crazyFly->AddComponent<BoxColliderComponent>(dx::XMFLOAT3(0.5f, 0.5f, 0.5f), dx::XMFLOAT3(0, 0.3f, 0));
+			RigidBodyComponent* frb = crazyFly->AddComponent<RigidBodyComponent>(10.0f, FilterGroups::HOLDABLE, FilterGroups::EVERYTHING, BodyType::DYNAMIC, true);
+
 			// Position for puzzle
 			dx::XMVECTOR position(dx::XMVectorAdd(rootPosition, dx::XMVECTOR({ CHUNK_SIZE / 2.0f, 3.5f, CHUNK_SIZE / 2.0f })));
 
@@ -124,10 +127,10 @@ void WorldGenerator::Construct(const SaveState& state, const WorldDescription& d
 			trb->SetPosition(position);
 			prb->SetPosition(position);
 
-			dx::XMVECTOR frogpos = dx::XMVectorAdd(position, dx::XMVECTOR({ 4, 2, 4, 0 }));
+			dx::XMVECTOR frogpos = dx::XMVectorAdd(position, dx::XMVECTOR({ 4, 1, 4, 0 }));
 			
 			crazyFrog->GetTransform().SetPosition(frogpos);
-			crazyFly->GetTransform().SetPosition(dx::XMVectorAdd(frogpos, dx::XMVECTOR({ 4, 0, 4, 0 })));
+			frb->SetPosition(dx::XMVectorAdd(frogpos, dx::XMVECTOR({ 4, 0, 4, 0 })));
 
 			return root;
 		});
