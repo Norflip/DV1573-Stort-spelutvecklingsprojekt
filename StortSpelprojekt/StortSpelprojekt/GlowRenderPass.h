@@ -19,7 +19,7 @@ public:
 		//shader->SetPixelShader("Shaders/Glow_ps.hlsl");
 		//shader->Compile(device);
 		glowMaterial = new Material(shader);
-		LoadTextureGlow(device);
+		//LoadTextureGlow(device);
 	}
 	
 	void Pass(Renderer* renderer, CameraComponent* camera, RenderTexture& current, RenderTexture& target) override
@@ -30,8 +30,8 @@ public:
 		renderer->GetContext()->PSSetShaderResources(0, 1, &current.srv);
 		renderer->DrawScreenQuad(glowMaterial);
 
-		ID3D11ShaderResourceView* nullSRV[1] = { nullptr };
-		renderer->GetContext()->PSSetShaderResources(1, 1, nullSRV);
+		//ID3D11ShaderResourceView* nullSRV[1] = { nullptr };
+		//renderer->GetContext()->PSSetShaderResources(1, 1, nullSRV);
 	}
 
 	void LoadTextureGlow(ID3D11Device* device)
