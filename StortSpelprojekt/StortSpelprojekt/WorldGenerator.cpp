@@ -79,16 +79,9 @@ void WorldGenerator::Construct(const SaveState& state, const WorldDescription& d
 			Object* leaves = Engine::Instance->GetResources()->AssembleObject("leaves", "leavesMaterial");
 			Object* puzzle = Engine::Instance->GetResources()->AssembleObject("TreePuzzle", "TreePuzzleMaterial");
 			Object* crazyFrog = Engine::Instance->GetResources()->AssembleObject("PuzzleFrogStatue", "PuzzleFrogStatueMaterial");
+			Object* crazyFly = Engine::Instance->GetResources()->AssembleObject("PuzzleFlyStatue", "PuzzleFlyStatueMaterial");
 
-			//Object::AddToHierarchy(root, tree);
-			//Object::AddToHierarchy(tree, leaves);
-			//Object::AddToHierarchy(chunk->GetOwner(), puzzle);
-
-			//tree->GetTransform().SetLocalPosition({ CHUNK_SIZE / 2.0f, 3.0f, CHUNK_SIZE / 2.0f });
 			tree->GetTransform().SetScale({ 2, 2, 2 });
-
-			//puzzle->GetTransform().SetLocalPosition({ CHUNK_SIZE / 2.0f, 3.0f, CHUNK_SIZE / 2.0f });
-			//puzzle->GetTransform().SetScale({ 2, 2, 2 });
 
 			// bounding box for tree calculations
 			Bounds bbInfo;
@@ -114,7 +107,7 @@ void WorldGenerator::Construct(const SaveState& state, const WorldDescription& d
 
 
 			// Position for puzzle
-			dx::XMVECTOR position(dx::XMVectorAdd(rootPosition, dx::XMVECTOR({ CHUNK_SIZE / 2.0f, 3.6f, CHUNK_SIZE / 2.0f })));
+			dx::XMVECTOR position(dx::XMVectorAdd(rootPosition, dx::XMVECTOR({ CHUNK_SIZE / 2.0f, 3.5f, CHUNK_SIZE / 2.0f })));
 
 			// Testing printing shit to find puzzle
 			dx::XMFLOAT3 pos;
@@ -124,15 +117,17 @@ void WorldGenerator::Construct(const SaveState& state, const WorldDescription& d
 			Object::AddToHierarchy(chunk->GetOwner(), tree);
 			Object::AddToHierarchy(tree, leaves);
 			Object::AddToHierarchy(chunk->GetOwner(), puzzle);
+			Object::AddToHierarchy(chunk->GetOwner(), crazyFrog);
+			Object::AddToHierarchy(chunk->GetOwner(), crazyFly);
 
 			// Set the positions for RB
 			trb->SetPosition(position);
 			prb->SetPosition(position);
 
-			dx::XMVECTOR frogpos = dx::XMVectorAdd(position, dx::XMVECTOR({ 2, 1, 2, 0 }));
+			dx::XMVECTOR frogpos = dx::XMVectorAdd(position, dx::XMVECTOR({ 4, 2, 4, 0 }));
 			
 			crazyFrog->GetTransform().SetPosition(frogpos);
-			Object::AddToHierarchy(chunk->GetOwner(), crazyFrog);
+			crazyFly->GetTransform().SetPosition(dx::XMVectorAdd(frogpos, dx::XMVECTOR({ 4, 0, 4, 0 })));
 
 			return root;
 		});
