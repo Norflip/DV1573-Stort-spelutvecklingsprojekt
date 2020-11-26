@@ -91,7 +91,7 @@ void GameScene::InitializeObjects()
 	this->player = playerObject;
 	camera = cameraObject->AddComponent<CameraComponent>(window->GetWidth(), window->GetHeight(), 60.0f);
 
-	Shader forwardPlusShader;// = 
+	Shader forwardPlusShader;
 
 	forwardPlusShader.SetComputeShader("Shaders/ForwardPlusRendering.hlsl", "ComputeFrustums");
 	forwardPlusShader.CompileCS(renderer->GetDevice());

@@ -25,10 +25,10 @@ void ObjectSpawner::Initialize(Object* root, World* world, Renderer* renderer)
 	// DEFAULT TREE
 	tree.meshes.push_back(resources->GetResource<Mesh>("instancedTree"));
 	tree.meshes.push_back(resources->GetResource<Mesh>("instancedleaves"));
-	//tree.meshes.push_back(resources->GetResource<Mesh>("TreePuzzle"));
+
 	tree.materials.push_back(resources->GetResource<Material>("instancedTreeMaterial"));
 	tree.materials.push_back(resources->GetResource<Material>("instancedleavesMaterial"));
-	//tree.materials.push_back(resources->GetResource<Material>("TreePuzzleMaterial"));
+
 	tree.materials[1]->SetTransparent(true);
 
 	tree.minScale = 1.4f;

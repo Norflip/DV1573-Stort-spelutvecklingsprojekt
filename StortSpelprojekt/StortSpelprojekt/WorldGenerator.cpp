@@ -78,31 +78,43 @@ void WorldGenerator::Construct(const SaveState& state, const WorldDescription& d
 			Object* tree =  Engine::Instance->GetResources()->AssembleObject("Tree", "TreeMaterial");
 			Object* leaves = Engine::Instance->GetResources()->AssembleObject("leaves", "leavesMaterial");
 			Object* puzzle = Engine::Instance->GetResources()->AssembleObject("TreePuzzle", "TreePuzzleMaterial");
+			Object* crazyFrog = Engine::Instance->GetResources()->AssembleObject("PuzzleFrogStatue", "PuzzleFrogStatueMaterial");
 
 			//Object::AddToHierarchy(root, tree);
 			//Object::AddToHierarchy(tree, leaves);
 			//Object::AddToHierarchy(chunk->GetOwner(), puzzle);
 
 			//tree->GetTransform().SetLocalPosition({ CHUNK_SIZE / 2.0f, 3.0f, CHUNK_SIZE / 2.0f });
-			//tree->GetTransform().SetScale({ 3, 3, 3 });
+			tree->GetTransform().SetScale({ 2, 2, 2 });
 
 			//puzzle->GetTransform().SetLocalPosition({ CHUNK_SIZE / 2.0f, 3.0f, CHUNK_SIZE / 2.0f });
-			//puzzle->GetTransform().SetScale({ 3, 3, 3 });
+			//puzzle->GetTransform().SetScale({ 2, 2, 2 });
 
 			// bounding box for tree calculations
 			Bounds bbInfo;
 			bbInfo.CalculateAABB(tree->GetComponent<MeshComponent>()->GetMeshes());
 			dx::XMFLOAT3 extends = bbInfo.GetExtends();
+			extends.x *= 1.3;
+			extends.y *= 2.0;
+			extends.z *= 1.3;
 
 			// For tree
 			BoxColliderComponent* colliders = tree->AddComponent<BoxColliderComponent>(extends, dx::XMFLOAT3(0, 0, 0));
 			RigidBodyComponent* trb = tree->AddComponent<RigidBodyComponent>(0.f, FilterGroups::DEFAULT, FilterGroups::EVERYTHING, BodyType::STATIC, true);
 
 			// For puzzle
-			RigidBodyComponent* prb = puzzle->AddComponent<RigidBodyComponent>(0.f, FilterGroups::DEFAULT, FilterGroups::EVERYTHING, BodyType::STATIC, true);
+			puzzle->AddComponent<BoxColliderComponent>(dx::XMFLOAT3(2.018f, 0.1f, 0.969f), dx::XMFLOAT3(1.239f, 0.175f, 0.422f));
+			puzzle->AddComponent<BoxColliderComponent>(dx::XMFLOAT3(0.764f, 0.1f, 2.175f), dx::XMFLOAT3(0.209f, 1.333f, 1.456f));
+			puzzle->AddComponent<BoxColliderComponent>(dx::XMFLOAT3(1.956f, 0.1f, 0.745f), dx::XMFLOAT3(-1.253f, 2.259f, 0.51f));
+			puzzle->AddComponent<BoxColliderComponent>(dx::XMFLOAT3(0.778f, 0.1f, 1.861f), dx::XMFLOAT3(-0.13f, 3.304f, -1.045f));
+			puzzle->AddComponent<BoxColliderComponent>(dx::XMFLOAT3(2.083f, 0.1f, 0.68f), dx::XMFLOAT3(1.092f, 4.476f, -0.118f));
+			puzzle->AddComponent<BoxColliderComponent>(dx::XMFLOAT3(0.6536f, 0.1f, 1.238f), dx::XMFLOAT3(0.259f, 5.515f, 1.238f));
+			puzzle->AddComponent<BoxColliderComponent>(dx::XMFLOAT3(1.195f, 0.1f, 2.041f), dx::XMFLOAT3(-1.337f, 6.57f, 0.183f));
+			RigidBodyComponent* prb = puzzle->AddComponent<RigidBodyComponent>(0.f, FilterGroups::PUZZLE, FilterGroups::EVERYTHING, BodyType::STATIC, true);
+
 
 			// Position for puzzle
-			dx::XMVECTOR position(dx::XMVectorAdd(rootPosition, dx::XMVECTOR({ CHUNK_SIZE / 2.0f, 3.0f, CHUNK_SIZE / 2.0f })));
+			dx::XMVECTOR position(dx::XMVectorAdd(rootPosition, dx::XMVECTOR({ CHUNK_SIZE / 2.0f, 3.6f, CHUNK_SIZE / 2.0f })));
 
 			// Testing printing shit to find puzzle
 			dx::XMFLOAT3 pos;
@@ -116,6 +128,11 @@ void WorldGenerator::Construct(const SaveState& state, const WorldDescription& d
 			// Set the positions for RB
 			trb->SetPosition(position);
 			prb->SetPosition(position);
+
+			dx::XMVECTOR frogpos = dx::XMVectorAdd(position, dx::XMVECTOR({ 2, 1, 2, 0 }));
+			
+			crazyFrog->GetTransform().SetPosition(frogpos);
+			Object::AddToHierarchy(chunk->GetOwner(), crazyFrog);
 
 			return root;
 		});

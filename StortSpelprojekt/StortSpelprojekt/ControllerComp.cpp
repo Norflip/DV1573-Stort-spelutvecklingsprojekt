@@ -10,6 +10,7 @@ void ControllerComp::CheckGrounded()
 	Ray ray(origin, DOWN_VEC);
 	RayHit hitTerrain;
 	RayHit hitProps;
+	RayHit hitPuzzle;
 
 	//TERRAIN or default depending on if u can jump from on top of objects
 	float distance = 1.45f;
@@ -17,9 +18,10 @@ void ControllerComp::CheckGrounded()
 
 	phy->RaytestSingle(ray, distance, hitTerrain, FilterGroups::TERRAIN);
 	phy->RaytestSingle(ray, distance, hitProps, FilterGroups::PROPS);
-	
+	phy->RaytestSingle(ray, distance, hitPuzzle, FilterGroups::PUZZLE);
+
 	this->isGrounded = false;
-	if (hitTerrain.object != nullptr || (hitProps.object != nullptr && hitProps.object->GetName() == "HouseInterior"))// != nullptr )//&& hitProps.object->GetName() == "houseBase"))
+	if (hitTerrain.object != nullptr || (hitProps.object != nullptr && hitProps.object->GetName() == "HouseInterior") || hitPuzzle.object != nullptr)// != nullptr )//&& hitProps.object->GetName() == "houseBase"))
 	{
 		//this->houseVelocity = { 0.f,0.f,0.f };
 		/*if (hitProps.object != nullptr && hitProps.object->GetName() == "houseBase")
