@@ -29,7 +29,6 @@ void WinScene::InitializeObjects()
 	AddObjectToRoot(cameraObject);
 
 	ShowCursor(true);
-	Input::Instance().SetMouseMode(dx::Mouse::MODE_ABSOLUTE);
 
 }
 
@@ -54,11 +53,13 @@ void WinScene::InitializeGUI()
 
 void WinScene::OnActivate()
 {
+	input.SetMouseMode(dx::Mouse::MODE_ABSOLUTE);
 	renderer->AddRenderPass(guiManager);
 }
 
 void WinScene::OnDeactivate()
 {
+	AudioMaster::Instance().StopSoundEvent("menusound");
 	renderer->RemoveRenderPass(guiManager);
 }
 

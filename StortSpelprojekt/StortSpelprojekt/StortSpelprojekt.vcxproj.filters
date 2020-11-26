@@ -300,6 +300,7 @@
     <ClCompile Include="VirtualCamera.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="CreditsScene.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="ObjectSpawner.h">
@@ -572,9 +573,6 @@
     <ClInclude Include="PlayerAnimHandlerComp.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="WorldGenerator.h">
-      <Filter>Source Files\SpawnSystems</Filter>
-    </ClInclude>
     <ClInclude Include="WorldDescription.h">
       <Filter>Source Files\SpawnSystems</Filter>
     </ClInclude>
@@ -608,6 +606,9 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="LightComponent.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="CreditsScene.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>
