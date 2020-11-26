@@ -24,7 +24,7 @@ Object::~Object()
 			delete children[i];
 			children[i] = nullptr;
 		}
-		
+
 		children.clear();
 	}
 }
@@ -89,25 +89,28 @@ void Object::AddFlag(ObjectFlag flag)
 {
 	ObjectFlag old = flags;
 	flags |= flag;
-
-	//for (auto i = components.begin(); i < components.end(); i++)
-	//	(*i)->OnOwnerFlagChanged(old, flags);
+	this->SendMsg((int)MessageType::SET_FLAG, std::to_string((int)flag), this, true);
 }
 
 void Object::RemoveFlag(ObjectFlag flag)
 {
 	ObjectFlag old = this->flags;
 	this->flags &= ~flag;
+	this->SendMsg((int)MessageType::REM_FLAG, std::to_string((int)flag), this, true);
+}
 
-
-	//for (auto i = components.begin(); i < components.end(); i++)
-		//(*i)->OnOwnerFlagChanged(old, this->flags);
+void Object::SetParent(Object* parent)
+{
+	this->parent = parent; 
+	transform.SetChanged(true);
+	this->SendMsg((int)MessageType::PARENT_CHANGED, "", this, true, parent);
 }
 
 void Object::AddChild(Object* child)
 {
 	assert(child != nullptr);
 	this->children.push_back(child);
+	this->SendMsg((int)MessageType::ADD_CHILD, "", this, true, child);
 }
 
 bool Object::RemoveChild(Object* child)
@@ -118,6 +121,7 @@ bool Object::RemoveChild(Object* child)
 	{
 		removed = true;
 		children.erase(foundObj);
+		this->SendMsg((int)MessageType::REM_CHILD, "", this, true, child);
 	}
 	return removed;
 }
@@ -142,3 +146,14 @@ void Object::RemoveFromHierarchy(Object* obj)
 		obj->SetParent(nullptr);
 	}
 }
+
+void Object::SendMsg(const int& type, const std::string& msg, Object* sender, bool sendDown, void* data)
+{
+	for (auto i = components.begin(); i < components.end(); i++)
+		(*i)->RecieveMsg(type, msg, sender, data);
+
+	if (sendDown)
+		for (auto i = children.begin(); i < children.end(); i++)
+			(*i)->SendMsg(type, msg, sender, sendDown, data);
+}
+

@@ -25,6 +25,16 @@ enum class ObjectFlag : unsigned int
 
 DEFINE_ENUM_FLAG_OPERATORS(ObjectFlag)
 
+
+enum class MessageType
+{
+	SET_FLAG,
+	REM_FLAG,
+	ADD_CHILD,
+	REM_CHILD,
+	PARENT_CHANGED,
+};
+
 // max components on entity
 constexpr std::size_t maxComponents = 40;
 using ComponentBitSet = std::bitset<maxComponents>;
@@ -71,9 +81,8 @@ public:
 	size_t GetID() const { return this->id; }
 	ALIGN16_ALLOC;
 
-
 	bool HasParent() const { return this->parent != nullptr; }
-	void SetParent(Object* parent) { this->parent = parent; transform.SetChanged(true); }
+	void SetParent(Object* parent);
 
 	void AddChild(Object* child);
 	bool RemoveChild(Object* child);
@@ -88,7 +97,7 @@ public:
 
 	Object* GetParent() const { return this->parent; }
 
-
+	void SendMsg(const int& type, const std::string& msg, Object* sender, bool sendDown = true, void* data = nullptr);
 
 private:
 	ObjectFlag flags;
@@ -102,6 +111,8 @@ private:
 	std::vector<Component*> components;
 	ComponentArray componentArray;
 	ComponentBitSet componentBitSet;
+
+	friend Component;
 };
 
 template<typename T>

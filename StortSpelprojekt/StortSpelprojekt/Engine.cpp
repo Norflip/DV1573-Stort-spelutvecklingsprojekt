@@ -75,7 +75,6 @@ void Engine::Run()
 
 			if (msg.message == WM_QUIT)
 				Exit();
-
 		}
 		else
 		{

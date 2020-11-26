@@ -553,6 +553,7 @@ void GameScene::Update(const float& deltaTime)
 
 	if (KEY_DOWN(B))
 	{
+
 		std::cout << "RESETTINGS PLAYER" << std::endl;
 		
 		playerPos.x = 0.0f;
@@ -599,7 +600,7 @@ void GameScene::Update(const float& deltaTime)
 		leftSign->GetComponent<SelectableComponent>()->SetActive(false);
 	}
 
-	std::cout << "PlayerPos: " << player->GetTransform().GetPosition().m128_f32[0] << " " << player->GetTransform().GetPosition().m128_f32[1] << " " << player->GetTransform().GetPosition().m128_f32[2] << std::endl;
+	//std::cout << "PlayerPos: " << player->GetTransform().GetPosition().m128_f32[0] << " " << player->GetTransform().GetPosition().m128_f32[1] << " " << player->GetTransform().GetPosition().m128_f32[2] << std::endl;
 
 	static_cast<GUIFont*>(guiManager->GetGUIObject("fps"))->SetString(std::to_string((int)GameClock::Instance().GetFramesPerSecond()));
 	guiManager->UpdateAll();
