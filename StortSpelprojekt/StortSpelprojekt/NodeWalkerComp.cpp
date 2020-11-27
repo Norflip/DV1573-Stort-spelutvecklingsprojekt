@@ -108,8 +108,8 @@ void NodeWalkerComp::StartAnim()
 		legs->SetAndGetDoneDown() = false;
 		base->SetAndGetDoneUp() = false;
 		legs->SetAndGetDoneUp() = false;
-		base->SetTrack(SkeletonStateMachine::UP, SkeletonStateMachine::NONE, true);
-		legs->SetTrack(SkeletonStateMachine::UP, SkeletonStateMachine::NONE, true);
+		base->SetTrack(SkeletonStateMachine::UP, true);
+		legs->SetTrack(SkeletonStateMachine::UP, true);
 	//}
 }
 
@@ -120,8 +120,8 @@ void NodeWalkerComp::StopAnim()
 		//std::cout << "stop Animation<" << std::endl;
 		base->SetisDone(false);
 		legs->SetisDone(false);
-		base->SetTrack(SkeletonStateMachine::DOWN, SkeletonStateMachine::NONE, true);
-		legs->SetTrack(SkeletonStateMachine::DOWN, SkeletonStateMachine::NONE, true);
+		base->SetTrack(SkeletonStateMachine::DOWN, true);
+		legs->SetTrack(SkeletonStateMachine::DOWN, true);
 		base->SetAndGetDoneDown() = false;
 		legs->SetAndGetDoneDown() = false;
 		base->SetAndGetDoneUp() = false;
@@ -138,13 +138,13 @@ void NodeWalkerComp::Update(const float& deltaTime)
 		if (base->SetAndGetDoneUp())
 		{
 			//canWalk = true;
-			base->SetTrack(SkeletonStateMachine::WALK, SkeletonStateMachine::NONE, false);
-			legs->SetTrack(SkeletonStateMachine::WALK, SkeletonStateMachine::NONE, false);
+			base->SetTrack(SkeletonStateMachine::WALK, false);
+			legs->SetTrack(SkeletonStateMachine::WALK, false);
 		}
 		if (base->SetAndGetDoneDown())
 		{
-			base->SetTrack(SkeletonStateMachine::IDLE, SkeletonStateMachine::NONE, false);
-			legs->SetTrack(SkeletonStateMachine::IDLE, SkeletonStateMachine::NONE, false);
+			base->SetTrack(SkeletonStateMachine::IDLE, false);
+			legs->SetTrack(SkeletonStateMachine::IDLE, false);
 		}
 	
 		if (isWalking)
@@ -186,8 +186,8 @@ void NodeWalkerComp::Update(const float& deltaTime)
 	}
 	else
 	{
-		base->SetTrack(SkeletonStateMachine::IDLE, SkeletonStateMachine::NONE, false);
-		legs->SetTrack(SkeletonStateMachine::IDLE, SkeletonStateMachine::NONE, false);
+		base->SetTrack(SkeletonStateMachine::IDLE, false);
+		legs->SetTrack(SkeletonStateMachine::IDLE, false);
 	}
 
 	if (KEY_DOWN(I)) //used to display info and test paths

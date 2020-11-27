@@ -34,7 +34,7 @@ void PlayerAnimHandlerComp::Animate(const float& time)
 
 	if (LMOUSE_PRESSED && attackCooldown > 1.0f)
 	{
-		skeletonMeshComp->SetTrack(SkeletonStateMachine::ATTACK, SkeletonStateMachine::NONE, true);
+		skeletonMeshComp->SetTrack(SkeletonStateMachine::ATTACK, true);
 		attackTimer = 0;
 		attackCooldown = 0;
 		attacking = true;
@@ -52,17 +52,17 @@ void PlayerAnimHandlerComp::Animate(const float& time)
 		{
 			if (KEY_PRESSED(LeftShift))
 			{
-				skeletonMeshComp->SetTrack(SkeletonStateMachine::RUN, SkeletonStateMachine::NONE, false);
+				skeletonMeshComp->SetTrack(SkeletonStateMachine::RUN, false);
 			}
 			else
 			{
-				skeletonMeshComp->SetTrack(SkeletonStateMachine::WALK, SkeletonStateMachine::NONE, false);
+				skeletonMeshComp->SetTrack(SkeletonStateMachine::WALK, false);
 			}
 		}
 
 		else if (controlComp->GetRigidBodyComp()->GetLinearVelocity().x == 0 && controlComp->GetRigidBodyComp()->GetLinearVelocity().z == 0)
 		{
-			skeletonMeshComp->SetTrack(SkeletonStateMachine::IDLE, SkeletonStateMachine::NONE, false);
+			skeletonMeshComp->SetTrack(SkeletonStateMachine::IDLE, false);
 		}
 	}
 }

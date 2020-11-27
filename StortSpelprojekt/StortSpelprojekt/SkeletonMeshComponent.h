@@ -10,7 +10,7 @@
 #include "Resource.h"
 #include <cmath>
 
-enum class SkeletonStateMachine
+enum SkeletonStateMachine
 {
 	IDLE,
 	WALK,
@@ -23,7 +23,7 @@ enum class SkeletonStateMachine
 	BLENDED,
 	LOAD,
 	UNLOAD,
-	TRANSITION,
+	COMBINED,
 };
 
 
@@ -47,10 +47,11 @@ public:
 
 	std::vector<dx::XMFLOAT4X4>& GetFinalTransforms() { return this->finalTransforms; }
 
-	void SetTrack(const SkeletonStateMachine& type, const SkeletonStateMachine& type2, bool playOnce);
+	void SetTrack(const SkeletonStateMachine& type, bool playOnce);
 	
 	void BlendAnimations();
-	void CreateBlendAnimation();
+	void CreateCombinedAnimation(SkeletonStateMachine state1, SkeletonStateMachine state2, int startJoint, int endJoint);
+	void CreateBlendedAnimation();
 	bool GetIsDone();
 	void SetisDone(bool);
 	bool& SetAndGetDoneDown();
@@ -76,7 +77,6 @@ private:
 	std::unordered_map<SkeletonStateMachine, unsigned int> trackMap;
 	std::vector<dx::XMFLOAT4X4> finalTransforms;
 	SkeletonStateMachine currentAni = SkeletonStateMachine::NONE;
-	SkeletonStateMachine nextAni = SkeletonStateMachine::NONE;
 	Bounds bounds;
 	float componentDeltaTime = 0.0f;
 	GameClock timer;

@@ -67,14 +67,14 @@ dx::SimpleMath::Quaternion SkeletonAni::sLerpQuaternions(dx::SimpleMath::Quatern
     return slerpQuat;
 }
 
-void SkeletonAni::FindChildren(float elapsedTime, const DirectX::XMMATRIX& globalParent, std::vector<Bone>& keys, std::map<std::string, unsigned int>& map)
+void SkeletonAni::FindChildren(float elapsedTime, const DirectX::XMMATRIX& globalParent, std::vector<Bone>& keys, std::map<std::string, unsigned int>& map, int startJoint, int endJoint)
 {
 
-    for (unsigned int i = 5; i < 37; i++) //recursively find all the children and repeat.
+    for (unsigned int i = startJoint; i < endJoint + 1; i++) //recursively find all the children and repeat.
     {
         if (keyBones[i][0].parentName == keys[0].name)
         {
-            FindChildren(elapsedTime, globalParent, keyBones[i], map);
+            FindChildren(elapsedTime, globalParent, keyBones[i], map, startJoint, endJoint);
 
             map.insert({ keyBones[i][0].name, i });
           //  std::cout << keyBones[i][0].name << std::endl;
