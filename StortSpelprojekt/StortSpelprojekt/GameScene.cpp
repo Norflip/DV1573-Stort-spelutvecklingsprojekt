@@ -510,6 +510,7 @@ void GameScene::OnActivate()
 		player->GetComponent<RigidBodyComponent>()->SetPosition(playerPos);
 
 		player->GetComponent<ControllerComp>()->SetInside(true);
+
 	}
 
 	renderer->AddRenderPass(guiManager);
@@ -614,6 +615,7 @@ void GameScene::Update(const float& deltaTime)
 
 	std::cout << "PlayerPos: " << player->GetTransform().GetPosition().m128_f32[0] << " " << player->GetTransform().GetPosition().m128_f32[1] << " " << player->GetTransform().GetPosition().m128_f32[2] << std::endl;
 
+	
 	static_cast<GUIFont*>(guiManager->GetGUIObject("fps"))->SetString(std::to_string((int)GameClock::Instance().GetFramesPerSecond()));
 	guiManager->UpdateAll();
 

@@ -1,6 +1,7 @@
 #include "stdafx.h"
 #include "ControllerComp.h"
 #include "Engine.h"
+#include "GUICompass.h"
 
 void ControllerComp::CheckGrounded()
 {
@@ -171,12 +172,22 @@ void ControllerComp::Update(const float& deltaTime)
 	{
 		// If next to the house
 		if (length > playerComp->GetRadius() || length < 7.0f)
+		{
+			static_cast<GUICompass*>(playerComp->GetGuiManager()->GetGUIObject("compass"))->GetBarSprite()->SetActivated();
+
 			houseWalkComp->Stop();
+		}
+			
 	}
 	else if (!houseWalkComp->GetIsWalking())
 	{
 		if (length < playerComp->GetRadius() && length > 7.0f && !inside)
+		{
 			houseWalkComp->Start();
+
+			static_cast<GUICompass*>(playerComp->GetGuiManager()->GetGUIObject("compass"))->GetBarSprite()->SetActivated(false);
+		}
+			
 
 		if (RMOUSE_DOWN)
 		{
