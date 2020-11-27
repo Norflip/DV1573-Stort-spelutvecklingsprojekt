@@ -246,6 +246,10 @@ void Renderer::RenderFrame(CameraComponent* camera, float time, float distance, 
 
 	transparentBatches.clear();
 
+	DrawQueueToTarget(emissiveItemQueue, camera);
+	for (auto i : emissiveBatches)
+		DrawBatch(i.second, camera);
+
 	SetCullBack(true);
 	size_t passCount = 0;
 	size_t bufferIndex = 0;
@@ -335,7 +339,7 @@ void Renderer::Draw(const Mesh* mesh, const Material* material, const dx::XMMATR
 		item.material = material;
 		item.type = RenderItem::Type::Default;
 		item.world = model;
-		AddItem(item, material->IsTransparent());
+		AddItem(item, material->IsTransparent(), material->IsEmissive());
 	}
 }
 
@@ -349,7 +353,7 @@ void Renderer::DrawInstanced(const Mesh* mesh, const size_t& count, ID3D11Buffer
 	item.instanceBuffer = instanceBuffer;
 	item.instanceCount = count;
 
-	AddItem(item, material->IsTransparent());
+	AddItem(item, material->IsTransparent(), material->IsEmissive());
 }
 
 void Renderer::DrawSkeleton(const Mesh* mesh, const Material* material, const dx::XMMATRIX& model, std::vector<dx::XMFLOAT4X4>& bones)
@@ -360,7 +364,7 @@ void Renderer::DrawSkeleton(const Mesh* mesh, const Material* material, const dx
 	item.type = RenderItem::Type::Skeleton;
 	item.bones = &bones;
 	item.world = model;
-	AddItem(item, false);
+	AddItem(item, false, false);
 }
 
 void Renderer::DrawGrass(const Mesh* mesh, const Material* material, const dx::XMMATRIX& model)
@@ -370,7 +374,7 @@ void Renderer::DrawGrass(const Mesh* mesh, const Material* material, const dx::X
 	item.mesh = mesh;
 	item.material = material;
 	item.world = model;
-	AddItem(item, false);
+	AddItem(item, false, false);
 }
 
 void Renderer::DrawParticles(const Mesh* mesh, const Material* material, const dx::XMMATRIX& model)
@@ -380,7 +384,7 @@ void Renderer::DrawParticles(const Mesh* mesh, const Material* material, const d
 	part.mesh = mesh;
 	part.material = material;
 	part.world = model;
-	AddItem(part, true);
+	AddItem(part, true, false);
 }
 
 void Renderer::DrawImmediate(const Mesh* mesh, const Material* material, const CameraComponent* camera, const dx::XMMATRIX& model)
@@ -397,6 +401,15 @@ void Renderer::DrawImmediate(const Mesh* mesh, const Material* material, const C
 	context->IASetPrimitiveTopology(mesh->GetTopology());
 
 	context->DrawIndexed(mesh->GetIndexCount(), 0, 0);
+}
+
+void Renderer::DrawEmissive(const Mesh* mesh, const Material* material, const dx::XMMATRIX& model)
+{
+	RenderItem item;
+	item.mesh = mesh;
+	item.material = material;
+	item.world = model;
+	AddItem(item, false, true);
 }
 
 void Renderer::SetCullBack(bool cullNone)
@@ -444,7 +457,7 @@ void Renderer::SetIdAndColor(int id, float color)
 	this->color = color;
 }
 
-void Renderer::AddItem(const RenderItem& item, bool transparent)
+void Renderer::AddItem(const RenderItem& item, bool transparent, bool emissive)
 {
 	if (transparent)
 	{
@@ -456,7 +469,7 @@ void Renderer::AddItem(const RenderItem& item, bool transparent)
 
 		transparentItemQueue[materialID].push(item);
 	}
-	else
+	else if(!transparent)
 	{
 		size_t materialID = item.material->GetID();
 		auto found = opaqueItemQueue.find(materialID);
@@ -466,6 +479,17 @@ void Renderer::AddItem(const RenderItem& item, bool transparent)
 
 		opaqueItemQueue[materialID].push(item);
 	}
+	if (emissive)
+	{
+		size_t materialID = item.material->GetID();
+		auto found = emissiveItemQueue.find(materialID);
+
+		if (found == emissiveItemQueue.end())
+			emissiveItemQueue.insert({ materialID, std::queue<RenderItem>() });
+		
+		emissiveItemQueue[materialID].push(item);
+	}
+
 }
 
 void Renderer::DrawRenderItem(const RenderItem& item, CameraComponent* camera)

@@ -1,7 +1,7 @@
 #include "CommonBuffers.hlsl"
 
 Texture2D rgbTexture : register(t0);
-Texture2D glowTexture : register(t1);
+Texture2D glowTexture : register(t2);
 
 SamplerState glowSampler;
 #include "IO.hlsl"
@@ -34,8 +34,8 @@ float4 main(PS_INPUT_GLOW input) : SV_TARGET
             
             //length(tempColor.rgb) becomes vector for checking of brightness
             
-            //if (length(tempColor.rgb) >= brightness && tempGlowColor.a != 0.f)
-            if (length(tempColor.rgb) >= brightness && tempColor.a != 0.f)
+            if (/*length(tempColor.rgb) >= brightness &&*/ tempGlowColor.r != 0.f)
+            //if (length(tempColor.rgb) >= brightness && tempColor.a != 0.f)
             {
                 brightPixelFound = true;
             }

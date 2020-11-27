@@ -220,6 +220,15 @@ namespace ZWEBLoader //TO BE ADDED: FUNCTION TO LOAD LIGHTS
 				mat->SetTexture(texture, 3, ShaderBindFlag::PIXEL); //This is default but can be manually changed afterwards.
 			}
 
+			if (emissiveName != " ")
+			{
+				std::string path = "Textures/" + emissiveName;
+				std::wstring pathWSTR(path.begin(), path.end());
+
+				Texture* texture = Texture::LoadTexture(device, pathWSTR.c_str());
+				mat->SetTexture(texture, 2, ShaderBindFlag::PIXEL); //This is default but can be manually changed afterwards.
+			}
+
 			mat->SetMaterialData(materialData);
 			materials.push_back(mat);
 		}

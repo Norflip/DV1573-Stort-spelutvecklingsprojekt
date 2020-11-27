@@ -76,6 +76,7 @@ public:
 	void DrawGrass(const Mesh* mesh, const Material* material, const dx::XMMATRIX& model);
 	void DrawParticles(const Mesh* mesh, const Material* material, const dx::XMMATRIX& model);
 	void DrawImmediate(const Mesh* mesh, const Material* material, const CameraComponent* camera, const dx::XMMATRIX& model);
+	void DrawEmissive(const Mesh* mesh, const Material* material, const dx::XMMATRIX& model);
 	
 	void SetCullBack(bool);
 
@@ -100,7 +101,7 @@ public:
 	ALIGN16_ALLOC;
 
 private:
-	void AddItem(const RenderItem& item, bool transparent);
+	void AddItem(const RenderItem& item, bool transparent, bool emissive);
 	void DrawRenderItem(const RenderItem& item, CameraComponent* camera);
 	void DrawRenderItemInstanced(const RenderItem& item, CameraComponent* camera);
 	void DrawRenderItemSkeleton(const RenderItem& item, CameraComponent* camera);
@@ -135,11 +136,13 @@ private:
 
 	std::unordered_map<int, Batch> opaqueBatches;
 	std::unordered_map<int, Batch> transparentBatches;
+	std::unordered_map<int, Batch> emissiveBatches;
 	ID3D11Buffer* batchInstanceBuffer;
 	dx::XMFLOAT4X4* tmpBatchInstanceData;
 
 	RenderQueue opaqueItemQueue;
 	RenderQueue transparentItemQueue;
+	RenderQueue emissiveItemQueue;
 	std::vector<RenderPass*> passes;
 
 	//blendstate

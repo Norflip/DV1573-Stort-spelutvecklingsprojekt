@@ -19,6 +19,7 @@ public:
 		//shader->SetPixelShader("Shaders/Glow_ps.hlsl");
 		//shader->Compile(device);
 		glowMaterial = new Material(shader);
+		glowMaterial->SetEmissive(true);
 		//LoadTextureGlow(device);
 	}
 	
@@ -47,6 +48,7 @@ public:
 	ALIGN16_ALLOC;
 
 private:
+
 	Mesh* mesh;
 	Material* glowMaterial;
 	ResourceManager* resources;

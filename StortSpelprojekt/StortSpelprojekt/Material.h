@@ -40,6 +40,9 @@ public:
 	bool IsTransparent() const { return this->transparent; }
 	void SetTransparent(bool transparent) { this->transparent = transparent; }
 
+	bool IsEmissive() const { return this->emissive; }
+	void SetEmissive(bool emissive) { this->emissive = emissive; }
+
 	void SetName(const std::string& name) { this->name = name; }
 	const std::string& GetName() const { return this->name; }
 
@@ -53,6 +56,7 @@ private:
 	cb_Material cb_material_data;
 	size_t id;
 	bool transparent;
+	bool emissive;
 
 	std::string name;
 	std::unordered_map<int, std::unordered_map<size_t, Texture*>> textures;
