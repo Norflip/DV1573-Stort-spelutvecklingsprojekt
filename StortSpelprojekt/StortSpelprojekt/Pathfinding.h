@@ -1,5 +1,6 @@
 #pragma once
 #include "Object.h"
+#include "GameClock.h"
 
 class Pathfinding
 {
@@ -22,16 +23,26 @@ class Pathfinding
 			Node* previous = nullptr;
 			std::vector<Node*> neighbors;
 		};
+		struct Compare
+		{
+			bool operator()(const Node* nodeA, const Node* nodeB)
+			{
+				return nodeA->fCost > nodeB->fCost;
+			}
+		};
 
-		void AStar();
+		void AStar(bool testHeap);
 		void AddNeighbors(Node* node);
 		void AddNeighbors2(Node* node);
 		int GetDistance(Node* nodeA, Node* nodeB);
 		void AddObstacles();
 		void ResetPath();
+		void TestReset();
 
 		int cols;
 		int rows;
-		Node* grid[32][32];
+		Node* grid[150][150];
 		DShape box;
+		GameClock timer;
+		bool usingHeap = false;
 };

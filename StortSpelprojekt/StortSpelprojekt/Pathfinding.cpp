@@ -2,8 +2,9 @@
 #include "Pathfinding.h"
 
 Pathfinding::Pathfinding()
-	: cols(5), rows(5)
+	: cols(150), rows(150)
 {
+	timer.Start();
 	for (int x = 0; x < cols; x++)
 	{
 		for (int y = 0; y < rows; y++)
@@ -37,38 +38,58 @@ void Pathfinding::Init()
 
 void Pathfinding::DrawGrid()
 {
-	ResetPath();
-	AStar();
-	for (int i = 0; i < cols; i++)
+	timer.Update();
+	if (KEY_DOWN(K))
 	{
-		for (int j = 0; j < rows; j++)
-		{
-			dx::XMFLOAT3 color;
-			if (grid[i][j]->obstacle)
-			{
-				color = dx::XMFLOAT3(0, 0, 0);
-			}
-			else
-			{
-				if (grid[i][j]->openSet)
-					color = dx::XMFLOAT3(0, 1, 0);
-				else if (grid[i][j]->correctPath)
-					color = dx::XMFLOAT3(0, 0, 1);
-				else if (grid[i][j]->closedSet)
-					color = dx::XMFLOAT3(1, 0, 0);
-				else
-					color = dx::XMFLOAT3(1, 1, 1);
-			}
-			
-			box.DrawBox(dx::XMFLOAT3(grid[i][j]->pos.x * 5, 5, grid[i][j]->pos.y * 5), dx::XMFLOAT3(2, 2, 2), color);
-		}
+		ResetPath();
 	}
+
+	if (KEY_DOWN(H))
+	{
+		TestReset();
+		usingHeap = true;
+		AStar(usingHeap);
+	}
+
+	if (KEY_DOWN(N))
+	{
+		TestReset();
+		usingHeap = false;
+		AStar(usingHeap);
+	}
+	
+		
+	//for (int i = 0; i < cols; i++)
+	//{
+	//	for (int j = 0; j < rows; j++)
+	//	{
+	//		dx::XMFLOAT3 color;
+	//		if (grid[i][j]->obstacle)
+	//		{
+	//			color = dx::XMFLOAT3(0, 0, 0);
+	//		}
+	//		else
+	//		{
+	//			if (grid[i][j]->openSet)
+	//				color = dx::XMFLOAT3(0, 1, 0);
+	//			else if (grid[i][j]->correctPath)
+	//				color = dx::XMFLOAT3(0, 0, 1);
+	//			else if (grid[i][j]->closedSet)
+	//				color = dx::XMFLOAT3(1, 0, 0);
+	//			else
+	//				color = dx::XMFLOAT3(1, 1, 1);
+	//		}
+	//		
+	//		box.DrawBox(dx::XMFLOAT3(grid[i][j]->pos.x * 5, 5, grid[i][j]->pos.y * 5), dx::XMFLOAT3(2, 2, 2), color);
+	//	}
+	//}
 }
 
-void Pathfinding::AStar()
+void Pathfinding::AStar(bool testHeap)
 {
+	timer.Restart();
 	Node* start = grid[0][0];
-	Node* end = grid[cols - 1][4];
+	Node* end = grid[cols - 1][rows - 1];
 	start->obstacle = false;
 	end->obstacle = false;
 	std::vector<Node*> openSet;
@@ -78,30 +99,53 @@ void Pathfinding::AStar()
 	bool pathFound = false;
 	while (openSet.size() > 0)
 	{
+		Node* current = nullptr;
 		int winner = 0;
-		for (int i = 0; i < openSet.size(); i++)
+		if (!testHeap)
 		{
-			if (openSet[i]->fCost < openSet[winner]->fCost)
+			for (int i = 0; i < openSet.size(); i++)
 			{
-				winner = i;
+				if (openSet[i]->fCost < openSet[winner]->fCost)
+				{
+					winner = i;
+				}
 			}
+			current = openSet[winner];
+			openSet.erase(openSet.begin() + winner);
 		}
-		Node* current = openSet[winner];
+		
+		if (testHeap)
+		{
+			std::make_heap(openSet.begin(), openSet.end(), Compare());
+			current = openSet[0];
+			openSet.erase(openSet.begin());
+		}
+		
 
-		if (current->pos.x == end->pos.x && current->pos.y == end->pos.y)
+		if (current != nullptr && current->pos.x == end->pos.x && current->pos.y == end->pos.y)
 		{
 			pathFound = true;
 			Node* temp = current;
+			std::vector<Node*> bestPath;
 			grid[(int)temp->pos.x][(int)temp->pos.y]->correctPath = true;
+			bestPath.push_back(grid[(int)temp->pos.x][(int)temp->pos.y]);
 			while (temp->previous != nullptr)
 			{
 				temp = temp->previous;
 				grid[(int)temp->pos.x][(int)temp->pos.y]->correctPath = true;
+				bestPath.push_back(grid[(int)temp->pos.x][(int)temp->pos.y]);
 			}
 			std::cout << "DONE!" << std::endl;
+			
+			
+			//for (int i = 0; i < bestPath.size(); i++)
+			//{
+			//	std::cout << bestPath[i]->fCost << std::endl;
+			//}
+			std::cout << "Time it took: " << timer.GetSeconds() << std::endl;
+			std::cout << "bestPath size: " << bestPath.size() << std::endl;
 		}
 
-		openSet.erase(openSet.begin() + winner);
 		openSet.shrink_to_fit();
 		grid[(int)current->pos.x][(int)current->pos.y]->openSet = false;
 		closedSet.push_back(current);
@@ -190,13 +234,16 @@ int Pathfinding::GetDistance(Node* nodeA, Node* nodeB)
 
 void Pathfinding::AddObstacles()
 {
-	for (int i = 0; i < 2; i++)
+	srand(time(NULL));
+	for (int x = 0; x < cols; x++)
 	{
-		grid[1][i]->obstacle = true;
+		for (int y = 0; y < rows; y++)
+		{
+			int randNr = rand() % 100;
+			if(randNr < 30)
+				grid[x][y]->obstacle = true;
+		}
 	}
-	grid[2][2]->obstacle = true;
-	grid[2][3]->obstacle = true;
-	grid[2][4]->obstacle = true;
 }
 
 void Pathfinding::ResetPath()
@@ -227,4 +274,31 @@ void Pathfinding::ResetPath()
 	}
 
 	AddObstacles();
+}
+
+void Pathfinding::TestReset()
+{
+	for (int x = 0; x < cols; x++)
+	{
+		for (int y = 0; y < rows; y++)
+		{
+			grid[x][y]->pos = dx::XMFLOAT2(x, y);
+			grid[x][y]->gCost = 0;
+			grid[x][y]->hCost = 0;
+			grid[x][y]->fCost = 0;
+			grid[x][y]->openSet = false;
+			grid[x][y]->closedSet = false;
+			grid[x][y]->correctPath = false;
+			grid[x][y]->previous = nullptr;
+			grid[x][y]->neighbors.clear();
+		}
+	}
+
+	for (int x = 0; x < cols; x++)
+	{
+		for (int y = 0; y < rows; y++)
+		{
+			AddNeighbors(grid[x][y]);
+		}
+	}
 }
