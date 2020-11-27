@@ -73,9 +73,6 @@
     <FxCompile Include="Shaders\ForwardPlusRendering.hlsl">
       <Filter>Resource Files</Filter>
     </FxCompile>
-    <FxCompile Include="Shaders\Leaf_ps.hlsl">
-      <Filter>Resource Files</Filter>
-    </FxCompile>
     <FxCompile Include="Shaders\Leaf_vs.hlsl">
       <Filter>Resource Files</Filter>
     </FxCompile>

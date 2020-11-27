@@ -28,7 +28,7 @@ void ObjectSpawner::Initialize(Object* root, World* world, Renderer* renderer)
 
 	Material* mat = resources->GetResource<Material>("leavesMaterial");
 	mat->SetShader(resources->GetShaderResource("leafShader"));
-	
+
 	tree.materials.push_back(resources->GetResource<Material>("TreeMaterial"));
 	tree.materials.push_back(mat);
 	tree.materials[1]->SetTransparent(true);
@@ -45,6 +45,20 @@ void ObjectSpawner::Spawn(const SaveState& state, const Bounds& worldBounds, std
 	QuadTree tree(worldBounds);
 	globalTreeQT = new QuadTree(worldBounds);
 
+	int min = 10;
+	int max = -1;
+
+	for (size_t i = 0; i < 100; i++)
+	{
+		int v = Random::Range(0, 5);
+		if (v < min)
+			min = v;
+		if (v > max)
+			max = v;
+	}
+
+	std::cout << "MIN: " << min << " MAX: " << max << std::endl;
+
 	//SpawnStatic(chunkMap);
 
 	for (auto i : chunkMap)
@@ -58,9 +72,6 @@ void ObjectSpawner::Spawn(const SaveState& state, const Bounds& worldBounds, std
 		SpawnItem(i.second);
 #endif
 	}
-
-	std::cout << "ITEMS: " << activeItems.size() << " / " << itemSpawnPositions.size() << std::endl;
-	std::cout << "PROPS: " << propSpawnPositions.size() << std::endl;
 }
 
 void ObjectSpawner::Despawn()
@@ -98,7 +109,7 @@ void ObjectSpawner::SpawnSpecific(std::vector<dx::XMFLOAT2> positions, dx::XMVEC
 
 			modifier(obj);
 
-			
+
 		}
 	}
 }
@@ -143,12 +154,6 @@ void ObjectSpawner::RegisterInstancedItem(Mesh* mesh, Material* material, float 
 
 void ObjectSpawner::DrawDebug()
 {
-	for (size_t i = 0; i < TMP_POS.size(); i++)
-	{
-		DShape::DrawSphere(TMP_POS[i], 0.5f, dx::XMFLOAT3(1, 1, 0));
-	}
-
-
 	return;
 	for (size_t i = 0; i < itemSpawnPositions.size(); i++)
 	{
@@ -191,7 +196,7 @@ void ObjectSpawner::AddTreesToChunk(Chunk* chunk) const
 			std::vector<dx::XMFLOAT3> colliderPositions;
 			std::vector<dx::XMFLOAT3> colliderExtends;
 			std::vector<dx::XMFLOAT4> colliderRotations;
-			
+
 			for (size_t i = 0; i < nrOfInstancedStyTrees; i++)
 			{
 				float y = chunk->SampleHeight(posXZ.x + validPoints[i].x, posXZ.y + validPoints[i].y) - TREE_HEIGHT_ADJUSTMENT_FACTOR;
@@ -239,7 +244,7 @@ void ObjectSpawner::AddTreesToChunk(Chunk* chunk) const
 			BoxColliderComponent* colliders = treeObject->AddComponent<BoxColliderComponent>(colliderExtends, colliderPositions);
 			for (size_t i = 0; i < nrOfInstancedStyTrees; i++)
 				colliders->SetRotation(i, colliderRotations[i]);
-			
+
 
 			treeObject->AddComponent<RigidBodyComponent>(0.f, FilterGroups::DEFAULT, FilterGroups::EVERYTHING, BodyType::STATIC, true);
 		}
@@ -269,11 +274,10 @@ bool ObjectSpawner::ValidSpawnPoint(const dx::XMFLOAT2& point, Chunk* chunk, flo
 	int dy = static_cast<int>(roundf(point.y));
 
 	bool valid = false;
-	size_t index = dx + dy * (CHUNK_SIZE + 1);
-	if (index < (CHUNK_SIZE + 1)* (CHUNK_SIZE + 1))
+	if (dx + dy * (CHUNK_SIZE + 1) < (CHUNK_SIZE + 1) * (CHUNK_SIZE + 1))
 	{
 		float v = chunk->GetData().influenceMap[dx + dy * (CHUNK_SIZE + 1)];
-		valid = chunk->GetType() != ChunkType::PUZZEL && v > minInfluence;
+		valid = chunk->GetType() != ChunkType::PUZZEL && chunk->GetType() != ChunkType::PATH && v > minInfluence;
 	}
 
 	return valid;
@@ -282,7 +286,7 @@ bool ObjectSpawner::ValidSpawnPoint(const dx::XMFLOAT2& point, Chunk* chunk, flo
 Object* ObjectSpawner::DefaultCreateItem(std::string key, PickupType type, float value)
 {
 	Object* object = Engine::Instance->GetResources()->AssembleObject(key, key + "Material");
-	
+
 	object->AddComponent<PickupComponent>(type, value);
 	if (type == PickupType::Fuel)
 	{
@@ -298,7 +302,7 @@ Object* ObjectSpawner::DefaultCreateItem(std::string key, PickupType type, float
 }
 
 static float spawnChance = 0.0f;
-static float spawnIncrement = 0.1f;
+static float spawnIncrement = 0.2f;
 static float spawnDecrement = 0.2f;
 
 void ObjectSpawner::SpawnStatic(Chunk* chunk, std::unordered_map<int, Chunk*>& chunkMap)
@@ -309,36 +313,34 @@ void ObjectSpawner::SpawnStatic(Chunk* chunk, std::unordered_map<int, Chunk*>& c
 	if (chunk->GetType() != ChunkType::TERRAIN)
 		return;
 
-	if (Random::Value() > spawnChance)
-	{
-		static size_t MAX_TRIES = 12;
-		int nrToSpawn = Random::Range(0, 3);
 
-		for (size_t nr = 0; nr < nrToSpawn; nr++)
+	static size_t MAX_TRIES = 12;
+	size_t nrToSpawn = UICAST(Random::Range(1, (3+1)));	// 1 - 3
+
+	for (size_t nr = 0; nr < nrToSpawn; nr++)
+	{
+		if (Random::Value() > spawnChance)
 		{
-			size_t propIndex = UICAST(Random::Range(0, instancedProps.size() - 1));
+			size_t propIndex = UICAST(Random::Range(0, instancedProps.size()));
 			Prop& prop = instancedProps[propIndex];
 			Bounds b = prop.bounds;
 
 			size_t tries = 0;
 			while (tries < MAX_TRIES)
 			{
-				float dx = Random::Value() * FCAST(CHUNK_SIZE);
-				float dz = Random::Value() * FCAST(CHUNK_SIZE);
-				
+				float x = Random::Value() * FCAST(CHUNK_SIZE);
+				float z = Random::Value() * FCAST(CHUNK_SIZE);
+
 				dx::XMFLOAT3 chunkPosition;
 				dx::XMStoreFloat3(&chunkPosition, chunk->GetOwner()->GetTransform().GetWorldPosition());
-				dx += chunkPosition.x;
-				dz += chunkPosition.z;
+				float dx = x + chunkPosition.x;
+				float dz = z + chunkPosition.z;
 
 				dx::XMFLOAT2 point(dx, dz);
 				const float radius = prop.bounds.GetRadiusXZ();
 
-				//std::cout << globalTreeQT->CountInRange(point, radius) << std::endl;
-
-				if (globalTreeQT->CountInRange(point, radius) == 0)
+				if (ValidSpawnPoint(dx::XMFLOAT2(x,z), chunk, 0.2f) && globalTreeQT->CountInRange(point, radius) == 0)
 				{
-					
 					spawnChance -= spawnDecrement;
 					globalTreeQT->Insert(-1, point, radius);
 
@@ -346,20 +348,24 @@ void ObjectSpawner::SpawnStatic(Chunk* chunk, std::unordered_map<int, Chunk*>& c
 
 					std::cout << "created prop in " << chunk->GetOwner()->GetName() << " radius: " << radius << " props: " << nrToSpawn << " pos (" << dx << ", " << y << ", " << dz << ")\n";
 
-					TMP_POS.push_back({ dx, y, dz });
+					Object* props = new Object("props_" + prop.mesh->GetMeshName(), ObjectFlag::DEFAULT);
+					props->AddFlag(ObjectFlag::NO_CULL);
 
-					Object* props = new Object("props_" + prop.mesh->GetMeshName(), ObjectFlag::DEFAULT | ObjectFlag::NO_CULL);
 					MeshComponent* mc = props->AddComponent<MeshComponent>(prop.mesh, prop.material);
 
+					dx::XMVECTOR randomYRotation = dx::XMQuaternionRotationAxis({ 0,1,0 }, Random::RadAngle());
 					dx::XMFLOAT4X4 wat;
-					dx::XMStoreFloat4x4(&wat, dx::XMMatrixTranslation(dx, y, dz));
+					dx::XMStoreFloat4x4(&wat, dx::XMMatrixTranspose(dx::XMMatrixRotationQuaternion(randomYRotation) * dx::XMMatrixTranslation(dx, y, dz)));
 
-					std::vector<dx::XMFLOAT4X4> instancedData{ wat };
-					mc->SetInstanceable( instancedData, instancedData.size(), renderer->GetDevice());
+					std::vector<dx::XMFLOAT4X4> instancedData(1);
+					instancedData[0] = wat;
+					mc->SetInstanceable(instancedData, instancedData.size(), renderer->GetDevice());
+
+					MeshCollider* meshCollider = props->AddComponent<MeshCollider>(prop.mesh, dx::XMFLOAT3(dx, y, dz));
 					
-					/*MeshCollider* meshCollider = props->AddComponent<MeshCollider>(i.second.prop->mesh, i.second.positions);
-					for (size_t j = 0; j < i.second.rotations.size(); j++)
-						meshCollider->SetRotation(j, i.second.rotations[j]);*/
+					dx::XMFLOAT4 rot;
+					dx::XMStoreFloat4(&rot, randomYRotation);
+					meshCollider->SetRotation(0, rot);
 
 					props->AddComponent<RigidBodyComponent>(0.f, FilterGroups::PROPS, FilterGroups::EVERYTHING, BodyType::STATIC, true);
 					Object::AddToHierarchy(chunk->GetOwner(), props);
@@ -371,11 +377,12 @@ void ObjectSpawner::SpawnStatic(Chunk* chunk, std::unordered_map<int, Chunk*>& c
 				tries++;
 			}
 		}
+		else
+		{
+			spawnChance += spawnIncrement;
+		}
 	}
-	else
-	{
-		spawnChance += spawnIncrement;
-	}
+
 
 	spawnChance = Math::Clamp01(spawnChance);
 }
@@ -432,6 +439,7 @@ void ObjectSpawner::SpawnStatic(std::unordered_map<int, Chunk*>& chunkMap)
 				*/
 					dx::XMFLOAT4 rot;
 					dx::XMStoreFloat4(&rot, randomYRotation);
+
 					data[chunk].rotations.push_back(rot);
 
 					dx::XMFLOAT4X4 instancedData;
@@ -509,7 +517,7 @@ void ObjectSpawner::SpawnItem(Chunk* chunk)
 
 					m_itemIndex++;
 					m_itemIndex %= itemRegistry.size();
-					
+
 					spawnCount++;
 				}
 			}
