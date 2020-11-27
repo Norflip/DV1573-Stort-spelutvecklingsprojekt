@@ -331,7 +331,7 @@ void SkeletonMeshComponent::PlayOnce(const float& deltaTime)
 			timer.Update();
 			time = (float)timer.GetSeconds();
 			time *= timeScale;
-			float animationTime = time * skeletonAnimations[4].GetFPS();
+			float animationTime = time * skeletonAnimations[trackMap[SkeletonStateMachine::DEATH]].GetFPS();
 			float currentFrame = fmodf(animationTime, skeletonAnimations[trackMap[SkeletonStateMachine::DEATH]].GetAniLength());
 			
 			count += deltaTime;
