@@ -325,25 +325,24 @@ void SkeletonMeshComponent::PlayOnce(const float& deltaTime)
 	}
 	else if (currentAni == SkeletonStateMachine::DEATH)
 	{
-		if (!doneOnce)
+		if (!doneDeath)
 		{
-			timer.Start();
-			timer.Update();
-			time = (float)timer.GetSeconds();
-			time *= timeScale;
-			float animationTime = time * skeletonAnimations[trackMap[SkeletonStateMachine::DEATH]].GetFPS();
-			float currentFrame = fmodf(animationTime, skeletonAnimations[trackMap[SkeletonStateMachine::DEATH]].GetAniLength());
 			
 			count += deltaTime;
-			finalTransforms = skeletonAnimations[trackMap[SkeletonStateMachine::DEATH]].Makeglobal(time, dx::XMMatrixIdentity(), *skeletonAnimations[trackMap[SkeletonStateMachine::DEATH]].GetRootKeyJoints());
-			if (count >= skeletonAnimations[trackMap[SkeletonStateMachine::DEATH]].GetAniLength() / skeletonAnimations[trackMap[SkeletonStateMachine::DEATH]].GetFPS())
+			
+			if (count < skeletonAnimations[trackMap[SkeletonStateMachine::DEATH]].GetAniLength() / skeletonAnimations[trackMap[SkeletonStateMachine::DEATH]].GetFPS())
+			{
+
+				finalTransforms = skeletonAnimations[trackMap[SkeletonStateMachine::DEATH]].Makeglobal(count, dx::XMMatrixIdentity(), *skeletonAnimations[trackMap[SkeletonStateMachine::DEATH]].GetRootKeyJoints());
+				
+			}
+			else
 			{
 				timer.Stop();
 				doneOnce = true;
 				doneDeath = true;
 				count = 0.0f;
 			}
-			
 		}
 		
 	}

@@ -52,5 +52,5 @@ private:
     EnemyAttackComp* attackComponent;
     EnemyStatsComp* statsComponent;
     EnemyPatrolComp* enemyPatrolComp;
-    
+   
 };

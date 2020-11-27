@@ -45,11 +45,14 @@ void EnemySMComp::Animate()
 	if (statsComponent->GetHealth() <= 0.0f)
 	{
 		SetState(EnemyState::IDLE);
+
+		
 		
 		skeletonComponent->SetTrack(SkeletonStateMachine::DEATH, true);
 
 		if (skeletonComponent->GetDoneDeath())
 		{
+			
 			statsComponent->GetManager()->RemoveEnemy(GetOwner());
 		}
 		
