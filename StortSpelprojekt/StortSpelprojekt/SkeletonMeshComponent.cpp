@@ -332,11 +332,11 @@ void SkeletonMeshComponent::PlayOnce(const float& deltaTime)
 			time = (float)timer.GetSeconds();
 			time *= timeScale;
 			float animationTime = time * skeletonAnimations[4].GetFPS();
-			float currentFrame = fmodf(animationTime, skeletonAnimations[4].GetAniLength());
+			float currentFrame = fmodf(animationTime, skeletonAnimations[trackMap[SkeletonStateMachine::DEATH]].GetAniLength());
 			
 			count += deltaTime;
-			finalTransforms = skeletonAnimations[4].Makeglobal(time, dx::XMMatrixIdentity(), *skeletonAnimations[4].GetRootKeyJoints());
-			if (count >= skeletonAnimations[4].GetAniLength() / skeletonAnimations[4].GetFPS())
+			finalTransforms = skeletonAnimations[trackMap[SkeletonStateMachine::DEATH]].Makeglobal(time, dx::XMMatrixIdentity(), *skeletonAnimations[trackMap[SkeletonStateMachine::DEATH]].GetRootKeyJoints());
+			if (count >= skeletonAnimations[trackMap[SkeletonStateMachine::DEATH]].GetAniLength() / skeletonAnimations[trackMap[SkeletonStateMachine::DEATH]].GetFPS())
 			{
 				timer.Stop();
 				doneOnce = true;
