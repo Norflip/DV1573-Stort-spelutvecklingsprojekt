@@ -88,7 +88,7 @@ private:
 	ObjectPooler* pooler;
 	Object* root;
 	World* world;
-	QuadTree* globalTreeQT;
+	QuadTree* environmentQT;
 
 	std::vector<dx::XMFLOAT2> itemSpawnPositions;
 	std::vector<dx::XMFLOAT2> propSpawnPositions;

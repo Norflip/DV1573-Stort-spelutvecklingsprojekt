@@ -457,11 +457,12 @@ void ResourceManager::CompileShaders(ID3D11Device* device)
 	}
 }
 
-Object* ResourceManager::AssembleObject(std::string meshName, std::string materialName, ObjectFlag flag)
+Object* ResourceManager::AssembleObject(std::string meshName, std::string materialName, bool batchable, ObjectFlag flag)
 {
 	Object* object = new Object(meshName, flag);
 
-	object->AddComponent<MeshComponent>(GetResource<Mesh>(meshName), GetResource<Material>(materialName));
+	MeshComponent* meshComponent = object->AddComponent<MeshComponent>(GetResource<Mesh>(meshName), GetResource<Material>(materialName));
+	meshComponent->SetBatchable(batchable);
 
 	return object;
 }

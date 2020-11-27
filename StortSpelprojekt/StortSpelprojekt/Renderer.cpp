@@ -338,19 +338,19 @@ void Renderer::Draw(const Mesh* mesh, const Material* material, const dx::XMMATR
 			batches.insert({ batchID, batch });
 		}
 
-		auto& batchesDepth = material->IsTransparent() ? transparentBatchesDepth : opaqueBatchesDepth;
-		if (batchesDepth.find(batchID) != batchesDepth.end())
-		{
-			batchesDepth[batchID].transformations.push_back(modelInFloats);
-		}
-		else
-		{
-			Batch batch;
-			batch.material = material;
-			batch.mesh = mesh;
-			batch.transformations.push_back(modelInFloats);
-			batchesDepth.insert({ batchID, batch });
-		}
+		//auto& batchesDepth = material->IsTransparent() ? transparentBatchesDepth : opaqueBatchesDepth;
+		//if (batchesDepth.find(batchID) != batchesDepth.end())
+		//{
+		//	batchesDepth[batchID].transformations.push_back(modelInFloats);
+		//}
+		//else
+		//{
+		//	Batch batch;
+		//	batch.material = material;
+		//	batch.mesh = mesh;
+		//	batch.transformations.push_back(modelInFloats);
+		//	batchesDepth.insert({ batchID, batch });
+		//}
 	}
 	else
 	{
@@ -614,6 +614,8 @@ void Renderer::DrawBatch(const Batch& batch, CameraComponent* camera)
 	if (instanceCount == 0)
 		return;
 
+	batch.material->BindToContext(context);
+
 	SetObjectBufferValues(camera, dx::XMMatrixIdentity(), true);
 	objectBuffer.UpdateBuffer(context);
 
@@ -623,15 +625,11 @@ void Renderer::DrawBatch(const Batch& batch, CameraComponent* camera)
 
 	GetContext()->Map(batchInstanceBuffer, 0, D3D11_MAP_WRITE_DISCARD, 0, &mappedData);
 	dx::XMFLOAT4X4* dataView = reinterpret_cast<dx::XMFLOAT4X4*>(mappedData.pData);
-
 	for (size_t i = 0; i < batch.transformations.size(); i++)
 	{
 		dataView[i] = batch.transformations[i];
 	}
-
 	GetContext()->Unmap(batchInstanceBuffer, 0);
-
-
 
 	UINT stride[2] = { sizeof(Mesh::Vertex), sizeof(dx::XMFLOAT4X4) };
 	UINT offset[2] = { 0 };
@@ -646,7 +644,7 @@ void Renderer::DrawBatch(const Batch& batch, CameraComponent* camera)
 
 	context->DrawIndexedInstanced(batch.mesh->GetIndexCount(), instanceCount, 0, 0, 0);
 
-	//std::cout << "BATCHING(" << batch.material->IsTransparent() << "): " << batch.mesh->GetMeshName() << " / " << batch.material->GetID() << " : " << instanceCount << "\n";
+	//std::cout << "BATCHING(" << batch.material->IsTransparent() << "): " << batch.mesh->GetMeshName() << " id(" << batch.material->GetID() << "), count: " << instanceCount << "\n";
 }
 
 void Renderer::SetObjectBufferValues(const CameraComponent* camera, dx::XMMATRIX world, bool transpose)
@@ -849,18 +847,18 @@ void Renderer::UpdateForwardPlus(CameraComponent* camera)
 	context->OMSetDepthStencilState(dss, 0);
 	SetCullBack(true);
 	DrawQueueToTarget(opaqueItemQueueDepth, camera);
-	
-	for (auto i : opaqueBatchesDepth)
-		DrawBatch(i.second, camera);
+	//
+	//for (auto i : opaqueBatchesDepth)
+	//	DrawBatch(i.second, camera);
 
-	opaqueBatchesDepth.clear();
+	//opaqueBatchesDepth.clear();
 
-	SetCullBack(false);
-	DrawQueueToTarget(transparentItemQueueDepth, camera);
-	for (auto i : transparentBatchesDepth)
-		DrawBatch(i.second, camera);
+	//SetCullBack(false);
+	//DrawQueueToTarget(transparentItemQueueDepth, camera);
+	//for (auto i : transparentBatchesDepth)
+	//	DrawBatch(i.second, camera);
 
-	transparentBatchesDepth.clear();
+	//transparentBatchesDepth.clear();
 
 	SetCullBack(true);
 

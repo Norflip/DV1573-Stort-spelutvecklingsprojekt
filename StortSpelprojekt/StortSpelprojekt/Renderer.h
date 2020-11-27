@@ -187,8 +187,8 @@ private:
 	RenderQueue transparentItemQueue;
 	RenderQueue opaqueItemQueueDepth;
 	RenderQueue transparentItemQueueDepth;
-	std::unordered_map<int, Batch> opaqueBatchesDepth;
-	std::unordered_map<int, Batch> transparentBatchesDepth;
+	//std::unordered_map<int, Batch> opaqueBatchesDepth;
+	//std::unordered_map<int, Batch> transparentBatchesDepth;
 	std::vector<RenderPass*> passes;
 
 	//blendstate

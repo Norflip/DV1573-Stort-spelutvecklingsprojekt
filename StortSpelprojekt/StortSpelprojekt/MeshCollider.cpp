@@ -89,6 +89,8 @@ void MeshCollider::Update(const float& deltaTime)
 	std::vector<Mesh::Vertex> vertices = mesh->GetVertices();
 	std::vector<size_t> indices = mesh->GetIndices();
 
+	dx::XMMATRIX model = GetOwner()->GetTransform().GetWorldMatrix();
+
 	for (size_t i = 0; i < colliderInformations.size(); i++)
 	{
 		dx::XMVECTOR p = dx::XMLoadFloat3(&colliderInformations[i].position);
@@ -99,7 +101,7 @@ void MeshCollider::Update(const float& deltaTime)
 			for (size_t k = 0; k < COUNT; k++)
 			{
 				dx::XMVECTOR vector = dx::XMVectorScale(dx::XMLoadFloat3(&vertices[indices[j * COUNT + k]].position), OFFSET);
-				dx::XMStoreFloat3(&positions[k], dx::XMVectorAdd(p, dx::XMVector3Rotate(vector, r)));
+				dx::XMStoreFloat3(&positions[k], dx::XMVector3Transform(vector, model));
 			}
 
 			size_t i0 = COUNT -1;

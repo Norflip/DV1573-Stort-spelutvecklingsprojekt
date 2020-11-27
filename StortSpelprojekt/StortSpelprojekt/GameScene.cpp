@@ -180,7 +180,7 @@ void GameScene::InitializeObjects()
 	AddObjectToRoot(playerArms);
 
 	//Axe
-	Object* axeObject = resources->AssembleObject("Axe", "AxeMaterial", ObjectFlag::DEFAULT | ObjectFlag::NO_CULL);
+	Object* axeObject = resources->AssembleObject("Axe", "AxeMaterial", false, ObjectFlag::DEFAULT | ObjectFlag::NO_CULL);
 	axeObject->GetTransform().SetPosition({ 21.0f, 1.0f, -16.0f });
 	axeObject->GetTransform().SetScale({ 1.0f, 1.0f, 1.0f });
 	axeObject->AddComponent<WeaponComponent>(playerArms->GetComponent<SkeletonMeshComponent>());
@@ -210,7 +210,7 @@ void GameScene::InitializeObjects()
 	//puzzleFrog->AddComponent<RigidBodyComponent>(50.f, FilterGroups::PROPS, (FilterGroups::EVERYTHING), BodyType::DYNAMIC, true);*/
 	//AddObject(puzzleFrog);
 
-	Object* puzzleFly = resources->AssembleObject("PuzzleFlyStatue", "PuzzleFlyStatueMaterial", ObjectFlag::DEFAULT | ObjectFlag::NO_CULL);
+	Object* puzzleFly = resources->AssembleObject("PuzzleFlyStatue", "PuzzleFlyStatueMaterial", false, ObjectFlag::DEFAULT | ObjectFlag::NO_CULL);
 	puzzleFly->GetTransform().SetPosition({ 28, 1.3f, 50 });
 	puzzleFly->AddComponent<BoxColliderComponent>(dx::XMFLOAT3{ 1.0f, 1.0f, 1.0f }, dx::XMFLOAT3{ 0, 0, 0 });
 	puzzleFly->AddComponent<RigidBodyComponent>(0.0f, FilterGroups::HOLDABLE, FilterGroups::EVERYTHING, BodyType::DYNAMIC, true);
