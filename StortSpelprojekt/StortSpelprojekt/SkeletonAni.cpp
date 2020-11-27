@@ -60,6 +60,28 @@ dx::SimpleMath::Matrix& SkeletonAni::Lerp(float elapsedTime, std::vector<Bone>& 
 
 }
 
+dx::SimpleMath::Quaternion SkeletonAni::sLerpQuaternions(dx::SimpleMath::Quaternion quat, dx::SimpleMath::Quaternion quat2)
+{
+    dx::SimpleMath::Quaternion slerpQuat = slerpQuat.Slerp(quat, quat2, t);
+
+    return slerpQuat;
+}
+
+void SkeletonAni::FindChildren(float elapsedTime, const DirectX::XMMATRIX& globalParent, std::vector<Bone>& keys, std::map<std::string, unsigned int>& map)
+{
+
+    for (unsigned int i = 5; i < 37; i++) //recursively find all the children and repeat.
+    {
+        if (keyBones[i][0].parentName == keys[0].name)
+        {
+            FindChildren(elapsedTime, globalParent, keyBones[i], map);
+
+            map.insert({ keyBones[i][0].name, i });
+          //  std::cout << keyBones[i][0].name << std::endl;
+        }
+    }
+}
+
 SkeletonAni::SkeletonAni()
 {
    

@@ -54,6 +54,9 @@ public:
 
 	std::vector<dx::XMFLOAT4X4> GetBones() { return this->bones; }
 	dx::SimpleMath::Matrix& Lerp(float elapsedTime, std::vector<Bone>& keys);
+
+	dx::SimpleMath::Quaternion sLerpQuaternions(dx::SimpleMath::Quaternion quat, dx::SimpleMath::Quaternion quat2);
+	void FindChildren(float elapsedTime, const DirectX::XMMATRIX& globalParent, std::vector<Bone>& keys, std::map<std::string, unsigned int>& map);
 	
 };
 
