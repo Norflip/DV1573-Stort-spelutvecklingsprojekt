@@ -72,6 +72,7 @@ void WorldGenerator::Construct(const SaveState& state, const WorldDescription& d
 		//		return root;
 		//	});
 
+		// Ugly ass spawn for tree/frog puzzle
 		RegisterEnviromentProp("PuzzleTree", 0, 10, 10, [](Chunk* chunk, dx::XMVECTOR rootPosition)
 		{
 			Object* root = new Object("puzzel_root");
@@ -80,6 +81,7 @@ void WorldGenerator::Construct(const SaveState& state, const WorldDescription& d
 			Object* puzzle = Engine::Instance->GetResources()->AssembleObject("TreePuzzle", "TreePuzzleMaterial");
 			Object* crazyFrog = Engine::Instance->GetResources()->AssembleObject("PuzzleFrogStatue", "PuzzleFrogStatueMaterial");
 			Object* crazyFly = Engine::Instance->GetResources()->AssembleObject("PuzzleFlyStatue", "PuzzleFlyStatueMaterial");
+			Object* frogHead = new Object("frogHead");
 
 			tree->GetTransform().SetScale({ 2, 2, 2 });
 
@@ -105,32 +107,43 @@ void WorldGenerator::Construct(const SaveState& state, const WorldDescription& d
 			puzzle->AddComponent<BoxColliderComponent>(dx::XMFLOAT3(1.195f, 0.1f, 2.041f), dx::XMFLOAT3(-1.337f, 6.57f, 0.183f));
 			RigidBodyComponent* prb = puzzle->AddComponent<RigidBodyComponent>(0.f, FilterGroups::PUZZLE, FilterGroups::EVERYTHING, BodyType::STATIC, true);
 
-
+			// For fly
 			crazyFly->AddComponent<BoxColliderComponent>(dx::XMFLOAT3(0.5f, 0.5f, 0.5f), dx::XMFLOAT3(0, 0.3f, 0));
-			RigidBodyComponent* frb = crazyFly->AddComponent<RigidBodyComponent>(10.0f, FilterGroups::HOLDABLE, FilterGroups::EVERYTHING, BodyType::DYNAMIC, true);
+			RigidBodyComponent* flyrb = crazyFly->AddComponent<RigidBodyComponent>(10.0f, FilterGroups::HOLDABLE, FilterGroups::EVERYTHING, BodyType::DYNAMIC, true);
+
+			// For frog
+			//crazyFrog->AddComponent<SphereColliderComponent>(1.685, dx::XMFLOAT3(0, -0.0f, 0));
+			//crazyFrog->AddComponent<BoxColliderComponent>(dx::XMFLOAT3(2.f, 2.f, 2.2f), dx::XMFLOAT3(0, -0.3f, 0));
+			crazyFrog->AddComponent<CapsuleColliderComponent>(2.0f, 1.6f, dx::XMFLOAT3(0, -2.0f, 0));
+			RigidBodyComponent* frogrb = crazyFrog->AddComponent<RigidBodyComponent>(0.0f, FilterGroups::PROPS, FilterGroups::EVERYTHING, BodyType::STATIC, true);
+
+			// For froghead
+			frogHead->AddComponent<BoxColliderComponent>(dx::XMFLOAT3({ 1.158f, 0.435f, 1.871f }), dx::XMFLOAT3({ 0, 2.181f, -0.021f }));
+			RigidBodyComponent* headrb = frogHead->AddComponent<RigidBodyComponent>(0.0f, FilterGroups::PUZZLE, FilterGroups::EVERYTHING, BodyType::STATIC, true);
 
 			// Position for puzzle
 			dx::XMVECTOR position(dx::XMVectorAdd(rootPosition, dx::XMVECTOR({ CHUNK_SIZE / 2.0f, 3.5f, CHUNK_SIZE / 2.0f })));
-
-			// Testing printing shit to find puzzle
-			dx::XMFLOAT3 pos;
-			dx::XMStoreFloat3(&pos, position);
-			std::cout << "PAAZZL: " << pos.x << ", " << pos.y << ", " << pos.z << "\n";
 
 			Object::AddToHierarchy(chunk->GetOwner(), tree);
 			Object::AddToHierarchy(tree, leaves);
 			Object::AddToHierarchy(chunk->GetOwner(), puzzle);
 			Object::AddToHierarchy(chunk->GetOwner(), crazyFrog);
 			Object::AddToHierarchy(chunk->GetOwner(), crazyFly);
+			Object::AddToHierarchy(chunk->GetOwner(), frogHead);
+
+			dx::XMVECTOR frogpos = dx::XMVectorAdd(position, dx::XMVECTOR({ 4, 1, 4, 0 }));
 
 			// Set the positions for RB
 			trb->SetPosition(position);
 			prb->SetPosition(position);
+			frogrb->SetPosition(frogpos);
+			flyrb->SetPosition(dx::XMVectorAdd(frogpos, dx::XMVECTOR({ 4, 0, 4, 0 })));
+			headrb->SetPosition(dx::XMVectorAdd(frogpos, dx::XMVECTOR({ 0, 0.0f, 0, 0 })));
 
-			dx::XMVECTOR frogpos = dx::XMVectorAdd(position, dx::XMVECTOR({ 4, 1, 4, 0 }));
-			
-			crazyFrog->GetTransform().SetPosition(frogpos);
-			frb->SetPosition(dx::XMVectorAdd(frogpos, dx::XMVECTOR({ 4, 0, 4, 0 })));
+			// Testing printing shit to find puzzle
+			dx::XMFLOAT3 pos;
+			dx::XMStoreFloat3(&pos, position);
+			std::cout << "PAAZZL: " << pos.x << ", " << pos.y << ", " << pos.z << "\n";
 
 			return root;
 		});

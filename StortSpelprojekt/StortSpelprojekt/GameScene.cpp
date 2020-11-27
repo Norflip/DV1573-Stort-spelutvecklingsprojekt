@@ -101,7 +101,7 @@ void GameScene::InitializeObjects()
 
 	cameraObject->GetTransform().SetPosition(playerSpawnVec);
 	playerObject->GetTransform().SetPosition(playerSpawnVec);
-	playerObject->AddComponent<CapsuleColliderComponent>(0.5f, 1.5f, zero);
+	playerObject->AddComponent<CapsuleColliderComponent>(0.4f, 1.5f, zero);
 	playerObject->AddComponent<RigidBodyComponent>(50.f, FilterGroups::PLAYER, (FilterGroups::EVERYTHING), BodyType::DYNAMIC, true);
 
 	playerObject->AddComponent<PlayerComp>(renderer, camera, house, Engine::Instance->GetPhysics(), guiManager, 100.f, 2.f, 20.f, 50.f, 3.f);
