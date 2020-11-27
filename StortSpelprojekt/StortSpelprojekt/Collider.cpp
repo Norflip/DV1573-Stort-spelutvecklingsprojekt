@@ -43,8 +43,8 @@ rp::Transform Collider::GetTransform(size_t index) const
     assert(index >= 0 && index < colliderInformations.size());
     rp::Transform transform = this->colliderInformations[index].transform;
 
-    dx::XMFLOAT4 rot = colliderInformations[index].rotation;
-    transform.setOrientation(rp::Quaternion(rot.x, rot.y, rot.z, rot.w));
+  //  dx::XMFLOAT4 rot = colliderInformations[index].rotation;
+  //  transform.setOrientation(rp::Quaternion(rot.x, rot.y, rot.z, rot.w));
     return transform;
 }
 

@@ -168,7 +168,7 @@ void GameScene::InitializeObjects()
 	beansObject->AddComponent<RigidBodyComponent>(0.f, FilterGroups::PICKUPS, (FilterGroups::EVERYTHING & ~FilterGroups::PLAYER), BodyType::DYNAMIC, true);
 
 	beansObject->AddComponent<ParticleSystemComponent>(renderer, particleShader);
-	beansObject->GetComponent<ParticleSystemComponent>()->InitializeParticles(renderer->GetDevice(), L"Textures/starstar.png");
+	beansObject->GetComponent<ParticleSystemComponent>()->InitializeParticles(renderer->GetDevice(), "Stars");
 	AddObjectToRoot(beansObject);
 
 	//Player Arms
@@ -217,7 +217,7 @@ void GameScene::InitializeObjects()
 	puzzleFly->AddComponent<ParticleSystemComponent>(renderer, particleShader);
 	puzzleFly->GetComponent<ParticleSystemComponent>()->SetMaxParticles(50);
 	puzzleFly->GetComponent<ParticleSystemComponent>()->SetParticleSize(0.1f);
-	puzzleFly->GetComponent<ParticleSystemComponent>()->InitializeParticles(renderer->GetDevice(), L"Textures/fire1.png");
+	puzzleFly->GetComponent<ParticleSystemComponent>()->InitializeParticles(renderer->GetDevice(), "Fire1");
 	AddObjectToRoot(puzzleFly);
 
 	/*Shader* fireShader = resources->GetShaderResource("fireShader");*/
@@ -428,7 +428,7 @@ void GameScene::InitializeInterior()
 	LightComponent* fLight = fireLight->AddComponent<LightComponent>(LightType::POINT_LIGHT,dx::XMFLOAT4(1.0f, 0.29f, 0.0f, 1.0f), 1.7f);
 	fireLight->GetTransform().SetPosition({ -7.0f, -99.f, -1.36f });
 	fireLight->AddComponent<ParticleSystemComponent>(renderer, Engine::Instance->GetResources()->GetShaderResource("particleShader"));
-	fireLight->GetComponent<ParticleSystemComponent>()->InitializeFirelikeParticles(renderer->GetDevice(), L"Textures/fire1.png");
+	fireLight->GetComponent<ParticleSystemComponent>()->InitializeFirelikeParticles(renderer->GetDevice(), "Fire1");
 	fireLight->AddFlag(ObjectFlag::DEFAULT | ObjectFlag::NO_CULL);
 	fLight->SetEnabled(true);
 	fLight->SetIntensity(1.f);

@@ -66,8 +66,7 @@ public:
 	static Object* DefaultCreateItem(std::string key, PickupType type, float value);
 
 private:
-	void SpawnStatic(Chunk* chunk, std::unordered_map<int, Chunk*>& chunkMap);
-	void SpawnStatic(std::unordered_map<int, Chunk*>& chunkMap);
+	void SpawnStatic(Chunk* chunk);
 	void SpawnItem (Chunk* chunk);
 
 	bool ValidSpawnPoint(const dx::XMFLOAT2& point, Chunk* chunk, float minInfluence) const;

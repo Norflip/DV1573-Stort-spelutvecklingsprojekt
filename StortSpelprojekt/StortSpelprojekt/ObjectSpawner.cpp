@@ -47,7 +47,7 @@ void ObjectSpawner::Spawn(const SaveState& state, const Bounds& worldBounds, std
 
 	for (auto i : chunkMap)
 	{
-		SpawnStatic(i.second, chunkMap);
+		SpawnStatic(i.second);
 
 		AddTreesToChunk(i.second);
 		AddGrassToChunk(i.second);
@@ -289,7 +289,7 @@ static float spawnChance = 0.0f;
 static float spawnIncrement = 0.2f;
 static float spawnDecrement = 0.15f;
 
-void ObjectSpawner::SpawnStatic(Chunk* chunk, std::unordered_map<int, Chunk*>& chunkMap)
+void ObjectSpawner::SpawnStatic(Chunk* chunk)
 {
 	const float SPAWN_RADIUS = 10.0f;
 	std::vector<dx::XMFLOAT2> points = PossionDiscSampler::Sample(SPAWN_RADIUS, CHUNK_SIZE, CHUNK_SIZE);
@@ -299,7 +299,7 @@ void ObjectSpawner::SpawnStatic(Chunk* chunk, std::unordered_map<int, Chunk*>& c
 
 
 	static size_t MAX_TRIES = 12;
-	size_t nrToSpawn = UICAST(Random::Range(1, (3+1)));	// 1 - 3
+	size_t nrToSpawn = UICAST(Random::Range(1, (3 + 1)));	// 1 - 3
 
 	for (size_t nr = 0; nr < nrToSpawn; nr++)
 	{
@@ -323,7 +323,7 @@ void ObjectSpawner::SpawnStatic(Chunk* chunk, std::unordered_map<int, Chunk*>& c
 				dx::XMFLOAT2 point(dx, dz);
 				const float radius = prop.bounds.GetRadiusXZ();
 
-				if (ValidSpawnPoint(dx::XMFLOAT2(x,z), chunk, 0.9f) && environmentQT->CountInRange(point, radius) == 0)
+				if (ValidSpawnPoint(dx::XMFLOAT2(x, z), chunk, 0.9f) && environmentQT->CountInRange(point, radius) == 0)
 				{
 					spawnChance -= spawnDecrement;
 					environmentQT->Insert(point, radius * 1.5f);	// small padding by 50%
@@ -347,10 +347,10 @@ void ObjectSpawner::SpawnStatic(Chunk* chunk, std::unordered_map<int, Chunk*>& c
 					//mc->SetInstanceable(instancedData, instancedData.size(), renderer->GetDevice());
 
 					dx::XMFLOAT3 tmpPos;
-					dx::XMStoreFloat3 (&tmpPos, props->GetTransform().GetLocalPosition());
+					dx::XMStoreFloat3(&tmpPos, props->GetTransform().GetLocalPosition());
 
-					MeshCollider* meshCollider = props->AddComponent<MeshCollider>(prop.mesh, dx::XMFLOAT3(0,0,0));
-					
+					MeshCollider* meshCollider = props->AddComponent<MeshCollider>(prop.mesh, dx::XMFLOAT3(0, 0, 0));
+
 					dx::XMFLOAT4 rot;
 					dx::XMStoreFloat4(&rot, randomYRotation);
 					meshCollider->SetRotation(0, rot);
@@ -369,94 +369,6 @@ void ObjectSpawner::SpawnStatic(Chunk* chunk, std::unordered_map<int, Chunk*>& c
 	}
 
 	spawnChance = Math::Clamp01(spawnChance);
-}
-
-void ObjectSpawner::SpawnStatic(std::unordered_map<int, Chunk*>& chunkMap)
-{
-	propSpawnPositions = CreateSpawnPositions(environmentQT, 10.0f, 5.0f, chunkMap);
-
-	if (instancedProps.size() > 0)
-	{
-		struct TempData
-		{
-			Prop* prop;
-			std::vector<dx::XMFLOAT4X4> instancedData;
-			std::vector<dx::XMFLOAT3> positions;
-			std::vector<dx::XMFLOAT4> rotations;
-		};
-
-		std::unordered_map<Chunk*, TempData> data;
-
-		size_t propIndex = 0;
-		for (size_t i = 0; i < propSpawnPositions.size(); i++)
-		{
-			Prop& prop = instancedProps[propIndex];
-			bool valid = false;
-
-			for (size_t j = 0; j < prop.queueCount && i < propSpawnPositions.size(); j++)
-			{
-				dx::XMFLOAT2 pos = propSpawnPositions[i];
-
-				Chunk* chunk = world->GetChunk(pos.x, pos.y);
-				valid = ValidSpawnPoint(pos, chunk, 0.3f);
-
-				if (valid)
-				{
-					auto find = data.find(chunk);
-					if (find == data.end())
-						data.insert({ chunk, TempData() });
-
-					float y = chunk->SampleHeight(pos.x, pos.y) + prop.yOffset;
-					dx::XMFLOAT3 position = dx::XMFLOAT3(pos.x, y, pos.y);
-
-					float height = prop.bounds.GetSize().y;
-
-					dx::XMVECTOR randomYRotation = dx::XMQuaternionRotationAxis({ 0,1,0 }, Random::RadAngle());
-
-					//position.y += ((height / 2.0f) * (1.0f - prop.yOffset));
-
-					/*
-					dx::XMMATRIX rotation = dx::XMMatrixIdentity();
-					rotation = dx::XMMatrixMultiply(rotation, dx::XMMatrixRotationNormal({0, 0, FCAST(prop.randomRotationAxis.z)}, Random::RadAngle()));
-					rotation = dx::XMMatrixMultiply(rotation, dx::XMMatrixRotationNormal({0, FCAST(prop.randomRotationAxis.y), 0}, Random::RadAngle()));
-					rotation = dx::XMMatrixMultiply(rotation, dx::XMMatrixRotationNormal({ FCAST(prop.randomRotationAxis.x), 0, 0}, Random::RadAngle()));
-				*/
-					dx::XMFLOAT4 rot;
-					dx::XMStoreFloat4(&rot, randomYRotation);
-
-					data[chunk].rotations.push_back(rot);
-
-					dx::XMFLOAT4X4 instancedData;
-					dx::XMMATRIX translation = dx::XMMatrixScaling(1.0f, 1.0f, 1.0f) * dx::XMMatrixRotationQuaternion(randomYRotation) * dx::XMMatrixTranslation(position.x, position.y, position.z);
-					dx::XMStoreFloat4x4(&instancedData, dx::XMMatrixTranspose(translation));
-
-					data[chunk].positions.push_back(position);
-					data[chunk].instancedData.push_back(instancedData);
-					data[chunk].prop = &prop;
-				}
-			}
-
-			propIndex++;
-			propIndex %= instancedProps.size();
-			i += (prop.queueCount - 1);
-		}
-
-		size_t index = 0;
-		for (auto i : data)
-		{
-			Object* props = new Object("props_" + std::to_string(index), ObjectFlag::DEFAULT /* | ObjectFlag::NO_CULL */);
-			MeshComponent* mc = props->AddComponent<MeshComponent>(i.second.prop->mesh, i.second.prop->material);
-			mc->SetInstanceable(i.second.instancedData, i.second.instancedData.size(), renderer->GetDevice());
-
-			MeshCollider* meshCollider = props->AddComponent<MeshCollider>(i.second.prop->mesh, i.second.positions);
-			for (size_t j = 0; j < i.second.rotations.size(); j++)
-				meshCollider->SetRotation(j, i.second.rotations[j]);
-
-			props->AddComponent<RigidBodyComponent>(0.f, FilterGroups::PROPS, FilterGroups::EVERYTHING, BodyType::STATIC, true);
-
-			Object::AddToHierarchy(i.first->GetOwner(), props);
-		}
-	}
 }
 
 static size_t m_itemIndex = 0;
@@ -495,9 +407,12 @@ void ObjectSpawner::SpawnItem(Chunk* chunk)
 					Object::AddToHierarchy(root, object);
 					activeItems.push_back(object);
 
-					/* Particles */
-					ParticleSystemComponent* particles = object->AddComponent<ParticleSystemComponent>(renderer, Engine::Instance->GetResources()->GetShaderResource("particleShader"));
-					particles->InitializeParticles(renderer->GetDevice(), L"Textures/starstar.png");
+					if (!object->HasComponent<ParticleSystemComponent>())
+					{
+						/* Particles */
+						ParticleSystemComponent* particles = object->AddComponent<ParticleSystemComponent>(renderer, Engine::Instance->GetResources()->GetShaderResource("particleShader"));
+						particles->InitializeParticles(renderer->GetDevice(), "Stars");
+					}
 
 					m_itemIndex++;
 					m_itemIndex %= itemRegistry.size();

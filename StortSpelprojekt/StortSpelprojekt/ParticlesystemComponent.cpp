@@ -1,5 +1,6 @@
 #include "stdafx.h"
 #include "ParticlesystemComponent.h"
+#include "Engine.h"
 
 ParticleSystemComponent::ParticleSystemComponent(Renderer* renderer, Shader* shader) : mesh(new Mesh(vertexBuffer, indexBuffer))
 {
@@ -75,7 +76,7 @@ void ParticleSystemComponent::Shutdown()
 	}
 }
 
-void ParticleSystemComponent::InitializeParticles(ID3D11Device* device, LPCWSTR textureFilename)
+void ParticleSystemComponent::InitializeParticles(ID3D11Device* device, const std::string& texureKey)
 {
 	//maxParticles = 10;
 	particleList = new Particles[maxParticles];
@@ -91,10 +92,14 @@ void ParticleSystemComponent::InitializeParticles(ID3D11Device* device, LPCWSTR 
 	mesh->SetIndexCount(indexCount);
 	mesh->SetVertexCount(vertexCount);
 
-	LoadTexture(device, textureFilename);
+	Texture* texture = Engine::Instance->GetResources()->GetResource<Texture>(texureKey);
+	assert(texture != nullptr);
+
+	mat->SetTexture(texture, TEXTURE_DIFFUSE_SLOT, ShaderBindFlag::PIXEL);
+	mat->SetSampler(DXHelper::CreateSampler(D3D11_FILTER_MIN_MAG_MIP_LINEAR, D3D11_TEXTURE_ADDRESS_WRAP, device), 0, ShaderBindFlag::PIXEL);
 }
 
-void ParticleSystemComponent::InitializeFirelikeParticles(ID3D11Device* device, LPCWSTR textureFilename)
+void ParticleSystemComponent::InitializeFirelikeParticles(ID3D11Device* device, const std::string& texureKey)
 {
 	maxParticles = 50;
 	particleSize = 0.1f;
@@ -115,7 +120,8 @@ void ParticleSystemComponent::InitializeFirelikeParticles(ID3D11Device* device, 
 	mesh->SetIndexCount(indexCount);
 	mesh->SetVertexCount(vertexCount);
 
-	LoadTexture(device, textureFilename);
+	mat->SetTexture(Engine::Instance->GetResources()->GetResource<Texture>(texureKey), TEXTURE_DIFFUSE_SLOT, ShaderBindFlag::PIXEL);
+	mat->SetSampler(DXHelper::CreateSampler(D3D11_FILTER_MIN_MAG_MIP_LINEAR, D3D11_TEXTURE_ADDRESS_WRAP, device), 0, ShaderBindFlag::PIXEL);
 }
 
 void ParticleSystemComponent::SetDifference(float x, float y, float z)
@@ -124,17 +130,17 @@ void ParticleSystemComponent::SetDifference(float x, float y, float z)
 	this->differenceOnY = y;
 	this->differenceOnZ = z;
 }
-
-void ParticleSystemComponent::LoadTexture(ID3D11Device* device, LPCWSTR textureFilename)
-{
-	HRESULT hr = dx::CreateWICTextureFromFile(device, textureFilename, nullptr, &srv);
-	if (FAILED(hr))
-		MessageBox(0, L"Failed to 'Load WIC Texture'", L"Graphics scene Initialization Message", MB_ICONERROR);
-
-	/* Mat info */
-	mat->SetTexture(new Texture(srv), TEXTURE_DIFFUSE_SLOT, ShaderBindFlag::PIXEL);
-	mat->SetSampler(DXHelper::CreateSampler(D3D11_FILTER_MIN_MAG_MIP_LINEAR, D3D11_TEXTURE_ADDRESS_WRAP, device), 0, ShaderBindFlag::PIXEL);
-}
+//
+//void ParticleSystemComponent::LoadTexture(ID3D11Device* device, LPCWSTR textureFilename)
+//{
+//	HRESULT hr = dx::CreateWICTextureFromFile(device, textureFilename, nullptr, &srv);
+//	if (FAILED(hr))
+//		MessageBox(0, L"Failed to 'Load WIC Texture'", L"Graphics scene Initialization Message", MB_ICONERROR);
+//
+//	/* Mat info */
+//	mat->SetTexture(new Texture(srv), TEXTURE_DIFFUSE_SLOT, ShaderBindFlag::PIXEL);
+//	mat->SetSampler(DXHelper::CreateSampler(D3D11_FILTER_MIN_MAG_MIP_LINEAR, D3D11_TEXTURE_ADDRESS_WRAP, device), 0, ShaderBindFlag::PIXEL);
+//}
 
 void ParticleSystemComponent::InitializeBuffers(ID3D11Device* device)
 {

@@ -17,8 +17,8 @@ public:
 	virtual ~ParticleSystemComponent();
 	void Shutdown();
 
-	void InitializeParticles(ID3D11Device* device, LPCWSTR textureFilename);
-	void InitializeFirelikeParticles(ID3D11Device* device, LPCWSTR textureFilename);
+	void InitializeParticles(ID3D11Device* device, const std::string& texureKey);
+	void InitializeFirelikeParticles(ID3D11Device* device, const std::string& texureKey);
 
 	void Update(const float& deltaTime) override;
 	void Draw(Renderer* renderer, CameraComponent* camera) override;
@@ -31,7 +31,6 @@ public:
 	void SetActive(bool active) { this->active = active; }
 
 private:
-	void LoadTexture(ID3D11Device* device, LPCWSTR textureFilename);
 	void InitializeBuffers(ID3D11Device* device);
 
 	void CreateParticle(float frameTime);
