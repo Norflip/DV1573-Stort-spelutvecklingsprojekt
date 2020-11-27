@@ -37,7 +37,7 @@ Engine::Engine(HINSTANCE hInstance) : window(hInstance), activeSceneIndex(-1), s
 	SetScene(SceneIndex::WIN,		new WinScene());
 	SetScene(SceneIndex::CREDITS,	new CreditsScene());
 
-	SwitchScene(SceneIndex::CREDITS);
+	SwitchScene(SceneIndex::INTRO);
 }
 
 Engine::~Engine()
