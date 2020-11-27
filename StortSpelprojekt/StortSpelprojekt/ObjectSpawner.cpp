@@ -26,16 +26,10 @@ void ObjectSpawner::Initialize(Object* root, World* world, Renderer* renderer)
 	tree.meshes.push_back(resources->GetResource<Mesh>("Tree"));
 	tree.meshes.push_back(resources->GetResource<Mesh>("leaves"));
 
-	tree.materials.push_back(resources->GetResource<Material>("TreeMaterial"));
-
-	//Material* mat = new Material(resources->GetShaderResource("leafShader"));
-	//mat->SetMaterialData(resources->GetResource<Material>("leavesMaterial")->GetMaterialData());
-	//mat->SetTransparent(true);
-	//tree.materials.push_back(mat);
-
 	Material* mat = resources->GetResource<Material>("leavesMaterial");
 	mat->SetShader(resources->GetShaderResource("leafShader"));
-
+	
+	tree.materials.push_back(resources->GetResource<Material>("TreeMaterial"));
 	tree.materials.push_back(mat);
 	tree.materials[1]->SetTransparent(true);
 
