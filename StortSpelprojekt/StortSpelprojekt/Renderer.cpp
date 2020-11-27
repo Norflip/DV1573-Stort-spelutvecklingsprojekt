@@ -867,10 +867,14 @@ void Renderer::UpdateForwardPlus(CameraComponent* camera)
 	ClearRenderTarget(midbuffer);
 	SetRenderTarget(midbuffer);
 	ID3D11UnorderedAccessView* nullUAV = nullptr;
+	ID3D11ShaderResourceView* nullSRV = nullptr;
+	context->CSSetUnorderedAccessViews(0, 1, &nullUAV, NULL); //frustum
 	context->CSSetUnorderedAccessViews(3, 1, &nullUAV, NULL); //u3
 	context->CSSetUnorderedAccessViews(4, 1, &nullUAV, NULL); //u4
 	context->CSSetUnorderedAccessViews(5, 1, &nullUAV, NULL); //u5
 	context->CSSetUnorderedAccessViews(6, 1, &nullUAV, NULL); //u6
+	context->PSSetShaderResources(10, 1, &nullSRV);
+	context->PSSetShaderResources(11, 1, &nullSRV);
 	context->OMSetDepthStencilState(dss, 0);
 	context->CSSetShaderResources(1, 1, depthPass.GetDepthSRV());
 	DXHelper::BindStructuredBuffer(context, 9, ShaderBindFlag::COMPUTE, &inFrustums_srv);
@@ -891,7 +895,8 @@ void Renderer::UpdateForwardPlus(CameraComponent* camera)
 	context->CSSetUnorderedAccessViews(4, 1, &nullUAV, NULL); //u4
 	context->CSSetUnorderedAccessViews(5, 1, &nullUAV, NULL); //u5
 	context->CSSetUnorderedAccessViews(6, 1, &nullUAV, NULL); //u6
-
+	context->PSSetShaderResources(10, 1, &nullSRV);
+	context->PSSetShaderResources(11, 1, &nullSRV);
 	
 	//context->Dispatch(1, 1, 1);
 }

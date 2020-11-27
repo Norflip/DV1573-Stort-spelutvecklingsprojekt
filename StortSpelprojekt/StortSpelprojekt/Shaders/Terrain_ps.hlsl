@@ -20,7 +20,7 @@ SamplerState m_dataSamplerState : register(s0);
 SamplerState m_textureSamplerState : register(s1);
 
 float4 main(VS_OUTPUT input) : SV_TARGET
-{
+{	
 	const float UV_SCALE = 8.0f;
 
 	float4 data = testTexture.Sample(m_dataSamplerState, input.uv);

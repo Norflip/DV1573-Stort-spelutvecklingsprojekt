@@ -416,7 +416,8 @@ void PlayerComp::RayCast(const float& deltaTime)
 	}
 
 	//ATTACK ENEMIES
-	if (LMOUSE_DOWN && holding == nullptr)
+	if (LMOUSE_DOWN && holding == nullptr && 
+		arms->GetComponent< PlayerAnimHandlerComp>()->GetCooldown() > 1.0f)
 	{
 		if (physics->RaytestSingle(ray, 5.0f, hit, FilterGroups::ENEMIES))
 		{
@@ -444,10 +445,10 @@ void PlayerComp::RayCast(const float& deltaTime)
 			}
 		}
 
-		else if (physics->RaytestSingle(ray, 5.0f, hit, FilterGroups::PROPS))
+		/*else if (physics->RaytestSingle(ray, 5.0f, hit, FilterGroups::PROPS))
 		{
 			AudioMaster::Instance().PlaySoundEvent("choptree");			
-		}
+		}*/
 	}
 
 	// Health drop

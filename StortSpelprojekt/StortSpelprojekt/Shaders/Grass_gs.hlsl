@@ -39,7 +39,7 @@ void main(line DS_OUTPUT_GRASS input[2], inout TriangleStream<GS_OUTPUT_GRASS> T
 
 	output.position = mul(float4(pos, 1.0f), mvp);
 	output.tex = float2(0, input[0].tex.y);
-	output.normal = input[0].normal;
+    output.normal = input[0].normal; //cross(input[0].position.xyz, input[1].position.xyz); //
 	output.colour = input[0].colour;
 	output.grassDirection = grassDirection;
 	output.fade = origWidth1 / width1;
@@ -52,7 +52,7 @@ void main(line DS_OUTPUT_GRASS input[2], inout TriangleStream<GS_OUTPUT_GRASS> T
 	
 	output.position = mul(float4(pos, 1.0f), mvp);
 	output.tex = float2(0, input[1].tex.y);
-	output.normal = input[1].normal;
+    output.normal = input[1].normal; //cross(input[0].position.xyz, input[1].position.xyz); //
 	output.colour = input[1].colour;
 	output.grassDirection = grassDirection;
 	output.fade = origWidth2 / width2;
@@ -64,7 +64,7 @@ void main(line DS_OUTPUT_GRASS input[2], inout TriangleStream<GS_OUTPUT_GRASS> T
 	
 	output.position = mul(float4(pos, 1.0f), mvp);
 	output.tex = float2(1, input[0].tex.y);
-	output.normal = input[0].normal;
+    output.normal = input[0].normal; //cross(input[0].position.xyz, input[1].position.xyz); //
 	output.colour = input[0].colour;
 	output.grassDirection = grassDirection;
 	output.fade = origWidth1 / width1;
@@ -77,7 +77,7 @@ void main(line DS_OUTPUT_GRASS input[2], inout TriangleStream<GS_OUTPUT_GRASS> T
 	
 	output.position = mul(float4(pos, 1.0f), mvp);
 	output.tex = float2(1, input[1].tex.y);
-	output.normal = input[1].normal;
+    output.normal = input[1].normal; //cross(input[0].position.xyz, input[1].position.xyz); //
 	output.colour = input[1].colour;
 	output.grassDirection = grassDirection;
 	output.fade = origWidth2 / width2;

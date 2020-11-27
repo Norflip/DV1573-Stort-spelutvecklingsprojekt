@@ -235,6 +235,8 @@ void GameScene::InitializeObjects()
 	frogpuzzle*/
 	GUICompass* compass = new GUICompass(*renderer, window, house, player);
 	guiManager->AddGUIObject(compass, "compass");
+
+	
 }
 
 void GameScene::InitializeGUI()
@@ -465,7 +467,6 @@ void GameScene::OnActivate()
 	Input::Instance().ConfineMouse();
 	Input::Instance().SetMouseMode(dx::Mouse::Mode::MODE_RELATIVE);
 	ShowCursor(false);
-	AudioMaster::Instance().PlaySoundEvent("wind");
 
 	world.ConstructSegment(state);
 
@@ -504,6 +505,10 @@ void GameScene::OnActivate()
 	//this->PrintSceneHierarchy(root, 0);
 	enemyManager->SpawnEnemies();
 
+	AudioMaster::Instance().PlaySoundEvent("wind");
+
+	/* Ugly solution */
+	player->GetComponent<PlayerComp>()->GetArms()->GetComponent< PlayerAnimHandlerComp>()->SetStarted(true);
 }
 
 void GameScene::OnDeactivate()
@@ -518,6 +523,7 @@ void GameScene::OnDeactivate()
 
 	ShowCursor(true);
 	//this->PrintSceneHierarchy(root, 0);
+	player->GetComponent<PlayerComp>()->GetArms()->GetComponent< PlayerAnimHandlerComp>()->SetStarted(false);
 }
 
 void GameScene::SetSignPositions()

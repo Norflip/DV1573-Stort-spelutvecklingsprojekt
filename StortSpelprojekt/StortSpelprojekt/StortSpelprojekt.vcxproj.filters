@@ -276,9 +276,6 @@
     <ClCompile Include="PlayerAnimHandlerComp.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="FireTextureComponent.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="WorldGenerator.cpp">
       <Filter>Source Files\SpawnSystems</Filter>
     </ClCompile>
@@ -301,6 +298,9 @@
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="VirtualCamera.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="CreditsScene.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>
@@ -587,16 +587,12 @@
     <ClInclude Include="FrogPuzzle.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="FireTextureComponent.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
     <ClInclude Include="HousePartsComponent.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="SelectableComponent.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="WorldGenerator.h" />
     <ClInclude Include="WorldGenerator.h" />
     <ClInclude Include="WorldGenerator.h">
       <Filter>Source Files\SpawnSystems</Filter>
@@ -608,6 +604,9 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="SaveHandler.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="CreditsScene.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>

@@ -22,7 +22,8 @@ void PlayerAnimHandlerComp::Initialize()
 
 void PlayerAnimHandlerComp::Update(const float& deltaTime)
 {
-	Animate(deltaTime);
+	if(gameStarted)
+		Animate(deltaTime);
 	SetPosition();
 }
 
@@ -32,12 +33,14 @@ void PlayerAnimHandlerComp::Animate(const float& time)
 	attackTimer += time;
 	attackCooldown += time;
 
-	if (LMOUSE_PRESSED && attackCooldown > 1.0f)
+	
+	if (LMOUSE_DOWN && attackCooldown > 1.0f)
 	{
 		skeletonMeshComp->SetTrack(SkeletonStateMachine::ATTACK, true);
 		attackTimer = 0;
 		attackCooldown = 0;
 		attacking = true;
+				
 		AudioMaster::Instance().PlaySoundEvent("axeSwing");
 	}
 	else if (attacking && attackTimer > 0.83f)
@@ -45,7 +48,7 @@ void PlayerAnimHandlerComp::Animate(const float& time)
 		attacking = false;
 	}
 
-	else if(!attacking)
+	else if (!attacking)
 	{
 		if (controlComp->GetRigidBodyComp()->GetLinearVelocity().x > 0 || controlComp->GetRigidBodyComp()->GetLinearVelocity().x < 0 ||
 			controlComp->GetRigidBodyComp()->GetLinearVelocity().z > 0 || controlComp->GetRigidBodyComp()->GetLinearVelocity().z < 0)
@@ -65,6 +68,7 @@ void PlayerAnimHandlerComp::Animate(const float& time)
 			skeletonMeshComp->SetTrack(SkeletonStateMachine::IDLE, false);
 		}
 	}
+	
 }
 
 //Makes the players arms follow the camera.
