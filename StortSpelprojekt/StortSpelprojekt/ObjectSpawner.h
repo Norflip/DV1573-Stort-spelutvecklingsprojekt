@@ -66,6 +66,7 @@ public:
 	static Object* DefaultCreateItem(std::string key, PickupType type, float value);
 
 private:
+	void SpawnStatic(Chunk* chunk, std::unordered_map<int, Chunk*>& chunkMap);
 	void SpawnStatic(std::unordered_map<int, Chunk*>& chunkMap);
 	void SpawnItem (Chunk* chunk);
 
@@ -81,6 +82,8 @@ private:
 private:
 	std::vector<Object*> activeItems;
 	std::vector<Object*> props;
+
+	std::vector<dx::XMFLOAT3> TMP_POS;
 
 	ObjectPooler* pooler;
 	Object* root;

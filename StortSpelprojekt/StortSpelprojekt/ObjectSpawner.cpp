@@ -25,9 +25,20 @@ void ObjectSpawner::Initialize(Object* root, World* world, Renderer* renderer)
 	// DEFAULT TREE
 	tree.meshes.push_back(resources->GetResource<Mesh>("Tree"));
 	tree.meshes.push_back(resources->GetResource<Mesh>("leaves"));
+
 	tree.materials.push_back(resources->GetResource<Material>("TreeMaterial"));
-	tree.materials.push_back(resources->GetResource<Material>("leavesMaterial"));
+
+	//Material* mat = new Material(resources->GetShaderResource("leafShader"));
+	//mat->SetMaterialData(resources->GetResource<Material>("leavesMaterial")->GetMaterialData());
+	//mat->SetTransparent(true);
+	//tree.materials.push_back(mat);
+
+	Material* mat = resources->GetResource<Material>("leavesMaterial");
+	mat->SetShader(resources->GetShaderResource("leafShader"));
+
+	tree.materials.push_back(mat);
 	tree.materials[1]->SetTransparent(true);
+
 
 	tree.minScale = 1.4f;
 	tree.maxScale = 2.0f;
@@ -40,10 +51,12 @@ void ObjectSpawner::Spawn(const SaveState& state, const Bounds& worldBounds, std
 	QuadTree tree(worldBounds);
 	globalTreeQT = new QuadTree(worldBounds);
 
-	SpawnStatic(chunkMap);
+	//SpawnStatic(chunkMap);
 
 	for (auto i : chunkMap)
 	{
+		SpawnStatic(i.second, chunkMap);
+
 		AddTreesToChunk(i.second);
 		AddGrassToChunk(i.second);
 
@@ -136,6 +149,12 @@ void ObjectSpawner::RegisterInstancedItem(Mesh* mesh, Material* material, float 
 
 void ObjectSpawner::DrawDebug()
 {
+	for (size_t i = 0; i < TMP_POS.size(); i++)
+	{
+		DShape::DrawSphere(TMP_POS[i], 0.5f, dx::XMFLOAT3(1, 1, 0));
+	}
+
+
 	return;
 	for (size_t i = 0; i < itemSpawnPositions.size(); i++)
 	{
@@ -205,6 +224,7 @@ void ObjectSpawner::AddTreesToChunk(Chunk* chunk) const
 				dx::XMMATRIX translation = dx::XMMatrixScaling(scale, scale, scale) * rotation * dx::XMMatrixTranslation(position.x, position.y, position.z);
 				dx::XMStoreFloat4x4(&treesInstanced[i], dx::XMMatrixTranspose(translation));
 
+				position.y += 3.0f;
 				colliderPositions.push_back(position);
 				colliderExtends.push_back(extends);
 
@@ -220,7 +240,7 @@ void ObjectSpawner::AddTreesToChunk(Chunk* chunk) const
 			treeObject->GetTransform().SetWorldPosition({ 0,0,0 });
 
 			MeshComponent* meshComp = treeObject->AddComponent<MeshComponent>(tree.meshes, tree.materials);
-			meshComp->SetInstanceable(0, treesInstanced, nrOfInstancedStyTrees, renderer->GetDevice());
+			meshComp->SetInstanceable(treesInstanced, nrOfInstancedStyTrees, renderer->GetDevice());
 
 			BoxColliderComponent* colliders = treeObject->AddComponent<BoxColliderComponent>(colliderExtends, colliderPositions);
 			for (size_t i = 0; i < nrOfInstancedStyTrees; i++)
@@ -281,6 +301,89 @@ Object* ObjectSpawner::DefaultCreateItem(std::string key, PickupType type, float
 		object->AddComponent<RigidBodyComponent>(10.0f, FilterGroups::PICKUPS, FilterGroups::EVERYTHING & ~FilterGroups::PLAYER, BodyType::DYNAMIC, true);
 	}
 	return object;
+}
+
+static float spawnChance = 0.0f;
+static float spawnIncrement = 0.1f;
+static float spawnDecrement = 0.2f;
+
+void ObjectSpawner::SpawnStatic(Chunk* chunk, std::unordered_map<int, Chunk*>& chunkMap)
+{
+	const float SPAWN_RADIUS = 10.0f;
+	std::vector<dx::XMFLOAT2> points = PossionDiscSampler::Sample(SPAWN_RADIUS, CHUNK_SIZE, CHUNK_SIZE);
+
+	if (chunk->GetType() != ChunkType::TERRAIN)
+		return;
+
+	if (Random::Value() > spawnChance)
+	{
+		static size_t MAX_TRIES = 12;
+		int nrToSpawn = Random::Range(0, 3);
+
+		for (size_t nr = 0; nr < nrToSpawn; nr++)
+		{
+			size_t propIndex = UICAST(Random::Range(0, instancedProps.size() - 1));
+			Prop& prop = instancedProps[propIndex];
+			Bounds b = prop.bounds;
+
+			size_t tries = 0;
+			while (tries < MAX_TRIES)
+			{
+				float dx = Random::Value() * FCAST(CHUNK_SIZE);
+				float dz = Random::Value() * FCAST(CHUNK_SIZE);
+				
+				dx::XMFLOAT3 chunkPosition;
+				dx::XMStoreFloat3(&chunkPosition, chunk->GetOwner()->GetTransform().GetWorldPosition());
+				dx += chunkPosition.x;
+				dz += chunkPosition.z;
+
+				dx::XMFLOAT2 point(dx, dz);
+				const float radius = prop.bounds.GetRadiusXZ();
+
+				//std::cout << globalTreeQT->CountInRange(point, radius) << std::endl;
+
+				if (globalTreeQT->CountInRange(point, radius) == 0)
+				{
+					
+					spawnChance -= spawnDecrement;
+					globalTreeQT->Insert(-1, point, radius);
+
+					float y = chunk->SampleHeight(dx, dz) + prop.yOffset;
+
+					std::cout << "created prop in " << chunk->GetOwner()->GetName() << " radius: " << radius << " props: " << nrToSpawn << " pos (" << dx << ", " << y << ", " << dz << ")\n";
+
+					TMP_POS.push_back({ dx, y, dz });
+
+					Object* props = new Object("props_" + prop.mesh->GetMeshName(), ObjectFlag::DEFAULT | ObjectFlag::NO_CULL);
+					MeshComponent* mc = props->AddComponent<MeshComponent>(prop.mesh, prop.material);
+
+					dx::XMFLOAT4X4 wat;
+					dx::XMStoreFloat4x4(&wat, dx::XMMatrixTranslation(dx, y, dz));
+
+					std::vector<dx::XMFLOAT4X4> instancedData{ wat };
+					mc->SetInstanceable( instancedData, instancedData.size(), renderer->GetDevice());
+					
+					/*MeshCollider* meshCollider = props->AddComponent<MeshCollider>(i.second.prop->mesh, i.second.positions);
+					for (size_t j = 0; j < i.second.rotations.size(); j++)
+						meshCollider->SetRotation(j, i.second.rotations[j]);*/
+
+					props->AddComponent<RigidBodyComponent>(0.f, FilterGroups::PROPS, FilterGroups::EVERYTHING, BodyType::STATIC, true);
+					Object::AddToHierarchy(chunk->GetOwner(), props);
+					//props->GetTransform().SetWorldPosition(dx::XMLoadFloat3(&position));
+
+					break;
+				}
+
+				tries++;
+			}
+		}
+	}
+	else
+	{
+		spawnChance += spawnIncrement;
+	}
+
+	spawnChance = Math::Clamp01(spawnChance);
 }
 
 void ObjectSpawner::SpawnStatic(std::unordered_map<int, Chunk*>& chunkMap)
@@ -357,7 +460,7 @@ void ObjectSpawner::SpawnStatic(std::unordered_map<int, Chunk*>& chunkMap)
 		{
 			Object* props = new Object("props_" + std::to_string(index), ObjectFlag::DEFAULT /* | ObjectFlag::NO_CULL */);
 			MeshComponent* mc = props->AddComponent<MeshComponent>(i.second.prop->mesh, i.second.prop->material);
-			mc->SetInstanceable(0, i.second.instancedData, i.second.instancedData.size(), renderer->GetDevice());
+			mc->SetInstanceable(i.second.instancedData, i.second.instancedData.size(), renderer->GetDevice());
 
 			MeshCollider* meshCollider = props->AddComponent<MeshCollider>(i.second.prop->mesh, i.second.positions);
 			for (size_t j = 0; j < i.second.rotations.size(); j++)
@@ -462,7 +565,6 @@ std::vector<dx::XMFLOAT2> ObjectSpawner::CreateSpawnPositions(QuadTree* tree, fl
 	std::cout << "VALID: " << validPoints.size() << std::endl;
 	std::cout << "FAILS: " << fails << std::endl;
 	std::cout << "COLS: " << cols << std::endl;
-
 
 	ShuffleVector(validPoints);
 	return validPoints;

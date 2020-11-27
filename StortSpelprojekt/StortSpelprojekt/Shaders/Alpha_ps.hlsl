@@ -25,6 +25,7 @@ float4 main(VS_OUTPUT input) : SV_TARGET
 	uint startOffset = LightGrid[tileIndex].x;
 	uint lightCount = LightGrid[tileIndex].y;
 
+	
 	finalColor = IterateLights(startOffset,lightCount,finalColor, normalized,  input.worldPosition,  viewDirection);
 
 	finalColor.a = 1;
