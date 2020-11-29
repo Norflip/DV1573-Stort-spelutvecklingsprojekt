@@ -36,7 +36,7 @@ struct VertexOut
 	float Age : AGE;
 };
 
-VertexOut DrawVS(Particle vin)
+VertexOut main(Particle vin)
 {
 	VertexOut vout;
 

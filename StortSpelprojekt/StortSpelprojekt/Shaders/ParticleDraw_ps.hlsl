@@ -23,7 +23,7 @@ struct GeoOut
 	float2 Tex   : TEXCOORD;
 };
 
-float4 DrawPS(GeoOut pin) : SV_TARGET
+float4 main(GeoOut pin) : SV_TARGET
 {
 	if (usingTexture)
 	{

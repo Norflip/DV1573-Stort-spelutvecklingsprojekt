@@ -53,26 +53,25 @@ struct GeoOut
 
 // The draw GS just expands points into camera facing quads.
 [maxvertexcount(4)]
-void DrawGS(point VertexOut gin[1],
-	inout TriangleStream<GeoOut> triStream)
+void main(point VertexOut pIn[1], inout TriangleStream<GeoOut> triStream)
 {
 	// do not draw "emitter" particles.
-	if (gin[0].Type != PT_EMITTER) {
+	if (pIn[0].Type != PT_EMITTER) {
 
 		// Compute world matrix so that billboard faces the camera		
-		float3 look = normalize(eyePosW.xyz - gin[0].PosW);
+		float3 look = normalize(eyePosW.xyz - pIn[0].PosW);
 		float3 right = normalize(cross(float3(0, 1, 0), look));
 		float3 up = cross(look, right);
 
 		// Compute triangle strip vertices (quad) in world space
-		float halfWidth = 0.5f * gin[0].SizeW.x;
-		float halfHeight = 0.5f * gin[0].SizeW.y;
+		float halfWidth = 0.5f * pIn[0].SizeW.x;
+		float halfHeight = 0.5f * pIn[0].SizeW.y;
 
 		float4 v[4];
-		v[0] = float4(gin[0].PosW + halfWidth * right - halfHeight * up, 1.0f);
-		v[1] = float4(gin[0].PosW + halfWidth * right + halfHeight * up, 1.0f);
-		v[2] = float4(gin[0].PosW - halfWidth * right - halfHeight * up, 1.0f);
-		v[3] = float4(gin[0].PosW - halfWidth * right + halfHeight * up, 1.0f);
+		v[0] = float4(pIn[0].PosW + halfWidth * right - halfHeight * up, 1.0f);
+		v[1] = float4(pIn[0].PosW + halfWidth * right + halfHeight * up, 1.0f);
+		v[2] = float4(pIn[0].PosW - halfWidth * right - halfHeight * up, 1.0f);
+		v[3] = float4(pIn[0].PosW - halfWidth * right + halfHeight * up, 1.0f);
 
 
 		GeoOut gOut[4];
@@ -86,15 +85,15 @@ void DrawGS(point VertexOut gin[1],
 		gOut[2].Tex = float2(0.0f, 0.0f);
 		gOut[3].Tex = float2(1.0f, 0.0f);
 
-		gOut[0].Color = gin[0].Color;
-		gOut[1].Color = gin[0].Color;
-		gOut[2].Color = gin[0].Color;
-		gOut[3].Color = gin[0].Color;
+		gOut[0].Color = pIn[0].Color;
+		gOut[1].Color = pIn[0].Color;
+		gOut[2].Color = pIn[0].Color;
+		gOut[3].Color = pIn[0].Color;
 
-		gOut[0].Age = gin[0].Age;
-		gOut[1].Age = gin[0].Age;
-		gOut[2].Age = gin[0].Age;
-		gOut[3].Age = gin[0].Age;
+		gOut[0].Age = pIn[0].Age;
+		gOut[1].Age = pIn[0].Age;
+		gOut[2].Age = pIn[0].Age;
+		gOut[3].Age = pIn[0].Age;
 
 		for (int i = 0; i < 4; ++i)
 		{

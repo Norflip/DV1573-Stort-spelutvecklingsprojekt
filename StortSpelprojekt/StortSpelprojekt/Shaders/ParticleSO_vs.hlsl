@@ -16,7 +16,7 @@ struct ParticleOut
 	uint Type          : TYPE;
 };
 
-ParticleOut StreamOutVS(Particle vin)
+ParticleOut main(Particle vin)
 {
 	ParticleOut pOut;
 	pOut.InitialPosW = vin.InitialPosW;

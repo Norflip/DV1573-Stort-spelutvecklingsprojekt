@@ -236,6 +236,21 @@ void GameScene::InitializeObjects()
 	GUICompass* compass = new GUICompass(*renderer, window, house, player);
 	guiManager->AddGUIObject(compass, "compass");
 
+
+	Shader* SOShader = new Shader;
+	SOShader->SetInputLayoutStructure(5, SOShader->DEFAULT_INPUT_LAYOUT_PARTICLE);
+	SOShader->SetVertexShader("Shaders/ParticleSO_vs.hlsl");
+	SOShader->SetSOGeometryShader("Shaders/ParticleSO_gs.hlsl");
+	SOShader->Compile(renderer->GetDevice());
+
+	Shader* DrawShader = new Shader;
+	DrawShader->SetInputLayoutStructure(5, SOShader->DEFAULT_INPUT_LAYOUT_PARTICLE);
+	DrawShader->SetVertexShader("Shaders/ParticleDraw_vs.hlsl");
+	DrawShader->SetGeometryShader("Shaders/ParticleDraw_gs.hlsl");
+	DrawShader->SetPixelShader("Shaders/ParticleDraw_ps.hlsl");
+	DrawShader->Compile(renderer->GetDevice());
+
+
 	
 }
 

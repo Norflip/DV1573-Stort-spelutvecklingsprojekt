@@ -21,7 +21,8 @@ enum class ShaderBindFlag
 	GEOMETRY = 1 << 2,
 	HULL = 1 << 3,
 	DOMAINS = 1 << 4,
-	COMPUTE = 1 << 5
+	COMPUTE = 1 << 5,
+	SOGEOMETRY = 1 << 6,
 };
 
 DEFINE_ENUM_FLAG_OPERATORS(ShaderBindFlag);

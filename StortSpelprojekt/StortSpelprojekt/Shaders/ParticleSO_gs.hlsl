@@ -40,7 +40,7 @@ struct Particle
 };
 
 [maxvertexcount(4)]
-void StreamOutGS(point Particle gin[1], inout PointStream<Particle> ptStream)
+void main(point Particle gin[1], inout PointStream<Particle> ptStream)
 {
 	gin[0].Age += timeStep;
 
@@ -80,5 +80,5 @@ void StreamOutGS(point Particle gin[1], inout PointStream<Particle> ptStream)
 }
 
 GeometryShader gsStreamOut = ConstructGSWithSO(
-	CompileShader(gs_5_0, StreamOutGS()),
+	CompileShader(gs_5_0, main()),
 	"POSITION.xyz; VELOCITY.xyz; SIZE.xy; AGE.x; TYPE.x");

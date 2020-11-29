@@ -10,6 +10,16 @@ ALIGN16
 class Mesh : public Resource
 {
 public:
+
+	struct Particle
+	{
+		dx::XMFLOAT3 startPos;
+		dx::XMFLOAT3 startVelocity;
+		dx::XMFLOAT2 size;
+		float age;
+		unsigned int type;
+	};
+
 	struct InstanceData
 	{
 		dx::XMFLOAT4X4 instanceWorld;
