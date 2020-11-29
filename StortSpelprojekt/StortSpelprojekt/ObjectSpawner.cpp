@@ -50,10 +50,10 @@ void ObjectSpawner::Spawn(const SaveState& state, const Bounds& worldBounds, std
 		SpawnStatic(i.second);
 
 		AddTreesToChunk(i.second);
-	//	AddGrassToChunk(i.second);
+		AddGrassToChunk(i.second);
 
 #if SPAWN_ITEMS
-		//SpawnItem(i.second);
+		SpawnItem(i.second);
 #endif
 	}
 }
@@ -229,8 +229,7 @@ void ObjectSpawner::AddTreesToChunk(Chunk* chunk) const
 			for (size_t i = 0; i < nrOfInstancedStyTrees; i++)
 				colliders->SetRotation(i, colliderRotations[i]);
 
-
-			//treeObject->AddComponent<RigidBodyComponent>(0.f, FilterGroups::DEFAULT, FilterGroups::EVERYTHING, BodyType::STATIC, true);
+			treeObject->AddComponent<RigidBodyComponent>(0.f, FilterGroups::DEFAULT, FilterGroups::EVERYTHING, BodyType::STATIC, true);
 		}
 	}
 }

@@ -619,6 +619,8 @@ void Renderer::DrawBatch(const Batch& batch, CameraComponent* camera)
 	GetContext()->Unmap(batchInstanceBuffer, 0);
 
 	batch.material->BindToContext(context);
+	materialBuffer.SetData(batch.material->GetMaterialData());
+	materialBuffer.UpdateBuffer(context);
 
 	UINT stride[2] = { sizeof(Mesh::Vertex), sizeof(dx::XMFLOAT4X4) };
 	UINT offset[2] = { 0 };
@@ -835,6 +837,9 @@ void Renderer::UpdateForwardPlus(CameraComponent* camera)
 	depthPass.BindDSV(context);
 	context->OMSetDepthStencilState(dss, 0);
 	SetCullBack(true);
+
+	std::cout << opaqueItemQueue.size() << std::endl;
+
 	DrawQueueToTarget(opaqueItemQueue, camera);
 	for (auto i : opaqueBatches)
 		DrawBatch(i.second, camera);
