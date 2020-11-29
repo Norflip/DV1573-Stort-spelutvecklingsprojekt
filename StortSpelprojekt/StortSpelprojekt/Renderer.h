@@ -101,6 +101,9 @@ public:
 	//std::vector<UINT>& cullLightsOnCPU();
 	void SetIdAndColor(int id, float color);
 
+	void EnableAlphaBlending();
+	void DisableAlphaBlending();
+
 	ALIGN16_ALLOC;
 
 private:

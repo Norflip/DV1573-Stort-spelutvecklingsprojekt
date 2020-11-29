@@ -251,6 +251,12 @@ void GameScene::InitializeObjects()
 	DrawShader->Compile(renderer->GetDevice());
 
 
+	Object* puzzleFly2 = resources->AssembleObject("PuzzleFlyStatue", "PuzzleFlyStatueMaterial", ObjectFlag::DEFAULT | ObjectFlag::NO_CULL);
+	puzzleFly2->GetTransform().SetPosition({ 35, 1.3f, 50 });
+	puzzleFly2->AddComponent<BoxColliderComponent>(dx::XMFLOAT3{ 1.0f, 1.0f, 1.0f }, dx::XMFLOAT3{ 0, 0, 0 });
+	puzzleFly2->AddComponent<RigidBodyComponent>(0.0f, FilterGroups::HOLDABLE, FilterGroups::EVERYTHING, BodyType::DYNAMIC, true);	
+	AddObjectToRoot(puzzleFly2);
+
 	
 }
 
@@ -623,9 +629,7 @@ void GameScene::Update(const float& deltaTime)
 	std::cout << "PlayerPos: " << player->GetTransform().GetPosition().m128_f32[0] << " " << player->GetTransform().GetPosition().m128_f32[1] << " " << player->GetTransform().GetPosition().m128_f32[2] << std::endl;
 
 	static_cast<GUIFont*>(guiManager->GetGUIObject("fps"))->SetString(std::to_string((int)GameClock::Instance().GetFramesPerSecond()));
-	guiManager->UpdateAll();
-
-	
+	guiManager->UpdateAll();	
 
 }
 

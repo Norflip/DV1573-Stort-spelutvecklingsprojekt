@@ -29,6 +29,8 @@
 #include "PlayerAnimHandlerComp.h"
 #include "HousePartsComponent.h"
 
+#include "ParticleComponent.h"
+
 class GUIFont;
 class SpriteRenderPass;
 class PlayerComp;

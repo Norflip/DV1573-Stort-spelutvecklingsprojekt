@@ -111,9 +111,10 @@ void ParticleComponent::Update(const float& deltaTime)
 
 void ParticleComponent::Draw(Renderer* renderer, CameraComponent* camera)
 {
-
-
-
+	renderer->EnableAlphaBlending();
+	DrawStreamOut(renderer->GetContext(), camera);
+	Draw(renderer->GetContext(), camera);
+	renderer->DisableAlphaBlending();
 }
 
 void ParticleComponent::SetTexture(ID3D11Device* device, LPCWSTR textureFilename)

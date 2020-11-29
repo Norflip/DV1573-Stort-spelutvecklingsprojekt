@@ -903,3 +903,16 @@ void Renderer::UpdateForwardPlus(CameraComponent* camera)
 	//context->Dispatch(1, 1, 1);
 }
 
+void Renderer::EnableAlphaBlending()
+{
+	float blendfact[4] = { 0.0f,0.0f,0.0f,0.0f };
+	context->OMSetBlendState(blendStateOn, blendfact, 0xffffffff);
+}
+
+void Renderer::DisableAlphaBlending()
+{
+	float blendfact[4] = { 0.0f,0.0f,0.0f,0.0f };
+	context->OMSetBlendState(blendStateOff, blendfact, 0xffffffff);
+}
+
+
