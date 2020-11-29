@@ -138,5 +138,32 @@ struct cb_grass
 };
 
 
+ALIGN16
+struct cb_particle
+{
+	dx::XMFLOAT4 particleColor;
+	dx::XMFLOAT3 eyePos;
+	float padding;
+
+	dx::XMFLOAT3 emitPos;
+	float padding2;
+
+	dx::XMFLOAT3 emitDir;
+	float gameTime;
+
+	float ageTimeStep;
+
+	float particleMaxAge;
+	float padding3[2];
+
+	DirectX::XMFLOAT4X4 viewProjection;
+
+	int usingTexture;
+	dx::XMFLOAT3 particleSpreadMulti;
+
+	int particlesPerSecond;
+};
+
+
 
 
