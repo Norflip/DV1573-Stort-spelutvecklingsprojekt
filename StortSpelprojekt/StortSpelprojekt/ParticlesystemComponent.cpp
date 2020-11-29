@@ -17,6 +17,9 @@ ParticleSystemComponent::ParticleSystemComponent(Renderer* renderer, Shader* sha
 	this->particleSize = 0.03f;
 	this->maxParticles = 10;
 
+	// calculate the furthest points
+	cullBounds.SetMinMax(dx::XMFLOAT3(-differenceOnX, -differenceOnY, -differenceOnZ), dx::XMFLOAT3(differenceOnX, differenceOnY, differenceOnZ));
+
 	this->currentParticleCount = 0;
 	this->accumulatedTime = 0.0f;
 
@@ -109,7 +112,7 @@ void ParticleSystemComponent::InitializeFirelikeParticles(ID3D11Device* device, 
 		particleList[i].active = false;
 
 
-	particlesPosition.x = GetOwner()->GetTransform().GetPosition().m128_f32[0]-0.05f;
+	particlesPosition.x = GetOwner()->GetTransform().GetPosition().m128_f32[0] - 0.05f;
 	particlesPosition.y = GetOwner()->GetTransform().GetPosition().m128_f32[1] - 0.02f;
 	particlesPosition.z = GetOwner()->GetTransform().GetPosition().m128_f32[2];
 	fire = true;
@@ -129,6 +132,8 @@ void ParticleSystemComponent::SetDifference(float x, float y, float z)
 	this->differenceOnX = x;
 	this->differenceOnY = y;
 	this->differenceOnZ = z;
+
+	cullBounds.SetMinMax(dx::XMFLOAT3(-differenceOnX, -differenceOnY, -differenceOnZ), dx::XMFLOAT3(differenceOnX, differenceOnY, differenceOnZ));
 }
 //
 //void ParticleSystemComponent::LoadTexture(ID3D11Device* device, LPCWSTR textureFilename)
@@ -387,7 +392,7 @@ void ParticleSystemComponent::Update(const float& deltaTime)
 void ParticleSystemComponent::Draw(Renderer* renderer, CameraComponent* camera)
 {
 	if (active)
-	{		
+	{
 		dx::XMMATRIX worldParticles = dx::XMMatrixIdentity();
 
 		if (!fire)
@@ -414,8 +419,8 @@ void ParticleSystemComponent::Draw(Renderer* renderer, CameraComponent* camera)
 			worldParticles = particlesFireRotationY * particlesFireTranslation;
 			worldmatrix = worldParticles;
 		}
-		
 
-		renderer->DrawParticles(mesh, mat, worldmatrix);
+		if (camera->InView(cullBounds, worldmatrix))
+			renderer->DrawParticles(mesh, mat, worldmatrix);
 	}
 }

@@ -170,6 +170,7 @@
     <ClCompile Include="AudioEngine.cpp" />
     <ClCompile Include="CreditsScene.cpp" />
     <ClCompile Include="DepthPass.cpp" />
+    <ClCompile Include="Resource.cpp" />
     <ClCompile Include="SelectableComponent.cpp" />
     <ClCompile Include="EnemyAttackComp.cpp" />
     <ClCompile Include="EnemyIdleComp.cpp" />

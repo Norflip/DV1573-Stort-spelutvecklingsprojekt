@@ -43,6 +43,8 @@ private:
 	Shader* particlesShader;
 	ID3D11ShaderResourceView* srv;	
 
+	Bounds cullBounds;
+
 	int vertexCount, indexCount;
 	Mesh::VertexColor* vertices;
 	ID3D11Buffer* vertexBuffer, * indexBuffer;

@@ -50,10 +50,10 @@ void ObjectSpawner::Spawn(const SaveState& state, const Bounds& worldBounds, std
 		SpawnStatic(i.second);
 
 		AddTreesToChunk(i.second);
-		AddGrassToChunk(i.second);
+	//	AddGrassToChunk(i.second);
 
 #if SPAWN_ITEMS
-		SpawnItem(i.second);
+		//SpawnItem(i.second);
 #endif
 	}
 }

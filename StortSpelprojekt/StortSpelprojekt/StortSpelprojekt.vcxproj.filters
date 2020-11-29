@@ -303,6 +303,7 @@
     <ClCompile Include="CreditsScene.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="Resource.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="ObjectSpawner.h">
@@ -593,7 +594,6 @@
     <ClInclude Include="SelectableComponent.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="WorldGenerator.h" />
     <ClInclude Include="WorldGenerator.h">
       <Filter>Source Files\SpawnSystems</Filter>
     </ClInclude>
