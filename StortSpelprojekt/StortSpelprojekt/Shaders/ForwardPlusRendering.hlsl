@@ -117,6 +117,11 @@ void main(ComputeShaderInput IN) // light culling everyframe
 	int2 texCoord = IN.dispatchThreadID.xy;
 	float fDepth = depthTexture.Load(int3(texCoord, 0)).r;
 	//fDepth = (0.5 * projection[3][2]) / (fDepth + 0.5 * projection[2][2] - 0.5);
+    const float near = 0.01f; // NEAR PLANE
+    const float far = 500.0f; // FAR PLANE
+
+    fDepth = ((2.0f * near) / (far + near - fDepth * (far - near)));
+	
 	uint uDepth = asuint(fDepth);
 
 	if (IN.groupIndex == 0) // Avoid contention by other threads in the group.
