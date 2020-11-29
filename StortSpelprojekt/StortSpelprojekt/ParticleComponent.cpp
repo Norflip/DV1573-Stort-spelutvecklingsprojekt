@@ -1,9 +1,14 @@
 #include "stdafx.h"
 #include "ParticleComponent.h"
 
-ParticleComponent::ParticleComponent(Renderer* renderer, Shader* shader)
-    : initializeVB(nullptr), drawVB(nullptr), streamoutVB(nullptr), particleSRV(nullptr), randomNumberSRV(nullptr)//, inputLayout(0)
+ParticleComponent::ParticleComponent(Renderer* renderer, Shader* soShader, Shader* drawShader)
+    : initializeVB(nullptr), drawVB(nullptr), streamoutVB(nullptr) //, particleSRV(nullptr), randomNumberSRV(nullptr)//, inputLayout(0)
 {
+	this->soShader = soShader;
+	this->drawShader = drawShader;
+	drawMat = new Material(drawShader);
+	streamoutMat = new Material(soShader);
+
 	firstRun = true;
 	gameTimer = 0.0f;
 	ageTimeStep = 0.0f;
@@ -29,13 +34,13 @@ ParticleComponent::~ParticleComponent()
 	if (initializeVB) { initializeVB->Release(); }
 	if (drawVB) { drawVB->Release(); }
 	if (streamoutVB) { streamoutVB->Release(); }
-	if (particleSRV) { particleSRV->Release(); }
-	if (randomNumberSRV) { randomNumberSRV->Release(); }
+	/*if (particleSRV) { particleSRV->Release(); }
+	if (randomNumberSRV) { randomNumberSRV->Release(); }*/
 }
 
 void ParticleComponent::InitializeParticles(ID3D11Device* device)
 {
-	ID3D11Texture1D* random;
+	/*ID3D11Texture1D* random;
 	DirectX::XMFLOAT4* randomValues = new DirectX::XMFLOAT4[1024];
 	for (int i = 0; i < 1024; ++i)
 	{
@@ -71,9 +76,14 @@ void ParticleComponent::InitializeParticles(ID3D11Device* device)
 
 	hr = device->CreateShaderResourceView(random, &viewDesc, &randomNumberSRV);
 	assert(SUCCEEDED(hr));
-	delete[] randomValues;
+	delete[] randomValues;*/
 
+	random1DTexture->CreateRandom1DTexture(device);
+	streamoutMat->SetTexture(random1DTexture, TEXTURE_DIFFUSE_SLOT, ShaderBindFlag::SOGEOMETRY);
+	streamoutMat->SetSampler(DXHelper::CreateSampler(D3D11_FILTER_MIN_MAG_MIP_LINEAR, D3D11_TEXTURE_ADDRESS_WRAP, device), 0, ShaderBindFlag::SOGEOMETRY);
+	
 
+	/* Particle cb stuffy */
 	D3D11_BUFFER_DESC cBufferDescription;
 	// Setup the description of the camera constant buffer that is in the vertex shader.
 	ZeroMemory(&cBufferDescription, sizeof(cBufferDescription));
@@ -86,7 +96,6 @@ void ParticleComponent::InitializeParticles(ID3D11Device* device)
 
 	hr = device->CreateBuffer(&cBufferDescription, NULL, &cb_Per_Particle);
 	assert(SUCCEEDED(hr));	
-
 
 	BuildVertexBuffers(device);
 }
@@ -107,10 +116,14 @@ void ParticleComponent::Draw(Renderer* renderer, CameraComponent* camera)
 
 }
 
-void ParticleComponent::SetTexture(ID3D11Device* device, LPCWSTR particleTexture)
+void ParticleComponent::SetTexture(ID3D11Device* device, LPCWSTR textureFilename)
 {
-	hr = DirectX::CreateWICTextureFromFile(device, particleTexture, nullptr, &particleSRV);
-	assert(SUCCEEDED(hr));
+	particleTex->LoadTexture(device, textureFilename);
+	drawMat->SetTexture(particleTex, TEXTURE_DIFFUSE_SLOT, ShaderBindFlag::PIXEL);
+	drawMat->SetSampler(DXHelper::CreateSampler(D3D11_FILTER_MIN_MAG_MIP_LINEAR, D3D11_TEXTURE_ADDRESS_WRAP, device), 0, ShaderBindFlag::PIXEL);
+
+	/*hr = DirectX::CreateWICTextureFromFile(device, particleTexture, nullptr, &particleSRV);
+	assert(SUCCEEDED(hr));*/
 
 	usingTexture = true;
 }
@@ -121,13 +134,13 @@ void ParticleComponent::Reset()
 	particleAge = 0.0f;
 }
 
-float ParticleComponent::RandomFloat(float a, float b)
-{
-	float random = ((float)rand()) / (float)RAND_MAX;
-	float diff = b - a;
-	float r = random * diff;
-	return a + r;
-}
+//float ParticleComponent::RandomFloat(float a, float b)
+//{
+//	float random = ((float)rand()) / (float)RAND_MAX;
+//	float diff = b - a;
+//	float r = random * diff;
+//	return a + r;
+//}
 
 void ParticleComponent::BuildVertexBuffers(ID3D11Device* device)
 {
@@ -164,10 +177,105 @@ void ParticleComponent::BuildVertexBuffers(ID3D11Device* device)
 	assert(SUCCEEDED(hr));
 }
 
-void ParticleComponent::DrawStreamOut(ID3D11DeviceContext* context, DirectX::XMMATRIX view, DirectX::XMMATRIX projection, CameraComponent* cam, ID3D11SamplerState* sampler)
+void ParticleComponent::DrawStreamOut(ID3D11DeviceContext* context, CameraComponent* cam)
 {
+	dx::XMMATRIX viewproj; // = view * projection;
+	viewproj = dx::XMMatrixMultiply(cam->GetViewMatrix(), cam->GetViewMatrix());
+
+	/* Streamout stuffy  */
+	particleBuffer.emitDir = emitDir; // GetEmitDir();
+	particleBuffer.emitPos = emitPos; // GetEmitPos();
+	particleBuffer.eyePos = eyePos; // GetEyePos();
+	particleBuffer.gameTime = gameTimer;
+	particleBuffer.ageTimeStep = ageTimeStep;
+	/*particleBuffer.viewProjection = */ dx::XMStoreFloat4x4(&particleBuffer.viewProjection, dx::XMMatrixTranspose(viewproj));
+	particleBuffer.particleMaxAge = particleMaxAge;
+	particleBuffer.particleColor = particleColor;
+	particleBuffer.usingTexture = usingTexture;
+	particleBuffer.particleSpreadMulti = particleSpreadMulti;
+	particleBuffer.particlesPerSecond = particlesPerSecond;
+
+	context->UpdateSubresource(cb_Per_Particle, 0, nullptr, &particleBuffer, 0, 0);
+	context->GSSetConstantBuffers(0, 1, &cb_Per_Particle);
+
+	//context->IASetInputLayout(inputLayout);
+	context->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_POINTLIST);
+
+	streamoutMat->BindToContext(context);
+	soShader->BindToContext(context);
+
+	UINT stride = sizeof(Mesh::Particle);
+	UINT offset = 0;
+
+	if (firstRun)
+		context->IASetVertexBuffers(0, 1, &initializeVB, &stride, &offset);
+	else
+		context->IASetVertexBuffers(0, 1, &drawVB, &stride, &offset);
+
+	context->SOSetTargets(1, &streamoutVB, &offset);
+
+	if (firstRun)
+	{
+		context->Draw(1, 0);
+		firstRun = false;
+	}
+	else
+	{
+		context->DrawAuto();
+	}
+
+
+	// Ping-pong the vertex buffers
+	ID3D11Buffer* bufferArray[1] = { 0 };
+	context->SOSetTargets(1, bufferArray, &offset);
+
+	std::swap(drawVB, streamoutVB);
+
+	/* Clear */
+	ID3D11ShaderResourceView* nullSRV[1] = { nullptr };
+	context->GSSetShaderResources(0, 1, nullSRV);
+
+	ID3D11SamplerState* nullSampler[1] = { nullptr };
+	context->GSSetSamplers(0, 1, nullSampler);
+
+	context->GSSetConstantBuffers(0, 1, bufferArray);
+	context->VSSetShader(nullptr, 0, 0);
+	context->GSSetShader(nullptr, 0, 0);
+	context->PSSetShader(nullptr, 0, 0);
 }
 
-void ParticleComponent::Draw(ID3D11DeviceContext* context, DirectX::XMMATRIX view, DirectX::XMMATRIX projection, CameraComponent* cam, ID3D11SamplerState* sampler)
+void ParticleComponent::Draw(ID3D11DeviceContext* context, CameraComponent* cam)
 {
+	UINT stride = sizeof(Mesh::Particle);
+	UINT offset = 0;
+
+	context->UpdateSubresource(cb_Per_Particle, 0, nullptr, &particleBuffer, 0, 0);
+	context->VSSetConstantBuffers(0, 1, &cb_Per_Particle);
+	context->GSSetConstantBuffers(0, 1, &cb_Per_Particle);
+	context->PSSetConstantBuffers(0, 1, &cb_Per_Particle);
+
+	drawMat->BindToContext(context);
+	drawShader->BindToContext(context);
+
+	context->IASetVertexBuffers(0, 1, &drawVB, &stride, &offset);
+
+	context->DrawAuto();
+
+	/* Clear */
+	ID3D11Buffer* bufferArray[1] = { 0 };
+	ID3D11ShaderResourceView* nullSRV[1] = { nullptr };
+	context->PSSetShaderResources(0, 1, nullSRV);
+
+	ID3D11SamplerState* nullSampler[1] = { nullptr };
+	context->PSSetSamplers(0, 1, nullSampler);
+
+	context->GSSetConstantBuffers(0, 1, bufferArray);
+	context->GSSetConstantBuffers(1, 1, bufferArray);
+	context->VSSetConstantBuffers(0, 1, bufferArray);
+	context->VSSetConstantBuffers(1, 1, bufferArray);
+	context->PSSetConstantBuffers(0, 1, bufferArray);
+
+	context->VSSetShader(nullptr, 0, 0);
+	context->GSSetShader(nullptr, 0, 0);
+	context->PSSetShader(nullptr, 0, 0);
 }

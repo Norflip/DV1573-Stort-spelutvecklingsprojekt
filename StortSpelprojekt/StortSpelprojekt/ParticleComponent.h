@@ -5,7 +5,7 @@
 class ParticleComponent : public Component
 {
 public:
-	ParticleComponent(Renderer* renderer, Shader* shader);
+	ParticleComponent(Renderer* renderer, Shader* soShader, Shader* drawShader);
 	virtual ~ParticleComponent();
 	
 	void InitializeParticles(ID3D11Device* device);
@@ -36,20 +36,20 @@ public:
 	dx::XMFLOAT2 GetParticleSize() { return this->particleSize; }
 	int GetParticlesPerSecond() { return this->particlesPerSecond; }
 
-	ID3D11ShaderResourceView* GetParticleTexture() { return this->particleSRV; }
-	ID3D11ShaderResourceView* GetRandomTexture() { return this->randomNumberSRV; }
-	void SetTexture(ID3D11Device* device, LPCWSTR particleTexture);
+	//ID3D11ShaderResourceView* GetParticleTexture() { return this->particleSRV; }
+	//ID3D11ShaderResourceView* GetRandomTexture() { return this->randomNumberSRV; }
+	void SetTexture(ID3D11Device* device, LPCWSTR textureFilename);
 
 	void Reset();
 
 	bool GetActive() { return this->active; }
 	void SetActive(bool active) { this->active = active; }
-	float RandomFloat(float a, float b);
+	//float RandomFloat(float a, float b);
 
 private:
 	void BuildVertexBuffers(ID3D11Device* device);
-	void DrawStreamOut(ID3D11DeviceContext* context, DirectX::XMMATRIX view, DirectX::XMMATRIX projection, CameraComponent* cam, ID3D11SamplerState* sampler);
-	void Draw(ID3D11DeviceContext* context, DirectX::XMMATRIX view, DirectX::XMMATRIX projection, CameraComponent* cam, ID3D11SamplerState* sampler);
+	void DrawStreamOut(ID3D11DeviceContext* context, CameraComponent* cam);
+	void Draw(ID3D11DeviceContext* context, CameraComponent* cam);
 
 private:
 	bool active;
@@ -75,11 +75,19 @@ private:
 	ID3D11Buffer* drawVB;
 	ID3D11Buffer* streamoutVB;
 
-	ID3D11ShaderResourceView* particleSRV;
-	ID3D11ShaderResourceView* randomNumberSRV;
+	//ID3D11ShaderResourceView* particleSRV;
+	//ID3D11ShaderResourceView* randomNumberSRV;
+	Texture* particleTex;
+	Texture* random1DTexture;
+
 
 	cb_particle particleBuffer; 
 	ID3D11Buffer* cb_Per_Particle;
 
 	HRESULT hr;
+
+	Material* streamoutMat;	
+	Material* drawMat;
+	Shader* soShader;
+	Shader* drawShader;
 };
