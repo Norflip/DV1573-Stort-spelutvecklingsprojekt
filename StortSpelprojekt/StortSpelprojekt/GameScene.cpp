@@ -625,6 +625,8 @@ void GameScene::Update(const float& deltaTime)
 	static_cast<GUIFont*>(guiManager->GetGUIObject("fps"))->SetString(std::to_string((int)GameClock::Instance().GetFramesPerSecond()));
 	guiManager->UpdateAll();
 
+	GameClock::Instance().GetMiliseconds();
+
 }
 
 void GameScene::FixedUpdate(const float& fixedDeltaTime)

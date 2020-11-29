@@ -36,6 +36,12 @@ public:
 	dx::XMFLOAT2 GetParticleSize() { return this->particleSize; }
 	int GetParticlesPerSecond() { return this->particlesPerSecond; }
 
+	ID3D11ShaderResourceView* GetParticleTexture() { return this->particleSRV; }
+	ID3D11ShaderResourceView* GetRandomTexture() { return this->randomNumberSRV; }
+	void SetTexture(ID3D11Device* device, LPCWSTR particleTexture);
+
+	void Reset();
+
 	bool GetActive() { return this->active; }
 	void SetActive(bool active) { this->active = active; }
 	float RandomFloat(float a, float b);
@@ -71,6 +77,9 @@ private:
 
 	ID3D11ShaderResourceView* particleSRV;
 	ID3D11ShaderResourceView* randomNumberSRV;
+
+	cb_particle particleBuffer; 
+	ID3D11Buffer* cb_Per_Particle;
 
 	HRESULT hr;
 };
