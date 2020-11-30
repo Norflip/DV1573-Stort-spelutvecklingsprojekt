@@ -32,7 +32,7 @@ float4 CalculatePointLight(Light light,float3 normal, float3 objectPosition, flo
     }
 
 	finalColor = ambient + diffuse + specular;
-	return finalColor;// *light.intensity;
+	return finalColor *light.intensity;
 }
 
 // Calculate normalmapping

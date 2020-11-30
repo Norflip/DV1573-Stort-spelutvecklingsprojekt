@@ -7,6 +7,11 @@
 #include "Input.h"
 #include <unordered_map>
 #include "EnemyManager.h"
+
+#define ENEMY_HEIGHT_LIMIT -100.f //Kill Enemy under this y-value 
+#define ENEMY_RADIUS_LIMIT 50.f //Kill Enemy outside of this length from player
+//(kill enemies since they never will be encountered)
+
 enum class EnemyState
 {
     NONE,
@@ -39,7 +44,7 @@ public:
     void SetState(EnemyState state);
     void Start();
     void Initialize();
-    void InitAnimation();
+    void InitAnimation(Object* playerObj);
 
     void Update(const float& deltaTime);
     void RegisterState(EnemyState state, Component* comp);
@@ -52,5 +57,6 @@ private:
     EnemyAttackComp* attackComponent;
     EnemyStatsComp* statsComponent;
     EnemyPatrolComp* enemyPatrolComp;
+    Object* player;
     
 };

@@ -25,7 +25,7 @@ public:
 	void UpdateView();
 	bool InView(const Bounds& bounds, const dx::XMMATRIX world);
 	Ray MouseToRay(const unsigned int& x, const unsigned int& y) const;
-
+	std::vector<dx::XMFLOAT4> GetFrustumPlanes()const;
 
 private:
 	std::vector<dx::XMFLOAT4> planes;
