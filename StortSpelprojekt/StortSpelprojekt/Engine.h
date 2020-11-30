@@ -9,12 +9,13 @@
 #include "IntroScene.h"
 #include "GameOverScene.h"
 #include "WinScene.h"
+#include "CreditsScene.h"
 
 constexpr int FIXED_FPS = 60;
 constexpr float TARGET_FIXED_DELTA = 1.0f / FIXED_FPS;
 
-enum SceneIndex { INTRO = 0, GAME_OVER = 1, GAME = 2, WIN = 3 };
-constexpr size_t SCENE_COUNT = 4;
+enum SceneIndex { INTRO = 0, GAME_OVER = 1, GAME = 2, WIN = 3, CREDITS = 4 };
+constexpr size_t SCENE_COUNT = 5;
 
 enum DayTime {DAY =0, DUSK = 1, NIGHT = 2, END = 3};
 
@@ -29,7 +30,7 @@ public:
 	bool IsRunning() const { return this->running; }
 
 	Scene* GetActiveScene() const;
-	void SetScene(size_t id, Scene* scene);
+	void RegisterScene(size_t id, Scene* scene);
 	void UnregisterScene(size_t id);
 	void SwitchScene(size_t id);
 	

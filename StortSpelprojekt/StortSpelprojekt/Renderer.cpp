@@ -69,7 +69,7 @@ void Renderer::Initialize(Window* window)
 	LightManager::Instance().Initialize(device);
 
 	sceneBuffer.Initialize(CB_SCENE_SLOT, ShaderBindFlag::PIXEL | ShaderBindFlag::DOMAINS | ShaderBindFlag::VERTEX|ShaderBindFlag::COMPUTE, device);
-	objectBuffer.Initialize(CB_OBJECT_SLOT, ShaderBindFlag::VERTEX, device);
+	objectBuffer.Initialize(CB_OBJECT_SLOT, ShaderBindFlag::VERTEX | ShaderBindFlag::DOMAINS|ShaderBindFlag::GEOMETRY, device);
 	materialBuffer.Initialize(CB_MATERIAL_SLOT, ShaderBindFlag::PIXEL, device);
 
 	DXHelper::CreateStructuredBuffer(device, &skeleton_srvbuffer, srv_skeleton_data.data(), sizeof(dx::XMFLOAT4X4), srv_skeleton_data.size(), &skeleton_srv);
@@ -139,9 +139,6 @@ void Renderer::DrawQueueToTarget(RenderQueue& queue, CameraComponent* camera)
 			mat->UnbindToContext(context);
 		}
 	}
-
-	// clear queues
-	queue.clear();
 }
 
 
@@ -199,9 +196,9 @@ void Renderer::RenderFrame(CameraComponent* camera, float time, float distance, 
 	//data.mousePos = { (float)Input::Instance().GetMousePos().x, (float)Input::Instance().GetMousePos().y };
 	// put in mouse pos delta here
 	dx::XMStoreFloat3(&data.cameraPosition, camera->GetOwner()->GetTransform().GetPosition());
-	dx::XMStoreFloat4x4(&data.invProjection, dx::XMMatrixInverse(NULL, camera->GetProjectionMatrix()));
+	dx::XMStoreFloat4x4(&data.invProjection, dx::XMMatrixTranspose(dx::XMMatrixInverse(NULL, camera->GetProjectionMatrix())));
 	dx::XMStoreFloat4x4(&data.invView, dx::XMMatrixTranspose(dx::XMMatrixInverse(NULL, camera->GetViewMatrix())));
-	dx::XMStoreFloat4x4(&data.view, camera->GetViewMatrix());
+	dx::XMStoreFloat4x4(&data.view, dx::XMMatrixTranspose(camera->GetViewMatrix()));
 	sceneBuffer.SetData(data);
 	sceneBuffer.UpdateBuffer(context);
 
@@ -233,20 +230,25 @@ void Renderer::RenderFrame(CameraComponent* camera, float time, float distance, 
 	DXHelper::BindStructuredBuffer(context, 10, ShaderBindFlag::PIXEL, &o_LightIndexList_srv);
 	context->PSSetShaderResources(11, 1, &o_LightGrid_texSRV);
 	SetCullBack(true);
+
 	DrawQueueToTarget(opaqueItemQueue, camera);
+	opaqueItemQueue.clear();
+
 	DShape::Instance().m_Draw(camera->GetViewMatrix() * camera->GetProjectionMatrix(), context);
 
 	for (auto i : opaqueBatches)
 		DrawBatch(i.second, camera);
-	
 	opaqueBatches.clear();
+
 	DXHelper::BindStructuredBuffer(context, 10, ShaderBindFlag::PIXEL, &t_LightIndexList_srv);
 	context->PSSetShaderResources(11, 1, &t_LightGrid_texSRV);
 	SetCullBack(false);
+
 	DrawQueueToTarget(transparentItemQueue, camera);
+	transparentItemQueue.clear();
+
 	for (auto i : transparentBatches)
 		DrawBatch(i.second, camera);
-
 	transparentBatches.clear();
 
 	SetCullBack(true);
@@ -329,20 +331,6 @@ void Renderer::Draw(const Mesh* mesh, const Material* material, const dx::XMMATR
 			batch.mesh = mesh;
 			batch.transformations.push_back(modelInFloats);
 			batches.insert({ batchID, batch });
-		}
-
-		auto& batchesDepth = material->IsTransparent() ? transparentBatchesDepth : opaqueBatchesDepth;
-		if (batchesDepth.find(batchID) != batchesDepth.end())
-		{
-			batchesDepth[batchID].transformations.push_back(modelInFloats);
-		}
-		else
-		{
-			Batch batch;
-			batch.material = material;
-			batch.mesh = mesh;
-			batch.transformations.push_back(modelInFloats);
-			batchesDepth.insert({ batchID, batch });
 		}
 	}
 	else
@@ -472,16 +460,16 @@ void Renderer::AddItem(const RenderItem& item, bool transparent, bool cullDepth)
 
 		if (found == transparentItemQueue.end())
 			transparentItemQueue.insert({ materialID, std::queue<RenderItem>() });
-
 		transparentItemQueue[materialID].push(item);
-		if (!cullDepth)
-		{
-			auto foundDepth = transparentItemQueueDepth.find(materialID);
-			if (foundDepth == transparentItemQueueDepth.end())
-				transparentItemQueueDepth.insert({ materialID, std::queue<RenderItem>() });
-			transparentItemQueueDepth[materialID].push(item);
-		}
-		
+
+		//if (!cullDepth)
+		//{
+		//	auto foundDepth = transparentItemQueueDepth.find(materialID);
+		//	if (foundDepth == transparentItemQueueDepth.end())
+		//		transparentItemQueueDepth.insert({ materialID, std::queue<RenderItem>() });
+		//	transparentItemQueueDepth[materialID].push(item);
+		//}
+		//
 	}
 	else
 	{
@@ -490,15 +478,15 @@ void Renderer::AddItem(const RenderItem& item, bool transparent, bool cullDepth)
 
 		if (found == opaqueItemQueue.end())
 			opaqueItemQueue.insert({ materialID, std::queue<RenderItem>() });
-
 		opaqueItemQueue[materialID].push(item);
-		if (!cullDepth)
+
+		/*if (!cullDepth)
 		{
 			auto foundDepth = opaqueItemQueueDepth.find(materialID);
 			if (foundDepth == opaqueItemQueueDepth.end())
 				opaqueItemQueueDepth.insert({ materialID, std::queue<RenderItem>() });
 			opaqueItemQueueDepth[materialID].push(item);
-		}
+		}*/
 	}
 }
 
@@ -607,6 +595,7 @@ void Renderer::DrawBatch(const Batch& batch, CameraComponent* camera)
 	if (instanceCount == 0)
 		return;
 
+
 	SetObjectBufferValues(camera, dx::XMMatrixIdentity(), true);
 	objectBuffer.UpdateBuffer(context);
 
@@ -616,15 +605,15 @@ void Renderer::DrawBatch(const Batch& batch, CameraComponent* camera)
 
 	GetContext()->Map(batchInstanceBuffer, 0, D3D11_MAP_WRITE_DISCARD, 0, &mappedData);
 	dx::XMFLOAT4X4* dataView = reinterpret_cast<dx::XMFLOAT4X4*>(mappedData.pData);
-
 	for (size_t i = 0; i < batch.transformations.size(); i++)
 	{
 		dataView[i] = batch.transformations[i];
 	}
-
 	GetContext()->Unmap(batchInstanceBuffer, 0);
 
-
+	batch.material->BindToContext(context);
+	materialBuffer.SetData(batch.material->GetMaterialData());
+	materialBuffer.UpdateBuffer(context);
 
 	UINT stride[2] = { sizeof(Mesh::Vertex), sizeof(dx::XMFLOAT4X4) };
 	UINT offset[2] = { 0 };
@@ -639,7 +628,7 @@ void Renderer::DrawBatch(const Batch& batch, CameraComponent* camera)
 
 	context->DrawIndexedInstanced(batch.mesh->GetIndexCount(), instanceCount, 0, 0, 0);
 
-	//std::cout << "BATCHING(" << batch.material->IsTransparent() << "): " << batch.mesh->GetMeshName() << " / " << batch.material->GetID() << " : " << instanceCount << "\n";
+	//std::cout << "BATCHING(" << batch.material->IsTransparent() << "): " << batch.mesh->GetMeshName() << " id(" << batch.material->GetID() << "), count: " << instanceCount << "\n";
 }
 
 void Renderer::SetObjectBufferValues(const CameraComponent* camera, dx::XMMATRIX world, bool transpose)
@@ -735,7 +724,7 @@ void Renderer::InitForwardPlus(CameraComponent* camera, Window* window, Shader& 
 	screenToViewParams.Initialize(CB_SCREEN_TOVIEW_PARAMS_SLOT, ShaderBindFlag::COMPUTE, device);
 	cb_ScreenToViewParams& dataSVP = screenToViewParams.GetData();
 	dx::XMFLOAT4X4 inverse;
-	dx::XMStoreFloat4x4(&inverse, dx::XMMatrixInverse(nullptr, camera->GetProjectionMatrix())); //transposed matrix.
+	dx::XMStoreFloat4x4(&inverse, dx::XMMatrixTranspose(dx::XMMatrixInverse(nullptr, camera->GetProjectionMatrix())));
 	dataSVP.inverseProjection = inverse;
 	dataSVP.screenDimensions.x = FCAST(window->GetWidth());
 	dataSVP.screenDimensions.y = FCAST(window->GetHeight());
@@ -841,19 +830,17 @@ void Renderer::UpdateForwardPlus(CameraComponent* camera)
 	depthPass.BindDSV(context);
 	context->OMSetDepthStencilState(dss, 0);
 	SetCullBack(true);
-	DrawQueueToTarget(opaqueItemQueueDepth, camera);
-	
-	for (auto i : opaqueBatchesDepth)
-		DrawBatch(i.second, camera);
 
-	opaqueBatchesDepth.clear();
+	std::cout << opaqueItemQueue.size() << std::endl;
+
+	DrawQueueToTarget(opaqueItemQueue, camera);
+	for (auto i : opaqueBatches)
+		DrawBatch(i.second, camera);
 
 	SetCullBack(false);
-	DrawQueueToTarget(transparentItemQueueDepth, camera);
-	for (auto i : transparentBatchesDepth)
+	DrawQueueToTarget(transparentItemQueue, camera);
+	for (auto i : transparentBatches)
 		DrawBatch(i.second, camera);
-
-	transparentBatchesDepth.clear();
 
 	SetCullBack(true);
 
@@ -862,10 +849,15 @@ void Renderer::UpdateForwardPlus(CameraComponent* camera)
 	ClearRenderTarget(midbuffer);
 	SetRenderTarget(midbuffer);
 	ID3D11UnorderedAccessView* nullUAV = nullptr;
+	ID3D11ShaderResourceView* nullSRV = nullptr;
+	context->CSSetUnorderedAccessViews(0, 1, &nullUAV, NULL); //frustum
 	context->CSSetUnorderedAccessViews(3, 1, &nullUAV, NULL); //u3
 	context->CSSetUnorderedAccessViews(4, 1, &nullUAV, NULL); //u4
 	context->CSSetUnorderedAccessViews(5, 1, &nullUAV, NULL); //u5
 	context->CSSetUnorderedAccessViews(6, 1, &nullUAV, NULL); //u6
+	context->PSSetShaderResources(10, 1, &nullSRV);
+	context->PSSetShaderResources(11, 1, &nullSRV);
+
 	context->OMSetDepthStencilState(dss, 0);
 	context->CSSetShaderResources(1, 1, depthPass.GetDepthSRV());
 	DXHelper::BindStructuredBuffer(context, 9, ShaderBindFlag::COMPUTE, &inFrustums_srv);
@@ -886,7 +878,8 @@ void Renderer::UpdateForwardPlus(CameraComponent* camera)
 	context->CSSetUnorderedAccessViews(4, 1, &nullUAV, NULL); //u4
 	context->CSSetUnorderedAccessViews(5, 1, &nullUAV, NULL); //u5
 	context->CSSetUnorderedAccessViews(6, 1, &nullUAV, NULL); //u6
-
+	context->PSSetShaderResources(10, 1, &nullSRV);
+	context->PSSetShaderResources(11, 1, &nullSRV);
 	
 	//context->Dispatch(1, 1, 1);
 }

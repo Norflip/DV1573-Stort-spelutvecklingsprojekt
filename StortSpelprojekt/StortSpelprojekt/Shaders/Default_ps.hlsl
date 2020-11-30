@@ -8,13 +8,13 @@ TextureCube skymap : register(t2); //just testing
 SamplerState defaultSampleType : register (s0);
 
 float4 main(VS_OUTPUT input) : SV_TARGET
-{
+{	
 	float4 textureColor = float4(0.5f, 0.5f, 0.5f, 1.0f);
 	float4 normalmap = float4(1.0f, 1.0f, 1.0f, 1.0f);
 	
 	if (hasAlbedo)
 		textureColor = diffuseMap.Sample(defaultSampleType, input.uv);
-
+	
 	if (hasNormalMap)
 	{
 		normalmap = normalMap.Sample(defaultSampleType, input.uv);

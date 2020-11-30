@@ -416,35 +416,39 @@ void PlayerComp::RayCast(const float& deltaTime)
 	}
 
 	//ATTACK ENEMIES
-	if (LMOUSE_DOWN && holding == nullptr)
+	if (LMOUSE_DOWN && holding == nullptr && 
+		arms->GetComponent< PlayerAnimHandlerComp>()->GetCooldown() > 1.0f)
 	{
 		if (physics->RaytestSingle(ray, 5.0f, hit, FilterGroups::ENEMIES))
 		{
 			if (hit.object != nullptr)
 			{
 				EnemyStatsComp* stats = hit.object->GetComponent<EnemyStatsComp>();
-
+				SkeletonMeshComponent* skeleton = hit.object->GetComponent<SkeletonMeshComponent>();
 				if (stats != nullptr && stats->IsEnabled() && stats->GetHealth() >= 0.0f)
 				{
 					stats->LoseHealth(attack);
 					AudioMaster::Instance().PlaySoundEvent("punch");
 
-					if (stats->GetHealth() <= 0.0f)
-					{
-						stats->GetManager()->RemoveEnemy(hit.object);
+					//if (stats->GetHealth() <= 0.0f)
+					//{
 
-							/*RigidBodyComponent* rbComp = hit.object->GetComponent<RigidBodyComponent>();
-							rbComp->Release();
-							Engine::Instance->GetActiveScene()->RemoveObject(hit.object);*/
-					}
+					//	skeleton->SetTrack(SkeletonStateMachine::DEATH, true);
+					//	stats->GetManager()->RemoveEnemy(hit.object);
+					//	
+
+					//		/*RigidBodyComponent* rbComp = hit.object->GetComponent<RigidBodyComponent>();
+					//		rbComp->Release();
+					//		Engine::Instance->GetActiveScene()->RemoveObject(hit.object);*/
+					//}
 				}
 			}
 		}
 
-		else if (physics->RaytestSingle(ray, 5.0f, hit, FilterGroups::PROPS))
+		/*else if (physics->RaytestSingle(ray, 5.0f, hit, FilterGroups::PROPS))
 		{
 			AudioMaster::Instance().PlaySoundEvent("choptree");			
-		}
+		}*/
 	}
 
 	// Health drop

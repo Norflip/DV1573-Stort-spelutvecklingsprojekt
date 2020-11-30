@@ -177,8 +177,8 @@ void WorldGenerator::Construct(const SaveState& state, const WorldDescription& d
 				obj->GetTransform().SetScale({ 1.2f, 1.2f, 1.2f });
 
 				Object* light = new Object("lantern_pointLight");
-				light->GetTransform().SetPosition({ 1.0f, 2.0f, 0.5f });
-				LightComponent* lc = light->AddComponent<LightComponent>(LightType::POINT_LIGHT, dx::XMFLOAT4(0.5f, 0.5f, 0.0f, 1.0f), 3.0f);
+				light->GetTransform().SetPosition({ 1.0f, 3.0f, 0.f });
+				LightComponent* lc = light->AddComponent<LightComponent>(LightType::POINT_LIGHT, dx::XMFLOAT4(0.5f, 0.5f, 0.0f, 1.0f), 5.0f);
 				lc->SetEnabled(true);
 				lc->SetIntensity(0.7f);
 				Object::AddToHierarchy(obj, light);
@@ -262,7 +262,7 @@ void WorldGenerator::AddEnvironmentProps(const size_t& segmentIndex, const World
 	if (enviromentProps.empty())
 		return;
 
-	// hitta alla props som passar in på segment  INdex
+	// hitta alla props som passar in pï¿½ segment  INdex
 	size_t nrOfProps = Random::Range(description.minEnviromentProps, description.maxEnviromentProps);	// flytta till description? 
 	size_t FOUND = 0;
 
@@ -275,7 +275,7 @@ void WorldGenerator::AddEnvironmentProps(const size_t& segmentIndex, const World
 
 	if (!validProps.empty())
 	{
-		// sortera dom baserat på usage  <- detta måste sparas sen
+		// sortera dom baserat pï¿½ usage  <- detta mï¿½ste sparas sen
 		std::sort(validProps.begin(), validProps.end(), SortProps);
 
 		size_t indexesFound = 0;
@@ -341,32 +341,27 @@ Chunk* WorldGenerator::CreateChunk(ChunkIndexInfo& indexInfo, Object* root, cons
 		}
 
 		Object* object = prop.factory(chunk, chunkPosition);
-		Object::AddToHierarchy(chunk->GetOwner(), object);
-		//std::cout << " CREATED PUZZEL " << std::endl;
+		Object::AddToHierarchy(chunkObject, object);
 		prop.usedCount++;
 	}
 
-	//Texture texture(chunkDataSRV);
-
-	Texture* grassTexture = Texture::LoadTexture(renderer->GetDevice(), L"Textures/newGrass.png");
-	Texture* roadTexture = Texture::LoadTexture(renderer->GetDevice(), L"Textures/Stone_Floor_003_COLOR.jpg");
+	ResourceManager* resources = Engine::Instance->GetResources();
+	Texture* grassTexture = resources->GetResource<Texture>("Grass");
+	Texture* roadTexture = resources->GetResource<Texture>("Road");
 
 	material->SetTexture(chunk->GetData().dataTexture, 0, ShaderBindFlag::PIXEL | ShaderBindFlag::VERTEX);
 	material->SetTexture(grassTexture, 1, ShaderBindFlag::PIXEL);
 	material->SetTexture(roadTexture, 2, ShaderBindFlag::PIXEL);
 
 	auto dataSampler = DXHelper::CreateSampler(D3D11_FILTER_MIN_MAG_MIP_POINT, D3D11_TEXTURE_ADDRESS_CLAMP, renderer->GetDevice());
-	material->SetSampler(dataSampler, 0, ShaderBindFlag::PIXEL | ShaderBindFlag::VERTEX);
-
 	auto textureSampler = DXHelper::CreateSampler(D3D11_FILTER_MIN_MAG_MIP_LINEAR, D3D11_TEXTURE_ADDRESS_WRAP, renderer->GetDevice());
+	material->SetSampler(dataSampler, 0, ShaderBindFlag::PIXEL | ShaderBindFlag::VERTEX);
 	material->SetSampler(textureSampler, 1, ShaderBindFlag::PIXEL);
 
 	Bounds bounds(dx::XMFLOAT3(0, 0, 0), dx::XMFLOAT3(CHUNK_SIZE, TERRAIN_SCALE + 1.0f, CHUNK_SIZE));
 	chunkObject->AddComponent<MeshComponent>(chunkMesh, material, bounds);
 
-	int i = HASH2D_I(indexInfo.index.x, indexInfo.index.y);
-	chunkMap.insert({ i, chunk });
-
+	chunkMap.insert({ HASH2D_I(indexInfo.index.x, indexInfo.index.y), chunk });
 	return chunk;
 }
 
@@ -495,13 +490,13 @@ void WorldGenerator::UpdateDirection(dx::XMINT2& direction)
 	{
 		float value = Random::Value();
 
-		// 50% att den går rakt vertikalt
+		// 50% att den gï¿½r rakt vertikalt
 		if (value < 0.5f)
 		{
 			direction.x = 0;
 			direction.y = 1;
 		}
-		// 50% att den går helt åt sidan
+		// 50% att den gï¿½r helt ï¿½t sidan
 		else if (value >= 0.5f)
 		{
 			direction.y = 1;
@@ -512,7 +507,7 @@ void WorldGenerator::UpdateDirection(dx::XMINT2& direction)
 		// 50% om den byter riktning i x
 		direction.x = (Random::Value() < 0.5f) ? -1 : 1;
 
-		// 50% om den börjar gå horizontal
+		// 50% om den bï¿½rjar gï¿½ horizontal
 		if (Random::Value() < 0.5f)
 		{
 			direction.y = 0;

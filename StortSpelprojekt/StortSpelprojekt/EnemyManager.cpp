@@ -62,13 +62,14 @@ void EnemyManager::InitChargerEnemy()
 
 void EnemyManager::RemoveEnemy(Object* enemy)
 {
+	
 	enemyPool->ReturnItem(enemy);
 }
 
 void EnemyManager::SpawnEnemies()
 {
 	// whyyyy
-	nrOfEnemies = 1;
+	nrOfEnemies = 2;
 
 	for (size_t i = 0; i < nrOfEnemies; i++)
 	{
@@ -108,3 +109,5 @@ void EnemyManager::SpawnEnemy(std::string key, dx::XMVECTOR position)
 
 	enemyVector.push_back(enemy);
 }
+
+

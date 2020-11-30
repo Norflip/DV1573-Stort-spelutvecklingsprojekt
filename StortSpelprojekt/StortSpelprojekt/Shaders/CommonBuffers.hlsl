@@ -9,14 +9,6 @@ static const int LIGHT_COUNT = 200;
 #define POINT_LIGHT 0
 #define SPOT_LIGHT 1
 #define DIRECTIONAL_LIGHT 2
-//struct PointLight
-//{
-//    float4 lightColor;
-//    float3 lightPosition;
-//	float range;
-//    float3 attenuation;
-//	float paddingThree;
-//};
 
 struct Light //slot t8
 {
@@ -42,6 +34,16 @@ cbuffer cb_Object : register(b0)
     row_major matrix vp;
     row_major matrix wv;
 };
+
+//struct Material 
+//{
+//    float4 matAmbient;
+//    float4 matDiffuse;
+//    float4 matSpecular;
+	
+//    bool hasAlbedo;
+//    bool hasNormalMap;
+//};
 
 cbuffer cb_Material : register(b1)
 {
@@ -71,28 +73,10 @@ cbuffer cb_Scene : register(b2)
     float distanceToHouse;
 	float pad_cbs;
 
-    row_major matrix view;
+    float4x4 view;
 
    
 }
-
-//cbuffer cb_Lights : register(b3)
-//{
-//	PointLight pointLights[POINT_LIGHT_COUNT];
-//	int nrOfPointLights;
-//	float3 sunDirection;
-//	float sunIntensity;
-//	float3 pad3;
-//};
-
-//cbuffer cb_Lights : register(b3)
-//{
-//    Light lights[LIGHT_COUNT];
-//    int nrOfLights;
-//    float3 sunDirection;
-//    float sunIntensity;
-//    float3 pad_cbl;
-//};
 
 StructuredBuffer<float4x4> bones : register(t2);
 
@@ -163,7 +147,7 @@ bool PointInsidePlane(float3 p, Plane plane)
 // Source: Real-time collision detection, Christer Ericson (2005)
 bool SphereInsidePlane(Sphere sphere, Plane plane)
 {
-    return dot(plane.N, sphere.c) - plane.d < -sphere.r;
+    return dot(plane.N, sphere.c) - plane.d < -(sphere.r * 20);
 }
 
 // Check to see if a cone if fully behind (inside the negative halfspace of) a plane.
@@ -188,7 +172,7 @@ bool SphereInsideFrustum(Sphere sphere, Frustum frustum, float zNear, float zFar
 	// First check depth
 	// Note: Here, the view vector points in the -Z axis so the 
 	// far depth value will be approaching -infinity.
-    if (sphere.c.z - sphere.r > zFar || sphere.c.z + sphere.r < zNear ) //Switched places for zNear and zFar
+    if (sphere.c.z - (sphere.r*20) > zFar  || sphere.c.z + (sphere.r * 20) < zNear) //Switched places for zNear and zFar
     {
         result = false;
     }

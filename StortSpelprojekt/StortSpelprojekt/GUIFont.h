@@ -9,7 +9,7 @@ public:
 	~GUIFont();
 	void Draw(DirectX::SpriteBatch*) override;
 	void SetPosition(float x, float y) override;
-
+	void Translate(float x, float y);
 
 	void SetFont(const wchar_t* font);
 	void SetString(const std::string& text);

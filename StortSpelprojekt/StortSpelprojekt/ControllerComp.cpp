@@ -22,7 +22,7 @@ void ControllerComp::CheckGrounded()
 	phy->RaytestSingle(ray, distance, hitPuzzle, FilterGroups::PUZZLE);
 
 	this->isGrounded = false;
-	if (hitTerrain.object != nullptr || (hitProps.object != nullptr && hitProps.object->GetName() == "HouseInterior") || hitPuzzle.object != nullptr)// != nullptr )//&& hitProps.object->GetName() == "houseBase"))
+	if (hitTerrain.object != nullptr || hitProps.object != nullptr || hitPuzzle.object != nullptr)// && hitProps.object->GetName() == "HouseInterior") || hitPuzzle.object != nullptr)// != nullptr )//&& hitProps.object->GetName() == "houseBase"))
 	{
 		//this->houseVelocity = { 0.f,0.f,0.f };
 		/*if (hitProps.object != nullptr && hitProps.object->GetName() == "houseBase")
@@ -62,7 +62,7 @@ ControllerComp::ControllerComp(Object* cameraObject, Object* houseObject)
 	this->houseVelocity = { 0.f,0.f,0.f };
 	this->jumpDir = { 0.f,0.f,0.f };
 	this->cameraOffset = { 0.f,0.f,0.f };
-	this->cameraEuler = { 0.f,0.f,0.f }; //TODO_: fix start angle (looks down or up at start)
+	this->cameraEuler = { 0.f,45.f,0.f }; //TODO_: fix start angle (looks down or up at start)
 
 	this->cameraObject = cameraObject;
 	this->houseWalkComp = houseObject->GetComponent<NodeWalkerComp>();
@@ -224,6 +224,11 @@ void ControllerComp::Update(const float& deltaTime)
 		}
 	}
 	
+	if (!inside)	
+		AudioMaster::Instance().PlayerOutside(true);	
+	else	
+		AudioMaster::Instance().PlayerOutside(false);
+	
 	if (!playerComp->GetIsReading())
 	{
 		if (this->canRotate)
@@ -329,9 +334,16 @@ void ControllerComp::Update(const float& deltaTime)
 				{
 					if (this->velocity > 0.f) //is more decrease
 						acceleration = -WALK_ACCELERATION;
-
-					AudioMaster::Instance().StopSoundEvent("walk");
-					AudioMaster::Instance().StopSoundEvent("run");
+					if (!inside)
+					{
+						AudioMaster::Instance().StopSoundEvent("insideWalk");
+						AudioMaster::Instance().StopSoundEvent("walk");
+						AudioMaster::Instance().StopSoundEvent("run");
+					}
+					else
+					{
+						AudioMaster::Instance().StopSoundEvent("insideWalk");
+					}
 				}
 				else if (isMoving == WALKING)
 				{
@@ -340,25 +352,41 @@ void ControllerComp::Update(const float& deltaTime)
 					else if (this->velocity > WALK_VELOCITY) //is more decrease
 						acceleration = -WALK_ACCELERATION;
 
-					// Kan lägga in ljud för att gå på plankor här med, ha en bool för "onHouse" t.ex.
+					// Kan lï¿½gga in ljud fï¿½r att gï¿½ pï¿½ plankor hï¿½r med, ha en bool fï¿½r "onHouse" t.ex.
 					if (isGrounded)
 					{
-						AudioMaster::Instance().StopSoundEvent("run");
-						AudioMaster::Instance().PlaySoundEvent("walk");
+						if (!inside)
+						{
+							AudioMaster::Instance().StopSoundEvent("insideWalk");
+							AudioMaster::Instance().StopSoundEvent("run");
+							AudioMaster::Instance().PlaySoundEvent("walk");
+						}
+						else
+						{
+							AudioMaster::Instance().PlaySoundEvent("insideWalk");
+						}
 					}
 				}
 				else if (isMoving == SPRINTING)
 				{
-					if (this->velocity + RUN_ACCELERATION < RUN_VELOCITY) //is less increase
-						acceleration = RUN_ACCELERATION;
-
-					else if (this->velocity > RUN_VELOCITY)//is more decrease
-						acceleration = -RUN_ACCELERATION;
-
-					if (isGrounded)
+					if (!inside)
 					{
-						AudioMaster::Instance().PlaySoundEvent("run");
-						AudioMaster::Instance().StopSoundEvent("walk");
+						if (this->velocity + RUN_ACCELERATION < RUN_VELOCITY) //is less increase
+							acceleration = RUN_ACCELERATION;
+
+						else if (this->velocity > RUN_VELOCITY)//is more decrease
+							acceleration = -RUN_ACCELERATION;
+
+						if (isGrounded)
+						{
+							//if (!inside)
+							//{
+								AudioMaster::Instance().StopSoundEvent("insideWalk");
+								AudioMaster::Instance().PlaySoundEvent("run");
+								AudioMaster::Instance().StopSoundEvent("walk");
+							//}
+
+						}
 					}
 				}
 				else if (isMoving == CROUCHING)
@@ -452,7 +480,7 @@ void ControllerComp::Update(const float& deltaTime)
 		this->CalcVelocity(acceleration);
 		AudioMaster::Instance().StopSoundEvent("walk");
 		AudioMaster::Instance().StopSoundEvent("run");
-
+		AudioMaster::Instance().StopSoundEvent("insideWalk");
 
 		dx::XMVECTOR direction = dx::XMLoadFloat3(&dir);
 		//direction = dx::XMVector3Normalize(direction);

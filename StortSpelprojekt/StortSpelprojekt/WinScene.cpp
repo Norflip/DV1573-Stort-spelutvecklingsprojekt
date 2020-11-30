@@ -28,8 +28,7 @@ void WinScene::InitializeObjects()
 	//cameraObject3->AddComponent<ControllerComponent>();
 	AddObjectToRoot(cameraObject);
 
-	ShowCursor(true);
-	Input::Instance().SetMouseMode(dx::Mouse::MODE_ABSOLUTE);
+	//ShowCursor(true);
 
 }
 
@@ -54,11 +53,14 @@ void WinScene::InitializeGUI()
 
 void WinScene::OnActivate()
 {
+	input.SetMouseMode(dx::Mouse::MODE_ABSOLUTE);
+	//ShowCursor(true);
 	renderer->AddRenderPass(guiManager);
 }
 
 void WinScene::OnDeactivate()
 {
+	AudioMaster::Instance().StopSoundEvent("menusound");
 	renderer->RemoveRenderPass(guiManager);
 }
 
@@ -69,12 +71,20 @@ void WinScene::Update(const float& deltaTime)
 
 	if (static_cast<GUISprite*>(guiManager->GetGUIObject("quit"))->IsClicked())
 	{
+		AudioMaster::Instance().StopSoundEvent("menusound");
 		Engine::Instance->Exit();
+		return;
 	}
 
 	if (static_cast<GUISprite*>(guiManager->GetGUIObject("restart"))->IsClicked())
 	{
+		guiManager->ChangeGuiGroup(GuiGroup::Load);
+		AudioMaster::Instance().StopSoundEvent("menusound");
 		Engine::Instance->SwitchScene(SceneIndex::GAME);
+		return;
+		//AudioMaster::Instance().StopSoundEvent("menusound");
+		//Engine::Instance->SwitchScene(SceneIndex::INTRO);
+		//return;
 	}
 
 	guiManager->UpdateAll();

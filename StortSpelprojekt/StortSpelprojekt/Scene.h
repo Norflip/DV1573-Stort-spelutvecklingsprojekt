@@ -27,14 +27,11 @@
 #include "EnemyManager.h"
 #include <wchar.h>
 #include "PlayerAnimHandlerComp.h"
-#include "FireTextureComponent.h"
 #include "HousePartsComponent.h"
 
 class GUIFont;
 class SpriteRenderPass;
 class PlayerComp;
-
-//constexpr auto IMMORTAL = 0;
 
 ALIGN16
 class Scene

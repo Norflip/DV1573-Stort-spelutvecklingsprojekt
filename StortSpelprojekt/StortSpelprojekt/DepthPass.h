@@ -3,6 +3,7 @@
 class DepthPass
 {
 public:
+	ID3D11ShaderResourceView** GetRandomSRV() { return &randomSRV; }
 	ID3D11ShaderResourceView** GetDepthSRV() { return &depthSRV; }
 	//initialize resources
 	void Init(ID3D11Device*, UINT width, UINT height);
@@ -12,5 +13,6 @@ public:
 private:
 	ID3D11DepthStencilView* depthDSV;
 	ID3D11ShaderResourceView* depthSRV;
+	ID3D11ShaderResourceView* randomSRV;
 };
 
