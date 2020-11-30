@@ -403,14 +403,14 @@ void Renderer::DrawImmediate(const Mesh* mesh, const Material* material, const C
 	context->DrawIndexed(mesh->GetIndexCount(), 0, 0);
 }
 
-void Renderer::DrawEmissive(const Mesh* mesh, const Material* material, const dx::XMMATRIX& model)
-{
-	RenderItem item;
-	item.mesh = mesh;
-	item.material = material;
-	item.world = model;
-	AddItem(item, false, true);
-}
+//void Renderer::DrawEmissive(const Mesh* mesh, const Material* material, const dx::XMMATRIX& model)
+//{
+//	RenderItem item;
+//	item.mesh = mesh;
+//	item.material = material;
+//	item.world = model;
+//	AddItem(item, false, true);
+//}
 
 void Renderer::SetCullBack(bool cullNone)
 {

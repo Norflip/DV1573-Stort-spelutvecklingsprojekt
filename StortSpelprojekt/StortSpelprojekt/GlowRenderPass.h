@@ -29,8 +29,8 @@ public:
 		renderer->SetRenderTarget(target, false);
 
 		renderer->GetContext()->PSSetShaderResources(0, 1, &current.srv);
+		
 		renderer->DrawScreenQuad(glowMaterial);
-
 		//ID3D11ShaderResourceView* nullSRV[1] = { nullptr };
 		//renderer->GetContext()->PSSetShaderResources(1, 1, nullSRV);
 	}
