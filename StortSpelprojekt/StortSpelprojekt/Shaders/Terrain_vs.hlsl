@@ -55,8 +55,10 @@ VS_OUTPUT main(INPUT input)
     float3 bitangent = cross(normal, float3(0, 0, 1));
     float3 tangent = cross(normal, bitangent);
     
-	// Changed to input.normal since it offers the most accurate normal for the terrain
-	// The normals returned by the "GetNormal" function is all facing in the Z direction, which should be incorrect
+    float t = normal.z;
+    normal.z = normal.y;
+    normal.y = t;
+    
 #ifdef INSTANCED
     output.normal = normalize(mul(input.instanceWorld, float4(input.normal, 0.0f)).xyz);
     output.tangent = normalize(mul(input.instanceWorld, float4(input.tangent, 0.0f)).xyz);
