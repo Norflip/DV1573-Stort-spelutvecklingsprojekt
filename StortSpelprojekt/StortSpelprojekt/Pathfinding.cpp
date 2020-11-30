@@ -1,8 +1,8 @@
 #include "stdafx.h"
 #include "Pathfinding.h"
 
-Pathfinding::Pathfinding()
-	: cols(150), rows(150)
+Pathfinding::Pathfinding(Object* player, Object* enemy)
+	: cols(32), rows(32), player(player), enemy(enemy)
 {
 	timer.Start();
 	for (int x = 0; x < cols; x++)
@@ -27,6 +27,7 @@ Pathfinding::~Pathfinding()
 
 void Pathfinding::Init()
 {
+
 	for (int x = 0; x < cols; x++)
 	{
 		for (int y = 0; y < rows; y++)
@@ -39,55 +40,45 @@ void Pathfinding::Init()
 void Pathfinding::DrawGrid()
 {
 	timer.Update();
-	if (KEY_DOWN(K))
-	{
-		ResetPath();
-	}
+	ResetPath();
+	AStar();
 
-	if (KEY_DOWN(H))
+	for (int i = 0; i < cols; i++)
 	{
-		TestReset();
-		usingHeap = true;
-		AStar(usingHeap);
+		for (int j = 0; j < rows; j++)
+		{
+			dx::XMFLOAT3 color;
+			if (grid[i][j]->obstacle)
+			{
+				color = dx::XMFLOAT3(0, 0, 0);
+			}
+			else
+			{
+				if (grid[i][j]->openSet)
+					color = dx::XMFLOAT3(0, 1, 0);
+				else if (grid[i][j]->correctPath)
+					color = dx::XMFLOAT3(0, 0, 1);
+				else if (grid[i][j]->closedSet)
+					color = dx::XMFLOAT3(1, 0, 0);
+				else
+					color = dx::XMFLOAT3(1, 1, 1);
+			}
+			
+			box.DrawBox(dx::XMFLOAT3(grid[i][j]->pos.x * 5, 5, grid[i][j]->pos.y * 5), dx::XMFLOAT3(2, 2, 2), color);
+		}
 	}
-
-	if (KEY_DOWN(N))
-	{
-		TestReset();
-		usingHeap = false;
-		AStar(usingHeap);
-	}
-	
-		
-	//for (int i = 0; i < cols; i++)
-	//{
-	//	for (int j = 0; j < rows; j++)
-	//	{
-	//		dx::XMFLOAT3 color;
-	//		if (grid[i][j]->obstacle)
-	//		{
-	//			color = dx::XMFLOAT3(0, 0, 0);
-	//		}
-	//		else
-	//		{
-	//			if (grid[i][j]->openSet)
-	//				color = dx::XMFLOAT3(0, 1, 0);
-	//			else if (grid[i][j]->correctPath)
-	//				color = dx::XMFLOAT3(0, 0, 1);
-	//			else if (grid[i][j]->closedSet)
-	//				color = dx::XMFLOAT3(1, 0, 0);
-	//			else
-	//				color = dx::XMFLOAT3(1, 1, 1);
-	//		}
-	//		
-	//		box.DrawBox(dx::XMFLOAT3(grid[i][j]->pos.x * 5, 5, grid[i][j]->pos.y * 5), dx::XMFLOAT3(2, 2, 2), color);
-	//	}
-	//}
 }
 
-void Pathfinding::AStar(bool testHeap)
+void Pathfinding::AStar()
 {
 	timer.Restart();
+	//dx::XMFLOAT3 enemyPos;
+	//dx::XMStoreFloat3(&enemyPos, enemy->GetTransform().GetPosition());
+	//Node* start = grid[(int)enemyPos.x][(int)enemyPos.z];
+	//dx::XMFLOAT3 playerPos;
+	//dx::XMStoreFloat3(&playerPos, player->GetTransform().GetPosition());
+	//Node* end = grid[(int)playerPos.x][(int)playerPos.z];
+
 	Node* start = grid[0][0];
 	Node* end = grid[cols - 1][rows - 1];
 	start->obstacle = false;
@@ -100,27 +91,10 @@ void Pathfinding::AStar(bool testHeap)
 	while (openSet.size() > 0)
 	{
 		Node* current = nullptr;
-		int winner = 0;
-		if (!testHeap)
-		{
-			for (int i = 0; i < openSet.size(); i++)
-			{
-				if (openSet[i]->fCost < openSet[winner]->fCost)
-				{
-					winner = i;
-				}
-			}
-			current = openSet[winner];
-			openSet.erase(openSet.begin() + winner);
-		}
 		
-		if (testHeap)
-		{
-			std::make_heap(openSet.begin(), openSet.end(), Compare());
-			current = openSet[0];
-			openSet.erase(openSet.begin());
-		}
-		
+		std::make_heap(openSet.begin(), openSet.end(), Compare());
+		current = openSet[0];
+		openSet.erase(openSet.begin());
 
 		if (current != nullptr && current->pos.x == end->pos.x && current->pos.y == end->pos.y)
 		{
@@ -274,31 +248,4 @@ void Pathfinding::ResetPath()
 	}
 
 	AddObstacles();
-}
-
-void Pathfinding::TestReset()
-{
-	for (int x = 0; x < cols; x++)
-	{
-		for (int y = 0; y < rows; y++)
-		{
-			grid[x][y]->pos = dx::XMFLOAT2(x, y);
-			grid[x][y]->gCost = 0;
-			grid[x][y]->hCost = 0;
-			grid[x][y]->fCost = 0;
-			grid[x][y]->openSet = false;
-			grid[x][y]->closedSet = false;
-			grid[x][y]->correctPath = false;
-			grid[x][y]->previous = nullptr;
-			grid[x][y]->neighbors.clear();
-		}
-	}
-
-	for (int x = 0; x < cols; x++)
-	{
-		for (int y = 0; y < rows; y++)
-		{
-			AddNeighbors(grid[x][y]);
-		}
-	}
 }

@@ -5,7 +5,7 @@
 class Pathfinding
 {
 	public:
-		Pathfinding();
+		Pathfinding(Object* player, Object* enemy);
 		~Pathfinding();
 		void Init();
 		void DrawGrid();
@@ -31,18 +31,18 @@ class Pathfinding
 			}
 		};
 
-		void AStar(bool testHeap);
+		void AStar();
 		void AddNeighbors(Node* node);
 		void AddNeighbors2(Node* node);
 		int GetDistance(Node* nodeA, Node* nodeB);
 		void AddObstacles();
 		void ResetPath();
-		void TestReset();
 
 		int cols;
 		int rows;
-		Node* grid[150][150];
+		Node* grid[32][32];
 		DShape box;
 		GameClock timer;
-		bool usingHeap = false;
+		Object* player;
+		Object* enemy;
 };

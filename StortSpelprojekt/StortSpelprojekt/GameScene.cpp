@@ -520,8 +520,6 @@ void GameScene::OnActivate()
 	pathfinding = new Pathfinding();
 	pathfinding->Init();
 
-	LightManager::Instance().ForceUpdateBuffers(renderer->GetContext());
-
 	AudioMaster::Instance().PlaySoundEvent("wind");
 
 	/* Ugly solution */
