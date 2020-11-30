@@ -27,7 +27,7 @@ constexpr float CROUCH_LIMIT = -0.5f;
 constexpr float CROUCH_INC_RATE = 0.005f; //how often changes occur
 constexpr float JUMP_VELOCITY = 5.f;
 
-constexpr dx::XMFLOAT3 RESET_POS = {20.f,3.f,20.f};
+constexpr dx::XMFLOAT3 RESET_POS = {20.f,6.f,20.f};
 constexpr dx::XMFLOAT4 RESET_ROT = { 0.f,0.f,0.f,1.f };
 constexpr dx::XMFLOAT3 DOWN_VEC = { 0.f,-1.f,0.f };
 
@@ -58,6 +58,7 @@ private:
 	bool isGrounded;
 	bool inside;
 	bool inDoorRange;
+	bool first;
 
 	dx::XMFLOAT3 houseVelocity;
 	dx::XMFLOAT3 jumpDir; 
@@ -99,4 +100,5 @@ public:
 	bool GetInRange() { return this->inDoorRange; }
 	void SetInRange(bool state) { this->inDoorRange = state; }
 	bool GetInside() { return this->inside; }
+	void SetInside(bool state) { this->inside = state; }
 };

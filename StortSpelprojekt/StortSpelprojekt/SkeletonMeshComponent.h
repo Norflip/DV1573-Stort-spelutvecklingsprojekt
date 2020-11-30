@@ -57,7 +57,8 @@ public:
 	bool& SetAndGetDoneDown();
 	bool& SetAndGetDoneUp();
 	float GetTimeScale() { return this->timeScale; }
-
+	const bool GetDoneDeath() { return doneDeath; }
+	void SetDoneDeath(bool doneDeath) { this->doneDeath = doneDeath; }
 	std::vector<dx::XMFLOAT4X4> GetAnimationTransforms() { return this->finalTransforms; }
 	//void SetAnimationTransforms(std::vector<dx::XMFLOAT4X4> transform);
 	std::vector<SkeletonAni> GetAnimations() { return this->skeletonAnimations; }
@@ -85,7 +86,9 @@ private:
 	void PlayOnce(const float& deltaTime);
 	void RunAnimation(const float& deltaTime);
 	void FindChildren(SkeletonAni& track, int index, std::map<std::string, unsigned int>& map, std::string& name, std::string& secondName);
-
 	bool doneUp, doneDown;
+	bool doneDeath = false;
+	float count = 0.0f;
+	
 };
 

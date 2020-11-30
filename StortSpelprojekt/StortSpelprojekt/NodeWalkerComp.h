@@ -2,8 +2,10 @@
 #include "SkeletonMeshComponent.h"
 #include "Path.h"
 #include "Input.h"
+#include "World.h"
+
 // why are these global?
-constexpr float HEIGHT = 1.f; //height from ground
+constexpr float HEIGHT = 0.6f; //height from ground
 class PlayerComp;
 
 namespace dx = DirectX;
@@ -26,6 +28,7 @@ private:
 	RigidBodyComponent* rbComp;
 	PlayerComp* playerComp;
 	dx::XMFLOAT3 pos3;
+	World* world;
 
 	void StartAnim();
 	void StopAnim();
@@ -42,6 +45,6 @@ public:
 	//dx::XMFLOAT3 GetLastPos();
 	dx::XMFLOAT3 GetMoveVec();
 	bool GetIsWalking() const { return isWalking; };
-
+	void SetWorld(World* world) { this->world = world; }
 };
 

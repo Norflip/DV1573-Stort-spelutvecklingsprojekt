@@ -20,7 +20,7 @@ SamplerState m_dataSamplerState : register(s0);
 SamplerState m_textureSamplerState : register(s1);
 
 float4 main(VS_OUTPUT input) : SV_TARGET
-{
+{	
 	const float UV_SCALE = 8.0f;
 
 	float4 data = testTexture.Sample(m_dataSamplerState, input.uv);
@@ -41,13 +41,13 @@ float4 main(VS_OUTPUT input) : SV_TARGET
 	float4 finalColor = float4(0,0,0,1);
 
 	float3 normal = normalize(input.normal);
-	finalColor += CalculateDirectionalLight(sunDirection, normal, viewDirection);
 
-	for (int i = 0; i < nrOfPointLights; i++)
-	{
-		finalColor += CalculatePointLight(pointLights[i], normal, input.worldPosition, viewDirection);
-	}
+    uint2 tileIndex = uint2(floor(input.position.xy / (BLOCK_SIZE)));
 
+	uint startOffset = LightGrid[tileIndex].x;
+	uint lightCount = LightGrid[tileIndex].y;
+
+	finalColor = IterateLights(startOffset, lightCount, finalColor, normal, input.worldPosition, viewDirection);
 	finalColor = saturate(textureColor * finalColor);
 	finalColor.a = 1.0f;
 

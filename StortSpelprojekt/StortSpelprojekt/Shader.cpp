@@ -1,7 +1,7 @@
 
 #include "Shader.h"
 
-Shader::Shader() : pixelShader(nullptr), vertexShader(nullptr), inputLayout(nullptr), geometryShader(nullptr), hullShader(nullptr), domainShader(nullptr)
+Shader::Shader() : pixelShader(nullptr), vertexShader(nullptr), inputLayout(nullptr), geometryShader(nullptr), hullShader(nullptr), domainShader(nullptr), computeShader(nullptr)
 {
 	shaderCompilationFlag = D3DCOMPILE_ENABLE_STRICTNESS;
 #ifdef _DEBUG
@@ -19,6 +19,7 @@ Shader::~Shader()
 	RELEASE(geometryShader);
 	RELEASE(hullShader);
 	RELEASE(domainShader);
+	RELEASE(computeShader);
 }
 
 void Shader::SetPixelShader(std::string path, LPCSTR entry)
@@ -48,7 +49,12 @@ void Shader::SetDomainShader(std::string path, LPCSTR entry)
 	this->domainEntry = entry;
 	shaderFlags |= ShaderBindFlag::DOMAINS;
 }
-
+void Shader::SetComputeShader(std::string path, LPCSTR entry)
+{
+	this->computePath = path;
+	this->computeEntry = entry;
+	shaderFlags |= ShaderBindFlag::COMPUTE;
+}
 void Shader::SetGeometryShader(std::string path, LPCSTR entry)
 {
 	this->geometryPath = path;
@@ -65,6 +71,7 @@ void Shader::SetInputLayoutStructure(size_t arraySize, D3D11_INPUT_ELEMENT_DESC*
 
 void Shader::Compile(ID3D11Device* device)
 {	
+	CompileCS(device);
 	CompileVS(device);
 	CompilePS(device);
 	CompileGS(device);
@@ -101,6 +108,10 @@ void Shader::BindToContext(ID3D11DeviceContext* context) const
 	if ((flag & (int)ShaderBindFlag::DOMAINS) != 0)
 	{
 		context->DSSetShader(domainShader, 0, 0);
+	}
+	if ((flag & (int)ShaderBindFlag::COMPUTE) != 0)
+	{
+		context->CSSetShader(computeShader, 0, 0);
 	}
 }
 
@@ -348,6 +359,48 @@ void Shader::CompileDS(ID3D11Device* device)
 	}
 }
 
+void Shader::CompileCS(ID3D11Device* device)
+{
+	if (((int)shaderFlags & (int)ShaderBindFlag::COMPUTE) != 0)
+	{
+		if (computeShader != nullptr)
+		{
+			computeShader->Release();
+		}
+		ID3DBlob* errorBlob = nullptr;
+		ID3DBlob* CSBlob = nullptr;
+
+		// Convert the string to a wstring locally, without changing the content
+		std::wstring wPath = std::wstring(computePath.begin(), computePath.end());
+
+		const D3D_SHADER_MACRO defines[] =
+		{
+	#if _DEBUG
+				"_DEBUG", "1",
+	#else
+				"_DEBUG", "0",
+	#endif
+				NULL, NULL
+		};
+		HRESULT CSCompileResult = D3DCompileFromFile
+		(
+			wPath.c_str(),
+			defines,
+			D3D_COMPILE_STANDARD_FILE_INCLUDE,
+			computeEntry,
+			"cs_5_0",
+			shaderCompilationFlag,
+			0,
+			&CSBlob,
+			&errorBlob
+		);
+
+		ASSERT_SHADER(CSCompileResult, errorBlob, wPath);
+
+		HRESULT CSCreateResult = device->CreateComputeShader(CSBlob->GetBufferPointer(), CSBlob->GetBufferSize(), nullptr, &this->computeShader);
+		assert(SUCCEEDED(CSCreateResult));
+	}
+}
 void Shader::Unbind(ID3D11DeviceContext* context) const
 {
 
@@ -365,5 +418,7 @@ void Shader::Unbind(ID3D11DeviceContext* context) const
 	if ((flag & (int)ShaderBindFlag::GEOMETRY) != 0)
 		context->GSSetShader(nullptr, 0, 0);
 
+	if ((flag & (int)ShaderBindFlag::COMPUTE) != 0)
+		context->CSSetShader(nullptr, 0, 0);
 
 }
