@@ -65,7 +65,8 @@ void ObjectPooler::ReturnItem(Object* object)
 		Pool* pool = GetPool(key);
 		if (pool != nullptr)
 		{
-			Transform::ClearFromHierarchy(object->GetTransform());
+			Object::RemoveFromHierarchy(object);
+
 			object->Reset();
 			object->RemoveFlag(ObjectFlag::ENABLED);
 			assert(pool->inside.size() + pool->outside.size() < POOL_MAX_LIMIT);

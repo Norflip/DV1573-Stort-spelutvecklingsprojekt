@@ -52,6 +52,12 @@ void GUIFont::SetPosition(float x, float y)
 	this->y = y;
 }
 
+void GUIFont::Translate(float x, float y)
+{
+	this->x += x;
+	this->y += y;
+}
+
 void GUIFont::SetFont(const wchar_t* font)
 {
 	this->spriteFont = new DirectX::SpriteFont(this->renderer->GetDevice(), font);

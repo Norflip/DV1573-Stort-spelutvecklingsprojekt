@@ -20,4 +20,5 @@ class PlayerAttackComp : public Component
 		GameClock timer;
 		PlayerComp* playerStatsComp;
 		EnemyStatsComp* enemyStatsComp;
+		
 };

@@ -5,20 +5,17 @@
 #include "GUIFont.h"
 #include "PlayerComp.h"
 
-
-
-Scene::Scene() : input(Input::Instance())
+Scene::Scene(const std::string& debugName) : input(Input::Instance()), debugName(debugName)
 {
 	renderer = nullptr;
 	camera = nullptr;
+	this->root = new Object("root");
 }
 
 Scene::~Scene()
 {
-	// skapar en krasch atm, vet inte riktigt varför. 
-	// Ska lägga in namnet för varje scene för att lättare hitta vilken scen som kraschar.
-//	delete root;
-//	root = nullptr;	
+	delete root;
+	root = nullptr;	
 }
 
 void Scene::SetDepedencies(ResourceManager* resources, Renderer* renderer, Physics* physics, Window* window)
@@ -28,29 +25,23 @@ void Scene::SetDepedencies(ResourceManager* resources, Renderer* renderer, Physi
 	this->physics = physics;
 	this->window = window;
 
-	this->pooler = new ObjectPooler(resources);
-	this->root = new Object("root");
 	this->input.SetWindow(window->GetHWND(), window->GetHeight(), window->GetWidth());
 }
 
 void Scene::Update(const float& deltaTime)
 {
 
-
-
-
-	
 	while (!removeQueue.empty())
 	{
 		Object* obj = removeQueue.front();
 		removeQueue.pop();
-		Transform::ClearFromHierarchy(obj->GetTransform());
+		Object::RemoveFromHierarchy(obj);
 		delete obj;
 	}
 
 	clock.Update();
 	input.UpdateInputs();
-	root->GetTransform().ResetChanged();
+	root->GetTransform().SetChanged(true);
 	root->Update(deltaTime);
 	GameClock::Instance().Update();
 
@@ -67,6 +58,7 @@ void Scene::Update(const float& deltaTime)
 		std::cout << "Compiling: " << std::endl;
 		resources->CompileShaders(renderer->GetDevice());
 	}
+
 }
 
 void Scene::FixedUpdate(const float& fixedDeltaTime)
@@ -87,23 +79,9 @@ void Scene::Render()
 	renderer->RenderFrame(camera, (float)clock.GetSeconds());
 }
 
-void Scene::AddObject(Object* object)
+void Scene::AddObjectToRoot(Object* object)
 {
-	Transform::SetParentChild(root->GetTransform(), object->GetTransform());
-}
-
-void Scene::AddObject(Object* object, Object* parent)
-{
-	Transform::SetParentChild(parent->GetTransform(), object->GetTransform());
-}
-
-void Scene::RemoveObject(Object* object)
-{
-	// remove the the connection and traverse downwards and remove / destroy all objects
-	enemyManager->RemoveEnemy(object);
-	removeQueue.push(object);
-	object->RemoveFlag(ObjectFlag::ENABLED);
-	object->AddFlag(ObjectFlag::REMOVED);
+	Object::AddToHierarchy(root, object);
 }
 
 void Scene::PrintSceneHierarchy(Object* object, size_t level) const
@@ -120,13 +98,13 @@ void Scene::PrintSceneHierarchy(Object* object, size_t level) const
 
 	std::cout << (indent + object->GetName()) << std::endl;
 	
-	if (object->GetTransform().CountChildren() > 0)
+	if (object->CountChildren() > 0)
 	{
-		auto children = object->GetTransform().GetChildren();
+		auto children = object->GetChildren();
 
 		for (size_t i = 0; i < children.size(); i++)
 		{
-			PrintSceneHierarchy(children[i]->GetOwner(), level + 1);
+			PrintSceneHierarchy(children[i], level + 1);
 		}
 	}
 }
@@ -148,5 +126,21 @@ void Scene::AnimateIcon()
 		const wchar_t* iconText = wide_string.c_str();
 		SendMessage(window->GetHWND(), WM_SETICON, ICON_SMALL, (LPARAM)LoadIcon(window->GetHINSTANCE(), iconText));
 	}
+}
+
+void Scene::DebugCheckForObjectIDConflict(Object* current, std::unordered_set<size_t>& registry, size_t& conflicCounter) const
+{
+	auto find = registry.find(current->GetID());
+
+	if (find == registry.end())
+		registry.insert(current->GetID());
+	else
+	{
+		conflicCounter++;
+	}
+
+	auto children = current->GetChildren();
+	for (size_t i = 0; i < children.size(); i++)
+		DebugCheckForObjectIDConflict(children[i], registry, conflicCounter);
 }
 

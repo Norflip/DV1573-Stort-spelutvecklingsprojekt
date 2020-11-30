@@ -8,7 +8,7 @@ TextureCube skymap : register(t2); //just testing
 SamplerState defaultSampleType : register (s0);
 
 float4 main(VS_OUTPUT input) : SV_TARGET
-{
+{	
 	float4 textureColor = float4(0.5f, 0.5f, 0.5f, 1.0f);
 	float4 normalmap = float4(1.0f, 1.0f, 1.0f, 1.0f);
 	
@@ -27,12 +27,12 @@ float4 main(VS_OUTPUT input) : SV_TARGET
 
 	float4 finalColor = float4(0.0f, 0.0f, 0.0f, 0.0);
 
-	finalColor += CalculateDirectionalLight(sunDirection, normalized, viewDirection);
+    uint2 tileIndex = uint2(floor(input.position.xy / (BLOCK_SIZE)));
 
-    for (int i = 0; i < nrOfPointLights; i++)
-    {
-		finalColor += CalculatePointLight(pointLights[i], normalized, input.worldPosition, viewDirection);
-    }
+	uint startOffset = LightGrid[tileIndex].x;
+	uint lightCount = LightGrid[tileIndex].y;
+
+	finalColor = IterateLights(startOffset, lightCount, finalColor, normalized, input.worldPosition, viewDirection);
 
 	finalColor = saturate(finalColor * textureColor);
 	finalColor.a = 1.0f;

@@ -16,12 +16,13 @@ void World::Initialize(Object* root, ResourceManager* resources, Renderer* rende
 {
 	this->resources = resources;
 	generator.Initialize(root, this, renderer);
-	lastRelevantIndex = dx::XMINT2(-5000, -5000);
+	ResetRelevanceIndex();
 }
 
 void World::ConstructSegment(const SaveState& state)
 {
 	Random::SetSeed(state.GetSegmentedSeed());
+	ResetRelevanceIndex();
 	this->description = DescriptionFromState(state);
 
 	ObjectSpawner* spawner = generator.GetSpawner();
@@ -39,6 +40,11 @@ void World::DeconstructSegment()
 {
 	relevant.clear();
 	generator.Deconstruct();
+}
+
+void World::ResetRelevanceIndex()
+{
+	lastRelevantIndex = dx::XMINT2(DEFAULT_RELEVANT_INDEX, DEFAULT_RELEVANT_INDEX);
 }
 
 void World::UpdateRelevantChunks(const Transform& transform, CameraComponent* camera)
