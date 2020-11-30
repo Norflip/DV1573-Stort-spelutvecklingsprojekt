@@ -77,7 +77,9 @@ void WorldGenerator::Construct(const SaveState& state, const WorldDescription& d
 		{
 			Object* root = new Object("puzzel_root");
 			Object* tree =  Engine::Instance->GetResources()->AssembleObject("Tree", "TreeMaterial");
+
 			Object* leaves = Engine::Instance->GetResources()->AssembleObject("leaves", "leavesMaterial");
+			leaves->GetComponent<MeshComponent>()->GetMaterials()[0]->SetTransparent(true);
 			Object* puzzle = Engine::Instance->GetResources()->AssembleObject("TreePuzzle", "TreePuzzleMaterial");
 			Object* crazyFrog = Engine::Instance->GetResources()->AssembleObject("PuzzleFrogStatue", "PuzzleFrogStatueMaterial");
 			Object* crazyFly = Engine::Instance->GetResources()->AssembleObject("PuzzleFlyStatue", "PuzzleFlyStatueMaterial");

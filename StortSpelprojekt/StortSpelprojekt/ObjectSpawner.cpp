@@ -27,19 +27,12 @@ void ObjectSpawner::Initialize(Object* root, World* world, Renderer* renderer)
 	tree.meshes.push_back(resources->GetResource<Mesh>("instancedleaves"));
 
 	tree.materials.push_back(resources->GetResource<Material>("instancedTreeMaterial"));
-	//tree.materials.push_back(resources->GetResource<Material>("instancedleavesMaterial"));
 
 	Material* mat = resources->GetResource<Material>("instancedleavesMaterial");
 	mat->SetShader(resources->GetShaderResource("leafShader"));
 
-
-	//Material* mat = resources->GetResource<Material>("instancedleavesMaterial");
-	//mat->SetShader(resources->GetShaderResource("leafShader"));
-
-	//tree.materials.push_back(resources->GetResource<Material>("TreeMaterial"));
 	tree.materials.push_back(mat);
 	tree.materials[1]->SetTransparent(true);
-
 
 	tree.minScale = 1.4f;
 	tree.maxScale = 2.0f;

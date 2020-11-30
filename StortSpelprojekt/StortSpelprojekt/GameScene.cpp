@@ -31,6 +31,7 @@ void GameScene::InitializeObjects()
 	Object* housesLegsObject = new Object("houseLegs");
 	Object* houseDoor = resources->AssembleObject("HouseDoor", "HouseDoorMaterial");
 	Object* houseExterior = resources->AssembleObject("HouseExterior", "HouseExteriorMaterial");
+	houseExterior->GetComponent<MeshComponent>()->GetMaterials()[0]->SetTransparent(true);
 	Object* houseDoorRigid = new Object("doorRigid");
 
 	houseBaseObject->GetTransform().Rotate(0, -90.0f * Math::ToRadians, 0.0);
@@ -403,21 +404,21 @@ void GameScene::InitializeInterior()
 	table->AddComponent<RigidBodyComponent>(0.0f, FilterGroups::PROPS, FilterGroups::EVERYTHING, BodyType::STATIC, true);
 	AddObjectToRoot(table);
 
-	Object* tutorialFood = resources->AssembleObject("Fruits", "FruitsMaterial");
+	Object* tutorialFood = resources->AssembleObject("Fruits", "FruitsMaterial", true);
 	tutorialFood->GetTransform().SetPosition({ -5.65f, interiorPosition.y + 1.0f, -4.6f, 0.0f });
 	tutorialFood->AddComponent<PickupComponent>(PickupType::Food, 30.0f);
 	tutorialFood->AddComponent<BoxColliderComponent>(dx::XMFLOAT3(0.25f, 0.25f, 0.25f), dx::XMFLOAT3(0, 0, 0));
 	tutorialFood->AddComponent<RigidBodyComponent>(10.0f, FilterGroups::PICKUPS, FilterGroups::EVERYTHING & ~FilterGroups::PLAYER, BodyType::DYNAMIC, true);
 	AddObjectToRoot(tutorialFood);
 
-	Object* tutorialHealth = resources->AssembleObject("HealthKit", "HealthKitMaterial");
+	Object* tutorialHealth = resources->AssembleObject("HealthKit", "HealthKitMaterial", true);
 	tutorialHealth->GetTransform().SetPosition({ -5.0f, interiorPosition.y + 1.0f, -4.4f, 0.0f });
 	tutorialHealth->AddComponent<PickupComponent>(PickupType::Health, 30.0f);
 	tutorialHealth->AddComponent<BoxColliderComponent>(dx::XMFLOAT3(0.25f, 0.1f, 0.25f), dx::XMFLOAT3(0, 0, 0));
 	tutorialHealth->AddComponent<RigidBodyComponent>(10.0f, FilterGroups::PICKUPS, FilterGroups::EVERYTHING & ~FilterGroups::PLAYER, BodyType::DYNAMIC, true);
 	AddObjectToRoot(tutorialHealth);
 
-	Object* tutorialFuel = resources->AssembleObject("FuelCanRed", "FuelCanRedMaterial");
+	Object* tutorialFuel = resources->AssembleObject("FuelCanRed", "FuelCanRedMaterial", true);
 	tutorialFuel->GetTransform().SetPosition({ -5.0f, interiorPosition.y + 3.0f, 0.11f, 0.0f });
 	tutorialFuel->AddComponent<PickupComponent>(PickupType::Fuel, 30.0f);
 	tutorialFuel->AddComponent<BoxColliderComponent>(dx::XMFLOAT3(0.3f, 0.35f, 0.15f), dx::XMFLOAT3(0, 0, 0));
