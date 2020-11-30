@@ -2,6 +2,9 @@
 #include "DXHelper.h"
 #include "ResourceManager.h"
 
+const dx::XMFLOAT4 fireRedColor = dx::XMFLOAT4(0.5f, 0.2f, 0.2f, 1.0f);
+const dx::XMFLOAT4 grayColor = dx::XMFLOAT4(0.2f, 0.2f, 0.2f, 1.0f);
+
 class ParticleComponent : public Component
 {
 public:
@@ -37,14 +40,14 @@ public:
 	int GetParticlesPerSecond() { return this->particlesPerSecond; }
 
 	//ID3D11ShaderResourceView* GetParticleTexture() { return this->particleSRV; }
-	//ID3D11ShaderResourceView* GetRandomTexture() { return this->randomNumberSRV; }
+	ID3D11ShaderResourceView* GetRandomTexture() { return this->randomNumberSRV; }
 	void SetTexture(ID3D11Device* device, LPCWSTR textureFilename);
 
 	void Reset();
 
 	bool GetActive() { return this->active; }
 	void SetActive(bool active) { this->active = active; }
-	//float RandomFloat(float a, float b);
+	float RandomFloat(float a, float b);
 
 private:
 	void BuildVertexBuffers(ID3D11Device* device);
@@ -75,10 +78,10 @@ private:
 	ID3D11Buffer* drawVB;
 	ID3D11Buffer* streamoutVB;
 
-	//ID3D11ShaderResourceView* particleSRV;
-	//ID3D11ShaderResourceView* randomNumberSRV;
-	Texture* particleTex;
-	Texture* random1DTexture;
+	ID3D11ShaderResourceView* particleSRV;
+	ID3D11ShaderResourceView* randomNumberSRV;
+	//Texture* particleTex;
+	//Texture* random1DTexture;
 
 
 	cb_particle particleBuffer; 

@@ -241,7 +241,7 @@ void GameScene::InitializeObjects()
 	SOShader->SetInputLayoutStructure(5, SOShader->DEFAULT_INPUT_LAYOUT_PARTICLE);
 	SOShader->SetVertexShader("Shaders/ParticleSO_vs.hlsl");
 	SOShader->SetSOGeometryShader("Shaders/ParticleSO_gs.hlsl");
-	SOShader->Compile(renderer->GetDevice());
+	//SOShader->Compile(renderer->GetDevice());
 
 	Shader* DrawShader = new Shader;
 	DrawShader->SetInputLayoutStructure(5, SOShader->DEFAULT_INPUT_LAYOUT_PARTICLE);
@@ -255,7 +255,16 @@ void GameScene::InitializeObjects()
 	puzzleFly2->GetTransform().SetPosition({ 35, 1.3f, 50 });
 	puzzleFly2->AddComponent<BoxColliderComponent>(dx::XMFLOAT3{ 1.0f, 1.0f, 1.0f }, dx::XMFLOAT3{ 0, 0, 0 });
 	puzzleFly2->AddComponent<RigidBodyComponent>(0.0f, FilterGroups::HOLDABLE, FilterGroups::EVERYTHING, BodyType::DYNAMIC, true);	
-	AddObjectToRoot(puzzleFly2);
+	puzzleFly2->AddComponent<ParticleComponent>(renderer, SOShader, DrawShader);
+	puzzleFly2->GetComponent<ParticleComponent>()->SetTexture(renderer->GetDevice(), L"Textures/fire1.png");
+	puzzleFly2->GetComponent<ParticleComponent>()->SetMaxParticles(30);
+	puzzleFly2->GetComponent<ParticleComponent>()->SetParticleColor(dx::XMFLOAT4(fireRedColor));
+	puzzleFly2->GetComponent<ParticleComponent>()->SetParticleSize(dx::XMFLOAT2(1, 1));
+	puzzleFly2->GetComponent<ParticleComponent>()->SetEmitPos(dx::XMFLOAT3(35, 1.8f, 50));
+	puzzleFly2->GetComponent<ParticleComponent>()->SetParticleSpreadMulti(dx::XMFLOAT3(0.5f, 1.0f, 0.5f));
+	puzzleFly2->GetComponent<ParticleComponent>()->InitializeParticles(renderer->GetDevice());
+
+	//AddObjectToRoot(puzzleFly2);
 
 	
 }

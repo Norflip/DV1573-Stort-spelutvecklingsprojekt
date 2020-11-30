@@ -40,7 +40,7 @@ ParticleComponent::~ParticleComponent()
 
 void ParticleComponent::InitializeParticles(ID3D11Device* device)
 {
-	/*ID3D11Texture1D* random;
+	ID3D11Texture1D* random;
 	DirectX::XMFLOAT4* randomValues = new DirectX::XMFLOAT4[1024];
 	for (int i = 0; i < 1024; ++i)
 	{
@@ -76,10 +76,12 @@ void ParticleComponent::InitializeParticles(ID3D11Device* device)
 
 	hr = device->CreateShaderResourceView(random, &viewDesc, &randomNumberSRV);
 	assert(SUCCEEDED(hr));
-	delete[] randomValues;*/
+	delete[] randomValues;
 
-	random1DTexture->CreateRandom1DTexture(device);
-	streamoutMat->SetTexture(random1DTexture, TEXTURE_DIFFUSE_SLOT, ShaderBindFlag::SOGEOMETRY);
+	/*random1DTexture->SetSRV(randomNumberSRV);*/
+
+	//random1DTexture->CreateRandom1DTexture(device);
+	streamoutMat->SetTexture(new Texture(randomNumberSRV), TEXTURE_DIFFUSE_SLOT, ShaderBindFlag::SOGEOMETRY);
 	streamoutMat->SetSampler(DXHelper::CreateSampler(D3D11_FILTER_MIN_MAG_MIP_LINEAR, D3D11_TEXTURE_ADDRESS_WRAP, device), 0, ShaderBindFlag::SOGEOMETRY);
 	
 
@@ -111,16 +113,24 @@ void ParticleComponent::Update(const float& deltaTime)
 
 void ParticleComponent::Draw(Renderer* renderer, CameraComponent* camera)
 {
-	renderer->EnableAlphaBlending();
+	//renderer->EnableAlphaBlending();
+	dx::XMFLOAT3 pos;
+	dx::XMStoreFloat3(&pos, camera->GetOwner()->GetTransform().GetPosition());	
+	SetEyePos(pos);
 	DrawStreamOut(renderer->GetContext(), camera);
 	Draw(renderer->GetContext(), camera);
-	renderer->DisableAlphaBlending();
+	//renderer->DisableAlphaBlending();
 }
 
 void ParticleComponent::SetTexture(ID3D11Device* device, LPCWSTR textureFilename)
 {
-	particleTex->LoadTexture(device, textureFilename);
-	drawMat->SetTexture(particleTex, TEXTURE_DIFFUSE_SLOT, ShaderBindFlag::PIXEL);
+	//particleTex->LoadTexture(device, textureFilename);
+
+	hr = dx::CreateWICTextureFromFile(device, textureFilename, nullptr, &particleSRV);
+	if (FAILED(hr))
+		MessageBox(0, L"Failed to 'Load WIC Texture'", L"Graphics scene Initialization Message", MB_ICONERROR);
+
+	drawMat->SetTexture(new Texture(particleSRV), TEXTURE_DIFFUSE_SLOT, ShaderBindFlag::PIXEL);
 	drawMat->SetSampler(DXHelper::CreateSampler(D3D11_FILTER_MIN_MAG_MIP_LINEAR, D3D11_TEXTURE_ADDRESS_WRAP, device), 0, ShaderBindFlag::PIXEL);
 
 	/*hr = DirectX::CreateWICTextureFromFile(device, particleTexture, nullptr, &particleSRV);
@@ -135,13 +145,13 @@ void ParticleComponent::Reset()
 	particleAge = 0.0f;
 }
 
-//float ParticleComponent::RandomFloat(float a, float b)
-//{
-//	float random = ((float)rand()) / (float)RAND_MAX;
-//	float diff = b - a;
-//	float r = random * diff;
-//	return a + r;
-//}
+float ParticleComponent::RandomFloat(float a, float b)
+{
+	float random = ((float)rand()) / (float)RAND_MAX;
+	float diff = b - a;
+	float r = random * diff;
+	return a + r;
+}
 
 void ParticleComponent::BuildVertexBuffers(ID3D11Device* device)
 {

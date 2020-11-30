@@ -98,6 +98,8 @@ private:
 	std::vector<Vertex> vertices;
 	std::vector<unsigned int> indices;
 	ID3D11Buffer* vertexBuffer;
+	ID3D11Buffer* streamoutBuffer, *InitializeBuffer;
+
 	ID3D11Buffer* indexBuffer;
 	int indexCount;
 	int vertexCount;

@@ -165,7 +165,7 @@ void IntroScene::Update(const float& deltaTime)
 
 	if (static_cast<GUISprite*>(guiManager->GetGUIObject("startSprite"))->IsClicked())
 	{
-		guiManager->ChangeGuiGroup(GuiGroup::Load);
+		//guiManager->ChangeGuiGroup(GuiGroup::Load);
 		AudioMaster::Instance().StopSoundEvent("menusound");
 		Engine::Instance->SwitchScene(SceneIndex::GAME);
 		return;

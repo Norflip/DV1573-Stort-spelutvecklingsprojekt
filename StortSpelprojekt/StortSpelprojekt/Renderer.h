@@ -47,6 +47,9 @@ class Renderer
 
 		const Mesh* mesh;
 		const Material* material;
+		const Material* streamoutMaterial;	// New
+
+		//const Material* streamoutMaterial;
 
 		Type type;
 		
