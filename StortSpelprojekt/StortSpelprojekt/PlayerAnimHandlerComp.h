@@ -18,6 +18,9 @@ public:
 
 	void Animate(const float& time);
 	void SetPosition();
+	void SetStarted(bool started) { this->gameStarted = started; }
+	float GetCooldown() { return this->attackCooldown; }
+
 private:
 	CameraComponent* camComp;
 	ControllerComp* controlComp;
@@ -29,5 +32,5 @@ private:
 	bool attacking;
 	float attackTimer = 0;
 	float attackCooldown = 0;
-	
+	bool gameStarted = false;
 };

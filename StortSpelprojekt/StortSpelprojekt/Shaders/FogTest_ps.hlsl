@@ -31,7 +31,7 @@ float3 WorldPosFromDepth(float depth, float2 uv) {
 
 float4 main(PixelInputType input) : SV_TARGET
 {
-    float someValue = 400;
+    float someValue = 343; //1080/pi unsure on math here
     float4 diff;
     float4 diff2;
     float4 final;
@@ -51,16 +51,15 @@ float4 main(PixelInputType input) : SV_TARGET
     float D = ((2.0f * near) / (far + near - depth * (far - near)));
     float fogFactor = saturate(((D * far) - start) / (end - start));
 
-    float2 st = input.uv.xy;// / float2(1600, 800) * 3.;
-
-  
+    float2 st = input.uv.xy; 
+    st.y = st.y * (9.f / 16.f);// divides uv with screen aspect ratio
     float2 q = float2(0,0);
     q.x = fbm(st + 0.00 * time + (mousePos / someValue));
     q.y = fbm(st + float2(1.0, 0.0) + (mousePos / someValue));
 
     float2 r = float2(0, 0);
-    r.x = fbm(st + 1.0 * q + float2(1.7, 9.2) + 0.15 * time + (mousePos / (someValue))); //2pi r
-    r.y = fbm(st + 1.0 * q + float2(8.3, 2.8) + 0.126 * time + (mousePos / (someValue))); //2pi r
+    r.x = fbm(st + 1.0 * q + float2(1.7, 9.2) + 0.15 * time + (mousePos / (someValue)));
+    r.y = fbm(st + 1.0 * q + float2(8.3, 2.8) + 0.126 * time + (mousePos / (someValue))); 
 
     float f = fbm(st + r + (mousePos / (someValue)));
     float3 color = float3(0,0,0);
@@ -106,15 +105,16 @@ float4 main(PixelInputType input) : SV_TARGET
    float4 fogColor = float4(1, 1, 1, 1.0f);
 
    //Math to multiply colors
-   fogColor = float4((((f * f * f * f + .6 * f * f * f + .5 * f * f) * color) + color * color * color).xyz, 1.0f);
+   fogColor = float4((((pow(f,4) + .6 * pow(f,3) + .5 * f * f) * color) + pow(color, 3)).xyz, 1.0f);
 
 
    const float amount = 0.2f;  // higher = more intensity 
    const float power = (1 / distanceToHouse) * 100;   // higher = less space on screen
-   const float4 vignetteColor = float4(.8f, .3f, 0, 3.f); //ugly green shit
+   const float4 vignetteColor = float4(.8f, .3f, 0, 3.f); 
    float dis = length(input.uv * 2 - 1);
    dis = dis / 1.41421;
    dis = pow(dis, power);
+   
    float4 result = lerp(diffuseColor, fogColor, fogFactor);
    float4 vigcolor = float4(lerp(result, vignetteColor, 1.0f - pow(1 - dis * amount, 2)).rgb, 1.0f);
 

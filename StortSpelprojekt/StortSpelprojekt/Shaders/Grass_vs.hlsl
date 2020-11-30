@@ -34,7 +34,7 @@ VS_OUTPUT_GRASS main(VS_INPUT input)
 
 	float tess = saturate((30.0f - d) / (30.0f - 5.0f));
 
-	output.tessFactor = 0.0f + tess * (8.0f - 0.0f); /*MAX TESSELEATION FACTOR NEEDS TO BE A MULTIPLE OF 64*/
+	output.tessFactor = 0.0f + tess * (64.0f - 0.0f); /*MAX TESSELEATION FACTOR NEEDS TO BE A MULTIPLE OF 64*/
 
 	return output;
 }

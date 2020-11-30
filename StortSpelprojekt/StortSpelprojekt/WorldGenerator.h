@@ -14,8 +14,7 @@ class World;
 
 class WorldGenerator
 {
-
-	const int CHUNK_PADDING = 2;
+	const int CHUNK_PADDING = 4;
 	const float MIN_TERRAIN_HEIGHT = 0.1f;
 	const float TERRAIN_BASE_HEIGHT = 1.0f;
 

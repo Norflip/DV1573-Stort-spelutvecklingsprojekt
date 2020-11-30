@@ -5,9 +5,12 @@
 #include "SkyboxRenderPass.h"
 #include "GlowRenderPass.h"
 
+
+#include "SaveHandler.h"
+
 Engine* Engine::Instance = nullptr;
 
-Engine::Engine(HINSTANCE hInstance) : window(hInstance), activeScene(nullptr), sceneSwitch(-1)
+Engine::Engine(HINSTANCE hInstance) : window(hInstance), activeSceneIndex(-1), sceneSwitch(-1)
 {
 	this->Instance = this;
 
@@ -16,13 +19,12 @@ Engine::Engine(HINSTANCE hInstance) : window(hInstance), activeScene(nullptr), s
 
 	window.Open(1920, 1080);
 
-
 	renderer = new Renderer();
 	renderer->Initialize(&window);
 
 	resourceManager = new ResourceManager();
 	resourceManager->InitializeResources(renderer->GetDevice());
-
+	
 	physics = new Physics();
 	physics->Initialize();
 
@@ -31,22 +33,21 @@ Engine::Engine(HINSTANCE hInstance) : window(hInstance), activeScene(nullptr), s
 	renderer->AddRenderPass(new FXAARenderPass(1, resourceManager));
 	renderer->AddRenderPass(new GlowRenderPass(2, resourceManager));
 
-	RegisterScene(SceneIndex::INTRO,	new IntroScene());
-	RegisterScene(SceneIndex::GAME_OVER,new GameOverScene());
-	RegisterScene(SceneIndex::GAME,		new GameScene());
-	RegisterScene(SceneIndex::WIN,		new WinScene());
+	SetScene(SceneIndex::INTRO,		new IntroScene());
+	SetScene(SceneIndex::GAME_OVER, new GameOverScene());
+	SetScene(SceneIndex::GAME,		new GameScene());
+	SetScene(SceneIndex::WIN,		new WinScene());
+	SetScene(SceneIndex::CREDITS,	new CreditsScene());
 
 	SwitchScene(SceneIndex::INTRO);
 }
 
 Engine::~Engine()
 {
-	for (size_t i = 0; i < scenes.size(); i++)
+	for (size_t i = 0; i < SCENE_COUNT; i++)
 	{
-		if (scenes[i])
-		{
-			delete scenes[i];
-		}
+		delete scenes[i];
+		scenes[i] = nullptr;
 	}
 
 	delete renderer;
@@ -58,7 +59,7 @@ void Engine::Run()
 {
 	this->running = true;
 #if MULTITHREAD_PHYSICS
-	std::thread fixedLoopThread (Engine::FixedUpdateLoop, this);
+	std::thread fixedLoopThread(Engine::FixedUpdateLoop, this);
 #endif
 
 	auto startTimePoint = std::chrono::high_resolution_clock::now();
@@ -75,25 +76,21 @@ void Engine::Run()
 			TranslateMessage(&msg);
 			DispatchMessage(&msg);
 
-			if (msg.message == WM_QUIT)				
+			if (msg.message == WM_QUIT)
 				Exit();
-				
+
 		}
 		else
 		{
-			if (sceneSwitch != -1)
+			if (sceneSwitch >= 0 && sceneSwitch < SCENE_COUNT)
 			{
-				auto sceneIt = this->scenes.find(sceneSwitch);
-				assert(sceneIt != scenes.end());
-
-				Scene* previous = activeScene;
-				if (previous != nullptr)
+				if (activeSceneIndex != -1)
 				{
-					previous->OnDeactivate();
+					scenes[activeSceneIndex]->OnDeactivate();
 				}
 
-				activeScene = (*sceneIt).second;
-				activeScene->OnActivate();
+				activeSceneIndex = sceneSwitch;
+				scenes[activeSceneIndex]->OnActivate();
 				sceneSwitch = -1;
 				std::cout << "switching scene" << std::endl;
 			}
@@ -102,10 +99,11 @@ void Engine::Run()
 			float currentTime = static_cast<float>(elapsed.count() / 1000.0f);
 			float deltaTime = currentTime - timeLastFrame;
 
-			if (activeScene != nullptr)
+			if (activeSceneIndex >= 0 && activeSceneIndex < SCENE_COUNT)
 			{
+				Scene* scene = scenes[activeSceneIndex];
 				float deltaTime = currentTime - timeLastFrame;
-				activeScene->Update(deltaTime);
+				scene->Update(deltaTime);
 
 #if !MULTITHREAD_PHYSICS
 				fixedTimeAccumulation += deltaTime;
@@ -114,11 +112,10 @@ void Engine::Run()
 				{
 					// FIXED UPDATE
 					fixedTimeAccumulation -= TARGET_FIXED_DELTA;
-					activeScene->FixedUpdate(TARGET_FIXED_DELTA);
+					scene->FixedUpdate(TARGET_FIXED_DELTA);
 				}
 #endif
-
-				activeScene->Render();
+				scene->Render();
 			}
 
 			timeLastFrame = currentTime;
@@ -137,22 +134,20 @@ void Engine::Exit()
 	running = false;
 }
 
-void Engine::RegisterScene(size_t id, Scene* scene)
+Scene* Engine::GetActiveScene() const
 {
-	auto sceneIt = this->scenes.find(id);
-	assert(sceneIt == scenes.end());
-
-	scene->SetDepedencies(resourceManager, renderer, physics, renderer->GetOutputWindow());
-	scene->Initialize();
-	
-	this->scenes.insert({ id, scene });
+	Scene* active = nullptr;
+	if (activeSceneIndex >= 0 && activeSceneIndex < SCENE_COUNT)
+		active = scenes[activeSceneIndex];
+	return active;
 }
 
-void Engine::UnregisterScene(size_t id)
+void Engine::SetScene(size_t id, Scene* scene)
 {
-	auto sceneIt = this->scenes.find(id);
-	if (sceneIt != scenes.end())
-		scenes.erase(sceneIt);
+	assert(id >= 0 && id < SCENE_COUNT);
+	scene->SetDepedencies(resourceManager, renderer, physics, renderer->GetOutputWindow());
+	scene->Initialize();
+	scenes[id] = scene;
 }
 
 void Engine::SwitchScene(size_t id)

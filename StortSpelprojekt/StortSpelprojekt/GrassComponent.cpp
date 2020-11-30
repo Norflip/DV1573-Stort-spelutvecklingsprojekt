@@ -15,7 +15,12 @@ GrassComponent::GrassComponent(size_t chunkTriangleCount, ID3D11Device* device, 
 	{
 		grassI.push_back(triangle);
 	}
-
+	cb_Material mat;
+	mat.ambient = dx::XMFLOAT4(1, 1, 1, 1);
+	mat.diffuse = dx::XMFLOAT4(0.5, 0.5, 0.5, 0);
+	mat.specular = dx::XMFLOAT4(0, 0, 0, 0);
+	grassMat->SetMaterialData(mat);
+	
 	grassMesh = new Mesh(grassV, grassI, D3D11_PRIMITIVE_TOPOLOGY_1_CONTROL_POINT_PATCHLIST);
 	grassMesh->Initialize(device);
 

@@ -56,7 +56,7 @@ GUIManager::GUIManager(Renderer* renderer, int priority) : RenderPass(priority, 
 
 
 	D3D11_SAMPLER_DESC testDesc;
-	D3D11_FILTER_REDUCTION_TYPE  testFilter;
+	//D3D11_FILTER_REDUCTION_TYPE  testFilter;	// onödig varning
 	ZeroMemory(&testDesc, sizeof(D3D11_SAMPLER_DESC));
 	testDesc.Filter = D3D11_FILTER_MIN_MAG_POINT_MIP_LINEAR;
 	testDesc.MaxAnisotropy = 4;
