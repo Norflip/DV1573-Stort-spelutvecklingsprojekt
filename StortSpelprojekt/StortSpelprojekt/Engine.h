@@ -30,7 +30,7 @@ public:
 	bool IsRunning() const { return this->running; }
 
 	Scene* GetActiveScene() const;
-	void SetScene(size_t id, Scene* scene);
+	void RegisterScene(size_t id, Scene* scene);
 	void UnregisterScene(size_t id);
 	void SwitchScene(size_t id);
 	

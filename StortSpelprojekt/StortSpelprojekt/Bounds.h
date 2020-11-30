@@ -20,6 +20,7 @@ public:
 	dx::XMFLOAT3 GetMin() const { return this->min; }
 	dx::XMFLOAT3 GetMax() const { return this->max; }
 	dx::XMFLOAT3 GetSize() const;
+	float GetRadiusXZ() const;
 
 	void TransformMinMax(dx::XMMATRIX worldTransform, dx::XMFLOAT3& min, dx::XMFLOAT3& max) const;
 

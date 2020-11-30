@@ -265,32 +265,27 @@ Chunk* WorldGenerator::CreateChunk(ChunkIndexInfo& indexInfo, Object* root, cons
 		}
 
 		Object* object = prop.factory(chunk, chunkPosition);
-		Object::AddToHierarchy(chunk->GetOwner(), object);
-		//std::cout << " CREATED PUZZEL " << std::endl;
+		Object::AddToHierarchy(chunkObject, object);
 		prop.usedCount++;
 	}
 
-	//Texture texture(chunkDataSRV);
-
-	Texture* grassTexture = Texture::LoadTexture(renderer->GetDevice(), L"Textures/newGrass.png");
-	Texture* roadTexture = Texture::LoadTexture(renderer->GetDevice(), L"Textures/Stone_Floor_003_COLOR.jpg");
+	ResourceManager* resources = Engine::Instance->GetResources();
+	Texture* grassTexture = resources->GetResource<Texture>("Grass");
+	Texture* roadTexture = resources->GetResource<Texture>("Road");
 
 	material->SetTexture(chunk->GetData().dataTexture, 0, ShaderBindFlag::PIXEL | ShaderBindFlag::VERTEX);
 	material->SetTexture(grassTexture, 1, ShaderBindFlag::PIXEL);
 	material->SetTexture(roadTexture, 2, ShaderBindFlag::PIXEL);
 
 	auto dataSampler = DXHelper::CreateSampler(D3D11_FILTER_MIN_MAG_MIP_POINT, D3D11_TEXTURE_ADDRESS_CLAMP, renderer->GetDevice());
-	material->SetSampler(dataSampler, 0, ShaderBindFlag::PIXEL | ShaderBindFlag::VERTEX);
-
 	auto textureSampler = DXHelper::CreateSampler(D3D11_FILTER_MIN_MAG_MIP_LINEAR, D3D11_TEXTURE_ADDRESS_WRAP, renderer->GetDevice());
+	material->SetSampler(dataSampler, 0, ShaderBindFlag::PIXEL | ShaderBindFlag::VERTEX);
 	material->SetSampler(textureSampler, 1, ShaderBindFlag::PIXEL);
 
 	Bounds bounds(dx::XMFLOAT3(0, 0, 0), dx::XMFLOAT3(CHUNK_SIZE, TERRAIN_SCALE + 1.0f, CHUNK_SIZE));
 	chunkObject->AddComponent<MeshComponent>(chunkMesh, material, bounds);
 
-	int i = HASH2D_I(indexInfo.index.x, indexInfo.index.y);
-	chunkMap.insert({ i, chunk });
-
+	chunkMap.insert({ HASH2D_I(indexInfo.index.x, indexInfo.index.y), chunk });
 	return chunk;
 }
 
