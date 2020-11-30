@@ -74,12 +74,15 @@
       <Filter>Resource Files</Filter>
     </FxCompile>
     <FxCompile Include="Shaders\Glow_vs.hlsl">
-	  <Filter>Resource Files</Filter>
-	</FxCompile>
+      <Filter>Resource Files</Filter>
+    </FxCompile>
     <FxCompile Include="Shaders\ForwardPlusRendering.hlsl">
       <Filter>Resource Files</Filter>
     </FxCompile>
     <FxCompile Include="Shaders\Leaf_vs.hlsl">
+      <Filter>Resource Files</Filter>
+    </FxCompile>
+    <FxCompile Include="Shaders\Emissive_ps.hlsl">
       <Filter>Resource Files</Filter>
     </FxCompile>
   </ItemGroup>
@@ -602,10 +605,6 @@
     </ClInclude>
     <ClInclude Include="GlowRenderPass.h">
       <Filter>Header Files</Filter>
-    </ClInclude>
-
-    <ClInclude Include="WorldGenerator.h">
-      <Filter>Source Files\SpawnSystems</Filter>
     </ClInclude>
     <ClInclude Include="DepthPass.h">
       <Filter>Header Files</Filter>

@@ -66,6 +66,7 @@ public:
 	void Initialize(Window* window);
 
 	void DrawQueueToTarget(RenderQueue& queue, CameraComponent* camera);
+	void DrawEmissionTarget(RenderQueue& queue, CameraComponent* camera);
 	void RenderFrame(CameraComponent* camera, float time, float distance = 0.f);
 	void RenderFrame(CameraComponent* camera, float time, float distance, RenderTexture& target, bool drawGUI = false, bool applyRenderPasses = true);
 

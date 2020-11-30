@@ -1,4 +1,4 @@
-Shaders: 15
+Shaders: 17
 
 Name: default
 
@@ -70,3 +70,7 @@ PS: Shaders/FXAA_ps.hlsl
 Name: GlowShader
 VS: Shaders/Glow_vs.hlsl
 PS: Shaders/Glow_ps.hlsl
+
+Name: EmissiveShader
+VS: Shaders/Default_vs.hlsl
+PS:Shaders/Emissive_ps.hlsl
