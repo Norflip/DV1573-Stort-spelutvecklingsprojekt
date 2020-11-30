@@ -23,7 +23,7 @@ public:
 	Bounds GetBounds() { return this->bounds; }
 	void SetBounds(Bounds bounds) { this->bounds = bounds; }
 
-	void SetInstanceable(size_t index, std::vector<dx::XMFLOAT4X4> instanceData, size_t instanceCount, ID3D11Device* device);
+	void SetInstanceable(std::vector<dx::XMFLOAT4X4> instanceData, size_t instanceCount, ID3D11Device* device);
 	ID3D11Buffer* GetInstanceBuffer() const { return this->instanceBuffer; }
 
 	bool IsInstanced() const { return this->instanced; }

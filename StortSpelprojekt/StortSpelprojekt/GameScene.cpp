@@ -168,7 +168,7 @@ void GameScene::InitializeObjects()
 	beansObject->AddComponent<RigidBodyComponent>(0.f, FilterGroups::PICKUPS, (FilterGroups::EVERYTHING & ~FilterGroups::PLAYER), BodyType::DYNAMIC, true);
 
 	beansObject->AddComponent<ParticleSystemComponent>(renderer, particleShader);
-	beansObject->GetComponent<ParticleSystemComponent>()->InitializeParticles(renderer->GetDevice(), L"Textures/starstar.png");
+	beansObject->GetComponent<ParticleSystemComponent>()->InitializeParticles(renderer->GetDevice(), "Stars");
 	AddObjectToRoot(beansObject);
 
 	//Player Arms
@@ -180,7 +180,7 @@ void GameScene::InitializeObjects()
 	AddObjectToRoot(playerArms);
 
 	//Axe
-	Object* axeObject = resources->AssembleObject("Axe", "AxeMaterial", ObjectFlag::DEFAULT | ObjectFlag::NO_CULL);
+	Object* axeObject = resources->AssembleObject("Axe", "AxeMaterial", false, ObjectFlag::DEFAULT | ObjectFlag::NO_CULL);
 	axeObject->GetTransform().SetPosition({ 21.0f, 1.0f, -16.0f });
 	axeObject->GetTransform().SetScale({ 1.0f, 1.0f, 1.0f });
 	axeObject->AddComponent<WeaponComponent>(playerArms->GetComponent<SkeletonMeshComponent>());
@@ -210,14 +210,14 @@ void GameScene::InitializeObjects()
 	//puzzleFrog->AddComponent<RigidBodyComponent>(50.f, FilterGroups::PROPS, (FilterGroups::EVERYTHING), BodyType::DYNAMIC, true);*/
 	//AddObject(puzzleFrog);
 
-	Object* puzzleFly = resources->AssembleObject("PuzzleFlyStatue", "PuzzleFlyStatueMaterial", ObjectFlag::DEFAULT | ObjectFlag::NO_CULL);
+	Object* puzzleFly = resources->AssembleObject("PuzzleFlyStatue", "PuzzleFlyStatueMaterial", false, ObjectFlag::DEFAULT | ObjectFlag::NO_CULL);
 	puzzleFly->GetTransform().SetPosition({ 28, 1.3f, 50 });
 	puzzleFly->AddComponent<BoxColliderComponent>(dx::XMFLOAT3{ 1.0f, 1.0f, 1.0f }, dx::XMFLOAT3{ 0, 0, 0 });
 	puzzleFly->AddComponent<RigidBodyComponent>(0.0f, FilterGroups::HOLDABLE, FilterGroups::EVERYTHING, BodyType::DYNAMIC, true);
 	puzzleFly->AddComponent<ParticleSystemComponent>(renderer, particleShader);
 	puzzleFly->GetComponent<ParticleSystemComponent>()->SetMaxParticles(50);
 	puzzleFly->GetComponent<ParticleSystemComponent>()->SetParticleSize(0.1f);
-	puzzleFly->GetComponent<ParticleSystemComponent>()->InitializeParticles(renderer->GetDevice(), L"Textures/fire1.png");
+	puzzleFly->GetComponent<ParticleSystemComponent>()->InitializeParticles(renderer->GetDevice(), "Fire1");
 	AddObjectToRoot(puzzleFly);
 
 	/*Shader* fireShader = resources->GetShaderResource("fireShader");*/
@@ -428,7 +428,7 @@ void GameScene::InitializeInterior()
 	LightComponent* fLight = fireLight->AddComponent<LightComponent>(LightType::POINT_LIGHT,dx::XMFLOAT4(1.0f, 0.29f, 0.0f, 1.0f), 2.2f);
 	fireLight->GetTransform().SetPosition({ -7.0f, -99.f, -1.36f });
 	fireLight->AddComponent<ParticleSystemComponent>(renderer, Engine::Instance->GetResources()->GetShaderResource("particleShader"));
-	fireLight->GetComponent<ParticleSystemComponent>()->InitializeFirelikeParticles(renderer->GetDevice(), L"Textures/fire1.png");
+	fireLight->GetComponent<ParticleSystemComponent>()->InitializeFirelikeParticles(renderer->GetDevice(), "Fire1");
 	fireLight->AddFlag(ObjectFlag::DEFAULT | ObjectFlag::NO_CULL);
 	fLight->SetEnabled(true);
 	fLight->SetIntensity(1.f);
@@ -577,6 +577,7 @@ void GameScene::Update(const float& deltaTime)
 
 	if (KEY_DOWN(B))
 	{
+
 		std::cout << "RESETTINGS PLAYER" << std::endl;
 		
 		playerPos.x = 0.0f;

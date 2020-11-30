@@ -222,11 +222,9 @@ void ResourceManager::ReadTextures(ID3D11Device* device)
 			std::string name = line.substr(0, pos);
 			std::string filepath = line.substr(pos + 2, line.length() - pos - 2);
 
-			Texture* texture = new Texture;
 			std::wstring pathWSTR(filepath.begin(), filepath.end());
-
-			bool success = texture->LoadTexture(device, pathWSTR.c_str());
-			assert(success);
+			Texture* texture = Texture::LoadTexture(device, pathWSTR.c_str());
+			assert(texture);
 
 			// Read empty line
 			std::getline(file, line);
@@ -459,11 +457,12 @@ void ResourceManager::CompileShaders(ID3D11Device* device)
 	}
 }
 
-Object* ResourceManager::AssembleObject(std::string meshName, std::string materialName, ObjectFlag flag)
+Object* ResourceManager::AssembleObject(std::string meshName, std::string materialName, bool batchable, ObjectFlag flag)
 {
 	Object* object = new Object(meshName, flag);
 
-	object->AddComponent<MeshComponent>(GetResource<Mesh>(meshName), GetResource<Material>(materialName));
+	MeshComponent* meshComponent = object->AddComponent<MeshComponent>(GetResource<Mesh>(meshName), GetResource<Material>(materialName));
+	meshComponent->SetBatchable(batchable);
 
 	return object;
 }

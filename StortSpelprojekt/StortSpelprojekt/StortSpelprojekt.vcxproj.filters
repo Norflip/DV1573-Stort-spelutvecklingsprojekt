@@ -73,6 +73,9 @@
     <FxCompile Include="Shaders\ForwardPlusRendering.hlsl">
       <Filter>Resource Files</Filter>
     </FxCompile>
+    <FxCompile Include="Shaders\Leaf_vs.hlsl">
+      <Filter>Resource Files</Filter>
+    </FxCompile>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="BoxColliderComponent.cpp">
@@ -300,6 +303,7 @@
     <ClCompile Include="CreditsScene.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="Resource.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="ObjectSpawner.h">
@@ -590,7 +594,6 @@
     <ClInclude Include="SelectableComponent.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="WorldGenerator.h" />
     <ClInclude Include="WorldGenerator.h">
       <Filter>Source Files\SpawnSystems</Filter>
     </ClInclude>
@@ -630,6 +633,9 @@
     </None>
     <None Include="cpp.hint">
       <Filter>Source Files</Filter>
+    </None>
+    <None Include="Shaders\noiseSimplex.cginc">
+      <Filter>Resource Files</Filter>
     </None>
   </ItemGroup>
   <ItemGroup>

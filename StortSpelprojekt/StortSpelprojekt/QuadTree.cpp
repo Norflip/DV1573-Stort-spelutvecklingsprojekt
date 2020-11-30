@@ -20,24 +20,23 @@ QuadTree::QuadTree(size_t level, dx::XMFLOAT2 min, dx::XMFLOAT2 max, size_t maxL
 
 QuadTree::~QuadTree() {}
 
-void QuadTree::Insert(size_t id, const Bounds& bounds, const dx::XMMATRIX& transform, void* data)
+void QuadTree::Insert(const Bounds& bounds, const dx::XMMATRIX& transform, void* data)
 {
 	dx::XMFLOAT3 min, max;
 	bounds.TransformMinMax(transform, min, max);
-	Insert(id, dx::XMFLOAT2(min.x, min.z), dx::XMFLOAT2(max.x, max.z), data);
+	Insert(dx::XMFLOAT2(min.x, min.z), dx::XMFLOAT2(max.x, max.z), data);
 }
 
-void QuadTree::Insert(size_t id, dx::XMFLOAT2 point, float radius, void* data)
+void QuadTree::Insert(dx::XMFLOAT2 point, float radius, void* data)
 {
 	dx::XMFLOAT2 min(point.x - radius, point.y - radius);
 	dx::XMFLOAT2 max(point.x + radius, point.y + radius);
-	Insert(id, min, max, data);
+	Insert(min, max, data);
 }
 
-void QuadTree::Insert(size_t id, dx::XMFLOAT2 min, dx::XMFLOAT2 max, void* data)
+void QuadTree::Insert(dx::XMFLOAT2 min, dx::XMFLOAT2 max, void* data)
 {
 	Node node;
-	node.id = id;
 	node.min = min;
 	node.max = max;
 	node.data = data;
@@ -112,7 +111,7 @@ void QuadTree::Remove(Node node)
 		bool found = false;
 		for (size_t i = 0; i < nodes.size() && !found; i++)
 		{
-			if (nodes[i].id == node.id && 
+			if (
 				nodes[i].min.x != node.min.x && nodes[i].min.y != node.min.y && 
 				nodes[i].max.x != node.max.x && nodes[i].max.y != node.max.y)
 			{
@@ -134,18 +133,6 @@ std::vector<QuadTree::Node> QuadTree::GetNodesInArea(dx::XMFLOAT2 min, dx::XMFLO
 	std::vector<Node> nodes;
 	RecursiveAddToArea(min, max, nodes);
 	return nodes;
-}
-
-std::vector<size_t> QuadTree::GetIDsInArea(dx::XMFLOAT2 min, dx::XMFLOAT2 max) const
-{
-	std::vector<Node> nodes;
-	RecursiveAddToArea(min, max, nodes);
-
-	const size_t size = nodes.size();
-	std::vector<size_t> ids(size);
-	for (size_t i = 0; i < size; i++)
-		ids[i] = nodes[i].id;
-	return ids;
 }
 
 size_t QuadTree::CountInRange(dx::XMFLOAT2 point, float radius) const
