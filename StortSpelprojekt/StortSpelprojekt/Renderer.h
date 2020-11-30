@@ -15,7 +15,7 @@
 
 inline int GetBatchID(const Material* material, const Mesh* mesh)
 {
-	return std::hash<int>()(material->GetID()) * 10000 + std::hash<int>()((int)mesh);
+	return std::hash<int>()(material->GetID() + 100) ^ std::hash<int>()(mesh->GetID());
 }
 
 class RenderPass;
@@ -190,8 +190,6 @@ private:
 	RenderQueue transparentItemQueue;
 	RenderQueue emissiveItemQueue;
 
-	std::unordered_map<int, Batch> opaqueBatchesDepth;
-	std::unordered_map<int, Batch> transparentBatchesDepth;
 	std::vector<RenderPass*> passes;
 
 	//blendstate

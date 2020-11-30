@@ -33,11 +33,11 @@ Engine::Engine(HINSTANCE hInstance) : window(hInstance), activeSceneIndex(-1), s
 	renderer->AddRenderPass(new FXAARenderPass(1, resourceManager));
 	renderer->AddRenderPass(new GlowRenderPass(2, resourceManager));
 
-	SetScene(SceneIndex::INTRO,		new IntroScene());
-	SetScene(SceneIndex::GAME_OVER, new GameOverScene());
-	SetScene(SceneIndex::GAME,		new GameScene());
-	SetScene(SceneIndex::WIN,		new WinScene());
-	SetScene(SceneIndex::CREDITS,	new CreditsScene());
+	RegisterScene(SceneIndex::INTRO,	new IntroScene());
+	RegisterScene(SceneIndex::GAME_OVER,new GameOverScene());
+	RegisterScene(SceneIndex::GAME,		new GameScene());
+	RegisterScene(SceneIndex::WIN,		new WinScene());
+	RegisterScene(SceneIndex::CREDITS,	new CreditsScene());
 
 	SwitchScene(SceneIndex::INTRO);
 }
@@ -78,7 +78,6 @@ void Engine::Run()
 
 			if (msg.message == WM_QUIT)
 				Exit();
-
 		}
 		else
 		{
@@ -142,7 +141,7 @@ Scene* Engine::GetActiveScene() const
 	return active;
 }
 
-void Engine::SetScene(size_t id, Scene* scene)
+void Engine::RegisterScene(size_t id, Scene* scene)
 {
 	assert(id >= 0 && id < SCENE_COUNT);
 	scene->SetDepedencies(resourceManager, renderer, physics, renderer->GetOutputWindow());

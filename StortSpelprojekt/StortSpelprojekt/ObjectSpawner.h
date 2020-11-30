@@ -66,7 +66,7 @@ public:
 	static Object* DefaultCreateItem(std::string key, PickupType type, float value);
 
 private:
-	void SpawnStatic(std::unordered_map<int, Chunk*>& chunkMap);
+	void SpawnStatic(Chunk* chunk);
 	void SpawnItem (Chunk* chunk);
 
 	bool ValidSpawnPoint(const dx::XMFLOAT2& point, Chunk* chunk, float minInfluence) const;
@@ -82,10 +82,12 @@ private:
 	std::vector<Object*> activeItems;
 	std::vector<Object*> props;
 
+	std::vector<dx::XMFLOAT3> TMP_POS;
+
 	ObjectPooler* pooler;
 	Object* root;
 	World* world;
-	QuadTree* globalTreeQT;
+	QuadTree* environmentQT;
 
 	std::vector<dx::XMFLOAT2> itemSpawnPositions;
 	std::vector<dx::XMFLOAT2> propSpawnPositions;

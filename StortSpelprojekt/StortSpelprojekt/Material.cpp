@@ -1,10 +1,9 @@
 #include "stdafx.h"
 #include "Material.h"
 
-size_t Material::idCounter = 0;
 
-Material::Material() : id(idCounter++) {}
-Material::Material(Shader* shader) : shader(shader), id(idCounter++) {}
+Material::Material() {}
+Material::Material(Shader* shader) : shader(shader) {}
 
 Material::~Material() 
 {

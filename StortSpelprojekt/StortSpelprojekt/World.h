@@ -49,7 +49,7 @@ private:
 private:
 	WorldGenerator generator;
 	WorldDescription description;
-
+	Renderer* renderer;
 	ResourceManager* resources;
 	std::vector<Chunk*> relevant;	
 	dx::XMINT2 lastRelevantIndex;

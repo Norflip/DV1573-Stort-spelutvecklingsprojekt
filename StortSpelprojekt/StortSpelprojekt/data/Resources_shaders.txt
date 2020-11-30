@@ -16,6 +16,11 @@ Name: alphaShader
 VS: Shaders/Default_vs.hlsl
 PS: Shaders/Alpha_ps.hlsl
 
+Name: leafShader
+Input: instance
+VS: Shaders/Leaf_vs.hlsl
+PS: Shaders/Alpha_ps.hlsl
+
 Name: alphaInstanceShader
 Input: instance
 VS: Shaders/Instance_vs.hlsl
