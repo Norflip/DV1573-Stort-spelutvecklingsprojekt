@@ -42,17 +42,18 @@ class Renderer
 			Instanced,
 			Skeleton,
 			Grass,
-			Particles
+			Particles,
+			NewParticles
 		};
 
 		const Mesh* mesh;
 		const Material* material;
 		const Material* streamoutMaterial;	// New
-
-		//const Material* streamoutMaterial;
-
-		Type type;
 		
+		cb_particle* particles;
+
+		Type type;		
+
 		std::vector<dx::XMFLOAT4X4>* bones;
 		dx::XMMATRIX world;
 		
@@ -79,6 +80,7 @@ public:
 	void DrawSkeleton(const Mesh* mesh, const Material* material, const dx::XMMATRIX& model, std::vector<dx::XMFLOAT4X4>& bones);
 	void DrawGrass(const Mesh* mesh, const Material* material, const dx::XMMATRIX& model);
 	void DrawParticles(const Mesh* mesh, const Material* material, const dx::XMMATRIX& model);
+	void DrawNewParticles(const Mesh* particleMesh, const Material* drawMat, const Material* streamoutMat, cb_particle* particleData);
 	void DrawImmediate(const Mesh* mesh, const Material* material, const CameraComponent* camera, const dx::XMMATRIX& model);
 	
 	void SetCullBack(bool);
@@ -104,8 +106,12 @@ public:
 	//std::vector<UINT>& cullLightsOnCPU();
 	void SetIdAndColor(int id, float color);
 
+
+	/* new crap.... */
 	void EnableAlphaBlending();
-	void DisableAlphaBlending();
+	void DisableAlphaBlending();	
+	ID3D11DepthStencilState* GetDepthEnable() { return this->dss_On; }
+	ID3D11DepthStencilState* GetDepthDisable() { return this->dss_Off; }
 
 	ALIGN16_ALLOC;
 
@@ -116,6 +122,7 @@ private:
 	void DrawRenderItemSkeleton(const RenderItem& item, CameraComponent* camera);
 	void DrawRenderItemGrass(const RenderItem& item, CameraComponent* camera);
 	void DrawRenderItemParticles(const RenderItem& item, CameraComponent* camera);
+	void DrawRenderItemNewParticles(const RenderItem& item, CameraComponent* camera);
 	void DrawBatch(const Batch& batch, CameraComponent* camera);
 
 	void SetObjectBufferValues(const CameraComponent* camera, dx::XMMATRIX world, bool transpose);
@@ -134,6 +141,7 @@ private:
 	Material* screenQuadMaterial;
 	Mesh* screenQuadMesh;
 
+	ConstantBuffer<cb_particle> particleBuffer;
 	ConstantBuffer<cb_Object> objectBuffer;
 	ConstantBuffer<cb_Scene> sceneBuffer;
 	ConstantBuffer<cb_Material> materialBuffer;
@@ -201,7 +209,15 @@ private:
 	ID3D11BlendState* blendStateOn;
 	ID3D11BlendState* blendStateOff;
 
+	
+	ID3D11BlendState* particleBlendOn; 
+	ID3D11BlendState* particleBlendOff;
+
 	ID3D11DepthStencilState* dss;
+
+	ID3D11DepthStencilState* dss_Off;
+	ID3D11DepthStencilState* dss_On;
+
 	DepthPass depthPass;
 	const float BLENDSTATEMASK[4] = { 0.0f };
 	
@@ -219,4 +235,7 @@ private:
 	ID3D11RasterizerState* rasterizerStateCullBack;
 	ID3D11RasterizerState* rasterizerStateCullNone;
 	ID3D11RasterizerState* rasterizerStateCCWO;
+
+
+	bool firstRun;
 };

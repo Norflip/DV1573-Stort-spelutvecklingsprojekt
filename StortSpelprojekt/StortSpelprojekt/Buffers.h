@@ -156,7 +156,7 @@ struct cb_particle
 	float particleMaxAge;
 	float padding3[2];
 
-	DirectX::XMFLOAT4X4 viewProjection;
+	DirectX::XMMATRIX viewProjection;
 
 	int usingTexture;
 	dx::XMFLOAT3 particleSpreadMulti;

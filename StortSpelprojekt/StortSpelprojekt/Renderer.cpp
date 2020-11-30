@@ -7,6 +7,7 @@
 
 Renderer::Renderer() : device(nullptr), context(nullptr), swapchain(nullptr), skeleton_srvbuffer(nullptr), skeleton_srv(nullptr), batchInstanceBuffer(nullptr)
 {
+	firstRun = true;
 	srand(unsigned int(time(0)));
 }
 
@@ -68,10 +69,11 @@ void Renderer::Initialize(Window* window)
 
 	DXHelper::CreateRSState(device, &rasterizerStateCullBack, &rasterizerStateCullNone, &rasterizerStateCCWO);
 
-
-
-
 	LightManager::Instance().Initialize(device);
+
+	/* new particle stuff */
+	particleBuffer.Initialize(0, ShaderBindFlag::SOGEOMETRY | ShaderBindFlag::VERTEX | ShaderBindFlag::GEOMETRY | ShaderBindFlag::PIXEL, device);
+	
 
 
 	sceneBuffer.Initialize(CB_SCENE_SLOT, ShaderBindFlag::PIXEL | ShaderBindFlag::DOMAINS | ShaderBindFlag::VERTEX|ShaderBindFlag::COMPUTE, device);
@@ -82,6 +84,10 @@ void Renderer::Initialize(Window* window)
 	DXHelper::BindStructuredBuffer(context, skeleton_srvbuffer, srv_skeleton_data.data(), BONES_SRV_SLOT, ShaderBindFlag::VERTEX, &skeleton_srv);
 	DXHelper::CreateBlendState(device, &blendStateOn, &blendStateOff);
 
+
+	/* two new shit */
+	DXHelper::CreateParticleBlendState(device, &particleBlendOn, &particleBlendOff);
+	DXHelper::CreateDepthStencilStates(device, &dss_On, &dss_Off);
 
 	/* Screenquad shader */
 	Shader* screenQuadShader = new Shader;
@@ -133,6 +139,9 @@ void Renderer::DrawQueueToTarget(RenderQueue& queue, CameraComponent* camera)
 
 					case RenderItem::Type::Particles:
 						DrawRenderItemParticles(item, camera); break;
+
+					case RenderItem::Type::NewParticles:
+						DrawRenderItemNewParticles(item, camera); break;
 
 					case RenderItem::Type::Default:
 					default:
@@ -407,6 +416,17 @@ void Renderer::DrawParticles(const Mesh* mesh, const Material* material, const d
 	AddItem(part, true, true);
 }
 
+void Renderer::DrawNewParticles(const Mesh* particleMesh, const Material* drawMat, const Material* streamoutMat, cb_particle* particleData)
+{
+	RenderItem part;
+	part.type = RenderItem::Type::NewParticles;
+	part.mesh = particleMesh;
+	part.material = drawMat;
+	part.streamoutMaterial = streamoutMat;
+	part.particles = particleData;
+	AddItem(part, true, true);
+}
+
 void Renderer::DrawImmediate(const Mesh* mesh, const Material* material, const CameraComponent* camera, const dx::XMMATRIX& model)
 {
 	SetObjectBufferValues(camera, model, true);
@@ -604,6 +624,96 @@ void Renderer::DrawRenderItemParticles(const RenderItem& item, CameraComponent* 
 
 	//context->Draw(item.mesh->GetVertexCount(), 0);
 	context->DrawIndexed(item.mesh->GetIndexCountPart(), 0, 0);
+}
+
+void Renderer::DrawRenderItemNewParticles(const RenderItem& item, CameraComponent* camera)
+{
+	cb_particle* part = item.particles;
+	particleBuffer.SetData(*part);
+	particleBuffer.UpdateBuffer(context);
+
+	
+	
+	ID3D11Buffer* initBuffer = item.mesh->GetInitBuffer(); 
+	ID3D11Buffer* streamoutBuffer = item.mesh->GetStreamoutBuffer();
+	ID3D11Buffer* drawBuffer = item.mesh->GetInitBuffer();
+	const Material* soMat = item.streamoutMaterial;
+	const Material* drawMat = item.material;
+	
+	context->IASetPrimitiveTopology(item.mesh->GetTopology());
+
+	soMat->BindToContext(context);
+
+	UINT stride = sizeof(Mesh::Particle);
+	UINT offset = 0;
+
+
+	if (firstRun)
+		context->IASetVertexBuffers(0, 1, &initBuffer, &stride, &offset);
+	else
+		context->IASetVertexBuffers(0, 1, &drawBuffer, &stride, &offset);
+
+	context->SOSetTargets(1, &streamoutBuffer, &offset);
+
+	if (firstRun)
+	{
+		context->Draw(1, 0);
+		firstRun = false;
+	}
+	else
+	{
+		context->DrawAuto();
+	}
+
+	// Ping-pong the vertex buffers
+	ID3D11Buffer* bufferArray[1] = { 0 };
+	context->SOSetTargets(1, bufferArray, &offset);
+	std::swap(drawBuffer, streamoutBuffer);
+
+
+	/* Clear */
+	ID3D11ShaderResourceView* nullSRV[1] = { nullptr };
+	context->GSSetShaderResources(0, 1, nullSRV);
+
+	ID3D11SamplerState* nullSampler[1] = { nullptr };
+	context->GSSetSamplers(0, 1, nullSampler);
+
+	context->GSSetConstantBuffers(0, 1, bufferArray);
+	context->VSSetShader(nullptr, 0, 0);
+	context->GSSetShader(nullptr, 0, 0);
+	context->PSSetShader(nullptr, 0, 0);
+
+
+
+	/* DRAW STUFF */
+
+	particleBuffer.SetData(*part);
+	particleBuffer.UpdateBuffer(context);
+
+	drawMat->BindToContext(context);
+	context->IASetVertexBuffers(0, 1, &drawBuffer, &stride, &offset);
+
+	context->DrawAuto();
+
+
+
+	/* Clear */
+	//ID3D11Buffer* bufferArray[1] = { 0 };
+	//ID3D11ShaderResourceView* nullSRV[1] = { nullptr };
+	context->PSSetShaderResources(0, 1, nullSRV);
+
+	//ID3D11SamplerState* nullSampler[1] = { nullptr };
+	context->PSSetSamplers(0, 1, nullSampler);
+
+	context->GSSetConstantBuffers(0, 1, bufferArray);
+	context->GSSetConstantBuffers(1, 1, bufferArray);
+	context->VSSetConstantBuffers(0, 1, bufferArray);
+	context->VSSetConstantBuffers(1, 1, bufferArray);
+	context->PSSetConstantBuffers(0, 1, bufferArray);
+
+	context->VSSetShader(nullptr, 0, 0);
+	context->GSSetShader(nullptr, 0, 0);
+	context->PSSetShader(nullptr, 0, 0);
 }
 
 void Renderer::DrawBatch(const Batch& batch, CameraComponent* camera)
@@ -906,13 +1016,13 @@ void Renderer::UpdateForwardPlus(CameraComponent* camera)
 void Renderer::EnableAlphaBlending()
 {
 	float blendfact[4] = { 0.0f,0.0f,0.0f,0.0f };
-	context->OMSetBlendState(blendStateOn, blendfact, 0xffffffff);
+	context->OMSetBlendState(particleBlendOn, blendfact, 0xffffffff);
 }
 
 void Renderer::DisableAlphaBlending()
 {
 	float blendfact[4] = { 0.0f,0.0f,0.0f,0.0f };
-	context->OMSetBlendState(blendStateOff, blendfact, 0xffffffff);
+	context->OMSetBlendState(particleBlendOff, blendfact, 0xffffffff);
 }
 
 

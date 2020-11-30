@@ -496,4 +496,7 @@ void Shader::Unbind(ID3D11DeviceContext* context) const
 	if ((flag & (int)ShaderBindFlag::COMPUTE) != 0)
 		context->CSSetShader(nullptr, 0, 0);
 
+	if ((flag & (int)ShaderBindFlag::SOGEOMETRY) != 0)
+		context->GSSetShader(nullptr, 0, 0);
+
 }

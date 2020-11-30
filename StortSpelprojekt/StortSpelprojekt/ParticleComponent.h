@@ -8,7 +8,7 @@ const dx::XMFLOAT4 grayColor = dx::XMFLOAT4(0.2f, 0.2f, 0.2f, 1.0f);
 class ParticleComponent : public Component
 {
 public:
-	ParticleComponent(Renderer* renderer, Shader* soShader, Shader* drawShader);
+	ParticleComponent(Shader* soShader, Shader* drawShader);
 	virtual ~ParticleComponent();
 	
 	void InitializeParticles(ID3D11Device* device);
@@ -16,7 +16,6 @@ public:
 	void Update(const float& deltaTime) override;
 	void Draw(Renderer* renderer, CameraComponent* camera) override;
 	
-	// Time elapsed since the system was reset.
 	float GetAge() { return this->particleAge; };
 
 	void SetEyePos(dx::XMFLOAT3 eyePosW) { this->eyePos = eyePosW; }
@@ -39,7 +38,7 @@ public:
 	dx::XMFLOAT2 GetParticleSize() { return this->particleSize; }
 	int GetParticlesPerSecond() { return this->particlesPerSecond; }
 
-	//ID3D11ShaderResourceView* GetParticleTexture() { return this->particleSRV; }
+	ID3D11ShaderResourceView* GetParticleTexture() { return this->particleSRV; }
 	ID3D11ShaderResourceView* GetRandomTexture() { return this->randomNumberSRV; }
 	void SetTexture(ID3D11Device* device, LPCWSTR textureFilename);
 
@@ -55,6 +54,12 @@ private:
 	void Draw(ID3D11DeviceContext* context, CameraComponent* cam);
 
 private:
+	Mesh* particleMesh;
+	Material* streamoutMat;
+	Material* drawMat;
+	Shader* soShader;
+	Shader* drawShader;
+
 	bool active;
 	int particlesPerSecond;
 
@@ -83,14 +88,11 @@ private:
 	//Texture* particleTex;
 	//Texture* random1DTexture;
 
-
+	cb_particle* particleBufferSend;
 	cb_particle particleBuffer; 
 	ID3D11Buffer* cb_Per_Particle;
 
 	HRESULT hr;
 
-	Material* streamoutMat;	
-	Material* drawMat;
-	Shader* soShader;
-	Shader* drawShader;
+	
 };

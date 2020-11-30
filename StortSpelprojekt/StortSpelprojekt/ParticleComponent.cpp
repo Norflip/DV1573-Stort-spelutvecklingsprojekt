@@ -1,8 +1,8 @@
 #include "stdafx.h"
 #include "ParticleComponent.h"
 
-ParticleComponent::ParticleComponent(Renderer* renderer, Shader* soShader, Shader* drawShader)
-    : initializeVB(nullptr), drawVB(nullptr), streamoutVB(nullptr) //, particleSRV(nullptr), randomNumberSRV(nullptr)//, inputLayout(0)
+ParticleComponent::ParticleComponent(Shader* soShader, Shader* drawShader)
+    : initializeVB(nullptr), drawVB(nullptr), streamoutVB(nullptr), particleMesh(new Mesh(drawVB, streamoutVB, initializeVB)) //, particleSRV(nullptr), randomNumberSRV(nullptr)//, inputLayout(0)
 {
 	this->soShader = soShader;
 	this->drawShader = drawShader;
@@ -78,9 +78,7 @@ void ParticleComponent::InitializeParticles(ID3D11Device* device)
 	assert(SUCCEEDED(hr));
 	delete[] randomValues;
 
-	/*random1DTexture->SetSRV(randomNumberSRV);*/
-
-	//random1DTexture->CreateRandom1DTexture(device);
+	
 	streamoutMat->SetTexture(new Texture(randomNumberSRV), TEXTURE_DIFFUSE_SLOT, ShaderBindFlag::SOGEOMETRY);
 	streamoutMat->SetSampler(DXHelper::CreateSampler(D3D11_FILTER_MIN_MAG_MIP_LINEAR, D3D11_TEXTURE_ADDRESS_WRAP, device), 0, ShaderBindFlag::SOGEOMETRY);
 	
@@ -100,6 +98,10 @@ void ParticleComponent::InitializeParticles(ID3D11Device* device)
 	assert(SUCCEEDED(hr));	
 
 	BuildVertexBuffers(device);
+	
+	particleMesh->SetDrawBuffer(drawVB);
+	particleMesh->SetInitBuffer(initializeVB);
+	particleMesh->SetStreamoutBuffer(streamoutVB);
 }
 
 void ParticleComponent::Update(const float& deltaTime)
@@ -113,13 +115,55 @@ void ParticleComponent::Update(const float& deltaTime)
 
 void ParticleComponent::Draw(Renderer* renderer, CameraComponent* camera)
 {
-	//renderer->EnableAlphaBlending();
+	dx::XMFLOAT3 emitpos;	
+	emitpos.x = GetOwner()->GetTransform().GetPosition().m128_f32[0]; 
+	emitpos.y = GetOwner()->GetTransform().GetPosition().m128_f32[1]; 
+	emitpos.z = GetOwner()->GetTransform().GetPosition().m128_f32[2];
+	emitPos = emitpos;
+
+	/*renderer->SetCullBack(false);
+	renderer->GetContext()->OMSetDepthStencilState(renderer->GetDepthDisable(), 0);
+	renderer->EnableAlphaBlending();*/
+	
 	dx::XMFLOAT3 pos;
-	dx::XMStoreFloat3(&pos, camera->GetOwner()->GetTransform().GetPosition());	
-	SetEyePos(pos);
-	DrawStreamOut(renderer->GetContext(), camera);
+	pos.x = camera->GetOwner()->GetTransform().GetPosition().m128_f32[0];
+	pos.y = camera->GetOwner()->GetTransform().GetPosition().m128_f32[1];
+	pos.z = camera->GetOwner()->GetTransform().GetPosition().m128_f32[2];
+	//dx::XMStoreFloat3(&pos, camera->GetOwner()->GetTransform().GetPosition());	
+	eyePos = pos;
+
+
+	//SetEyePos(pos);
+	/*DrawStreamOut(renderer->GetContext(), camera);
 	Draw(renderer->GetContext(), camera);
-	//renderer->DisableAlphaBlending();
+
+	
+
+	renderer->DisableAlphaBlending();
+	renderer->GetContext()->OMSetDepthStencilState(renderer->GetDepthEnable(), 0);
+	renderer->SetCullBack(true);*/
+
+
+
+	dx::XMMATRIX viewproj;
+	dx::XMMATRIX proj = camera->GetProjectionMatrix();
+	dx::XMMATRIX view = camera->GetViewMatrix();
+	viewproj = view * proj;
+
+	particleBufferSend = new cb_particle;
+	particleBufferSend->emitDir = emitDir; // GetEmitDir();
+	particleBufferSend->emitPos = emitPos; // GetEmitPos();
+	particleBufferSend->eyePos = eyePos; // GetEyePos();
+	particleBufferSend->gameTime = gameTimer;
+	particleBufferSend->ageTimeStep = ageTimeStep;
+	particleBufferSend->viewProjection = dx::XMMatrixTranspose(viewproj); //dx::XMStoreFloat4x4(&particleBuffer.viewProjection, dx::XMMatrixTranspose(viewproj));
+	particleBufferSend->particleMaxAge = particleMaxAge;
+	particleBufferSend->particleColor = particleColor;
+	particleBufferSend->usingTexture = usingTexture;
+	particleBufferSend->particleSpreadMulti = particleSpreadMulti;
+	particleBufferSend->particlesPerSecond = particlesPerSecond;
+
+	renderer->DrawNewParticles(particleMesh, drawMat, streamoutMat, particleBufferSend);
 }
 
 void ParticleComponent::SetTexture(ID3D11Device* device, LPCWSTR textureFilename)
@@ -191,7 +235,8 @@ void ParticleComponent::BuildVertexBuffers(ID3D11Device* device)
 void ParticleComponent::DrawStreamOut(ID3D11DeviceContext* context, CameraComponent* cam)
 {
 	dx::XMMATRIX viewproj; // = view * projection;
-	viewproj = dx::XMMatrixMultiply(cam->GetViewMatrix(), cam->GetViewMatrix());
+	viewproj = cam->GetViewMatrix() * cam->GetProjectionMatrix();
+	//viewproj = dx::XMMatrixMultiply(cam->GetViewMatrix(), cam->GetViewMatrix());
 
 	/* Streamout stuffy  */
 	particleBuffer.emitDir = emitDir; // GetEmitDir();
@@ -199,7 +244,7 @@ void ParticleComponent::DrawStreamOut(ID3D11DeviceContext* context, CameraCompon
 	particleBuffer.eyePos = eyePos; // GetEyePos();
 	particleBuffer.gameTime = gameTimer;
 	particleBuffer.ageTimeStep = ageTimeStep;
-	/*particleBuffer.viewProjection = */ dx::XMStoreFloat4x4(&particleBuffer.viewProjection, dx::XMMatrixTranspose(viewproj));
+	particleBuffer.viewProjection = dx::XMMatrixTranspose(viewproj); //dx::XMStoreFloat4x4(&particleBuffer.viewProjection, dx::XMMatrixTranspose(viewproj));
 	particleBuffer.particleMaxAge = particleMaxAge;
 	particleBuffer.particleColor = particleColor;
 	particleBuffer.usingTexture = usingTexture;

@@ -52,6 +52,7 @@ public:
 	};
 
 public:
+	Mesh(ID3D11Buffer* drawBuffer, ID3D11Buffer* streamOutBuffer, ID3D11Buffer* initializeBuffer, D3D11_PRIMITIVE_TOPOLOGY = D3D_PRIMITIVE_TOPOLOGY_POINTLIST);
 	Mesh(ID3D11Buffer* vertexBuffer, ID3D11Buffer* indexBuffer, D3D11_PRIMITIVE_TOPOLOGY = DEFAULT_TOPOLOGY);
 	Mesh(std::vector<Vertex> vertices, std::vector<unsigned int> indices, D3D11_PRIMITIVE_TOPOLOGY topology = DEFAULT_TOPOLOGY);
 	virtual ~Mesh();
@@ -61,6 +62,16 @@ public:
 	ID3D11Buffer* GetVertexBuffer() const { return this->vertexBuffer; }
 	ID3D11Buffer* GetIndexBuffer() const { return this->indexBuffer; }
 	void SetVertexBuffer(ID3D11Buffer* vertexBuffer) { this->vertexBuffer = vertexBuffer; }
+
+
+	void SetDrawBuffer(ID3D11Buffer* drawBuffer) { this->drawBuffer = drawBuffer; }// new
+	void SetInitBuffer(ID3D11Buffer* initBuffer) { this->initBuffer = initBuffer; }		// new
+	void SetStreamoutBuffer(ID3D11Buffer* streamoutBuffer) { this->streamBuffer = streamoutBuffer; } // new
+	ID3D11Buffer* GetDrawBuffer() const { return this->drawBuffer; } // new
+	ID3D11Buffer* GetInitBuffer() const { return this->initBuffer; }// new
+	ID3D11Buffer* GetStreamoutBuffer() const { return this->streamBuffer; }// new
+
+
 	void SetIndexBuffer(ID3D11Buffer* indexBuffer) { this->indexBuffer = indexBuffer; }
 	void SetIndexCount(int indexCount) { this->indexCount = indexCount; }
 	void SetVertexCount(int vertexCount) { this->vertexCount = vertexCount; }
@@ -98,7 +109,8 @@ private:
 	std::vector<Vertex> vertices;
 	std::vector<unsigned int> indices;
 	ID3D11Buffer* vertexBuffer;
-	ID3D11Buffer* streamoutBuffer, *InitializeBuffer;
+
+	ID3D11Buffer* streamBuffer, *initBuffer, * drawBuffer;	// new ones
 
 	ID3D11Buffer* indexBuffer;
 	int indexCount;

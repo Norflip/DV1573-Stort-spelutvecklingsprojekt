@@ -407,8 +407,8 @@ void ObjectSpawner::SpawnItem(Chunk* chunk)
 					activeItems.push_back(object);
 
 					/* Particles */
-					/*ParticleSystemComponent* particles = object->AddComponent<ParticleSystemComponent>(renderer, Engine::Instance->GetResources()->GetShaderResource("particleShader"));
-					particles->InitializeParticles(renderer->GetDevice(), L"Textures/starstar.png");*/
+					ParticleSystemComponent* particles = object->AddComponent<ParticleSystemComponent>(renderer, Engine::Instance->GetResources()->GetShaderResource("particleShader"));
+					particles->InitializeParticles(renderer->GetDevice(), L"Textures/starstar.png");
 
 					m_itemIndex++;
 					m_itemIndex %= itemRegistry.size();
