@@ -515,10 +515,6 @@ void GameScene::OnActivate()
 
 	//LOADING BASE MONSTER; ADDING SKELETONS TO IT
 	enemyManager->SpawnEnemies();
-	
-	//Pathfinding
-	pathfinding = new Pathfinding();
-	pathfinding->Init();
 
 	AudioMaster::Instance().PlaySoundEvent("wind");
 
@@ -619,8 +615,6 @@ void GameScene::Update(const float& deltaTime)
 		OnActivate();
 		leftSign->GetComponent<SelectableComponent>()->SetActive(false);
 	}
-
-	pathfinding->DrawGrid();
 
 	static_cast<GUIFont*>(guiManager->GetGUIObject("fps"))->SetString(std::to_string((int)GameClock::Instance().GetFramesPerSecond()));
 	dx::XMFLOAT3 playerPosF;

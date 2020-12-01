@@ -1,14 +1,15 @@
 #pragma once
 #include "Object.h"
 #include "GameClock.h"
+#include "PlayerComp.h"
 
-class Pathfinding
+class Pathfinding : public Component
 {
 	public:
-		Pathfinding(Object* player, Object* enemy);
-		~Pathfinding();
-		void Init();
-		void DrawGrid();
+		Pathfinding(PlayerComp* player);
+		virtual ~Pathfinding();
+		void Initialize();
+		void Update(const float& deltaTime) override;
 	private:
 		struct Node
 		{
@@ -43,6 +44,5 @@ class Pathfinding
 		Node* grid[32][32];
 		DShape box;
 		GameClock timer;
-		Object* player;
-		Object* enemy;
+		PlayerComp* player;
 };

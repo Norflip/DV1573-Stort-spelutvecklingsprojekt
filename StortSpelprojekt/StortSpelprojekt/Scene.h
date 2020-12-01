@@ -86,7 +86,6 @@ protected:
 	Input& input;
 	Object* player;
 	EnemyManager* enemyManager;
-	Pathfinding* pathfinding;
 
 	ObjectPooler* pooler;
 	GUIManager* guiManager;		

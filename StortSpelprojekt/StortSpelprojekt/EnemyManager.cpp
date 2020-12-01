@@ -69,7 +69,7 @@ void EnemyManager::RemoveEnemy(Object* enemy)
 void EnemyManager::SpawnEnemies()
 {
 	// whyyyy
-	nrOfEnemies = 2;
+	nrOfEnemies = 1;
 
 	for (size_t i = 0; i < nrOfEnemies; i++)
 	{
@@ -78,7 +78,7 @@ void EnemyManager::SpawnEnemies()
 		
 	}
 	
-	for (size_t i = 0; i < nrOfEnemies; i++)
+	for (size_t i = 0; i < 0; i++)
 	{
 		dx::XMFLOAT3 playerPos = player->GetComponent<PlayerComp>()->GetStartPosition();
 		SpawnEnemy("chargerEnemy", { (float)playerPos.x + (i + 2) * 10.0f, playerPos.y + 5.0f, (float)(playerPos.z + i * 5.0f) });
@@ -100,6 +100,7 @@ void EnemyManager::SpawnEnemy(std::string key, dx::XMVECTOR position)
 
 	EnemySMComp* stateMachine = enemy->GetComponent<EnemySMComp>();
 	enemy->GetComponent<EnemyAttackComp>()->SetPlayer(playerComp);
+	enemy->AddComponent<Pathfinding>(playerComp);
 	stateMachine->InitAnimation();
 
 	enemy->GetComponent<RigidBodyComponent>()->SetPosition(position);

@@ -2,6 +2,7 @@
 #include "EnemySMComp.h"
 #include "ResourceManager.h"
 #include "ObjectPooler.h"
+#include "Pathfinding.h"
 class EnemyManager
 {
 	public:

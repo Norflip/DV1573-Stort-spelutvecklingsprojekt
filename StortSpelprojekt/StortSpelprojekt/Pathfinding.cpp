@@ -1,8 +1,8 @@
 #include "stdafx.h"
 #include "Pathfinding.h"
 
-Pathfinding::Pathfinding(Object* player, Object* enemy)
-	: cols(32), rows(32), player(player), enemy(enemy)
+Pathfinding::Pathfinding(PlayerComp* player)
+	: cols(32), rows(32), player(player)
 {
 	timer.Start();
 	for (int x = 0; x < cols; x++)
@@ -25,9 +25,8 @@ Pathfinding::~Pathfinding()
 	}
 }
 
-void Pathfinding::Init()
+void Pathfinding::Initialize()
 {
-
 	for (int x = 0; x < cols; x++)
 	{
 		for (int y = 0; y < rows; y++)
@@ -37,12 +36,14 @@ void Pathfinding::Init()
 	}
 }
 
-void Pathfinding::DrawGrid()
+void Pathfinding::Update(const float& deltaTime)
 {
 	timer.Update();
 	ResetPath();
 	AStar();
 
+	dx::XMFLOAT3 enemyPos;
+	dx::XMStoreFloat3(&enemyPos, GetOwner()->GetTransform().GetPosition());
 	for (int i = 0; i < cols; i++)
 	{
 		for (int j = 0; j < rows; j++)
@@ -63,8 +64,7 @@ void Pathfinding::DrawGrid()
 				else
 					color = dx::XMFLOAT3(1, 1, 1);
 			}
-			
-			box.DrawBox(dx::XMFLOAT3(grid[i][j]->pos.x * 5, 5, grid[i][j]->pos.y * 5), dx::XMFLOAT3(2, 2, 2), color);
+			box.DrawBox(dx::XMFLOAT3(grid[i][j]->pos.x + (int)enemyPos.x - (cols/2), enemyPos.y + 2, grid[i][j]->pos.y + (int)enemyPos.z - (rows/2)), dx::XMFLOAT3(0.8, 0.8, 0.8), color);
 		}
 	}
 }
@@ -72,93 +72,104 @@ void Pathfinding::DrawGrid()
 void Pathfinding::AStar()
 {
 	timer.Restart();
-	//dx::XMFLOAT3 enemyPos;
-	//dx::XMStoreFloat3(&enemyPos, enemy->GetTransform().GetPosition());
-	//Node* start = grid[(int)enemyPos.x][(int)enemyPos.z];
-	//dx::XMFLOAT3 playerPos;
-	//dx::XMStoreFloat3(&playerPos, player->GetTransform().GetPosition());
-	//Node* end = grid[(int)playerPos.x][(int)playerPos.z];
+	dx::XMFLOAT3 enemyGridPos;
+	dx::XMStoreFloat3(&enemyGridPos, GetOwner()->GetTransform().GetPosition());
+	dx::XMFLOAT3 playerGridPos;
+	dx::XMStoreFloat3(&playerGridPos, player->GetOwner()->GetTransform().GetPosition());
+	playerGridPos.x = (abs((int)playerGridPos.x) - abs((int)enemyGridPos.x)) + (cols / 2);
+	playerGridPos.z = (abs((int)playerGridPos.z) - abs((int)enemyGridPos.z)) + (rows / 2);
+	enemyGridPos.x = (abs((int)enemyGridPos.x) - abs((int)enemyGridPos.x)) + (cols / 2);
+	enemyGridPos.z = (abs((int)enemyGridPos.z) - abs((int)enemyGridPos.z)) + (rows / 2);
 
-	Node* start = grid[0][0];
-	Node* end = grid[cols - 1][rows - 1];
-	start->obstacle = false;
-	end->obstacle = false;
-	std::vector<Node*> openSet;
-	std::vector<Node*> closedSet;
-	openSet.push_back(start);
-	grid[(int)start->pos.x][(int)start->pos.y]->openSet = true;
-	bool pathFound = false;
-	while (openSet.size() > 0)
+	std::cout << "player Grid x: " << playerGridPos.x << " z: " << playerGridPos.z << std::endl;
+
+	if ((int)playerGridPos.x >= 0 && (int)playerGridPos.z >= 0 && 
+		abs((int)playerGridPos.x - (int)enemyGridPos.x) < (cols-1) && abs((int)playerGridPos.z - (int)enemyGridPos.z) < (rows - 1))
 	{
-		Node* current = nullptr;
-		
-		std::make_heap(openSet.begin(), openSet.end(), Compare());
-		current = openSet[0];
-		openSet.erase(openSet.begin());
+		Node* start = grid[(int)enemyGridPos.x][(int)enemyGridPos.z];
+		Node* end = grid[(int)playerGridPos.x][(int)playerGridPos.z];
 
-		if (current != nullptr && current->pos.x == end->pos.x && current->pos.y == end->pos.y)
+		//Node* start = grid[0][0];
+		//Node* end = grid[cols - 1][rows - 1];
+		start->obstacle = false;
+		end->obstacle = false;
+		std::vector<Node*> openSet;
+		std::vector<Node*> closedSet;
+		openSet.push_back(start);
+		grid[(int)start->pos.x][(int)start->pos.y]->openSet = true;
+		bool pathFound = false;
+		while (openSet.size() > 0)
 		{
-			pathFound = true;
-			Node* temp = current;
-			std::vector<Node*> bestPath;
-			grid[(int)temp->pos.x][(int)temp->pos.y]->correctPath = true;
-			bestPath.push_back(grid[(int)temp->pos.x][(int)temp->pos.y]);
-			while (temp->previous != nullptr)
+			Node* current = nullptr;
+
+			std::make_heap(openSet.begin(), openSet.end(), Compare());
+			current = openSet[0];
+			openSet.erase(openSet.begin());
+
+			if (current != nullptr && current->pos.x == end->pos.x && current->pos.y == end->pos.y)
 			{
-				temp = temp->previous;
+				pathFound = true;
+				Node* temp = current;
+				std::vector<Node*> bestPath;
 				grid[(int)temp->pos.x][(int)temp->pos.y]->correctPath = true;
 				bestPath.push_back(grid[(int)temp->pos.x][(int)temp->pos.y]);
-			}
-			std::cout << "DONE!" << std::endl;
-			
-			
-			//for (int i = 0; i < bestPath.size(); i++)
-			//{
-			//	std::cout << bestPath[i]->fCost << std::endl;
-			//}
-			std::cout << "Time it took: " << timer.GetSeconds() << std::endl;
-			std::cout << "bestPath size: " << bestPath.size() << std::endl;
-		}
-
-		openSet.shrink_to_fit();
-		grid[(int)current->pos.x][(int)current->pos.y]->openSet = false;
-		closedSet.push_back(current);
-		grid[(int)current->pos.x][(int)current->pos.y]->closedSet = true;
-
-		for (int i = 0; i < current->neighbors.size(); i++)
-		{
-			if ((closedSet.empty() || std::find(closedSet.begin(), closedSet.end(), current->neighbors[i]) == closedSet.end()) 
-				&& !current->neighbors[i]->obstacle)
-			{
-				int tempG = current->gCost + 1;
-
-				bool newPath = false;
-				if (std::find(openSet.begin(), openSet.end(), current->neighbors[i]) != openSet.end())
+				while (temp->previous != nullptr)
 				{
-					if (tempG < current->neighbors[i]->gCost)
+					temp = temp->previous;
+					grid[(int)temp->pos.x][(int)temp->pos.y]->correctPath = true;
+					bestPath.push_back(grid[(int)temp->pos.x][(int)temp->pos.y]);
+				}
+				std::cout << "DONE!" << std::endl;
+
+
+				//for (int i = 0; i < bestPath.size(); i++)
+				//{
+				//	std::cout << bestPath[i]->fCost << std::endl;
+				//}
+				std::cout << "Time it took: " << timer.GetSeconds() << std::endl;
+				std::cout << "bestPath size: " << bestPath.size() << std::endl;
+			}
+
+			openSet.shrink_to_fit();
+			grid[(int)current->pos.x][(int)current->pos.y]->openSet = false;
+			closedSet.push_back(current);
+			grid[(int)current->pos.x][(int)current->pos.y]->closedSet = true;
+
+			for (int i = 0; i < current->neighbors.size(); i++)
+			{
+				if ((closedSet.empty() || std::find(closedSet.begin(), closedSet.end(), current->neighbors[i]) == closedSet.end())
+					&& !current->neighbors[i]->obstacle)
+				{
+					int tempG = current->gCost + 1;
+
+					bool newPath = false;
+					if (std::find(openSet.begin(), openSet.end(), current->neighbors[i]) != openSet.end())
+					{
+						if (tempG < current->neighbors[i]->gCost)
+						{
+							current->neighbors[i]->gCost = tempG;
+							newPath = true;
+						}
+					}
+					else
 					{
 						current->neighbors[i]->gCost = tempG;
+						openSet.push_back(current->neighbors[i]);
+						grid[(int)current->neighbors[i]->pos.x][(int)current->neighbors[i]->pos.y]->openSet = true;
 						newPath = true;
 					}
-				}
-				else
-				{
-					current->neighbors[i]->gCost = tempG;
-					openSet.push_back(current->neighbors[i]);
-					grid[(int)current->neighbors[i]->pos.x][(int)current->neighbors[i]->pos.y]->openSet = true;
-					newPath = true;
-				}	
-				if (newPath)
-				{
-					current->neighbors[i]->hCost = GetDistance(current->neighbors[i], end);
-					current->neighbors[i]->fCost = current->neighbors[i]->gCost + current->neighbors[i]->hCost;
-					current->neighbors[i]->previous = current;
+					if (newPath)
+					{
+						current->neighbors[i]->hCost = GetDistance(current->neighbors[i], end);
+						current->neighbors[i]->fCost = current->neighbors[i]->gCost + current->neighbors[i]->hCost;
+						current->neighbors[i]->previous = current;
+					}
 				}
 			}
 		}
+		if (!pathFound)
+			std::cout << "No path available" << std::endl;
 	}
-	if (!pathFound)
-		std::cout << "No path available" << std::endl;
 }
 
 void Pathfinding::AddNeighbors(Node* node)
