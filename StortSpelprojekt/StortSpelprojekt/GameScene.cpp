@@ -205,7 +205,7 @@ void GameScene::InitializeObjects()
 
 	//LOADING BASE MONSTER; ADDING SKELETONS TO IT
 	enemyManager = new EnemyManager();
-	enemyManager->Initialize(player, player->GetComponent<PlayerComp>(), camera, root);
+	enemyManager->Initialize(player,house, player->GetComponent<PlayerComp>(), camera, root);
 	enemyManager->InitBaseEnemy();
 	enemyManager->InitChargerEnemy();
 
@@ -350,6 +350,7 @@ void GameScene::InitializeInterior()
 	houseInterior->AddComponent<BoxColliderComponent>(dx::XMFLOAT3(10.0f, 10.0f, 1.5f), dx::XMFLOAT3(0, 0, 7.0f)); // Front wall
 	houseInterior->AddComponent<BoxColliderComponent>(dx::XMFLOAT3(10.0f, 10.0f, 1.5f), dx::XMFLOAT3(0, 0, -8.0f)); // Back wall
 	houseInterior->AddComponent<RigidBodyComponent>(0.0f, FilterGroups::PROPS, FilterGroups::EVERYTHING, BodyType::STATIC, true); // RB
+	houseInterior->GetComponent<RigidBodyComponent>()->GetRigidBody()->getCollider(0)->getMaterial().setBounciness(0.f);
 	AddObjectToRoot(houseInterior);
 
 	Object* fireplace = resources->AssembleObject("Fireplace", "FireplaceMaterial");

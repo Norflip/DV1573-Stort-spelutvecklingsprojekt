@@ -135,9 +135,9 @@ void EnemyManager::SpawnRandomEnemy(const float& deltaTime)
 			dx::XMVECTOR randVec;// = dx::XMLoadFloat3(&randPos);
 
 			//while inside radius of player or inside cam frustum do random again
-			randPos.x = playerPos.x + Random::Range(-20, 20+1);
-			randPos.y = playerPos.y + 0.5f; //height over ground
-			randPos.z = playerPos.z + Random::Range(-20, 20+1);
+			randPos.x = playerPos.x + Random::Range(-50, 50+1);
+			randPos.y = playerPos.y + 2.5f; //height over ground
+			randPos.z = playerPos.z + Random::Range(-50, 50+1);
 			randVec = dx::XMLoadFloat3(&randPos);
 			//std::cout << length << std::endl;
 			dx::XMStoreFloat(&lengthP, dx::XMVector3Length(dx::XMVectorSubtract(playerVec, randVec)));
@@ -149,7 +149,7 @@ void EnemyManager::SpawnRandomEnemy(const float& deltaTime)
 			dx::XMMATRIX world = dx::XMMatrixTranslation(randPos.x, randPos.y, randPos.z);
 
 			//maybe also check radius from house??
-			if (lengthP > ENEMY_SPAWN_RADIUS && lengthH > ENEMY_SPAWN_RADIUS && !camComp->InView(enemyBounds, world))  //!SphereInFrustum(theFrustum, randPos))
+			if (playerPos.y > -10 &&lengthP > ENEMY_SPAWN_RADIUS && lengthH > ENEMY_SPAWN_RADIUS && !camComp->InView(enemyBounds, world))  //!SphereInFrustum(theFrustum, randPos))
 			{
 				//spawn enemies & increment nrof
 				aliveEnemies++;

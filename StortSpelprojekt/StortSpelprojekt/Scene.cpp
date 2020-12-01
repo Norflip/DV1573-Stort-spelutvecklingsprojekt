@@ -64,7 +64,8 @@ void Scene::Update(const float& deltaTime)
 void Scene::FixedUpdate(const float& fixedDeltaTime)
 {
 	root->FixedUpdate(fixedDeltaTime);
-	physics->FixedUpdate(fixedDeltaTime);
+	if (GameClock::Instance().GetSeconds() > 10)
+		physics->FixedUpdate(fixedDeltaTime);
 }
 
 void Scene::Render()
