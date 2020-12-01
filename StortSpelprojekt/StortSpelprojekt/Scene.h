@@ -38,8 +38,6 @@ class GUIFont;
 class SpriteRenderPass;
 class PlayerComp;
 
-//constexpr auto IMMORTAL = 0;
-
 ALIGN16
 class Scene
 {
@@ -76,6 +74,7 @@ protected:
 	int frameToDraw = 1;
 	int lastFrame = 1;
 	wchar_t iconText[10];
+
 	Object* root;
 	Renderer* renderer;
 	ResourceManager* resources;
@@ -84,7 +83,7 @@ protected:
 	
 	std::queue<Object*> removeQueue;
 	CameraComponent* camera;
-	
+	bool firstFrame;
 	GameClock clock;
 
 	Input& input;

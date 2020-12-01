@@ -42,6 +42,11 @@ public:
 	ALIGN16_ALLOC;
 
 private:
+	virtual void RecieveMsg(const int& type, const std::string& msg, Object* sender, void* data = nullptr) {}
+
+private:
 	Object* owner;
 	bool enable;
+
+	friend Object;
 };

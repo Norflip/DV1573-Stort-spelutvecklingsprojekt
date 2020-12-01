@@ -3,7 +3,7 @@
 
 NodeWalkerComp::NodeWalkerComp()
 {
-	this->speed = 1.0f;// 16.2f;
+	this->speed = 3.0f;// 16.2f;
 	this->currentNode = thePath.GetFirstPointIndex();
 	this->nextChosen = -1;
 	this->nodeRadius = 0.3f;
@@ -169,7 +169,17 @@ void NodeWalkerComp::Update(const float& deltaTime)
 					vdir = dx::XMVectorScale(vdir, speed * deltaTime);
 					dx::XMStoreFloat3(&moveVec, vdir);
 					//this->moveVec = dir;
-
+					//'''''''''''''''''''
+					dx::XMVECTOR dirVec = vdir;
+					dx::XMFLOAT3 dirToRoad;
+					dx::XMStoreFloat3(&dirToRoad, dirVec);
+					float angle = /*180.f*/-90.0f + atan2f(dirToRoad.x, dirToRoad.z) * (180.f / Math::PI);
+					float rotation = angle * Math::ToRadians;
+					dx::XMVECTOR right = GetOwner()->GetTransform().TransformDirection({ 1,0,0 });
+					dx::XMVECTOR eulerRotation = dx::XMQuaternionMultiply(dx::XMQuaternionRotationAxis(right, 0), dx::XMQuaternionRotationAxis({ 0,1,0 }, rotation));
+					GetOwner()->GetTransform().SetRotation(eulerRotation);
+					rbComp->SetRotation(eulerRotation);
+					//'''''''''''''
 					GetOwner()->GetTransform().Translate(moveVec.x, moveVec.y, moveVec.z);
 					this->rbComp->SetPosition(GetOwner()->GetTransform().GetWorldPosition());
 				}

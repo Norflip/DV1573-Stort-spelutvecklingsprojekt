@@ -35,6 +35,11 @@ double GameClock::GetFrameTime()const
 	return frameTime;
 }
 
+double GameClock::GetFixedFrameTime() const
+{
+	return TARGET_FIXED_DELTA;
+}
+
 double GameClock::GetFramesPerSecond()const
 {
 	return FPS;

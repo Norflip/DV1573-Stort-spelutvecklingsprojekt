@@ -57,6 +57,7 @@ public:
 	bool TryGetLocalColRow(const float& x, const float& z, int& col, int& row) const;
 	float SampleHeight(const float& x, const float& z) const;
 	float SampleInfluence(const float& x, const float& z) const;
+	dx::XMFLOAT3 SampleNormal(const float& x, const float& z) const;
 
 	dx::XMINT2 GetIndex() const { return this->index; }
 	ChunkType GetType() const { return this->type; }

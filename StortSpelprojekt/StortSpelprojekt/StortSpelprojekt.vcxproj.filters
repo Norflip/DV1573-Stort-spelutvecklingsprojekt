@@ -73,6 +73,9 @@
     <FxCompile Include="Shaders\ForwardPlusRendering.hlsl">
       <Filter>Resource Files</Filter>
     </FxCompile>
+    <FxCompile Include="Shaders\Leaf_vs.hlsl">
+      <Filter>Resource Files</Filter>
+    </FxCompile>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="BoxColliderComponent.cpp">
@@ -303,7 +306,12 @@
     <ClCompile Include="ParticleComponent.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="Particlesys.cpp" />
+    <ClCompile Include="Particlesys.cpp">
+    <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="Resource.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="ObjectSpawner.h">
@@ -636,6 +644,9 @@
     </None>
     <None Include="cpp.hint">
       <Filter>Source Files</Filter>
+    </None>
+    <None Include="Shaders\noiseSimplex.cginc">
+      <Filter>Resource Files</Filter>
     </None>
   </ItemGroup>
   <ItemGroup>
