@@ -5,7 +5,7 @@
 #include "Math.h"
 #include "Random.h"
 constexpr float ENEMY_SPAWN_RATE = 2.f; //how fast enemies spawn
-constexpr float ENEMY_SPAWN_RADIUS = 10.f; //distance from player
+constexpr float ENEMY_SPAWN_RADIUS = 15.f; //distance from player
 constexpr int ENEMY_TOTAL = 25; //max nr of enemies
 
 //struct Frustum
