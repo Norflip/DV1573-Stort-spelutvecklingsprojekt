@@ -11,8 +11,8 @@
 #include "WinScene.h"
 #include "CreditsScene.h"
 
-constexpr int FIXED_FPS = 60;
-constexpr float TARGET_FIXED_DELTA = 1.0f / FIXED_FPS;
+//constexpr int FIXED_FPS = 60;
+//constexpr float TARGET_FIXED_DELTA = 1.0f / FIXED_FPS;
 
 enum SceneIndex { INTRO = 0, GAME_OVER = 1, GAME = 2, WIN = 3, CREDITS = 4 };
 constexpr size_t SCENE_COUNT = 5;

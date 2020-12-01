@@ -38,3 +38,5 @@
 //GLOBAL NAMESPACES
 namespace dx = DirectX;
 namespace sm = DirectX::SimpleMath;
+constexpr int FIXED_FPS = 60;
+constexpr float TARGET_FIXED_DELTA = 1.0f / FIXED_FPS;
