@@ -53,7 +53,7 @@ void EnemySMComp::Animate()
 	if (statsComponent->GetHealth() <= 0.0f || enemyPos.y <= ENEMY_HEIGHT_LIMIT || length >= ENEMY_RADIUS_LIMIT)
 	{
 		SetState(EnemyState::IDLE);
-
+		
 		skeletonComponent->SetTrack(SkeletonStateMachine::DEATH, true);
 
 		if (skeletonComponent->GetDoneDeath())
