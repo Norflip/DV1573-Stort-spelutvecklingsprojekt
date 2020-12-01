@@ -4,7 +4,7 @@
 
 #include "Window.h"
 #include "Scene.h"
-
+#include <pix3.h>
 #include "GameScene.h"
 #include "IntroScene.h"
 #include "GameOverScene.h"

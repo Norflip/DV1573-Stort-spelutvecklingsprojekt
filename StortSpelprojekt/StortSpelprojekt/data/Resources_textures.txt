@@ -1,6 +1,6 @@
 Textures: 4
 
-Grass: Textures/newGrass.png
+Grass: Textures/grassTexture.png
 
 Road: Textures/Stone_Floor_003_COLOR.jpg
 
