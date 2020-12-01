@@ -9,6 +9,9 @@ constexpr float STILL_REDUCTION = 0.7f;
 
 PlayerComp::PlayerComp(Renderer* renderer, CameraComponent* camComp, Object* house, Physics* physics, GUIManager* guimanager, float health, float movementSpeed, float radius, float attack, float attackSpeed)
 {
+	this->enemyHit = false;
+	this->attackTimer = 0.0f;
+
 	//attackTimer.Start();
 	this->guiMan = guimanager;
 	this->health = health;
@@ -415,18 +418,18 @@ void PlayerComp::RayCast(const float& deltaTime)
 
 	//ATTACK ENEMIES
 	if (LMOUSE_DOWN && holding == nullptr && 
-		arms->GetComponent< PlayerAnimHandlerComp>()->GetCooldown() > 1.0f)
+		arms->GetComponent< PlayerAnimHandlerComp>()->GetCooldown() > 1.0f && enemyHit == false)
 	{
 		if (physics->RaytestSingle(ray, 5.0f, hit, FilterGroups::ENEMIES))
 		{
 			if (hit.object != nullptr)
 			{
-				EnemyStatsComp* stats = hit.object->GetComponent<EnemyStatsComp>();
+				stats = hit.object->GetComponent<EnemyStatsComp>();
 				SkeletonMeshComponent* skeleton = hit.object->GetComponent<SkeletonMeshComponent>();
 				if (stats != nullptr && stats->IsEnabled() && stats->GetHealth() >= 0.0f)
 				{
-					stats->LoseHealth(attack);
-					AudioMaster::Instance().PlaySoundEvent("punch");
+					enemyHit = true;
+					
 
 					//if (stats->GetHealth() <= 0.0f)
 					//{
@@ -449,6 +452,19 @@ void PlayerComp::RayCast(const float& deltaTime)
 		}*/
 	}
 
+	if (enemyHit)
+	{
+		attackTimer += deltaTime;
+
+		if (attackTimer >= 0.3f)
+		{
+			stats->LoseHealth(attack);
+			AudioMaster::Instance().PlaySoundEvent("punch");
+			attackTimer = 0.0f;
+			enemyHit = false;
+		}
+	}
+	
 	// Health drop
 	healthDippingBar->SetScaleBars(ReverseAndClamp(health));
 
