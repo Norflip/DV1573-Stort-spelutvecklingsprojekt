@@ -11,7 +11,7 @@ LightComponent::LightComponent(UINT type, dx::XMFLOAT4 color, float range)
 	this->lightDirection = dx::XMFLOAT3({ 0, -1, 0 });
 	this->spotlightAngle = 15.0f;
 	this->enabled = false;
-	this->intensity = 0.5f;
+	this->intensity = 1.0f;
 	this->dirty=true;
 	this->elapsedTime = 0.f;
 }
@@ -24,7 +24,7 @@ LightComponent::LightComponent(LightType type, dx::XMFLOAT4 color, float range)
 	this->lightDirection = dx::XMFLOAT3({ 0, -1, 0 });
 	this->spotlightAngle = 15.0f;
 	this->enabled = false;
-	this->intensity = 0.5f;
+	this->intensity = 1.0f;
 	this->dirty = true;
 	this->elapsedTime = 0.f;
 }
