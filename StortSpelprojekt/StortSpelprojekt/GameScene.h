@@ -39,4 +39,5 @@ private:
 
 	float fogCol;
 	bool start;
+	bool end;
 };

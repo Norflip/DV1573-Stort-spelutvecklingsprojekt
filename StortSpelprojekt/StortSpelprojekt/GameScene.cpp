@@ -11,6 +11,7 @@ GameScene::GameScene() : Scene("GameScene")
 	this->interiorPosition = { 0.0f, -100.0f, 0.0f };
 	fogCol = 0;
 	start = true;
+	end = false;
 }
 
 GameScene::~GameScene()
@@ -483,8 +484,7 @@ void GameScene::OnActivate()
 		renderer->SetIdAndColor(state.segment, fogCol);
 	}
 
-	if (start)
-		start = false;
+	
 
 	LightManager::Instance().ForceUpdateBuffers(renderer->GetContext(),camera);
 
@@ -513,16 +513,38 @@ void GameScene::OnActivate()
 		if (house->HasComponent<RigidBodyComponent>())
 			house->GetComponent<RigidBodyComponent>()->SetPosition(position);
 
-		dx::XMVECTOR playerPos = { this->interiorPosition.x, this->interiorPosition.y + 3.0f, this->interiorPosition.z, 0.0f };
+		
 
-		position = dx::XMVectorAdd(dx::XMVECTOR({ 0.0f, 1.0f, 5.0f, 0.0f }), position);
+		if (!start)
+		{
+			dx::XMFLOAT3 switchPosition;
+			switchPosition = dx::XMFLOAT3{ world.GetPath().GetPlayerSwitchPosition().x , 1.5f ,world.GetPath().GetPlayerSwitchPosition().y };
 
-		player->GetComponent<PlayerComp>()->SetStartPosition(position);
+			dx::XMVECTOR playerPos = { switchPosition.x, switchPosition.y, switchPosition.z, 0.0f };
 
-		player->GetTransform().SetPosition(playerPos);
-		player->GetComponent<RigidBodyComponent>()->SetPosition(playerPos);
+			//position = dx::XMVectorAdd(dx::XMVECTOR({ 0.0f, 1.0f, 5.0f, 0.0f }), position);
 
-		player->GetComponent<ControllerComp>()->SetInside(true);
+			//player->GetComponent<PlayerComp>()->SetStartPosition(position);
+
+			player->GetTransform().SetPosition(playerPos);
+			player->GetComponent<RigidBodyComponent>()->SetPosition(playerPos);
+		}
+		
+		else if (start)
+
+		{
+			dx::XMVECTOR playerPos = { this->interiorPosition.x, this->interiorPosition.y + 3.0f, this->interiorPosition.z, 0.0f };
+
+			position = dx::XMVectorAdd(dx::XMVECTOR({ 0.0f, 1.0f, 5.0f, 0.0f }), position);
+
+			player->GetComponent<PlayerComp>()->SetStartPosition(position);
+
+			player->GetTransform().SetPosition(playerPos);
+			player->GetComponent<RigidBodyComponent>()->SetPosition(playerPos);
+
+			player->GetComponent<ControllerComp>()->SetInside(true);
+		}
+
 	}
 
 	renderer->AddRenderPass(guiManager);
@@ -532,6 +554,9 @@ void GameScene::OnActivate()
 
 	AudioMaster::Instance().PlaySoundEvent("wind");
 
+
+	if (start)
+		start = false;
 	/* Ugly solution */
 	player->GetComponent<PlayerComp>()->GetArms()->GetComponent< PlayerAnimHandlerComp>()->SetStarted(true);
 }
@@ -555,10 +580,15 @@ void GameScene::SetSignPositions(SaveState& state)
 {
 	if (state.segment == 8)
 	{
+		end = true;
 		dx::XMFLOAT3 signPosition;
 		signPosition = dx::XMFLOAT3{ world.GetPath().GetSignPosition().x , 1.0f ,world.GetPath().GetSignPosition().y };
 		
 		roadSign->GetTransform().SetPosition({ signPosition.x, signPosition.y - 1.0f, signPosition.z });
+		roadSign->AddComponent<BoxColliderComponent>(dx::XMFLOAT3{ 3.0f, 2.0f, 1.5f }, dx::XMFLOAT3{ 0,0,0 });
+		roadSign->AddComponent<SelectableComponent>();
+		roadSign->AddComponent<RigidBodyComponent>(0.0f, FilterGroups::CLICKABLE, (FilterGroups::EVERYTHING & ~FilterGroups::PLAYER), BodyType::STATIC, true);
+
 		/*std::vector<dx::XMINT2> indexes = world.GetPath().GetIndexes();
 		dx::XMINT2 spawnIndex = indexes[0];
 		roadSign->GetTransform().SetPosition(dx::XMVectorAdd(Chunk::IndexToWorld(spawnIndex, 0.0f), dx::XMVectorSet(CHUNK_SIZE / 2.0f, 1, CHUNK_SIZE / 2.0f, 0)));*/
@@ -567,14 +597,24 @@ void GameScene::SetSignPositions(SaveState& state)
 	else
 	{
 		dx::XMFLOAT3 signPosition;
-		signPosition = dx::XMFLOAT3{ world.GetPath().GetSignPosition().x , 1.0f ,world.GetPath().GetSignPosition().y };
+		dx::XMFLOAT3 signRotation;
+		signPosition = dx::XMFLOAT3{ world.GetPath().GetSignPosition().x , 1.5f ,world.GetPath().GetSignPosition().y };
+		signRotation = dx::XMFLOAT3{ 0.0f ,world.GetPath().GetSignRotation().y, 0.0f };
 
 		//Right Sign
-		rightSign->GetTransform().SetPosition({ signPosition.x - 1.0f, signPosition.y - 1.0f, signPosition.z });
-		
+		rightSign->GetTransform().SetPosition({ signPosition.x + 1.0f, signPosition.y - 1.0f, signPosition.z });
+		rightSign->GetTransform().SetRotation({ signRotation.x, signRotation.y, signRotation.z });
+		rightSign->AddComponent<BoxColliderComponent>(dx::XMFLOAT3{ 1.0f, 1.0f, 1.0f }, dx::XMFLOAT3{ 0,0,0 });
+		rightSign->AddComponent<SelectableComponent>();
+		rightSign->AddComponent<RigidBodyComponent>(0.0f, FilterGroups::CLICKABLE, (FilterGroups::EVERYTHING & ~FilterGroups::PLAYER), BodyType::STATIC, true);
+
 		//Left Sign
-		leftSign->GetTransform().SetPosition({ signPosition.x + 1.0f, signPosition.y - 1.0f, signPosition.z });
-		
+		leftSign->GetTransform().SetPosition({ signPosition.x - 1.0f, signPosition.y - 1.0f, signPosition.z });
+		leftSign->GetTransform().SetRotation({ signRotation.x, signRotation.y, signRotation.z });
+		leftSign->AddComponent<BoxColliderComponent>(dx::XMFLOAT3{ 1.0f, 1.0f, 1.0f }, dx::XMFLOAT3{ 0,0,0 });
+		leftSign->AddComponent<SelectableComponent>();
+		leftSign->AddComponent<RigidBodyComponent>(0.0f, FilterGroups::CLICKABLE, (FilterGroups::EVERYTHING & ~FilterGroups::PLAYER), BodyType::STATIC, true);
+
 	}
 	
 }
@@ -627,6 +667,7 @@ void GameScene::Update(const float& deltaTime)
 		guiManager->GetGUIObject("door")->SetVisible(false);
 	}
 
+	//Left or right
 	if (rightSign->GetComponent<SelectableComponent>()->GetActive())
 	{
 		OnDeactivate();
@@ -641,6 +682,15 @@ void GameScene::Update(const float& deltaTime)
 		OnActivate();
 		leftSign->GetComponent<SelectableComponent>()->SetActive(false);
 	}
+	//Win
+	if (end)
+	{
+		if (roadSign->GetComponent<SelectableComponent>()->GetActive())
+		{
+			Engine::Instance->SwitchScene(SceneIndex::WIN);
+		}
+	}
+	
 
 	//std::cout << "PlayerPos: " << player->GetTransform().GetPosition().m128_f32[0] << " " << player->GetTransform().GetPosition().m128_f32[1] << " " << player->GetTransform().GetPosition().m128_f32[2] << std::endl;
 
