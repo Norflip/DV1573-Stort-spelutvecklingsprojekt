@@ -110,7 +110,7 @@ void PlayerComp::FixedUpdate(const float& fixedDeltaTime)
 	distance = playerPos.Distance(playerPos, housePos);
 
 		//temp fix for wierd clock start at 
-	if (TARGET_FIXED_DELTA < 5.f)
+	//if (TARGET_FIXED_DELTA < 5.f)
 	{
 
 

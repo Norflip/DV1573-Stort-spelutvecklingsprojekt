@@ -11,6 +11,7 @@ GameScene::GameScene() : Scene("GameScene")
 	this->interiorPosition = { 0.0f, -100.0f, 0.0f };
 	fogCol = 0;
 	start = true;
+	firstFrame = false;
 }
 
 GameScene::~GameScene()
@@ -23,6 +24,7 @@ void GameScene::Initialize()
 	InitializeObjects();
 	InitializeInterior();
 	start = true;
+
 }
 
 void GameScene::InitializeObjects()
@@ -627,4 +629,5 @@ void GameScene::Render()
 	//world.DrawDebug();
 
 	renderer->RenderFrame(camera, (float)clock.GetSeconds(), player->GetComponent<PlayerComp>()->GetDangerDistance());
+	firstFrame = true;
 }
