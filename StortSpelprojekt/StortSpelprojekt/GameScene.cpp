@@ -537,7 +537,7 @@ void GameScene::OnDeactivate()
 
 void GameScene::SetSignPositions(SaveState& state)
 {
-	if (state.segment == 3)
+	if (state.segment == 8)
 	{
 		dx::XMFLOAT3 signPosition;
 		signPosition = dx::XMFLOAT3{ world.GetPath().GetSignPosition().x , 1.0f ,world.GetPath().GetSignPosition().y };
