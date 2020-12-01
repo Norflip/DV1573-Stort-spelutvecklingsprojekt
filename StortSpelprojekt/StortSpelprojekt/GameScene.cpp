@@ -190,6 +190,15 @@ void GameScene::InitializeObjects()
 	roadSign = resources->AssembleObject("Endsign", "EndsignMaterial");
 	rightSign = resources->AssembleObject("LeftDirectionSign", "LeftDirectionSignMaterial");
 	leftSign = resources->AssembleObject("RightDirectionSign", "RightDirectionSignMaterial");
+
+	rightSign->AddComponent<BoxColliderComponent>(dx::XMFLOAT3{ 1.0f, 1.0f, 1.0f }, dx::XMFLOAT3{ 0, 0, 0 });
+	rightSign->AddComponent<SelectableComponent>();
+	rightSign->AddComponent<RigidBodyComponent>(0.0f, FilterGroups::CLICKABLE, (FilterGroups::EVERYTHING & ~FilterGroups::PLAYER), BodyType::STATIC, true);
+
+	leftSign->AddComponent<BoxColliderComponent>(dx::XMFLOAT3{ 1.0f, 1.0f, 1.0f }, dx::XMFLOAT3{ 0, 0, 0 });
+	leftSign->AddComponent<SelectableComponent>();
+	leftSign->AddComponent<RigidBodyComponent>(0.0f, FilterGroups::CLICKABLE, (FilterGroups::EVERYTHING & ~FilterGroups::PLAYER), BodyType::STATIC, true);
+
 	AddObjectToRoot(roadSign);
 	AddObjectToRoot(rightSign);
 	AddObjectToRoot(leftSign);
@@ -475,7 +484,7 @@ void GameScene::OnActivate()
 	house->GetComponent<NodeWalkerComp>()->SetWorld(&world);
 
 	//Place signs
-	SetSignPositions();
+	SetSignPositions(state);
 
 	if (house != nullptr && player != nullptr)
 	{
@@ -526,23 +535,27 @@ void GameScene::OnDeactivate()
 	player->GetComponent<PlayerComp>()->GetArms()->GetComponent< PlayerAnimHandlerComp>()->SetStarted(false);
 }
 
-void GameScene::SetSignPositions()
+void GameScene::SetSignPositions(SaveState& state)
 {
-	dx::XMFLOAT3 signPosition;
-	signPosition = dx::XMFLOAT3{ world.GetPath().GetSignPosition().x , 1.0f ,world.GetPath().GetSignPosition().y };
-	roadSign->GetTransform().SetPosition({ signPosition.x, signPosition.y - 1.0f, signPosition.z });
+	if (state.segment == 3)
+	{
+		dx::XMFLOAT3 signPosition;
+		signPosition = dx::XMFLOAT3{ world.GetPath().GetSignPosition().x , 1.0f ,world.GetPath().GetSignPosition().y };
+	}
+	else
+	{
+		dx::XMFLOAT3 signPosition;
+		signPosition = dx::XMFLOAT3{ world.GetPath().GetSignPosition().x , 1.0f ,world.GetPath().GetSignPosition().y };
+		roadSign->GetTransform().SetPosition({ signPosition.x, signPosition.y - 1.0f, signPosition.z });
 
-	//Right Sign
-	rightSign->GetTransform().SetPosition({ signPosition.x - 1.0f, signPosition.y - 1.0f, signPosition.z });
-	rightSign->AddComponent<BoxColliderComponent>(dx::XMFLOAT3{ 1.0f, 1.0f, 1.0f }, dx::XMFLOAT3{ 0, 0, 0 });
-	rightSign->AddComponent<SelectableComponent>();
-	rightSign->AddComponent<RigidBodyComponent>(0.0f, FilterGroups::CLICKABLE, (FilterGroups::EVERYTHING & ~FilterGroups::PLAYER), BodyType::STATIC, true);
-
-	//Left Sign
-	leftSign->GetTransform().SetPosition({ signPosition.x + 1.0f, signPosition.y - 1.0f, signPosition.z });
-	leftSign->AddComponent<BoxColliderComponent>(dx::XMFLOAT3{ 1.0f, 1.0f, 1.0f }, dx::XMFLOAT3{ 0, 0, 0 });
-	leftSign->AddComponent<SelectableComponent>();
-	leftSign->AddComponent<RigidBodyComponent>(0.0f, FilterGroups::CLICKABLE, (FilterGroups::EVERYTHING & ~FilterGroups::PLAYER), BodyType::STATIC, true);
+		//Right Sign
+		rightSign->GetTransform().SetPosition({ signPosition.x - 1.0f, signPosition.y - 1.0f, signPosition.z });
+		
+		//Left Sign
+		leftSign->GetTransform().SetPosition({ signPosition.x + 1.0f, signPosition.y - 1.0f, signPosition.z });
+		
+	}
+	
 }
 
 void GameScene::Update(const float& deltaTime)
