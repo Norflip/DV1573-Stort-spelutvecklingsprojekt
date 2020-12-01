@@ -88,11 +88,11 @@ void SkeletonMeshComponent::RunAnimation(const float& deltaTime)
 	}
 	if (currentAni == SkeletonStateMachine::IDLE)
 	{
-		finalTransforms = skeletonAnimations[0].Makeglobal(time, dx::XMMatrixIdentity(), *skeletonAnimations[0].GetRootKeyJoints());
+		finalTransforms = skeletonAnimations[trackMap[SkeletonStateMachine::IDLE]].Makeglobal(time, dx::XMMatrixIdentity(), *skeletonAnimations[trackMap[SkeletonStateMachine::IDLE]].GetRootKeyJoints());
 	}
 	else if (currentAni == SkeletonStateMachine::WALK)
 	{
-		finalTransforms = skeletonAnimations[1].Makeglobal(time, dx::XMMatrixIdentity(), *skeletonAnimations[1].GetRootKeyJoints());
+		finalTransforms = skeletonAnimations[trackMap[SkeletonStateMachine::WALK]].Makeglobal(time, dx::XMMatrixIdentity(), *skeletonAnimations[trackMap[SkeletonStateMachine::WALK]].GetRootKeyJoints());
 	}
 	else if (currentAni == SkeletonStateMachine::RUN || currentAni == SkeletonStateMachine::UP)
 	{
