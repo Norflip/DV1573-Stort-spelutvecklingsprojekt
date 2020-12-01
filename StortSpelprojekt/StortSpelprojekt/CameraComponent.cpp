@@ -6,7 +6,6 @@ CameraComponent::CameraComponent(size_t width, size_t height, float fieldOfView)
 {
 	planes.resize(0);
 	//planes.clear();
-	//std::cout << "fff" << std::endl;
 }
 
 CameraComponent::~CameraComponent()
@@ -28,7 +27,7 @@ void CameraComponent::UpdateView()
 	dx::XMMATRIX transform = GetOwner()->GetTransform().GetWorldMatrix();
 	//UpdateProjectionMatrix(width,height,60,CAMERA_NEAR_Z, CAMERA_FAR_Z);
 	planes = VirtualCamera::GetFrustumPlanes(transform);
-	//std::cout << "ff" << std::endl;
+
 }
 
 bool CameraComponent::InView(const Bounds& bounds, const dx::XMMATRIX world)

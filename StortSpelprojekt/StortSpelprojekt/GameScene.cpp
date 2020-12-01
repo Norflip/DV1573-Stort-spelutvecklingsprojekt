@@ -567,7 +567,7 @@ void GameScene::Update(const float& deltaTime)
 	world.UpdateRelevantChunks(player->GetTransform(), camera);
 	//world.DrawDebug();
 
-	enemyManager->SpawnEnemy(deltaTime);
+	enemyManager->SpawnRandomEnemy(deltaTime);
 
 	dx::XMFLOAT3 playerPos;
 	dx::XMStoreFloat3(&playerPos, player->GetTransform().GetWorldPosition());
