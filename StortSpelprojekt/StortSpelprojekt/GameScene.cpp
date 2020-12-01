@@ -35,7 +35,7 @@ void GameScene::InitializeObjects()
 	Object* houseExterior = resources->AssembleObject("HouseExterior", "HouseExteriorMaterial");
 	Object* houseDoorRigid = new Object("doorRigid");
 
-	houseBaseObject->GetTransform().Rotate(0, 180.0f /** Math::ToRadians*/, 0.0);
+	houseBaseObject->GetTransform().Rotate(0, -90.0f * Math::ToRadians, 0.0);
 
 	house = houseBaseObject;
 
