@@ -179,13 +179,17 @@ void Renderer::DrawEmissionTarget(RenderQueue& queue, CameraComponent* camera)
 				switch (item.type)
 				{
 				case RenderItem::Type::Instanced:
-					DrawRenderItemInstanced(item, camera); break;
+					if (item.material->IsEmissive())
+					{
+						DrawRenderItemInstanced(item, camera); break;
+					}
 
 				case RenderItem::Type::Default:
 				default:
-
-					DrawRenderItem(item, camera);
-					break;
+					if (item.material->IsEmissive())
+					{
+						DrawRenderItem(item, camera); break;
+					}
 				}
 
 				queue.pop();
