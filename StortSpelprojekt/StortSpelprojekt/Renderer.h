@@ -50,7 +50,7 @@ class Renderer
 		const Material* material;
 		const Material* streamoutMaterial;	// New
 		
-		cb_particle* particles;
+		cb_particle* particles; // new
 
 		Type type;		
 
@@ -109,9 +109,7 @@ public:
 	void ListParticle(Particlesys* psys) { this->particleList.push_back(psys); }
 	std::vector<Particlesys*> GetParticleList() { return this->particleList; }
 
-	//void GetParticlesys(Particlesys* part) { /*this->particle = new Particlesys;*/ this->particle = part; }
-
-	/* new crap.... */
+	/* new stuffy */
 	void EnableAlphaBlending();
 	void DisableAlphaBlending();	
 	ID3D11DepthStencilState* GetDepthEnable() { return this->dss_On; }
@@ -212,15 +210,8 @@ private:
 	//blendstate
 	ID3D11BlendState* blendStateOn;
 	ID3D11BlendState* blendStateOff;
-
 	
-	ID3D11BlendState* particleBlendOn; 
-	ID3D11BlendState* particleBlendOff;
-
-	ID3D11DepthStencilState* dss;
-
-	ID3D11DepthStencilState* dss_Off;
-	ID3D11DepthStencilState* dss_On;
+	ID3D11DepthStencilState* dss;	
 
 	DepthPass depthPass;
 	const float BLENDSTATEMASK[4] = { 0.0f };
@@ -241,9 +232,11 @@ private:
 	ID3D11RasterizerState* rasterizerStateCCWO;
 
 
+	/* new stuff */
 	bool firstRun;
-
-
 	std::vector<Particlesys*> particleList;
-	//Particlesys* particle;
+	ID3D11BlendState* particleBlendOn;
+	ID3D11BlendState* particleBlendOff;
+	ID3D11DepthStencilState* dss_Off;
+	ID3D11DepthStencilState* dss_On;
 };

@@ -52,7 +52,7 @@ public:
 	};
 
 public:
-	Mesh(ID3D11Buffer* drawBuffer, ID3D11Buffer* streamOutBuffer, ID3D11Buffer* initializeBuffer, D3D11_PRIMITIVE_TOPOLOGY = D3D_PRIMITIVE_TOPOLOGY_POINTLIST);
+	Mesh(ID3D11Buffer* drawBuffer, ID3D11Buffer* streamOutBuffer, ID3D11Buffer* initializeBuffer, D3D11_PRIMITIVE_TOPOLOGY = D3D_PRIMITIVE_TOPOLOGY_POINTLIST);	// new for particle stuff later on .. couldnt do it now
 	Mesh(ID3D11Buffer* vertexBuffer, ID3D11Buffer* indexBuffer, D3D11_PRIMITIVE_TOPOLOGY = DEFAULT_TOPOLOGY);
 	Mesh(std::vector<Vertex> vertices, std::vector<unsigned int> indices, D3D11_PRIMITIVE_TOPOLOGY topology = DEFAULT_TOPOLOGY);
 	virtual ~Mesh();
@@ -121,5 +121,4 @@ private:
 	bool initialized;
 
 	std::map<std::string, unsigned int> boneIDMap;
-
 };
