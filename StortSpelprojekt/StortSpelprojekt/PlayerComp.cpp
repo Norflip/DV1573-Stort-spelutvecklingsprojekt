@@ -5,20 +5,7 @@
 #include "WeaponComponent.h"
 #include "EnemyManager.h"
 
-//PlayerComp::PlayerComp() 
-//{
-//	health = 100;
-//	movementSpeed = 10;
-//	attack = 0;
-//	attackSpeed = 0;
-//	radius = 15;	// dont know ffs
-//	/*this->fuelDippingBar = static_cast<GUISprite*>(guiMan->GetGUIObject("fuelDippingBar"));
-//	this->foodDippingBar = static_cast<GUISprite*>(guiMan->GetGUIObject("foodDippingBar"));
-//	this->healthDippingBar = static_cast<GUISprite*>(guiMan->GetGUIObject("healthDippingBar"));*/
-//
-//	foodEmpty = false;
-//	gg = false;
-//}
+constexpr float STILL_REDUCTION = 0.7f;
 
 PlayerComp::PlayerComp(Renderer* renderer, CameraComponent* camComp, Object* house, Physics* physics, GUIManager* guimanager, float health, float movementSpeed, float radius, float attack, float attackSpeed)
 {
@@ -39,12 +26,12 @@ PlayerComp::PlayerComp(Renderer* renderer, CameraComponent* camComp, Object* hou
 	this->renderer = renderer;
 	this->physics = physics;
 	this->throwStrength = 50;
-	this->hpLossDist = 40;
-	this->maxDist = 90;
+	this->hpLossDist = 70;
+	this->maxDist = 130;
 	this->holdAngle = dx::SimpleMath::Vector3( 0.3f, -0.4f, 0.8f );
 	this->house = house;
 	this->hpLossPerDistance = 0.0001f;
-	Reset();
+	//Reset();
 
 	this->fuelDippingBar = static_cast<GUISprite*>(guiMan->GetGUIObject("fuelDippingBar"));
 	this->foodDippingBar = static_cast<GUISprite*>(guiMan->GetGUIObject("foodDippingBar"));
@@ -77,33 +64,12 @@ PlayerComp::~PlayerComp()
 
 void PlayerComp::Update(const float& deltaTime)
 {
-	float frameTime = FCAST(GameClock::Instance().GetFrameTime() / 1000.0);
+	//float frameTime = FCAST(GameClock::Instance().GetFrameTime() / 1000.0);
 
-	//temp fix for wierd clock start at 
-	if (frameTime < 5.f)
-	{
-		//lose fuel if not inside house
-		if(!GetOwner()->GetComponent<ControllerComp>()->GetInside() && fuel > 0.0f)
-			fuel -= frameTime * fuelBurnPerMeter;
 
-		// lose food
-		food -= frameTime * foodLossPerSecond;
-
-#if  !IMMORTAL
-		if ((health <= 0))
-			Engine::Instance->SwitchScene(SceneIndex::GAME_OVER);
-#endif //  !IMMORTAL
-		
-		if (food < 0)
-			foodEmpty = true;
-
-		if (foodEmpty)
-		{
-			health -= frameTime * healthLossPerSecond;
-		}
-	}
 
 	// Fuel drop
+
 	fuelDippingBar->SetScaleBars(ReverseAndClamp(fuel));
 	fuelBar->SetScaleColor(ReverseAndClamp(fuel));
 
@@ -138,18 +104,50 @@ void PlayerComp::Update(const float& deltaTime)
 
 void PlayerComp::FixedUpdate(const float& fixedDeltaTime)
 {
+
 	sm::Vector3 housePos = house->GetTransform().GetPosition();
 	sm::Vector3 playerPos = this->GetOwner()->GetTransform().GetPosition();
 	distance = playerPos.Distance(playerPos, housePos);
-	//std::cout << distance << std::endl;
-	// around 30-50
-	if (distance > hpLossDist && !GetOwner()->GetComponent<ControllerComp>()->GetInside())
-		health -= distance * hpLossPerDistance;
 
-	// around 90
-	if (distance > maxDist && !GetOwner()->GetComponent<ControllerComp>()->GetInside())
-		health = 0;
+		//temp fix for wierd clock start at 
+	if (TARGET_FIXED_DELTA < 5.f)
+	{
 
+
+		//lose fuel if not inside house
+		if (!GetOwner()->GetComponent<ControllerComp>()->GetInside() && fuel > 0.0f)
+		{
+			if (house->GetComponent<NodeWalkerComp>()->GetIsWalking())
+				fuel -= (TARGET_FIXED_DELTA * fuelBurnPerMeter)* STILL_REDUCTION;
+
+			else
+				fuel -= (TARGET_FIXED_DELTA * fuelBurnPerMeter);
+
+		}
+
+		// lose food
+		food -= TARGET_FIXED_DELTA * foodLossPerSecond;
+
+	#if  !IMMORTAL
+			if ((health <= 0))
+				Engine::Instance->SwitchScene(SceneIndex::GAME_OVER);
+	#endif //  !IMMORTAL
+
+			if (food < 0)
+				foodEmpty = true;
+
+			if (foodEmpty)
+			{
+				health -= TARGET_FIXED_DELTA * healthLossPerSecond;
+			}
+
+			if (distance > hpLossDist && !GetOwner()->GetComponent<ControllerComp>()->GetInside())
+				health -= distance * hpLossPerDistance;
+
+			// around 90
+			if (distance > maxDist && !GetOwner()->GetComponent<ControllerComp>()->GetInside())
+				health = 0;
+	}
 }
 
 void PlayerComp::HoldObject()
@@ -460,10 +458,14 @@ void PlayerComp::RayCast(const float& deltaTime)
 
 float PlayerComp::GetDangerDistance() 
 {
-	if (distance > 60.f && !GetOwner()->GetComponent<ControllerComp>()->GetInside())
+	//IF WE ARE INSIDE
+	if (GetOwner()->GetComponent<ControllerComp>()->GetInside())
+		return 0;
+
+	if (distance > hpLossDist)
 		return distance;
 	else
-		return 0;
+		return 1;
 }
 
 void PlayerComp::SetStatsFromState(const SaveState& state)
@@ -474,7 +476,7 @@ void PlayerComp::SetStatsFromState(const SaveState& state)
 
 	// defaulting some shit
 	this->foodLossPerSecond = 0.3f;
-	this->fuelBurnPerMeter = 0.7f;
+	this->fuelBurnPerMeter = 0.5f;
 	this->healthLossPerSecond = 0.5f;
 	this->holding = nullptr;
 	this->foodEmpty = false;

@@ -194,7 +194,7 @@ void Renderer::RenderFrame(CameraComponent* camera, float time, float distance, 
 	data.factor = color;
 	data.time = time;
 	data.distanceToHouse = distance;
-	//std::cout << xPos << std::endl;
+	std::cout << distance << std::endl;
 	//std::cout << yPos << std::endl;
 	xPos += (float)Input::Instance().GetPrevMousePosRelative().y;
 	yPos += (float)Input::Instance().GetPrevMousePosRelative().x;
@@ -838,7 +838,7 @@ void Renderer::UpdateForwardPlus(CameraComponent* camera)
 	context->OMSetDepthStencilState(dss, 0);
 	SetCullBack(true);
 
-	std::cout << opaqueItemQueue.size() << std::endl;
+	//std::cout << opaqueItemQueue.size() << std::endl;
 
 	DrawQueueToTarget(opaqueItemQueue, camera);
 	for (auto i : opaqueBatches)
