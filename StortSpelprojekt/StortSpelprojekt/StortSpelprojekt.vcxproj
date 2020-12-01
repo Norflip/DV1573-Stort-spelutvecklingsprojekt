@@ -166,6 +166,7 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="AnimationController.cpp" />
     <ClCompile Include="AudioMaster.cpp" />
     <ClCompile Include="AudioEngine.cpp" />
     <ClCompile Include="CreditsScene.cpp" />
@@ -250,6 +251,9 @@
     <ClCompile Include="World.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="AnimationController.h">
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|x64'">true</ExcludedFromBuild>
+    </ClInclude>
     <ClInclude Include="AudioMaster.h" />
     <ClInclude Include="AudioEngine.h" />
     <ClInclude Include="CreditsScene.h" />

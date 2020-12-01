@@ -124,7 +124,6 @@ std::string SkeletonAni::GetRootName()
             break;
         }
     }
-
     return rootNode;
 }
 

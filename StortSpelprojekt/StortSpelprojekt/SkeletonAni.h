@@ -14,7 +14,9 @@ struct Bone
 	std::string parentName;
 	dx::SimpleMath::Quaternion rotationQuaternion;
 	dx::SimpleMath::Vector3 translationVector;
+	
 };
+
 
 class SkeletonAni
 {
@@ -31,7 +33,6 @@ private:
 	dx::SimpleMath::Quaternion rotQ;
 	dx::SimpleMath::Matrix RT;
 	std::vector<dx::XMFLOAT4X4> bones;
-	
 	
 public:
 	SkeletonAni();
