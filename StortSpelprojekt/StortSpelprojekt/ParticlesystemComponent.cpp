@@ -14,7 +14,7 @@ ParticleSystemComponent::ParticleSystemComponent(Renderer* renderer, Shader* sha
 	this->particleVelocity = 0.8f;
 	this->particleVelocityVariation = 0.2f;
 	this->particleSize = 0.03f;
-	this->maxParticles = 10;
+	this->maxParticles = 20;
 
 	this->currentParticleCount = 0;
 	this->accumulatedTime = 0.0f;
@@ -108,6 +108,7 @@ void ParticleSystemComponent::InitializeFirelikeParticles(ID3D11Device* device, 
 	particlesPosition.y = GetOwner()->GetTransform().GetPosition().m128_f32[1] - 0.02f;
 	particlesPosition.z = GetOwner()->GetTransform().GetPosition().m128_f32[2];
 	fire = true;
+
 	/* Init and pass it to mesh, can do a initializefunction in mesh later.. or something. */
 	InitializeBuffers(device);
 	mesh->SetVertexBuffer(vertexBuffer);
@@ -217,6 +218,7 @@ void ParticleSystemComponent::CreateParticle(float frameTime)
 		float red = 1.0f;
 		float green = 1.0f;
 		float blue = 1.0f;
+		float alpha = 1.0f;
 
 		/*
 			Sort the listarray and find a place for the new particle.
@@ -249,6 +251,7 @@ void ParticleSystemComponent::CreateParticle(float frameTime)
 			particleList[i].red = particleList[j].red;
 			particleList[i].green = particleList[j].green;
 			particleList[i].blue = particleList[j].blue;
+			particleList[i].alpha = particleList[j].alpha;
 			particleList[i].velocity = particleList[j].velocity;
 			particleList[i].active = particleList[j].active;
 			i--;
@@ -262,6 +265,7 @@ void ParticleSystemComponent::CreateParticle(float frameTime)
 		particleList[index].red = red;
 		particleList[index].green = green;
 		particleList[index].blue = blue;
+		particleList[index].alpha = alpha;
 		particleList[index].velocity = velocity;
 		particleList[index].active = true;
 	}
@@ -271,7 +275,9 @@ void ParticleSystemComponent::UpdateParticles(float frameTime)
 {
 	for (int i = 0; i < currentParticleCount; i++)
 	{
-		particleList[i].posy = particleList[i].posy + (particleList[i].velocity * ((float)frameTime * 0.2f));
+		particleList[i].posy = particleList[i].posy + (particleList[i].velocity * ((float)frameTime * 0.5f));
+
+		particleList[i].alpha -= (float)frameTime * 0.5f;
 	}
 }
 
@@ -280,7 +286,7 @@ void ParticleSystemComponent::DeleteParticles()
 	/* Kill all the particles that have gone over a certain height range */
 	for (int i = 0; i < maxParticles; i++)
 	{
-		if ((particleList[i].active == true) && (particleList[i].posy > 0.5f))
+		if (/*(particleList[i].active == true) && (particleList[i].posy > 0.5f) ||*/ ((particleList[i].active == true) && particleList[i].alpha <= 0.0f))
 		{
 			particleList[i].active = false;
 			currentParticleCount--;
@@ -293,6 +299,7 @@ void ParticleSystemComponent::DeleteParticles()
 				particleList[j].red = particleList[j + 1].red;
 				particleList[j].green = particleList[j + 1].green;
 				particleList[j].blue = particleList[j + 1].blue;
+				particleList[j].alpha = particleList[j + 1].alpha;
 				particleList[j].velocity = particleList[j + 1].velocity;
 				particleList[j].active = particleList[j + 1].active;
 			}
@@ -322,37 +329,37 @@ void ParticleSystemComponent::UpdateBuffers()
 		// Bottom left.
 		verticesPtr[index].position = dx::XMFLOAT3(particleList[i].posx - particleSize, (particleList[i].posy) - particleSize, particleList[i].posz);
 		verticesPtr[index].texcoord = dx::XMFLOAT2(0.0f, 1.0f);
-		verticesPtr[index].color = dx::XMFLOAT4(particleList[i].red, particleList[i].green, particleList[i].blue, 1.0f);
+		verticesPtr[index].color = dx::XMFLOAT4(particleList[i].red, particleList[i].green, particleList[i].blue, particleList[i].alpha);
 		index++;
 
 		// Top left.
 		verticesPtr[index].position = dx::XMFLOAT3(particleList[i].posx - particleSize, (particleList[i].posy) + particleSize, particleList[i].posz);
 		verticesPtr[index].texcoord = dx::XMFLOAT2(0.0f, 0.0f);
-		verticesPtr[index].color = dx::XMFLOAT4(particleList[i].red, particleList[i].green, particleList[i].blue, 1.0f);
+		verticesPtr[index].color = dx::XMFLOAT4(particleList[i].red, particleList[i].green, particleList[i].blue, particleList[i].alpha);
 		index++;
 
 		// Bottom right.
 		verticesPtr[index].position = dx::XMFLOAT3(particleList[i].posx + particleSize, (particleList[i].posy) - particleSize, particleList[i].posz);
 		verticesPtr[index].texcoord = dx::XMFLOAT2(1.0f, 1.0f);
-		verticesPtr[index].color = dx::XMFLOAT4(particleList[i].red, particleList[i].green, particleList[i].blue, 1.0f);
+		verticesPtr[index].color = dx::XMFLOAT4(particleList[i].red, particleList[i].green, particleList[i].blue, particleList[i].alpha);
 		index++;
 
 		// Bottom right.
 		verticesPtr[index].position = dx::XMFLOAT3(particleList[i].posx + particleSize, (particleList[i].posy) - particleSize, particleList[i].posz);
 		verticesPtr[index].texcoord = dx::XMFLOAT2(1.0f, 1.0f);
-		verticesPtr[index].color = dx::XMFLOAT4(particleList[i].red, particleList[i].green, particleList[i].blue, 1.0f);
+		verticesPtr[index].color = dx::XMFLOAT4(particleList[i].red, particleList[i].green, particleList[i].blue, particleList[i].alpha);
 		index++;
 
 		// Top left.
 		verticesPtr[index].position = dx::XMFLOAT3(particleList[i].posx - particleSize, (particleList[i].posy) + particleSize, particleList[i].posz);
 		verticesPtr[index].texcoord = dx::XMFLOAT2(0.0f, 0.0f);
-		verticesPtr[index].color = dx::XMFLOAT4(particleList[i].red, particleList[i].green, particleList[i].blue, 1.0f);
+		verticesPtr[index].color = dx::XMFLOAT4(particleList[i].red, particleList[i].green, particleList[i].blue, particleList[i].alpha);
 		index++;
 
 		// Top right.
 		verticesPtr[index].position = dx::XMFLOAT3(particleList[i].posx + particleSize, (particleList[i].posy) + particleSize, particleList[i].posz);
 		verticesPtr[index].texcoord = dx::XMFLOAT2(1.0f, 0.0f);
-		verticesPtr[index].color = dx::XMFLOAT4(particleList[i].red, particleList[i].green, particleList[i].blue, 1.0f);
+		verticesPtr[index].color = dx::XMFLOAT4(particleList[i].red, particleList[i].green, particleList[i].blue, particleList[i].alpha);
 		index++;
 	}
 
@@ -387,7 +394,7 @@ void ParticleSystemComponent::Draw(Renderer* renderer, CameraComponent* camera)
 		if (!fire)
 		{
 			dx::XMStoreFloat3(&particlesPosition, GetOwner()->GetTransform().GetWorldPosition());
-			particlesPosition.y += 0.4f;
+			particlesPosition.y += 0.5f;
 
 			dx::XMFLOAT3 pos;
 			dx::XMStoreFloat3(&pos, camera->GetOwner()->GetTransform().GetPosition());

@@ -196,26 +196,7 @@ bool Particlesys::InitializeParticleShaders(ID3D11Device* device, HWND hwnd)
 	if (FAILED(hr))
 	{
 		return false;
-	}
-
-
-
-
-	//D3D11_BUFFER_DESC cBufferDescription;
-	//// Setup the description of the bufferPerObject constant buffer that is in the vertex shader.
-	//ZeroMemory(&cBufferDescription, sizeof(D3D11_BUFFER_DESC));
-	//cBufferDescription.Usage = D3D11_USAGE_DEFAULT;
-	//cBufferDescription.ByteWidth = static_cast<uint32_t>(sizeof(cBufferPerObject) + (16 - (sizeof(cBufferPerObject) % 16)));
-	//cBufferDescription.BindFlags = D3D11_BIND_CONSTANT_BUFFER;
-	//cBufferDescription.CPUAccessFlags = 0;
-	//cBufferDescription.MiscFlags = 0;
-	//cBufferDescription.StructureByteStride = 0;
-
-	//hr = device->CreateBuffer(&cBufferDescription, NULL, &cbufferPerObject);
-	//if (FAILED(hr))
-	//{
-	//	return false;
-	//}
+	}	
 
 	D3D11_BUFFER_DESC cBufferDescription;
 	// Setup the description of the camera constant buffer that is in the vertex shader.
@@ -241,10 +222,7 @@ void Particlesys::InitializeParticles(ID3D11Device* device, Renderer* renderer, 
 	this->renderer = renderer;
 	this->objectRef = objectRef;
 	//mMaxParticles = maxParticles;
-
-	/*hr = DirectX::CreateWICTextureFromFile(device, L"Textures/fire1.png", nullptr, &particleSRV);
-	assert(SUCCEEDED(hr));*/
-
+	
 	ID3D11Texture1D* random;
 	DirectX::XMFLOAT4* randomValues = new DirectX::XMFLOAT4[1024];
 	for (int i = 0; i < 1024; ++i)
@@ -314,10 +292,33 @@ void Particlesys::Update(float deltaTime, float gameTime)
 	/* Check some values outside shader */
 	particleAge += ageTimeStep;
 
+	static float a = 0.0f;
+	if (left)
+	{
+		if (a > -0.04f)
+			a -= 0.002f;
+		else
+		{
+			right = true;
+			left = false;
+		}
+	}
+	else if (right)
+	{
+		if (a < 0.04f)
+			a += 0.002f;
+		else
+		{
+			right = false;
+			left = true;
+		}
+
+	}
+
 	dx::XMFLOAT3 pos;
 	dx::XMStoreFloat3(&pos, objectRef->GetTransform().GetPosition());
-	pos.y += 0.4f;
-	pos.z += -0.1f;
+	pos.y += 0.3f;
+	pos.z += 0.f + a;
 	pos.x -= 0.2f;
 	SetEmitPos(pos);	
 }
@@ -328,12 +329,12 @@ void Particlesys::Draw(ID3D11DeviceContext* context, CameraComponent* cam)
 	dx::XMStoreFloat3(&eyeCam, cam->GetOwner()->GetTransform().GetPosition());
 	SetEyePos(eyeCam);
 	
-	renderer->GetContext()->OMSetDepthStencilState(nullptr, 0);
 	DrawStreamOut(context, cam);
+	renderer->GetContext()->OMSetDepthStencilState(nullptr, 0);
 	renderer->EnableAlphaBlending();
 	DrawParticles(context, cam);
 	renderer->DisableAlphaBlending();
-	renderer->GetContext()->OMSetDepthStencilState(renderer->GetDepthEnable(), 0);
+	renderer->GetContext()->OMSetDepthStencilState(renderer->GetDepthDisable(), 0);
 }
 
 float Particlesys::RandomFloat(float a, float b)
@@ -350,9 +351,9 @@ void Particlesys::DrawStreamOut(ID3D11DeviceContext* context, CameraComponent* c
 	viewproj = XMMatrixMultiply(cam->GetViewMatrix(), cam->GetProjectionMatrix());
 
 	/* Streamout stuffy  */
-	cbPerFrame.emitDir = emitDir; // GetEmitDir();
-	cbPerFrame.emitPos = emitPos; // GetEmitPos();
-	cbPerFrame.eyePos = eyePos; // GetEyePos();
+	cbPerFrame.emitDir = emitDir;	// GetEmitDir();
+	cbPerFrame.emitPos = emitPos;	// GetEmitPos();
+	cbPerFrame.eyePos = eyePos;		// GetEyePos();
 	cbPerFrame.gameTime = gameTimer;
 	cbPerFrame.ageTimeStep = ageTimeStep;
 	cbPerFrame.viewProjection = DirectX::XMMatrixTranspose(viewproj);

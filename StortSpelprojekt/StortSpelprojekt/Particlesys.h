@@ -176,4 +176,6 @@ private:
 
 	/* Benchmark stuff */
 	int particlesPerSecond;	
+
+	bool left = false, right = true;
 };

@@ -450,13 +450,13 @@ void GameScene::InitializeInterior()
 	testParticles = new Particlesys(/*Engine::Instance->GetResources()->GetShaderResource("soshader"), Engine::Instance->GetResources()->GetShaderResource("drawshader")*/);
 	testParticles->InitializeParticleShaders(renderer->GetDevice(), window->GetHWND());
 
-	testParticles->SetTexture(renderer->GetDevice(), L"Textures/fire1.png");
+	testParticles->SetTexture(renderer->GetDevice(), L"Textures/fire.png");
 	testParticles->SetMaxParticles(200);
-	testParticles->SetParticleColor(dx::XMFLOAT4(fireRedColor));
+	//testParticles->SetParticleColor(dx::XMFLOAT4(fireRedColor));
 	testParticles->SetParticleSize(dx::XMFLOAT2(0.8f, 0.8f));
 	//testParticles->SetEmitPos(dx::XMFLOAT3(28, 1.7f, 50));
 	testParticles->SetEmitDir(dx::XMFLOAT3(0.0f, 0.5f, 0.0f));
-	testParticles->SetParticleSpreadMulti(dx::XMFLOAT3(0.1f, 0.3f, 0.1f));
+	testParticles->SetParticleSpreadMulti(dx::XMFLOAT3(0.15f, 0.3f, 0.15f));
 
 	testParticles->InitializeParticles(renderer->GetDevice(), renderer, fireLight);
 	renderer->ListParticle(testParticles);
@@ -667,8 +667,8 @@ void GameScene::Update(const float& deltaTime)
 	testParticles->SetEmitPos(dx::XMFLOAT3(28.0f + a, 1.7f, 50.0f));*/
 	dx::XMFLOAT3 eyeCam;
 	dx::XMStoreFloat3(&eyeCam, camera->GetOwner()->GetTransform().GetPosition());
-	testParticles->SetEyePos(eyeCam);
-	testParticles->Update(deltaTime, GameClock::Instance().GetSeconds());
+	//testParticles->SetEyePos(eyeCam);
+	//testParticles->Update(deltaTime, GameClock::Instance().GetSeconds());
 
 
 	//dx::XMFLOAT3 eyeCam;
