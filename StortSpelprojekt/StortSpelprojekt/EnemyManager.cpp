@@ -22,15 +22,16 @@ EnemyManager::~EnemyManager()
 {
 }
 
-void EnemyManager::Initialize(Object* player, PlayerComp* playerComp,CameraComponent* camComp, Object* root)
+void EnemyManager::Initialize(Object* playerObj, Object* houseObj, PlayerComp* playerComp,CameraComponent* camComp, Object* rootObj)
 {
 	//this->enemySpawnTimer = 0.f;
 	//this->aliveEnemies = 0.f;
 	this->resources = Engine::Instance->GetResources();
-	this->player = player;
+	this->player = playerObj;
+	this->house = houseObj;
 	this->playerComp = playerComp;
 	this->camComp = camComp;
-	this->root = root;
+	this->root = rootObj;
 	this->enemyPool = new ObjectPooler(resources);
 }
 
@@ -117,12 +118,15 @@ void EnemyManager::SpawnRandomEnemy(const float& deltaTime)
 	//spawn on timer intervall if nrof enemies is less than cap
 	if (enemySpawnTimer >= ENEMY_SPAWN_RATE && aliveEnemies < ENEMY_TOTAL)
 	{
+		dx::XMVECTOR houseVec = house->GetTransform().GetPosition();
+
 		dx::XMFLOAT3 playerPos = { 0,0,0 };
 		dx::XMVECTOR playerVec = player->GetTransform().GetPosition();
 		dx::XMStoreFloat3(&playerPos, playerVec);
 
 		//make sure it's outside frustum of player camera and a bit away from player
-		float length = 0;
+		float lengthP = 0; //length enemy to player
+		float lengthH = 0; //length enemy to house
 
 		if (camComp->GetFrustumPlanes().size() == 6)
 		{
@@ -136,15 +140,16 @@ void EnemyManager::SpawnRandomEnemy(const float& deltaTime)
 			randPos.z = playerPos.z + Random::Range(-20, 20+1);
 			randVec = dx::XMLoadFloat3(&randPos);
 			//std::cout << length << std::endl;
-			dx::XMStoreFloat(&length, dx::XMVector3Length(dx::XMVectorSubtract(playerVec, randVec)));
-	
+			dx::XMStoreFloat(&lengthP, dx::XMVector3Length(dx::XMVectorSubtract(playerVec, randVec)));
+			dx::XMStoreFloat(&lengthH, dx::XMVector3Length(dx::XMVectorSubtract(houseVec, randVec)));
 
 			Bounds enemyBounds;
 			enemyBounds.SetMinMax({ -0.5f,-1.f,-0.5f }, { 0.5f,1.f,0.5f });
 			
 			dx::XMMATRIX world = dx::XMMatrixTranslation(randPos.x, randPos.y, randPos.z);
 
-			if (length > ENEMY_SPAWN_RADIUS && !camComp->InView(enemyBounds,world))  //!SphereInFrustum(theFrustum, randPos))
+			//maybe also check radius from house??
+			if (lengthP > ENEMY_SPAWN_RADIUS && lengthH > ENEMY_SPAWN_RADIUS && !camComp->InView(enemyBounds, world))  //!SphereInFrustum(theFrustum, randPos))
 			{
 				//spawn enemies & increment nrof
 				aliveEnemies++;

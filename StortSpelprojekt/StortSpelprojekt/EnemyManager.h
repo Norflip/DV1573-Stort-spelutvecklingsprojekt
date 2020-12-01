@@ -5,7 +5,7 @@
 #include "Math.h"
 #include "Random.h"
 constexpr float ENEMY_SPAWN_RATE = 2.f; //how fast enemies spawn
-constexpr float ENEMY_SPAWN_RADIUS = 7.f; //distance from player
+constexpr float ENEMY_SPAWN_RADIUS = 10.f; //distance from player
 constexpr int ENEMY_TOTAL = 25; //max nr of enemies
 
 //struct Frustum
@@ -25,7 +25,7 @@ class EnemyManager
 		EnemyManager();
 		virtual ~EnemyManager();
 
-		void Initialize(Object* player, PlayerComp* playerComp,CameraComponent* camComp, Object* root);
+		void Initialize(Object* playerObj,Object* houseObj, PlayerComp* playerComp,CameraComponent* camComp, Object* rootObj);
 
 		std::vector<Object*> GetEnemies() const { return enemyVector; }
 		void InitBaseEnemy();
@@ -42,7 +42,7 @@ class EnemyManager
 		ObjectPooler* enemyPool;
 		std::vector<Object*> enemyVector;
 		Object* player;
-		//Object* house;
+		Object* house;
 		PlayerComp* playerComp;
 		CameraComponent* camComp;
 		ResourceManager* resources;
