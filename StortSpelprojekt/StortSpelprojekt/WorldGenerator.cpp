@@ -113,7 +113,7 @@ void WorldGenerator::Construct(const SaveState& state, const WorldDescription& d
 			// For fly
 			crazyFly->AddComponent<BoxColliderComponent>(dx::XMFLOAT3(0.876f, 0.389f, 0.623f), dx::XMFLOAT3(0, 0.2f, 0));
 			//crazyFly->AddComponent<MeshCollider>(crazyFly->GetComponent<MeshComponent>()->GetMeshes()[0], dx::XMFLOAT3({ 0, 1, 0 }));
-			RigidBodyComponent* flyrb = crazyFly->AddComponent<RigidBodyComponent>(10.0f, FilterGroups::HOLDABLE, FilterGroups::EVERYTHING, BodyType::DYNAMIC, true);
+			RigidBodyComponent* flyrb = crazyFly->AddComponent<RigidBodyComponent>(10.0f, FilterGroups::HOLDABLE, FilterGroups::EVERYTHING & ~FilterGroups::PLAYER, BodyType::DYNAMIC, true);
 
 			// For frog
 			//crazyFrog->AddComponent<SphereColliderComponent>(1.685, dx::XMFLOAT3(0, -0.0f, 0));
@@ -122,9 +122,8 @@ void WorldGenerator::Construct(const SaveState& state, const WorldDescription& d
 			crazyFrog->AddComponent<MeshCollider>(crazyFrog->GetComponent<MeshComponent>()->GetMeshes()[0], dx::XMFLOAT3({ 0, 0, 0 }));
 			RigidBodyComponent* frogrb = crazyFrog->AddComponent<RigidBodyComponent>(0.0f, FilterGroups::PROPS, FilterGroups::EVERYTHING, BodyType::STATIC, true);
 
-			
 			// For froghead
-			frogHead->AddComponent<BoxColliderComponent>(dx::XMFLOAT3({ 1.158f, 0.435f, 1.871f }), dx::XMFLOAT3({ 0, 2.181f, -0.021f }));
+			frogHead->AddComponent<BoxColliderComponent>(dx::XMFLOAT3({ 0.878f, 0.33f, 1.419f }), dx::XMFLOAT3({ 0, 2.335f, -0.021f }));
 			RigidBodyComponent* headrb = frogHead->AddComponent<RigidBodyComponent>(0.0f, FilterGroups::PUZZLE, FilterGroups::EVERYTHING, BodyType::STATIC, true);
 
 			// Position for puzzle
@@ -150,6 +149,34 @@ void WorldGenerator::Construct(const SaveState& state, const WorldDescription& d
 			dx::XMFLOAT3 pos;
 			dx::XMStoreFloat3(&pos, position);
 			std::cout << "PAAZZL: " << pos.x << ", " << pos.y << ", " << pos.z << "\n";
+
+			CollisionInfo info;
+			info.other = crazyFly;
+
+			std::function<bool(CollisionInfo&)> collisionCallback = [](CollisionInfo info) {
+
+				if (info.remove)
+				{
+					std::cout << "True" << std::endl;
+					return false;
+				}
+				if (info.other->GetName() == "PuzzleFlyStatue" && info.remove)
+				{
+					std::cout << "Collider: " << info.other->GetName() << std::endl;
+					return true;
+					//info.other->RemoveFlag(ObjectFlag::ENABLED);
+				}
+				else if(info.other->GetName() == "PuzzleFlyStatue" && !info.remove)
+				{
+					std::cout << "First" << std::endl;
+					info.remove = true;
+					return false;
+				}
+					
+			};
+			collisionCallback(info);
+
+			frogrb->AddCollisionCallback(collisionCallback);
 
 			return root;
 		});

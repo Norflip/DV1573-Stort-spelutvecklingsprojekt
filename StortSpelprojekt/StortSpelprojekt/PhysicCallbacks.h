@@ -49,7 +49,7 @@ class CollisionEventListener : public rp::EventListener
 					CollisionInfo info;
 					
 					RigidBodyComponent* body0 = object0->GetComponent<RigidBodyComponent>();
-					if (body0 != nullptr && body0->GetType() == BodyType::DYNAMIC)
+					if (body0 != nullptr && (body0->GetType() == BodyType::DYNAMIC || object0->GetName() == "PuzzleFrog"))
 					{
 						info.other = object1;
 						body0->m_OnCollision(info);

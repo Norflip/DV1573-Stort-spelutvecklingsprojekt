@@ -236,8 +236,6 @@ void GameScene::InitializeObjects()
 	frogpuzzle*/
 	GUICompass* compass = new GUICompass(*renderer, window, house, player);
 	guiManager->AddGUIObject(compass, "compass");
-
-	
 }
 
 void GameScene::InitializeGUI()
@@ -623,10 +621,8 @@ void GameScene::Update(const float& deltaTime)
 
 	//std::cout << "PlayerPos: " << player->GetTransform().GetPosition().m128_f32[0] << " " << player->GetTransform().GetPosition().m128_f32[1] << " " << player->GetTransform().GetPosition().m128_f32[2] << std::endl;
 
-	
 	static_cast<GUIFont*>(guiManager->GetGUIObject("fps"))->SetString(std::to_string((int)GameClock::Instance().GetFramesPerSecond()));
 	guiManager->UpdateAll();
-
 }
 
 void GameScene::FixedUpdate(const float& fixedDeltaTime)

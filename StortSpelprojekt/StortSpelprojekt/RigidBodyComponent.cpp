@@ -186,13 +186,16 @@ void RigidBodyComponent::OnOwnerFlagChanged(ObjectFlag old, ObjectFlag newFlag)
 		body->setIsActive(enabled);
 }
 
-void RigidBodyComponent::m_OnCollision(const CollisionInfo& collision)
+void RigidBodyComponent::m_OnCollision(CollisionInfo& collision)
 {
 	for (auto it = callbacks.begin(); it < callbacks.end(); it++)
-		(*it)(collision);
+		if ((*it)(collision)) 
+		{
+			GetOwner()->RemoveFlag(ObjectFlag::ENABLED);
+		}
 }
 
-void RigidBodyComponent::AddCollisionCallback(std::function<void(CollisionInfo)> callback)
+void RigidBodyComponent::AddCollisionCallback(std::function<bool(CollisionInfo&)> callback)
 {
 	callbacks.push_back(callback);
 }

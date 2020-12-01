@@ -831,7 +831,7 @@ void Renderer::UpdateForwardPlus(CameraComponent* camera)
 	context->OMSetDepthStencilState(dss, 0);
 	SetCullBack(true);
 
-	std::cout << opaqueItemQueue.size() << std::endl;
+	//std::cout << opaqueItemQueue.size() << std::endl;
 
 	DrawQueueToTarget(opaqueItemQueue, camera);
 	for (auto i : opaqueBatches)
