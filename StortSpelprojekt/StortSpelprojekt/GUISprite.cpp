@@ -142,10 +142,12 @@ void GUISprite::SetScale(float x, float y)
 
 void GUISprite::SetScaleBars(float yValue)
 {
-	if (yScale < 1.0f)
+	if (yScale <= 1.0f)
 		this->yScale = yValue;
-	else
+	else if (yScale > 1.0f)
 		yScale = 1.0f;
+	/*else
+		yScale = 1.0f;*/
 
 	this->scale = dx::XMVectorSet(this->xScale, this->yScale, 0, 0);
 }

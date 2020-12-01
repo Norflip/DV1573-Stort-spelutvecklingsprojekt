@@ -35,7 +35,7 @@ void GameScene::InitializeObjects()
 	Object* houseExterior = resources->AssembleObject("HouseExterior", "HouseExteriorMaterial");
 	Object* houseDoorRigid = new Object("doorRigid");
 
-	houseBaseObject->GetTransform().Rotate(0, -90.0f * Math::ToRadians, 0.0);
+	houseBaseObject->GetTransform().Rotate(0, 180.0f /** Math::ToRadians*/, 0.0);
 
 	house = houseBaseObject;
 
@@ -192,13 +192,22 @@ void GameScene::InitializeObjects()
 	roadSign = resources->AssembleObject("Endsign", "EndsignMaterial");
 	rightSign = resources->AssembleObject("LeftDirectionSign", "LeftDirectionSignMaterial");
 	leftSign = resources->AssembleObject("RightDirectionSign", "RightDirectionSignMaterial");
+
+	rightSign->AddComponent<BoxColliderComponent>(dx::XMFLOAT3{ 1.0f, 1.0f, 1.0f }, dx::XMFLOAT3{ 0, 0, 0 });
+	rightSign->AddComponent<SelectableComponent>();
+	rightSign->AddComponent<RigidBodyComponent>(0.0f, FilterGroups::CLICKABLE, (FilterGroups::EVERYTHING & ~FilterGroups::PLAYER), BodyType::STATIC, true);
+
+	leftSign->AddComponent<BoxColliderComponent>(dx::XMFLOAT3{ 1.0f, 1.0f, 1.0f }, dx::XMFLOAT3{ 0, 0, 0 });
+	leftSign->AddComponent<SelectableComponent>();
+	leftSign->AddComponent<RigidBodyComponent>(0.0f, FilterGroups::CLICKABLE, (FilterGroups::EVERYTHING & ~FilterGroups::PLAYER), BodyType::STATIC, true);
+
 	AddObjectToRoot(roadSign);
 	AddObjectToRoot(rightSign);
 	AddObjectToRoot(leftSign);
 
 	//LOADING BASE MONSTER; ADDING SKELETONS TO IT
 	enemyManager = new EnemyManager();
-	enemyManager->Initialize(player, player->GetComponent<PlayerComp>(), root);
+	enemyManager->Initialize(player, player->GetComponent<PlayerComp>(), camera, root);
 	enemyManager->InitBaseEnemy();
 	enemyManager->InitChargerEnemy();
 
@@ -427,7 +436,7 @@ void GameScene::InitializeInterior()
 	AddObjectToRoot(tutorialFuel);
 
 	Object* fireLight = new Object("fireLight");
-	LightComponent* fLight = fireLight->AddComponent<LightComponent>(LightType::POINT_LIGHT,dx::XMFLOAT4(1.0f, 0.29f, 0.0f, 1.0f), 1.7f);
+	LightComponent* fLight = fireLight->AddComponent<LightComponent>(LightType::POINT_LIGHT,dx::XMFLOAT4(1.0f, 0.29f, 0.0f, 1.0f), 2.2f);
 	fireLight->GetTransform().SetPosition({ -7.0f, -99.f, -1.36f });
 	fireLight->AddComponent<ParticleSystemComponent>(renderer, Engine::Instance->GetResources()->GetShaderResource("particleShader"));
 	fireLight->GetComponent<ParticleSystemComponent>()->InitializeFirelikeParticles(renderer->GetDevice(), "Fire1");
@@ -447,6 +456,22 @@ void GameScene::InitializeInterior()
 	LightComponent* wLight2 = windowLight2->AddComponent<LightComponent>(LightType::POINT_LIGHT,dx::XMFLOAT4(0.3f, 0.41f, 0.8f, 1.0f), 5.0f);
 	wLight2->SetEnabled(true);
 	AddObjectToRoot(windowLight2);
+
+	Object* doorLight = new Object("doorLight");
+	doorLight->GetTransform().SetPosition({ 2.f, -97.f, -3.3f });
+	LightComponent* drLight = doorLight->AddComponent<LightComponent>(LightType::POINT_LIGHT, dx::XMFLOAT4(0.5f, 0.5f, 0.5f, 1.0f), 6.0f);
+	drLight->SetEnabled(true);
+	drLight->SetIntensity(0.4);
+	AddObjectToRoot(doorLight);
+
+	Object* tableLight = new Object("tableLight");
+	tableLight->GetTransform().SetPosition({ -5.f, -98.f, -5.f });
+	LightComponent* tblLight = tableLight->AddComponent<LightComponent>(LightType::POINT_LIGHT, dx::XMFLOAT4(0.5f, 0.5f, 0.5f, 1.0f), 4.0f);
+	tblLight->SetEnabled(true);
+	tblLight->SetIntensity(0.4);
+	AddObjectToRoot(tableLight);
+
+
 }
 
 void GameScene::OnActivate()
@@ -477,7 +502,7 @@ void GameScene::OnActivate()
 	house->GetComponent<NodeWalkerComp>()->SetWorld(&world);
 
 	//Place signs
-	SetSignPositions();
+	SetSignPositions(state);
 
 	if (house != nullptr && player != nullptr)
 	{
@@ -505,7 +530,7 @@ void GameScene::OnActivate()
 	renderer->AddRenderPass(guiManager);
 
 	//this->PrintSceneHierarchy(root, 0);
-	enemyManager->SpawnEnemies();
+	//enemyManager->SpawnEnemies();
 
 	AudioMaster::Instance().PlaySoundEvent("wind");
 
@@ -528,23 +553,32 @@ void GameScene::OnDeactivate()
 	player->GetComponent<PlayerComp>()->GetArms()->GetComponent< PlayerAnimHandlerComp>()->SetStarted(false);
 }
 
-void GameScene::SetSignPositions()
+void GameScene::SetSignPositions(SaveState& state)
 {
-	dx::XMFLOAT3 signPosition;
-	signPosition = dx::XMFLOAT3{ world.GetPath().GetSignPosition().x , 1.0f ,world.GetPath().GetSignPosition().y };
-	roadSign->GetTransform().SetPosition({ signPosition.x, signPosition.y - 1.0f, signPosition.z });
+	if (state.segment == 8)
+	{
+		dx::XMFLOAT3 signPosition;
+		signPosition = dx::XMFLOAT3{ world.GetPath().GetSignPosition().x , 1.0f ,world.GetPath().GetSignPosition().y };
+		
+		roadSign->GetTransform().SetPosition({ signPosition.x, signPosition.y - 1.0f, signPosition.z });
+		/*std::vector<dx::XMINT2> indexes = world.GetPath().GetIndexes();
+		dx::XMINT2 spawnIndex = indexes[0];
+		roadSign->GetTransform().SetPosition(dx::XMVectorAdd(Chunk::IndexToWorld(spawnIndex, 0.0f), dx::XMVectorSet(CHUNK_SIZE / 2.0f, 1, CHUNK_SIZE / 2.0f, 0)));*/
 
-	//Right Sign
-	rightSign->GetTransform().SetPosition({ signPosition.x - 1.0f, signPosition.y - 1.0f, signPosition.z });
-	rightSign->AddComponent<BoxColliderComponent>(dx::XMFLOAT3{ 1.0f, 1.0f, 1.0f }, dx::XMFLOAT3{ 0, 0, 0 });
-	rightSign->AddComponent<SelectableComponent>();
-	rightSign->AddComponent<RigidBodyComponent>(0.0f, FilterGroups::CLICKABLE, (FilterGroups::EVERYTHING & ~FilterGroups::PLAYER), BodyType::STATIC, true);
+	}
+	else
+	{
+		dx::XMFLOAT3 signPosition;
+		signPosition = dx::XMFLOAT3{ world.GetPath().GetSignPosition().x , 1.0f ,world.GetPath().GetSignPosition().y };
 
-	//Left Sign
-	leftSign->GetTransform().SetPosition({ signPosition.x + 1.0f, signPosition.y - 1.0f, signPosition.z });
-	leftSign->AddComponent<BoxColliderComponent>(dx::XMFLOAT3{ 1.0f, 1.0f, 1.0f }, dx::XMFLOAT3{ 0, 0, 0 });
-	leftSign->AddComponent<SelectableComponent>();
-	leftSign->AddComponent<RigidBodyComponent>(0.0f, FilterGroups::CLICKABLE, (FilterGroups::EVERYTHING & ~FilterGroups::PLAYER), BodyType::STATIC, true);
+		//Right Sign
+		rightSign->GetTransform().SetPosition({ signPosition.x - 1.0f, signPosition.y - 1.0f, signPosition.z });
+		
+		//Left Sign
+		leftSign->GetTransform().SetPosition({ signPosition.x + 1.0f, signPosition.y - 1.0f, signPosition.z });
+		
+	}
+	
 }
 
 void GameScene::Update(const float& deltaTime)
@@ -552,6 +586,8 @@ void GameScene::Update(const float& deltaTime)
 	Scene::Update(deltaTime);
 	world.UpdateRelevantChunks(player->GetTransform(), camera);
 	//world.DrawDebug();
+
+	enemyManager->SpawnRandomEnemy(deltaTime);
 
 	dx::XMFLOAT3 playerPos;
 	dx::XMStoreFloat3(&playerPos, player->GetTransform().GetWorldPosition());
