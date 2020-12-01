@@ -42,6 +42,7 @@ class EnemyManager
 		ObjectPooler* enemyPool;
 		std::vector<Object*> enemyVector;
 		Object* player;
+		//Object* house;
 		PlayerComp* playerComp;
 		CameraComponent* camComp;
 		ResourceManager* resources;

@@ -121,12 +121,10 @@ void EnemyManager::SpawnRandomEnemy(const float& deltaTime)
 		dx::XMVECTOR playerVec = player->GetTransform().GetPosition();
 		dx::XMStoreFloat3(&playerPos, playerVec);
 
-		std::vector<dx::XMFLOAT4> theFrustum = camComp->GetFrustumPlanes(); //fix frustum
-
 		//make sure it's outside frustum of player camera and a bit away from player
 		float length = 0;
 
-		if (theFrustum.size() == 6)
+		if (camComp->GetFrustumPlanes().size() == 6)
 		{
 			//random points
 			dx::XMFLOAT3 randPos;// = playerPos;
