@@ -317,7 +317,7 @@ void Particlesys::Update(float deltaTime, float gameTime)
 
 	dx::XMFLOAT3 pos;
 	dx::XMStoreFloat3(&pos, objectRef->GetTransform().GetPosition());
-	pos.y += 0.3f;
+	pos.y += 0.2f;
 	pos.z += 0.f + a;
 	pos.x -= 0.2f;
 	SetEmitPos(pos);	
