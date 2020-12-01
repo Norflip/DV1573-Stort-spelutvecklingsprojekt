@@ -71,7 +71,7 @@ void EnemySMComp::Animate()
 		}
 		else if (currentState == EnemyState::PATROL)
 		{
-			skeletonComponent->SetTrack(SkeletonStateMachine::WALK, false);
+			skeletonComponent->SetTrack(SkeletonStateMachine::RUN, false);
 		}
 
 		else

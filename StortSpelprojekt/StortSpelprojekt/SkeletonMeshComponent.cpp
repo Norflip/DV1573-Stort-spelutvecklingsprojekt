@@ -92,7 +92,7 @@ void SkeletonMeshComponent::RunAnimation(const float& deltaTime)
 	}
 	else if (currentAni == SkeletonStateMachine::WALK)
 	{
-		finalTransforms = skeletonAnimations[trackMap[SkeletonStateMachine::RUN]].Makeglobal(time, dx::XMMatrixIdentity(), *skeletonAnimations[trackMap[SkeletonStateMachine::RUN]].GetRootKeyJoints());
+		finalTransforms = skeletonAnimations[trackMap[SkeletonStateMachine::WALK]].Makeglobal(time, dx::XMMatrixIdentity(), *skeletonAnimations[trackMap[SkeletonStateMachine::WALK]].GetRootKeyJoints());
 	}
 	else if (currentAni == SkeletonStateMachine::RUN || currentAni == SkeletonStateMachine::UP)
 	{
