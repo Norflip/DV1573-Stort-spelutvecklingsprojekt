@@ -504,31 +504,6 @@ void ResourceManager::ReadAnimations(ID3D11Device* device)
 }
 
 
-#if LOAD_FROM_DLL
-
-void ResourceManager::LoadDLL()
-{
-	// hämta listan av shaders
-
-	int id = 136;
-
-	// LOAD TEXTURE
-	HRSRC hResource = FindResource(handle, MAKEINTRESOURCE(id), L"PNG");
-	HGLOBAL hMemory = LoadResource(handle, hResource);
-	size_t bytes = SizeofResource(handle, hResource);
-
-
-}
-
-void ResourceManager::DLLReadTexture(void* data, size_t size)
-{
-
-}
-
-void ResourceManager::DLLReadShader(void* data, size_t size)
-{
-}
-
 
 
 void ResourceManager::CompileShaders(ID3D11Device* device)
@@ -549,6 +524,8 @@ Object* ResourceManager::AssembleObject(std::string meshName, std::string materi
 
 	return object;
 }
+
+#if LOAD_FROM_DLL
 
 std::wstring ResourceManager::DLLGetShaderData(std::string path, size_t& size)
 {
@@ -602,6 +579,35 @@ unsigned char* ResourceManager::DLLGetTextureData(std::string path, size_t& size
 
 	return nullptr;
 }
+//
+//unsigned char* ResourceManager::DLLGetSoundData(std::string path, size_t& size)
+//{
+//	size_t index = path.find_last_of('/');
+//	if (index != std::string::npos)
+//		path = path.substr(index + 1, path.size() - index - 1);
+//
+//	auto found = dllResourceMap.find(path);
+//	if (dllResourceMap.find(path) != dllResourceMap.end())
+//	{
+//		auto found2 = dllTextureCache.find(path);
+//		if (found2 != dllTextureCache.end())
+//			return found2->second;
+//		else
+//			std::cout << "loading sound from memory @" << path << std::endl;
+//
+//		HRSRC hResource = FindResource(handle, MAKEINTRESOURCE(found->second), MAKEINTRESOURCE(SOUND));
+//		HGLOBAL hMemory = LoadResource(handle, hResource);
+//		size = SizeofResource(handle, hResource);
+//
+//		unsigned char* data = static_cast<unsigned char*>(::LockResource(hMemory));
+//		assert(data);
+//
+//		dllTextureCache.insert({ path, data });
+//		return data;
+//	}
+//
+//	return nullptr;
+//}
 
 
 #endif

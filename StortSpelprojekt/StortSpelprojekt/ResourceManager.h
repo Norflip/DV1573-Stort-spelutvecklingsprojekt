@@ -18,12 +18,6 @@ private:
 
 	std::unordered_map<std::string, int> dllResourceMap;
 	std::unordered_map<std::string, unsigned char*> dllTextureCache;
-	void LoadDLL();
-
-	void DLLReadText(void* data, size_t size);
-	void DLLReadTexture(void* data, size_t size);
-	void DLLReadShader(void* data, size_t size);
-
 #endif
 
 
@@ -46,6 +40,9 @@ public:
 	// Return a shader resource given the specific key
 	Shader* GetShaderResource(std::string key);
 
+	HMODULE& GetHMODULE() { return this->handle; }
+	const HMODULE& GetHMODULE() const { return this->handle; }
+
 	// Remove a resource from the maps given the specific key
 	void RemoveResource(std::string key);
 
@@ -60,7 +57,7 @@ public:
 
 	std::wstring DLLGetShaderData(std::string path, size_t& size);
 	unsigned char* DLLGetTextureData(std::string path, size_t& size);
-
+	//unsigned char* DLLGetSoundData(std::string path, size_t& size);
 
 #endif
 

@@ -4,6 +4,7 @@
 #include "GUISprite.h"
 #include "GUIFont.h"
 #include "PlayerComp.h"
+#include "Engine.h"
 
 Scene::Scene(const std::string& debugName) : input(Input::Instance()), debugName(debugName)
 {
@@ -125,7 +126,8 @@ void Scene::AnimateIcon()
 		std::wstring wide_string = std::wstring(narrow_string.begin(), narrow_string.end());
 		const wchar_t* iconText = wide_string.c_str();
 
-		SendMessage(window->GetHWND(), WM_SETICON, ICON_SMALL, (LPARAM)LoadIcon(window->GetHINSTANCE(), iconText));
+		HMODULE& hmod = Engine::Instance->GetResources()->GetHMODULE();
+		SendMessage(window->GetHWND(), WM_SETICON, ICON_SMALL, (LPARAM)LoadIcon(hmod, iconText));
 	}
 }
 

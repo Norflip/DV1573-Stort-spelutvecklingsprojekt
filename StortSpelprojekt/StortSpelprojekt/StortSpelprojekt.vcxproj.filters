@@ -636,9 +636,4 @@
     <None Include="cpp.hint" />
     <None Include="packages.config" />
   </ItemGroup>
-  <ItemGroup>
-    <ResourceCompile Include="icons.rc">
-      <Filter>Resource Files</Filter>
-    </ResourceCompile>
-  </ItemGroup>
 </Project>

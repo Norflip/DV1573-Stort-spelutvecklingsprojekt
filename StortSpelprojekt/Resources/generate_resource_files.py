@@ -55,6 +55,17 @@ def add (mKeyPrefix, mClass, mFolder, mFileType, mIndex):
         localIndex += 1
     return currentIndex
 
+resource.write("MAINICON ICON \"..\\\\StortSpelprojekt\\\\Ico\\\\icon.ico\"\n")
+resource.write("MAINICON2 ICON \"..\\\\StortSpelprojekt\\\\Ico\\\\icon2.ico\"\n")
+resource.write("test1 ICON \"..\\\\StortSpelprojekt\\\\Ico\\\\test1.ico\"\n")
+resource.write("test2 ICON \"..\\\\StortSpelprojekt\\\\Ico\\\\test2.ico\"\n")
+resource.write("test3 ICON \"..\\\\StortSpelprojekt\\\\Ico\\\\test3.ico\"\n")
+resource.write("test4 ICON \"..\\\\StortSpelprojekt\\\\Ico\\\\test4.ico\"\n")
+resource.write("test5 ICON \"..\\\\StortSpelprojekt\\\\Ico\\\\test5.ico\"\n")
+resource.write("test6 ICON \"..\\\\StortSpelprojekt\\\\Ico\\\\test6.ico\"\n")
+resource.write("test7 ICON \"..\\\\StortSpelprojekt\\\\Ico\\\\test7.ico\"\n")
+resource.write("test8 ICON \"..\\\\StortSpelprojekt\\\\Ico\\\\test8.ico\"\n")
+
 #rsmap.write("shaders:\n")
 currentIndex = add("IDR_SHADER", "SHADER", shader_folder, "*", currentIndex)
 
