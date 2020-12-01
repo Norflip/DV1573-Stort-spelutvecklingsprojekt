@@ -15,6 +15,7 @@ struct Frame
 
 struct AnimationKey
 {
+	Frame* frame;
 	float time;
 	//std::string parentName;
 	dx::SimpleMath::Quaternion rotationQuaternion;
@@ -42,7 +43,7 @@ struct AnimationSet
 struct RootFrame
 {
 	bool checkAnimationSets;
-	Animation* rootFrame;
+	Frame* rootFrame;
 };
 
 struct AnimTrackDesc
@@ -93,16 +94,19 @@ public:
 
 	bool CheckCompatibility();					 //are the animation sets applicable to the frame hierarchy?
 	bool BuildFrameNameIndex();					 //sets Animation::trackKeyIndex 
-	bool SetCurTicks(DWORD animSetNum);
+	bool SetCurTicks(size_t animSetNum);
 	bool InterpolateAnimations(Animation& anim, double fTime, std::vector<AnimationKey>& trackKeys);
 	bool InterpolateKeyFrame(AnimationKey& animKey, double fTime);
+
+	void AddFrameName(Frame* frame);
+	int IndexForFrameName(std::string frameName);
 
 	SkeletonAni skeletonAni;
 	RootFrame _rootFrame;				// frame hierarchy access (for storing matrices, finding names, etc).
 	std::vector<AnimationSet> _animSets;							// all the animation sets available
 	std::vector<AnimTrack> _animTracks;						// all the tracks
 	std::vector<BlendEvent> _trackEvents;						// information for blending animation sets 
-	dx::SimpleMath::Vector3 frameNames;							// this of hierarchy frame names used to index into track
+	std::vector<std::string> frameNames;							// this of hierarchy frame names used to index into track
 	bool init;
 
 private:
