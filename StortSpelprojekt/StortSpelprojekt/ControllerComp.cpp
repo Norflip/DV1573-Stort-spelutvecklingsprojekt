@@ -9,18 +9,18 @@ void ControllerComp::CheckGrounded()
 	//origin.z += 2.f;
 	Ray ray(origin, DOWN_VEC);
 	RayHit hitTerrain;
-	RayHit hitProps;
+	//RayHit hitProps;
 
 	//TERRAIN or default depending on if u can jump from on top of objects
 	float distance = 1.45f;
 	Physics* phy = Engine::Instance->GetPhysics();
 
-	phy->RaytestSingle(ray, distance, hitTerrain, FilterGroups::TERRAIN);
-	phy->RaytestSingle(ray, distance, hitProps, FilterGroups::PROPS);
+	phy->RaytestSingle(ray, distance, hitTerrain, FilterGroups::TERRAIN | FilterGroups::PROPS);
+	//phy->RaytestSingle(ray, distance, hitProps, FilterGroups::PROPS);
 	
 	
 	this->isGrounded = false;
-	if (hitTerrain.object != nullptr || hitProps.object != nullptr) //(hitProps.object != nullptr && hitProps.object->GetName() == "HouseInterior"))// != nullptr )//&& hitProps.object->GetName() == "houseBase"))
+	if (hitTerrain.object != nullptr) //(hitProps.object != nullptr && hitProps.object->GetName() == "HouseInterior"))// != nullptr )//&& hitProps.object->GetName() == "houseBase"))
 	{
 		//this->houseVelocity = { 0.f,0.f,0.f };
 		/*if (hitProps.object != nullptr && hitProps.object->GetName() == "houseBase")
@@ -33,6 +33,9 @@ void ControllerComp::CheckGrounded()
 			GetOwner()->GetTransform().Translate(move.x, move.y, move.z); 
 			rbComp->SetPosition(GetOwner()->GetTransform().GetPosition());
 		}*/
+
+		std::cout << hitTerrain.object->GetName() << std::endl;
+
 		this->isGrounded = true;
 		//std::cout << "picking: " << hit.object->GetName() << std::endl;
 		//DShape::DrawLine(ray.origin, ray.GetPoint(distance), { 0,0,1 });

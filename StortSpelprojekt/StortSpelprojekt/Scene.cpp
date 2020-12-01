@@ -124,6 +124,7 @@ void Scene::AnimateIcon()
 		narrow_string.append(std::to_string(frameToDraw));
 		std::wstring wide_string = std::wstring(narrow_string.begin(), narrow_string.end());
 		const wchar_t* iconText = wide_string.c_str();
+
 		SendMessage(window->GetHWND(), WM_SETICON, ICON_SMALL, (LPARAM)LoadIcon(window->GetHINSTANCE(), iconText));
 	}
 }

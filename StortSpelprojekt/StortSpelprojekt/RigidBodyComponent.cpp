@@ -14,6 +14,7 @@ RigidBodyComponent::~RigidBodyComponent()
 
 void RigidBodyComponent::Update(const float& deltaTime)
 {
+
 	currentTransform = body->getTransform();
 
 	const float delta = std::min(deltaTime, 1.0f);

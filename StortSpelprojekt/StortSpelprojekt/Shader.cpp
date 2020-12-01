@@ -1,5 +1,5 @@
-
 #include "Shader.h"
+#include "Engine.h"
 
 Shader::Shader() : pixelShader(nullptr), vertexShader(nullptr), inputLayout(nullptr), geometryShader(nullptr), hullShader(nullptr), domainShader(nullptr), computeShader(nullptr)
 {
@@ -129,6 +129,8 @@ void Shader::CompilePS(ID3D11Device* device)
 		ID3DBlob* PSBlob = nullptr;
 
 		// Convert the string to a wstring locally, without changing the content
+
+		HRESULT PSCompileResult;
 		std::wstring wPath = std::wstring(pixelPath.begin(), pixelPath.end());
 
 		const D3D_SHADER_MACRO defines[] =
@@ -140,8 +142,25 @@ void Shader::CompilePS(ID3D11Device* device)
 #endif
 			NULL, NULL
 		};
+//
+//#if LOAD_FROM_DLL
+//
+//		size_t size;
+//		std::wstring shader = Engine::Instance->GetResources()->DLLGetShaderData(pixelPath, size);
+//
+//		std::cout << "SIZE1: " << size << std::endl;
+//		std::cout << "SIZE2: " << (shader.size()) << std::endl;
+//		std::cout << "SIZE3: " << (sizeof(shader)) << std::endl;
+//		std::cout << "SIZE4: " << (shader.size() * sizeof(wchar_t)) << std::endl;
+//
+//		PSCompileResult = D3DCompile(shader.c_str(), shader.length(), nullptr, defines, D3D_COMPILE_STANDARD_FILE_INCLUDE, pixelEntry, "ps_5_0", shaderCompilationFlag, 0, &PSBlob, &errorBlob);
+//#else
 
-		HRESULT PSCompileResult = D3DCompileFromFile
+
+//#endif
+
+
+		PSCompileResult = D3DCompileFromFile
 		(
 			wPath.c_str(),
 			defines,
@@ -153,7 +172,7 @@ void Shader::CompilePS(ID3D11Device* device)
 			&PSBlob,
 			&errorBlob
 		);
-
+		
 		ASSERT_SHADER(PSCompileResult, errorBlob, wPath);
 
 		HRESULT PSCreateResult = device->CreatePixelShader(PSBlob->GetBufferPointer(), PSBlob->GetBufferSize(), nullptr, &this->pixelShader);

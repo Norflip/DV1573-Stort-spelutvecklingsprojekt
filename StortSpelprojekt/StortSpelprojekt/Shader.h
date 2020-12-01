@@ -110,5 +110,5 @@ private:
 	ID3D11HullShader* hullShader;
 	ID3D11DomainShader* domainShader;
 	ID3D11ComputeShader* computeShader;
-
+	//D3D_SHADER_MACRO defines[2];
 };

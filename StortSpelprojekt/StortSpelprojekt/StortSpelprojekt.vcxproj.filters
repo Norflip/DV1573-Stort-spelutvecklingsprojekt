@@ -303,7 +303,9 @@
     <ClCompile Include="CreditsScene.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="Resource.cpp" />
+    <ClCompile Include="Resource.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="ObjectSpawner.h">
@@ -594,9 +596,6 @@
     <ClInclude Include="SelectableComponent.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="WorldGenerator.h">
-      <Filter>Source Files\SpawnSystems</Filter>
-    </ClInclude>
     <ClInclude Include="DepthPass.h">
       <Filter>Header Files</Filter>
     </ClInclude>
@@ -607,6 +606,9 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="CreditsScene.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="ResourceKeys.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>
@@ -628,15 +630,11 @@
     </Filter>
   </ItemGroup>
   <ItemGroup>
-    <None Include="packages.config">
-      <Filter>Resource Files</Filter>
-    </None>
-    <None Include="cpp.hint">
-      <Filter>Source Files</Filter>
-    </None>
     <None Include="Shaders\noiseSimplex.cginc">
       <Filter>Resource Files</Filter>
     </None>
+    <None Include="cpp.hint" />
+    <None Include="packages.config" />
   </ItemGroup>
   <ItemGroup>
     <ResourceCompile Include="icons.rc">

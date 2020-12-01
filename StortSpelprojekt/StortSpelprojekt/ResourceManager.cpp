@@ -1,12 +1,20 @@
 #include "stdafx.h"
 #include "ResourceManager.h"
+#include "Window.h"
+#include "ResourceKeys.h"
+#include <sstream>
 
 ResourceManager::ResourceManager()
 {
+
 }
 
 ResourceManager::~ResourceManager()
 {
+#if LOAD_FROM_DLL
+	FreeLibrary(handle);
+#endif
+
 	for (auto i : resources)
 	{
 		delete i.second;
@@ -81,9 +89,56 @@ void ResourceManager::RemoveResource(std::string key)
 
 void ResourceManager::InitializeResources(ID3D11Device* device)
 {
+#if LOAD_FROM_DLL
+
+#if RUNNING_IN_VS
+#if _DEBUG
+	handle = LoadLibrary(L"../Debug/Resources.dll");
+#else
+	handle = LoadLibrary(L"../Release/Resources.dll");
+#endif
+#else
+	handle = LoadLibrary(L"Resources.dll");
+#endif
+
+
+
+	// LÄSER IN RESOURCE_MAP
+	HRSRC hResource = FindResource(handle, MAKEINTRESOURCE(IDR_TEXT_RESOURCEMAP), MAKEINTRESOURCE(TXT));
+	HGLOBAL hMemory = LoadResource(handle, hResource);
+	size_t bytes = SizeofResource(handle, hResource);
+
+	const char* data = static_cast<const char*>(::LockResource(hMemory));
+	assert(data != nullptr);
+
+	std::stringstream strstream (data);
+	std::string tmp;
+	std::string marker = " : ";
+
+	while (std::getline(strstream, tmp, '\n')) 
+	{
+		tmp[tmp.size() - 1] = ' ';
+		size_t index = tmp.find(marker);
+		int value = std::stoi(tmp.substr(index + marker.size(), tmp.size() - index - marker.size() - 1));
+		dllResourceMap.insert({ tmp.substr(0, index), value });
+
+	}
+
+	const int a = 0;
+#endif
+
+
+	 
+
+//#if !LOAD_FROM_DLL
 	ReadTextures(device);
 	ReadShaders(device);
 	ReadObjects(device);
+//#endif
+
+#if LOAD_FROM_DLL
+//	FreeLibrary(handle);
+#endif
 }
 
 void ResourceManager::ReadObjects(ID3D11Device* device)
@@ -448,6 +503,34 @@ void ResourceManager::ReadAnimations(ID3D11Device* device)
 	}
 }
 
+
+#if LOAD_FROM_DLL
+
+void ResourceManager::LoadDLL()
+{
+	// hämta listan av shaders
+
+	int id = 136;
+
+	// LOAD TEXTURE
+	HRSRC hResource = FindResource(handle, MAKEINTRESOURCE(id), L"PNG");
+	HGLOBAL hMemory = LoadResource(handle, hResource);
+	size_t bytes = SizeofResource(handle, hResource);
+
+
+}
+
+void ResourceManager::DLLReadTexture(void* data, size_t size)
+{
+
+}
+
+void ResourceManager::DLLReadShader(void* data, size_t size)
+{
+}
+
+
+
 void ResourceManager::CompileShaders(ID3D11Device* device)
 {
 	// Recompile every shader in the shaderResource map
@@ -467,4 +550,58 @@ Object* ResourceManager::AssembleObject(std::string meshName, std::string materi
 	return object;
 }
 
+std::wstring ResourceManager::DLLGetShaderData(std::string path, size_t& size)
+{
+	size_t index = path.find_last_of('/');
+	if (index != std::string::npos)
+		path = path.substr(index + 1, path.size() - index - 1);
+	
+	std::wstring shader;
+	auto found = dllResourceMap.find(path);
+	if (dllResourceMap.find(path) != dllResourceMap.end())
+	{
+		HRSRC hResource = FindResource(handle, MAKEINTRESOURCE(found->second), MAKEINTRESOURCE(SHADER));
+		HGLOBAL hMemory = LoadResource(handle, hResource);
+		size = SizeofResource(handle, hResource);
+		
+		std::string data = std::string(static_cast<const char*>(::LockResource(hMemory)));
 
+
+		std::cout << data << std::endl << std::endl << std::endl << std::endl << std::endl << std::endl;
+		shader = std::wstring(data.begin(), data.end());
+	}
+
+	return shader;
+}
+
+unsigned char* ResourceManager::DLLGetTextureData(std::string path, size_t& size)
+{
+	size_t index = path.find_last_of('/');
+	if (index != std::string::npos)
+		path = path.substr(index + 1, path.size() - index - 1);
+
+	auto found = dllResourceMap.find(path);
+	if (dllResourceMap.find(path) != dllResourceMap.end())
+	{
+		auto found2 = dllTextureCache.find(path);
+		if (found2 != dllTextureCache.end())
+			return found2->second;
+		else
+			std::cout << "loading texture from memory @" << path << std::endl;
+
+		HRSRC hResource = FindResource(handle, MAKEINTRESOURCE(found->second), MAKEINTRESOURCE(TEXTURE));
+		HGLOBAL hMemory = LoadResource(handle, hResource);
+		size = SizeofResource(handle, hResource);
+
+		unsigned char* data = static_cast<unsigned char*>(::LockResource(hMemory));
+		assert(data);
+		
+		dllTextureCache.insert({ path, data });
+		return data;
+	}
+
+	return nullptr;
+}
+
+
+#endif

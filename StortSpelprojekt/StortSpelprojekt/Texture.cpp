@@ -1,5 +1,6 @@
 #include "stdafx.h"
 #include "Texture.h"
+#include "Engine.h"
 
 Texture::Texture() 
 	: srv(nullptr), buffer(nullptr), width(-1), height(-1), channels(-1)
@@ -61,8 +62,28 @@ Texture* Texture::CreateFromBuffer(unsigned char* buffer, size_t width, size_t h
 
 Texture* Texture::LoadTexture(ID3D11Device* device, LPCWSTR textureFilepath)
 {
+#if LOAD_FROM_DLL
+
+	std::wstring wstr(textureFilepath);
+	std::string path (wstr.begin(), wstr.end());
+	size_t size = -1;
+	unsigned char* data = Engine::Instance->GetResources()->DLLGetTextureData(path, size);
+
+	Texture* t = FromMemory(device, data, size);
+
+		return t;
+#else
 	ID3D11ShaderResourceView* srv;
 	HRESULT hr = DirectX::CreateWICTextureFromFile(device, textureFilepath, nullptr, &srv);
 	assert(SUCCEEDED(hr));
+	return new Texture(srv);
+#endif
+}
+
+Texture* Texture::FromMemory(ID3D11Device* device, uint8_t* data, size_t dataSize)
+{
+	ID3D11ShaderResourceView* srv;
+
+	DirectX::CreateWICTextureFromMemory(device, data, dataSize, nullptr, &srv);
 	return new Texture(srv);
 }

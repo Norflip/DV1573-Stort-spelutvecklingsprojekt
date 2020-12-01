@@ -7,11 +7,26 @@ private:
 	// Maps for different resources and shaders
 	std::unordered_map<std::string, Resource*> resources;
 	std::unordered_map<std::string, Shader*> shaderResources;
+	HMODULE handle = NULL;
 
 	void ReadObjects(ID3D11Device* device);
 	void ReadTextures(ID3D11Device* device);
 	void ReadShaders(ID3D11Device* device);
 	void ReadAnimations(ID3D11Device* device);
+
+#if LOAD_FROM_DLL
+
+	std::unordered_map<std::string, int> dllResourceMap;
+	std::unordered_map<std::string, unsigned char*> dllTextureCache;
+	void LoadDLL();
+
+	void DLLReadText(void* data, size_t size);
+	void DLLReadTexture(void* data, size_t size);
+	void DLLReadShader(void* data, size_t size);
+
+#endif
+
+
 
 	Resource* GetResource(std::string key);
 
@@ -40,6 +55,15 @@ public:
 	// Recompile all the shaders inside the shaderResources
 	void CompileShaders(ID3D11Device* device);
 	Object* AssembleObject(std::string meshName, std::string materialName, bool batchable = false, ObjectFlag flag = ObjectFlag::DEFAULT);
+
+#if LOAD_FROM_DLL
+
+	std::wstring DLLGetShaderData(std::string path, size_t& size);
+	unsigned char* DLLGetTextureData(std::string path, size_t& size);
+
+
+#endif
+
 };
 
 // Template function to get a resource from the unordered_map
