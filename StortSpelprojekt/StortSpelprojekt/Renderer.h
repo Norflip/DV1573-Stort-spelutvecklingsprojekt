@@ -11,7 +11,7 @@
 #include "DepthPass.h"
 #include <time.h>
 
-
+#include "Particlesys.h"
 
 inline int GetBatchID(const Material* material, const Mesh* mesh)
 {
@@ -106,6 +106,10 @@ public:
 	//std::vector<UINT>& cullLightsOnCPU();
 	void SetIdAndColor(int id, float color);
 
+	void ListParticle(Particlesys* psys) { this->particleList.push_back(psys); }
+	std::vector<Particlesys*> GetParticleList() { return this->particleList; }
+
+	//void GetParticlesys(Particlesys* part) { /*this->particle = new Particlesys;*/ this->particle = part; }
 
 	/* new crap.... */
 	void EnableAlphaBlending();
@@ -238,4 +242,8 @@ private:
 
 
 	bool firstRun;
+
+
+	std::vector<Particlesys*> particleList;
+	//Particlesys* particle;
 };

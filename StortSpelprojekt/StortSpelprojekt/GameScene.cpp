@@ -233,11 +233,12 @@ void GameScene::InitializeObjects()
 	//AddObject(fire);	
 	/*FrogPuzzle* frogpuzzle = new FrogPuzzle(resources);
 	frogpuzzle*/
+
 	GUICompass* compass = new GUICompass(*renderer, window, house, player);
 	guiManager->AddGUIObject(compass, "compass");
 
 
-	Shader* SOShader = new Shader;
+	/*Shader* SOShader = new Shader;
 	SOShader->SetInputLayoutStructure(5, SOShader->DEFAULT_INPUT_LAYOUT_PARTICLE);
 	SOShader->SetVertexShader("Shaders/ParticleSO_vs.hlsl");
 	SOShader->SetSOGeometryShader("Shaders/ParticleSO_gs.hlsl");
@@ -248,25 +249,7 @@ void GameScene::InitializeObjects()
 	DrawShader->SetVertexShader("Shaders/ParticleDraw_vs.hlsl");
 	DrawShader->SetGeometryShader("Shaders/ParticleDraw_gs.hlsl");
 	DrawShader->SetPixelShader("Shaders/ParticleDraw_ps.hlsl");
-	DrawShader->Compile(renderer->GetDevice());
-
-
-	Object* puzzleFly2 = resources->AssembleObject("PuzzleFlyStatue", "PuzzleFlyStatueMaterial", ObjectFlag::DEFAULT );
-	puzzleFly2->GetTransform().SetPosition({ 30, 1.3f, 50 });
-	puzzleFly2->AddComponent<BoxColliderComponent>(dx::XMFLOAT3{ 1.0f, 1.0f, 1.0f }, dx::XMFLOAT3{ 0, 0, 0 });
-	puzzleFly2->AddComponent<RigidBodyComponent>(0.0f, FilterGroups::HOLDABLE, FilterGroups::EVERYTHING, BodyType::DYNAMIC, true);	
-	puzzleFly2->AddComponent<ParticleComponent>(SOShader, DrawShader);
-	puzzleFly2->GetComponent<ParticleComponent>()->SetTexture(renderer->GetDevice(), L"Textures/fire1.png");
-	puzzleFly2->GetComponent<ParticleComponent>()->SetMaxParticles(2000);
-	puzzleFly2->GetComponent<ParticleComponent>()->SetParticleColor(dx::XMFLOAT4(fireRedColor));
-	puzzleFly2->GetComponent<ParticleComponent>()->SetParticleSize(dx::XMFLOAT2(1, 1));
-	puzzleFly2->GetComponent<ParticleComponent>()->SetEmitPos(dx::XMFLOAT3(30, 1.8f, 50));
-	puzzleFly2->GetComponent<ParticleComponent>()->SetParticleSpreadMulti(dx::XMFLOAT3(0.5f, 1.0f, 0.5f));
-	puzzleFly2->GetComponent<ParticleComponent>()->InitializeParticles(renderer->GetDevice());
-
-	AddObjectToRoot(puzzleFly2);
-
-	
+	DrawShader->Compile(renderer->GetDevice());*/	
 }
 
 void GameScene::InitializeGUI()
@@ -457,12 +440,27 @@ void GameScene::InitializeInterior()
 	Object* fireLight = new Object("fireLight");
 	LightComponent* fLight = fireLight->AddComponent<LightComponent>(LightType::POINT_LIGHT,dx::XMFLOAT4(1.0f, 0.29f, 0.0f, 1.0f), 1.7f);
 	fireLight->GetTransform().SetPosition({ -7.0f, -99.f, -1.36f });
-	fireLight->AddComponent<ParticleSystemComponent>(renderer, Engine::Instance->GetResources()->GetShaderResource("particleShader"));
-	fireLight->GetComponent<ParticleSystemComponent>()->InitializeFirelikeParticles(renderer->GetDevice(), L"Textures/fire1.png");
+	//fireLight->AddComponent<ParticleSystemComponent>(renderer, Engine::Instance->GetResources()->GetShaderResource("particleShader"));
+	//fireLight->GetComponent<ParticleSystemComponent>()->InitializeFirelikeParticles(renderer->GetDevice(), L"Textures/fire1.png");
 	fireLight->AddFlag(ObjectFlag::DEFAULT | ObjectFlag::NO_CULL);
 	fLight->SetEnabled(true);
 	fLight->SetIntensity(1.f);
 	AddObjectToRoot(fireLight);
+
+	testParticles = new Particlesys(/*Engine::Instance->GetResources()->GetShaderResource("soshader"), Engine::Instance->GetResources()->GetShaderResource("drawshader")*/);
+	testParticles->InitializeParticleShaders(renderer->GetDevice(), window->GetHWND());
+
+	testParticles->SetTexture(renderer->GetDevice(), L"Textures/fire1.png");
+	testParticles->SetMaxParticles(200);
+	testParticles->SetParticleColor(dx::XMFLOAT4(fireRedColor));
+	testParticles->SetParticleSize(dx::XMFLOAT2(0.8f, 0.8f));
+	//testParticles->SetEmitPos(dx::XMFLOAT3(28, 1.7f, 50));
+	testParticles->SetEmitDir(dx::XMFLOAT3(0.0f, 0.5f, 0.0f));
+	testParticles->SetParticleSpreadMulti(dx::XMFLOAT3(0.1f, 0.3f, 0.1f));
+
+	testParticles->InitializeParticles(renderer->GetDevice(), renderer, fireLight);
+	renderer->ListParticle(testParticles);
+
 
 	Object* windowLight = new Object("windowLight");
 	windowLight->GetTransform().SetPosition({ 3.0f, -98.f, 3 });
@@ -638,7 +636,49 @@ void GameScene::Update(const float& deltaTime)
 	std::cout << "PlayerPos: " << player->GetTransform().GetPosition().m128_f32[0] << " " << player->GetTransform().GetPosition().m128_f32[1] << " " << player->GetTransform().GetPosition().m128_f32[2] << std::endl;
 
 	static_cast<GUIFont*>(guiManager->GetGUIObject("fps"))->SetString(std::to_string((int)GameClock::Instance().GetFramesPerSecond()));
-	guiManager->UpdateAll();	
+	guiManager->UpdateAll();
+
+
+
+
+	/*static float a = 0.0f;
+	if (left)
+	{
+		if (a > -10.0f)
+			a -= 0.075f;
+		else
+		{
+			right = true;
+			left = false;
+		}
+	}
+	else if (right)
+	{
+		if (a < 10.0f)
+			a += 0.075f;
+		else
+		{
+			right = false;
+			left = true;
+		}
+
+	}
+
+	testParticles->SetEmitPos(dx::XMFLOAT3(28.0f + a, 1.7f, 50.0f));*/
+	dx::XMFLOAT3 eyeCam;
+	dx::XMStoreFloat3(&eyeCam, camera->GetOwner()->GetTransform().GetPosition());
+	testParticles->SetEyePos(eyeCam);
+	testParticles->Update(deltaTime, GameClock::Instance().GetSeconds());
+
+
+	//dx::XMFLOAT3 eyeCam;
+	//dx::XMStoreFloat3(&eyeCam, camera->GetOwner()->GetTransform().GetPosition());
+	for (auto i : renderer->GetParticleList())
+	{		
+		i->SetEyePos(eyeCam);
+		i->Update(deltaTime, GameClock::Instance().GetSeconds());
+	}
+	//renderer->GetParticlesys(testParticles);
 
 }
 
@@ -654,6 +694,10 @@ void GameScene::Render()
 	root->Draw(renderer, camera);
 	//worldGenerator.DrawShapes();
 	//world.DrawDebug();
+
+	//renderer->GetParticlesys(testParticles);
+	//renderer->GetContext().
+	//testParticles->Draw(renderer->GetContext(), camera);
 
 	renderer->RenderFrame(camera, (float)clock.GetSeconds(), player->GetComponent<PlayerComp>()->GetDangerDistance());
 }

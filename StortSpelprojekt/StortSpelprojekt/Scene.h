@@ -31,6 +31,9 @@
 
 #include "ParticleComponent.h"
 
+#include "Particlesys.h"
+
+
 class GUIFont;
 class SpriteRenderPass;
 class PlayerComp;
@@ -89,4 +92,5 @@ protected:
 	EnemyManager* enemyManager;
 	GUIManager* guiManager;		
 	std::string debugName;
+
 };

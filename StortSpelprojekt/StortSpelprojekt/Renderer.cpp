@@ -235,6 +235,9 @@ void Renderer::RenderFrame(CameraComponent* camera, float time, float distance, 
 	ClearRenderTarget(midbuffer);
 	SetRenderTarget(midbuffer);
 
+
+	
+
 	for (auto i = passes.begin(); i < passes.end(); i++)
 	{
 		RenderPass* pass = *i;
@@ -244,6 +247,9 @@ void Renderer::RenderFrame(CameraComponent* camera, float time, float distance, 
 		}
 	}
 	
+
+	
+
 
 	context->OMSetDepthStencilState(dss, 0);
 	DXHelper::BindStructuredBuffer(context, 10, ShaderBindFlag::PIXEL, &o_LightIndexList_srv);
@@ -264,8 +270,20 @@ void Renderer::RenderFrame(CameraComponent* camera, float time, float distance, 
 		DrawBatch(i.second, camera);
 
 	transparentBatches.clear();
+	
 
-	SetCullBack(true);
+
+	//context->OMSetDepthStencilState(dss_Off, 0);
+	//EnableAlphaBlending();
+	for (auto i : particleList)
+		i->Draw(context, camera);	
+	//DisableAlphaBlending();
+	context->OMSetBlendState(blendStateOff, BLENDSTATEMASK, 0xffffffff);
+	context->OMSetDepthStencilState(dss, 0);
+
+
+
+	//SetCullBack(true);
 	size_t passCount = 0;
 	size_t bufferIndex = 0;
 
@@ -300,6 +318,9 @@ void Renderer::RenderFrame(CameraComponent* camera, float time, float distance, 
 
 	context->PSSetShaderResources(0, 1, &lastBuffer.srv);
 	DrawScreenQuad(screenQuadMaterial);
+
+
+	
 
 	if (drawGUI)
 	{
@@ -454,7 +475,7 @@ void Renderer::SetCullBack(bool cullNone)
 	{
 		context->RSSetState(rasterizerStateCullBack);
 		//context->OMSetBlendState(blendStateOff, BLENDSTATEMASK, 0xffffffff);
-		context->OMSetBlendState(blendStateOn, BLENDSTATEMASK, 0xffffffff);
+		context->OMSetBlendState(blendStateOff, BLENDSTATEMASK, 0xffffffff);		// ON BEFORE?
 	}
 }
 
