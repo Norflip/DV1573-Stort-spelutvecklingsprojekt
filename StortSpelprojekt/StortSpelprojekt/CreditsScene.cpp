@@ -96,7 +96,7 @@ std::string CreditsScene::GetCreditsString()
 
 CreditsScene::CreditsScene() : Scene("CreditsScene")
 {
-	creditsPos = { 0,0 };
+	creditsPos = { 0.f,0.f };
 }
 
 CreditsScene::~CreditsScene()
@@ -122,7 +122,7 @@ void CreditsScene::InitializeGUI()
 {
 	float windowWidth = static_cast<float>(window->GetWidth());
 
-	GUISprite* returnToMenu = new GUISprite(*renderer, "Textures/Restart.png", 100, 200, 0, DrawDirection::Default, ClickFunction::Clickable);
+	GUISprite* returnToMenu = new GUISprite(*renderer, "Textures/BackButton.png", 100, 200, 0, DrawDirection::Default, ClickFunction::Clickable);
 	GUISprite* quit = new GUISprite(*renderer, "Textures/Exit.png", 100, 400, 0, DrawDirection::Default, ClickFunction::Clickable);
 	GUIFont* fpsDisplay = new GUIFont(*renderer, "fps", windowWidth / 2, 50);
 
@@ -130,7 +130,7 @@ void CreditsScene::InitializeGUI()
 	quit->SetActivated();
 
 	guiManager = new GUIManager(renderer, 100);
-	creditsPos = { windowWidth / 2-500, 1080 };
+	creditsPos = { windowWidth / 2 - 500, 1080 };
 	std::string text = GetCreditsString();
 
 	GUIFont* title_credits = new GUIFont(*renderer, text, creditsPos.x, creditsPos.y);//gameName, credits,course, school, //change text
@@ -182,7 +182,8 @@ void CreditsScene::Update(const float& deltaTime)
 
 	if (static_cast<GUISprite*>(guiManager->GetGUIObject("returnToMenu"))->IsClicked())
 	{
-		AudioMaster::Instance().StopSoundEvent("menusound");
+		static_cast<GUIFont*>(guiManager->GetGUIObject("credits"))->SetPosition(creditsPos.x, creditsPos.y);
+		AudioMaster::Instance().PlaySoundEvent("menusound");
 		Engine::Instance->SwitchScene(SceneIndex::INTRO);
 		return;
 	}

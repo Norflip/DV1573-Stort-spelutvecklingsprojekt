@@ -9,11 +9,25 @@ EnemyStatsComp::EnemyStatsComp() : manager(nullptr)
 	chaseRadius = 0;
 	attack = 0;
 	attackSpeed = 0;
+	attackRadius = 0;
+
+	baseHealth = health;
+	//baseSpeed = movementSpeed;
+	//baseAttack = attack;
+	//baseAttackSpeed = baseAttackSpeed;
 }
 
 EnemyStatsComp::EnemyStatsComp(float health, float movementSpeed, float chaseRadius, float attack, float attackSpeed, float attackRadius)
-	: manager(manager), health(health), movementSpeed(movementSpeed), chaseRadius(chaseRadius), attack(attack), attackSpeed(attackSpeed), attackRadius(attackRadius)
+	: manager(manager), health(health), baseHealth(health),movementSpeed(movementSpeed), chaseRadius(chaseRadius), attack(attack), attackSpeed(attackSpeed), attackRadius(attackRadius)
 {
 }
 
 EnemyStatsComp::~EnemyStatsComp(){}
+
+void EnemyStatsComp::Reset()
+{
+	this->health = this->baseHealth;
+	//this->movementSpeed = this->baseSpeed;
+	//this->attack = this->baseAttack;
+	//this->attackSpeed = this->baseAttackSpeed;
+}

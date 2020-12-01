@@ -103,8 +103,9 @@ std::vector<dx::XMFLOAT4> VirtualCamera::GetFrustumPlanes(const dx::XMMATRIX& tr
 	frustumPlanes[0] = { mat._14 - mat._11, mat._24 - mat._21, mat._34 - mat._31, mat._44 - mat._41 }; //right
 	frustumPlanes[1] = { mat._14 + mat._11, mat._24 + mat._21, mat._34 + mat._31, mat._44 + mat._41 }; //left
 	frustumPlanes[2] = { mat._14 + mat._12, mat._24 + mat._22, mat._34 + mat._32, mat._44 + mat._42 }; //bottom
-	frustumPlanes[3] = { mat._14 - mat._12, mat._24 - mat._22, mat._34 - mat._32, mat._44 - mat._42 }; //top
-	frustumPlanes[4] = { mat._13, mat._23, mat._33, mat._43 }; //near
+	frustumPlanes[3] = { mat._14 - mat._12, mat._24 - mat._22, mat._34 - mat._32, mat._44 - mat._42 }; //top 
+	//frustumPlanes[4] = { mat._13, mat._23, mat._33, mat._43 }; //near
+	frustumPlanes[4] = { mat._13 + mat._13, mat._24 + mat._23, mat._34 + mat._33, mat._44 + mat._43 }; //near
 	frustumPlanes[5] = { mat._14 - mat._13, mat._24 - mat._23, mat._34 - mat._33, mat._44 - mat._43 }; //far
 
 	DirectX::XMFLOAT4 n;

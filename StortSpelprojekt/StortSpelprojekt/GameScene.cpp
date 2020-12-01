@@ -196,7 +196,7 @@ void GameScene::InitializeObjects()
 
 	//LOADING BASE MONSTER; ADDING SKELETONS TO IT
 	enemyManager = new EnemyManager();
-	enemyManager->Initialize(player, player->GetComponent<PlayerComp>(), root);
+	enemyManager->Initialize(player, player->GetComponent<PlayerComp>(), camera, root);
 	enemyManager->InitBaseEnemy();
 	enemyManager->InitChargerEnemy();
 
@@ -425,7 +425,7 @@ void GameScene::InitializeInterior()
 	AddObjectToRoot(tutorialFuel);
 
 	Object* fireLight = new Object("fireLight");
-	LightComponent* fLight = fireLight->AddComponent<LightComponent>(LightType::POINT_LIGHT,dx::XMFLOAT4(1.0f, 0.29f, 0.0f, 1.0f), 1.7f);
+	LightComponent* fLight = fireLight->AddComponent<LightComponent>(LightType::POINT_LIGHT,dx::XMFLOAT4(1.0f, 0.29f, 0.0f, 1.0f), 2.2f);
 	fireLight->GetTransform().SetPosition({ -7.0f, -99.f, -1.36f });
 	fireLight->AddComponent<ParticleSystemComponent>(renderer, Engine::Instance->GetResources()->GetShaderResource("particleShader"));
 	fireLight->GetComponent<ParticleSystemComponent>()->InitializeFirelikeParticles(renderer->GetDevice(), "Fire1");
@@ -445,6 +445,22 @@ void GameScene::InitializeInterior()
 	LightComponent* wLight2 = windowLight2->AddComponent<LightComponent>(LightType::POINT_LIGHT,dx::XMFLOAT4(0.3f, 0.41f, 0.8f, 1.0f), 5.0f);
 	wLight2->SetEnabled(true);
 	AddObjectToRoot(windowLight2);
+
+	Object* doorLight = new Object("doorLight");
+	doorLight->GetTransform().SetPosition({ 2.f, -97.f, -3.3f });
+	LightComponent* drLight = doorLight->AddComponent<LightComponent>(LightType::POINT_LIGHT, dx::XMFLOAT4(0.5f, 0.5f, 0.5f, 1.0f), 6.0f);
+	drLight->SetEnabled(true);
+	drLight->SetIntensity(0.4);
+	AddObjectToRoot(doorLight);
+
+	Object* tableLight = new Object("tableLight");
+	tableLight->GetTransform().SetPosition({ -5.f, -98.f, -5.f });
+	LightComponent* tblLight = tableLight->AddComponent<LightComponent>(LightType::POINT_LIGHT, dx::XMFLOAT4(0.5f, 0.5f, 0.5f, 1.0f), 4.0f);
+	tblLight->SetEnabled(true);
+	tblLight->SetIntensity(0.4);
+	AddObjectToRoot(tableLight);
+
+
 }
 
 void GameScene::OnActivate()
@@ -503,7 +519,7 @@ void GameScene::OnActivate()
 	renderer->AddRenderPass(guiManager);
 
 	//this->PrintSceneHierarchy(root, 0);
-	enemyManager->SpawnEnemies();
+	//enemyManager->SpawnEnemies();
 
 	AudioMaster::Instance().PlaySoundEvent("wind");
 
@@ -550,6 +566,8 @@ void GameScene::Update(const float& deltaTime)
 	Scene::Update(deltaTime);
 	world.UpdateRelevantChunks(player->GetTransform(), camera);
 	//world.DrawDebug();
+
+	enemyManager->SpawnRandomEnemy(deltaTime);
 
 	dx::XMFLOAT3 playerPos;
 	dx::XMStoreFloat3(&playerPos, player->GetTransform().GetWorldPosition());
