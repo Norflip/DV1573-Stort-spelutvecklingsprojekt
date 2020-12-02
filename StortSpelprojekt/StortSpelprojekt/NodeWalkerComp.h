@@ -15,10 +15,10 @@ private:
 	//std::vector<Node> nodes;
 	Path thePath;
 	float speed;
-	int currentNode;
+	//int currentNode;
 	int nextChosen;
 	float nodeRadius;
-	bool canWalk;
+
 	bool isWalking;
 	float length;
 	//dx::XMFLOAT3 lastPos;
@@ -33,6 +33,8 @@ private:
 	void StartAnim();
 	void StopAnim();
 public:
+	int currentNode;
+	bool canWalk;
 	NodeWalkerComp();
 	virtual ~NodeWalkerComp();
 	void InitializePath(Path thePath);

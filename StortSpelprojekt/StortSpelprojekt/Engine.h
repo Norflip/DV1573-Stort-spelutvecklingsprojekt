@@ -41,7 +41,7 @@ public:
 
 	ALIGN16_ALLOC;
 	static Engine* Instance;
-
+	bool start = true;
 private:
 	static void FixedUpdateLoop(Engine* engine);
 

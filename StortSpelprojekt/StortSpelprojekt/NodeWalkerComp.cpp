@@ -68,14 +68,16 @@ void NodeWalkerComp::InitAnimation()
 
 void NodeWalkerComp::Reset()
 {
-	this->currentNode = thePath.GetFirstPointIndex();
-	this->nextChosen = -1;
-	this->canWalk = false;
+	std::cout<<this->currentNode<< std::endl;
+	this->currentNode = 0;
+	std::cout << this->nextChosen << std::endl;
+	this->nextChosen = 0;
+	std::cout << this->canWalk << std::endl;
 
-	dx::XMFLOAT3 pos3 = { thePath.GetPoint(this->currentNode).x,HEIGHT, thePath.GetPoint(this->currentNode).z };
-	dx::XMVECTOR startPos = dx::XMLoadFloat3(&pos3);
-	this->GetOwner()->GetTransform().SetPosition(startPos);
-	this->rbComp->SetPosition(startPos);
+	//dx::XMFLOAT3 pos3 = { thePath.GetPoint(this->currentNode).x,HEIGHT, thePath.GetPoint(this->currentNode).z };
+	//dx::XMVECTOR startPos = dx::XMLoadFloat3(&pos3);
+	//this->GetOwner()->GetTransform().SetPosition(startPos);
+	//this->rbComp->SetPosition(startPos);
 }
 
 void NodeWalkerComp::Start()
@@ -152,8 +154,8 @@ void NodeWalkerComp::Update(const float& deltaTime)
 			if (canWalk)
 			{
 				float y = this->world->SampleHeight(thePath.GetPoint(this->currentNode).x, thePath.GetPoint(this->currentNode).z);
-				if (y < 0.0f)
-					y = 0.0f;
+				if (y < 0.0f || y > 30)
+					y = 0.01f;
 				
 				//DirectX::XMFLOAT3 dir = { 0.f,0.f,0.f };
 				dx::XMFLOAT3 nextPoint = { thePath.GetPoint(this->currentNode).x, y, thePath.GetPoint(this->currentNode).z };
