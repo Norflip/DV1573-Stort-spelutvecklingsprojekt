@@ -6,8 +6,8 @@ class ParticleSystemComponent : public Component
 {
 private:
 	struct Particles {
+		float red, green, blue, alpha;
 		float posx, posy, posz;
-		float red, green, blue;
 		float velocity;
 		bool active;
 	};	
@@ -26,7 +26,7 @@ public:
 	void SetMaxParticles(int maxParticles) { this->maxParticles = maxParticles; }
 	void SetDifference(float x, float y, float z);
 	void SetParticleSize(float size) { this->particleSize = size; }
-		
+	void SetParticleColor(dx::XMFLOAT3 color) { this->particleColor = color; }
 	bool GetActive() { return this->active; }
 	void SetActive(bool active) { this->active = active; }
 
@@ -53,6 +53,7 @@ private:
 	Mesh* mesh;
 	Material* mat;
 
+	dx::XMFLOAT3 particleColor;
 	dx::XMMATRIX worldmatrix;
 	bool active;
 

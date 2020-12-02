@@ -31,6 +31,8 @@ private:
 	World world;
 	Object* house;
 
+	Particlesys* testParticles;
+
 	dx::XMFLOAT3 interiorPosition;
 	Object* leftSign;
 	Object* rightSign;
@@ -39,4 +41,5 @@ private:
 
 	float fogCol;
 	bool start;
+
 };

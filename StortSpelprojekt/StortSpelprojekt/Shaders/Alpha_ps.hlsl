@@ -15,11 +15,11 @@ float4 main(VS_OUTPUT input) : SV_TARGET
 		float4 normalmap = normalMap.Sample(defaultSampleType, input.uv);
 		input.normal = CalculateNormalMapping(input.normal, input.tangent, normalmap);
 	}
+
 	float3 normalized = normalize(input.normal);
 	float3 viewDirection = cameraPosition - input.worldPosition;
 	float4 finalColor = float4(0.0f, 0.0f, 0.0f, 0.0);
 
-	
     uint2 tileIndex = uint2(floor(input.position.xy / (BLOCK_SIZE)));
 
 	uint startOffset = LightGrid[tileIndex].x;

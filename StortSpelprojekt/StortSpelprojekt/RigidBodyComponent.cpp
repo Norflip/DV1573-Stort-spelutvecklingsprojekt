@@ -26,6 +26,8 @@ void RigidBodyComponent::Update(const float& deltaTime)
 	{
 		bodyPosition.y = -1000;
 		std::cout << "BODY OUT OF BOUNDS (y < -1000)" << std::endl;
+		std::cout << "Owner: " << GetOwner()->GetName() << std::endl;
+
 		body->enableGravity(false);
 		GetOwner()->RemoveFlag(ObjectFlag::ENABLED);
 		return;
@@ -135,7 +137,7 @@ void RigidBodyComponent::AddCollidersToBody(Object* obj, rp::RigidBody* body)
 		}
 	}
 
-//	assert(collidersList.size() > 0);
+	//	assert(collidersList.size() > 0);
 	//std::cout << (GetOwner()->GetName() + " has " + std::to_string(colliders.size()) + " colliders\n");
 
 	//CHILDREN
@@ -184,13 +186,32 @@ void RigidBodyComponent::OnOwnerFlagChanged(ObjectFlag old, ObjectFlag newFlag)
 		body->setIsActive(enabled);
 }
 
-void RigidBodyComponent::m_OnCollision(const CollisionInfo& collision)
+void RigidBodyComponent::m_OnCollision(CollisionInfo& collision)
 {
+	// <3 LOVAR JAG SKA ÄNDRA DETTA FILIP <3 
 	for (auto it = callbacks.begin(); it < callbacks.end(); it++)
-		(*it)(collision);
+		if ((*it)(collision)) 
+		{	
+			Mesh* pickupMesh = Engine::Instance->GetResources()->GetResource<Mesh>("Propane");
+			Material* pickupMat = Engine::Instance->GetResources()->GetResource<Material>("PropaneMaterial");
+
+			pickupMat->SetShader(Engine::Instance->GetResources()->GetShaderResource("defaultShader"));
+			
+			Object* pickup = new Object("puzzlePickup");
+			Object::AddToHierarchy(GetOwner()->GetParent(), pickup);
+
+			pickup->AddComponent<MeshComponent>(pickupMesh, pickupMat);
+			pickup->AddComponent<PickupComponent>(PickupType::Fuel, 35.0f);
+			pickup->AddComponent<BoxColliderComponent>(dx::XMFLOAT3(0.3f, 0.35f, 0.15f), dx::XMFLOAT3(0, 0, 0));
+			RigidBodyComponent* rb = pickup->AddComponent<RigidBodyComponent>(10.0f, FilterGroups::HOLDABLE, FilterGroups::EVERYTHING & ~FilterGroups::PLAYER, BodyType::DYNAMIC, true);
+
+			rb->SetPosition(GetOwner()->GetTransform().GetPosition());
+
+			GetOwner()->RemoveFlag(ObjectFlag::ENABLED);
+		}
 }
 
-void RigidBodyComponent::AddCollisionCallback(std::function<void(CollisionInfo)> callback)
+void RigidBodyComponent::AddCollisionCallback(std::function<bool(CollisionInfo&)> callback)
 {
 	callbacks.push_back(callback);
 }

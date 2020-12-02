@@ -197,6 +197,17 @@ float AudioMaster::GetVolume(const AudioTypes& audioType) const
 	return 1.0f;
 }
 
+void AudioMaster::StopAllSoundEffects()
+{
+	SoundEvent soundEvent;
+	for (auto& i : soundTracks)
+	{		
+		soundEvent = i.second;
+		soundEvent.playing = false;
+		soundEvent.sourceVoice->Stop();
+	}	
+}
+
 void AudioMaster::PlayerOutside(bool state)
 {
 	if(state)
