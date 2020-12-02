@@ -7,14 +7,14 @@ void ControllerComp::CheckGrounded()
 {
 	dx::XMFLOAT3 origin;
 	dx::XMStoreFloat3(&origin, GetOwner()->GetTransform().GetPosition());
-	origin.z += 2.f;
+	//origin.z += 2.f;
 	Ray ray(origin, DOWN_VEC);
 	RayHit hitTerrain;
 	RayHit hitProps;
 	RayHit hitPuzzle;
 
 	//TERRAIN or default depending on if u can jump from on top of objects
-	float distance = 1.45f;
+	float distance = 1.46f;
 	Physics* phy = Engine::Instance->GetPhysics();
 
 	phy->RaytestSingle(ray, distance, hitTerrain, FilterGroups::TERRAIN);

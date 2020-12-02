@@ -572,6 +572,8 @@ void GameScene::OnActivate()
 		}
 		// NÅN MÅSTE FIXA DETTA. JAG PALLAR INTE
 		// NÅN MÅSTE FIXA DETTA. JAG PALLAR INTE
+		// NÅN MÅSTE FIXA DETTA. JAG PALLAR INTE 
+		// NÅN MÅSTE FIXA DETTA. JAG PALLAR INTE
 		// NÅN MÅSTE FIXA DETTA. JAG PALLAR INTE
 		else if (Engine::Instance->start)
 
