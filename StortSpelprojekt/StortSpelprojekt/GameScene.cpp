@@ -10,7 +10,6 @@ GameScene::GameScene() : Scene("GameScene")
 {
 	this->interiorPosition = { 0.0f, -100.0f, 0.0f };
 	fogCol = 0;
-	start = true;
 	end = false;
 	firstFrame = false;
 }
@@ -24,7 +23,6 @@ void GameScene::Initialize()
 	InitializeGUI();
 	InitializeObjects();
 	InitializeInterior();
-	start = true;
 
 }
 
@@ -541,7 +539,7 @@ void GameScene::OnActivate()
 	
 		
 
-		if (!start)
+		if (!Engine::Instance->start)
 		{
 			sm::Vector3 housePos = house->GetTransform().GetLocalPosition();
 			fogCol += 0.5f;
@@ -564,8 +562,10 @@ void GameScene::OnActivate()
 			player->GetTransform().SetPosition(playerPos);
 			player->GetComponent<RigidBodyComponent>()->SetPosition(playerPos);
 		}
-		
-		else if (start)
+		// NÅN MÅSTE FIXA DETTA. JAG PALLAR INTE
+		// NÅN MÅSTE FIXA DETTA. JAG PALLAR INTE
+		// NÅN MÅSTE FIXA DETTA. JAG PALLAR INTE
+		else if (Engine::Instance->start)
 
 		{
 			fogCol = 0.0f;
@@ -583,7 +583,7 @@ void GameScene::OnActivate()
 
 			player->GetComponent<ControllerComp>()->SetInside(true);
 
-			start = false;
+			Engine::Instance->start = false;
 			
 		}
 

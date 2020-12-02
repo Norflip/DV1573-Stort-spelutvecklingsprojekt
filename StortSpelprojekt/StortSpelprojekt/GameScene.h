@@ -40,7 +40,7 @@ private:
 	NodeWalkerComp* nodeWalker;
 
 	float fogCol;
-	bool start;
+
 	bool onceTest = true;
 	bool end;
 };
