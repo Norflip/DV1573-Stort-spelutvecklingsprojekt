@@ -301,7 +301,7 @@ void GameScene::InitializeGUI()
 	GUISprite* loadSprite = new GUISprite(*renderer, "Textures/Loading.png", 0, 0, -110, DrawDirection::Default, ClickFunction::NotClickable, GuiGroup::Load);
 	loadSprite->SetVisible(true);
 	//FONTS
-	GUIFont* playerPosDisplay = new GUIFont(*renderer, "playerPos", 50, 100);
+	//GUIFont* playerPosDisplay = new GUIFont(*renderer, "playerPos", 50, 100);
 	GUIFont* fpsDisplay = new GUIFont(*renderer, "fps",30, 30);
 	//GUIFont* healthDisplay = new GUIFont(*renderer, "playerHealth", 50, 100);
 	//GUIFont* enemyDisplay = new GUIFont(*renderer, "enemyHealth", 50, 150);
@@ -320,7 +320,7 @@ void GameScene::InitializeGUI()
 	// INSERTIONS
 	guiManager = new GUIManager(renderer, 0);
 	guiManager->AddGUIObject(fpsDisplay, "fps");
-	guiManager->AddGUIObject(playerPosDisplay, "playerPos");
+	//guiManager->AddGUIObject(playerPosDisplay, "playerPos");
 	//guiManager->AddGUIObject(healthDisplay, "playerHealth");
 	//guiManager->AddGUIObject(enemyDisplay, "enemyHealth");
 	//COMPASS
@@ -754,10 +754,10 @@ void GameScene::Update(const float& deltaTime)
 	//std::cout << "PlayerPos: " << player->GetTransform().GetPosition().m128_f32[0] << " " << player->GetTransform().GetPosition().m128_f32[1] << " " << player->GetTransform().GetPosition().m128_f32[2] << std::endl;
 
 	static_cast<GUIFont*>(guiManager->GetGUIObject("fps"))->SetString(std::to_string((int)GameClock::Instance().GetFramesPerSecond()));
-	dx::XMFLOAT3 playerPosF;
-	dx::XMStoreFloat3(&playerPosF, player->GetTransform().GetPosition());
-	static_cast<GUIFont*>(guiManager->GetGUIObject("playerPos"))->SetString("Player pos x:" + std::to_string((int)playerPosF.x)
-	+ " y: " + std::to_string((int)playerPosF.z));
+	//dx::XMFLOAT3 playerPosF;
+	//dx::XMStoreFloat3(&playerPosF, player->GetTransform().GetPosition());
+	//static_cast<GUIFont*>(guiManager->GetGUIObject("playerPos"))->SetString("Player pos x:" + std::to_string((int)playerPosF.x)
+	//+ " y: " + std::to_string((int)playerPosF.z));
 	guiManager->UpdateAll();
 
 	/*static float a = 0.0f;
