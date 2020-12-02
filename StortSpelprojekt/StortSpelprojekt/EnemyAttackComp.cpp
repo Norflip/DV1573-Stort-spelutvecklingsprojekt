@@ -86,7 +86,7 @@ void EnemyAttackComp::UpdateEnemyPos(const float& deltaTime)
 
 		dx::XMFLOAT3 vel = rbComp->GetLinearVelocity();
 
-		dx::XMFLOAT3 move = { moveDir.x * enemyStatsComp->GetSpeed(), vel.y, moveDir.z * enemyStatsComp->GetSpeed() };
+		dx::XMFLOAT3 move = { moveDir.x * enemyStatsComp->GetChaseSpeed(), vel.y, moveDir.z * enemyStatsComp->GetChaseSpeed() };
 
 		rbComp->SetLinearVelocity(move);
 		dx::XMVECTOR enemyPos = GetOwner()->GetTransform().GetPosition();
