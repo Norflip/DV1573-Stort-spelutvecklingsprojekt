@@ -412,6 +412,7 @@ void PlayerComp::RayCast(const float& deltaTime)
 				hit.object->GetComponent<BoxColliderComponent>()->SetRotation(0, { 5, 5, 5, 5 });
 		
 				clickable->GetComponent<SelectableComponent>()->SetActive(true);
+				
 			}
 		}
 	}

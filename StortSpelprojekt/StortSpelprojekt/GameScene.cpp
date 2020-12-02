@@ -209,7 +209,7 @@ void GameScene::InitializeObjects()
 
 	//LOADING BASE MONSTER; ADDING SKELETONS TO IT
 	enemyManager = new EnemyManager();
-	enemyManager->Initialize(player, player->GetComponent<PlayerComp>(), camera, root);
+	enemyManager->Initialize(player,house, player->GetComponent<PlayerComp>(), camera, root);
 	enemyManager->InitBaseEnemy();
 	enemyManager->InitChargerEnemy();
 
@@ -370,6 +370,7 @@ void GameScene::InitializeInterior()
 	houseInterior->AddComponent<BoxColliderComponent>(dx::XMFLOAT3(10.0f, 10.0f, 1.5f), dx::XMFLOAT3(0, 0, 7.0f)); // Front wall
 	houseInterior->AddComponent<BoxColliderComponent>(dx::XMFLOAT3(10.0f, 10.0f, 1.5f), dx::XMFLOAT3(0, 0, -8.0f)); // Back wall
 	houseInterior->AddComponent<RigidBodyComponent>(0.0f, FilterGroups::PROPS, FilterGroups::EVERYTHING, BodyType::STATIC, true); // RB
+	houseInterior->GetComponent<RigidBodyComponent>()->GetRigidBody()->getCollider(0)->getMaterial().setBounciness(0.f);
 	AddObjectToRoot(houseInterior);
 
 	Object* fireplace = resources->AssembleObject("Fireplace", "FireplaceMaterial");
@@ -492,16 +493,16 @@ void GameScene::InitializeInterior()
 
 	Object* doorLight = new Object("doorLight");
 	doorLight->GetTransform().SetPosition({ 2.f, -97.f, -3.3f });
-	LightComponent* drLight = doorLight->AddComponent<LightComponent>(LightType::POINT_LIGHT, dx::XMFLOAT4(0.5f, 0.5f, 0.5f, 1.0f), 6.0f);
+	LightComponent* drLight = doorLight->AddComponent<LightComponent>(LightType::POINT_LIGHT, dx::XMFLOAT4(0.5f, 0.5f, 0.5f, 1.0f), 7.0f);
 	drLight->SetEnabled(true);
-	drLight->SetIntensity(0.4);
+	drLight->SetIntensity(0.5);
 	AddObjectToRoot(doorLight);
 
 	Object* tableLight = new Object("tableLight");
-	tableLight->GetTransform().SetPosition({ -5.f, -98.f, -5.f });
-	LightComponent* tblLight = tableLight->AddComponent<LightComponent>(LightType::POINT_LIGHT, dx::XMFLOAT4(0.5f, 0.5f, 0.5f, 1.0f), 4.0f);
+	tableLight->GetTransform().SetPosition({ -4.f, -98.f, -4.f });
+	LightComponent* tblLight = tableLight->AddComponent<LightComponent>(LightType::POINT_LIGHT, dx::XMFLOAT4(0.5f, 0.5f, 0.5f, 1.0f), 7.0f);
 	tblLight->SetEnabled(true);
-	tblLight->SetIntensity(0.4);
+	tblLight->SetIntensity(0.5);
 	AddObjectToRoot(tableLight);
 
 }
