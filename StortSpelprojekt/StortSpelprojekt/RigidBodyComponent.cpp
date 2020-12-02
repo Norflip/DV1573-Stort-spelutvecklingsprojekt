@@ -188,6 +188,7 @@ void RigidBodyComponent::OnOwnerFlagChanged(ObjectFlag old, ObjectFlag newFlag)
 
 void RigidBodyComponent::m_OnCollision(CollisionInfo& collision)
 {
+	// <3 LOVAR JAG SKA ÄNDRA DETTA FILIP <3 
 	for (auto it = callbacks.begin(); it < callbacks.end(); it++)
 		if ((*it)(collision)) 
 		{	
