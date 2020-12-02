@@ -5,20 +5,10 @@
 #include "Pathfinding.h"
 #include "Math.h"
 #include "Random.h"
-constexpr float ENEMY_SPAWN_RATE = 5.0f; //how fast enemies spawn
+constexpr float ENEMY_SPAWN_RATE_MAX = 20.f; //how fast enemies spawn
+constexpr float ENEMY_SPAWN_RATE_MIN = 5.f; 
 constexpr float ENEMY_SPAWN_RADIUS = 15.f; //distance from player
-constexpr int ENEMY_TOTAL = 25; //max nr of enemies
-
-//struct Frustum
-//{
-//	s_Plane planes[6];
-//};
-//
-//struct Sphere
-//{
-//	dx::XMFLOAT3 c; // Center point.
-//	float r; // Radius.
-//};
+constexpr int ENEMY_TOTAL = 14; //max nr of enemies
 
 class EnemyManager
 {
@@ -26,7 +16,7 @@ class EnemyManager
 		EnemyManager();
 		virtual ~EnemyManager();
 
-		void Initialize(Object* player, PlayerComp* playerComp,CameraComponent* camComp, Object* root);
+		void Initialize(Object* playerObj,Object* houseObj, PlayerComp* playerComp,CameraComponent* camComp, Object* rootObj);
 
 		std::vector<Object*> GetEnemies() const { return enemyVector; }
 		void InitBaseEnemy();
@@ -43,13 +33,14 @@ class EnemyManager
 		ObjectPooler* enemyPool;
 		std::vector<Object*> enemyVector;
 		Object* player;
-		//Object* house;
+		Object* house;
 		PlayerComp* playerComp;
 		CameraComponent* camComp;
 		ResourceManager* resources;
 		Object* root;
 
 		//size_t nrOfEnemies; //total
+		float enemySpawnRate;
 		size_t nrOfBaseEnemies;
 		size_t nrOfChargeEnemies;
 		size_t aliveEnemies; //current number of enemies
