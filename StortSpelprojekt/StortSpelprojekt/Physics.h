@@ -43,7 +43,6 @@ public:
 	void MutexUnlock();
 
 	void RegisterRigidBody(RigidBodyComponent* rigidBodyComp);
-	void UnregisterRigidBody(Object* object);
 	void UnregisterRigidBody(RigidBodyComponent* rigidBodyComp);
 
 	void FixedUpdate(const float& fixedDeltaTime);

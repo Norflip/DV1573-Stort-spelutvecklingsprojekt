@@ -37,6 +37,8 @@ class ObjectSpawner
 		float maxScale;
 		float minRotation;
 		float maxRotation;
+		float discRadius;
+		float segmentScaleFactor;
 		std::vector<Mesh*> meshes;
 		std::vector<Material*> materials;
 
@@ -68,15 +70,15 @@ public:
 
 private:
 	void SpawnStatic(Chunk* chunk);
-	void SpawnItem (Chunk* chunk);
+	void SpawnItem(Chunk* chunk);
 
 	bool ValidSpawnPoint(const dx::XMFLOAT2& point, Chunk* chunk, float minInfluence) const;
-	void AddTreesToChunk(Chunk* chunk) const;
+	void AddTreesToChunk(const TreeModel& treeModel, Chunk* chunk, size_t segment) const;
 	void AddGrassToChunk(Chunk* chunk) const;
 
 private:
 	std::vector<dx::XMFLOAT2> CreateSpawnPositions(QuadTree* tree, float spawnRadius, float itemRadius, std::unordered_map<int, Chunk*>& chunkMap) const;
-	template <typename T> 
+	template <typename T>
 	void ShuffleVector(std::vector<T>& v) const;
 
 private:
@@ -95,7 +97,7 @@ private:
 
 	std::vector<Item> itemRegistry;
 	std::vector<Prop> instancedProps;
-	TreeModel tree;
+	TreeModel baseTreeModel;
 
 	Renderer* renderer;
 };
