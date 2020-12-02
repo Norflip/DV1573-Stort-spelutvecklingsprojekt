@@ -41,5 +41,6 @@ private:
 
 	float fogCol;
 	bool start;
+	bool onceTest = true;
 	bool end;
 };

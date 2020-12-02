@@ -509,7 +509,7 @@ void GameScene::InitializeInterior()
 
 void GameScene::OnActivate()
 {
-	
+	house->GetComponent<NodeWalkerComp>()->currentNode = 1;
 	SaveState& state = SaveHandler::LoadOrCreate();
 
 	LightManager::Instance().ForceUpdateBuffers(renderer->GetContext(),camera);
@@ -524,7 +524,6 @@ void GameScene::OnActivate()
 	//PrintSceneHierarchy(root, 0);
 	house->GetComponent<NodeWalkerComp>()->InitializePath(world.GetPath());
 	house->GetComponent<NodeWalkerComp>()->SetWorld(&world);
-
 	//Place signs
 	SetSignPositions(state);
 
@@ -549,7 +548,7 @@ void GameScene::OnActivate()
 			renderer->SetIdAndColor(state.segment, fogCol);
 
 			dx::XMFLOAT3 switchPosition;
-			switchPosition = dx::XMFLOAT3{ housePos.x  , 10.f , housePos.z };
+			switchPosition = dx::XMFLOAT3{ housePos.x +10 , 7.f , housePos.z };
 
 			dx::XMVECTOR playerPos = { switchPosition.x, switchPosition.y, switchPosition.z };
 
@@ -603,18 +602,22 @@ void GameScene::OnActivate()
 
 	sceneSwitch = false;
 	delayTimer = 0.0f;
-	physicsDelay = 4.0f;
+	physicsDelay = 5.0f;
 	std::cout << "Game Scene activated " << std::endl;
+	guiManager->GetGUIObject("loading")->SetVisible(true);
+	//house->GetComponent<NodeWalkerComp>()->canWalk = true;
+	house->GetComponent<NodeWalkerComp>()->Reset();
 }
 
 void GameScene::OnDeactivate()
 {
-
+	player->RemoveFlag(ObjectFlag::ENABLED);
 	firstFrame = false;
 	sceneSwitch = true;
 	delayTimer = 0.0f;
+
 	physicsDelay = 1000.0f;
-	//guiManager->GetGUIObject("loading")->SetVisible(true);
+	guiManager->GetGUIObject("loading")->SetVisible(true);
 	std::cout << "Game Scene deactivated" << std::endl;
 	world.DeconstructSegment();
 	renderer->RemoveRenderPass(guiManager);
@@ -672,6 +675,11 @@ void GameScene::SetSignPositions(SaveState& state)
 
 void GameScene::Update(const float& deltaTime)
 {
+	if ((delayTimer > (physicsDelay + loadScreenDelay+2)) && onceTest)
+	{
+		onceTest = false;
+		house->GetComponent<NodeWalkerComp>()->Reset();
+	}
 	Scene::Update(deltaTime);
 	world.UpdateRelevantChunks(player->GetTransform(), camera);
 	//world.DrawDebug();
