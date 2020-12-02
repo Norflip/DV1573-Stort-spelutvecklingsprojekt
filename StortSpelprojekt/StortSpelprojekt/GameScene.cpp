@@ -33,6 +33,7 @@ void GameScene::InitializeObjects()
 	Object* housesLegsObject = new Object("houseLegs");
 	Object* houseDoor = resources->AssembleObject("HouseDoor", "HouseDoorMaterial");
 	Object* houseExterior = resources->AssembleObject("HouseExterior", "HouseExteriorMaterial");
+	houseExterior->GetComponent<MeshComponent>()->GetMaterials()[0]->SetTransparent(true);
 	Object* houseDoorRigid = new Object("doorRigid");
 
 	houseBaseObject->GetTransform().Rotate(0, -90.0f * Math::ToRadians, 0.0);
@@ -93,7 +94,7 @@ void GameScene::InitializeObjects()
 	this->player = playerObject;
 	camera = cameraObject->AddComponent<CameraComponent>(window->GetWidth(), window->GetHeight(), 60.0f);
 
-	Shader forwardPlusShader;// = 
+	Shader forwardPlusShader;
 
 	forwardPlusShader.SetComputeShader("Shaders/ForwardPlusRendering.hlsl", "ComputeFrustums");
 	forwardPlusShader.CompileCS(renderer->GetDevice());
@@ -103,7 +104,7 @@ void GameScene::InitializeObjects()
 
 	cameraObject->GetTransform().SetPosition(playerSpawnVec);
 	playerObject->GetTransform().SetPosition(playerSpawnVec);
-	playerObject->AddComponent<CapsuleColliderComponent>(0.5f, 1.5f, zero);
+	playerObject->AddComponent<CapsuleColliderComponent>(0.4f, 1.5f, zero);
 	playerObject->AddComponent<RigidBodyComponent>(50.f, FilterGroups::PLAYER, (FilterGroups::EVERYTHING), BodyType::DYNAMIC, true);
 
 	playerObject->AddComponent<PlayerComp>(renderer, camera, house, Engine::Instance->GetPhysics(), guiManager, 100.f, 2.f, 40.f, 50.f, 3.f);
@@ -248,7 +249,6 @@ void GameScene::InitializeObjects()
 	GUICompass* compass = new GUICompass(*renderer, window, house, player);
 	guiManager->AddGUIObject(compass, "compass");
 
-
 	/*Shader* SOShader = new Shader;
 	SOShader->SetInputLayoutStructure(5, SOShader->DEFAULT_INPUT_LAYOUT_PARTICLE);
 	SOShader->SetVertexShader("Shaders/ParticleSO_vs.hlsl");
@@ -359,7 +359,7 @@ void GameScene::InitializeGUI()
 
 void GameScene::InitializeInterior()
 {
-	//_____________________________________________________________________________________________________________________________________
+
 	// Inside house
 	Object* houseInterior = resources->AssembleObject("HouseInterior", "HouseInteriorMaterial");
 	houseInterior->GetTransform().SetPosition({ this->interiorPosition.x, this->interiorPosition.y, this->interiorPosition.z, 0 });
@@ -431,21 +431,21 @@ void GameScene::InitializeInterior()
 	table->AddComponent<RigidBodyComponent>(0.0f, FilterGroups::PROPS, FilterGroups::EVERYTHING, BodyType::STATIC, true);
 	AddObjectToRoot(table);
 
-	Object* tutorialFood = resources->AssembleObject("Fruits", "FruitsMaterial");
+	Object* tutorialFood = resources->AssembleObject("Fruits", "FruitsMaterial", true);
 	tutorialFood->GetTransform().SetPosition({ -5.65f, interiorPosition.y + 1.0f, -4.6f, 0.0f });
 	tutorialFood->AddComponent<PickupComponent>(PickupType::Food, 30.0f);
 	tutorialFood->AddComponent<BoxColliderComponent>(dx::XMFLOAT3(0.25f, 0.25f, 0.25f), dx::XMFLOAT3(0, 0, 0));
 	tutorialFood->AddComponent<RigidBodyComponent>(10.0f, FilterGroups::PICKUPS, FilterGroups::EVERYTHING & ~FilterGroups::PLAYER, BodyType::DYNAMIC, true);
 	AddObjectToRoot(tutorialFood);
 
-	Object* tutorialHealth = resources->AssembleObject("HealthKit", "HealthKitMaterial");
+	Object* tutorialHealth = resources->AssembleObject("HealthKit", "HealthKitMaterial", true);
 	tutorialHealth->GetTransform().SetPosition({ -5.0f, interiorPosition.y + 1.0f, -4.4f, 0.0f });
 	tutorialHealth->AddComponent<PickupComponent>(PickupType::Health, 30.0f);
 	tutorialHealth->AddComponent<BoxColliderComponent>(dx::XMFLOAT3(0.25f, 0.1f, 0.25f), dx::XMFLOAT3(0, 0, 0));
 	tutorialHealth->AddComponent<RigidBodyComponent>(10.0f, FilterGroups::PICKUPS, FilterGroups::EVERYTHING & ~FilterGroups::PLAYER, BodyType::DYNAMIC, true);
 	AddObjectToRoot(tutorialHealth);
 
-	Object* tutorialFuel = resources->AssembleObject("FuelCanRed", "FuelCanRedMaterial");
+	Object* tutorialFuel = resources->AssembleObject("FuelCanRed", "FuelCanRedMaterial", true);
 	tutorialFuel->GetTransform().SetPosition({ -5.0f, interiorPosition.y + 3.0f, 0.11f, 0.0f });
 	tutorialFuel->AddComponent<PickupComponent>(PickupType::Fuel, 30.0f);
 	tutorialFuel->AddComponent<BoxColliderComponent>(dx::XMFLOAT3(0.3f, 0.35f, 0.15f), dx::XMFLOAT3(0, 0, 0));
@@ -503,7 +503,6 @@ void GameScene::InitializeInterior()
 	tblLight->SetIntensity(0.4);
 	AddObjectToRoot(tableLight);
 
-
 }
 
 void GameScene::OnActivate()
@@ -557,6 +556,7 @@ void GameScene::OnActivate()
 		player->GetComponent<RigidBodyComponent>()->SetPosition(playerPos);
 
 		player->GetComponent<ControllerComp>()->SetInside(true);
+
 	}
 
 	renderer->AddRenderPass(guiManager);
@@ -680,9 +680,6 @@ void GameScene::Update(const float& deltaTime)
 
 	static_cast<GUIFont*>(guiManager->GetGUIObject("fps"))->SetString(std::to_string((int)GameClock::Instance().GetFramesPerSecond()));
 	guiManager->UpdateAll();
-
-
-
 
 	/*static float a = 0.0f;
 	if (left)
