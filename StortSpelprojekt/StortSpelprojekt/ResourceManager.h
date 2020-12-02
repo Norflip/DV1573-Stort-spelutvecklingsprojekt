@@ -39,7 +39,7 @@ public:
 
 	// Recompile all the shaders inside the shaderResources
 	void CompileShaders(ID3D11Device* device);
-	Object* AssembleObject(std::string meshName, std::string materialName, ObjectFlag flag = ObjectFlag::DEFAULT);
+	Object* AssembleObject(std::string meshName, std::string materialName, bool batchable = false, ObjectFlag flag = ObjectFlag::DEFAULT);
 };
 
 // Template function to get a resource from the unordered_map

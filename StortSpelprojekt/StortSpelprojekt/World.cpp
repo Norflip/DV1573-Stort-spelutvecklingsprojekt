@@ -110,18 +110,9 @@ float World::SampleRoadInfluence(const float& x, const float& z) const
 
 void World::SampleNormal(const float& x, const float& z, dx::XMFLOAT3& normal) const
 {
-	float hLeft = SampleHeight(x - 1, z);
-	float hRight = SampleHeight(x + 1, z);
-	float hDown = SampleHeight(x, z - 1);
-	float hUp = SampleHeight(x, z + 1);
-
-	dx::XMVECTOR horizontal = dx::XMVector3Normalize({ 1.0f, 0.0f, hLeft - hRight });
-	dx::XMVECTOR vertical = dx::XMVector3Normalize({ 0.0f, 1.0f, hUp - hDown });
-	dx::XMStoreFloat3(&normal, dx::XMVector3Cross(horizontal, vertical));
-
-	float tmp = normal.y;
-	normal.y = normal.z;
-	normal.z = tmp;
+	Chunk* chunk = GetChunk(x, z);
+	if (chunk)
+		normal = chunk->SampleNormal(x, z);
 }
 
 void World::GetChunksInRadius(const dx::XMINT2& index, int radius, std::vector<Chunk*>& chunks) const
@@ -246,9 +237,8 @@ void World::RegisterStatic(ObjectSpawner* spawner, const std::map<std::string, i
 {
 	static const dx::XMUINT3 UP = dx::XMUINT3(0, 1, 0);
 
-	spawner->RegisterInstancedItem("Rock1", 0.0f, 1, UP);
-	spawner->RegisterInstancedItem("Rock2", 0.0f, 1, UP);
-	spawner->RegisterInstancedItem("Rock3", 0.0f, 1, UP);
-	spawner->RegisterInstancedItem("Log",	0.0f, 1, UP);
-
+	spawner->RegisterInstancedItem("Rock1", 0.5f, 1, UP);
+	spawner->RegisterInstancedItem("Rock2", 0.5f, 1, UP);
+	spawner->RegisterInstancedItem("Rock3", 0.5f, 1, UP);
+	spawner->RegisterInstancedItem("Log",	0.5f, 1, UP);
 }

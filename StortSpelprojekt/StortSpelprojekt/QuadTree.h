@@ -12,7 +12,6 @@ class QuadTree
 public:
 	struct Node
 	{
-		size_t id;
 		dx::XMFLOAT2 min;
 		dx::XMFLOAT2 max;
 		void* data;
@@ -24,9 +23,9 @@ public:
 	QuadTree(size_t level, dx::XMFLOAT2 min, dx::XMFLOAT2 max, size_t maxLevels, size_t maxItems);
 	virtual ~QuadTree();
 
-	void Insert(size_t id, const Bounds& bounds, const dx::XMMATRIX& transform, void* data = nullptr);
-	void Insert(size_t id, dx::XMFLOAT2 point, float radius, void* data = nullptr);
-	void Insert(size_t id, dx::XMFLOAT2 min, dx::XMFLOAT2 max, void* data = nullptr);
+	void Insert(const Bounds& bounds, const dx::XMMATRIX& transform, void* data = nullptr);
+	void Insert(dx::XMFLOAT2 point, float radius, void* data = nullptr);
+	void Insert(dx::XMFLOAT2 min, dx::XMFLOAT2 max, void* data = nullptr);
 	void Insert(Node node);
 	void Clear();
 
@@ -34,7 +33,6 @@ public:
 
 	void SetMinMax(dx::XMFLOAT2 min, dx::XMFLOAT2 max);
 	std::vector<Node> GetNodesInArea(dx::XMFLOAT2 min, dx::XMFLOAT2 max) const;
-	std::vector<size_t> GetIDsInArea(dx::XMFLOAT2 min, dx::XMFLOAT2 max) const;
 
 	size_t CountInRange(dx::XMFLOAT2 point, float radius) const;
 

@@ -135,7 +135,7 @@ void RigidBodyComponent::AddCollidersToBody(Object* obj, rp::RigidBody* body)
 		}
 	}
 
-	assert(collidersList.size() > 0);
+//	assert(collidersList.size() > 0);
 	//std::cout << (GetOwner()->GetName() + " has " + std::to_string(colliders.size()) + " colliders\n");
 
 	//CHILDREN

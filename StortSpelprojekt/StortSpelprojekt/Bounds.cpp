@@ -70,6 +70,13 @@ dx::XMFLOAT3 Bounds::GetSize() const
 	return dx::XMFLOAT3(x, y, z);
 }
 
+float Bounds::GetRadiusXZ() const
+{
+	float dx = (max.x - min.x);
+	float dz = (max.z - min.z);
+	return sqrtf(dx * dx + dz * dz) * 0.5f;
+}
+
 void Bounds::TransformMinMax(dx::XMMATRIX worldTransform, dx::XMFLOAT3& min, dx::XMFLOAT3& max) const
 {
 	dx::XMFLOAT3 storedTransformedCorner;

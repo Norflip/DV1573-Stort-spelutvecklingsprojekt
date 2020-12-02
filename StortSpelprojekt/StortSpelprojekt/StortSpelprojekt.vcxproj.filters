@@ -73,6 +73,9 @@
     <FxCompile Include="Shaders\ForwardPlusRendering.hlsl">
       <Filter>Resource Files</Filter>
     </FxCompile>
+    <FxCompile Include="Shaders\Leaf_vs.hlsl">
+      <Filter>Resource Files</Filter>
+    </FxCompile>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="BoxColliderComponent.cpp">
@@ -304,6 +307,15 @@
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="CreditsScene.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="ParticleComponent.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="Particlesys.cpp">
+    <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="Resource.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>
@@ -617,6 +629,12 @@
     <ClInclude Include="CreditsScene.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="ParticleComponent.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Particlesys.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <Filter Include="Header Files">
@@ -641,6 +659,9 @@
     </None>
     <None Include="cpp.hint">
       <Filter>Source Files</Filter>
+    </None>
+    <None Include="Shaders\noiseSimplex.cginc">
+      <Filter>Resource Files</Filter>
     </None>
   </ItemGroup>
   <ItemGroup>

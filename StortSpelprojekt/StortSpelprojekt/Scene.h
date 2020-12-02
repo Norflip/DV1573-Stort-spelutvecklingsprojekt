@@ -30,11 +30,14 @@
 #include "PlayerAnimHandlerComp.h"
 #include "HousePartsComponent.h"
 
+#include "ParticleComponent.h"
+
+#include "Particlesys.h"
+
+
 class GUIFont;
 class SpriteRenderPass;
 class PlayerComp;
-
-//constexpr auto IMMORTAL = 0;
 
 ALIGN16
 class Scene
@@ -71,7 +74,10 @@ protected:
 	int currentframe = 0;
 	int frameToDraw = 1;
 	int lastFrame = 1;
+	float physicsDelay =2.f;
+	float delayTimer = 0;
 	wchar_t iconText[10];
+
 	Object* root;
 	Renderer* renderer;
 	ResourceManager* resources;
@@ -80,7 +86,7 @@ protected:
 	
 	std::queue<Object*> removeQueue;
 	CameraComponent* camera;
-	
+	bool firstFrame;
 	GameClock clock;
 
 	Input& input;
@@ -90,4 +96,5 @@ protected:
 	ObjectPooler* pooler;
 	GUIManager* guiManager;		
 	std::string debugName;
+
 };

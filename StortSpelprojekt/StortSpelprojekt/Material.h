@@ -11,8 +11,6 @@ constexpr std::size_t MAX_SHADER_SLOTS = 5;
 ALIGN16
 class Material : public Resource
 {
-	static size_t idCounter;
-
 	struct Slot
 	{
 		ID3D11SamplerState* state;
@@ -43,7 +41,6 @@ public:
 	void SetName(const std::string& name) { this->name = name; }
 	const std::string& GetName() const { return this->name; }
 
-	size_t GetID() const { return this->id; }
 	Shader* GetShader() { return this->shader; }
 
 	ALIGN16_ALLOC;
@@ -51,7 +48,6 @@ public:
 private:
 	Shader* shader;
 	cb_Material cb_material_data;
-	size_t id;
 	bool transparent;
 
 	std::string name;
