@@ -40,6 +40,7 @@ class Pathfinding : public Component
 		void AddObstacles();
 		void ResetPath();
 		void FollowPath();
+		void AddObstaclesToNeighbors(Node* node);
 
 		int cols;
 		int rows;

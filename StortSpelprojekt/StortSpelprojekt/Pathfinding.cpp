@@ -60,32 +60,32 @@ void Pathfinding::Update(const float& deltaTime)
 		FollowPath();
 	}
 
-	/*dx::XMFLOAT3 enemyPos;
-	dx::XMStoreFloat3(&enemyPos, GetOwner()->GetTransform().GetPosition());
+	//dx::XMFLOAT3 enemyPos;
+	//dx::XMStoreFloat3(&enemyPos, GetOwner()->GetTransform().GetPosition());
 
-	for (int i = 0; i < cols; i++)
-	{
-		for (int j = 0; j < rows; j++)
-		{
-			dx::XMFLOAT3 color;
-			if (grid[i][j]->obstacle)
-			{
-				color = dx::XMFLOAT3(0, 0, 0);
-			}
-			else
-			{
-				if (grid[i][j]->openSet)
-					color = dx::XMFLOAT3(0, 1, 0);
-				else if (grid[i][j]->correctPath)
-					color = dx::XMFLOAT3(0, 0, 1);
-				else if (grid[i][j]->closedSet)
-					color = dx::XMFLOAT3(1, 0, 0);
-				else
-					color = dx::XMFLOAT3(1, 1, 1);
-			}
-			DShape::DrawBox(dx::XMFLOAT3(grid[i][j]->pos.x + (int)enemyPos.x - (cols/2), enemyPos.y + 7, grid[i][j]->pos.y + (int)enemyPos.z - (rows/2)), dx::XMFLOAT3(0.8, 0.8, 0.8), color);
-		}
-	}*/
+	//for (int i = 0; i < cols; i++)
+	//{
+	//	for (int j = 0; j < rows; j++)
+	//	{
+	//		dx::XMFLOAT3 color;
+	//		if (grid[i][j]->obstacle)
+	//		{
+	//			color = dx::XMFLOAT3(0, 0, 0);
+	//		}
+	//		else
+	//		{
+	//			if (grid[i][j]->openSet)
+	//				color = dx::XMFLOAT3(0, 1, 0);
+	//			else if (grid[i][j]->correctPath)
+	//				color = dx::XMFLOAT3(0, 0, 1);
+	//			else if (grid[i][j]->closedSet)
+	//				color = dx::XMFLOAT3(1, 0, 0);
+	//			else
+	//				color = dx::XMFLOAT3(1, 1, 1);
+	//		}
+	//		DShape::DrawBox(dx::XMFLOAT3(grid[i][j]->pos.x + (int)enemyPos.x - (cols/2), enemyPos.y + 7, grid[i][j]->pos.y + (int)enemyPos.z - (rows/2)), dx::XMFLOAT3(0.8, 0.8, 0.8), color);
+	//	}
+	//}
 }
 
 void Pathfinding::SetPlayer(PlayerComp* playerComp)
@@ -258,6 +258,7 @@ void Pathfinding::AddObstacles()
 				if (hitProps.object != nullptr || hitDefaults.object != nullptr) //(hitProps.object != nullptr && hitProps.object->GetName() == "HouseInterior"))// != nullptr )//&& hitProps.object->GetName() == "houseBase"))
 				{
 					grid[x][y]->obstacle = true;
+					AddObstaclesToNeighbors(grid[x][y]);
 					//for (int i = 0; i < grid[x][y]->neighbors.size(); i++)
 					//{
 						//if (!grid[x][y]->neighbors[i]->obstacle)
@@ -339,4 +340,24 @@ void Pathfinding::FollowPath()
 		if (length <= 0.01)
 			correctPath.pop_back();
 	}
+}
+
+void Pathfinding::AddObstaclesToNeighbors(Node* node)
+{
+	if (node->pos.x < (cols - 1))							
+		grid[(int)node->pos.x + 1][(int)node->pos.y]->obstacle = true;
+	if (node->pos.x > 0)
+		grid[(int)node->pos.x - 1][(int)node->pos.y]->obstacle = true;
+	if (node->pos.y < (rows - 1))
+		grid[(int)node->pos.x][(int)node->pos.y + 1]->obstacle = true;
+	if (node->pos.y > 0)
+		grid[(int)node->pos.x][(int)node->pos.y - 1]->obstacle = true;
+	if (node->pos.x > 0 && node->pos.y > 0)
+		grid[(int)node->pos.x - 1][(int)node->pos.y - 1]->obstacle = true;
+	if (node->pos.x < cols - 1 && node->pos.y > 0)
+		grid[(int)node->pos.x + 1][(int)node->pos.y - 1]->obstacle = true;
+	if (node->pos.x > 0 && node->pos.y < rows - 1)
+		grid[(int)node->pos.x - 1][(int)node->pos.y + 1]->obstacle = true;
+	if (node->pos.x < cols - 1 && node->pos.y < rows - 1)
+		grid[(int)node->pos.x + 1][(int)node->pos.y + 1]->obstacle = true;
 }
