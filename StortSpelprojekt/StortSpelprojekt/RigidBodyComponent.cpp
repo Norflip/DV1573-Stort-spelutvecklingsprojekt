@@ -11,6 +11,7 @@ RigidBodyComponent::RigidBodyComponent(float mass, FilterGroups group, FilterGro
 RigidBodyComponent::~RigidBodyComponent()
 {
 	physics->UnregisterRigidBody(this);
+	Release();
 }
 
 void RigidBodyComponent::Update(const float& deltaTime)
