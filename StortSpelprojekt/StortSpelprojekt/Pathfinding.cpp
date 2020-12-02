@@ -49,7 +49,7 @@ void Pathfinding::Update(const float& deltaTime)
 	playerGridPos.x = (abs((int)playerGridPos.x) - abs((int)enemyGridPos.x)) + (cols / 2);
 	playerGridPos.z = (abs((int)playerGridPos.z) - abs((int)enemyGridPos.z)) + (rows / 2);
 
-	if (timer.GetSeconds() > 2.0f)
+	if (timer.GetSeconds() > 1.0f)
 	{
 		ResetPath();
 		AStar();
@@ -299,7 +299,7 @@ void Pathfinding::ResetPath()
 
 void Pathfinding::FollowPath()
 {
-	if (correctPath.size() > 1)
+	if (correctPath.size() > 2)
 	{
 		Node* nodeA = correctPath[correctPath.size() - 1];
 		Node* nodeB = correctPath[correctPath.size() - 2];
