@@ -51,6 +51,7 @@ class CollisionEventListener : public rp::EventListener
 					RigidBodyComponent* body0 = object0->GetComponent<RigidBodyComponent>();
 					if (body0 != nullptr && body0->GetType() == BodyType::DYNAMIC)
 					{
+						info.main = object0;
 						info.other = object1;
 						body0->m_OnCollision(info);
 					}
@@ -58,6 +59,7 @@ class CollisionEventListener : public rp::EventListener
 					RigidBodyComponent* body1 = object1->GetComponent<RigidBodyComponent>();
 					if (body1 != nullptr && body1->GetType() == BodyType::DYNAMIC)
 					{
+						info.main = object1;
 						info.other = object0;
 						body1->m_OnCollision(info);
 					}

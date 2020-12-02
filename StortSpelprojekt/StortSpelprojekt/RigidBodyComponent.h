@@ -43,7 +43,7 @@ public:
 	void OnOwnerFlagChanged(ObjectFlag old, ObjectFlag newFlag);
 
 	virtual void m_OnCollision(CollisionInfo& collision);
-	virtual void AddCollisionCallback(std::function<bool(CollisionInfo&)> callback);
+	virtual void AddCollisionCallback(std::function<void(CollisionInfo&)> callback);
 
 	virtual void AddForce(const dx::XMFLOAT3& force);
 	virtual void AddForceAtPoint(const dx::XMFLOAT3& force, const dx::XMFLOAT3& offset, bool local = true);
@@ -88,6 +88,6 @@ private:
 	bool lockRotation;
 	BodyType type;
 	bool autoRegister, initialized;
-	std::vector<std::function<bool(CollisionInfo&)>> callbacks;
+	std::vector<std::function<void(CollisionInfo&)>> callbacks;
 
 };

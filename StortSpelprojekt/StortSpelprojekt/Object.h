@@ -98,6 +98,7 @@ public:
 	Object* GetParent() const { return this->parent; }
 
 	void SendMsg(const int& type, const std::string& msg, Object* sender, bool sendDown = true, void* data = nullptr);
+	void SetEnable(bool state) { this->enable = state; }
 
 private:
 	ObjectFlag flags;
@@ -112,6 +113,7 @@ private:
 	ComponentArray componentArray;
 	ComponentBitSet componentBitSet;
 
+	bool enable;
 	friend Component;
 };
 
