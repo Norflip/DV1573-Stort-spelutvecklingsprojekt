@@ -60,7 +60,7 @@ void Pathfinding::Update(const float& deltaTime)
 		FollowPath();
 	}
 
-	dx::XMFLOAT3 enemyPos;
+	/*dx::XMFLOAT3 enemyPos;
 	dx::XMStoreFloat3(&enemyPos, GetOwner()->GetTransform().GetPosition());
 
 	for (int i = 0; i < cols; i++)
@@ -85,7 +85,7 @@ void Pathfinding::Update(const float& deltaTime)
 			}
 			DShape::DrawBox(dx::XMFLOAT3(grid[i][j]->pos.x + (int)enemyPos.x - (cols/2), enemyPos.y + 7, grid[i][j]->pos.y + (int)enemyPos.z - (rows/2)), dx::XMFLOAT3(0.8, 0.8, 0.8), color);
 		}
-	}
+	}*/
 }
 
 void Pathfinding::SetPlayer(PlayerComp* playerComp)
@@ -321,7 +321,7 @@ void Pathfinding::FollowPath()
 		enemyNextPos = dx::XMFLOAT3(enemyNextPos.x + walkTo.x, 0, enemyNextPos.z + walkTo.z);
 		dx::XMVECTOR enemyNextPosVec = dx::XMLoadFloat3(&enemyNextPos);
 		dx::XMFLOAT3 vel = enemyRB->GetLinearVelocity();
-		dx::XMFLOAT3 move = { -walkTo.x * enemyStatsComp->GetSpeed(), vel.y, -walkTo.z * enemyStatsComp->GetSpeed() };
+		dx::XMFLOAT3 move = { -walkTo.x * enemyStatsComp->GetChaseSpeed(), vel.y, -walkTo.z * enemyStatsComp->GetChaseSpeed() };
 		enemyRB->SetLinearVelocity(move);
 
 		dx::XMVECTOR dirVec = dx::XMVector3Normalize(dx::XMVectorSubtract(GetOwner()->GetTransform().GetPosition(), enemyNextPosVec));
