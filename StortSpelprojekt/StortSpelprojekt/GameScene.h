@@ -43,4 +43,5 @@ private:
 
 	bool onceTest = true;
 	bool end;
+	int segments;
 };

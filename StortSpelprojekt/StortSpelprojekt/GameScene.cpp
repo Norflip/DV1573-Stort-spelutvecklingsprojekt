@@ -12,6 +12,7 @@ GameScene::GameScene() : Scene("GameScene")
 	fogCol = 0;
 	end = false;
 	firstFrame = false;
+	segments = 0;
 }
 
 GameScene::~GameScene()
@@ -530,8 +531,6 @@ void GameScene::OnActivate()
 	//PrintSceneHierarchy(root, 0);
 	house->GetComponent<NodeWalkerComp>()->InitializePath(world.GetPath());
 	house->GetComponent<NodeWalkerComp>()->SetWorld(&world);
-	//Place signs
-	SetSignPositions(state);
 
 	if (house != nullptr && player != nullptr)
 	{
@@ -569,6 +568,8 @@ void GameScene::OnActivate()
 
 			player->GetTransform().SetPosition(playerPos);
 			player->GetComponent<RigidBodyComponent>()->SetPosition(playerPos);
+
+			segments++;
 		}
 		// NÅN MÅSTE FIXA DETTA. JAG PALLAR INTE
 		// NÅN MÅSTE FIXA DETTA. JAG PALLAR INTE
@@ -607,6 +608,8 @@ void GameScene::OnActivate()
 	/* Ugly solution */
 	player->GetComponent<PlayerComp>()->GetArms()->GetComponent< PlayerAnimHandlerComp>()->SetStarted(true);
 
+	//Place signs
+	SetSignPositions(state);
 
 	sceneSwitch = false;
 	delayTimer = 0.0f;
@@ -640,7 +643,7 @@ void GameScene::OnDeactivate()
 
 void GameScene::SetSignPositions(SaveState& state)
 {
-	if (state.segment == 7)
+	if (segments == 1)
 	{
 		end = true;
 		dx::XMFLOAT3 signPosition;
@@ -755,6 +758,7 @@ void GameScene::Update(const float& deltaTime)
 	{
 		if (roadSign->GetComponent<SelectableComponent>()->GetActive())
 		{
+			segments = 0;
 			Engine::Instance->SwitchScene(SceneIndex::WIN);
 		}
 	}
