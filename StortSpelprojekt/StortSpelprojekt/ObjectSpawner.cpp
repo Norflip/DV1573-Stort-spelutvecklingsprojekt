@@ -412,7 +412,7 @@ void ObjectSpawner::SpawnItem(Chunk* chunk)
 					{
 						/* Particles */
 						ParticleSystemComponent* particles = object->AddComponent<ParticleSystemComponent>(renderer, Engine::Instance->GetResources()->GetShaderResource("particleShader"));
-						particles->InitializeParticles(renderer->GetDevice(), "Stars");
+						particles->InitializeParticles(renderer->GetDevice(), "Particle");
 					}
 
 					m_itemIndex++;
