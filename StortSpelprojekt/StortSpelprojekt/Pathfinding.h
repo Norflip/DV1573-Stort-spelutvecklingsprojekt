@@ -38,6 +38,7 @@ class Pathfinding : public Component
 		int GetDistance(Node* nodeA, Node* nodeB);
 		void AddObstacles();
 		void ResetPath();
+		void FollowPath();
 
 		int cols;
 		int rows;
@@ -45,4 +46,9 @@ class Pathfinding : public Component
 		DShape box;
 		GameClock timer;
 		PlayerComp* player;
+		std::vector<Node*> correctPath;
+		bool pathFound;
+		float playerRadius;
+		RigidBodyComponent* enemyRB;
+		EnemyStatsComp* enemyStatsComp;
 };

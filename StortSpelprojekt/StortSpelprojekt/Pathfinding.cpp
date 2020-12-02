@@ -2,7 +2,7 @@
 #include "Pathfinding.h"
 
 Pathfinding::Pathfinding(PlayerComp* player)
-	: cols(32), rows(32), player(player)
+	: cols(32), rows(32), player(player), pathFound(false), playerRadius(2.5)
 {
 	timer.Start();
 	for (int x = 0; x < cols; x++)
@@ -27,11 +27,13 @@ Pathfinding::~Pathfinding()
 
 void Pathfinding::Initialize()
 {
-	for (int x = 0; x < cols; x++)
+	this->enemyRB = GetOwner()->GetComponent<RigidBodyComponent>();
+	this->enemyStatsComp = GetOwner()->GetComponent<EnemyStatsComp>();
+	for (int x = 0; x < this->cols; x++)
 	{
-		for (int y = 0; y < rows; y++)
+		for (int y = 0; y < this->rows; y++)
 		{
-			grid[x][y] = new Node();
+			this->grid[x][y] = new Node();
 		}
 	}
 }
@@ -44,6 +46,10 @@ void Pathfinding::Update(const float& deltaTime)
 
 	dx::XMFLOAT3 enemyPos;
 	dx::XMStoreFloat3(&enemyPos, GetOwner()->GetTransform().GetPosition());
+	if (pathFound)
+	{
+		FollowPath();
+	}
 	for (int i = 0; i < cols; i++)
 	{
 		for (int j = 0; j < rows; j++)
@@ -81,10 +87,8 @@ void Pathfinding::AStar()
 	enemyGridPos.x = (abs((int)enemyGridPos.x) - abs((int)enemyGridPos.x)) + (cols / 2);
 	enemyGridPos.z = (abs((int)enemyGridPos.z) - abs((int)enemyGridPos.z)) + (rows / 2);
 
-	std::cout << "player Grid x: " << playerGridPos.x << " z: " << playerGridPos.z << std::endl;
-
 	if ((int)playerGridPos.x >= 0 && (int)playerGridPos.z >= 0 && 
-		abs((int)playerGridPos.x - (int)enemyGridPos.x) < (cols-1) && abs((int)playerGridPos.z - (int)enemyGridPos.z) < (rows - 1))
+		(int)playerGridPos.x < (cols-1) && (int)playerGridPos.z < (rows - 1))
 	{
 		Node* start = grid[(int)enemyGridPos.x][(int)enemyGridPos.z];
 		Node* end = grid[(int)playerGridPos.x][(int)playerGridPos.z];
@@ -97,7 +101,6 @@ void Pathfinding::AStar()
 		std::vector<Node*> closedSet;
 		openSet.push_back(start);
 		grid[(int)start->pos.x][(int)start->pos.y]->openSet = true;
-		bool pathFound = false;
 		while (openSet.size() > 0)
 		{
 			Node* current = nullptr;
@@ -110,24 +113,14 @@ void Pathfinding::AStar()
 			{
 				pathFound = true;
 				Node* temp = current;
-				std::vector<Node*> bestPath;
 				grid[(int)temp->pos.x][(int)temp->pos.y]->correctPath = true;
-				bestPath.push_back(grid[(int)temp->pos.x][(int)temp->pos.y]);
+				correctPath.push_back(grid[(int)temp->pos.x][(int)temp->pos.y]);
 				while (temp->previous != nullptr)
 				{
 					temp = temp->previous;
 					grid[(int)temp->pos.x][(int)temp->pos.y]->correctPath = true;
-					bestPath.push_back(grid[(int)temp->pos.x][(int)temp->pos.y]);
+					correctPath.push_back(grid[(int)temp->pos.x][(int)temp->pos.y]);
 				}
-				std::cout << "DONE!" << std::endl;
-
-
-				//for (int i = 0; i < bestPath.size(); i++)
-				//{
-				//	std::cout << bestPath[i]->fCost << std::endl;
-				//}
-				std::cout << "Time it took: " << timer.GetSeconds() << std::endl;
-				std::cout << "bestPath size: " << bestPath.size() << std::endl;
 			}
 
 			openSet.shrink_to_fit();
@@ -233,6 +226,8 @@ void Pathfinding::AddObstacles()
 
 void Pathfinding::ResetPath()
 {
+	pathFound = false;
+	correctPath.clear();
 	for (int x = 0; x < cols; x++)
 	{
 		for (int y = 0; y < rows; y++)
@@ -259,4 +254,59 @@ void Pathfinding::ResetPath()
 	}
 
 	AddObstacles();
+}
+
+void Pathfinding::FollowPath()
+{
+	if (correctPath.size() > 1)
+	{
+		dx::XMFLOAT3 enemyNewPos;
+		dx::XMStoreFloat3(&enemyNewPos, GetOwner()->GetTransform().GetPosition());
+
+		Node* nodeA = correctPath[correctPath.size() - 1];
+		correctPath.erase(correctPath.begin() + (correctPath.size() - 1));
+		correctPath.shrink_to_fit();
+		Node* nodeB = correctPath[correctPath.size() - 1];
+		correctPath.erase(correctPath.begin() + (correctPath.size() - 1));
+		correctPath.shrink_to_fit();
+
+		dx::XMFLOAT2 walkTo = { nodeA->pos.x - nodeB->pos.x, nodeA->pos.y - nodeB->pos.y };
+		enemyNewPos.x = walkTo.x;
+		enemyNewPos.z = walkTo.y;
+		std::cout << "enemyNewPos x: " << enemyNewPos.x << " z: " << enemyNewPos.z << std::endl;
+		dx::XMVECTOR enemyNewPosVec = dx::XMVectorSet(enemyNewPos.x, 0, enemyNewPos.y, 0);
+
+		dx::XMFLOAT3 moveDir = { 0.0f, 0.0f, 0.0f };
+		dx::XMVECTOR moveVec = dx::XMVectorAdd(enemyNewPosVec, GetOwner()->GetTransform().GetPosition());
+		dx::XMVECTOR normVec = dx::XMVector3Normalize(moveVec);
+		dx::XMFLOAT3 normDir;
+		dx::XMStoreFloat3(&normDir, normVec);
+
+		dx::XMVECTOR lenVec = dx::XMVector3Length(moveVec);
+		float length;
+		dx::XMStoreFloat(&length, lenVec);
+
+		if (length >= playerRadius)
+		{
+			moveDir.x = normDir.x;
+			moveDir.z = normDir.z;
+		}
+
+		dx::XMFLOAT3 vel = enemyRB->GetLinearVelocity();
+
+		dx::XMFLOAT3 move = { moveDir.x * enemyStatsComp->GetSpeed(), vel.y, moveDir.z * enemyStatsComp->GetSpeed() };
+
+		enemyRB->SetLinearVelocity(move);
+		dx::XMVECTOR enemyPos = GetOwner()->GetTransform().GetPosition();
+
+		dx::XMVECTOR dirVec = dx::XMVector3Normalize(dx::XMVectorSubtract(GetOwner()->GetTransform().GetPosition(), moveVec));
+		dx::XMFLOAT3 dirToNode;
+		dx::XMStoreFloat3(&dirToNode, dirVec);
+		float angle = 180.f + atan2f(dirToNode.x, dirToNode.z) * (180.f / Math::PI);
+		float rotation = angle * Math::ToRadians;
+		dx::XMVECTOR right = GetOwner()->GetTransform().TransformDirection({ 1,0,0 });
+		dx::XMVECTOR eulerRotation = dx::XMQuaternionMultiply(dx::XMQuaternionRotationAxis(right, 0), dx::XMQuaternionRotationAxis({ 0,1,0 }, rotation));
+		GetOwner()->GetTransform().SetRotation(eulerRotation);
+		enemyRB->SetRotation(eulerRotation);
+	}
 }
