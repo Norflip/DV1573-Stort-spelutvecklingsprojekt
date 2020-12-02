@@ -105,7 +105,7 @@ void EnemyManager::SpawnRandomEnemy(const float& deltaTime)
 	enemySpawnTimer += deltaTime;
 	//spawn on timer intervall if nrof enemies is less than cap
 	//std::cout << aliveEnemies <<" - " <<enemyVector.size()<< " - new enemy spawns in: " << enemySpawnRate << "sec, time: " << enemySpawnTimer << " sec." << std::endl;
-	std::cout <<enemyVector.size()<< " - new enemy spawns in: " << enemySpawnRate << "sec, time: " << enemySpawnTimer << " sec." << std::endl;
+	//std::cout <<enemyVector.size()<< " - new enemy spawns in: " << enemySpawnRate << "sec, time: " << enemySpawnTimer << " sec." << std::endl;
 	if (enemySpawnTimer >= enemySpawnRate && /*aliveEnemies*/ enemyVector.size()< ENEMY_TOTAL)
 	{
 		dx::XMVECTOR houseVec = house->GetTransform().GetPosition();
@@ -162,10 +162,10 @@ void EnemyManager::SpawnRandomEnemy(const float& deltaTime)
 					nrOfChargeEnemies++;
 
 				}
-				std::cout << "spawned..."<<" nr of is " << /*aliveEnemies*/enemyVector.size() << std::endl;
-				std::cout << "playerpos: x: " << playerPos.x << ", y: " << playerPos.y << ", z: " << playerPos.z << std::endl;
-				std::cout << "enemypos: x: " << randPos.x << ", y:" << randPos.y << ", z: " << randPos.z << std::endl;
-				std::cout << "L: " << lengthP << " - " << !camComp->InView(enemyBounds, world) << std::endl;
+				//std::cout << "spawned..."<<" nr of is " << /*aliveEnemies*/enemyVector.size() << std::endl;
+				//std::cout << "playerpos: x: " << playerPos.x << ", y: " << playerPos.y << ", z: " << playerPos.z << std::endl;
+				//std::cout << "enemypos: x: " << randPos.x << ", y:" << randPos.y << ", z: " << randPos.z << std::endl;
+				//std::cout << "L: " << lengthP << " - " << !camComp->InView(enemyBounds, world) << std::endl;
 			}
 		}
 	}
