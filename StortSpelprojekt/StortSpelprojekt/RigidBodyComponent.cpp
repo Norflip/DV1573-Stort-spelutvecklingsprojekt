@@ -10,6 +10,8 @@ RigidBodyComponent::RigidBodyComponent(float mass, FilterGroups group, FilterGro
 
 RigidBodyComponent::~RigidBodyComponent()
 {
+	physics->UnregisterRigidBody(this);
+	Release();
 }
 
 void RigidBodyComponent::Update(const float& deltaTime)
@@ -105,6 +107,19 @@ void RigidBodyComponent::Release()
 	}
 
 	physics->GetWorld()->destroyRigidBody(body);
+}
+
+void RigidBodyComponent::RecieveMsg(const int& type, const std::string& msg, Object* sender, void* data)
+{
+	if (type == (int)MessageType::SET_FLAG && msg == std::to_string((int)ObjectFlag::ENABLED))
+	{
+		body->setIsActive(true);
+	}
+
+	if (type == (int)MessageType::REM_FLAG && msg == std::to_string((int)ObjectFlag::ENABLED))
+	{
+		body->setIsActive(false);
+	}
 }
 
 rp::Transform RigidBodyComponent::ConvertToBtTransform(const Transform& transform) const

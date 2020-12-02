@@ -62,7 +62,7 @@ namespace SaveHandler
 		return loaded;
 	}
 
-	inline SaveState& LoadOrCreate ()
+	inline SaveState& LoadOrCreate()
 	{
 #if PRINT_IO
 		std::cout << "Loading @" << FULL_FILE_PATH << "\tsize: " << sizeof(SaveState) << std::endl;
@@ -85,6 +85,13 @@ namespace SaveHandler
 	inline bool RemoveSave()
 	{
 		if (Contains())
+		{
+			std::cout << "deletes save" << std::endl;
 			remove(FULL_FILE_PATH);
+
+			std::cout << "removed: " << (!Contains()) << std::endl;
+			return true;
+		}
+		return false;
 	}
 }
