@@ -1,6 +1,6 @@
 #pragma once
 #include "Scene.h"
-#define SCROLLING_SPEED 20
+#define SCROLLING_SPEED 50
 class GUIFont;
 class SpriteRenderPass;
 

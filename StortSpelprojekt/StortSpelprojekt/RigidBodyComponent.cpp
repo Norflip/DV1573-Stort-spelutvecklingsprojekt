@@ -188,30 +188,11 @@ void RigidBodyComponent::OnOwnerFlagChanged(ObjectFlag old, ObjectFlag newFlag)
 
 void RigidBodyComponent::m_OnCollision(CollisionInfo& collision)
 {
-	// <3 LOVAR JAG SKA ÄNDRA DETTA FILIP <3 
 	for (auto it = callbacks.begin(); it < callbacks.end(); it++)
-		if ((*it)(collision)) 
-		{	
-			Mesh* pickupMesh = Engine::Instance->GetResources()->GetResource<Mesh>("Propane");
-			Material* pickupMat = Engine::Instance->GetResources()->GetResource<Material>("PropaneMaterial");
-
-			pickupMat->SetShader(Engine::Instance->GetResources()->GetShaderResource("defaultShader"));
-			
-			Object* pickup = new Object("puzzlePickup");
-			Object::AddToHierarchy(GetOwner()->GetParent(), pickup);
-
-			pickup->AddComponent<MeshComponent>(pickupMesh, pickupMat);
-			pickup->AddComponent<PickupComponent>(PickupType::Fuel, 35.0f);
-			pickup->AddComponent<BoxColliderComponent>(dx::XMFLOAT3(0.3f, 0.35f, 0.15f), dx::XMFLOAT3(0, 0, 0));
-			RigidBodyComponent* rb = pickup->AddComponent<RigidBodyComponent>(10.0f, FilterGroups::HOLDABLE, FilterGroups::EVERYTHING & ~FilterGroups::PLAYER, BodyType::DYNAMIC, true);
-
-			rb->SetPosition(GetOwner()->GetTransform().GetPosition());
-
-			GetOwner()->RemoveFlag(ObjectFlag::ENABLED);
-		}
+		((*it)(collision));
 }
 
-void RigidBodyComponent::AddCollisionCallback(std::function<bool(CollisionInfo&)> callback)
+void RigidBodyComponent::AddCollisionCallback(std::function<void(CollisionInfo&)> callback)
 {
 	callbacks.push_back(callback);
 }
