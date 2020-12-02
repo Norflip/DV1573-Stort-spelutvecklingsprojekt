@@ -55,7 +55,9 @@ public:
 
 #if LOAD_FROM_DLL
 
-	std::wstring DLLGetShaderData(std::string path, size_t& size);
+	std::string DLLGetShaderData(std::string path, size_t& size);
+	std::string DLLFormatShaderString(std::string shader, size_t& sizeref);
+	
 	unsigned char* DLLGetTextureData(std::string path, size_t& size);
 	//unsigned char* DLLGetSoundData(std::string path, size_t& size);
 

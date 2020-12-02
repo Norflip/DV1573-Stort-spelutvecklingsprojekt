@@ -142,23 +142,35 @@ void Shader::CompilePS(ID3D11Device* device)
 #endif
 			NULL, NULL
 		};
-//
-//#if LOAD_FROM_DLL
-//
-//		size_t size;
-//		std::wstring shader = Engine::Instance->GetResources()->DLLGetShaderData(pixelPath, size);
-//
-//		std::cout << "SIZE1: " << size << std::endl;
-//		std::cout << "SIZE2: " << (shader.size()) << std::endl;
-//		std::cout << "SIZE3: " << (sizeof(shader)) << std::endl;
-//		std::cout << "SIZE4: " << (shader.size() * sizeof(wchar_t)) << std::endl;
-//
-//		PSCompileResult = D3DCompile(shader.c_str(), shader.length(), nullptr, defines, D3D_COMPILE_STANDARD_FILE_INCLUDE, pixelEntry, "ps_5_0", shaderCompilationFlag, 0, &PSBlob, &errorBlob);
-//#else
+
+#if LOAD_FROM_DLL
+
+		size_t size;
+		std::string shader = Engine::Instance->GetResources()->DLLGetShaderData(pixelPath, size);
+
+		std::cout << "--------------------------------" << std::endl;
+		std::cout << "--------------------------------" << std::endl;
+		std::cout << "--------------------------------" << std::endl;
+		std::cout << "--------------------------------" << std::endl;
+
+		std::string dd(shader.begin(), shader.end());
+		//size_t index = dd.find("//DLL_EOF");
+		//dd = dd.substr(0, index);
+
+		std::cout << dd << std::endl;
+
+		//size_t index0 = dd.find("main");
+		//std::cout << "HAS MAIN " << index0 << std::endl;
 
 
-//#endif
+		std::cout << "--------------------------------" << std::endl;
+		std::cout << "--------------------------------" << std::endl;
+		std::cout << "--------------------------------" << std::endl;
+		std::cout << "--------------------------------" << std::endl;
 
+
+		PSCompileResult = D3DCompile(shader.c_str(), shader.length(), nullptr, defines, D3D_COMPILE_STANDARD_FILE_INCLUDE, pixelEntry, "ps_5_0", shaderCompilationFlag, 0, &PSBlob, &errorBlob);
+#else
 
 		PSCompileResult = D3DCompileFromFile
 		(
@@ -172,7 +184,8 @@ void Shader::CompilePS(ID3D11Device* device)
 			&PSBlob,
 			&errorBlob
 		);
-		
+#endif
+
 		ASSERT_SHADER(PSCompileResult, errorBlob, wPath);
 
 		HRESULT PSCreateResult = device->CreatePixelShader(PSBlob->GetBufferPointer(), PSBlob->GetBufferSize(), nullptr, &this->pixelShader);

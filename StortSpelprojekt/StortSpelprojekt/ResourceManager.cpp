@@ -527,13 +527,13 @@ Object* ResourceManager::AssembleObject(std::string meshName, std::string materi
 
 #if LOAD_FROM_DLL
 
-std::wstring ResourceManager::DLLGetShaderData(std::string path, size_t& size)
+std::string ResourceManager::DLLGetShaderData(std::string path, size_t& size)
 {
 	size_t index = path.find_last_of('/');
 	if (index != std::string::npos)
 		path = path.substr(index + 1, path.size() - index - 1);
 	
-	std::wstring shader;
+	std::string shader;
 	auto found = dllResourceMap.find(path);
 	if (dllResourceMap.find(path) != dllResourceMap.end())
 	{
@@ -541,11 +541,38 @@ std::wstring ResourceManager::DLLGetShaderData(std::string path, size_t& size)
 		HGLOBAL hMemory = LoadResource(handle, hResource);
 		size = SizeofResource(handle, hResource);
 		
-		std::string data = std::string(static_cast<const char*>(::LockResource(hMemory)));
+		shader = std::string(static_cast<const char*>(::LockResource(hMemory)));
+		shader = DLLFormatShaderString(shader, size);
 
+		//std::cout << data << std::endl << std::endl << std::endl << std::endl << std::endl << std::endl;
+	}
 
-		std::cout << data << std::endl << std::endl << std::endl << std::endl << std::endl << std::endl;
-		shader = std::wstring(data.begin(), data.end());
+	return shader;
+}
+
+std::string ResourceManager::DLLFormatShaderString(std::string shader, size_t& sizeref)
+{
+	const std::string include_marker = "#include";
+	size_t index = shader.find(include_marker);
+
+	while (index != std::string::npos)
+	{
+		size_t startIndex = index;
+		size_t endIndex = shader.substr(startIndex, 100).find("\r\n");
+		
+		std::string line = shader.substr(startIndex, endIndex - startIndex);
+		shader.erase(startIndex, endIndex - startIndex);
+
+		size_t firstP = line.find_first_of('"');
+		size_t lastP = line.find_last_of('"');
+		line = line.substr(firstP + 1, lastP - firstP - 1);
+
+		size_t tmp;
+		std::string incshader = DLLGetShaderData(line, tmp);
+		sizeref += tmp;
+		shader.insert(startIndex, incshader);
+
+		index = shader.find(include_marker);
 	}
 
 	return shader;
@@ -574,6 +601,12 @@ unsigned char* ResourceManager::DLLGetTextureData(std::string path, size_t& size
 		assert(data);
 		
 		dllTextureCache.insert({ path, data });
+		return data;
+	}
+	else
+	{
+		unsigned char* data = new unsigned char[4];
+		data[0] = data[1] = data[2] = data[3] = 0.5f;
 		return data;
 	}
 

@@ -127,7 +127,7 @@ void Scene::AnimateIcon()
 		const wchar_t* iconText = wide_string.c_str();
 
 		HMODULE& hmod = Engine::Instance->GetResources()->GetHMODULE();
-		SendMessage(window->GetHWND(), WM_SETICON, ICON_SMALL, (LPARAM)LoadIcon(hmod, iconText));
+		SendMessage(window->GetHWND(), WM_SETICON, ICON_SMALL, (LPARAM)LoadIconW(hmod, iconText));
 	}
 }
 

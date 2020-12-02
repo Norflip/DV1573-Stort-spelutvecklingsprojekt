@@ -1,3 +1,4 @@
+//DLL_EOF
 #include "CommonBuffers.hlsl"
 #include "IO.hlsl"
 

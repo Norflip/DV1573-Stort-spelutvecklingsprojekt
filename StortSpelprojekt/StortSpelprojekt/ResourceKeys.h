@@ -228,22 +228,21 @@
 #define IDR_TEXTURE187 323
 #define IDR_TEXTURE188 324
 #define IDR_TEXTURE189 325
-#define IDR_TEXTURE190 326
-#define IDR_SOUND1 327
-#define IDR_SOUND2 328
-#define IDR_SOUND3 329
-#define IDR_SOUND4 330
-#define IDR_SOUND5 331
-#define IDR_SOUND6 332
-#define IDR_SOUND7 333
-#define IDR_SOUND8 334
-#define IDR_SOUND9 335
-#define IDR_SOUND10 336
-#define IDR_SOUND11 337
+#define IDR_SOUND1 326
+#define IDR_SOUND2 327
+#define IDR_SOUND3 328
+#define IDR_SOUND4 329
+#define IDR_SOUND5 330
+#define IDR_SOUND6 331
+#define IDR_SOUND7 332
+#define IDR_SOUND8 333
+#define IDR_SOUND9 334
+#define IDR_SOUND10 335
+#define IDR_SOUND11 336
 // Next default values for new objects
 #ifdef APSTUDIO_INVOKED
 #ifndef APSTUDIO_READONLY_SYMBOLS
-#define _APS_NEXT_RESOURCE_VALUE        238
+#define _APS_NEXT_RESOURCE_VALUE        237
 #define _APS_NEXT_COMMAND_VALUE         40001
 #define _APS_NEXT_CONTROL_VALUE         1001
 #define _APS_NEXT_SYMED_VALUE           101
