@@ -43,6 +43,7 @@ class Pathfinding : public Component
 		int cols;
 		int rows;
 		Node* grid[32][32];
+		Node* end;
 		GameClock timer;
 		PlayerComp* player;
 		std::vector<Node*> correctPath;
@@ -50,4 +51,5 @@ class Pathfinding : public Component
 		float playerRadius;
 		RigidBodyComponent* enemyRB;
 		EnemyStatsComp* enemyStatsComp;
+		float length;
 };

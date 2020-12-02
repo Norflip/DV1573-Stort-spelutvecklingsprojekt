@@ -3,7 +3,7 @@
 #include "Engine.h"
 
 Pathfinding::Pathfinding(PlayerComp* player)
-	: cols(32), rows(32), player(player), pathFound(false), playerRadius(2.5)
+	: cols(32), rows(32), player(player), pathFound(false), playerRadius(2.5), length(10.0f)
 {
 	timer.Start();
 	for (int x = 0; x < cols; x++)
@@ -42,16 +42,28 @@ void Pathfinding::Initialize()
 void Pathfinding::Update(const float& deltaTime)
 {
 	timer.Update();
-	ResetPath();
-	AStar();
+	dx::XMFLOAT3 enemyGridPos;
+	dx::XMStoreFloat3(&enemyGridPos, GetOwner()->GetTransform().GetPosition());
+	dx::XMFLOAT3 playerGridPos;
+	dx::XMStoreFloat3(&playerGridPos, player->GetOwner()->GetTransform().GetPosition());
+	playerGridPos.x = (abs((int)playerGridPos.x) - abs((int)enemyGridPos.x)) + (cols / 2);
+	playerGridPos.z = (abs((int)playerGridPos.z) - abs((int)enemyGridPos.z)) + (rows / 2);
 
-	dx::XMFLOAT3 enemyPos;
-	dx::XMStoreFloat3(&enemyPos, GetOwner()->GetTransform().GetPosition());
+	if (grid[(int)playerGridPos.x][(int)playerGridPos.z] != end && timer.GetSeconds() > 2.0f)
+	{
+		ResetPath();
+		AStar();
+		timer.Restart();
+	}
 	if (pathFound)
 	{
 		FollowPath();
 	}
-	for (int i = 0; i < cols; i++)
+
+	//dx::XMFLOAT3 enemyPos;
+	//dx::XMStoreFloat3(&enemyPos, GetOwner()->GetTransform().GetPosition());
+
+	/*for (int i = 0; i < cols; i++)
 	{
 		for (int j = 0; j < rows; j++)
 		{
@@ -73,12 +85,11 @@ void Pathfinding::Update(const float& deltaTime)
 			}
 			DShape::DrawBox(dx::XMFLOAT3(grid[i][j]->pos.x + (int)enemyPos.x - (cols/2), enemyPos.y + 7, grid[i][j]->pos.y + (int)enemyPos.z - (rows/2)), dx::XMFLOAT3(0.8, 0.8, 0.8), color);
 		}
-	}
+	}*/
 }
 
 void Pathfinding::AStar()
 {
-	timer.Restart();
 	dx::XMFLOAT3 enemyGridPos;
 	dx::XMStoreFloat3(&enemyGridPos, GetOwner()->GetTransform().GetPosition());
 	dx::XMFLOAT3 playerGridPos;
@@ -92,7 +103,7 @@ void Pathfinding::AStar()
 		(int)playerGridPos.x < (cols-1) && (int)playerGridPos.z < (rows - 1))
 	{
 		Node* start = grid[(int)enemyGridPos.x][(int)enemyGridPos.z];
-		Node* end = grid[(int)playerGridPos.x][(int)playerGridPos.z];
+		end = grid[(int)playerGridPos.x][(int)playerGridPos.z];
 
 		//Node* start = grid[0][0];
 		//Node* end = grid[cols - 1][rows - 1];
@@ -232,13 +243,14 @@ void Pathfinding::AddObstacles()
 			phy->RaytestSingle(ray, distance, hitProps, FilterGroups::PROPS);
 
 			//this->isGrounded = false;
-			dx::XMFLOAT3 color = dx::XMFLOAT3(1,0,0);
+			//dx::XMFLOAT3 color = dx::XMFLOAT3(1,0,0);
 			if (hitProps.object != nullptr) //(hitProps.object != nullptr && hitProps.object->GetName() == "HouseInterior"))// != nullptr )//&& hitProps.object->GetName() == "houseBase"))
 			{
 				grid[x][y]->obstacle = true;
-				color = dx::XMFLOAT3(0, 0, 1);
+				//color = dx::XMFLOAT3(0, 0, 1);
 			}
-			DShape::DrawBox(ray.origin, dx::XMFLOAT3(0.2, distance, 0.2), color);
+			origin.y = origin.y - 15.0f;
+			//DShape::DrawBox(ray.origin, dx::XMFLOAT3(0.2, distance, 0.2), color);
 			//int randNr = rand() % 100;
 			//if(randNr < 30)
 			//	grid[x][y]->obstacle = true;
@@ -283,8 +295,7 @@ void Pathfinding::FollowPath()
 	if (correctPath.size() > 1)
 	{
 		Node* nodeA = correctPath[correctPath.size() - 1];
-		correctPath.pop_back();
-		Node* nodeB = correctPath[correctPath.size() - 1];
+		Node* nodeB = correctPath[correctPath.size() - 2];
 
 		dx::XMFLOAT3 enemyNextPos;
 		dx::XMStoreFloat3(&enemyNextPos, GetOwner()->GetTransform().GetPosition());
@@ -305,5 +316,10 @@ void Pathfinding::FollowPath()
 		dx::XMVECTOR eulerRotation = dx::XMQuaternionMultiply(dx::XMQuaternionRotationAxis(right, 0), dx::XMQuaternionRotationAxis({ 0,1,0 }, rotation));
 		GetOwner()->GetTransform().SetRotation(eulerRotation);
 		enemyRB->SetRotation(eulerRotation);
+
+		dx::XMVECTOR lengthVec = dx::XMVector3Length(dx::XMVectorSubtract(enemyNextPosVec, GetOwner()->GetTransform().GetPosition()));     
+		dx::XMStoreFloat(&length, lengthVec);
+		if (length <= 0.01)
+			correctPath.pop_back();
 	}
 }
