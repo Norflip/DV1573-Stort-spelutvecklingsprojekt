@@ -172,6 +172,7 @@ void ControllerComp::Update(const float& deltaTime)
 	{
 		// If next to the house
 		if (length > playerComp->GetRadius() || length < SIT_RADIUS)
+		{
 			houseWalkComp->Stop();
 		}
 			
@@ -179,6 +180,7 @@ void ControllerComp::Update(const float& deltaTime)
 	else if (!houseWalkComp->GetIsWalking())
 	{
 		if (length < playerComp->GetRadius() && length > SIT_RADIUS && !inside)
+		{
 			houseWalkComp->Start();
 
 			static_cast<GUICompass*>(playerComp->GetGuiManager()->GetGUIObject("compass"))->GetBarSprite()->SetActivated(false);
