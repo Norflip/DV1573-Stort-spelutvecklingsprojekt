@@ -72,6 +72,8 @@ protected:
 	int currentframe = 0;
 	int frameToDraw = 1;
 	int lastFrame = 1;
+	float physicsDelay =2.f;
+	float delayTimer = 0;
 	wchar_t iconText[10];
 
 	Object* root;

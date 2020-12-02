@@ -297,7 +297,9 @@ void GameScene::InitializeGUI()
 
 	// Info gui on the door
 	GUISprite* infoSprite = new GUISprite(*renderer, "Textures/Info.png", 0, 0, 0.0f, DrawDirection::Default, ClickFunction::NotClickable);
-
+	// Loading
+	GUISprite* loadSprite = new GUISprite(*renderer, "Textures/Loading.png", 0, 0, -110, DrawDirection::Default, ClickFunction::NotClickable, GuiGroup::Load);
+	loadSprite->SetVisible(true);
 	//FONTS
 	GUIFont* fpsDisplay = new GUIFont(*renderer, "fps", 30, 30);
 
@@ -316,6 +318,8 @@ void GameScene::InitializeGUI()
 	guiManager = new GUIManager(renderer, 0);
 	guiManager->AddGUIObject(fpsDisplay, "fps");
 
+	// Loading
+	guiManager->AddGUIObject(loadSprite, "loading");
 	//BASE OF EQUIPMENT
 	guiManager->AddGUIObject(equimpmentSprite1, "equimpmentSprite1");
 	guiManager->AddGUIObject(equimpmentSprite2, "equimpmentSprite2");
