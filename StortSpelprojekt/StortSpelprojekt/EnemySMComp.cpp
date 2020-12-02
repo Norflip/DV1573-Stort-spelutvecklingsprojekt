@@ -50,7 +50,7 @@ void EnemySMComp::Animate()
 	dx::XMStoreFloat3(&enemyPos, enemyVec);
 	dx::XMStoreFloat(&length, dx::XMVector3Length(dx::XMVectorSubtract(playerVec, enemyVec)));
 
-	if (statsComponent->GetHealth() <= 0.0f || enemyPos.y <= ENEMY_HEIGHT_LIMIT || length >= ENEMY_RADIUS_LIMIT)
+	if (statsComponent->GetHealth() <= 0.0f || length >= ENEMY_RADIUS_LIMIT)
 	{
 		SetState(EnemyState::IDLE);
 		
