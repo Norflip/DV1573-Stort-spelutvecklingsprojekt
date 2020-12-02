@@ -602,12 +602,13 @@ void GameScene::OnActivate()
 
 	sceneSwitch = false;
 	delayTimer = 0.0f;
-	physicsDelay = 2.0f;
+	physicsDelay = 4.0f;
 	std::cout << "Game Scene activated " << std::endl;
 }
 
 void GameScene::OnDeactivate()
 {
+
 	firstFrame = false;
 	sceneSwitch = true;
 	delayTimer = 0.0f;
