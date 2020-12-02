@@ -227,7 +227,7 @@ void Renderer::RenderFrame(CameraComponent* camera, float time, float distance, 
 	ClearRenderTarget(midbuffer);
 	SetRenderTarget(midbuffer);
 
-
+	context->OMSetDepthStencilState(dss, 0);
 	
 
 	for (auto i = passes.begin(); i < passes.end(); i++)
@@ -243,7 +243,6 @@ void Renderer::RenderFrame(CameraComponent* camera, float time, float distance, 
 	
 
 
-	context->OMSetDepthStencilState(dss, 0);
 	DXHelper::BindStructuredBuffer(context, 10, ShaderBindFlag::PIXEL, &o_LightIndexList_srv);
 	context->PSSetShaderResources(11, 1, &o_LightGrid_texSRV);
 	SetCullBack(true);
@@ -1027,6 +1026,15 @@ void Renderer::DisableAlphaBlending()
 {
 	float blendfact[4] = { 0.0f,0.0f,0.0f,0.0f };
 	context->OMSetBlendState(particleBlendOff, blendfact, 0xffffffff);
+}
+
+void Renderer::UpdateObjectBuffer(const CameraComponent* camera, dx::XMMATRIX world, ShaderBindFlag flag)
+{
+	SetObjectBufferValues(camera, world, false);
+	ShaderBindFlag defaultFlags = objectBuffer.GetFlag();
+	objectBuffer.SetBindFlag(flag);
+	objectBuffer.UpdateBuffer(context);
+	objectBuffer.SetBindFlag(defaultFlags);
 }
 
 

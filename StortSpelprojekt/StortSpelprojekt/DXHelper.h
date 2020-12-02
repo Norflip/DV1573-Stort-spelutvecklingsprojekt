@@ -83,5 +83,4 @@ namespace DXHelper
 	void BindStructuredBuffer(ID3D11DeviceContext* context, size_t slot, ShaderBindFlag flag, ID3D11ShaderResourceView** srv);
 	ID3D11RasterizerState* CreateRasterizerState(D3D11_CULL_MODE cullMode, D3D11_FILL_MODE fillMode, ID3D11Device* device);
 	
-
 }

@@ -3,7 +3,7 @@
 #include "FogRenderPass.h"
 #include "FXAARenderPass.h"
 #include "SkyboxRenderPass.h"
-
+#include "Rain.h"
 
 #include "SaveHandler.h"
 
@@ -28,9 +28,10 @@ Engine::Engine(HINSTANCE hInstance) : window(hInstance), activeSceneIndex(-1), s
 	physics->Initialize();
 
 	//renderer->AddRenderPass(new SkyboxRenderPass(-10, resourceManager));
-	renderer->AddRenderPass(new FogRenderPass(0, resourceManager));
-	renderer->AddRenderPass(new FXAARenderPass(1, resourceManager));
-
+	renderer->AddRenderPass(new Rain(0));
+	renderer->AddRenderPass(new FogRenderPass(1, resourceManager));
+	renderer->AddRenderPass(new FXAARenderPass(2, resourceManager));
+	
 	RegisterScene(SceneIndex::INTRO,	new IntroScene());
 	RegisterScene(SceneIndex::GAME_OVER,new GameOverScene());
 	RegisterScene(SceneIndex::GAME,		new GameScene());

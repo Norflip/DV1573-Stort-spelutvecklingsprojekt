@@ -115,6 +115,9 @@ public:
 	ID3D11DepthStencilState* GetDepthEnable() { return this->dss_On; }
 	ID3D11DepthStencilState* GetDepthDisable() { return this->dss_Off; }
 
+	void UpdateObjectBuffer(const CameraComponent* camera, dx::XMMATRIX world, ShaderBindFlag flag);
+
+
 	ALIGN16_ALLOC;
 
 private:

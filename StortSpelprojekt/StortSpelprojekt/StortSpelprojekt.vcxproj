@@ -173,6 +173,7 @@
     <ClCompile Include="DepthPass.cpp" />
     <ClCompile Include="ParticleComponent.cpp" />
     <ClCompile Include="Particlesys.cpp" />
+    <ClCompile Include="Rain.cpp" />
     <ClCompile Include="Resource.cpp" />
     <ClCompile Include="SelectableComponent.cpp" />
     <ClCompile Include="EnemyAttackComp.cpp" />
@@ -260,6 +261,7 @@
     <ClInclude Include="CreditsScene.h" />
     <ClInclude Include="ParticleComponent.h" />
     <ClInclude Include="Particlesys.h" />
+    <ClInclude Include="Rain.h" />
     <ClInclude Include="SaveHandler.h" />
     <ClInclude Include="SelectableComponent.h" />
     <ClInclude Include="Defines.h" />
