@@ -39,7 +39,7 @@ Object* ObjectPooler::GetItem(std::string key)
 		}
 		else
 		{
-			//std::cout << "RETURNING POOLED ITEM. " << pool->inside.size() << " REMANING.\n";
+			std::cout << "RETURNING POOLED ITEM. " << pool->inside.size() << " REMANING.\n";
 		}
 
 		obj = pool->inside.front();

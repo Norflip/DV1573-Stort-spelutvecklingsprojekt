@@ -16,7 +16,7 @@ public:
     virtual void Draw(DirectX::SpriteBatch*) override;
     float GetDistance()const { return distance; }
     virtual void SetPosition(float x, float y) override;
-    GUISprite* GetBarSprite() { return this->backgroundBar; }
+
     ALIGN16_ALLOC;
 private:
     Object* playerObj;

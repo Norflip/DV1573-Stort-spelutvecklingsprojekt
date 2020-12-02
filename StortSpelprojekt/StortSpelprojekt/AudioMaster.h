@@ -61,7 +61,6 @@ public:
 	void SetVolume(const AudioTypes& audioType, const float volume);
 	float GetVolume(const AudioTypes& audioType) const;
 
-	void StopAllSoundEffects();
 	void PlayerOutside(bool state);
 		
 	static AudioMaster& Instance()

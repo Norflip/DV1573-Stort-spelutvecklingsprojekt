@@ -168,25 +168,17 @@ void ResourceManager::ReadObjects(ID3D11Device* device)
 			// Ugly presumption that we load a Tree at some point
 			else if (name == "Tree")
 			{
-				// Load instanced tree models
-				std::vector<Material*> instancedmaterials = ZWEBLoader::LoadMaterials(filepath, GetShaderResource(shader), device);
-				std::vector<Mesh*> instancedmeshes = ZWEBLoader::LoadMeshes(ZWEBLoadType::NoAnimation, filepath, device);
-				instancedmaterials[0]->SetSampler(sampler, 0, ShaderBindFlag::PIXEL);
-				instancedmaterials[1]->SetSampler(sampler, 0, ShaderBindFlag::PIXEL);
-				instancedmaterials[1]->SetShader(GetShaderResource("alphaInstanceShader"));
-				AddResource("instanced" + name, instancedmeshes[0]);
-				AddResource("instanced" + instancedmeshes[1]->GetMeshName(), instancedmeshes[1]);
-				AddResource("instanced" + name + "Material", instancedmaterials[0]);
-				AddResource("instanced" + instancedmeshes[1]->GetMeshName() + "Material", instancedmaterials[1]);
-
-				//Load non instanced tree models
-				std::vector<Material*> materials = ZWEBLoader::LoadMaterials(filepath, GetShaderResource("defaultShader"), device);
+				std::vector<Material*> materials = ZWEBLoader::LoadMaterials(filepath, GetShaderResource(shader), device);
 				std::vector<Mesh*> meshes = ZWEBLoader::LoadMeshes(ZWEBLoadType::NoAnimation, filepath, device);
+
 				materials[0]->SetSampler(sampler, 0, ShaderBindFlag::PIXEL);
 				materials[1]->SetSampler(sampler, 0, ShaderBindFlag::PIXEL);
-				//materials[1]->SetShader(GetShaderResource("alphaShader"));
+
+				materials[1]->SetShader(GetShaderResource("alphaInstanceShader"));
+
 				AddResource(name, meshes[0]);
 				AddResource(meshes[1]->GetMeshName(), meshes[1]);
+
 				AddResource(name + "Material", materials[0]);
 				AddResource(meshes[1]->GetMeshName() + "Material", materials[1]);
 			}

@@ -22,7 +22,6 @@ void WinScene::Initialize()
 
 void WinScene::InitializeObjects()
 {
-	
 	Object* cameraObject = new Object("camera", ObjectFlag::ENABLED);
 	camera = cameraObject->AddComponent<CameraComponent>(window->GetWidth(), window->GetHeight(),60.0f);
 	this->player = cameraObject;

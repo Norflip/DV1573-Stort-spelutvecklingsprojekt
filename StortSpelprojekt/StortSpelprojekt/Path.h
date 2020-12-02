@@ -83,9 +83,6 @@ public:
 	PathPoint GetPoint(size_t index) { return this->points[index]; }
 	size_t CountPoints() const { return this->points.size(); }
 	dx::XMFLOAT2 GetSignPosition() const { return this->signPosition; }
-	dx::XMFLOAT2 GetSignRotation() const { return this->signRotation; }
-
-	dx::XMFLOAT2 GetPlayerSwitchPosition() const { return this->playerSwitchPosition; }
 
 	std::vector<dx::XMINT2> GetIndexes() const { return this->indexes; }
 	
@@ -110,9 +107,6 @@ private:
 	std::vector<LineSegment> segments;
 	std::vector<LineSegment> extraSegments;
 	dx::XMFLOAT2 signPosition;
-	dx::XMFLOAT2 signRotation;
-
-	dx::XMFLOAT2 playerSwitchPosition;
 
 	std::vector<dx::XMFLOAT2> lanternPoints;
 	std::vector<float> lanternAxisAngle;

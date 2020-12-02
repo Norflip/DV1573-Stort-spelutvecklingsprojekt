@@ -1,8 +1,7 @@
 #include "CommonBuffers.hlsl"
 #include "IO.hlsl"
 
-/*Alter the commented values to change the 
-*/
+/*Alter the commented values to change the grass*/
 [maxvertexcount(4)]
 void main(line DS_OUTPUT_GRASS input[2], inout TriangleStream<GS_OUTPUT_GRASS> TriangleOutputStream)
 {

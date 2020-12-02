@@ -31,6 +31,7 @@ void IntroScene::InitializeObjects()
 
 	ShowCursor(true); 
 
+
 	AudioMaster::Instance().PlaySoundEvent("menusound");
 }
 

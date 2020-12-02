@@ -41,7 +41,7 @@ void EnemyManager::InitBaseEnemy()
 		Object* object = new Object("baseEnemy", ObjectFlag::DEFAULT);
 		object->AddComponent<SkeletonMeshComponent>(resources->GetResource<SkeletonMeshComponent>("EnemySkeleton"));
 		object->GetTransform().SetScale({ 0.125f, 0.125f, 0.125f });
-		object->AddComponent<EnemyStatsComp>(100.f, 2.0f, 10.f, 5.f, 2.f, 3.f);
+		object->AddComponent<EnemyStatsComp>(100.f, 2.0f, 10.f, 5.f, 3.f, 3.f);
 		dx::XMFLOAT3 zero = { 0.f, 0.f, 0.f };
 		object->AddComponent<CapsuleColliderComponent>(1.6f, 1.8f, zero);
 		object->AddComponent<RigidBodyComponent>(100.f, FilterGroups::ENEMIES, (FilterGroups::EVERYTHING & ~FilterGroups::PICKUPS) & ~FilterGroups::HOLDABLE, BodyType::KINEMATIC, true);
@@ -62,7 +62,7 @@ void EnemyManager::InitChargerEnemy()
 		object->RemoveFlag(ObjectFlag::ENABLED);
 
 		object->AddComponent<SkeletonMeshComponent>(resources->GetResource<SkeletonMeshComponent>("ChargerSkeleton"));
-		object->AddComponent<EnemyStatsComp>(100.f, 2.0f, 10.f, 10.f, 2.f, 3.f);
+		object->AddComponent<EnemyStatsComp>(100.f, 2.0f, 10.f, 5.f, 3.f, 3.f);
 		dx::XMFLOAT3 zero = { 0.f, 0.f, 0.f };
 		object->AddComponent<CapsuleColliderComponent>(0.8f, 0.8f, zero);
 		object->AddComponent<RigidBodyComponent>(100.f, FilterGroups::ENEMIES, (FilterGroups::EVERYTHING & ~FilterGroups::PICKUPS) & ~FilterGroups::HOLDABLE, BodyType::KINEMATIC, true);

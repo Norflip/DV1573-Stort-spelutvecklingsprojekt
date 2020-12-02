@@ -11,7 +11,6 @@ GameScene::GameScene() : Scene("GameScene")
 	this->interiorPosition = { 0.0f, -100.0f, 0.0f };
 	fogCol = 0;
 	start = true;
-	end = false;
 	firstFrame = false;
 }
 
@@ -34,7 +33,6 @@ void GameScene::InitializeObjects()
 	Object* housesLegsObject = new Object("houseLegs");
 	Object* houseDoor = resources->AssembleObject("HouseDoor", "HouseDoorMaterial");
 	Object* houseExterior = resources->AssembleObject("HouseExterior", "HouseExteriorMaterial");
-	houseExterior->GetComponent<MeshComponent>()->GetMaterials()[0]->SetTransparent(true);
 	Object* houseDoorRigid = new Object("doorRigid");
 
 	houseBaseObject->GetTransform().Rotate(0, -90.0f * Math::ToRadians, 0.0);
@@ -95,7 +93,7 @@ void GameScene::InitializeObjects()
 	this->player = playerObject;
 	camera = cameraObject->AddComponent<CameraComponent>(window->GetWidth(), window->GetHeight(), 60.0f);
 
-	Shader forwardPlusShader;
+	Shader forwardPlusShader;// = 
 
 	forwardPlusShader.SetComputeShader("Shaders/ForwardPlusRendering.hlsl", "ComputeFrustums");
 	forwardPlusShader.CompileCS(renderer->GetDevice());
@@ -105,8 +103,8 @@ void GameScene::InitializeObjects()
 
 	cameraObject->GetTransform().SetPosition(playerSpawnVec);
 	playerObject->GetTransform().SetPosition(playerSpawnVec);
-	playerObject->AddComponent<CapsuleColliderComponent>(0.4f, 1.5f, zero);
-	playerObject->AddComponent<RigidBodyComponent>(50.f, FilterGroups::PLAYER, (FilterGroups::EVERYTHING), BodyType::DYNAMIC, true);
+	playerObject->AddComponent<CapsuleColliderComponent>(0.5f, 1.5f, zero);
+	RigidBodyComponent* body = playerObject->AddComponent<RigidBodyComponent>(50.f, FilterGroups::PLAYER, (FilterGroups::EVERYTHING), BodyType::DYNAMIC, true);
 
 	playerObject->AddComponent<PlayerComp>(renderer, camera, house, Engine::Instance->GetPhysics(), guiManager, 100.f, 2.f, 40.f, 50.f, 3.f);
 	ControllerComp* controller = playerObject->AddComponent<ControllerComp>(cameraObject, houseBaseObject);
@@ -131,7 +129,7 @@ void GameScene::InitializeObjects()
 	sunLight->GetTransform().SetPosition(dx::XMLoadFloat3(&sunTranslation));
 	LightComponent* sunComponent = sunLight->AddComponent<LightComponent>(2, dx::XMFLOAT4(0.5f, 0.5f, 0.5f, 1.0f), 7.f);
 	sunComponent->SetEnabled(true);
-	sunComponent->SetIntensity(0.2f);
+	sunComponent->SetIntensity(0.1f);
 	dx::XMFLOAT3 sunDirection;
 	dx::XMStoreFloat3(&sunDirection, dx::XMVector3Normalize(dx::XMVectorSet(0, -1, 1, 0)));
 	sunComponent->SetDirection(sunDirection);
@@ -251,6 +249,7 @@ void GameScene::InitializeObjects()
 	GUICompass* compass = new GUICompass(*renderer, window, house, player);
 	guiManager->AddGUIObject(compass, "compass");
 
+
 	/*Shader* SOShader = new Shader;
 	SOShader->SetInputLayoutStructure(5, SOShader->DEFAULT_INPUT_LAYOUT_PARTICLE);
 	SOShader->SetVertexShader("Shaders/ParticleSO_vs.hlsl");
@@ -298,9 +297,7 @@ void GameScene::InitializeGUI()
 
 	// Info gui on the door
 	GUISprite* infoSprite = new GUISprite(*renderer, "Textures/Info.png", 0, 0, 0.0f, DrawDirection::Default, ClickFunction::NotClickable);
-	// Loading
-	GUISprite* loadSprite = new GUISprite(*renderer, "Textures/Loading.png", 0, 0, -110, DrawDirection::Default, ClickFunction::NotClickable, GuiGroup::Load);
-	loadSprite->SetVisible(true);
+
 	//FONTS
 	GUIFont* fpsDisplay = new GUIFont(*renderer, "fps", 30, 30);
 
@@ -319,8 +316,6 @@ void GameScene::InitializeGUI()
 	guiManager = new GUIManager(renderer, 0);
 	guiManager->AddGUIObject(fpsDisplay, "fps");
 
-	// Loading
-	guiManager->AddGUIObject(loadSprite, "loading");
 	//BASE OF EQUIPMENT
 	guiManager->AddGUIObject(equimpmentSprite1, "equimpmentSprite1");
 	guiManager->AddGUIObject(equimpmentSprite2, "equimpmentSprite2");
@@ -361,7 +356,7 @@ void GameScene::InitializeGUI()
 
 void GameScene::InitializeInterior()
 {
-
+	//_____________________________________________________________________________________________________________________________________
 	// Inside house
 	Object* houseInterior = resources->AssembleObject("HouseInterior", "HouseInteriorMaterial");
 	houseInterior->GetTransform().SetPosition({ this->interiorPosition.x, this->interiorPosition.y, this->interiorPosition.z, 0 });
@@ -385,8 +380,8 @@ void GameScene::InitializeInterior()
 	logs->AddComponent<RigidBodyComponent>(0.0f, FilterGroups::FIRE, FilterGroups::EVERYTHING, BodyType::STATIC, true);
 	AddObjectToRoot(logs);
 
-	//Object* flowerpot = resources->AssembleObject("Flowerpot", "FlowerpotMaterial");
-	//Object::AddToHierarchy(houseInterior, flowerpot);
+	Object* flowerpot = resources->AssembleObject("Flowerpot", "FlowerpotMaterial");
+	Object::AddToHierarchy(houseInterior, flowerpot);
 
 	Object* curtains = resources->AssembleObject("Curtains", "CurtainsMaterial");
 	Object::AddToHierarchy(houseInterior, curtains);
@@ -433,21 +428,21 @@ void GameScene::InitializeInterior()
 	table->AddComponent<RigidBodyComponent>(0.0f, FilterGroups::PROPS, FilterGroups::EVERYTHING, BodyType::STATIC, true);
 	AddObjectToRoot(table);
 
-	Object* tutorialFood = resources->AssembleObject("Fruits", "FruitsMaterial", true);
+	Object* tutorialFood = resources->AssembleObject("Fruits", "FruitsMaterial");
 	tutorialFood->GetTransform().SetPosition({ -5.65f, interiorPosition.y + 1.0f, -4.6f, 0.0f });
 	tutorialFood->AddComponent<PickupComponent>(PickupType::Food, 30.0f);
 	tutorialFood->AddComponent<BoxColliderComponent>(dx::XMFLOAT3(0.25f, 0.25f, 0.25f), dx::XMFLOAT3(0, 0, 0));
 	tutorialFood->AddComponent<RigidBodyComponent>(10.0f, FilterGroups::PICKUPS, FilterGroups::EVERYTHING & ~FilterGroups::PLAYER, BodyType::DYNAMIC, true);
 	AddObjectToRoot(tutorialFood);
 
-	Object* tutorialHealth = resources->AssembleObject("HealthKit", "HealthKitMaterial", true);
+	Object* tutorialHealth = resources->AssembleObject("HealthKit", "HealthKitMaterial");
 	tutorialHealth->GetTransform().SetPosition({ -5.0f, interiorPosition.y + 1.0f, -4.4f, 0.0f });
 	tutorialHealth->AddComponent<PickupComponent>(PickupType::Health, 30.0f);
 	tutorialHealth->AddComponent<BoxColliderComponent>(dx::XMFLOAT3(0.25f, 0.1f, 0.25f), dx::XMFLOAT3(0, 0, 0));
 	tutorialHealth->AddComponent<RigidBodyComponent>(10.0f, FilterGroups::PICKUPS, FilterGroups::EVERYTHING & ~FilterGroups::PLAYER, BodyType::DYNAMIC, true);
 	AddObjectToRoot(tutorialHealth);
 
-	Object* tutorialFuel = resources->AssembleObject("FuelCanRed", "FuelCanRedMaterial", true);
+	Object* tutorialFuel = resources->AssembleObject("FuelCanRed", "FuelCanRedMaterial");
 	tutorialFuel->GetTransform().SetPosition({ -5.0f, interiorPosition.y + 3.0f, 0.11f, 0.0f });
 	tutorialFuel->AddComponent<PickupComponent>(PickupType::Fuel, 30.0f);
 	tutorialFuel->AddComponent<BoxColliderComponent>(dx::XMFLOAT3(0.3f, 0.35f, 0.15f), dx::XMFLOAT3(0, 0, 0));
@@ -505,12 +500,22 @@ void GameScene::InitializeInterior()
 	tblLight->SetIntensity(0.4);
 	AddObjectToRoot(tableLight);
 
+
 }
 
 void GameScene::OnActivate()
 {
-	
+	std::cout << "Game Scene activated" << std::endl;
 	SaveState& state = SaveHandler::LoadOrCreate();
+
+	if (!start)
+	{
+		fogCol += 0.5f;
+		renderer->SetIdAndColor(state.segment, fogCol);
+	}
+
+	if (start)
+		start = false;
 
 	LightManager::Instance().ForceUpdateBuffers(renderer->GetContext(),camera);
 
@@ -532,62 +537,23 @@ void GameScene::OnActivate()
 	{
 		std::vector<dx::XMINT2> indexes = world.GetPath().GetIndexes();
 		dx::XMINT2 spawnIndex = indexes[0];
-	
 
-		//dx::XMVECTOR position = dx::XMVectorAdd(Chunk::IndexToWorld(spawnIndex, 0.0f), dx::XMVectorSet(CHUNK_SIZE / 2.0f, 0, CHUNK_SIZE / 2.0f, 0));
-		//house->GetTransform().SetPosition(position);
+		dx::XMVECTOR position = dx::XMVectorAdd(Chunk::IndexToWorld(spawnIndex, 0.0f), dx::XMVectorSet(CHUNK_SIZE / 2.0f, 0, CHUNK_SIZE / 2.0f, 0));
+		house->GetTransform().SetPosition(position);
 		
-	/*	if (house->HasComponent<RigidBodyComponent>())
-			house->GetComponent<RigidBodyComponent>()->SetPosition(position);*/
-	
-		
+		if (house->HasComponent<RigidBodyComponent>())
+			house->GetComponent<RigidBodyComponent>()->SetPosition(position);
 
-		if (!start)
-		{
-			sm::Vector3 housePos = house->GetTransform().GetLocalPosition();
-			fogCol += 0.5f;
-			renderer->SetIdAndColor(state.segment, fogCol);
+		dx::XMVECTOR playerPos = { this->interiorPosition.x, this->interiorPosition.y + 3.0f, this->interiorPosition.z, 0.0f };
 
-			dx::XMFLOAT3 switchPosition;
-			switchPosition = dx::XMFLOAT3{ housePos.x  , 10.f , housePos.z };
+		position = dx::XMVectorAdd(dx::XMVECTOR({ 0.0f, 1.0f, 5.0f, 0.0f }), position);
 
-			dx::XMVECTOR playerPos = { switchPosition.x, switchPosition.y, switchPosition.z };
+		player->GetComponent<PlayerComp>()->SetStartPosition(position);
 
-			dx::XMVECTOR temphousePos = house->GetTransform().GetLocalPosition();
+		player->GetTransform().SetPosition(playerPos);
+		player->GetComponent<RigidBodyComponent>()->SetPosition(playerPos);
 
-
-			//position = dx::XMVectorAdd(dx::XMVECTOR({ 0.0f, 1.0f, 5.0f, 0.0f }), position);
-
-			//player->GetComponent<PlayerComp>()->SetStartPosition(position);
-
-			house->GetTransform().SetPosition({ housePos.x, 3.0f, housePos.z });
-
-			player->GetTransform().SetPosition(playerPos);
-			player->GetComponent<RigidBodyComponent>()->SetPosition(playerPos);
-		}
-		
-		else if (start)
-
-		{
-			fogCol = 0.0f;
-			renderer->SetIdAndColor(state.segment, fogCol);
-
-			dx::XMVECTOR playerPos = { this->interiorPosition.x, this->interiorPosition.y + 3.0f, this->interiorPosition.z, 0.0f };
-
-			dx::XMVECTOR position = house->GetTransform().GetLocalPosition();
-			position = dx::XMVectorAdd(dx::XMVECTOR({ 0.0f, 1.0f, 5.0f, 0.0f }), position);
-
-			player->GetComponent<PlayerComp>()->SetStartPosition(position);
-
-			player->GetTransform().SetPosition(playerPos);
-			player->GetComponent<RigidBodyComponent>()->SetPosition(playerPos);
-
-			player->GetComponent<ControllerComp>()->SetInside(true);
-
-			start = false;
-			
-		}
-
+		player->GetComponent<ControllerComp>()->SetInside(true);
 	}
 
 	renderer->AddRenderPass(guiManager);
@@ -596,24 +562,14 @@ void GameScene::OnActivate()
 	//enemyManager->SpawnEnemies();
 
 	AudioMaster::Instance().PlaySoundEvent("wind");
-	
+
 	/* Ugly solution */
 	player->GetComponent<PlayerComp>()->GetArms()->GetComponent< PlayerAnimHandlerComp>()->SetStarted(true);
-
-	physicsDelay = 25.0f;
-	sceneSwitch = false;
-
-	
-	std::cout << "Game Scene activated" << std::endl;
 }
 
 void GameScene::OnDeactivate()
 {
-	firstFrame = false;
-	sceneSwitch = true;
-	delayTimer = 0.0f;
 
-	//guiManager->GetGUIObject("loading")->SetVisible(true);
 	std::cout << "Game Scene deactivated" << std::endl;
 	world.DeconstructSegment();
 	renderer->RemoveRenderPass(guiManager);
@@ -628,17 +584,12 @@ void GameScene::OnDeactivate()
 
 void GameScene::SetSignPositions(SaveState& state)
 {
-	if (state.segment == 7)
+	if (state.segment == 8)
 	{
-		end = true;
 		dx::XMFLOAT3 signPosition;
 		signPosition = dx::XMFLOAT3{ world.GetPath().GetSignPosition().x , 1.0f ,world.GetPath().GetSignPosition().y };
 		
 		roadSign->GetTransform().SetPosition({ signPosition.x, signPosition.y - 1.0f, signPosition.z });
-		roadSign->AddComponent<BoxColliderComponent>(dx::XMFLOAT3{ 2.0f, 3.0f, 4.0f }, dx::XMFLOAT3{ 0,0,0 });
-		roadSign->AddComponent<SelectableComponent>();
-		roadSign->AddComponent<RigidBodyComponent>(0.0f, FilterGroups::CLICKABLE, (FilterGroups::EVERYTHING & ~FilterGroups::PLAYER), BodyType::STATIC, true);
-
 		/*std::vector<dx::XMINT2> indexes = world.GetPath().GetIndexes();
 		dx::XMINT2 spawnIndex = indexes[0];
 		roadSign->GetTransform().SetPosition(dx::XMVectorAdd(Chunk::IndexToWorld(spawnIndex, 0.0f), dx::XMVectorSet(CHUNK_SIZE / 2.0f, 1, CHUNK_SIZE / 2.0f, 0)));*/
@@ -647,24 +598,14 @@ void GameScene::SetSignPositions(SaveState& state)
 	else
 	{
 		dx::XMFLOAT3 signPosition;
-		dx::XMFLOAT3 signRotation;
-		signPosition = dx::XMFLOAT3{ world.GetPath().GetSignPosition().x , 1.5f ,world.GetPath().GetSignPosition().y };
-		signRotation = dx::XMFLOAT3{ 0.0f ,world.GetPath().GetSignRotation().y, 0.0f };
+		signPosition = dx::XMFLOAT3{ world.GetPath().GetSignPosition().x , 1.0f ,world.GetPath().GetSignPosition().y };
 
 		//Right Sign
-		rightSign->GetTransform().SetPosition({ signPosition.x + 1.0f, signPosition.y - 1.0f, signPosition.z });
-		rightSign->GetTransform().SetRotation({ signRotation.x, signRotation.y, signRotation.z });
-		rightSign->AddComponent<BoxColliderComponent>(dx::XMFLOAT3{ 1.0f, 1.0f, 1.0f }, dx::XMFLOAT3{ 0,0,0 });
-		rightSign->AddComponent<SelectableComponent>();
-		rightSign->AddComponent<RigidBodyComponent>(0.0f, FilterGroups::CLICKABLE, (FilterGroups::EVERYTHING & ~FilterGroups::PLAYER), BodyType::STATIC, true);
-
+		rightSign->GetTransform().SetPosition({ signPosition.x - 1.0f, signPosition.y - 1.0f, signPosition.z });
+		
 		//Left Sign
-		leftSign->GetTransform().SetPosition({ signPosition.x - 1.0f, signPosition.y - 1.0f, signPosition.z });
-		leftSign->GetTransform().SetRotation({ signRotation.x, signRotation.y, signRotation.z });
-		leftSign->AddComponent<BoxColliderComponent>(dx::XMFLOAT3{ 1.0f, 1.0f, 1.0f }, dx::XMFLOAT3{ 0,0,0 });
-		leftSign->AddComponent<SelectableComponent>();
-		leftSign->AddComponent<RigidBodyComponent>(0.0f, FilterGroups::CLICKABLE, (FilterGroups::EVERYTHING & ~FilterGroups::PLAYER), BodyType::STATIC, true);
-
+		leftSign->GetTransform().SetPosition({ signPosition.x + 1.0f, signPosition.y - 1.0f, signPosition.z });
+		
 	}
 	
 }
@@ -717,10 +658,8 @@ void GameScene::Update(const float& deltaTime)
 		guiManager->GetGUIObject("door")->SetVisible(false);
 	}
 
-	//Left or right
 	if (rightSign->GetComponent<SelectableComponent>()->GetActive())
 	{
-		//set first frame till false
 		OnDeactivate();
 		ShowCursor(false);
 		OnActivate();
@@ -733,20 +672,14 @@ void GameScene::Update(const float& deltaTime)
 		OnActivate();
 		leftSign->GetComponent<SelectableComponent>()->SetActive(false);
 	}
-	//Win
-	if (end)
-	{
-		if (roadSign->GetComponent<SelectableComponent>()->GetActive())
-		{
-			Engine::Instance->SwitchScene(SceneIndex::WIN);
-		}
-	}
-	
 
 	//std::cout << "PlayerPos: " << player->GetTransform().GetPosition().m128_f32[0] << " " << player->GetTransform().GetPosition().m128_f32[1] << " " << player->GetTransform().GetPosition().m128_f32[2] << std::endl;
 
 	static_cast<GUIFont*>(guiManager->GetGUIObject("fps"))->SetString(std::to_string((int)GameClock::Instance().GetFramesPerSecond()));
 	guiManager->UpdateAll();
+
+
+
 
 	/*static float a = 0.0f;
 	if (left)

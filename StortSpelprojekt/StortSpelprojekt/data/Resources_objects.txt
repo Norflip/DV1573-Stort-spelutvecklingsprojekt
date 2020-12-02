@@ -1,4 +1,4 @@
-Objects: 51
+Objects: 50
 
 Charger: Models/Enemies/Charger_Model.ZWEB
 Shader: skeletonShader
@@ -176,7 +176,4 @@ HouseExterior: Models/House/House_Exterior.ZWEB
 Shader: defaultShader
 
 Table: Models/House/Table.ZWEB
-Shader: defaultShader
-
-TreePuzzle: Models/Puzzles/Puzzle.ZWEB
 Shader: defaultShader

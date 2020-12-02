@@ -8,7 +8,7 @@ ALIGN16
 class WinScene : public Scene
 {
 private:
-	
+
 public:
 	WinScene();
 	virtual ~WinScene();

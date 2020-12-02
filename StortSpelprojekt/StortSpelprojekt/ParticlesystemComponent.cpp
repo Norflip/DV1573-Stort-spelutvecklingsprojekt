@@ -8,15 +8,13 @@ ParticleSystemComponent::ParticleSystemComponent(Renderer* renderer, Shader* sha
 	this->particlesShader = shader;
 	this->mat = new Material(particlesShader);
 
-	this->particleColor = dx::XMFLOAT3(1.0f, 1.0f, 1.0f);
-
 	/* Default stuff about every particle */
-	this->differenceOnX = 0.3f;
-	this->differenceOnY = 0.3f;
-	this->differenceOnZ = 0.3f;
+	this->differenceOnX = 0.2f;
+	this->differenceOnY = 0.2f;
+	this->differenceOnZ = 0.2f;
 	this->particleVelocity = 0.8f;
 	this->particleVelocityVariation = 0.2f;
-	this->particleSize = 0.05f;
+	this->particleSize = 0.03f;
 	this->maxParticles = 20;
 
 	// calculate the furthest points
@@ -228,10 +226,10 @@ void ParticleSystemComponent::CreateParticle(float frameTime)
 		float positionY = (((float)rand() - (float)rand()) / RAND_MAX) * differenceOnY;
 		float positionZ = (((float)rand() - (float)rand()) / RAND_MAX) * differenceOnZ;
 		float velocity = particleVelocity + (((float)rand() - (float)rand()) / RAND_MAX) * particleVelocityVariation;
-		float red = 1.f;
-		float green = 1.f;
-		float blue = 0.f;
-		float alpha = 0.95f;
+		float red = 1.0f;
+		float green = 1.0f;
+		float blue = 1.0f;
+		float alpha = 1.0f;
 
 		/*
 			Sort the listarray and find a place for the new particle.
@@ -288,7 +286,7 @@ void ParticleSystemComponent::UpdateParticles(float frameTime)
 {
 	for (int i = 0; i < currentParticleCount; i++)
 	{
-		particleList[i].posy = particleList[i].posy + (particleList[i].velocity * ((float)frameTime * 1.3f));
+		particleList[i].posy = particleList[i].posy + (particleList[i].velocity * ((float)frameTime * 0.5f));
 
 		particleList[i].alpha -= (float)frameTime * 0.5f;
 	}
