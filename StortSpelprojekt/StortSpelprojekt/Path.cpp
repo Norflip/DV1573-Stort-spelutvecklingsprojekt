@@ -164,20 +164,39 @@ void Path::CreateLineSegments()
 	}
 
 	LineSegment lastSegment = segments[segments.size() - 1];
+	LineSegment firstSegment = segments[0];
+
 	PathPoint lastPoint = lastSegment.end;
-	dx::XMFLOAT2 direction = lastSegment.Direction();
-	dx::XMFLOAT2 right = dx::XMFLOAT2(-direction.y, direction.x);
+	PathPoint firstPoint = firstSegment.start;
 
-	dx::XMFLOAT2 leftDirection = Math::Lerp(direction, dx::XMFLOAT2(-right.x, -right.y), 0.5f);
-	PathPoint endLeft(lastPoint.x + leftDirection.x * distanceOffset, lastPoint.z + leftDirection.y * distanceOffset, lastPoint.influence);
-	
-	dx::XMFLOAT2 rightDirection = Math::Lerp(direction, right, 0.5f);
-	PathPoint endRight(lastPoint.x + (rightDirection.x) * distanceOffset, lastPoint.z + (rightDirection.y) * distanceOffset, lastPoint.influence);
+	dx::XMFLOAT2 lastSegDirection = lastSegment.Direction();
+	dx::XMFLOAT2 firstSegmentDirection = firstSegment.Direction();
 
+	dx::XMFLOAT2 lastRight = dx::XMFLOAT2(-lastSegDirection.y, lastSegDirection.x);
+	dx::XMFLOAT2 firstRight = dx::XMFLOAT2(-firstSegmentDirection.y, firstSegmentDirection.x);
+
+	dx::XMFLOAT2 lastLeftDirection = Math::Lerp(lastSegDirection, dx::XMFLOAT2(-lastRight.x, -lastRight.y), 0.5f);
+	dx::XMFLOAT2 firstLeftDirection = Math::Lerp(firstSegmentDirection, dx::XMFLOAT2(-firstRight.x, -firstRight.y), 0.5f);
+
+	PathPoint endLeft(lastPoint.x + lastLeftDirection.x * distanceOffset, lastPoint.z + lastLeftDirection.y * distanceOffset, lastPoint.influence);
+	PathPoint firstLeft(firstPoint.x + firstLeftDirection.x * distanceOffset, firstPoint.z + firstLeftDirection.y * distanceOffset, firstPoint.influence);
+
+	dx::XMFLOAT2 endRightDirection = Math::Lerp(lastSegDirection, lastRight, 0.5f);
+	dx::XMFLOAT2 firstRightDirection = Math::Lerp(firstSegmentDirection, firstRight, 0.5f);
+
+	PathPoint endRight(lastPoint.x + (endRightDirection.x) * distanceOffset, lastPoint.z + (endRightDirection.y) * distanceOffset, lastPoint.influence);
+	PathPoint startRight(firstPoint.x + (firstRightDirection.x) * distanceOffset, firstPoint.z + (firstSegmentDirection.y) * distanceOffset, firstPoint.influence);
 	
-	// FIXA ROTATION
-	signPosition.x = lastPoint.x + direction.x * MAX_INFLUENCE;
-	signPosition.y = lastPoint.z + direction.y * MAX_INFLUENCE;
+	//Sign
+	signPosition.x = lastPoint.x + lastSegDirection.x * (MAX_INFLUENCE * 0.5f);
+	signPosition.y = lastPoint.z + lastSegDirection.y * (MAX_INFLUENCE * 0.5f);
+
+	signRotation.x = lastPoint.x + lastSegDirection.x * MAX_INFLUENCE;
+	signRotation.y = lastPoint.z + lastSegDirection.y * MAX_INFLUENCE;
+
+	//Player
+	playerSwitchPosition.x = firstPoint.x + firstSegmentDirection.x * 1.5f;
+	playerSwitchPosition.y = firstPoint.z + firstSegmentDirection.y * 1.5f;
 
 
 	segments.push_back(LineSegment(lastPoint, endLeft));

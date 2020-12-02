@@ -1,6 +1,5 @@
 #pragma once
 
-
 //THIS MESS NEEDS TO DIE A HORRIBLE DEATH
 #include "Object.h"
 #include "HeightMap.h"
@@ -74,7 +73,8 @@ protected:
 	int currentframe = 0;
 	int frameToDraw = 1;
 	int lastFrame = 1;
-	float physicsDelay =2.f;
+	float physicsDelay = 0.f;
+	float loadScreenDelay = 4.0f;
 	float delayTimer = 0;
 	wchar_t iconText[10];
 
@@ -87,6 +87,7 @@ protected:
 	std::queue<Object*> removeQueue;
 	CameraComponent* camera;
 	bool firstFrame;
+	bool sceneSwitch = false;
 	GameClock clock;
 
 	Input& input;
