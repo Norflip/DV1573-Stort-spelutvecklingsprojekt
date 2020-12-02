@@ -23,21 +23,24 @@ void ObjectSpawner::Initialize(Object* root, World* world, Renderer* renderer)
 	this->world = world;
 
 	// DEFAULT TREE
-	tree.meshes.push_back(resources->GetResource<Mesh>("instancedTree"));
-	tree.meshes.push_back(resources->GetResource<Mesh>("instancedleaves"));
+	baseTreeModel.meshes.push_back(resources->GetResource<Mesh>("instancedTree"));
+	baseTreeModel.meshes.push_back(resources->GetResource<Mesh>("instancedleaves"));
 
-	tree.materials.push_back(resources->GetResource<Material>("instancedTreeMaterial"));
+	baseTreeModel.materials.push_back(resources->GetResource<Material>("instancedTreeMaterial"));
 
 	Material* mat = resources->GetResource<Material>("instancedleavesMaterial");
 	mat->SetShader(resources->GetShaderResource("leafShader"));
 
-	tree.materials.push_back(mat);
-	tree.materials[1]->SetTransparent(true);
+	baseTreeModel.materials.push_back(mat);
+	baseTreeModel.materials[1]->SetTransparent(true);
 
-	tree.minScale = 1.4f;
-	tree.maxScale = 2.0f;
-	tree.minRotation = 5.0f;
-	tree.maxRotation = 15.0f;
+	baseTreeModel.minScale = 1.4f;
+	baseTreeModel.maxScale = 2.0f;
+	baseTreeModel.minRotation = 5.0f;
+	baseTreeModel.maxRotation = 15.0f;
+
+	baseTreeModel.discRadius = 3.0f; // with padding
+	baseTreeModel.segmentScaleFactor = 0.7f;
 }
 
 void ObjectSpawner::Spawn(const SaveState& state, const Bounds& worldBounds, std::unordered_map<int, Chunk*>& chunkMap)
@@ -49,7 +52,7 @@ void ObjectSpawner::Spawn(const SaveState& state, const Bounds& worldBounds, std
 	{
 		SpawnStatic(i.second);
 
-		AddTreesToChunk(i.second);
+		AddTreesToChunk(baseTreeModel, i.second, state.segment);
 		AddGrassToChunk(i.second);
 
 #if SPAWN_ITEMS
@@ -153,9 +156,10 @@ void ObjectSpawner::DrawDebug()
 }
 
 
-void ObjectSpawner::AddTreesToChunk(Chunk* chunk) const
+void ObjectSpawner::AddTreesToChunk(const TreeModel& treeModel, Chunk* chunk, size_t segment) const
 {
-	std::vector<dx::XMFLOAT2> points = PossionDiscSampler::Sample(5.0f, CHUNK_SIZE, CHUNK_SIZE);
+	float discradius = treeModel.discRadius * (1.0f + (segment * treeModel.segmentScaleFactor * 0.5f));
+	std::vector<dx::XMFLOAT2> points = PossionDiscSampler::Sample(discradius, CHUNK_SIZE, CHUNK_SIZE);
 
 	if (points.size() > 0)
 	{
@@ -174,7 +178,7 @@ void ObjectSpawner::AddTreesToChunk(Chunk* chunk) const
 			dx::XMFLOAT2 posXZ = Chunk::IndexToWorldXZ(chunk->GetIndex());
 
 			Bounds bbInfo;
-			bbInfo.CalculateAABB(tree.meshes[0]);
+			bbInfo.CalculateAABB(baseTreeModel.meshes[0]);
 			dx::XMFLOAT3 extends = bbInfo.GetExtends();
 
 			std::vector<dx::XMFLOAT3> colliderPositions;
@@ -191,7 +195,7 @@ void ObjectSpawner::AddTreesToChunk(Chunk* chunk) const
 				dx::XMFLOAT3 normal;
 				world->SampleNormal(position.x, position.z, normal);
 
-				float angleRotation = Random::Range(tree.minRotation, tree.maxRotation) * Math::ToRadians;
+				float angleRotation = Random::Range(baseTreeModel.minRotation, baseTreeModel.maxRotation) * Math::ToRadians;
 
 				dx::XMVECTOR normalAngleRotation = dx::XMQuaternionRotationNormal(dx::XMLoadFloat3(&normal), angleRotation);
 				dx::XMVECTOR randomYRotation = dx::XMQuaternionRotationAxis({ 0,1,0 }, Random::RadAngle());
@@ -203,7 +207,7 @@ void ObjectSpawner::AddTreesToChunk(Chunk* chunk) const
 				dx::XMVECTOR combinedRot = dx::XMQuaternionMultiply(randomYRotation, normalAngleRotation);
 				dx::XMMATRIX rotation = dx::XMMatrixRotationQuaternion(combinedRot);
 
-				float scale = Random::Range(tree.minScale, tree.maxScale);
+				float scale = Random::Range(baseTreeModel.minScale, baseTreeModel.maxScale);
 				dx::XMMATRIX translation = dx::XMMatrixScaling(scale, scale, scale) * rotation * dx::XMMatrixTranslation(position.x, position.y, position.z);
 				dx::XMStoreFloat4x4(&treesInstanced[i], dx::XMMatrixTranspose(translation));
 
@@ -223,7 +227,7 @@ void ObjectSpawner::AddTreesToChunk(Chunk* chunk) const
 			treeObject->GetTransform().SetPosition({ 0,0,0 });
 			treeObject->GetTransform().SetWorldPosition({ 0,0,0 });
 
-			MeshComponent* meshComp = treeObject->AddComponent<MeshComponent>(tree.meshes, tree.materials);
+			MeshComponent* meshComp = treeObject->AddComponent<MeshComponent>(baseTreeModel.meshes, baseTreeModel.materials);
 			meshComp->SetInstanceable(treesInstanced, nrOfInstancedStyTrees, renderer->GetDevice());
 
 			BoxColliderComponent* colliders = treeObject->AddComponent<BoxColliderComponent>(colliderExtends, colliderPositions);
