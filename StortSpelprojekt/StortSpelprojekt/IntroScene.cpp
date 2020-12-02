@@ -55,6 +55,11 @@ void IntroScene::InitializeGUI()
 	soundEffectsSprite->SetVisible(false);
 
 
+	//make Textures/Credits.png
+	GUISprite* credits = new GUISprite(*renderer, "Textures/credits.png",100,850, 0, DrawDirection::Default, ClickFunction::Clickable);
+	credits->AddGroup(GuiGroup::Default);
+
+
 	GUISprite* volumeBarFillMusic = new GUISprite(*renderer, "Textures/volumeBarFill.png", 900, 250, 0, DrawDirection::Default, ClickFunction::NotClickable, GuiGroup::Options);
 	GUISprite* lowerMusicSprite = new GUISprite(*renderer, "Textures/lowerVolume.png", 800, 250, 0, DrawDirection::Default, ClickFunction::Clickable, GuiGroup::Options);
 	GUISprite* volumeMusicSprite = new GUISprite(*renderer, "Textures/volumeButton.png", 900, 250, 0, DrawDirection::Default, ClickFunction::NotClickable, GuiGroup::Options);
@@ -126,6 +131,8 @@ void IntroScene::InitializeGUI()
 	guiManager->AddGUIObject(howToPlayText, "howToPlayText");
 	guiManager->AddGUIObject(loreText, "loreText");
 
+	guiManager->AddGUIObject(credits, "credits");
+
 	//
 
 	/* Soundseffects */
@@ -170,6 +177,20 @@ void IntroScene::Update(const float& deltaTime)
 		Engine::Instance->SwitchScene(SceneIndex::GAME);
 		return;
 	}
+
+	//
+	if (static_cast<GUISprite*>(guiManager->GetGUIObject("credits"))->IsClicked())
+	{
+		//guiManager->ChangeGuiGroup(GuiGroup::Load);
+		AudioMaster::Instance().PlaySoundEvent("menusound");
+		Engine::Instance->SwitchScene(SceneIndex::CREDITS);
+		return;
+		//AudioMaster::Instance().StopSoundEvent("menusound");
+		//Engine::Instance->SwitchScene(SceneIndex::INTRO);
+		//return;
+		
+	}
+	//
 
 	if (static_cast<GUISprite*>(guiManager->GetGUIObject("quitSprite"))->IsClicked())
 	{

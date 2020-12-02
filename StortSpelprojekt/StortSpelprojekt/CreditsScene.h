@@ -10,7 +10,6 @@ class CreditsScene : public Scene
 private:
 	dx::XMFLOAT2 creditsPos;
 
-
 	std::string GetCreditsString();
 public:
 	CreditsScene();

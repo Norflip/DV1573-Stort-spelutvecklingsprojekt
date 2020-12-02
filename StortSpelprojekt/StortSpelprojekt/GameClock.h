@@ -9,6 +9,7 @@ public:
 	double GetMicroseconds()const;
 	double GetSeconds()const;
 	double GetFrameTime()const;
+	double GetFixedFrameTime()const;
 	double GetFramesPerSecond()const;
 	double GetFramesPerSecondSmooth()const; // not needed yet, unimplemented
 	void Update();
@@ -33,6 +34,7 @@ private:
 	double seconds;
 	double microS;
 	double frameTime;
+	double fixedFrameTime;
 	int frameCounter;
 	int FPS;
 	bool active;

@@ -43,7 +43,11 @@ float4 main(PixelInputType input) : SV_TARGET
     float depth = depthTexture.Sample(defaultSampleType, input.uv).x;
 
     const float start = 1; // FOG START
-    const float end = 120; // FOG END
+    float end = 120;
+    if(distanceToHouse == 0)
+    { 
+      end = 10000; // FOG END
+    }
 
     const float near = 0.01f; // NEAR PLANE
     const float far = 500.0f; // FAR PLANE

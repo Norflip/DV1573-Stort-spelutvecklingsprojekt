@@ -29,6 +29,11 @@
 #include "PlayerAnimHandlerComp.h"
 #include "HousePartsComponent.h"
 
+#include "ParticleComponent.h"
+
+#include "Particlesys.h"
+
+
 class GUIFont;
 class SpriteRenderPass;
 class PlayerComp;
@@ -69,6 +74,7 @@ protected:
 	int frameToDraw = 1;
 	int lastFrame = 1;
 	wchar_t iconText[10];
+
 	Object* root;
 	Renderer* renderer;
 	ResourceManager* resources;
@@ -77,7 +83,7 @@ protected:
 	
 	std::queue<Object*> removeQueue;
 	CameraComponent* camera;
-	
+	bool firstFrame;
 	GameClock clock;
 
 	Input& input;
@@ -85,4 +91,5 @@ protected:
 	EnemyManager* enemyManager;
 	GUIManager* guiManager;		
 	std::string debugName;
+
 };

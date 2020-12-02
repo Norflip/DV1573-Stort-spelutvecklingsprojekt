@@ -22,6 +22,49 @@ Texture::~Texture()
 	RELEASE(srv);
 }
 
+Texture* Texture::CreateRandom1DTexture(ID3D11Device* device)
+{
+	ID3D11Texture1D* random;
+	DirectX::XMFLOAT4* randomValues = new DirectX::XMFLOAT4[1024];
+	for (int i = 0; i < 1024; ++i)
+	{
+		randomValues[i].x = RandomFloat(-1, 1);
+		randomValues[i].y = RandomFloat(-1, 1);
+		randomValues[i].z = RandomFloat(-1, 1);
+		randomValues[i].w = RandomFloat(-1, 1);
+	}
+
+	D3D11_SUBRESOURCE_DATA initData = {};
+	initData.pSysMem = randomValues;
+	initData.SysMemPitch = 1024 * sizeof(DirectX::XMFLOAT4);
+	initData.SysMemSlicePitch = 0;
+
+	D3D11_TEXTURE1D_DESC texDesc = {};
+	texDesc.Width = 1024;
+	texDesc.Usage = D3D11_USAGE_IMMUTABLE;
+	texDesc.BindFlags = D3D11_BIND_SHADER_RESOURCE;
+	texDesc.CPUAccessFlags = 0;
+	texDesc.MiscFlags = 0;
+	texDesc.ArraySize = 1;
+	texDesc.Format = DXGI_FORMAT_R32G32B32A32_FLOAT;
+	texDesc.MipLevels = 1;
+
+	HRESULT hr = device->CreateTexture1D(&texDesc, &initData, &random);
+	assert(SUCCEEDED(hr));
+
+	D3D11_SHADER_RESOURCE_VIEW_DESC viewDesc = {};
+	viewDesc.Format = texDesc.Format;
+	viewDesc.ViewDimension = D3D11_SRV_DIMENSION_TEXTURE1D;
+	viewDesc.Texture1D.MipLevels = texDesc.MipLevels;
+	viewDesc.Texture1D.MostDetailedMip = 0;
+
+	hr = device->CreateShaderResourceView(random, &viewDesc, &srv);
+	assert(SUCCEEDED(hr));
+	delete[] randomValues;
+
+	return new Texture(srv);
+}
+
 Texture* Texture::CreateFromBuffer(unsigned char* buffer, size_t width, size_t height, size_t channels, DXGI_FORMAT format, ID3D11Device* device)
 {
 	D3D11_TEXTURE2D_DESC textureDesc;
@@ -86,4 +129,12 @@ Texture* Texture::FromMemory(ID3D11Device* device, uint8_t* data, size_t dataSiz
 
 	DirectX::CreateWICTextureFromMemory(device, data, dataSize, nullptr, &srv);
 	return new Texture(srv);
+}
+
+float Texture::RandomFloat(float a, float b)
+{
+	float random = ((float)rand()) / (float)RAND_MAX;
+	float diff = b - a;
+	float r = random * diff;
+	return a + r;
 }
