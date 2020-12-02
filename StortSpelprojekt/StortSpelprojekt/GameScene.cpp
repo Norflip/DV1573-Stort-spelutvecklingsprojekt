@@ -5,6 +5,9 @@
 #include "Engine.h"
 #include "GUICompass.h"
 #include "SaveHandler.h"
+#include <d3d11_4.h>
+#include <dxgi1_6.h>
+#include <psapi.h>
 
 GameScene::GameScene() : Scene("GameScene")
 {
@@ -310,6 +313,9 @@ void GameScene::InitializeGUI()
 	GUISprite* doorSprite = new GUISprite(*renderer, "Textures/DoorSprite.png", (windowWidth / 2) - 6, (windowHeight / 2) - 6, 0, DrawDirection::BottomLeft, ClickFunction::NotClickable);
 	GUISprite* fuel = new GUISprite(*renderer, "Textures/Fuel_Icon.png", (windowWidth / 2) - 6, (windowHeight / 2) - 6, 0, DrawDirection::BottomLeft, ClickFunction::NotClickable);
 
+	GUIFont* vramDisplay = new GUIFont(*renderer, "vram", 30, 60);
+	GUIFont* ramDisplay = new GUIFont(*renderer, "ram", 30, 90);
+
 	crosshair->SetVisible(false);
 	doorSprite->SetVisible(false);
 	fuel->SetVisible(false);
@@ -362,6 +368,8 @@ void GameScene::InitializeGUI()
 	guiManager->AddGUIObject(doorSprite, "door");
 	guiManager->AddGUIObject(fuel, "fuel");
 
+	guiManager->AddGUIObject(vramDisplay, "vramSprite");
+	guiManager->AddGUIObject(ramDisplay, "ramSprite");
 }
 
 void GameScene::InitializeInterior()
@@ -759,10 +767,11 @@ void GameScene::Update(const float& deltaTime)
 		}
 	}
 	
-
+	static_cast<GUIFont*>(guiManager->GetGUIObject("vramSprite"))->SetString("vram: " + std::to_string(VramUsage()) + " mb");
+	static_cast<GUIFont*>(guiManager->GetGUIObject("ramSprite"))->SetString("ram: " + std::to_string(RamUsage()) + " mb");
 	//std::cout << "PlayerPos: " << player->GetTransform().GetPosition().m128_f32[0] << " " << player->GetTransform().GetPosition().m128_f32[1] << " " << player->GetTransform().GetPosition().m128_f32[2] << std::endl;
 
-	static_cast<GUIFont*>(guiManager->GetGUIObject("fps"))->SetString(std::to_string((int)GameClock::Instance().GetFramesPerSecond()));
+	static_cast<GUIFont*>(guiManager->GetGUIObject("fps"))->SetString("fps: " + std::to_string((int)GameClock::Instance().GetFramesPerSecond()));
 	//dx::XMFLOAT3 playerPosF;
 	//dx::XMStoreFloat3(&playerPosF, player->GetTransform().GetPosition());
 	//static_cast<GUIFont*>(guiManager->GetGUIObject("playerPos"))->SetString("Player pos x:" + std::to_string((int)playerPosF.x)
@@ -829,4 +838,69 @@ void GameScene::Render()
 
 	renderer->RenderFrame(camera, (float)clock.GetSeconds(), player->GetComponent<PlayerComp>()->GetDangerDistance());
 	firstFrame = true;
+}
+
+float GameScene::VramUsage()
+{
+	IDXGIFactory* dxgifactory = nullptr;
+	HRESULT ret_code = ::CreateDXGIFactory(
+		__uuidof(IDXGIFactory),
+		reinterpret_cast<void**>(&dxgifactory));
+
+	float memoryUsage = 0;
+
+	if (SUCCEEDED(ret_code))
+	{
+		IDXGIAdapter* dxgiAdapter = nullptr;
+
+		if (SUCCEEDED(dxgifactory->EnumAdapters(0, &dxgiAdapter)))
+		{
+			IDXGIAdapter4* dxgiAdapter4 = NULL;
+			if (SUCCEEDED(dxgiAdapter->QueryInterface(__uuidof(IDXGIAdapter4), (void**)&dxgiAdapter4)))
+			{
+				DXGI_QUERY_VIDEO_MEMORY_INFO info;
+
+				if (SUCCEEDED(dxgiAdapter4->QueryVideoMemoryInfo(0, DXGI_MEMORY_SEGMENT_GROUP_LOCAL, &info)))
+				{
+					memoryUsage = float(info.CurrentUsage / 1024.0 / 1024.0); //MiB
+
+					/*char msg[100];
+					sprintf_s(msg, "%.2f MiB used", memoryUsage);
+					MessageBoxA(0, msg, "VRAM", 0);*/
+				};
+
+				dxgiAdapter4->Release();
+			}
+			dxgiAdapter->Release();
+		}
+		dxgifactory->Release();
+	}
+
+	return memoryUsage;
+}
+
+float GameScene::RamUsage()
+{
+	DWORD currentProcessID = GetCurrentProcessId();
+
+	HANDLE hProcess = OpenProcess(PROCESS_QUERY_INFORMATION | PROCESS_VM_READ, FALSE, currentProcessID);
+
+	if (NULL == hProcess)
+		return 0.0f;
+
+	float memoryUsage = 0;
+
+	PROCESS_MEMORY_COUNTERS pmc{};
+	if (GetProcessMemoryInfo(hProcess, &pmc, sizeof(pmc)))
+	{
+		//PagefileUsage is the:
+		//The Commit Charge value in bytes for this process.
+		//Commit Charge is the total amount of memory that the memory manager has committed for a running process.
+
+		memoryUsage = float(pmc.PagefileUsage / 1024.0 / 1024.0); //MiB
+	}
+
+	CloseHandle(hProcess);
+
+	return memoryUsage;
 }
