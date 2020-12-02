@@ -4,7 +4,8 @@
 CameraComponent::CameraComponent(size_t width, size_t height, float fieldOfView)
 	:VirtualCamera(VirtualCamera::CameraMode::PERSPECTIVE, width, height, CAMERA_NEAR_Z, CAMERA_FAR_Z, fieldOfView)
 {
-
+	planes.resize(0);
+	//planes.clear();
 }
 
 CameraComponent::~CameraComponent()
@@ -24,7 +25,9 @@ dx::XMMATRIX CameraComponent::GetViewMatrix() const
 void CameraComponent::UpdateView()
 {
 	dx::XMMATRIX transform = GetOwner()->GetTransform().GetWorldMatrix();
+	//UpdateProjectionMatrix(width,height,60,CAMERA_NEAR_Z, CAMERA_FAR_Z);
 	planes = VirtualCamera::GetFrustumPlanes(transform);
+
 }
 
 bool CameraComponent::InView(const Bounds& bounds, const dx::XMMATRIX world)
@@ -44,4 +47,9 @@ Ray CameraComponent::MouseToRay(const unsigned int& x, const unsigned int& y) co
 	dx::XMStoreFloat3(&direction, dx::XMVector3Normalize(dir));
 	dx::XMStoreFloat3(&origin, position);
 	return Ray(origin, direction);
+}
+
+std::vector<dx::XMFLOAT4> CameraComponent::GetFrustumPlanes() const
+{
+	return planes;
 }

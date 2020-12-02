@@ -40,6 +40,9 @@ void Material::BindToContext(ID3D11DeviceContext* context) const
 
 			if ((i.first & (int)ShaderBindFlag::GEOMETRY) != 0)
 				context->GSSetShaderResources(slot, 1, &srv);
+			
+			if ((i.first & (int)ShaderBindFlag::SOGEOMETRY) != 0)
+				context->GSSetShaderResources(slot, 1, &srv);
 		}
 	}
 
@@ -63,6 +66,9 @@ void Material::BindToContext(ID3D11DeviceContext* context) const
 				context->DSSetSamplers(slot, 1, &srv);
 
 			if ((i.first & (int)ShaderBindFlag::GEOMETRY) != 0)
+				context->GSSetSamplers(slot, 1, &srv);
+
+			if ((i.first & (int)ShaderBindFlag::SOGEOMETRY) != 0)
 				context->GSSetSamplers(slot, 1, &srv);
 		}
 	}

@@ -21,7 +21,8 @@ enum class ShaderBindFlag
 	GEOMETRY = 1 << 2,
 	HULL = 1 << 3,
 	DOMAINS = 1 << 4,
-	COMPUTE = 1 << 5
+	COMPUTE = 1 << 5,
+	SOGEOMETRY = 1 << 6,
 };
 
 DEFINE_ENUM_FLAG_OPERATORS(ShaderBindFlag);
@@ -56,9 +57,14 @@ namespace DXHelper
 	
 	RenderTexture CreateRenderTexture(size_t width, size_t height, ID3D11Device* device, ID3D11DeviceContext* context, ID3D11DepthStencilState** dss);
 	void CreateBlendState(ID3D11Device* device, ID3D11BlendState** blendOn, ID3D11BlendState** blendOff);
+
 	void CreateRSState(ID3D11Device* device, ID3D11RasterizerState** cullBack, ID3D11RasterizerState** cullNone, ID3D11RasterizerState** CCWO); //can add more in the future.
 
 	//void CreateBackbuffer(size_t width, size_t height, ID3D11Device* device, IDXGISwapChain* swapchain, ID3D11RenderTargetView** backbuffer, ID3D11DepthStencilView** depthStencilView);
+
+	/* Jadda stuff */
+	void CreateParticleBlendState(ID3D11Device* device, ID3D11BlendState** blendOn, ID3D11BlendState** blendOff);
+	void CreateDepthStencilStates(ID3D11Device* device, ID3D11DepthStencilState** depthOn, ID3D11DepthStencilState** depthOff);
 
 	void CreateVertexBuffer(ID3D11Device* device, size_t verticeCount, size_t vertexSize, void* vertices, ID3D11Buffer** vertexBuffer);
 	void CreateIndexBuffer(ID3D11Device* device, size_t indexCount, unsigned int* indicies, ID3D11Buffer** indexBuffer);

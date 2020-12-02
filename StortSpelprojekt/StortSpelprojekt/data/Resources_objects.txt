@@ -151,7 +151,7 @@ Shader: defaultShader
 InsideDoor: Models/House/InsideDoor.ZWEB
 Shader: defaultShader
 
-Endsign: Models/Props/Endsign.ZWEB
+Endsign: Models/Props/endSignEmil.ZWEB
 Shader: defaultShader
 
 LeftDirectionSign: Models/Props/LeftDirectionSign.ZWEB

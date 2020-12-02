@@ -10,12 +10,13 @@ EnemySMComp::~EnemySMComp()
 {
 }
 
-void EnemySMComp::InitAnimation()
+void EnemySMComp::InitAnimation(Object* playerObj)
 {
 	skeletonComponent = GetOwner()->GetComponent<SkeletonMeshComponent>();
 	attackComponent = GetOwner()->GetComponent<EnemyAttackComp>();
 	statsComponent = GetOwner()->GetComponent<EnemyStatsComp>();
 	enemyPatrolComp = GetOwner()->GetComponent<EnemyPatrolComp>();
+	player = playerObj;
 }
 
 void EnemySMComp::SetState(EnemyState state)
@@ -42,20 +43,25 @@ void EnemySMComp::Initialize()
 
 void EnemySMComp::Animate()
 {
-	if (statsComponent->GetHealth() <= 0.0f)
+	float length = 0;
+	dx::XMVECTOR playerVec = player->GetTransform().GetPosition();
+	dx::XMVECTOR enemyVec = GetOwner()->GetTransform().GetPosition();
+	dx::XMFLOAT3 enemyPos;
+	dx::XMStoreFloat3(&enemyPos, enemyVec);
+	dx::XMStoreFloat(&length, dx::XMVector3Length(dx::XMVectorSubtract(playerVec, enemyVec)));
+
+	if (statsComponent->GetHealth() <= 0.0f || enemyPos.y <= ENEMY_HEIGHT_LIMIT || length >= ENEMY_RADIUS_LIMIT)
 	{
 		SetState(EnemyState::IDLE);
-
-		
 		
 		skeletonComponent->SetTrack(SkeletonStateMachine::DEATH, true);
 
 		if (skeletonComponent->GetDoneDeath())
 		{
-			
+			std::cout << "enemy died.. health: " << statsComponent->GetHealth() << ", y: " << enemyPos.y <<", length from player: "<<length<< std::endl;
 			statsComponent->GetManager()->RemoveEnemy(GetOwner());
 		}
-		
+
 
 	}
 	else
@@ -71,7 +77,7 @@ void EnemySMComp::Animate()
 		}
 		else if (currentState == EnemyState::PATROL)
 		{
-			skeletonComponent->SetTrack(SkeletonStateMachine::WALK, false);
+			skeletonComponent->SetTrack(SkeletonStateMachine::RUN, false);
 		}
 
 		else
