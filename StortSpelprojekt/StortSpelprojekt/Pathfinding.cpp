@@ -236,31 +236,41 @@ void Pathfinding::AddObstacles()
 	{
 		for (int y = 0; y < rows; y++)
 		{
-			dx::XMFLOAT3 origin;
-			dx::XMStoreFloat3(&origin, GetOwner()->GetTransform().GetPosition());
-			origin.x = origin.x + x - (cols/2);
-			origin.y = origin.y + 7.0f;
-			origin.z = origin.z + y - (rows/2);
-			Ray ray(origin, DOWN_VEC);
-			RayHit hitProps;
-
-			//TERRAIN or default depending on if u can jump from on top of objects
-			float distance = 15.0f;
-			Physics* phy = Engine::Instance->GetPhysics();
-			phy->RaytestSingle(ray, distance, hitProps, FilterGroups::PROPS);
-
-			//this->isGrounded = false;
-			//dx::XMFLOAT3 color = dx::XMFLOAT3(1,0,0);
-			if (hitProps.object != nullptr) //(hitProps.object != nullptr && hitProps.object->GetName() == "HouseInterior"))// != nullptr )//&& hitProps.object->GetName() == "houseBase"))
+			if (!grid[x][y]->obstacle)
 			{
-				grid[x][y]->obstacle = true;
-				//color = dx::XMFLOAT3(0, 0, 1);
+				dx::XMFLOAT3 origin;
+				dx::XMStoreFloat3(&origin, GetOwner()->GetTransform().GetPosition());
+				origin.x = origin.x + x - (cols / 2);
+				origin.y = origin.y + 7.0f;
+				origin.z = origin.z + y - (rows / 2);
+				Ray ray(origin, DOWN_VEC);
+				RayHit hitProps;
+				RayHit hitDefaults;
+
+				//TERRAIN or default depending on if u can jump from on top of objects
+				float distance = 15.0f;
+				Physics* phy = Engine::Instance->GetPhysics();
+				phy->RaytestSingle(ray, distance, hitProps, FilterGroups::PROPS);
+				phy->RaytestSingle(ray, distance, hitDefaults, FilterGroups::DEFAULT);
+
+				//this->isGrounded = false;
+				//dx::XMFLOAT3 color = dx::XMFLOAT3(1,0,0);
+				if (hitProps.object != nullptr || hitDefaults.object != nullptr) //(hitProps.object != nullptr && hitProps.object->GetName() == "HouseInterior"))// != nullptr )//&& hitProps.object->GetName() == "houseBase"))
+				{
+					grid[x][y]->obstacle = true;
+					for (int i = 0; i < grid[x][y]->neighbors.size(); i++)
+					{
+						if (!grid[x][y]->neighbors[i]->obstacle)
+							grid[x][y]->neighbors[i]->obstacle = true;
+					}
+					//color = dx::XMFLOAT3(0, 0, 1);
+				}
+				origin.y = origin.y - 15.0f;
+				//DShape::DrawBox(ray.origin, dx::XMFLOAT3(0.2, distance, 0.2), color);
+				//int randNr = rand() % 100;
+				//if(randNr < 30)
+				//	grid[x][y]->obstacle = true;
 			}
-			origin.y = origin.y - 15.0f;
-			//DShape::DrawBox(ray.origin, dx::XMFLOAT3(0.2, distance, 0.2), color);
-			//int randNr = rand() % 100;
-			//if(randNr < 30)
-			//	grid[x][y]->obstacle = true;
 		}
 	}
 }
