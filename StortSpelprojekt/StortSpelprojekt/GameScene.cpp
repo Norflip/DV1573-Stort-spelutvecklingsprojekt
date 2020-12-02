@@ -379,8 +379,8 @@ void GameScene::InitializeInterior()
 	logs->AddComponent<RigidBodyComponent>(0.0f, FilterGroups::FIRE, FilterGroups::EVERYTHING, BodyType::STATIC, true);
 	AddObjectToRoot(logs);
 
-	Object* flowerpot = resources->AssembleObject("Flowerpot", "FlowerpotMaterial");
-	Object::AddToHierarchy(houseInterior, flowerpot);
+	//Object* flowerpot = resources->AssembleObject("Flowerpot", "FlowerpotMaterial");
+	//Object::AddToHierarchy(houseInterior, flowerpot);
 
 	Object* curtains = resources->AssembleObject("Curtains", "CurtainsMaterial");
 	Object::AddToHierarchy(houseInterior, curtains);
