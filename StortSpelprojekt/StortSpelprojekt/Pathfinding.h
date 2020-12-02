@@ -10,18 +10,19 @@ class Pathfinding : public Component
 		virtual ~Pathfinding();
 		void Initialize();
 		void Update(const float& deltaTime) override;
+		void SetPlayer(PlayerComp* playerComp);
 	private:
 		struct Node
 		{
 			dx::XMFLOAT2 pos = { 0,0 };
-			int gCost = 0;
-			int hCost = 0;
-			int fCost = 0;
+			int gCost = 0;					//cost to neighbor node
+			int hCost = 0;					//cost from current node to endnode	
+			int fCost = 0;					//total cost of h and g
 			bool obstacle = false;
 			bool openSet = false;
 			bool closedSet = false;
 			bool correctPath = false;
-			Node* previous = nullptr;
+			Node* previous = nullptr;		//trace back to previous node to find the best path
 			std::vector<Node*> neighbors;
 		};
 		struct Compare
@@ -43,7 +44,6 @@ class Pathfinding : public Component
 		int cols;
 		int rows;
 		Node* grid[32][32];
-		Node* end;
 		GameClock timer;
 		PlayerComp* player;
 		std::vector<Node*> correctPath;
