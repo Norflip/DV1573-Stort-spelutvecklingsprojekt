@@ -1,6 +1,7 @@
 #include "stdafx.h"
 #include "ControllerComp.h"
 #include "Engine.h"
+#include "GUICompass.h"
 
 void ControllerComp::CheckGrounded()
 {
@@ -10,6 +11,7 @@ void ControllerComp::CheckGrounded()
 	Ray ray(origin, DOWN_VEC);
 	RayHit hitTerrain;
 	RayHit hitProps;
+	RayHit hitPuzzle;
 
 	//TERRAIN or default depending on if u can jump from on top of objects
 	float distance = 1.45f;
@@ -17,10 +19,10 @@ void ControllerComp::CheckGrounded()
 
 	phy->RaytestSingle(ray, distance, hitTerrain, FilterGroups::TERRAIN);
 	phy->RaytestSingle(ray, distance, hitProps, FilterGroups::PROPS);
-	
-	
+	phy->RaytestSingle(ray, distance, hitPuzzle, FilterGroups::PUZZLE);
+
 	this->isGrounded = false;
-	if (hitTerrain.object != nullptr || hitProps.object != nullptr) //(hitProps.object != nullptr && hitProps.object->GetName() == "HouseInterior"))// != nullptr )//&& hitProps.object->GetName() == "houseBase"))
+	if (hitTerrain.object != nullptr || hitProps.object != nullptr || hitPuzzle.object != nullptr)// && hitProps.object->GetName() == "HouseInterior") || hitPuzzle.object != nullptr)// != nullptr )//&& hitProps.object->GetName() == "houseBase"))
 	{
 		//this->houseVelocity = { 0.f,0.f,0.f };
 		/*if (hitProps.object != nullptr && hitProps.object->GetName() == "houseBase")
@@ -169,13 +171,23 @@ void ControllerComp::Update(const float& deltaTime)
 	if (houseWalkComp->GetIsWalking())
 	{
 		// If next to the house
-		if (length > playerComp->GetRadius() || length < 7.0f)
+		if (length > playerComp->GetRadius() || length < SIT_RADIUS)
+		{
+			static_cast<GUICompass*>(playerComp->GetGuiManager()->GetGUIObject("compass"))->GetBarSprite()->SetActivated();
+
 			houseWalkComp->Stop();
+		}
+			
 	}
 	else if (!houseWalkComp->GetIsWalking())
 	{
-		if (length < playerComp->GetRadius() && length > 7.0f && !inside)
+		if (length < playerComp->GetRadius() && length > SIT_RADIUS && !inside)
+		{
 			houseWalkComp->Start();
+
+			static_cast<GUICompass*>(playerComp->GetGuiManager()->GetGUIObject("compass"))->GetBarSprite()->SetActivated(false);
+		}
+			
 
 		if (RMOUSE_DOWN)
 		{
@@ -340,7 +352,7 @@ void ControllerComp::Update(const float& deltaTime)
 					else if (this->velocity > WALK_VELOCITY) //is more decrease
 						acceleration = -WALK_ACCELERATION;
 
-					// Kan lägga in ljud för att gå på plankor här med, ha en bool för "onHouse" t.ex.
+					// Kan lï¿½gga in ljud fï¿½r att gï¿½ pï¿½ plankor hï¿½r med, ha en bool fï¿½r "onHouse" t.ex.
 					if (isGrounded)
 					{
 						if (!inside)
