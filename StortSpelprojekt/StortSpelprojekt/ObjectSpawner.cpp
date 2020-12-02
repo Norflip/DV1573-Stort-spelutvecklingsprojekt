@@ -207,13 +207,16 @@ void ObjectSpawner::AddTreesToChunk(const TreeModel& treeModel, Chunk* chunk, si
 				dx::XMVECTOR combinedRot = dx::XMQuaternionMultiply(randomYRotation, normalAngleRotation);
 				dx::XMMATRIX rotation = dx::XMMatrixRotationQuaternion(combinedRot);
 
-				float scale = Random::Range(baseTreeModel.minScale, baseTreeModel.maxScale);
+				float scale = Random::Range(treeModel.minScale, treeModel.maxScale);
+				scale *= 1.0f + (segment * treeModel.segmentScaleFactor);
 				dx::XMMATRIX translation = dx::XMMatrixScaling(scale, scale, scale) * rotation * dx::XMMatrixTranslation(position.x, position.y, position.z);
 				dx::XMStoreFloat4x4(&treesInstanced[i], dx::XMMatrixTranspose(translation));
 
+				dx::XMFLOAT3 scaledExtends = dx::XMFLOAT3(extends.x * scale * 0.85f, extends.y * scale * 0.85f, extends.z * scale * 0.85f);
+
 				position.y += 3.0f;
 				colliderPositions.push_back(position);
-				colliderExtends.push_back(extends);
+				colliderExtends.push_back(scaledExtends);
 
 				dx::XMFLOAT4 rot;
 				dx::XMStoreFloat4(&rot, combinedRot);
