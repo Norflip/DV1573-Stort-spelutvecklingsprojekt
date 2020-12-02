@@ -71,7 +71,6 @@ void Scene::FixedUpdate(const float& fixedDeltaTime)
 		guiManager->GetGUIObject("loading")->SetVisible(true);
 		if (delayTimer > physicsDelay && !sceneSwitch)
 		{
-				player->AddFlag(ObjectFlag::ENABLED);
 			root->FixedUpdate(fixedDeltaTime);
 			//std::cout << GameClock::Instance().GetSeconds() << std::endl;
 			physics->FixedUpdate(fixedDeltaTime);
