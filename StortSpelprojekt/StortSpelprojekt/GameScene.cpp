@@ -530,8 +530,6 @@ void GameScene::OnActivate()
 	//PrintSceneHierarchy(root, 0);
 	house->GetComponent<NodeWalkerComp>()->InitializePath(world.GetPath());
 	house->GetComponent<NodeWalkerComp>()->SetWorld(&world);
-	//Place signs
-	SetSignPositions(state);
 
 	if (house != nullptr && player != nullptr)
 	{
@@ -609,6 +607,8 @@ void GameScene::OnActivate()
 	/* Ugly solution */
 	player->GetComponent<PlayerComp>()->GetArms()->GetComponent< PlayerAnimHandlerComp>()->SetStarted(true);
 
+	//Place signs
+	SetSignPositions(state);
 
 	sceneSwitch = false;
 	delayTimer = 0.0f;
@@ -740,6 +740,12 @@ void GameScene::Update(const float& deltaTime)
 	if (rightSign->GetComponent<SelectableComponent>()->GetActive())
 	{
 		//set first frame till false
+
+		SaveState state = SaveHandler::LoadOrCreate();
+		state.segment++;
+		SaveHandler::Save(state);
+		std::cout << "added +1 to segment in save" << std::endl;
+
 		OnDeactivate();
 		ShowCursor(false);
 		OnActivate();
@@ -747,6 +753,12 @@ void GameScene::Update(const float& deltaTime)
 	}
 	else if (leftSign->GetComponent<SelectableComponent>()->GetActive())
 	{
+		SaveState state = SaveHandler::LoadOrCreate();
+		state.segment++;
+		SaveHandler::Save(state);
+
+		std::cout << "added +1 to segment in save" << std::endl;
+
 		OnDeactivate();
 		ShowCursor(false);
 		OnActivate();

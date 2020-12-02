@@ -14,7 +14,7 @@ void ControllerComp::CheckGrounded()
 	RayHit hitPuzzle;
 
 	//TERRAIN or default depending on if u can jump from on top of objects
-	float distance = 1.46f;
+	float distance = 1.50f;
 	Physics* phy = Engine::Instance->GetPhysics();
 
 	phy->RaytestSingle(ray, distance, hitTerrain, FilterGroups::TERRAIN);

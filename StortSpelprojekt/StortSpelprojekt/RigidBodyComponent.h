@@ -70,6 +70,8 @@ public:
 
 	void Release();
 
+	void RecieveMsg(const int& type, const std::string& msg, Object* sender, void* data = nullptr) override;
+
 private:
 	rp::Transform ConvertToBtTransform(const Transform& transform) const;
 	void AddCollidersToBody(Object* obj, rp::RigidBody* body);
