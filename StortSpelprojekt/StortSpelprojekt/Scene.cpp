@@ -65,13 +65,23 @@ void Scene::Update(const float& deltaTime)
 
 void Scene::FixedUpdate(const float& fixedDeltaTime)
 {
-	// We need a check when everything is loaded
+	// Delays gamestart so the physics can load properly
 	if (firstFrame)
-	{
-		root->FixedUpdate(fixedDeltaTime);
-		//std::cout << GameClock::Instance().GetSeconds() << std::endl;
-		physics->FixedUpdate(fixedDeltaTime);
+	{		
+		if (delayTimer > physicsDelay && !sceneSwitch)
+		{
+			root->FixedUpdate(fixedDeltaTime);
+			//std::cout << GameClock::Instance().GetSeconds() << std::endl;
+			physics->FixedUpdate(fixedDeltaTime);
+			
+			if (delayTimer > (physicsDelay + loadScreenDelay))
+			{
+				guiManager->GetGUIObject("loading")->SetVisible(false);
+			}
+		}
+		delayTimer += GameClock::Instance().GetFixedFrameTime();
 	}
+	
 }
 
 void Scene::Render()

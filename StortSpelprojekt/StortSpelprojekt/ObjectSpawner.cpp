@@ -25,10 +25,12 @@ void ObjectSpawner::Initialize(Object* root, World* world, Renderer* renderer)
 	this->world = world;
 
 	// DEFAULT TREE
-	baseTreeModel.meshes.push_back(resources->GetResource<Mesh>("Tree"));
-	baseTreeModel.meshes.push_back(resources->GetResource<Mesh>("leaves"));
+	baseTreeModel.meshes.push_back(resources->GetResource<Mesh>("instancedTree"));
+	baseTreeModel.meshes.push_back(resources->GetResource<Mesh>("instancedleaves"));
 
-	Material* mat = resources->GetResource<Material>("leavesMaterial");
+	baseTreeModel.materials.push_back(resources->GetResource<Material>("instancedTreeMaterial"));
+
+	Material* mat = resources->GetResource<Material>("instancedleavesMaterial");
 	mat->SetShader(resources->GetShaderResource("leafShader"));
 
 	baseTreeModel.materials.push_back(resources->GetResource<Material>("TreeMaterial"));
@@ -215,6 +217,7 @@ void ObjectSpawner::AddTreesToChunk(const TreeModel& treeModel, Chunk* chunk, si
 			}
 
 			Object* treeObject = new Object("tree", ObjectFlag::DEFAULT | ObjectFlag::NO_CULL);
+
 			Object::AddToHierarchy(chunk->GetOwner(), treeObject);
 
 			treeObject->GetTransform().SetPosition({ 0,0,0 });
@@ -228,6 +231,7 @@ void ObjectSpawner::AddTreesToChunk(const TreeModel& treeModel, Chunk* chunk, si
 				colliders->SetRotation(i, colliderRotations[i]);
 
 			treeObject->AddComponent<RigidBodyComponent>(0.f, FilterGroups::DEFAULT, FilterGroups::EVERYTHING, BodyType::STATIC, true);
+
 		}
 	}
 }
@@ -414,7 +418,7 @@ void ObjectSpawner::SpawnItem(Chunk* chunk)
 					{
 						/* Particles */
 						ParticleSystemComponent* particles = object->AddComponent<ParticleSystemComponent>(renderer, Engine::Instance->GetResources()->GetShaderResource("particleShader"));
-						particles->InitializeParticles(renderer->GetDevice(), "Stars");
+						particles->InitializeParticles(renderer->GetDevice(), "Particle");
 					}
 
 					m_itemIndex++;

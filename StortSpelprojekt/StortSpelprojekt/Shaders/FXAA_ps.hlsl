@@ -8,7 +8,8 @@ Texture2D screenTexture : register (t0);
 SamplerState defaultSampleType : register (s0); // Try out anisotropic
 
 static const float EDGE_THRESHOLD_MIN = 0.0312; // visible limit
-static const float EDGE_THRESHOLD_MAX = 0.125; // high quality
+//static const float EDGE_THRESHOLD_MAX = 0.125; // high quality
+static const float EDGE_THRESHOLD_MAX = 0.0625; // high quality
 static const float QUALITY[12] = {1.0f, 1.0f, 1.0f, 1.0f, 1.0f, 1.5f, 2.0f, 2.0f, 2.0f, 2.0f, 4.0f, 8.0f };
 
 //static float index = 0;
@@ -21,27 +22,12 @@ struct PixelInputType
 
 float RgbToLuma(float3 color)
 {
-	return sqrt(dot(color, float3(0.299, 0.587, 0.114)));
+	//return sqrt(dot(color, float3(0.299, 0.587, 0.114)));
 
 	// or
 
-	// return color.g * (0.587/0.299) + color.r;
+	return color.g * (0.587/0.299) + color.r;
 }
-
-//float Quality(int iteration)
-//{
-//	if (index >= 5)
-//	{
-//		int oldIndex = index;
-//		index++;
-//
-//		return QUALITY[oldIndex];
-//	}
-//	else
-//	{
-//		return 1.0f;
-//	}
-//}
 
 float4 main(PixelInputType input) : SV_TARGET
 {
