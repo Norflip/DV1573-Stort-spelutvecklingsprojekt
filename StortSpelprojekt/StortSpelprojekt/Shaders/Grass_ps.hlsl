@@ -20,7 +20,7 @@ float4 main(GS_OUTPUT_GRASS input) : SV_TARGET
 	//uint lightCount = LightGrid[tileIndex].y;
 
 	//finalColor = IterateLights(startOffset, lightCount, finalColor, normalized, input.posToEye, viewDirection);
-    textureColor *= float4(0.4, 0.4, 0.4, 1.0);
+    textureColor *= float4(0.03, 0.03, 0.03, 1.0);
 
     //finalColor*= textureColor;
     return textureColor;
