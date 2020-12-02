@@ -188,8 +188,8 @@ void Path::CreateLineSegments()
 	PathPoint startRight(firstPoint.x + (firstRightDirection.x) * distanceOffset, firstPoint.z + (firstSegmentDirection.y) * distanceOffset, firstPoint.influence);
 	
 	//Sign
-	signPosition.x = lastPoint.x + lastSegDirection.x * MAX_INFLUENCE;
-	signPosition.y = lastPoint.z + lastSegDirection.y * MAX_INFLUENCE;
+	signPosition.x = lastPoint.x + lastSegDirection.x * (MAX_INFLUENCE * 0.5f);
+	signPosition.y = lastPoint.z + lastSegDirection.y * (MAX_INFLUENCE * 0.5f);
 
 	signRotation.x = lastPoint.x + lastSegDirection.x * MAX_INFLUENCE;
 	signRotation.y = lastPoint.z + lastSegDirection.y * MAX_INFLUENCE;

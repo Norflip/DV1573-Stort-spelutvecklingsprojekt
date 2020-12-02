@@ -478,14 +478,6 @@ void GameScene::OnActivate()
 	std::cout << "Game Scene activated" << std::endl;
 	SaveState& state = SaveHandler::LoadOrCreate();
 
-	if (!start)
-	{
-		fogCol += 0.5f;
-		renderer->SetIdAndColor(state.segment, fogCol);
-	}
-
-	
-
 	LightManager::Instance().ForceUpdateBuffers(renderer->GetContext(),camera);
 
 	player->GetComponent<PlayerComp>()->SetStatsFromState(state);
@@ -517,6 +509,10 @@ void GameScene::OnActivate()
 
 		if (!start)
 		{
+
+			fogCol += 0.5f;
+			renderer->SetIdAndColor(state.segment, fogCol);
+
 			dx::XMFLOAT3 switchPosition;
 			switchPosition = dx::XMFLOAT3{ world.GetPath().GetPlayerSwitchPosition().x , 1.5f ,world.GetPath().GetPlayerSwitchPosition().y };
 
@@ -533,6 +529,9 @@ void GameScene::OnActivate()
 		else if (start)
 
 		{
+			fogCol = 4.0f;
+			renderer->SetIdAndColor(state.segment, fogCol);
+
 			dx::XMVECTOR playerPos = { this->interiorPosition.x, this->interiorPosition.y + 3.0f, this->interiorPosition.z, 0.0f };
 
 			position = dx::XMVectorAdd(dx::XMVECTOR({ 0.0f, 1.0f, 5.0f, 0.0f }), position);
@@ -543,6 +542,9 @@ void GameScene::OnActivate()
 			player->GetComponent<RigidBodyComponent>()->SetPosition(playerPos);
 
 			player->GetComponent<ControllerComp>()->SetInside(true);
+
+			start = false;
+			
 		}
 
 	}
@@ -553,10 +555,7 @@ void GameScene::OnActivate()
 	//enemyManager->SpawnEnemies();
 
 	AudioMaster::Instance().PlaySoundEvent("wind");
-
-
-	if (start)
-		start = false;
+	
 	/* Ugly solution */
 	player->GetComponent<PlayerComp>()->GetArms()->GetComponent< PlayerAnimHandlerComp>()->SetStarted(true);
 }
@@ -578,14 +577,14 @@ void GameScene::OnDeactivate()
 
 void GameScene::SetSignPositions(SaveState& state)
 {
-	if (state.segment == 8)
+	if (state.segment == 7)
 	{
 		end = true;
 		dx::XMFLOAT3 signPosition;
 		signPosition = dx::XMFLOAT3{ world.GetPath().GetSignPosition().x , 1.0f ,world.GetPath().GetSignPosition().y };
 		
 		roadSign->GetTransform().SetPosition({ signPosition.x, signPosition.y - 1.0f, signPosition.z });
-		roadSign->AddComponent<BoxColliderComponent>(dx::XMFLOAT3{ 3.0f, 2.0f, 1.5f }, dx::XMFLOAT3{ 0,0,0 });
+		roadSign->AddComponent<BoxColliderComponent>(dx::XMFLOAT3{ 2.0f, 3.0f, 4.0f }, dx::XMFLOAT3{ 0,0,0 });
 		roadSign->AddComponent<SelectableComponent>();
 		roadSign->AddComponent<RigidBodyComponent>(0.0f, FilterGroups::CLICKABLE, (FilterGroups::EVERYTHING & ~FilterGroups::PLAYER), BodyType::STATIC, true);
 
@@ -670,6 +669,7 @@ void GameScene::Update(const float& deltaTime)
 	//Left or right
 	if (rightSign->GetComponent<SelectableComponent>()->GetActive())
 	{
+		//set first frame till false
 		OnDeactivate();
 		ShowCursor(false);
 		OnActivate();

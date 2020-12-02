@@ -1,6 +1,5 @@
 #pragma once
 
-
 //THIS MESS NEEDS TO DIE A HORRIBLE DEATH
 #include "Object.h"
 #include "HeightMap.h"
