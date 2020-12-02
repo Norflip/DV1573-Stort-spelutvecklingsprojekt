@@ -181,7 +181,7 @@ void SkeletonMeshComponent::PlayOnce(const float& deltaTime)
 {
 	float time = 0.0f;
 	bool doneOnce = false;
-	
+	doneDeath = false;
 
 	if (currentAni == SkeletonStateMachine::IDLE)
 	{
@@ -365,8 +365,7 @@ void SkeletonMeshComponent::PlayOnce(const float& deltaTime)
 			}
 			else
 			{
-				timer.Stop();
-				doneOnce = true;
+				
 				doneDeath = true;
 				count = 0.0f;
 			}
