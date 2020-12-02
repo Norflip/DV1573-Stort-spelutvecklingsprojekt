@@ -4,6 +4,7 @@
 #include "GUISprite.h"
 #include "GUIFont.h"
 #include "Engine.h"
+#include "SaveHandler.h"
 
 GameOverScene::GameOverScene() : Scene("GameOverScene")
 {
@@ -53,6 +54,8 @@ void GameOverScene::OnActivate()
 	Input::Instance().FreeMouse();
 	ShowCursor(true);
 	Input::Instance().SetMouseMode(dx::Mouse::MODE_ABSOLUTE);
+
+	SaveHandler::RemoveSave();
 }
 
 void GameOverScene::OnDeactivate()

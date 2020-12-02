@@ -741,6 +741,12 @@ void GameScene::Update(const float& deltaTime)
 	if (rightSign->GetComponent<SelectableComponent>()->GetActive())
 	{
 		//set first frame till false
+
+		SaveState state = SaveHandler::LoadOrCreate();
+		state.segment++;
+		SaveHandler::Save(state);
+		std::cout << "added +1 to segment in save" << std::endl;
+
 		OnDeactivate();
 		ShowCursor(false);
 		OnActivate();
@@ -748,6 +754,12 @@ void GameScene::Update(const float& deltaTime)
 	}
 	else if (leftSign->GetComponent<SelectableComponent>()->GetActive())
 	{
+		SaveState state = SaveHandler::LoadOrCreate();
+		state.segment++;
+		SaveHandler::Save(state);
+
+		std::cout << "added +1 to segment in save" << std::endl;
+
 		OnDeactivate();
 		ShowCursor(false);
 		OnActivate();
