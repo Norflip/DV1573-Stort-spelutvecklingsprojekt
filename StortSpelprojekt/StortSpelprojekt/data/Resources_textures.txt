@@ -1,4 +1,4 @@
-Textures: 4
+Textures: 5
 
 Grass: Textures/grassTexture.png
 
@@ -7,3 +7,5 @@ Road: Textures/Stone_Floor_003_COLOR.jpg
 Stars: Textures/starstar.png
 
 Fire1: Textures/fire1.png
+
+Particle: Textures/particle3.png
