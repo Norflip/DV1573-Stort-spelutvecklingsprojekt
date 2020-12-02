@@ -185,7 +185,7 @@ void Pathfinding::AStar()
 
 void Pathfinding::AddNeighbors(Node* node)
 {
-	if (node->pos.x < (cols - 1))							//Add neighbors for node passed in
+	if (node->pos.x < (cols - 1))							//Add neighbors for node passed in, suppose to use AddNeighbors2 but this is a temp fix
 		node->neighbors.push_back(grid[(int)node->pos.x + 1][(int)node->pos.y]);
 	if (node->pos.x > 0)
 		node->neighbors.push_back(grid[(int)node->pos.x - 1][(int)node->pos.y]);
