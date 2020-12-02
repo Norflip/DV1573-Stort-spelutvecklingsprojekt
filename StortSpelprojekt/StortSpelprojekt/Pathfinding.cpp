@@ -60,32 +60,32 @@ void Pathfinding::Update(const float& deltaTime)
 		FollowPath();
 	}
 
-	//dx::XMFLOAT3 enemyPos;
-	//dx::XMStoreFloat3(&enemyPos, GetOwner()->GetTransform().GetPosition());
+	dx::XMFLOAT3 enemyPos;
+	dx::XMStoreFloat3(&enemyPos, GetOwner()->GetTransform().GetPosition());
 
-	//for (int i = 0; i < cols; i++)
-	//{
-	//	for (int j = 0; j < rows; j++)
-	//	{
-	//		dx::XMFLOAT3 color;
-	//		if (grid[i][j]->obstacle)
-	//		{
-	//			color = dx::XMFLOAT3(0, 0, 0);
-	//		}
-	//		else
-	//		{
-	//			if (grid[i][j]->openSet)
-	//				color = dx::XMFLOAT3(0, 1, 0);
-	//			else if (grid[i][j]->correctPath)
-	//				color = dx::XMFLOAT3(0, 0, 1);
-	//			else if (grid[i][j]->closedSet)
-	//				color = dx::XMFLOAT3(1, 0, 0);
-	//			else
-	//				color = dx::XMFLOAT3(1, 1, 1);
-	//		}
-	//		DShape::DrawBox(dx::XMFLOAT3(grid[i][j]->pos.x + (int)enemyPos.x - (cols/2), enemyPos.y + 7, grid[i][j]->pos.y + (int)enemyPos.z - (rows/2)), dx::XMFLOAT3(0.8, 0.8, 0.8), color);
-	//	}
-	//}
+	for (int i = 0; i < cols; i++)
+	{
+		for (int j = 0; j < rows; j++)
+		{
+			dx::XMFLOAT3 color;
+			if (grid[i][j]->obstacle)
+			{
+				color = dx::XMFLOAT3(0, 0, 0);
+			}
+			else
+			{
+				if (grid[i][j]->openSet)
+					color = dx::XMFLOAT3(0, 1, 0);
+				else if (grid[i][j]->correctPath)
+					color = dx::XMFLOAT3(0, 0, 1);
+				else if (grid[i][j]->closedSet)
+					color = dx::XMFLOAT3(1, 0, 0);
+				else
+					color = dx::XMFLOAT3(1, 1, 1);
+			}
+			DShape::DrawBox(dx::XMFLOAT3(grid[i][j]->pos.x + (int)enemyPos.x - (cols/2), enemyPos.y + 7, grid[i][j]->pos.y + (int)enemyPos.z - (rows/2)), dx::XMFLOAT3(0.8, 0.8, 0.8), color);
+		}
+	}
 }
 
 void Pathfinding::SetPlayer(PlayerComp* playerComp)
@@ -116,7 +116,7 @@ void Pathfinding::AStar()
 		std::vector<Node*> closedSet;
 		openSet.push_back(start);										
 		grid[(int)start->pos.x][(int)start->pos.y]->openSet = true;
-		while (openSet.size() > 0 || !pathFound)
+		while (openSet.size() > 0 && !pathFound)
 		{
 			Node* current = nullptr;
 
@@ -236,8 +236,8 @@ void Pathfinding::AddObstacles()
 	{
 		for (int y = 0; y < rows; y++)
 		{
-			if (!grid[x][y]->obstacle)
-			{
+			//if (!grid[x][y]->obstacle)
+			//{
 				dx::XMFLOAT3 origin;
 				dx::XMStoreFloat3(&origin, GetOwner()->GetTransform().GetPosition());
 				origin.x = origin.x + x - (cols / 2);
@@ -254,23 +254,23 @@ void Pathfinding::AddObstacles()
 				phy->RaytestSingle(ray, distance, hitDefaults, FilterGroups::DEFAULT);
 
 				//this->isGrounded = false;
-				//dx::XMFLOAT3 color = dx::XMFLOAT3(1,0,0);
+				dx::XMFLOAT3 color = dx::XMFLOAT3(1,0,0);
 				if (hitProps.object != nullptr || hitDefaults.object != nullptr) //(hitProps.object != nullptr && hitProps.object->GetName() == "HouseInterior"))// != nullptr )//&& hitProps.object->GetName() == "houseBase"))
 				{
 					grid[x][y]->obstacle = true;
-					for (int i = 0; i < grid[x][y]->neighbors.size(); i++)
-					{
-						if (!grid[x][y]->neighbors[i]->obstacle)
-							grid[x][y]->neighbors[i]->obstacle = true;
-					}
-					//color = dx::XMFLOAT3(0, 0, 1);
+					//for (int i = 0; i < grid[x][y]->neighbors.size(); i++)
+					//{
+						//if (!grid[x][y]->neighbors[i]->obstacle)
+							//grid[x][y]->neighbors[i]->obstacle = true;
+					//}
+					//color = dx::XMFLOAT3(0, 0, 0);
 				}
-				origin.y = origin.y - 15.0f;
+				//origin.y = origin.y - 15.0f;
 				//DShape::DrawBox(ray.origin, dx::XMFLOAT3(0.2, distance, 0.2), color);
 				//int randNr = rand() % 100;
 				//if(randNr < 30)
 				//	grid[x][y]->obstacle = true;
-			}
+			//}
 		}
 	}
 }
@@ -309,7 +309,7 @@ void Pathfinding::ResetPath()
 
 void Pathfinding::FollowPath()
 {
-	if (correctPath.size() > 2)
+	if (correctPath.size() > 1)
 	{
 		Node* nodeA = correctPath[correctPath.size() - 1];
 		Node* nodeB = correctPath[correctPath.size() - 2];
