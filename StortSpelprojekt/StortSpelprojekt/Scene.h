@@ -24,6 +24,7 @@
 #include "ObjectPooler.h"
 #include "WeaponComponent.h"
 #include "EnemyManager.h"
+#include "Pathfinding.h"
 #include <wchar.h>
 #include "PlayerAnimHandlerComp.h"
 #include "HousePartsComponent.h"
@@ -92,6 +93,8 @@ protected:
 	Input& input;
 	Object* player;
 	EnemyManager* enemyManager;
+
+	ObjectPooler* pooler;
 	GUIManager* guiManager;		
 	std::string debugName;
 

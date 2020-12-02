@@ -2,6 +2,7 @@
 #include "EnemySMComp.h"
 #include "ResourceManager.h"
 #include "ObjectPooler.h"
+#include "Pathfinding.h"
 #include "Math.h"
 #include "Random.h"
 constexpr float ENEMY_SPAWN_RATE_MAX = 20.f; //how fast enemies spawn

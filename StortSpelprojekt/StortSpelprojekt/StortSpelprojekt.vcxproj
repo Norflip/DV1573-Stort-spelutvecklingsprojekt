@@ -168,6 +168,7 @@
   <ItemGroup>
     <ClCompile Include="AudioMaster.cpp" />
     <ClCompile Include="AudioEngine.cpp" />
+    <ClCompile Include="Pathfinding.cpp" />
     <ClCompile Include="CreditsScene.cpp" />
     <ClCompile Include="DepthPass.cpp" />
     <ClCompile Include="ParticleComponent.cpp" />
@@ -255,6 +256,7 @@
   <ItemGroup>
     <ClInclude Include="AudioMaster.h" />
     <ClInclude Include="AudioEngine.h" />
+    <ClInclude Include="Pathfinding.h" />
     <ClInclude Include="CreditsScene.h" />
     <ClInclude Include="ParticleComponent.h" />
     <ClInclude Include="Particlesys.h" />
