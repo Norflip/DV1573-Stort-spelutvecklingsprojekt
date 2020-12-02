@@ -6,7 +6,7 @@ void ControllerComp::CheckGrounded()
 {
 	dx::XMFLOAT3 origin;
 	dx::XMStoreFloat3(&origin, GetOwner()->GetTransform().GetPosition());
-	//origin.z += 2.f;
+	origin.z += 2.f;
 	Ray ray(origin, DOWN_VEC);
 	RayHit hitTerrain;
 	RayHit hitProps;
@@ -35,11 +35,11 @@ void ControllerComp::CheckGrounded()
 		}*/
 		this->isGrounded = true;
 		//std::cout << "picking: " << hit.object->GetName() << std::endl;
-		//DShape::DrawLine(ray.origin, ray.GetPoint(distance), { 0,0,1 });
+		DShape::DrawLine(ray.origin, ray.GetPoint(distance), { 0,0,1 });
 	}
 	
-	//else
-	//	DShape::DrawLine(ray.origin, ray.GetPoint(distance), { 1,0,0 });
+	else
+		DShape::DrawLine(ray.origin, ray.GetPoint(distance), { 1,0,0 });
 	
 	//return result;
 }

@@ -43,7 +43,6 @@ class Pathfinding : public Component
 		int cols;
 		int rows;
 		Node* grid[32][32];
-		DShape box;
 		GameClock timer;
 		PlayerComp* player;
 		std::vector<Node*> correctPath;

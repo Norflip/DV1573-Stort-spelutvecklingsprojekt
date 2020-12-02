@@ -1,5 +1,6 @@
 #include "stdafx.h"
 #include "Pathfinding.h"
+#include "Engine.h"
 
 Pathfinding::Pathfinding(PlayerComp* player)
 	: cols(32), rows(32), player(player), pathFound(false), playerRadius(2.5)
@@ -70,7 +71,7 @@ void Pathfinding::Update(const float& deltaTime)
 				else
 					color = dx::XMFLOAT3(1, 1, 1);
 			}
-			box.DrawBox(dx::XMFLOAT3(grid[i][j]->pos.x + (int)enemyPos.x - (cols/2), enemyPos.y + 2, grid[i][j]->pos.y + (int)enemyPos.z - (rows/2)), dx::XMFLOAT3(0.8, 0.8, 0.8), color);
+			DShape::DrawBox(dx::XMFLOAT3(grid[i][j]->pos.x + (int)enemyPos.x - (cols/2), enemyPos.y + 7, grid[i][j]->pos.y + (int)enemyPos.z - (rows/2)), dx::XMFLOAT3(0.8, 0.8, 0.8), color);
 		}
 	}
 }
@@ -217,9 +218,30 @@ void Pathfinding::AddObstacles()
 	{
 		for (int y = 0; y < rows; y++)
 		{
-			int randNr = rand() % 100;
-			if(randNr < 30)
+			dx::XMFLOAT3 origin;
+			dx::XMStoreFloat3(&origin, GetOwner()->GetTransform().GetPosition());
+			origin.x = origin.x + x - (cols/2);
+			origin.y = origin.y + 7.0f;
+			origin.z = origin.z + y - (rows/2);
+			Ray ray(origin, DOWN_VEC);
+			RayHit hitProps;
+
+			//TERRAIN or default depending on if u can jump from on top of objects
+			float distance = 15.0f;
+			Physics* phy = Engine::Instance->GetPhysics();
+			phy->RaytestSingle(ray, distance, hitProps, FilterGroups::PROPS);
+
+			//this->isGrounded = false;
+			dx::XMFLOAT3 color = dx::XMFLOAT3(1,0,0);
+			if (hitProps.object != nullptr) //(hitProps.object != nullptr && hitProps.object->GetName() == "HouseInterior"))// != nullptr )//&& hitProps.object->GetName() == "houseBase"))
+			{
 				grid[x][y]->obstacle = true;
+				color = dx::XMFLOAT3(0, 0, 1);
+			}
+			DShape::DrawBox(ray.origin, dx::XMFLOAT3(0.2, distance, 0.2), color);
+			//int randNr = rand() % 100;
+			//if(randNr < 30)
+			//	grid[x][y]->obstacle = true;
 		}
 	}
 }
@@ -260,49 +282,24 @@ void Pathfinding::FollowPath()
 {
 	if (correctPath.size() > 1)
 	{
-		dx::XMFLOAT3 enemyNewPos;
-		dx::XMStoreFloat3(&enemyNewPos, GetOwner()->GetTransform().GetPosition());
-
 		Node* nodeA = correctPath[correctPath.size() - 1];
-		correctPath.erase(correctPath.begin() + (correctPath.size() - 1));
-		correctPath.shrink_to_fit();
+		correctPath.pop_back();
 		Node* nodeB = correctPath[correctPath.size() - 1];
-		correctPath.erase(correctPath.begin() + (correctPath.size() - 1));
-		correctPath.shrink_to_fit();
 
-		dx::XMFLOAT2 walkTo = { nodeA->pos.x - nodeB->pos.x, nodeA->pos.y - nodeB->pos.y };
-		enemyNewPos.x = walkTo.x;
-		enemyNewPos.z = walkTo.y;
-		std::cout << "enemyNewPos x: " << enemyNewPos.x << " z: " << enemyNewPos.z << std::endl;
-		dx::XMVECTOR enemyNewPosVec = dx::XMVectorSet(enemyNewPos.x, 0, enemyNewPos.y, 0);
+		dx::XMFLOAT3 enemyNextPos;
+		dx::XMStoreFloat3(&enemyNextPos, GetOwner()->GetTransform().GetPosition());
+		dx::XMFLOAT3 walkTo = { nodeA->pos.x - nodeB->pos.x,0 ,nodeA->pos.y - nodeB->pos.y };
 
-		dx::XMFLOAT3 moveDir = { 0.0f, 0.0f, 0.0f };
-		dx::XMVECTOR moveVec = dx::XMVectorAdd(enemyNewPosVec, GetOwner()->GetTransform().GetPosition());
-		dx::XMVECTOR normVec = dx::XMVector3Normalize(moveVec);
-		dx::XMFLOAT3 normDir;
-		dx::XMStoreFloat3(&normDir, normVec);
-
-		dx::XMVECTOR lenVec = dx::XMVector3Length(moveVec);
-		float length;
-		dx::XMStoreFloat(&length, lenVec);
-
-		if (length >= playerRadius)
-		{
-			moveDir.x = normDir.x;
-			moveDir.z = normDir.z;
-		}
-
+		enemyNextPos = dx::XMFLOAT3(enemyNextPos.x + walkTo.x, 0, enemyNextPos.z + walkTo.z);
+		dx::XMVECTOR enemyNextPosVec = dx::XMLoadFloat3(&enemyNextPos);
 		dx::XMFLOAT3 vel = enemyRB->GetLinearVelocity();
-
-		dx::XMFLOAT3 move = { moveDir.x * enemyStatsComp->GetSpeed(), vel.y, moveDir.z * enemyStatsComp->GetSpeed() };
-
+		dx::XMFLOAT3 move = { -walkTo.x * enemyStatsComp->GetSpeed(), vel.y, -walkTo.z * enemyStatsComp->GetSpeed() };
 		enemyRB->SetLinearVelocity(move);
-		dx::XMVECTOR enemyPos = GetOwner()->GetTransform().GetPosition();
 
-		dx::XMVECTOR dirVec = dx::XMVector3Normalize(dx::XMVectorSubtract(GetOwner()->GetTransform().GetPosition(), moveVec));
+		dx::XMVECTOR dirVec = dx::XMVector3Normalize(dx::XMVectorSubtract(GetOwner()->GetTransform().GetPosition(), enemyNextPosVec));
 		dx::XMFLOAT3 dirToNode;
 		dx::XMStoreFloat3(&dirToNode, dirVec);
-		float angle = 180.f + atan2f(dirToNode.x, dirToNode.z) * (180.f / Math::PI);
+		float angle = 180.f + atan2f(-dirToNode.x, -dirToNode.z) * (180.f / Math::PI);
 		float rotation = angle * Math::ToRadians;
 		dx::XMVECTOR right = GetOwner()->GetTransform().TransformDirection({ 1,0,0 });
 		dx::XMVECTOR eulerRotation = dx::XMQuaternionMultiply(dx::XMQuaternionRotationAxis(right, 0), dx::XMQuaternionRotationAxis({ 0,1,0 }, rotation));
