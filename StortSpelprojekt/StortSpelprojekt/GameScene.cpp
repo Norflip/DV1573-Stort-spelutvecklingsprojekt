@@ -12,7 +12,6 @@ GameScene::GameScene() : Scene("GameScene")
 	fogCol = 0;
 	end = false;
 	firstFrame = false;
-	segments = 0;
 }
 
 GameScene::~GameScene()
@@ -568,8 +567,6 @@ void GameScene::OnActivate()
 
 			player->GetTransform().SetPosition(playerPos);
 			player->GetComponent<RigidBodyComponent>()->SetPosition(playerPos);
-
-			segments++;
 		}
 		// NÅN MÅSTE FIXA DETTA. JAG PALLAR INTE
 		// NÅN MÅSTE FIXA DETTA. JAG PALLAR INTE
@@ -643,7 +640,7 @@ void GameScene::OnDeactivate()
 
 void GameScene::SetSignPositions(SaveState& state)
 {
-	if (segments == 7)
+	if (state.segment == 0)
 	{
 		end = true;
 		dx::XMFLOAT3 signPosition;
@@ -770,7 +767,6 @@ void GameScene::Update(const float& deltaTime)
 	{
 		if (roadSign->GetComponent<SelectableComponent>()->GetActive())
 		{
-			segments = 0;
 			Engine::Instance->SwitchScene(SceneIndex::WIN);
 		}
 	}
