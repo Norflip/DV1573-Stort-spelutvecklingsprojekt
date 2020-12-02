@@ -129,7 +129,7 @@ void GameScene::InitializeObjects()
 	sunLight->GetTransform().SetPosition(dx::XMLoadFloat3(&sunTranslation));
 	LightComponent* sunComponent = sunLight->AddComponent<LightComponent>(2, dx::XMFLOAT4(0.5f, 0.5f, 0.5f, 1.0f), 7.f);
 	sunComponent->SetEnabled(true);
-	sunComponent->SetIntensity(0.1f);
+	sunComponent->SetIntensity(0.2f);
 	dx::XMFLOAT3 sunDirection;
 	dx::XMStoreFloat3(&sunDirection, dx::XMVector3Normalize(dx::XMVectorSet(0, -1, 1, 0)));
 	sunComponent->SetDirection(sunDirection);
@@ -509,7 +509,7 @@ void GameScene::InitializeInterior()
 
 void GameScene::OnActivate()
 {
-	std::cout << "Game Scene activated" << std::endl;
+	
 	SaveState& state = SaveHandler::LoadOrCreate();
 
 	LightManager::Instance().ForceUpdateBuffers(renderer->GetContext(),camera);
@@ -532,29 +532,35 @@ void GameScene::OnActivate()
 	{
 		std::vector<dx::XMINT2> indexes = world.GetPath().GetIndexes();
 		dx::XMINT2 spawnIndex = indexes[0];
+	
 
-		dx::XMVECTOR position = dx::XMVectorAdd(Chunk::IndexToWorld(spawnIndex, 0.0f), dx::XMVectorSet(CHUNK_SIZE / 2.0f, 0, CHUNK_SIZE / 2.0f, 0));
-		house->GetTransform().SetPosition(position);
+		//dx::XMVECTOR position = dx::XMVectorAdd(Chunk::IndexToWorld(spawnIndex, 0.0f), dx::XMVectorSet(CHUNK_SIZE / 2.0f, 0, CHUNK_SIZE / 2.0f, 0));
+		//house->GetTransform().SetPosition(position);
 		
-		if (house->HasComponent<RigidBodyComponent>())
-			house->GetComponent<RigidBodyComponent>()->SetPosition(position);
-
+	/*	if (house->HasComponent<RigidBodyComponent>())
+			house->GetComponent<RigidBodyComponent>()->SetPosition(position);*/
+	
 		
 
 		if (!start)
 		{
-
+			sm::Vector3 housePos = house->GetTransform().GetLocalPosition();
 			fogCol += 0.5f;
 			renderer->SetIdAndColor(state.segment, fogCol);
 
 			dx::XMFLOAT3 switchPosition;
-			switchPosition = dx::XMFLOAT3{ world.GetPath().GetPlayerSwitchPosition().x , 1.5f ,world.GetPath().GetPlayerSwitchPosition().y };
+			switchPosition = dx::XMFLOAT3{ housePos.x  , 10.f , housePos.z };
 
-			dx::XMVECTOR playerPos = { switchPosition.x, switchPosition.y, switchPosition.z, 0.0f };
+			dx::XMVECTOR playerPos = { switchPosition.x, switchPosition.y, switchPosition.z };
+
+			dx::XMVECTOR temphousePos = house->GetTransform().GetLocalPosition();
+
 
 			//position = dx::XMVectorAdd(dx::XMVECTOR({ 0.0f, 1.0f, 5.0f, 0.0f }), position);
 
 			//player->GetComponent<PlayerComp>()->SetStartPosition(position);
+
+			house->GetTransform().SetPosition({ housePos.x, 3.0f, housePos.z });
 
 			player->GetTransform().SetPosition(playerPos);
 			player->GetComponent<RigidBodyComponent>()->SetPosition(playerPos);
@@ -563,11 +569,12 @@ void GameScene::OnActivate()
 		else if (start)
 
 		{
-			fogCol = 4.0f;
+			fogCol = 0.0f;
 			renderer->SetIdAndColor(state.segment, fogCol);
 
 			dx::XMVECTOR playerPos = { this->interiorPosition.x, this->interiorPosition.y + 3.0f, this->interiorPosition.z, 0.0f };
 
+			dx::XMVECTOR position = house->GetTransform().GetLocalPosition();
 			position = dx::XMVectorAdd(dx::XMVECTOR({ 0.0f, 1.0f, 5.0f, 0.0f }), position);
 
 			player->GetComponent<PlayerComp>()->SetStartPosition(position);
@@ -592,11 +599,21 @@ void GameScene::OnActivate()
 	
 	/* Ugly solution */
 	player->GetComponent<PlayerComp>()->GetArms()->GetComponent< PlayerAnimHandlerComp>()->SetStarted(true);
+
+	physicsDelay = 25.0f;
+	sceneSwitch = false;
+
+	
+	std::cout << "Game Scene activated" << std::endl;
 }
 
 void GameScene::OnDeactivate()
 {
+	firstFrame = false;
+	sceneSwitch = true;
+	delayTimer = 0.0f;
 
+	//guiManager->GetGUIObject("loading")->SetVisible(true);
 	std::cout << "Game Scene deactivated" << std::endl;
 	world.DeconstructSegment();
 	renderer->RemoveRenderPass(guiManager);

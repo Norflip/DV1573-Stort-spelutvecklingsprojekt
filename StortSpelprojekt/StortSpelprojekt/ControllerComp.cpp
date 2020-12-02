@@ -169,12 +169,12 @@ void ControllerComp::Update(const float& deltaTime)
 	if (houseWalkComp->GetIsWalking())
 	{
 		// If next to the house
-		if (length > playerComp->GetRadius() || length < 7.0f)
+		if (length > playerComp->GetRadius() || length < SIT_RADIUS)
 			houseWalkComp->Stop();
 	}
 	else if (!houseWalkComp->GetIsWalking())
 	{
-		if (length < playerComp->GetRadius() && length > 7.0f && !inside)
+		if (length < playerComp->GetRadius() && length > SIT_RADIUS && !inside)
 			houseWalkComp->Start();
 
 		if (RMOUSE_DOWN)
