@@ -55,7 +55,6 @@ private:
 	bool freeCam;
 	bool showCursor;
 	bool canRotate;
-	bool isGrounded;
 	bool inside;
 	bool inDoorRange;
 	bool first;
@@ -78,6 +77,8 @@ private:
 
 	MoveState isMoving; 
 
+
+
 	void CalcVelocity(float acceleration)
 	{
 		if (this->velocityTimer >= VELOCITY_INC_RATE)
@@ -86,10 +87,14 @@ private:
 			this->velocityTimer = 0.f;
 		}
 	};
+
+
 protected:
 	dx::XMVECTOR groundRotation2;
 	dx::XMVECTOR groundRotation;
 public:
+	bool isGrounded;
+
 	ControllerComp(Object* cameraObject, Object* houseObject);
 	virtual ~ControllerComp();
 

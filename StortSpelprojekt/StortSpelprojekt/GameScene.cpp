@@ -104,11 +104,12 @@ void GameScene::InitializeObjects()
 	cameraObject->GetTransform().SetPosition(playerSpawnVec);
 	playerObject->GetTransform().SetPosition(playerSpawnVec);
 	playerObject->AddComponent<CapsuleColliderComponent>(0.5f, 1.5f, zero);
-	playerObject->AddComponent<RigidBodyComponent>(50.f, FilterGroups::PLAYER, (FilterGroups::EVERYTHING), BodyType::DYNAMIC, true);
+	RigidBodyComponent* body = playerObject->AddComponent<RigidBodyComponent>(50.f, FilterGroups::PLAYER, (FilterGroups::EVERYTHING), BodyType::DYNAMIC, true);
 
 	playerObject->AddComponent<PlayerComp>(renderer, camera, house, Engine::Instance->GetPhysics(), guiManager, 100.f, 2.f, 40.f, 50.f, 3.f);
-	playerObject->AddComponent<ControllerComp>(cameraObject, houseBaseObject);
+	ControllerComp* controller = playerObject->AddComponent<ControllerComp>(cameraObject, houseBaseObject);
 	playerObject->GetComponent<PlayerComp>()->SetInteriorPosition(this->interiorPosition.x, this->interiorPosition.y, this->interiorPosition.z);
+
 
 	Object::AddToHierarchy(playerObject, cameraObject);
 	AddObjectToRoot(playerObject);

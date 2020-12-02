@@ -129,6 +129,7 @@ void RigidBodyComponent::AddCollidersToBody(Object* obj, rp::RigidBody* body)
 		for (size_t j = 0; j < shapeCount; j++)
 		{
 			rp::Collider* collider = body->addCollider(colliders[i]->GetCollisionShape(j), colliders[i]->GetTransform(j));
+
 			collider->setCollisionCategoryBits(static_cast<unsigned short>(group));
 			collider->setCollideWithMaskBits(static_cast<unsigned short>(collisionMask));
 			collidersList.push_back(collider);
@@ -166,6 +167,9 @@ void RigidBodyComponent::m_InitializeBody(Physics* physics)
 		body->setUserData(static_cast<void*>(GetOwner()));
 
 		AddCollidersToBody(GetOwner(), body);
+
+		body->updateMassPropertiesFromColliders();
+
 		initialized = true;
 	}
 }

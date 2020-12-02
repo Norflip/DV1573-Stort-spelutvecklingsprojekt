@@ -3,6 +3,7 @@
 
 ResourceManager::ResourceManager()
 {
+
 }
 
 ResourceManager::~ResourceManager()
@@ -16,6 +17,8 @@ ResourceManager::~ResourceManager()
 	{
 		delete i.second;
 	}
+
+	delete emptyTexture;
 
 	resources.clear();
 	shaderResources.clear();
@@ -81,6 +84,11 @@ void ResourceManager::RemoveResource(std::string key)
 
 void ResourceManager::InitializeResources(ID3D11Device* device)
 {
+	unsigned char* data = new unsigned char[4];
+	for (size_t i = 0; i < 4; i++)
+		data[i] = 0.5f;
+	emptyTexture = Texture::FromMemory(device, data, sizeof(unsigned char) * 4);
+
 	ReadTextures(device);
 	ReadShaders(device);
 	ReadObjects(device);

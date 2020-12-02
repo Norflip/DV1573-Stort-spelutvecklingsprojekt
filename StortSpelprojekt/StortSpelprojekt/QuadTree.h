@@ -23,9 +23,9 @@ public:
 	QuadTree(size_t level, dx::XMFLOAT2 min, dx::XMFLOAT2 max, size_t maxLevels, size_t maxItems);
 	virtual ~QuadTree();
 
-	void Insert(const Bounds& bounds, const dx::XMMATRIX& transform, void* data = nullptr);
-	void Insert(dx::XMFLOAT2 point, float radius, void* data = nullptr);
-	void Insert(dx::XMFLOAT2 min, dx::XMFLOAT2 max, void* data = nullptr);
+	void Insert(const Bounds& bounds, const dx::XMMATRIX& transform, void* data );
+	void Insert(dx::XMFLOAT2 point, float radius, void* data);
+	void Insert(dx::XMFLOAT2 min, dx::XMFLOAT2 max, void* data);
 	void Insert(Node node);
 	void Clear();
 

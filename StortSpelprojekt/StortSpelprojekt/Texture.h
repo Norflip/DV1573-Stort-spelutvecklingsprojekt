@@ -36,6 +36,7 @@ public:
 	Texture* CreateRandom1DTexture(ID3D11Device* device);
 	static Texture* CreateFromBuffer (unsigned char* buffer, size_t width, size_t height, size_t channels, DXGI_FORMAT format, ID3D11Device* device);
 	static Texture* LoadTexture (ID3D11Device* device, LPCWSTR textureFilepath);
+	static Texture* FromMemory(ID3D11Device* device, uint8_t* data, size_t dataSize);
 
 	void SetSRV(ID3D11ShaderResourceView* srv) { this->srv = srv; }
 	ID3D11ShaderResourceView* GetSRV() const { return this->srv; }

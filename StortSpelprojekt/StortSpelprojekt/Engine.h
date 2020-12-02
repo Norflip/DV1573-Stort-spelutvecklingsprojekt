@@ -40,6 +40,8 @@ public:
 	void Pause(bool pause) { this->pause = pause; }
 	bool IsPaused() const { return pause; }
 
+	float GetTimeAccumulatorFactor() const { return this->accumulatorFactor; }
+
 	ALIGN16_ALLOC;
 	static Engine* Instance;
 
@@ -51,6 +53,7 @@ private:
 	Scene* scenes[SCENE_COUNT];
 	int activeSceneIndex;
 	bool pause;
+	float accumulatorFactor;
 
 	Window window;
 	Renderer* renderer;

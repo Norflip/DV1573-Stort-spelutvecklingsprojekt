@@ -88,6 +88,8 @@ bool Physics::RaytestSingle(const Ray& ray, float maxDistance, RayHit& hit, Filt
 	RaycastSingleResultCallback callback (hit);
 	world->raycast(rpray, &callback, static_cast<unsigned short>(group));
 
+
+
 	return callback.hit.didHit;
 }
 

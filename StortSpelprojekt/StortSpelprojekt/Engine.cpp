@@ -100,7 +100,7 @@ void Engine::Run()
 			{
 				Scene* scene = scenes[activeSceneIndex];
 				float deltaTime = currentTime - timeLastFrame;
-				scene->Update(deltaTime);
+
 
 #if !MULTITHREAD_PHYSICS
 				fixedTimeAccumulation += deltaTime;
@@ -112,6 +112,10 @@ void Engine::Run()
 					scene->FixedUpdate(TARGET_FIXED_DELTA);
 				}
 #endif
+
+				accumulatorFactor = fixedTimeAccumulation / TARGET_FIXED_DELTA;
+				scene->Update(deltaTime);
+
 				scene->Render();
 			}
 

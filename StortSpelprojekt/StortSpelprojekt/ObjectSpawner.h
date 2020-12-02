@@ -35,8 +35,10 @@ class ObjectSpawner
 	{
 		float minScale;
 		float maxScale;
+		float segmentScaleFactor;
 		float minRotation;
 		float maxRotation;
+		float discRadius;
 		std::vector<Mesh*> meshes;
 		std::vector<Material*> materials;
 	};
@@ -46,6 +48,7 @@ class ObjectSpawner
 	const float TREE_RADIUS = 1.0f;
 	const float TREE_HEIGHT_ADJUSTMENT_FACTOR = 0.9f;
 	const float NO_TREE_CHANCE = 0.5f;
+
 
 public:
 	ObjectSpawner();
@@ -64,13 +67,14 @@ public:
 	void DrawDebug();
 
 	static Object* DefaultCreateItem(std::string key, PickupType type, float value);
+	static QuadTree* GetGlobalEnviromentQT();
 
 private:
 	void SpawnStatic(Chunk* chunk);
 	void SpawnItem (Chunk* chunk);
 
 	bool ValidSpawnPoint(const dx::XMFLOAT2& point, Chunk* chunk, float minInfluence) const;
-	void AddTreesToChunk(Chunk* chunk) const;
+	void AddTreesToChunk(const TreeModel& treeModel, Chunk* chunk, size_t segment) const;
 	void AddGrassToChunk(Chunk* chunk) const;
 
 private:
@@ -83,18 +87,18 @@ private:
 	std::vector<Object*> props;
 
 	std::vector<dx::XMFLOAT3> TMP_POS;
+	static QuadTree* environmentQT;
 
 	ObjectPooler* pooler;
 	Object* root;
 	World* world;
-	QuadTree* environmentQT;
 
 	std::vector<dx::XMFLOAT2> itemSpawnPositions;
 	std::vector<dx::XMFLOAT2> propSpawnPositions;
 
 	std::vector<Item> itemRegistry;
 	std::vector<Prop> instancedProps;
-	TreeModel tree;
+	TreeModel baseTreeModel;
 
 	Renderer* renderer;
 };

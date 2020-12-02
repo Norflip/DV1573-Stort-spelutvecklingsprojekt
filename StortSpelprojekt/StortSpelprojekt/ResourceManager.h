@@ -15,6 +15,8 @@ private:
 
 	Resource* GetResource(std::string key);
 
+	Texture* emptyTexture;
+	
 public:
 	ResourceManager();
 	virtual ~ResourceManager();
@@ -36,6 +38,8 @@ public:
 
 	// Initialize resources, will read its private functions
 	void InitializeResources(ID3D11Device* device);
+
+	Texture* GetEmptyTexture() { return this->emptyTexture; }
 
 	// Recompile all the shaders inside the shaderResources
 	void CompileShaders(ID3D11Device* device);

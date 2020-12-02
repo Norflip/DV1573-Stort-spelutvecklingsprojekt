@@ -1,42 +1,27 @@
 #include "stdafx.h"
 #include "ControllerComp.h"
 #include "Engine.h"
+#include "QuadTree.h"
 
 void ControllerComp::CheckGrounded()
 {
 	dx::XMFLOAT3 origin;
-	dx::XMStoreFloat3(&origin, GetOwner()->GetTransform().GetPosition());
+	dx::XMStoreFloat3(&origin, GetOwner()->GetComponent<RigidBodyComponent>()->GetPosition());
+
 	//origin.z += 2.f;
 	Ray ray(origin, DOWN_VEC);
-	RayHit hitTerrain;
-	RayHit hitProps;
+	RayHit rayhit;
 
 	//TERRAIN or default depending on if u can jump from on top of objects
 	float distance = 1.45f;
 	Physics* phy = Engine::Instance->GetPhysics();
-
-	phy->RaytestSingle(ray, distance, hitTerrain, FilterGroups::TERRAIN);
-	phy->RaytestSingle(ray, distance, hitProps, FilterGroups::PROPS);
-	
-	
 	this->isGrounded = false;
-	if (hitTerrain.object != nullptr || hitProps.object != nullptr) //(hitProps.object != nullptr && hitProps.object->GetName() == "HouseInterior"))// != nullptr )//&& hitProps.object->GetName() == "houseBase"))
+
+	if (phy->RaytestSingle(ray, distance, rayhit, FilterGroups::PROPS | FilterGroups::TERRAIN))
 	{
-		//this->houseVelocity = { 0.f,0.f,0.f };
-		/*if (hitProps.object != nullptr && hitProps.object->GetName() == "houseBase")
-		{
-			dx::XMFLOAT3 move = hitProps.object->GetComponent<NodeWalkerComp>()->GetMoveVec();
-			this->houseVelocity = move;
-			dx::XMVECTOR houseVec = dx::XMLoadFloat3(&this->houseVelocity);
-			houseVec = dx::XMVector3Normalize(houseVec);
-			dx::XMStoreFloat3(&this->houseVelocity, houseVec);
-			GetOwner()->GetTransform().Translate(move.x, move.y, move.z); 
-			rbComp->SetPosition(GetOwner()->GetTransform().GetPosition());
-		}*/
-		this->isGrounded = true;
-		//std::cout << "picking: " << hit.object->GetName() << std::endl;
-		//DShape::DrawLine(ray.origin, ray.GetPoint(distance), { 0,0,1 });
+		this->isGrounded = rayhit.object != nullptr;
 	}
+
 	
 	//else
 	//	DShape::DrawLine(ray.origin, ray.GetPoint(distance), { 1,0,0 });
@@ -304,11 +289,13 @@ void ControllerComp::Update(const float& deltaTime)
 			{
 				float jumpVelocity = 0;
 				CheckGrounded();
+
 				if (isGrounded && KEY_DOWN(Space)) // FPcam //jump is  scuffed
 				{
 					jumpVelocity = JUMP_VELOCITY;
 					this->jumpDir.x = dir.x;
 					this->jumpDir.z = dir.z;
+					this->isGrounded = false;
 				}
 
 				if (KEY_PRESSED(LeftControl)) //crouch is scuffed and outdated
