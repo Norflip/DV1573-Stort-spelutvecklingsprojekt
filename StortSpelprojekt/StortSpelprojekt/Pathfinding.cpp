@@ -66,7 +66,7 @@ void Pathfinding::Update(const float& deltaTime)
 		FollowPath();
 	}
 
-	dx::XMFLOAT3 enemyPos;
+	/*dx::XMFLOAT3 enemyPos;
 	dx::XMStoreFloat3(&enemyPos, GetOwner()->GetTransform().GetPosition());
 
 	for (int i = 0; i < cols; i++)
@@ -91,7 +91,7 @@ void Pathfinding::Update(const float& deltaTime)
 			}
 			DShape::DrawBox(dx::XMFLOAT3(grid[i][j]->pos.x + (int)enemyPos.x - (cols/2), enemyPos.y + 7, grid[i][j]->pos.y + (int)enemyPos.z - (rows/2)), dx::XMFLOAT3(0.8, 0.8, 0.8), color);
 		}
-	}
+	}*/
 }
 
 void Pathfinding::SetPlayer(PlayerComp* playerComp)
