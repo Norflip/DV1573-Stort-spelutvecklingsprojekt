@@ -74,41 +74,41 @@ void WorldGenerator::Construct(const SaveState& state, const WorldDescription& d
 		//	});
 
 		// Ugly ass spawn for tree/frog puzzle
-		RegisterEnviromentProp("PuzzleTree", 0, 10, 10, [](Chunk* chunk, dx::XMVECTOR rootPosition)
+		RegisterEnviromentProp("PuzzleTree", 0, 5, 1, [](Chunk* chunk, dx::XMVECTOR rootPosition)
 		{
 			Object* root = new Object("puzzel_root");
-			Object* tree =  Engine::Instance->GetResources()->AssembleObject("Tree", "TreeMaterial");
+			//Object* tree =  Engine::Instance->GetResources()->AssembleObject("Tree", "TreeMaterial");
 
-			Object* leaves = Engine::Instance->GetResources()->AssembleObject("leaves", "leavesMaterial");
-			leaves->GetComponent<MeshComponent>()->GetMaterials()[0]->SetTransparent(true);
-			Object* puzzle = Engine::Instance->GetResources()->AssembleObject("TreePuzzle", "TreePuzzleMaterial");
+			//Object* leaves = Engine::Instance->GetResources()->AssembleObject("leaves", "leavesMaterial");
+			//leaves->GetComponent<MeshComponent>()->GetMaterials()[0]->SetTransparent(true);
+			//Object* puzzle = Engine::Instance->GetResources()->AssembleObject("TreePuzzle", "TreePuzzleMaterial");
 			Object* crazyFrog = Engine::Instance->GetResources()->AssembleObject("PuzzleFrogStatue", "PuzzleFrogStatueMaterial");
 			Object* crazyFly = Engine::Instance->GetResources()->AssembleObject("PuzzleFlyStatue", "PuzzleFlyStatueMaterial");
 			Object* frogHead = new Object("frogHead");
 
-			tree->GetTransform().SetScale({ 2, 2, 2 });
+			//tree->GetTransform().SetScale({ 2, 2, 2 });
 
 			// bounding box for tree calculations
-			Bounds bbInfo;
+			/*Bounds bbInfo;
 			bbInfo.CalculateAABB(tree->GetComponent<MeshComponent>()->GetMeshes());
 			dx::XMFLOAT3 extends = bbInfo.GetExtends();
 			extends.x *= 1.3;
 			extends.y *= 2.0;
-			extends.z *= 1.3;
+			extends.z *= 1.3;*/
 
 			// For tree
-			BoxColliderComponent* colliders = tree->AddComponent<BoxColliderComponent>(extends, dx::XMFLOAT3(0, 0, 0));
-			RigidBodyComponent* trb = tree->AddComponent<RigidBodyComponent>(0.f, FilterGroups::DEFAULT, FilterGroups::EVERYTHING, BodyType::STATIC, true);
+			//BoxColliderComponent* colliders = tree->AddComponent<BoxColliderComponent>(extends, dx::XMFLOAT3(0, 0, 0));
+			//RigidBodyComponent* trb = tree->AddComponent<RigidBodyComponent>(0.f, FilterGroups::DEFAULT, FilterGroups::EVERYTHING, BodyType::STATIC, true);
 
 			// For puzzle
-			puzzle->AddComponent<BoxColliderComponent>(dx::XMFLOAT3(2.018f, 0.1f, 0.969f), dx::XMFLOAT3(1.239f, 0.175f, 0.422f));
+			/*puzzle->AddComponent<BoxColliderComponent>(dx::XMFLOAT3(2.018f, 0.1f, 0.969f), dx::XMFLOAT3(1.239f, 0.175f, 0.422f));
 			puzzle->AddComponent<BoxColliderComponent>(dx::XMFLOAT3(0.764f, 0.1f, 2.175f), dx::XMFLOAT3(0.209f, 1.333f, 1.456f));
 			puzzle->AddComponent<BoxColliderComponent>(dx::XMFLOAT3(1.956f, 0.1f, 0.745f), dx::XMFLOAT3(-1.253f, 2.259f, 0.51f));
 			puzzle->AddComponent<BoxColliderComponent>(dx::XMFLOAT3(0.778f, 0.1f, 1.861f), dx::XMFLOAT3(-0.13f, 3.304f, -1.045f));
 			puzzle->AddComponent<BoxColliderComponent>(dx::XMFLOAT3(2.083f, 0.1f, 0.68f), dx::XMFLOAT3(1.092f, 4.476f, -0.118f));
 			puzzle->AddComponent<BoxColliderComponent>(dx::XMFLOAT3(0.6536f, 0.1f, 1.238f), dx::XMFLOAT3(0.259f, 5.515f, 1.238f));
 			puzzle->AddComponent<BoxColliderComponent>(dx::XMFLOAT3(1.195f, 0.1f, 2.041f), dx::XMFLOAT3(-1.337f, 6.57f, 0.183f));
-			RigidBodyComponent* prb = puzzle->AddComponent<RigidBodyComponent>(0.f, FilterGroups::PUZZLE, FilterGroups::EVERYTHING, BodyType::STATIC, true);
+			RigidBodyComponent* prb = puzzle->AddComponent<RigidBodyComponent>(0.f, FilterGroups::PUZZLE, FilterGroups::EVERYTHING, BodyType::STATIC, true);*/
 
 			// For fly
 			crazyFly->AddComponent<BoxColliderComponent>(dx::XMFLOAT3(0.876f, 0.389f, 0.623f), dx::XMFLOAT3(0, 0.2f, 0));
@@ -129,46 +129,39 @@ void WorldGenerator::Construct(const SaveState& state, const WorldDescription& d
 			// Position for puzzle
 			dx::XMVECTOR position(dx::XMVectorAdd(rootPosition, dx::XMVECTOR({ CHUNK_SIZE / 2.0f, 3.5f, CHUNK_SIZE / 2.0f })));
 
-			Object::AddToHierarchy(chunk->GetOwner(), tree);
-			Object::AddToHierarchy(tree, leaves);
-			Object::AddToHierarchy(chunk->GetOwner(), puzzle);
+			//Object::AddToHierarchy(chunk->GetOwner(), tree);
+			//Object::AddToHierarchy(tree, leaves);
+			//Object::AddToHierarchy(chunk->GetOwner(), puzzle);
 			Object::AddToHierarchy(chunk->GetOwner(), crazyFrog);
 			Object::AddToHierarchy(chunk->GetOwner(), crazyFly);
 			Object::AddToHierarchy(chunk->GetOwner(), frogHead);
 
-			dx::XMVECTOR frogpos = dx::XMVectorAdd(position, dx::XMVECTOR({ 4, 1, 4, 0 }));
+			//dx::XMVECTOR frogpos = dx::XMVectorAdd(position, dx::XMVECTOR({ 4, 1, 4, 0 }));
 
 			// Set the positions for RB
-			trb->SetPosition(position);
-			prb->SetPosition(position);
-			frogrb->SetPosition(frogpos);
-			flyrb->SetPosition(dx::XMVectorAdd(frogpos, dx::XMVECTOR({ 4, 0, 4, 0 })));
-			headrb->SetPosition(dx::XMVectorAdd(frogpos, dx::XMVECTOR({ 0, 0.0f, 0, 0 })));
+			//trb->SetPosition(position);
+			//prb->SetPosition(position);
+			frogrb->SetPosition(position);
+			flyrb->SetPosition(dx::XMVectorAdd(position, dx::XMVECTOR({ 4, 1, 4, 0 })));
+			headrb->SetPosition(dx::XMVectorAdd(position, dx::XMVECTOR({ 0, 0.0f, 0, 0 })));
 
 			// Testing printing shit to find puzzle
-			dx::XMFLOAT3 pos;
-			dx::XMStoreFloat3(&pos, position);
-			std::cout << "PAAZZL: " << pos.x << ", " << pos.y << ", " << pos.z << "\n";
+			//dx::XMFLOAT3 pos;
+			//dx::XMStoreFloat3(&pos, position);
+			//std::cout << "PAAZZL: " << pos.x << ", " << pos.y << ", " << pos.z << "\n";
 
 			CollisionInfo info;
-			info.other = crazyFly;
+			info.other = frogHead;
+			info.remove = false;
 
 			std::function<bool(CollisionInfo&)> collisionCallback = [](CollisionInfo info) {
 
-				if (info.remove)
+				if (info.other->GetName() == "frogHead" && info.remove)
 				{
-					std::cout << "True" << std::endl;
-					return false;
-				}
-				if (info.other->GetName() == "PuzzleFlyStatue" && info.remove)
-				{
-					std::cout << "Collider: " << info.other->GetName() << std::endl;
 					return true;
-					//info.other->RemoveFlag(ObjectFlag::ENABLED);
 				}
-				else if(info.other->GetName() == "PuzzleFlyStatue" && !info.remove)
+				else if(info.other->GetName() == "frogHead" && !info.remove)
 				{
-					std::cout << "First" << std::endl;
 					info.remove = true;
 					return false;
 				}
@@ -176,7 +169,7 @@ void WorldGenerator::Construct(const SaveState& state, const WorldDescription& d
 			};
 			collisionCallback(info);
 
-			frogrb->AddCollisionCallback(collisionCallback);
+			flyrb->AddCollisionCallback(collisionCallback);
 
 			return root;
 		});

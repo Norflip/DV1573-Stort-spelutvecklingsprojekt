@@ -137,7 +137,7 @@ void RigidBodyComponent::AddCollidersToBody(Object* obj, rp::RigidBody* body)
 		}
 	}
 
-//	assert(collidersList.size() > 0);
+	//	assert(collidersList.size() > 0);
 	//std::cout << (GetOwner()->GetName() + " has " + std::to_string(colliders.size()) + " colliders\n");
 
 	//CHILDREN
@@ -190,7 +190,22 @@ void RigidBodyComponent::m_OnCollision(CollisionInfo& collision)
 {
 	for (auto it = callbacks.begin(); it < callbacks.end(); it++)
 		if ((*it)(collision)) 
-		{
+		{	
+			Mesh* pickupMesh = Engine::Instance->GetResources()->GetResource<Mesh>("Propane");
+			Material* pickupMat = Engine::Instance->GetResources()->GetResource<Material>("PropaneMaterial");
+
+			pickupMat->SetShader(Engine::Instance->GetResources()->GetShaderResource("defaultShader"));
+			
+			Object* pickup = new Object("puzzlePickup");
+			Object::AddToHierarchy(GetOwner()->GetParent(), pickup);
+
+			pickup->AddComponent<MeshComponent>(pickupMesh, pickupMat);
+			pickup->AddComponent<PickupComponent>(PickupType::Fuel, 35.0f);
+			pickup->AddComponent<BoxColliderComponent>(dx::XMFLOAT3(0.3f, 0.35f, 0.15f), dx::XMFLOAT3(0, 0, 0));
+			RigidBodyComponent* rb = pickup->AddComponent<RigidBodyComponent>(10.0f, FilterGroups::HOLDABLE, FilterGroups::EVERYTHING & ~FilterGroups::PLAYER, BodyType::DYNAMIC, true);
+
+			rb->SetPosition(GetOwner()->GetTransform().GetPosition());
+
 			GetOwner()->RemoveFlag(ObjectFlag::ENABLED);
 		}
 }
