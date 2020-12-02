@@ -296,7 +296,9 @@ void GameScene::InitializeGUI()
 
 	// Info gui on the door
 	GUISprite* infoSprite = new GUISprite(*renderer, "Textures/Info.png", 0, 0, 0.0f, DrawDirection::Default, ClickFunction::NotClickable);
-
+	// Loading
+	GUISprite* loadSprite = new GUISprite(*renderer, "Textures/Loading.png", 0, 0, -110, DrawDirection::Default, ClickFunction::NotClickable, GuiGroup::Load);
+	loadSprite->SetVisible(true);
 	//FONTS
 	GUIFont* fpsDisplay = new GUIFont(*renderer, "fps", 30, 30);
 
@@ -315,6 +317,8 @@ void GameScene::InitializeGUI()
 	guiManager = new GUIManager(renderer, 0);
 	guiManager->AddGUIObject(fpsDisplay, "fps");
 
+	// Loading
+	guiManager->AddGUIObject(loadSprite, "loading");
 	//BASE OF EQUIPMENT
 	guiManager->AddGUIObject(equimpmentSprite1, "equimpmentSprite1");
 	guiManager->AddGUIObject(equimpmentSprite2, "equimpmentSprite2");
@@ -379,8 +383,8 @@ void GameScene::InitializeInterior()
 	logs->AddComponent<RigidBodyComponent>(0.0f, FilterGroups::FIRE, FilterGroups::EVERYTHING, BodyType::STATIC, true);
 	AddObjectToRoot(logs);
 
-	Object* flowerpot = resources->AssembleObject("Flowerpot", "FlowerpotMaterial");
-	Object::AddToHierarchy(houseInterior, flowerpot);
+	//Object* flowerpot = resources->AssembleObject("Flowerpot", "FlowerpotMaterial");
+	//Object::AddToHierarchy(houseInterior, flowerpot);
 
 	Object* curtains = resources->AssembleObject("Curtains", "CurtainsMaterial");
 	Object::AddToHierarchy(houseInterior, curtains);
