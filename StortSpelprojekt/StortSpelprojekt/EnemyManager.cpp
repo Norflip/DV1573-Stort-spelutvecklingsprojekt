@@ -93,30 +93,12 @@ void EnemyManager::RemoveEnemy(Object* enemy)
 	enemyPool->ReturnItem(enemy);
 }
 
-//bool EnemyManager::PointInFrustum(const std::vector<dx::XMFLOAT4>& frustum, const dx::XMFLOAT3& point)
-//{
-//	for (int i = 0; i < 6;i++)//(Plane plane in frustum) 
-//	{
-//		Frustum camFrustum; //making copy to easier use dot function
-//		camFrustum.planes[i].N.x = frustum[i].x;
-//		camFrustum.planes[i].N.y = frustum[i].y;
-//		camFrustum.planes[i].N.z = frustum[i].z;
-//		camFrustum.planes[i].d = frustum[i].w;
-//
-//		if (Math::Dot(camFrustum.planes[i].N, point) - camFrustum.planes[i].d < 0)
-//		{
-//			return false;
-//		}
-//	}
-//	return true;
-//}
-
-
 void EnemyManager::SpawnRandomEnemy(const float& deltaTime)
 {
 	enemySpawnTimer += deltaTime;
 	//spawn on timer intervall if nrof enemies is less than cap
-	if (enemySpawnTimer >= ENEMY_SPAWN_RATE && aliveEnemies < ENEMY_TOTAL)
+	//std::cout << "new enemy spawns in: " << enemySpawnRate << "sec, time: "<<enemySpawnTimer<<" sec." << std::endl;
+	if (enemySpawnTimer >= enemySpawnRate && aliveEnemies < ENEMY_TOTAL)
 	{
 		dx::XMVECTOR houseVec = house->GetTransform().GetPosition();
 
@@ -131,8 +113,8 @@ void EnemyManager::SpawnRandomEnemy(const float& deltaTime)
 		if (camComp->GetFrustumPlanes().size() == 6)
 		{
 			//random points
-			dx::XMFLOAT3 randPos;// = playerPos;
-			dx::XMVECTOR randVec;// = dx::XMLoadFloat3(&randPos);
+			dx::XMFLOAT3 randPos;
+			dx::XMVECTOR randVec;
 
 			//while inside radius of player or inside cam frustum do random again
 			randPos.x = playerPos.x + Random::Range(-50, 50+1);
@@ -148,12 +130,16 @@ void EnemyManager::SpawnRandomEnemy(const float& deltaTime)
 			
 			dx::XMMATRIX world = dx::XMMatrixTranslation(randPos.x, randPos.y, randPos.z);
 
-			//maybe also check radius from house??
-			if (playerPos.y > -10 &&lengthP > ENEMY_SPAWN_RADIUS && lengthH > ENEMY_SPAWN_RADIUS && !camComp->InView(enemyBounds, world))  //!SphereInFrustum(theFrustum, randPos))
+			//check if player is above -10, a length from player is above value, a length from house is above value, coord is inside cam-view
+			if (playerPos.y > -10.f &&lengthP > ENEMY_SPAWN_RADIUS && lengthH > ENEMY_SPAWN_RADIUS && !camComp->InView(enemyBounds, world))  //!SphereInFrustum(theFrustum, randPos))
 			{
 				//spawn enemies & increment nrof
 				aliveEnemies++;
 				enemySpawnTimer = 0;
+
+				this->enemySpawnRate = Random::Range(ENEMY_SPAWN_RATE_MIN, ENEMY_SPAWN_RATE_MAX);
+				
+
 				int enemyType = Random::Range(0, 2);
 				if (enemyType == 0) // base_enemy
 				{
