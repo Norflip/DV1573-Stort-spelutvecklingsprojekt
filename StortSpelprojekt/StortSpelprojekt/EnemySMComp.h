@@ -8,8 +8,7 @@
 #include <unordered_map>
 #include "EnemyManager.h"
 
-#define ENEMY_HEIGHT_LIMIT -100.f //Kill Enemy under this y-value 
-#define ENEMY_RADIUS_LIMIT 50.f //Kill Enemy outside of this length from player
+#define ENEMY_RADIUS_LIMIT 100.f //Kill Enemy outside of this length from player
 //(kill enemies since they never will be encountered)
 
 enum class EnemyState
