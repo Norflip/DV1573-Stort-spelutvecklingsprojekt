@@ -56,7 +56,7 @@ void IntroScene::InitializeGUI()
 
 
 	//make Textures/Credits.png
-	GUISprite* credits = new GUISprite(*renderer, "Textures/Lore.png",100,850, 0, DrawDirection::Default, ClickFunction::Clickable);
+	GUISprite* credits = new GUISprite(*renderer, "Textures/credits.png",100,850, 0, DrawDirection::Default, ClickFunction::Clickable);
 	credits->AddGroup(GuiGroup::Default);
 
 
