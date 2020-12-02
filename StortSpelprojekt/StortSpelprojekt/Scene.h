@@ -73,7 +73,7 @@ protected:
 	int frameToDraw = 1;
 	int lastFrame = 1;
 	float physicsDelay = 0.f;
-	float loadScreenDelay = 4.0f;
+	float loadScreenDelay = 2.0f;
 	float delayTimer = 0;
 	wchar_t iconText[10];
 

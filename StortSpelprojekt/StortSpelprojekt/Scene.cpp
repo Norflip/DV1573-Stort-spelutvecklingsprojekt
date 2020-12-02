@@ -68,6 +68,7 @@ void Scene::FixedUpdate(const float& fixedDeltaTime)
 	// Delays gamestart so the physics can load properly
 	if (firstFrame)
 	{		
+		guiManager->GetGUIObject("loading")->SetVisible(true);
 		if (delayTimer > physicsDelay && !sceneSwitch)
 		{
 			root->FixedUpdate(fixedDeltaTime);

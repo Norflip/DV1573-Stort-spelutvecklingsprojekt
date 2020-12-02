@@ -599,11 +599,11 @@ void GameScene::OnActivate()
 	/* Ugly solution */
 	player->GetComponent<PlayerComp>()->GetArms()->GetComponent< PlayerAnimHandlerComp>()->SetStarted(true);
 
-	physicsDelay = 25.0f;
-	sceneSwitch = false;
 
-	
-	std::cout << "Game Scene activated" << std::endl;
+	sceneSwitch = false;
+	delayTimer = 0.0f;
+	physicsDelay = 2.0f;
+	std::cout << "Game Scene activated " << std::endl;
 }
 
 void GameScene::OnDeactivate()
@@ -611,7 +611,7 @@ void GameScene::OnDeactivate()
 	firstFrame = false;
 	sceneSwitch = true;
 	delayTimer = 0.0f;
-
+	physicsDelay = 1000.0f;
 	//guiManager->GetGUIObject("loading")->SetVisible(true);
 	std::cout << "Game Scene deactivated" << std::endl;
 	world.DeconstructSegment();
