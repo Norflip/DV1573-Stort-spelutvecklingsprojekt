@@ -458,16 +458,16 @@ void GameScene::InitializeInterior()
 
 	Object* doorLight = new Object("doorLight");
 	doorLight->GetTransform().SetPosition({ 2.f, -97.f, -3.3f });
-	LightComponent* drLight = doorLight->AddComponent<LightComponent>(LightType::POINT_LIGHT, dx::XMFLOAT4(0.5f, 0.5f, 0.5f, 1.0f), 6.0f);
+	LightComponent* drLight = doorLight->AddComponent<LightComponent>(LightType::POINT_LIGHT, dx::XMFLOAT4(0.5f, 0.5f, 0.5f, 1.0f), 7.0f);
 	drLight->SetEnabled(true);
-	drLight->SetIntensity(0.4);
+	drLight->SetIntensity(0.5);
 	AddObjectToRoot(doorLight);
 
 	Object* tableLight = new Object("tableLight");
-	tableLight->GetTransform().SetPosition({ -5.f, -98.f, -5.f });
-	LightComponent* tblLight = tableLight->AddComponent<LightComponent>(LightType::POINT_LIGHT, dx::XMFLOAT4(0.5f, 0.5f, 0.5f, 1.0f), 4.0f);
+	tableLight->GetTransform().SetPosition({ -4.f, -98.f, -4.f });
+	LightComponent* tblLight = tableLight->AddComponent<LightComponent>(LightType::POINT_LIGHT, dx::XMFLOAT4(0.5f, 0.5f, 0.5f, 1.0f), 7.0f);
 	tblLight->SetEnabled(true);
-	tblLight->SetIntensity(0.4);
+	tblLight->SetIntensity(0.5);
 	AddObjectToRoot(tableLight);
 
 
