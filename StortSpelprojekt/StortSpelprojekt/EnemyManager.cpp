@@ -50,6 +50,7 @@ void EnemyManager::InitBaseEnemy()
 		stateMachine->RegisterState(EnemyState::PATROL, object->AddComponent<EnemyPatrolComp>());
 		stateMachine->RegisterState(EnemyState::IDLE, object->AddComponent<EnemyIdleComp>());
 		stateMachine->RegisterState(EnemyState::ATTACK, object->AddComponent<EnemyAttackComp>(nullptr));
+		object->AddComponent<Pathfinding>(nullptr);
 		return object;
 	});
 
@@ -73,6 +74,7 @@ void EnemyManager::InitChargerEnemy()
 		stateMachine->RegisterState(EnemyState::IDLE, object->AddComponent<EnemyIdleComp>());
 		stateMachine->RegisterState(EnemyState::ATTACK, object->AddComponent<EnemyAttackComp>(nullptr));
 		stateMachine->RegisterState(EnemyState::RUN, object->AddComponent<EnemyAttackComp>(nullptr));
+		object->AddComponent<Pathfinding>(nullptr);
 		//stateMachine->RegisterState(EnemyChargerState::DEATH, object->GetComponent<EnemyStatsComp>());	// Death component or something something???
 		return object;
 	});
@@ -200,6 +202,7 @@ void EnemyManager::SpawnEnemy(std::string key, dx::XMVECTOR position)
 
 	EnemySMComp* stateMachine = enemy->GetComponent<EnemySMComp>();
 	enemy->GetComponent<EnemyAttackComp>()->SetPlayer(playerComp);
+	enemy->GetComponent<Pathfinding>()->SetPlayer(playerComp);
 	stateMachine->InitAnimation(player);
 
 	enemy->GetComponent<RigidBodyComponent>()->SetPosition(position);
