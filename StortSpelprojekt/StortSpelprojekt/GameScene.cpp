@@ -640,7 +640,7 @@ void GameScene::OnDeactivate()
 
 void GameScene::SetSignPositions(SaveState& state)
 {
-	if (state.segment == 0)
+	if (state.segment == 7)
 	{
 		end = true;
 		dx::XMFLOAT3 signPosition;
