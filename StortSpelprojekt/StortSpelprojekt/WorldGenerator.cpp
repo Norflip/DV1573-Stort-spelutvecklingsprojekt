@@ -118,8 +118,8 @@ void WorldGenerator::Construct(const SaveState& state, const WorldDescription& d
 			// For frog
 			//crazyFrog->AddComponent<SphereColliderComponent>(1.685, dx::XMFLOAT3(0, -0.0f, 0));
 			//crazyFrog->AddComponent<BoxColliderComponent>(dx::XMFLOAT3(2.f, 2.f, 2.2f), dx::XMFLOAT3(0, -0.3f, 0));
-			//crazyFrog->AddComponent<CapsuleColliderComponent>(2.0f, 1.6f, dx::XMFLOAT3(0, -2.0f, 0));
-			crazyFrog->AddComponent<MeshCollider>(crazyFrog->GetComponent<MeshComponent>()->GetMeshes()[0], dx::XMFLOAT3({ 0, 0, 0 }));
+			crazyFrog->AddComponent<CapsuleColliderComponent>(2.0f, 1.6f, dx::XMFLOAT3(0, -2.0f, 0));
+			//crazyFrog->AddComponent<MeshCollider>(crazyFrog->GetComponent<MeshComponent>()->GetMeshes()[0], dx::XMFLOAT3({ 0, 0, 0 }));
 			RigidBodyComponent* frogrb = crazyFrog->AddComponent<RigidBodyComponent>(0.0f, FilterGroups::PROPS, FilterGroups::EVERYTHING, BodyType::STATIC, true);
 
 			// For froghead
@@ -151,19 +151,36 @@ void WorldGenerator::Construct(const SaveState& state, const WorldDescription& d
 			//std::cout << "PAAZZL: " << pos.x << ", " << pos.y << ", " << pos.z << "\n";
 
 			CollisionInfo info;
+			info.main = crazyFly;
 			info.other = frogHead;
 			info.remove = false;
 
-			std::function<bool(CollisionInfo&)> collisionCallback = [](CollisionInfo info) {
+			std::function<void(CollisionInfo&)> collisionCallback = [](CollisionInfo info) {
 
-				if (info.other->GetName() == "frogHead" && info.remove)
+
+				if (info.main->GetName() == "PuzzleFlyStatue" && info.other->GetName() == "frogHead" && info.remove && info.main->HasFlag(ObjectFlag::ENABLED))
 				{
-					return true;
+					info.main->SetEnable(false);
+
+					Mesh* pickupMesh = Engine::Instance->GetResources()->GetResource<Mesh>("Propane");
+					Material* pickupMat = Engine::Instance->GetResources()->GetResource<Material>("PropaneMaterial");
+
+					pickupMat->SetShader(Engine::Instance->GetResources()->GetShaderResource("defaultShader"));
+
+					Object* pickup = new Object("puzzlePickup");
+					Object::AddToHierarchy(info.main->GetParent(), pickup);
+
+					pickup->AddComponent<MeshComponent>(pickupMesh, pickupMat);
+					pickup->AddComponent<PickupComponent>(PickupType::Fuel, 35.0f);
+					pickup->AddComponent<BoxColliderComponent>(dx::XMFLOAT3(0.3f, 0.35f, 0.15f), dx::XMFLOAT3(0, 0, 0));
+					RigidBodyComponent* rb = pickup->AddComponent<RigidBodyComponent>(10.0f, FilterGroups::HOLDABLE, FilterGroups::EVERYTHING & ~FilterGroups::PLAYER, BodyType::DYNAMIC, true);
+
+					rb->SetPosition(info.main->GetTransform().GetPosition());
+
 				}
-				else if(info.other->GetName() == "frogHead" && !info.remove)
+				else if(info.main->GetName() == "PuzzleFlyStatue" && info.other->GetName() == "frogHead" && !info.remove)
 				{
 					info.remove = true;
-					return false;
 				}
 					
 			};

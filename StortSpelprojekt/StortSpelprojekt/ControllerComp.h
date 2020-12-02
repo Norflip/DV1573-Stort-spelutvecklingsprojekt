@@ -16,7 +16,7 @@ constexpr float WALK_FOV = 50.f;
 
 constexpr float CROUCH_VELOCITY = 0.6f;
 constexpr float CROUCH_ACCELERATION = 0.03f;
-constexpr float WALK_VELOCITY = 3.f;
+constexpr float WALK_VELOCITY = 4.f;
 constexpr float WALK_ACCELERATION = 0.063f;
 constexpr float RUN_VELOCITY = 7.f;
 constexpr float RUN_ACCELERATION = 0.10f;
