@@ -37,6 +37,8 @@ Engine::Engine(HINSTANCE hInstance) : window(hInstance), activeSceneIndex(-1), s
 	RegisterScene(SceneIndex::WIN,		new WinScene());
 	RegisterScene(SceneIndex::CREDITS,	new CreditsScene());
 
+	SaveHandler::RemoveSave();
+
 	SwitchScene(SceneIndex::INTRO);
 }
 
