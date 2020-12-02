@@ -108,5 +108,9 @@ private:
 	dx::XMFLOAT3 interiorPosition;
 	dx::XMFLOAT3 startPos;
 		 
+
+	EnemyStatsComp* stats;
+	bool enemyHit;
+	float attackTimer;
 };
 

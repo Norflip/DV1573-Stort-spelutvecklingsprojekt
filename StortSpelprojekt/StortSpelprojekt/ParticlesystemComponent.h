@@ -6,8 +6,8 @@ class ParticleSystemComponent : public Component
 {
 private:
 	struct Particles {
+		float red, green, blue, alpha;
 		float posx, posy, posz;
-		float red, green, blue;
 		float velocity;
 		bool active;
 	};	
