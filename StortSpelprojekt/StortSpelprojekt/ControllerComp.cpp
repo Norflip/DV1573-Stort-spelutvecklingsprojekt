@@ -152,6 +152,7 @@ void ControllerComp::Update(const float& deltaTime)
 	{
 		this->canRotate = !this->canRotate;
 		rbComp->SetLinearVelocity({ 0.f, 0.f, 0.f });
+		//rbComp->EnableGravity(!this->canRotate);
 		ShowCursor(!this->canRotate);
 		if (this->canRotate)
 			Input::Instance().SetMouseMode(dx::Mouse::MODE_RELATIVE);
@@ -171,7 +172,7 @@ void ControllerComp::Update(const float& deltaTime)
 	if (houseWalkComp->GetIsWalking())
 	{
 		// If next to the house
-		if (length > playerComp->GetRadius() || length < 7.0f)
+		if (length > playerComp->GetRadius() || length < SIT_RADIUS)
 		{
 			static_cast<GUICompass*>(playerComp->GetGuiManager()->GetGUIObject("compass"))->GetBarSprite()->SetActivated();
 
@@ -181,7 +182,7 @@ void ControllerComp::Update(const float& deltaTime)
 	}
 	else if (!houseWalkComp->GetIsWalking())
 	{
-		if (length < playerComp->GetRadius() && length > 7.0f && !inside)
+		if (length < playerComp->GetRadius() && length > SIT_RADIUS && !inside)
 		{
 			houseWalkComp->Start();
 
@@ -305,9 +306,12 @@ void ControllerComp::Update(const float& deltaTime)
 				direction = cameraObject->GetTransform().TransformDirection(direction);
 				direction = dx::XMVectorScale(direction, RUN_VELOCITY);
 				dx::XMStoreFloat3(&dir, direction);
-				dx::XMFLOAT3 vel = rbComp->GetLinearVelocity();
+
+				this->GetOwner()->GetTransform().Translate(dir.x* deltaTime, dir.y*deltaTime, dir.z*deltaTime);
+				this->rbComp->SetPosition(GetOwner()->GetTransform().GetPosition());
+				//dx::XMFLOAT3 vel = rbComp->GetLinearVelocity();
 				cameraObject->GetTransform().SetPosition(rbComp->GetPosition());
-				rbComp->SetLinearVelocity({ dir.x , dir.y , dir.z });
+				//rbComp->SetLinearVelocity({ dir.x , dir.y , dir.z });
 				dx::XMVECTOR capsule = dx::XMLoadFloat4(&RESET_ROT);
 				rbComp->SetRotation(capsule);
 				//phy.MutexUnlock();
@@ -460,8 +464,11 @@ void ControllerComp::Update(const float& deltaTime)
 		{
 			//phy.MutexLock();
 			//	Input::Instance().FreeMouse();
+			//PAUSE??
 
-			rbComp->SetLinearVelocity({ 0.f, 0.f, 0.f });
+
+			dx::XMFLOAT3 vel = rbComp->GetLinearVelocity();
+			rbComp->SetLinearVelocity({ 0.f, vel.y, 0.f });
 			dx::XMVECTOR capsule = dx::XMLoadFloat4(&RESET_ROT);
 			rbComp->SetRotation(capsule);
 			//phy.MutexUnlock();
