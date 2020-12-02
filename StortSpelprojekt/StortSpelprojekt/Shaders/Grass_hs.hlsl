@@ -1,9 +1,7 @@
 #include "CommonBuffers.hlsl"
 #include "IO.hlsl"
 
-Texture2D 
-
-HeightMap : register (t1);
+Texture2D grassHeightMap : register (t1);
 Texture2D chunkData : register (t6);
 SamplerState linearSampler : register(s0);
 
