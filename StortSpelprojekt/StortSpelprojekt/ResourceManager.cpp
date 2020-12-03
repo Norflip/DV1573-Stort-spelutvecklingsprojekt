@@ -200,7 +200,7 @@ void ResourceManager::ReadObjects(ID3D11Device* device)
 	}
 	else
 	{
-		std::cout << "Couldnt open file: " << std::endl;
+		//std::cout << "Couldnt open file: " << std::endl;
 	}
 }
 
@@ -413,7 +413,7 @@ void ResourceManager::ReadShaders(ID3D11Device* device)
 	}
 	else
 	{
-		std::cout << "Couldnt open file" << std::endl;
+		//std::cout << "Couldnt open file" << std::endl;
 	}
 }
 

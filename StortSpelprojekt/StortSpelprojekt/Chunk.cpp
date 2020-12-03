@@ -12,7 +12,6 @@ Chunk::Chunk(dx::XMINT2 index, ChunkType type) : index(index), type(type)
 
 Chunk::~Chunk()
 {
-	
 }
 
 void Chunk::Update(const float& deltaTime)
