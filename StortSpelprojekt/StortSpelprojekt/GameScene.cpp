@@ -299,7 +299,7 @@ void GameScene::InitializeGUI()
 	GUISprite* loadSprite = new GUISprite(*renderer, "Textures/Loading.png", 0, 0, -110, DrawDirection::Default, ClickFunction::NotClickable, GuiGroup::Load);
 	loadSprite->SetVisible(true);
 	//FONTS
-	GUIFont* playerPosDisplay = new GUIFont(*renderer, "playerPos", 50, 100);
+	//GUIFont* playerPosDisplay = new GUIFont(*renderer, "playerPos", 50, 100);
 	GUIFont* fpsDisplay = new GUIFont(*renderer, "fps",30, 30);
 	//GUIFont* healthDisplay = new GUIFont(*renderer, "playerHealth", 50, 100);
 	//GUIFont* enemyDisplay = new GUIFont(*renderer, "enemyHealth", 50, 150);
