@@ -53,7 +53,7 @@ PlayerComp::PlayerComp(Renderer* renderer, CameraComponent* camComp, Object* hou
 	this->rayDistance = 2.0f;
 	holding = nullptr;
 
-	finishedTutorial = true; // Change to false if you wanna use the tutorial
+	finishedTutorial = false; // Change to false if you wanna use the tutorial
 	foodTutorial = false;
 	fuelTutorial = false;
 	healthTutorial = false;
@@ -68,9 +68,6 @@ PlayerComp::~PlayerComp()
 void PlayerComp::Update(const float& deltaTime)
 {
 	//float frameTime = FCAST(GameClock::Instance().GetFrameTime() / 1000.0);
-
-
-
 	// Fuel drop
 
 	fuelDippingBar->SetScaleBars(ReverseAndClamp(fuel));
