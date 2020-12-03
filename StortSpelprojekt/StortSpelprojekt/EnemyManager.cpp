@@ -14,7 +14,7 @@ EnemyManager::EnemyManager()
 
 	nrOfBaseEnemies = 0;
 	nrOfChargeEnemies = 0;
-	aliveEnemies = 0;
+	//aliveEnemies = 0;
 	enemySpawnTimer = 0;
 }
 
@@ -24,7 +24,7 @@ EnemyManager::~EnemyManager()
 
 void EnemyManager::Initialize(Object* playerObj, Object* houseObj, PlayerComp* playerComp,CameraComponent* camComp, Object* rootObj)
 {
-	//this->enemySpawnTimer = 0.f;
+	this->enemySpawnTimer = 0.f;
 	//this->aliveEnemies = 0.f;
 	this->resources = Engine::Instance->GetResources();
 	this->player = playerObj;
@@ -64,7 +64,7 @@ void EnemyManager::InitChargerEnemy()
 		object->RemoveFlag(ObjectFlag::ENABLED);
 
 		object->AddComponent<SkeletonMeshComponent>(resources->GetResource<SkeletonMeshComponent>("ChargerSkeleton"));
-		object->AddComponent<EnemyStatsComp>(100.f, 2.0f, 25.f, 6.f, 10.f, 2.f, 3.f);
+		object->AddComponent<EnemyStatsComp>(100.f, 2.0f, 25.f, 5.f, 10.f, 2.f, 3.f);
 		dx::XMFLOAT3 zero = { 0.f, 0.f, 0.f };
 		object->AddComponent<CapsuleColliderComponent>(0.8f, 0.8f, zero);
 		object->AddComponent<RigidBodyComponent>(100.f, FilterGroups::ENEMIES, (FilterGroups::EVERYTHING & ~FilterGroups::PICKUPS) & ~FilterGroups::HOLDABLE, BodyType::KINEMATIC, true);
@@ -83,7 +83,7 @@ void EnemyManager::InitChargerEnemy()
 void EnemyManager::RemoveEnemy(Object* enemy)
 {
 	//std::cout << "enemy died: " <<enemy->GetName()<< std::endl;
-	aliveEnemies--;
+	//aliveEnemies--;
 	if ("baseEnemy")
 	{
 		nrOfBaseEnemies--;
@@ -93,14 +93,20 @@ void EnemyManager::RemoveEnemy(Object* enemy)
 		nrOfChargeEnemies--;
 	}
 	enemyPool->ReturnItem(enemy);
+	for (int i = 0; i < enemyVector.size(); i++)
+	{
+		if (enemyVector.at(i) == enemy)
+			enemyVector.erase(enemyVector.begin()+i);
+	}
 }
 
 void EnemyManager::SpawnRandomEnemy(const float& deltaTime)
 {
 	enemySpawnTimer += deltaTime;
 	//spawn on timer intervall if nrof enemies is less than cap
-	//std::cout << "new enemy spawns in: " << enemySpawnRate << "sec, time: "<<enemySpawnTimer<<" sec." << std::endl;
-	if (enemySpawnTimer >= enemySpawnRate && aliveEnemies < ENEMY_TOTAL)
+	//std::cout << aliveEnemies <<" - " <<enemyVector.size()<< " - new enemy spawns in: " << enemySpawnRate << "sec, time: " << enemySpawnTimer << " sec." << std::endl;
+	//std::cout <<enemyVector.size()<< " - new enemy spawns in: " << enemySpawnRate << "sec, time: " << enemySpawnTimer << " sec." << std::endl;
+	if (enemySpawnTimer >= enemySpawnRate && /*aliveEnemies*/ enemyVector.size()< ENEMY_TOTAL)
 	{
 		dx::XMVECTOR houseVec = house->GetTransform().GetPosition();
 
@@ -136,7 +142,7 @@ void EnemyManager::SpawnRandomEnemy(const float& deltaTime)
 			if (playerPos.y > -10.f &&lengthP > ENEMY_SPAWN_RADIUS && lengthH > ENEMY_SPAWN_RADIUS && !camComp->InView(enemyBounds, world))  //!SphereInFrustum(theFrustum, randPos))
 			{
 				//spawn enemies & increment nrof
-				aliveEnemies++;
+				//aliveEnemies++;
 				enemySpawnTimer = 0;
 
 				this->enemySpawnRate = Random::Range(ENEMY_SPAWN_RATE_MIN, ENEMY_SPAWN_RATE_MAX);
@@ -156,10 +162,10 @@ void EnemyManager::SpawnRandomEnemy(const float& deltaTime)
 					nrOfChargeEnemies++;
 
 				}
-				//std::cout << "spawned..."<<" nr of is " << aliveEnemies << std::endl;
+				//std::cout << "spawned..."<<" nr of is " << /*aliveEnemies*/enemyVector.size() << std::endl;
 				//std::cout << "playerpos: x: " << playerPos.x << ", y: " << playerPos.y << ", z: " << playerPos.z << std::endl;
 				//std::cout << "enemypos: x: " << randPos.x << ", y:" << randPos.y << ", z: " << randPos.z << std::endl;
-				//std::cout << "L: " << length << " - " << !camComp->InView(enemyBounds, world) << std::endl;
+				//std::cout << "L: " << lengthP << " - " << !camComp->InView(enemyBounds, world) << std::endl;
 			}
 		}
 	}
@@ -188,10 +194,11 @@ void EnemyManager::DespawnEnemies()
 {
 	nrOfBaseEnemies = 0;
 	nrOfChargeEnemies = 0;
-	aliveEnemies = 0;
+	//aliveEnemies = 0;
 	for (size_t i = 0; i < enemyVector.size(); i++)
 	{
 		RemoveEnemy(enemyVector[i]);
+		//enemy
 	}
 }
 

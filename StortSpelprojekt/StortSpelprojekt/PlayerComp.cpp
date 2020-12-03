@@ -137,12 +137,21 @@ void PlayerComp::FixedUpdate(const float& fixedDeltaTime)
 	#endif //  !IMMORTAL
 
 			if (food < 0)
-				foodEmpty = true;
+            {
+                foodEmpty = true;
+            }
+            else
+                foodEmpty = false;
 
-			if (foodEmpty)
-			{
-				health -= TARGET_FIXED_DELTA * healthLossPerSecond;
-			}
+            if (foodEmpty)
+            {
+                health -= TARGET_FIXED_DELTA * healthLossPerSecond;
+                foodLossPerSecond = 0;
+            }
+            if (!foodEmpty)
+            {
+                foodLossPerSecond = 0.3f;
+            }
 
 			if (distance > hpLossDist && !GetOwner()->GetComponent<ControllerComp>()->GetInside())
 				health -= distance * hpLossPerDistance;

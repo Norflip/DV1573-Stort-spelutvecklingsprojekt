@@ -530,8 +530,6 @@ void GameScene::OnActivate()
 	//PrintSceneHierarchy(root, 0);
 	house->GetComponent<NodeWalkerComp>()->InitializePath(world.GetPath());
 	house->GetComponent<NodeWalkerComp>()->SetWorld(&world);
-	//Place signs
-	SetSignPositions(state);
 
 	if (house != nullptr && player != nullptr)
 	{
@@ -572,6 +570,8 @@ void GameScene::OnActivate()
 		}
 		// NÅN MÅSTE FIXA DETTA. JAG PALLAR INTE
 		// NÅN MÅSTE FIXA DETTA. JAG PALLAR INTE
+		// NÅN MÅSTE FIXA DETTA. JAG PALLAR INTE 
+		// NÅN MÅSTE FIXA DETTA. JAG PALLAR INTE
 		// NÅN MÅSTE FIXA DETTA. JAG PALLAR INTE
 		else if (Engine::Instance->start)
 
@@ -607,6 +607,8 @@ void GameScene::OnActivate()
 	/* Ugly solution */
 	player->GetComponent<PlayerComp>()->GetArms()->GetComponent< PlayerAnimHandlerComp>()->SetStarted(true);
 
+	//Place signs
+	SetSignPositions(state);
 
 	sceneSwitch = false;
 	delayTimer = 0.0f;

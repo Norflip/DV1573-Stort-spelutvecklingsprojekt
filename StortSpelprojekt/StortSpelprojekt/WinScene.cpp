@@ -55,7 +55,7 @@ void WinScene::InitializeGUI()
 void WinScene::OnActivate()
 {
 	input.SetMouseMode(dx::Mouse::MODE_ABSOLUTE);
-	//ShowCursor(true);
+	ShowCursor(true);
 	renderer->AddRenderPass(guiManager);
 }
 
@@ -82,6 +82,7 @@ void WinScene::Update(const float& deltaTime)
 		guiManager->ChangeGuiGroup(GuiGroup::Load);
 		AudioMaster::Instance().StopSoundEvent("menusound");
 		Engine::Instance->SwitchScene(SceneIndex::GAME);
+		Engine::Instance->start = true;
 		return;
 		//AudioMaster::Instance().StopSoundEvent("menusound");
 		//Engine::Instance->SwitchScene(SceneIndex::INTRO);
