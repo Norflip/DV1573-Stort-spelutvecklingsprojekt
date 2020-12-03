@@ -91,7 +91,8 @@ void Engine::Run()
 				activeSceneIndex = sceneSwitch;
 				scenes[activeSceneIndex]->OnActivate();
 				sceneSwitch = -1;
-				std::cout << "switching scene" << std::endl;
+				
+				//std::cout << "switching scene" << std::endl;
 			}
 
 			auto elapsed = std::chrono::duration<double, std::milli>(std::chrono::high_resolution_clock::now() - startTimePoint);

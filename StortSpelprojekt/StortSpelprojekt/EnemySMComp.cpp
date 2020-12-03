@@ -58,7 +58,7 @@ void EnemySMComp::Animate()
 
 		if (skeletonComponent->GetDoneDeath())
 		{
-			std::cout << "enemy died.. health: " << statsComponent->GetHealth() << ", y: " << enemyPos.y <<", length from player: "<<length<< std::endl;
+			//std::cout << "enemy died.. health: " << statsComponent->GetHealth() << ", y: " << enemyPos.y <<", length from player: "<<length<< std::endl;
 			statsComponent->GetManager()->RemoveEnemy(GetOwner());
 		}
 
