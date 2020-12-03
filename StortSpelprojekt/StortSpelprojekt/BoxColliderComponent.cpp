@@ -21,7 +21,7 @@ BoxColliderComponent::~BoxColliderComponent()
     rp::PhysicsCommon& common = Engine::Instance->GetPhysics()->GetCommon();
 
     for (size_t i = 0; i < colliderInformations.size(); i++)
-    {
+    {       
         common.destroyBoxShape(static_cast<rp::BoxShape*>(colliderInformations[i].shape));
     }
 }

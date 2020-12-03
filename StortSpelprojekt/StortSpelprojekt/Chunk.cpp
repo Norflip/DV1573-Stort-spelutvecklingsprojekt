@@ -12,7 +12,7 @@ Chunk::Chunk(dx::XMINT2 index, ChunkType type) : index(index), type(type)
 
 Chunk::~Chunk()
 {
-	
+	Engine::Instance->GetPhysics()->GetCommon().destroyHeightFieldShape(shape);
 }
 
 void Chunk::Update(const float& deltaTime)

@@ -10,8 +10,12 @@ RigidBodyComponent::RigidBodyComponent(float mass, FilterGroups group, FilterGro
 
 RigidBodyComponent::~RigidBodyComponent()
 {
-	physics->UnregisterRigidBody(this);
-	Release();
+	if (body != nullptr)
+	{
+		physics->UnregisterRigidBody(this);
+		physics->GetWorld()->destroyRigidBody(body);
+		body = nullptr;
+	}
 }
 
 void RigidBodyComponent::Update(const float& deltaTime)
@@ -101,13 +105,6 @@ dx::XMVECTOR RigidBodyComponent::GetRotation() const
 
 void RigidBodyComponent::Release()
 {
-	for (auto i : collidersList)
-	{
-		body->removeCollider(i);
-		
-	}
-
-	physics->GetWorld()->destroyRigidBody(body);
 }
 
 void RigidBodyComponent::RecieveMsg(const int& type, const std::string& msg, Object* sender, void* data)
