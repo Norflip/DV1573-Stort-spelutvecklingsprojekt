@@ -158,7 +158,7 @@ void NodeWalkerComp::Update(const float& deltaTime)
 				{
 					y = 0.01f;
 					dx::XMVECTOR forcedPos = GetOwner()->GetTransform().GetPosition();
-					forcedPos.m128_f32[2] = y;
+					forcedPos.m128_f32[1] = y;
 					rbComp->SetPosition(forcedPos);
 					GetOwner()->GetTransform().SetPosition(forcedPos);
 				}
