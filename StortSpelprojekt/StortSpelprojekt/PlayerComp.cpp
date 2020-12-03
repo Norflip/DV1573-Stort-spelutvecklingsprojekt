@@ -111,44 +111,46 @@ void PlayerComp::FixedUpdate(const float& fixedDeltaTime)
 
 		//temp fix for wierd clock start at 
 	//if (TARGET_FIXED_DELTA < 5.f)
+	if (finishedTutorial)
 	{
-
-
-		//lose fuel if not inside house
-		if (!GetOwner()->GetComponent<ControllerComp>()->GetInside() && fuel > 0.0f)
 		{
-			if (house->GetComponent<NodeWalkerComp>()->GetIsWalking())
-				fuel -= (TARGET_FIXED_DELTA * fuelBurnPerMeter)* STILL_REDUCTION;
 
-			else
-				fuel -= (TARGET_FIXED_DELTA * fuelBurnPerMeter);
 
-		}
+			//lose fuel if not inside house
+			if (!GetOwner()->GetComponent<ControllerComp>()->GetInside() && fuel > 0.0f)
+			{
+				if (house->GetComponent<NodeWalkerComp>()->GetIsWalking())
+					fuel -= (TARGET_FIXED_DELTA * fuelBurnPerMeter) * STILL_REDUCTION;
 
-		// lose food
-		food -= TARGET_FIXED_DELTA * foodLossPerSecond;
+				else
+					fuel -= (TARGET_FIXED_DELTA * fuelBurnPerMeter);
 
-	#if  !IMMORTAL
+			}
+
+			// lose food
+			food -= TARGET_FIXED_DELTA * foodLossPerSecond;
+
+#if  !IMMORTAL
 			if ((health <= 0))
 				Engine::Instance->SwitchScene(SceneIndex::GAME_OVER);
-	#endif //  !IMMORTAL
+#endif //  !IMMORTAL
 
 			if (food < 0)
-            {
-                foodEmpty = true;
-            }
-            else
-                foodEmpty = false;
+			{
+				foodEmpty = true;
+			}
+			else
+				foodEmpty = false;
 
-            if (foodEmpty)
-            {
-                health -= TARGET_FIXED_DELTA * healthLossPerSecond;
-                foodLossPerSecond = 0;
-            }
-            if (!foodEmpty)
-            {
-                foodLossPerSecond = 1.2f;
-            }
+			if (foodEmpty)
+			{
+				health -= TARGET_FIXED_DELTA * healthLossPerSecond;
+				foodLossPerSecond = 0;
+			}
+			if (!foodEmpty)
+			{
+				foodLossPerSecond = 1.2f;
+			}
 
 			if (distance > hpLossDist && !GetOwner()->GetComponent<ControllerComp>()->GetInside())
 				health -= distance * hpLossPerDistance;
@@ -156,6 +158,7 @@ void PlayerComp::FixedUpdate(const float& fixedDeltaTime)
 			// around 90
 			if (distance > maxDist && !GetOwner()->GetComponent<ControllerComp>()->GetInside())
 				health = 0;
+		}
 	}
 }
 
