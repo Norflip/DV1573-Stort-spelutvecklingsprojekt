@@ -61,7 +61,7 @@ void Pathfinding::Update(const float& deltaTime)
 	float length;
 	dx::XMStoreFloat(&length, lenVec);
 
-	if (pathFound && length > 2.0f)
+	if (pathFound && length > 0.5f)
 	{
 		FollowPath();
 	}
@@ -105,16 +105,16 @@ void Pathfinding::AStar()
 	dx::XMStoreFloat3(&enemyGridPos, GetOwner()->GetTransform().GetPosition());
 	dx::XMFLOAT3 playerGridPos;
 	dx::XMStoreFloat3(&playerGridPos, player->GetOwner()->GetTransform().GetPosition());
-	playerGridPos.x = (abs((int)playerGridPos.x) - abs((int)enemyGridPos.x)) + (cols / 2);		//player worldpos to gridPos
-	playerGridPos.z = (abs((int)playerGridPos.z) - abs((int)enemyGridPos.z)) + (rows / 2);
-	enemyGridPos.x = (abs((int)enemyGridPos.x) - abs((int)enemyGridPos.x)) + (cols / 2);		//enemy worldpos to gridCenterPos
-	enemyGridPos.z = (abs((int)enemyGridPos.z) - abs((int)enemyGridPos.z)) + (rows / 2);
+	playerGridPos.x = (int)playerGridPos.x - (int)enemyGridPos.x + (cols / 2);		//player worldpos to gridPos
+	playerGridPos.z = (int)playerGridPos.z - (int)enemyGridPos.z + (rows / 2);
+	enemyGridPos.x =  cols / 2;																	//enemy worldpos to gridCenterPos
+	enemyGridPos.z = rows / 2;
 
 	if ((int)playerGridPos.x >= 0 && (int)playerGridPos.z >= 0 && 
 		(int)playerGridPos.x < (cols-1) && (int)playerGridPos.z < (rows - 1))
 	{
 		Node* start = grid[(int)enemyGridPos.x][(int)enemyGridPos.z];							//start node is center node of grid
-		Node* end = grid[(int)playerGridPos.x][(int)playerGridPos.z];							//player pos in grid
+		end = grid[(int)playerGridPos.x][(int)playerGridPos.z];									//player pos in grid
 
 		start->obstacle = false;
 		end->obstacle = false;
@@ -136,7 +136,6 @@ void Pathfinding::AStar()
 			}
 
 			//std::make_heap(openSet.begin(), openSet.end(), Compare());			//sort openSet
-			//current = openSet[0];
 
 
 			if (current != nullptr && current->pos.x == end->pos.x && current->pos.y == end->pos.y)		//if current is end, save the correct path and end loop
@@ -355,6 +354,8 @@ void Pathfinding::FollowPath()
 		dx::XMStoreFloat(&length, lengthVec);
 		if (length <= 0.01)
 			correctPath.pop_back();
+
+		std::cout << "end node x: " << end->pos.x << " z: " <<  end->pos.y << std::endl;
 	}
 }
 
