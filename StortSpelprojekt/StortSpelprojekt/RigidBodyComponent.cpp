@@ -12,6 +12,10 @@ RigidBodyComponent::~RigidBodyComponent()
 {
 	if (body != nullptr)
 	{
+		rp::Transform tr;
+		tr.setPosition(rp::Vector3(0, -5000, 0));
+		body->setTransform(tr);
+
 		physics->UnregisterRigidBody(this);
 		physics->GetWorld()->destroyRigidBody(body);
 		body = nullptr;
