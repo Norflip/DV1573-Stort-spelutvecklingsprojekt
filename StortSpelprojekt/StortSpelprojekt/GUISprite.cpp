@@ -190,7 +190,7 @@ bool GUISprite::IsMouseOver()
 
 void GUISprite::Update()
 {
-	if (clickFunc == ClickFunction::Clickable && IsMouseOver() && Input::Instance().GetLeftMouseKeyDown())
+	//if (clickFunc == ClickFunction::Clickable && IsMouseOver() && Input::Instance().GetLeftMouseKeyDown())
 		//std::cout << "Do function" << std::endl;
 }
 

@@ -147,7 +147,7 @@ void PlayerComp::FixedUpdate(const float& fixedDeltaTime)
             }
             if (!foodEmpty)
             {
-                foodLossPerSecond = 0.3f;
+                foodLossPerSecond = 1.2f;
             }
 
 			if (distance > hpLossDist && !GetOwner()->GetComponent<ControllerComp>()->GetInside())
@@ -498,8 +498,8 @@ void PlayerComp::SetStatsFromState(const SaveState& state)
 	this->health = state.playerHealth;
 
 	// defaulting some shit
-	this->foodLossPerSecond = 0.3f;
-	this->fuelBurnPerMeter = 0.5f;
+	this->foodLossPerSecond = 1.0f;
+	this->fuelBurnPerMeter = 1.2f;
 	this->healthLossPerSecond = 0.5f;
 	this->holding = nullptr;
 	this->foodEmpty = false;
