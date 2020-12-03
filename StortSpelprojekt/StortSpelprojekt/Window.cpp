@@ -23,11 +23,11 @@ void Window::Open(size_t width, size_t height)
 	this->height = height;
 	//Initializing console
 
-	AllocConsole();
-	HANDLE stdHandle = GetStdHandle(STD_OUTPUT_HANDLE);
-	int hConsole = _open_osfhandle((intptr_t)stdHandle, _O_TEXT);
-	FILE* fp = _fdopen(hConsole, "w");
-	freopen_s(&fp, "CONOUT$", "w", stdout);
+	//AllocConsole();
+	//HANDLE stdHandle = GetStdHandle(STD_OUTPUT_HANDLE);
+	//int hConsole = _open_osfhandle((intptr_t)stdHandle, _O_TEXT);
+	//FILE* fp = _fdopen(hConsole, "w");
+	//freopen_s(&fp, "CONOUT$", "w", stdout);
 
 	//Creating window
 	WNDCLASS wndclass;
@@ -46,7 +46,7 @@ void Window::Open(size_t width, size_t height)
 	this->hwnd = CreateWindowEx(0, CLASS_NAME, projectTitel, WS_OVERLAPPEDWINDOW, windowRect.left, windowRect.top, wWidth, wHeight, nullptr, nullptr, hInstance, nullptr);
 
 	//Moving window
-	SetWindowPos(hwnd, nullptr, 100, 100, 0, 0, SWP_NOSIZE | SWP_NOZORDER);
+	SetWindowPos(hwnd, nullptr, 0, 0, 0, 0, SWP_NOSIZE | SWP_NOZORDER);
 	ShowWindow(hwnd, SW_SHOW);
 	int i = wWidth;
 	//SendMessage(hwnd, WM_SETICON, ICON_SMALL, (LPARAM)LoadIcon(hInstance, L"MAINICON"));
