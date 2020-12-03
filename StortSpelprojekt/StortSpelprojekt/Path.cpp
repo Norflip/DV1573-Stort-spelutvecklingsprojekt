@@ -242,7 +242,7 @@ void Path::CreateLanternPoints()
 		}
 	}
 
-	std::cout << "LANTERNS: " << lanternPoints.size() << std::endl;
+	//std::cout << "LANTERNS: " << lanternPoints.size() << std::endl;
 }
 
 void Path::GetDistanceDirection (const PathPoint& point0, const PathPoint& point1, float& distance, dx::XMFLOAT2& direction) const

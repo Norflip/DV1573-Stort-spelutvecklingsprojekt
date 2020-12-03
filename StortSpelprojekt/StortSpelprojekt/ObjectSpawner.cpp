@@ -471,9 +471,9 @@ std::vector<dx::XMFLOAT2> ObjectSpawner::CreateSpawnPositions(QuadTree* tree, fl
 		}
 	}
 
-	std::cout << "VALID: " << validPoints.size() << std::endl;
+	/*std::cout << "VALID: " << validPoints.size() << std::endl;
 	std::cout << "FAILS: " << fails << std::endl;
-	std::cout << "COLS: " << cols << std::endl;
+	std::cout << "COLS: " << cols << std::endl;*/
 
 	ShuffleVector(validPoints);
 	return validPoints;
