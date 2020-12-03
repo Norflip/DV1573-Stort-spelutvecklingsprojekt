@@ -104,6 +104,7 @@ void RigidBodyComponent::Release()
 	for (auto i : collidersList)
 	{
 		body->removeCollider(i);
+		
 	}
 
 	physics->GetWorld()->destroyRigidBody(body);

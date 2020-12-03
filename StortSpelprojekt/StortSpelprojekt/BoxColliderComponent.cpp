@@ -1,6 +1,7 @@
 #include "stdafx.h"
 #include "BoxColliderComponent.h"
 #include "Physics.h"
+#include "Engine.h"
 
 BoxColliderComponent::BoxColliderComponent(std::vector<dx::XMFLOAT3> extends, std::vector<dx::XMFLOAT3> positions)
     :extends(extends), Collider(positions)
@@ -13,6 +14,16 @@ BoxColliderComponent::BoxColliderComponent(dx::XMFLOAT3 extends, dx::XMFLOAT3 po
 {
     this->extends = std::vector<dx::XMFLOAT3>();
     this->extends.push_back(extends);
+}
+
+BoxColliderComponent::~BoxColliderComponent()
+{
+    rp::PhysicsCommon& common = Engine::Instance->GetPhysics()->GetCommon();
+
+    for (size_t i = 0; i < colliderInformations.size(); i++)
+    {
+        common.destroyBoxShape(static_cast<rp::BoxShape*>(colliderInformations[i].shape));
+    }
 }
 
 void BoxColliderComponent::InitializeCollider(Physics* physics)
