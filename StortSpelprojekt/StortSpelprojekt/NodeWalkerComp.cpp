@@ -68,11 +68,11 @@ void NodeWalkerComp::InitAnimation()
 
 void NodeWalkerComp::Reset()
 {
-	std::cout<<this->currentNode<< std::endl;
+	//std::cout<<this->currentNode<< std::endl;
 	this->currentNode = 0;
-	std::cout << this->nextChosen << std::endl;
+	//std::cout << this->nextChosen << std::endl;
 	this->nextChosen = 0;
-	std::cout << this->canWalk << std::endl;
+	//std::cout << this->canWalk << std::endl;
 
 	//dx::XMFLOAT3 pos3 = { thePath.GetPoint(this->currentNode).x,HEIGHT, thePath.GetPoint(this->currentNode).z };
 	//dx::XMVECTOR startPos = dx::XMLoadFloat3(&pos3);
@@ -213,14 +213,14 @@ void NodeWalkerComp::Update(const float& deltaTime)
 		legs->SetTrack(SkeletonStateMachine::IDLE, false);
 	}
 
-	if (KEY_DOWN(I)) //used to display info and test paths
-	{
-		std::cout << "Current Node: (" << std::to_string(this->currentNode) << ")" << std::endl
-			<< "Next Node: " << std::to_string(nextChosen) << std::endl
-			<< "Can Walk: " << canWalk << std::endl
-			<< "Length: " << std::to_string(this->length) << std::endl;
+	//if (KEY_DOWN(I)) //used to display info and test paths
+	//{
+	//	std::cout << "Current Node: (" << std::to_string(this->currentNode) << ")" << std::endl
+	//		<< "Next Node: " << std::to_string(nextChosen) << std::endl
+	//		<< "Can Walk: " << canWalk << std::endl
+	//		<< "Length: " << std::to_string(this->length) << std::endl;
 
-	}
+	//}
 
 	if (KEY_DOWN(R))
 		this->Reset();

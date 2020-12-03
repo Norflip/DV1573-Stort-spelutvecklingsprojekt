@@ -191,7 +191,7 @@ bool GUISprite::IsMouseOver()
 void GUISprite::Update()
 {
 	if (clickFunc == ClickFunction::Clickable && IsMouseOver() && Input::Instance().GetLeftMouseKeyDown())
-		std::cout << "Do function" << std::endl;
+		//std::cout << "Do function" << std::endl;
 }
 
 void GUISprite::SetPos(float xPos, float yPos, DrawDirection dir)

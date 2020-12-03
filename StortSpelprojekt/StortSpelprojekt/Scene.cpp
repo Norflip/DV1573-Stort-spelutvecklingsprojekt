@@ -56,7 +56,7 @@ void Scene::Update(const float& deltaTime)
 		// Press P to recompile shaders
 		if (KEY_PRESSED(P))
 		{
-			std::cout << "Compiling: " << std::endl;
+			//std::cout << "Compiling: " << std::endl;
 			resources->CompileShaders(renderer->GetDevice());
 		}
 	
@@ -116,7 +116,7 @@ void Scene::PrintSceneHierarchy(Object* object, size_t level) const
 		indent += "L  ";
 	}
 
-	std::cout << (indent + object->GetName()) << std::endl;
+	//std::cout << (indent + object->GetName()) << std::endl;
 	
 	if (object->CountChildren() > 0)
 	{
