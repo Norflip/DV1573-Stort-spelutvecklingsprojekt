@@ -56,7 +56,7 @@ void Rain::m_Initialize(ID3D11Device* device)
 void Rain::Pass(Renderer* renderer, CameraComponent* camera, RenderTexture& inTexture, RenderTexture& outTexture)
 {
 	material.BindToContext(renderer->GetContext());
-	renderer->UpdateObjectBuffer(camera, dx::XMMatrixIdentity(), ShaderBindFlag::GEOMETRY);
+	renderer->UpdateObjectBuffer(camera, dx::XMMatrixIdentity(), ShaderBindFlag::GEOMETRY | ShaderBindFlag::VERTEX);
 
 	ID3D11DeviceContext* context = renderer->GetContext();
 	UpdatePositions(camera->GetOwner()->GetTransform().GetPosition(), context);

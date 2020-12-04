@@ -833,8 +833,9 @@ void Renderer::DrawScreenQuad(const Material* material)
 
 void Renderer::InitForwardPlus(CameraComponent* camera, Window* window, Shader& forwardPlusShader)
 {
-	
-	
+	this->forwardPlusShader = forwardPlusShader;
+	forwardPlusShader.BindToContext(context);
+
 	this->width = window->GetWidth();
 	this->height = window->GetHeight();
 	int screenWidth = std::max(window->GetWidth(), 1u);
@@ -957,7 +958,7 @@ void Renderer::UpdateForwardPlus(CameraComponent* camera)
 {
 	//this is to be run for lightculling compute shader
 	//////DEPTH PASS BEGIN---------------------------
-	
+
 	depthPass.BindNull(context);
 	depthPass.BindDSV(context);
 	context->OMSetDepthStencilState(dss, 0);
@@ -991,7 +992,10 @@ void Renderer::UpdateForwardPlus(CameraComponent* camera)
 	context->PSSetShaderResources(11, 1, &nullSRV);
 
 	context->OMSetDepthStencilState(dss, 0);
+
+	forwardPlusShader.BindToContext(context);
 	context->CSSetShaderResources(1, 1, depthPass.GetDepthSRV());
+
 	DXHelper::BindStructuredBuffer(context, 9, ShaderBindFlag::COMPUTE, &inFrustums_srv);
 	LightManager::Instance().UpdateBuffers(context, camera);
 	o_LightIndexCounter[0] = 0;

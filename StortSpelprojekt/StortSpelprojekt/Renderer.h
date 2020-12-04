@@ -145,6 +145,7 @@ private:
 	
 	Material* screenQuadMaterial;
 	Mesh* screenQuadMesh;
+	Shader forwardPlusShader;
 
 	ConstantBuffer<cb_particle> particleBuffer;
 	ConstantBuffer<cb_Object> objectBuffer;

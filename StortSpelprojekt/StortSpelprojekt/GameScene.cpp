@@ -94,11 +94,10 @@ void GameScene::InitializeObjects()
 	camera = cameraObject->AddComponent<CameraComponent>(window->GetWidth(), window->GetHeight(), 60.0f);
 
 	Shader forwardPlusShader;
-
 	forwardPlusShader.SetComputeShader("Shaders/ForwardPlusRendering.hlsl", "ComputeFrustums");
 	forwardPlusShader.CompileCS(renderer->GetDevice());
-	forwardPlusShader.BindToContext(renderer->GetContext());
 	renderer->InitForwardPlus(camera, window, forwardPlusShader);
+
 	//forwardPlusShader.Unbind(renderer->GetContext());
 
 	cameraObject->GetTransform().SetPosition(playerSpawnVec);
