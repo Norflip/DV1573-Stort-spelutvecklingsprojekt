@@ -78,10 +78,12 @@ void EnemyAttackComp::UpdateEnemyPos(const float& deltaTime)
 		if (length <= enemyStatsComp->GetAttackRadius())
 		{
 			attackPlayer = true;
+			GetOwner()->GetComponent<Pathfinding>()->SetEnabled(false);
 		}
 		else
 		{
 			attackPlayer = false;
+			GetOwner()->GetComponent<Pathfinding>()->SetEnabled(true);
 		}
 
 		//dx::XMFLOAT3 vel = rbComp->GetLinearVelocity();
@@ -95,15 +97,18 @@ void EnemyAttackComp::UpdateEnemyPos(const float& deltaTime)
 		//std::cout << "x: " << eP.x << ", y: " << eP.y << ", z: " << eP.z << std::endl;
 
 		//Billboarding x & z axis for enemy Rotation
-		//dx::XMVECTOR dirVec = dx::XMVector3Normalize(dx::XMVectorSubtract(GetOwner()->GetTransform().GetPosition(), player->GetOwner()->GetTransform().GetPosition()));
-		//dx::XMFLOAT3 dirToPlayer;
-		//dx::XMStoreFloat3(&dirToPlayer, dirVec);
-		//float angle = 180.f + atan2f(dirToPlayer.x, dirToPlayer.z) * (180.f / Math::PI);
-		//float rotation = angle * Math::ToRadians;
-		//dx::XMVECTOR right = GetOwner()->GetTransform().TransformDirection({ 1,0,0 });
-		//dx::XMVECTOR eulerRotation = dx::XMQuaternionMultiply(dx::XMQuaternionRotationAxis(right, 0), dx::XMQuaternionRotationAxis({ 0,1,0 }, rotation));
-		//GetOwner()->GetTransform().SetRotation(eulerRotation);
-		//rbComp->SetRotation(eulerRotation);
+		if (attackPlayer)
+		{
+			dx::XMVECTOR dirVec = dx::XMVector3Normalize(dx::XMVectorSubtract(GetOwner()->GetTransform().GetPosition(), player->GetOwner()->GetTransform().GetPosition()));
+			dx::XMFLOAT3 dirToPlayer;
+			dx::XMStoreFloat3(&dirToPlayer, dirVec);
+			float angle = 180.f + atan2f(dirToPlayer.x, dirToPlayer.z) * (180.f / Math::PI);
+			float rotation = angle * Math::ToRadians;
+			dx::XMVECTOR right = GetOwner()->GetTransform().TransformDirection({ 1,0,0 });
+			dx::XMVECTOR eulerRotation = dx::XMQuaternionMultiply(dx::XMQuaternionRotationAxis(right, 0), dx::XMQuaternionRotationAxis({ 0,1,0 }, rotation));
+			GetOwner()->GetTransform().SetRotation(eulerRotation);
+			rbComp->SetRotation(eulerRotation);
+		}
 	}
 
 	//Draw colliderbox
