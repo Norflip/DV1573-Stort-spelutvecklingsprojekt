@@ -3,7 +3,7 @@
 
 NodeWalkerComp::NodeWalkerComp()
 {
-	this->speed = 10.f;// 3.0f;// 16.2f;
+	this->speed = 3.0f;// 16.2f;
 	this->currentNode = thePath.GetFirstPointIndex();
 	this->nextChosen = this->currentNode + 1;
 	this->nodeRadius = 0.3f;
