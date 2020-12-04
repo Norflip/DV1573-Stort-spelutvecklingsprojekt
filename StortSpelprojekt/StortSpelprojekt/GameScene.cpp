@@ -26,7 +26,6 @@ void GameScene::Initialize()
 	InitializeGUI();
 	InitializeObjects();
 	InitializeInterior();
-
 }
 
 void GameScene::InitializeObjects()
