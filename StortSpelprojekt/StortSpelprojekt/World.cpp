@@ -195,15 +195,15 @@ void World::RegisterFood(ObjectSpawner* spawner, const std::map<std::string, int
 
 void World::RegisterFuel(ObjectSpawner* spawner, const std::map<std::string, int>& queueCountTable) const
 {
-	spawner->RegisterItem("FuelGreen", TryGetQueueCount("FuelGreen", queueCountTable), [](ResourceManager* resources)
+	/*spawner->RegisterItem("FuelGreen", TryGetQueueCount("FuelGreen", queueCountTable), [](ResourceManager* resources)
 		{
 			return ObjectSpawner::DefaultCreateItem("FuelCanGreen", PickupType::Fuel, 20.0f);
-		});
+		});*/
 
-	spawner->RegisterItem("FuelBlue", TryGetQueueCount("FuelBlue", queueCountTable), [](ResourceManager* resources)
+	/*spawner->RegisterItem("FuelBlue", TryGetQueueCount("FuelBlue", queueCountTable), [](ResourceManager* resources)
 		{
 			return ObjectSpawner::DefaultCreateItem("FuelCanBlue", PickupType::Fuel, 20.0f);
-		});
+		});*/
 
 	spawner->RegisterItem("FuelRed", TryGetQueueCount("FuelRed", queueCountTable), [](ResourceManager* resources)
 		{
@@ -239,6 +239,6 @@ void World::RegisterStatic(ObjectSpawner* spawner, const std::map<std::string, i
 
 	spawner->RegisterInstancedItem("Rock1", 0.5f, 1, UP);
 	spawner->RegisterInstancedItem("Rock2", 0.5f, 1, UP);
-	spawner->RegisterInstancedItem("Rock3", 0.5f, 1, UP);
+	//spawner->RegisterInstancedItem("Rock3", 0.5f, 1, UP);
 	spawner->RegisterInstancedItem("Log",	0.5f, 1, UP);
 }

@@ -1,4 +1,4 @@
-Objects: 42
+Objects: 39
 
 Charger: Models/Enemies/Charger_Model.ZWEB
 Shader: skeletonShader
@@ -52,9 +52,6 @@ Shader: instanceShader
 HealthKit: Models/Pickups/Health_Kit.ZWEB
 Shader: instanceShader
 
-FuelCanGreen: Models/Pickups/Fuel_Can_Green.ZWEB
-Shader: instanceShader
-
 Soup: Models/Pickups/Soup_Can.ZWEB
 Shader: instanceShader
 
@@ -68,9 +65,6 @@ Axe: Models/Weapons/AXE.ZWEB
 Shader: defaultShader
 
 Fruits: Models/Pickups/Fruit_Basket.ZWEB
-Shader: instanceShader
-
-FuelCanBlue: Models/Pickups/Fuel_Can_Blue.ZWEB
 Shader: instanceShader
 
 FuelCanRed: Models/Pickups/Fuel_Can_Red.ZWEB
@@ -92,9 +86,6 @@ Rock1: Models/Props/Rock_1.ZWEB
 Shader: instanceShader
 
 Rock2: Models/Props/Rock_2.ZWEB
-Shader: instanceShader
-
-Rock3: Models/Props/Rock_3.ZWEB
 Shader: instanceShader
 
 Curtains: Models/House/Curtains.ZWEB
