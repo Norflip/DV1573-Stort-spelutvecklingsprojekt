@@ -4,10 +4,15 @@
 #include "FXAARenderPass.h"
 #include "SkyboxRenderPass.h"
 
+
+#if USE_IMGUI
 #include "Imgui\imgui.h"
 #include "Imgui\imgui_impl_win32.h"
 #include "Imgui\imgui_impl_dx11.h"
+#endif
+
 #include "SaveHandler.h"
+#include "Config.h"
 
 Engine* Engine::Instance = nullptr;
 
@@ -20,6 +25,8 @@ Engine::Engine(HINSTANCE hInstance) : window(hInstance), activeSceneIndex(-1), s
 
 	window.Open(1920, 1080);
 
+	Config::LoadOrDefault();
+
 	renderer = new Renderer();
 	renderer->Initialize(&window);
 
@@ -29,13 +36,15 @@ Engine::Engine(HINSTANCE hInstance) : window(hInstance), activeSceneIndex(-1), s
 	physics = new Physics();
 	physics->Initialize();
 
+#if USE_IMGUI
+
 	IMGUI_CHECKVERSION();
 	ImGui::CreateContext();
 	ImGuiIO& io = ImGui::GetIO();
 	ImGui_ImplWin32_Init(window.GetHWND());
 	ImGui_ImplDX11_Init(renderer->GetDevice(), renderer->GetContext());
 	ImGui::StyleColorsDark();
-
+#endif
 	//renderer->AddRenderPass(new SkyboxRenderPass(-10, resourceManager));
 	renderer->AddRenderPass(new FogRenderPass(0, resourceManager));
 	renderer->AddRenderPass(new FXAARenderPass(1, resourceManager));
@@ -164,55 +173,18 @@ void Engine::SwitchScene(size_t id)
 	this->sceneSwitch = id;
 }
 
+#if USE_IMGUI
 void Engine::OnIMGUIFrame()
 {
-
-	static bool show_another_window = false;
-	static ImVec4 clear_color = ImVec4(0.45f, 0.55f, 0.60f, 1.00f);
-
-
-
-	//{
-	//	static float f = 0.0f;
-	//	static int counter = 0;
-
-	//	ImGui::Begin("TMP Imgui window");                          // Create a window called "Hello, world!" and append into it.
-
-	//	ImGui::Text("Application average %.3f ms/frame (%.1f FPS)", 1000.0f / ImGui::GetIO().Framerate, ImGui::GetIO().Framerate);
-
-	//	ImGui::Checkbox("Another Window", &show_another_window);
-	//	ImGui::SliderFloat("float", &f, 0.0f, 1.0f);            // Edit 1 float using a slider from 0.0f to 1.0f
-	//	ImGui::ColorEdit3("clear color", (float*)&clear_color); // Edit 3 floats representing a color
-
-	//	if (ImGui::Button("Button"))                            // Buttons return true when clicked (most widgets return true when edited/activated)
-	//		counter++;
-
-	//	ImGui::SameLine();
-	//	ImGui::Text("counter = %d", counter);
-
-	//	ImGui::End();
-	//}
-
-	//// 3. Show another simple window.
-	//if (show_another_window)
-	//{
-	//	ImGui::Begin("Another Window", &show_another_window);   // Pass a pointer to our bool variable (the window will have a closing button that will clear the bool when clicked)
-	//	ImGui::Text("Hello from another window!");
-	//	if (ImGui::Button("Close Me"))
-	//		show_another_window = false;
-	//	ImGui::End();
-	//}
-
 	if (activeSceneIndex >= 0 && activeSceneIndex < SCENE_COUNT)
 	{
 		Scene* scene = scenes[activeSceneIndex];
 		ImGui::Begin("debug");           
-
 		scene->OnIMGUIFrame();
-
 		ImGui::End();
 	}
 }
+#endif
 
 void Engine::FixedUpdateLoop(Engine* engine)
 {

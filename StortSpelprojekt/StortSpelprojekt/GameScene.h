@@ -25,7 +25,9 @@ public:
 	void FixedUpdate(const float& fixedDeltaTime) override;
 	void Render() override;
 
+#if USE_IMGUI
 	void OnIMGUIFrame() override;
+#endif
 	static bool immortal;
 	static bool drawColliders;
 

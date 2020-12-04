@@ -10,7 +10,6 @@ Scene::Scene(const std::string& debugName) : input(Input::Instance()), debugName
 	renderer = nullptr;
 	camera = nullptr;
 	this->root = new Object("root");
-	this->sensitivity = 0.5f;
 }
 
 Scene::~Scene()

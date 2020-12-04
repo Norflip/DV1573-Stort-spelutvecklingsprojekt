@@ -5,10 +5,13 @@
 #include "Engine.h"
 #include "GUICompass.h"
 #include "SaveHandler.h"
+#include "Config.h"
 
+#if USE_IMGUI
 #include "Imgui\imgui.h"
 #include "Imgui\imgui_impl_win32.h"
 #include "Imgui\imgui_impl_dx11.h"
+#endif
 
 bool GameScene::immortal = false;
 bool GameScene::drawColliders = false;
@@ -98,7 +101,7 @@ void GameScene::InitializeObjects()
 	Object* playerObject = new Object("player", ObjectFlag::ENABLED);
 	Object* cameraObject = new Object("camera", ObjectFlag::ENABLED);
 	this->player = playerObject;
-	camera = cameraObject->AddComponent<CameraComponent>(window->GetWidth(), window->GetHeight(), 70.0f);
+	camera = cameraObject->AddComponent<CameraComponent>(window->GetWidth(), window->GetHeight(), Config::GetInt("FOV", 70));
 
 
 	cameraObject->GetTransform().SetPosition(playerSpawnVec);
@@ -107,7 +110,7 @@ void GameScene::InitializeObjects()
 	playerObject->AddComponent<RigidBodyComponent>(50.f, FilterGroups::PLAYER, (FilterGroups::EVERYTHING), BodyType::DYNAMIC, true);
 
 	playerObject->AddComponent<PlayerComp>(renderer, camera, house, Engine::Instance->GetPhysics(), guiManager, 100.f, 2.f, 40.f, 50.f, 3.f);
-	playerObject->AddComponent<ControllerComp>(cameraObject, houseBaseObject, this->sensitivity);
+	playerObject->AddComponent<ControllerComp>(cameraObject, houseBaseObject);
 	playerObject->GetComponent<PlayerComp>()->SetInteriorPosition(this->interiorPosition.x, this->interiorPosition.y, this->interiorPosition.z);
 
 	Object::AddToHierarchy(playerObject, cameraObject);
@@ -699,9 +702,6 @@ void GameScene::Update(const float& deltaTime)
 	dx::XMFLOAT3 playerPos;
 	dx::XMStoreFloat3(&playerPos, player->GetTransform().GetWorldPosition());
 
-	if (Scene::sensitivity != player->GetComponent<ControllerComp>()->GetSensitivity())
-		player->GetComponent<ControllerComp>()->SetSensitivity(Scene::sensitivity);
-
 	//if (KEY_DOWN(X))
 	//	std::cout << "pos: " << playerPos.x << ", " << playerPos.y << ", " << playerPos.z << std::endl;
 
@@ -839,7 +839,7 @@ void GameScene::Render()
 }
 
 
-
+#if USE_IMGUI
 void GameScene::OnIMGUIFrame()
 {
 
@@ -848,12 +848,12 @@ void GameScene::OnIMGUIFrame()
 	ImGui::Checkbox("Immortal", &immortal);
 	ImGui::Checkbox("Draw Colliders", &drawColliders);
 
-	if (ImGui::Button("Kill player"))                          
+	if (ImGui::Button("Kill player"))
 	{
 		player->GetComponent<PlayerComp>()->LoseHealth(200.0f);
 	}
 
-	if (ImGui::Button("Print scene"))                          
+	if (ImGui::Button("Print scene"))
 	{
 		this->PrintSceneHierarchy(root, 0);
 	}
@@ -865,3 +865,4 @@ void GameScene::OnIMGUIFrame()
 		std::cout << "player current position: " << playerPos.x << ", " << playerPos.y << ", " << playerPos.z << std::endl;
 	}
 }
+#endif

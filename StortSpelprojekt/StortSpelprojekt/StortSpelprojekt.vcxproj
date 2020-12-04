@@ -265,6 +265,7 @@
   <ItemGroup>
     <ClInclude Include="AudioMaster.h" />
     <ClInclude Include="AudioEngine.h" />
+    <ClInclude Include="Config.h" />
     <ClInclude Include="Imgui\imconfig.h" />
     <ClInclude Include="Imgui\imgui.h" />
     <ClInclude Include="Imgui\imgui_impl_dx11.h" />

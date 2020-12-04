@@ -2,6 +2,7 @@
 #include "ControllerComp.h"
 #include "Engine.h"
 #include "GUICompass.h"
+#include "Config.h"
 
 void ControllerComp::CheckGrounded()
 {
@@ -46,7 +47,7 @@ void ControllerComp::CheckGrounded()
 	//return result;
 }
 
-ControllerComp::ControllerComp(Object* cameraObject, Object* houseObject, float sense)
+ControllerComp::ControllerComp(Object* cameraObject, Object* houseObject)
 {
 	//this->fov = 60.f;
 	//this->fovTimer = 0.f;
@@ -54,7 +55,6 @@ ControllerComp::ControllerComp(Object* cameraObject, Object* houseObject, float 
 	this->velocity = 0.f;
 	this->velocityTimer = 0.f;
 	this->crouchTimer = 0.f;
-	this->sensitivity = sense;
 
 	this->freeCam = false;
 	this->showCursor = false;
@@ -86,6 +86,8 @@ void ControllerComp::Initialize()
 {
 	this->rbComp = GetOwner()->GetComponent<RigidBodyComponent>();
 	rbComp->m_InitializeBody(Engine::Instance->GetPhysics());
+
+	this->sensitivity = Config::GetFloat("sensitivity", 0.5f);
 
 	this->camComp = cameraObject->GetComponent<CameraComponent>();
 	this->capsuleComp = GetOwner()->GetComponent<CapsuleColliderComponent>();

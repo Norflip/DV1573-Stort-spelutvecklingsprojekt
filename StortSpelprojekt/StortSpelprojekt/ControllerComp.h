@@ -91,7 +91,7 @@ protected:
 	//dx::XMVECTOR groundRotation2;
 	dx::XMVECTOR groundRotation;
 public:
-	ControllerComp(Object* cameraObject, Object* houseObject, float sense);
+	ControllerComp(Object* cameraObject, Object* houseObject);
 	virtual ~ControllerComp();
 
 	RigidBodyComponent* GetRigidBodyComp() { return this->rbComp; }
@@ -102,7 +102,4 @@ public:
 	void SetInRange(bool state) { this->inDoorRange = state; }
 	bool GetInside()const { return this->inside; }
 	void SetInside(bool state) { this->inside = state; }
-
-	void SetSensitivity(const float & sens) { this->sensitivity = sens; }
-	float GetSensitivity()const { return this->sensitivity; }
 };
