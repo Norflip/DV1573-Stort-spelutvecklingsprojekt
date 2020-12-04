@@ -88,40 +88,39 @@ void MeshCollider::InitializeCollider(Physics* physics)
 
 void MeshCollider::Update(const float& deltaTime)
 {
-#if DRAW_COLLIDERS
-
-	const size_t COUNT = 3;
-	const float OFFSET = 1.02f;
-
-	dx::XMFLOAT3 color = { 1,0,0 };
-	dx::XMFLOAT3 positions[COUNT];
-	size_t triangles = mesh->GetTriangleCount();
-	std::vector<Mesh::Vertex> vertices = mesh->GetVertices();
-	std::vector<size_t> indices = mesh->GetIndices();
-
-	dx::XMMATRIX model = GetOwner()->GetTransform().GetWorldMatrix();
-
-	for (size_t i = 0; i < colliderInformations.size(); i++)
+	if (GameScene::drawColliders)
 	{
-		dx::XMVECTOR p = dx::XMLoadFloat3(&colliderInformations[i].position);
-		dx::XMVECTOR r = dx::XMLoadFloat4(&colliderInformations[i].rotation);
+		const size_t COUNT = 3;
+		const float OFFSET = 1.02f;
 
-		for (size_t j = 0; j < triangles; j++)
+		dx::XMFLOAT3 color = { 1,0,0 };
+		dx::XMFLOAT3 positions[COUNT];
+		size_t triangles = mesh->GetTriangleCount();
+		std::vector<Mesh::Vertex> vertices = mesh->GetVertices();
+		std::vector<size_t> indices = mesh->GetIndices();
+
+		dx::XMMATRIX model = GetOwner()->GetTransform().GetWorldMatrix();
+
+		for (size_t i = 0; i < colliderInformations.size(); i++)
 		{
-			for (size_t k = 0; k < COUNT; k++)
-			{
-				dx::XMVECTOR vector = dx::XMVectorScale(dx::XMLoadFloat3(&vertices[indices[j * COUNT + k]].position), OFFSET);
-				dx::XMStoreFloat3(&positions[k], dx::XMVector3Transform(vector, model));
-			}
+			dx::XMVECTOR p = dx::XMLoadFloat3(&colliderInformations[i].position);
+			dx::XMVECTOR r = dx::XMLoadFloat4(&colliderInformations[i].rotation);
 
-			size_t i0 = COUNT -1;
-			for (size_t i1 = 0; i1 < COUNT; i1++)
+			for (size_t j = 0; j < triangles; j++)
 			{
-				DShape::DrawLine(positions[i0], positions[i1], color);
-				i0 = i1;
+				for (size_t k = 0; k < COUNT; k++)
+				{
+					dx::XMVECTOR vector = dx::XMVectorScale(dx::XMLoadFloat3(&vertices[indices[j * COUNT + k]].position), OFFSET);
+					dx::XMStoreFloat3(&positions[k], dx::XMVector3Transform(vector, model));
+				}
+
+				size_t i0 = COUNT - 1;
+				for (size_t i1 = 0; i1 < COUNT; i1++)
+				{
+					DShape::DrawLine(positions[i0], positions[i1], color);
+					i0 = i1;
+				}
 			}
 		}
 	}
-
-#endif
 }

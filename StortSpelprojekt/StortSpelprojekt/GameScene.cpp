@@ -6,6 +6,13 @@
 #include "GUICompass.h"
 #include "SaveHandler.h"
 
+#include "Imgui\imgui.h"
+#include "Imgui\imgui_impl_win32.h"
+#include "Imgui\imgui_impl_dx11.h"
+
+bool GameScene::immortal = false;
+bool GameScene::drawColliders = false;
+
 GameScene::GameScene() : Scene("GameScene")
 {
 	this->interiorPosition = { 0.0f, -100.0f, 0.0f };
@@ -200,7 +207,7 @@ void GameScene::InitializeObjects()
 
 	//LOADING BASE MONSTER; ADDING SKELETONS TO IT
 	enemyManager = new EnemyManager();
-	enemyManager->Initialize(player,house, player->GetComponent<PlayerComp>(), camera, root);
+	enemyManager->Initialize(player, house, player->GetComponent<PlayerComp>(), camera, root);
 	enemyManager->InitBaseEnemy();
 	enemyManager->InitChargerEnemy();
 
@@ -252,7 +259,7 @@ void GameScene::InitializeObjects()
 	DrawShader->SetVertexShader("Shaders/ParticleDraw_vs.hlsl");
 	DrawShader->SetGeometryShader("Shaders/ParticleDraw_gs.hlsl");
 	DrawShader->SetPixelShader("Shaders/ParticleDraw_ps.hlsl");
-	DrawShader->Compile(renderer->GetDevice());*/	
+	DrawShader->Compile(renderer->GetDevice());*/
 }
 
 void GameScene::InitializeGUI()
@@ -293,7 +300,7 @@ void GameScene::InitializeGUI()
 	loadSprite->SetVisible(true);
 	//FONTS
 	//GUIFont* playerPosDisplay = new GUIFont(*renderer, "playerPos", 50, 100);
-	GUIFont* fpsDisplay = new GUIFont(*renderer, "fps",30, 30);
+	GUIFont* fpsDisplay = new GUIFont(*renderer, "fps", 30, 30);
 	//GUIFont* healthDisplay = new GUIFont(*renderer, "playerHealth", 50, 100);
 	//GUIFont* enemyDisplay = new GUIFont(*renderer, "enemyHealth", 50, 150);
 
@@ -403,7 +410,7 @@ void GameScene::InitializeInterior()
 	AddObjectToRoot(bookShelf);
 
 	Object* chair = resources->AssembleObject("Chair", "ChairMaterial");
-	chair->GetTransform().SetPosition({ this->interiorPosition.x - 2.0f, this->interiorPosition.y, this->interiorPosition.z + 2.0f});
+	chair->GetTransform().SetPosition({ this->interiorPosition.x - 2.0f, this->interiorPosition.y, this->interiorPosition.z + 2.0f });
 	chair->AddComponent<BoxColliderComponent>(dx::XMFLOAT3(0.5f, 2.0f, 1.0f), dx::XMFLOAT3(-4.0f, 1.0f, 1.5f));
 	chair->AddComponent<RigidBodyComponent>(0.0f, FilterGroups::PROPS, FilterGroups::EVERYTHING, BodyType::STATIC, true);
 	AddObjectToRoot(chair);
@@ -427,7 +434,7 @@ void GameScene::InitializeInterior()
 	AddObjectToRoot(insideDoor);
 
 	Object* table = resources->AssembleObject("Table", "TableMaterial");
-	table->GetTransform().SetPosition({ this->interiorPosition.x, this->interiorPosition.y, this->interiorPosition.z});
+	table->GetTransform().SetPosition({ this->interiorPosition.x, this->interiorPosition.y, this->interiorPosition.z });
 	table->AddComponent<BoxColliderComponent>(dx::XMFLOAT3(2.0f, 1.4f, 2.0f), dx::XMFLOAT3(-6.5f, 0.0f, -5.8f));
 	table->AddComponent<RigidBodyComponent>(0.0f, FilterGroups::PROPS, FilterGroups::EVERYTHING, BodyType::STATIC, true);
 	AddObjectToRoot(table);
@@ -454,7 +461,7 @@ void GameScene::InitializeInterior()
 	AddObjectToRoot(tutorialFuel);
 
 	Object* fireLight = new Object("fireLight");
-	LightComponent* fLight = fireLight->AddComponent<LightComponent>(LightType::POINT_LIGHT,dx::XMFLOAT4(1.0f, 0.29f, 0.0f, 1.0f), 2.2f);
+	LightComponent* fLight = fireLight->AddComponent<LightComponent>(LightType::POINT_LIGHT, dx::XMFLOAT4(1.0f, 0.29f, 0.0f, 1.0f), 2.2f);
 	fireLight->GetTransform().SetPosition({ -7.0f, -99.f, -1.36f });
 	//fireLight->AddComponent<ParticleSystemComponent>(renderer, Engine::Instance->GetResources()->GetShaderResource("particleShader"));
 	//fireLight->GetComponent<ParticleSystemComponent>()->InitializeFirelikeParticles(renderer->GetDevice(), L"Textures/fire1.png");
@@ -480,13 +487,13 @@ void GameScene::InitializeInterior()
 
 	Object* windowLight = new Object("windowLight");
 	windowLight->GetTransform().SetPosition({ 3.0f, -98.f, 3 });
-	LightComponent * wLight1 = windowLight->AddComponent<LightComponent>(LightType::POINT_LIGHT,dx::XMFLOAT4(0.3f, 0.41f, 0.8f, 1.0f), 5.0f);
+	LightComponent* wLight1 = windowLight->AddComponent<LightComponent>(LightType::POINT_LIGHT, dx::XMFLOAT4(0.3f, 0.41f, 0.8f, 1.0f), 5.0f);
 	wLight1->SetEnabled(true);
 	AddObjectToRoot(windowLight);
 
 	Object* windowLight2 = new Object("windowLight2");
 	windowLight2->GetTransform().SetPosition({ -7, -98.f, 3 });
-	LightComponent* wLight2 = windowLight2->AddComponent<LightComponent>(LightType::POINT_LIGHT,dx::XMFLOAT4(0.3f, 0.41f, 0.8f, 1.0f), 5.0f);
+	LightComponent* wLight2 = windowLight2->AddComponent<LightComponent>(LightType::POINT_LIGHT, dx::XMFLOAT4(0.3f, 0.41f, 0.8f, 1.0f), 5.0f);
 	wLight2->SetEnabled(true);
 	AddObjectToRoot(windowLight2);
 
@@ -528,15 +535,15 @@ void GameScene::OnActivate()
 	{
 		std::vector<dx::XMINT2> indexes = world.GetPath().GetIndexes();
 		dx::XMINT2 spawnIndex = indexes[0];
-	
+
 
 		//dx::XMVECTOR position = dx::XMVectorAdd(Chunk::IndexToWorld(spawnIndex, 0.0f), dx::XMVectorSet(CHUNK_SIZE / 2.0f, 0, CHUNK_SIZE / 2.0f, 0));
 		//house->GetTransform().SetPosition(position);
-		
+
 	/*	if (house->HasComponent<RigidBodyComponent>())
 			house->GetComponent<RigidBodyComponent>()->SetPosition(position);*/
-	
-		
+
+
 
 		if (!Engine::Instance->start)
 		{
@@ -545,7 +552,7 @@ void GameScene::OnActivate()
 			renderer->SetIdAndColor(state.segment, fogCol);
 
 			dx::XMFLOAT3 switchPosition;
-			switchPosition = dx::XMFLOAT3{ housePos.x +10 , 7.f , housePos.z };
+			switchPosition = dx::XMFLOAT3{ housePos.x + 10 , 7.f , housePos.z };
 
 			dx::XMVECTOR playerPos = { switchPosition.x, switchPosition.y, switchPosition.z };
 
@@ -585,7 +592,7 @@ void GameScene::OnActivate()
 			player->GetComponent<ControllerComp>()->SetInside(true);
 
 			Engine::Instance->start = false;
-			
+
 		}
 
 	}
@@ -596,7 +603,7 @@ void GameScene::OnActivate()
 	//enemyManager->SpawnEnemies();
 
 	AudioMaster::Instance().PlaySoundEvent("wind");
-	
+
 	/* Ugly solution */
 	player->GetComponent<PlayerComp>()->GetArms()->GetComponent< PlayerAnimHandlerComp>()->SetStarted(true);
 
@@ -640,7 +647,7 @@ void GameScene::SetSignPositions(SaveState& state)
 		end = true;
 		dx::XMFLOAT3 signPosition;
 		signPosition = dx::XMFLOAT3{ world.GetPath().GetSignPosition().x , 1.0f ,world.GetPath().GetSignPosition().y };
-		
+
 		roadSign->GetTransform().SetPosition({ signPosition.x, signPosition.y - 1.0f, signPosition.z });
 		roadSign->AddComponent<BoxColliderComponent>(dx::XMFLOAT3{ 2.0f, 3.0f, 4.0f }, dx::XMFLOAT3{ 0,0,0 });
 		roadSign->AddComponent<SelectableComponent>();
@@ -673,12 +680,12 @@ void GameScene::SetSignPositions(SaveState& state)
 		leftSign->AddComponent<RigidBodyComponent>(0.0f, FilterGroups::CLICKABLE, (FilterGroups::EVERYTHING & ~FilterGroups::PLAYER), BodyType::STATIC, true);
 
 	}
-	
+
 }
 
 void GameScene::Update(const float& deltaTime)
 {
-	if ((delayTimer > (physicsDelay + loadScreenDelay+2)) && onceTest)
+	if ((delayTimer > (physicsDelay + loadScreenDelay + 2)) && onceTest)
 	{
 		onceTest = false;
 		house->GetComponent<NodeWalkerComp>()->Reset();
@@ -692,9 +699,6 @@ void GameScene::Update(const float& deltaTime)
 	dx::XMFLOAT3 playerPos;
 	dx::XMStoreFloat3(&playerPos, player->GetTransform().GetWorldPosition());
 
-	//if (KEY_DOWN(X))
-	//	std::cout << "pos: " << playerPos.x << ", " << playerPos.y << ", " << playerPos.z << std::endl;
-
 	//if (KEY_DOWN(B))
 	//{
 
@@ -707,16 +711,6 @@ void GameScene::Update(const float& deltaTime)
 	//	//player->GetTransform().SetWorldPosition();
 	//}
 
-	//if (KEY_DOWN(M))
-	//{
-	//	std::cout << "damaging player" << std::endl;
-	//	player->GetComponent<PlayerComp>()->LoseHealth(200.0f);
-	//}
-
-	//if (KEY_DOWN(N))
-	//{
-	//	this->PrintSceneHierarchy(root, 0);
-	//}
 
 	// Something CP with controllerComp/player wont allow this to happen inside the playerComp
 	if (player->GetComponent<ControllerComp>()->GetInRange())
@@ -765,7 +759,7 @@ void GameScene::Update(const float& deltaTime)
 			Engine::Instance->SwitchScene(SceneIndex::WIN);
 		}
 	}
-	
+
 
 	//std::cout << "PlayerPos: " << player->GetTransform().GetPosition().m128_f32[0] << " " << player->GetTransform().GetPosition().m128_f32[1] << " " << player->GetTransform().GetPosition().m128_f32[2] << std::endl;
 
@@ -809,7 +803,7 @@ void GameScene::Update(const float& deltaTime)
 	//dx::XMFLOAT3 eyeCam;
 	//dx::XMStoreFloat3(&eyeCam, camera->GetOwner()->GetTransform().GetPosition());
 	for (auto i : renderer->GetParticleList())
-	{		
+	{
 		i->SetEyePos(eyeCam);
 		i->Update(deltaTime, GameClock::Instance().GetSeconds());
 	}
@@ -836,4 +830,32 @@ void GameScene::Render()
 
 	renderer->RenderFrame(camera, (float)clock.GetSeconds(), player->GetComponent<PlayerComp>()->GetDangerDistance());
 	firstFrame = true;
+}
+
+
+
+void GameScene::OnIMGUIFrame()
+{
+
+	ImGui::Text("Application average %.3f ms/frame (%.1f FPS)", 1000.0f / ImGui::GetIO().Framerate, ImGui::GetIO().Framerate);
+
+	ImGui::Checkbox("Immortal", &immortal);
+	ImGui::Checkbox("Draw Colliders", &drawColliders);
+
+	if (ImGui::Button("Kill player"))                          
+	{
+		player->GetComponent<PlayerComp>()->LoseHealth(200.0f);
+	}
+
+	if (ImGui::Button("Print scene"))                          
+	{
+		this->PrintSceneHierarchy(root, 0);
+	}
+
+	if (ImGui::Button("Print player position"))
+	{
+		dx::XMFLOAT3 playerPos;
+		dx::XMStoreFloat3(&playerPos, player->GetTransform().GetWorldPosition());
+		std::cout << "player current position: " << playerPos.x << ", " << playerPos.y << ", " << playerPos.z << std::endl;
+	}
 }

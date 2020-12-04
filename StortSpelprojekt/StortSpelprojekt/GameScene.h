@@ -25,6 +25,10 @@ public:
 	void FixedUpdate(const float& fixedDeltaTime) override;
 	void Render() override;
 
+	void OnIMGUIFrame() override;
+	static bool immortal;
+	static bool drawColliders;
+
 	ALIGN16_ALLOC;
 
 private:
