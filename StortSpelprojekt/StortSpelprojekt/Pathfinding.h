@@ -31,7 +31,7 @@ class Pathfinding : public Component
 		{
 			bool operator()(const Node* nodeA, const Node* nodeB)
 			{
-				return nodeA->fCost > nodeB->fCost;
+				return nodeA->fCost >= nodeB->fCost;
 			}
 		};
 
