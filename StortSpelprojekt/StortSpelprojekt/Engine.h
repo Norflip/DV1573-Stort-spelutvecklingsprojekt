@@ -39,6 +39,8 @@ public:
 	void Pause(bool pause) { this->pause = pause; }
 	bool IsPaused() const { return pause; }
 
+	void OnIMGUIFrame();
+
 	ALIGN16_ALLOC;
 	static Engine* Instance;
 	bool start = true;

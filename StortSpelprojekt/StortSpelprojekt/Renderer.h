@@ -87,7 +87,7 @@ public:
 
 	ID3D11Device* GetDevice() const { return this->device; }
 	ID3D11DeviceContext* GetContext() const { return this->context; }
-	Window* GetOutputWindow() const { return this->outputWindow; }
+	Window* GetOutputWindow() const { return this->window; }
 
 	void DrawScreenQuad(const Material* Material);
 
@@ -101,7 +101,7 @@ public:
 
 	void RemoveRenderPass(RenderPass*);
 
-	void InitForwardPlus(CameraComponent* camera, Window* window, Shader& forwardPlusShader);
+	void InitForwardPlus(VirtualCamera* camera);
 	void UpdateForwardPlus(CameraComponent* camera);
 	//std::vector<UINT>& cullLightsOnCPU();
 	void SetIdAndColor(int id, float color);
@@ -142,6 +142,8 @@ private:
 	
 	Material* screenQuadMaterial;
 	Mesh* screenQuadMesh;
+	Shader forwardPlusShader;
+	bool forwardPlusInitialized;
 
 	ConstantBuffer<cb_particle> particleBuffer;
 	ConstantBuffer<cb_Object> objectBuffer;
@@ -192,7 +194,7 @@ private:
 	ID3D11Buffer* skeleton_srvbuffer;
 	ID3D11ShaderResourceView* skeleton_srv;
 
-	Window* outputWindow;
+	Window* window;
 
 	std::unordered_map<int, Batch> opaqueBatches;
 	std::unordered_map<int, Batch> transparentBatches;
