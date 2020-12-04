@@ -53,8 +53,8 @@ void IntroScene::InitializeGUI()
 	GUISprite* soundEffectsSprite = new GUISprite(*renderer, "Textures/SoundeffectsButton.png", 160, 400, 0, DrawDirection::Default, ClickFunction::NotClickable, GuiGroup::Options);	
 	soundEffectsSprite->SetVisible(false);
 
-	//make Mouse-Sensitivity png art
-	GUISprite* sensitivitySprite = new GUISprite(*renderer, "Textures/Lore.png", 100,550,0,DrawDirection::Default, ClickFunction::NotClickable, GuiGroup::Options);
+	
+	GUISprite* sensitivitySprite = new GUISprite(*renderer, "Textures/sensButton.png", 140,550,0,DrawDirection::Default, ClickFunction::NotClickable, GuiGroup::Options);
 	sensitivitySprite->SetVisible(false);
 
 
@@ -93,7 +93,7 @@ void IntroScene::InitializeGUI()
 	volumeSensitivtySprite->SetVisible(false);
 	higherSensitivitySprite->SetVisible(false);
 	sensitivityBarFill->SetScale(this->sensitivity, 1.0f);
-	GUIFont* sensitivityDisplay = new GUIFont(*renderer, "hi", windowWidth / 2 - 300, 550);
+	GUIFont* sensitivityDisplay = new GUIFont(*renderer, "hi", windowWidth / 2 +30, 585);
 	sensitivityDisplay->SetVisible(false);
 	sensitivityDisplay->AddGroup(GuiGroup::Font);
 	sensitivityDisplay->AddGroup(GuiGroup::Options);
@@ -184,9 +184,9 @@ void IntroScene::InitializeGUI()
 
 	/* Sensitivity */
 	guiManager->AddGUIObject(sensitivitySprite, "sensitivityText");
-	guiManager->AddGUIObject(sensitivityBarFill, "sensitivityBarFill");
+	//guiManager->AddGUIObject(sensitivityBarFill, "sensitivityBarFill");
 	guiManager->AddGUIObject(lowerSensitivitySprite, "lowerSensitivitySprite");
-	guiManager->AddGUIObject(volumeSensitivtySprite, "guiManager->AddGUIObject");
+	//guiManager->AddGUIObject(volumeSensitivtySprite, "guiManager->AddGUIObject");
 	guiManager->AddGUIObject(higherSensitivitySprite, "higherSensitivitySprite");
 	guiManager->AddGUIObject(sensitivityDisplay, "sensitivityDisplay");
 }
@@ -315,7 +315,7 @@ void IntroScene::Update(const float& deltaTime)
 			this->sensitivity -= 0.05f;
 		else
 			this->sensitivity = 0.05f;
-		static_cast<GUISprite*>(guiManager->GetGUIObject("sensitivityBarFill"))->SetScale(this->sensitivity, 1.f);
+		//static_cast<GUISprite*>(guiManager->GetGUIObject("sensitivityBarFill"))->SetScale(this->sensitivity, 1.f);
 	}
 	if (static_cast<GUISprite*>(guiManager->GetGUIObject("higherSensitivitySprite"))->IsClicked())
 	{
@@ -324,7 +324,7 @@ void IntroScene::Update(const float& deltaTime)
 			this->sensitivity += 0.05f;
 		else
 			this->sensitivity = 1.0f;
-		static_cast<GUISprite*>(guiManager->GetGUIObject("sensitivityBarFill"))->SetScale(sensitivity, 1.f);
+		//static_cast<GUISprite*>(guiManager->GetGUIObject("sensitivityBarFill"))->SetScale(sensitivity, 1.f);
 	}
 
 	guiManager->UpdateAll();
