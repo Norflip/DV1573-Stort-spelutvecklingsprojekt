@@ -3,6 +3,10 @@
 #include "RenderPass.h"
 #include "DShape.h"
 #include "Input.h"
+#include "Engine.h"
+#include "Imgui\imgui.h"
+#include "Imgui\imgui_impl_win32.h"
+#include "Imgui\imgui_impl_dx11.h"
 
 
 Renderer::Renderer() : device(nullptr), context(nullptr), swapchain(nullptr), skeleton_srvbuffer(nullptr), skeleton_srv(nullptr), batchInstanceBuffer(nullptr)
@@ -56,7 +60,7 @@ Renderer::~Renderer()
 
 void Renderer::Initialize(Window* window)
 {
-	this->outputWindow = window;
+	this->window = window;
 
 	DXHelper::CreateSwapchain(*window, &device, &context, &swapchain);
 	this->backbuffer = DXHelper::CreateBackbuffer(window->GetWidth() , window->GetHeight(), device, swapchain);
@@ -98,6 +102,11 @@ void Renderer::Initialize(Window* window)
 	DShape::Instance().m_Initialize(device);
 
 	//	CreateInstanceBuffer(device, MAX_BATCH_COUNT, )
+
+	
+	forwardPlusShader.SetComputeShader("Shaders/ForwardPlusRendering.hlsl", "ComputeFrustums");
+	forwardPlusShader.CompileCS(device);
+
 
 	tmpBatchInstanceData = new dx::XMFLOAT4X4[MAX_BATCH_COUNT];
 	DXHelper::CreateInstanceBuffer(device, MAX_BATCH_COUNT, sizeof(dx::XMFLOAT4X4), tmpBatchInstanceData, &batchInstanceBuffer);
@@ -165,7 +174,20 @@ void Renderer::RenderFrame(CameraComponent* camera, float time, float distance)
 	{
 		isFullScreen = true;
 	}*/
+
+
+	// Start the Dear ImGui frame
+	ImGui_ImplDX11_NewFrame();
+	ImGui_ImplWin32_NewFrame();
+	ImGui::NewFrame();
+
+	Engine::Instance->OnIMGUIFrame();
+
 	RenderFrame(camera, time, distance, backbuffer, true, true);
+
+	ImGui::Render();
+	ImGui_ImplDX11_RenderDrawData(ImGui::GetDrawData());
+
 	HRESULT hr = swapchain->Present(0, 0); //1 here?
 	//swapchain->SetFullscreenState(isFullScreen, nullptr);
 	assert(SUCCEEDED(hr));
@@ -203,7 +225,7 @@ void Renderer::RenderFrame(CameraComponent* camera, float time, float distance, 
 	xPos += (float)Input::Instance().GetPrevMousePosRelative().y;
 	yPos += (float)Input::Instance().GetPrevMousePosRelative().x;
 	data.mousePos = { xPos,yPos };
-	data.screenSize = { (float)outputWindow->GetWidth(), (float)outputWindow->GetHeight() };
+	data.screenSize = { (float)window->GetWidth(), (float)window->GetHeight() };
 	//data.mousePos = { (float)Input::Instance().GetMousePos().x, (float)Input::Instance().GetMousePos().y };
 	// put in mouse pos delta here
 	dx::XMStoreFloat3(&data.cameraPosition, camera->GetOwner()->GetTransform().GetPosition());
@@ -219,16 +241,20 @@ void Renderer::RenderFrame(CameraComponent* camera, float time, float distance, 
 
 	//LightManager::Instance().UpdateBuffers(context,camera);
 
+
+	if (!forwardPlusInitialized)
+	{ 
+		InitForwardPlus(camera);
+		forwardPlusInitialized = true;
+	}
+
 	UpdateForwardPlus(camera);
 
-	ID3D11ShaderResourceView* nullSRV[1] = { nullptr };
-	context->PSSetShaderResources(0, 1, nullSRV);
+//	ID3D11ShaderResourceView* nullSRV[1] = { nullptr };
+//	context->PSSetShaderResources(0, 1, nullSRV);
 
 	ClearRenderTarget(midbuffer);
 	SetRenderTarget(midbuffer);
-
-	context->OMSetDepthStencilState(dss, 0);
-	
 
 	for (auto i = passes.begin(); i < passes.end(); i++)
 	{
@@ -239,10 +265,7 @@ void Renderer::RenderFrame(CameraComponent* camera, float time, float distance, 
 		}
 	}
 	
-
-	
-
-
+	context->OMSetDepthStencilState(dss, 0);
 	DXHelper::BindStructuredBuffer(context, 10, ShaderBindFlag::PIXEL, &o_LightIndexList_srv);
 	context->PSSetShaderResources(11, 1, &o_LightGrid_texSRV);
 	SetCullBack(true);
@@ -831,9 +854,8 @@ void Renderer::DrawScreenQuad(const Material* material)
 }
 
 
-void Renderer::InitForwardPlus(CameraComponent* camera, Window* window, Shader& forwardPlusShader)
+void Renderer::InitForwardPlus(VirtualCamera* camera)
 {
-	this->forwardPlusShader = forwardPlusShader;
 	forwardPlusShader.BindToContext(context);
 
 	this->width = window->GetWidth();
@@ -990,6 +1012,8 @@ void Renderer::UpdateForwardPlus(CameraComponent* camera)
 	context->CSSetUnorderedAccessViews(6, 1, &nullUAV, NULL); //u6
 	context->PSSetShaderResources(10, 1, &nullSRV);
 	context->PSSetShaderResources(11, 1, &nullSRV);
+
+	forwardPlusShader.BindToContext(context);
 
 	context->OMSetDepthStencilState(dss, 0);
 
