@@ -58,7 +58,7 @@ void EnemySMComp::Animate()
 
 		if (skeletonComponent->GetDoneDeath())
 		{
-			std::cout << "enemy died.. health: " << statsComponent->GetHealth() << ", y: " << enemyPos.y <<", length from player: "<<length<< std::endl;
+			//std::cout << "enemy died.. health: " << statsComponent->GetHealth() << ", y: " << enemyPos.y <<", length from player: "<<length<< std::endl;
 			statsComponent->GetManager()->RemoveEnemy(GetOwner());
 		}
 
@@ -96,14 +96,17 @@ void EnemySMComp::Update(const float& deltaTime)
 	if (currentState != EnemyState::ATTACK && attackComponent->ChasePlayer())
 	{
 		SetState(EnemyState::ATTACK);
+		GetOwner()->GetComponent<Pathfinding>()->SetEnabled(true);
 	}
 	else if (currentState != EnemyState::IDLE && !attackComponent->ChasePlayer() && !enemyPatrolComp->GetIsMoving())
 	{
 		SetState(EnemyState::IDLE);
+		GetOwner()->GetComponent<Pathfinding>()->SetEnabled(false);
 	}
 	else if (currentState != EnemyState::PATROL && !attackComponent->ChasePlayer() && enemyPatrolComp->GetIsMoving())
 	{
 		SetState(EnemyState::PATROL);
+		GetOwner()->GetComponent<Pathfinding>()->SetEnabled(false);
 	}
 	
 	if (skeletonComponent)

@@ -55,37 +55,43 @@ void Pathfinding::Update(const float& deltaTime)
 		AStar();
 		timer.Restart();
 	}
-	if (pathFound)
+
+	dx::XMVECTOR moveVec = dx::XMVectorSubtract(player->GetOwner()->GetTransform().GetPosition(), GetOwner()->GetTransform().GetPosition());
+	dx::XMVECTOR lenVec = dx::XMVector3Length(moveVec);//now contatins length
+	float length;
+	dx::XMStoreFloat(&length, lenVec);
+
+	if (pathFound && length > 0.5f)
 	{
 		FollowPath();
 	}
 
-	//dx::XMFLOAT3 enemyPos;
-	//dx::XMStoreFloat3(&enemyPos, GetOwner()->GetTransform().GetPosition());
+	/*dx::XMFLOAT3 enemyPos;
+	dx::XMStoreFloat3(&enemyPos, GetOwner()->GetTransform().GetPosition());
 
-	//for (int i = 0; i < cols; i++)
-	//{
-	//	for (int j = 0; j < rows; j++)
-	//	{
-	//		dx::XMFLOAT3 color;
-	//		if (grid[i][j]->obstacle)
-	//		{
-	//			color = dx::XMFLOAT3(0, 0, 0);
-	//		}
-	//		else
-	//		{
-	//			if (grid[i][j]->openSet)
-	//				color = dx::XMFLOAT3(0, 1, 0);
-	//			else if (grid[i][j]->correctPath)
-	//				color = dx::XMFLOAT3(0, 0, 1);
-	//			else if (grid[i][j]->closedSet)
-	//				color = dx::XMFLOAT3(1, 0, 0);
-	//			else
-	//				color = dx::XMFLOAT3(1, 1, 1);
-	//		}
-	//		DShape::DrawBox(dx::XMFLOAT3(grid[i][j]->pos.x + (int)enemyPos.x - (cols/2), enemyPos.y + 7, grid[i][j]->pos.y + (int)enemyPos.z - (rows/2)), dx::XMFLOAT3(0.8, 0.8, 0.8), color);
-	//	}
-	//}
+	for (int i = 0; i < cols; i++)
+	{
+		for (int j = 0; j < rows; j++)
+		{
+			dx::XMFLOAT3 color;
+			if (grid[i][j]->obstacle)
+			{
+				color = dx::XMFLOAT3(0, 0, 0);
+			}
+			else
+			{
+				if (grid[i][j]->openSet)
+					color = dx::XMFLOAT3(0, 1, 0);
+				else if (grid[i][j]->correctPath)
+					color = dx::XMFLOAT3(0, 0, 1);
+				else if (grid[i][j]->closedSet)
+					color = dx::XMFLOAT3(1, 0, 0);
+				else
+					color = dx::XMFLOAT3(1, 1, 1);
+			}
+			DShape::DrawBox(dx::XMFLOAT3(grid[i][j]->pos.x + (int)enemyPos.x - (cols/2), enemyPos.y + 7, grid[i][j]->pos.y + (int)enemyPos.z - (rows/2)), dx::XMFLOAT3(0.8, 0.8, 0.8), color);
+		}
+	}*/
 }
 
 void Pathfinding::SetPlayer(PlayerComp* playerComp)
@@ -99,16 +105,16 @@ void Pathfinding::AStar()
 	dx::XMStoreFloat3(&enemyGridPos, GetOwner()->GetTransform().GetPosition());
 	dx::XMFLOAT3 playerGridPos;
 	dx::XMStoreFloat3(&playerGridPos, player->GetOwner()->GetTransform().GetPosition());
-	playerGridPos.x = (abs((int)playerGridPos.x) - abs((int)enemyGridPos.x)) + (cols / 2);		//player worldpos to gridPos
-	playerGridPos.z = (abs((int)playerGridPos.z) - abs((int)enemyGridPos.z)) + (rows / 2);
-	enemyGridPos.x = (abs((int)enemyGridPos.x) - abs((int)enemyGridPos.x)) + (cols / 2);		//enemy worldpos to gridCenterPos
-	enemyGridPos.z = (abs((int)enemyGridPos.z) - abs((int)enemyGridPos.z)) + (rows / 2);
+	playerGridPos.x = (int)playerGridPos.x - (int)enemyGridPos.x + (cols / 2);		//player worldpos to gridPos
+	playerGridPos.z = (int)playerGridPos.z - (int)enemyGridPos.z + (rows / 2);
+	enemyGridPos.x =  cols / 2;																	//enemy worldpos to gridCenterPos
+	enemyGridPos.z = rows / 2;
 
 	if ((int)playerGridPos.x >= 0 && (int)playerGridPos.z >= 0 && 
 		(int)playerGridPos.x < (cols-1) && (int)playerGridPos.z < (rows - 1))
 	{
 		Node* start = grid[(int)enemyGridPos.x][(int)enemyGridPos.z];							//start node is center node of grid
-		Node* end = grid[(int)playerGridPos.x][(int)playerGridPos.z];							//player pos in grid
+		end = grid[(int)playerGridPos.x][(int)playerGridPos.z];									//player pos in grid
 
 		start->obstacle = false;
 		end->obstacle = false;
@@ -118,11 +124,19 @@ void Pathfinding::AStar()
 		grid[(int)start->pos.x][(int)start->pos.y]->openSet = true;
 		while (openSet.size() > 0 && !pathFound)
 		{
-			Node* current = nullptr;
+			Node* current = openSet[0];
+			int winner = 0;
+			for (int i = 0; i < openSet.size() - 1; i++)
+			{
+				if (current->fCost >= openSet[i + 1]->fCost)
+				{
+					current = openSet[i+1];
+					winner = i;
+				}
+			}
 
-			std::make_heap(openSet.begin(), openSet.end(), Compare());			//sort openSet
-			current = openSet[0];
-			openSet.erase(openSet.begin());
+			//std::make_heap(openSet.begin(), openSet.end(), Compare());			//sort openSet
+
 
 			if (current != nullptr && current->pos.x == end->pos.x && current->pos.y == end->pos.y)		//if current is end, save the correct path and end loop
 			{
@@ -139,6 +153,7 @@ void Pathfinding::AStar()
 			}
 			else
 			{
+				openSet.erase(openSet.begin() + winner);
 				openSet.shrink_to_fit();
 				grid[(int)current->pos.x][(int)current->pos.y]->openSet = false;				//Add best choice to closedSet
 				closedSet.push_back(current);
@@ -339,6 +354,8 @@ void Pathfinding::FollowPath()
 		dx::XMStoreFloat(&length, lengthVec);
 		if (length <= 0.01)
 			correctPath.pop_back();
+
+		//std::cout << "end node x: " << end->pos.x << " z: " <<  end->pos.y << std::endl;
 	}
 }
 
