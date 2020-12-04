@@ -517,7 +517,6 @@ void GameScene::OnActivate()
 
 	LightManager::Instance().ForceUpdateBuffers(renderer->GetContext(), camera);
 
-	player->GetComponent<PlayerComp>()->SetStatsFromState(state);
 	Input::Instance().ConfineMouse();
 	Input::Instance().SetMouseMode(dx::Mouse::Mode::MODE_RELATIVE);
 	ShowCursor(false);
@@ -573,6 +572,8 @@ void GameScene::OnActivate()
 		else if (Engine::Instance->start)
 
 		{
+
+			player->GetComponent<PlayerComp>()->SetStatsFromState(state);
 			fogCol = 0.0f;
 			renderer->SetIdAndColor(state.segment, fogCol);
 
