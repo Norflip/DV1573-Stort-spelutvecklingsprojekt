@@ -17,6 +17,8 @@ ResourceManager::~ResourceManager()
 		delete i.second;
 	}
 
+	delete missingTexture;
+
 	resources.clear();
 	shaderResources.clear();
 }
@@ -81,6 +83,12 @@ void ResourceManager::RemoveResource(std::string key)
 
 void ResourceManager::InitializeResources(ID3D11Device* device)
 {
+	unsigned char* pixel = new unsigned char[4];
+	pixel[0] = pixel[2] = pixel[4] = 255;
+	pixel[1] = 0;
+
+	missingTexture = Texture::CreateFromBuffer(pixel, 1, 1, 4, DXGI_FORMAT_R8G8B8A8_UNORM, device);
+
 	ReadTextures(device);
 	ReadShaders(device);
 	ReadObjects(device);
@@ -200,7 +208,7 @@ void ResourceManager::ReadObjects(ID3D11Device* device)
 	}
 	else
 	{
-		std::cout << "Couldnt open file: " << std::endl;
+		//std::cout << "Couldnt open file: " << std::endl;
 	}
 }
 
@@ -413,7 +421,7 @@ void ResourceManager::ReadShaders(ID3D11Device* device)
 	}
 	else
 	{
-		std::cout << "Couldnt open file" << std::endl;
+		//std::cout << "Couldnt open file" << std::endl;
 	}
 }
 

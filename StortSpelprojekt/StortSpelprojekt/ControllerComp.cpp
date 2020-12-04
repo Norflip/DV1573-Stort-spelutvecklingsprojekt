@@ -7,14 +7,14 @@ void ControllerComp::CheckGrounded()
 {
 	dx::XMFLOAT3 origin;
 	dx::XMStoreFloat3(&origin, GetOwner()->GetTransform().GetPosition());
-	origin.z += 2.f;
+	//origin.z += 2.f;
 	Ray ray(origin, DOWN_VEC);
 	RayHit hitTerrain;
 	RayHit hitProps;
 	RayHit hitPuzzle;
 
 	//TERRAIN or default depending on if u can jump from on top of objects
-	float distance = 2.45f;
+	float distance = 1.60f;
 	Physics* phy = Engine::Instance->GetPhysics();
 
 	phy->RaytestSingle(ray, distance, hitTerrain, FilterGroups::TERRAIN);
@@ -123,42 +123,42 @@ void ControllerComp::Update(const float& deltaTime)
 	this->velocityTimer += deltaTime; 
 	this->crouchTimer += deltaTime;
 
-	if (KEY_DOWN(D0))
-	{
-		this->cameraObject->GetTransform().SetRotation(dx::XMLoadFloat4(&RESET_ROT));
-		this->cameraOffset = { 0.f,0.f,0.f };
-		this->cameraEuler = { 0.f, 0.f, 0.f };
-		this->jumpDir = { 0.f, 0.f, 0.f };
+	//if (KEY_DOWN(D0))
+	//{
+	//	this->cameraObject->GetTransform().SetRotation(dx::XMLoadFloat4(&RESET_ROT));
+	//	this->cameraOffset = { 0.f,0.f,0.f };
+	//	this->cameraEuler = { 0.f, 0.f, 0.f };
+	//	this->jumpDir = { 0.f, 0.f, 0.f };
 
-		rbComp->SetPosition(dx::XMLoadFloat3(&RESET_POS));
-		rbComp->SetLinearVelocity({ 0.f, 0.f, 0.f });
-	}
+	//	rbComp->SetPosition(dx::XMLoadFloat3(&RESET_POS));
+	//	rbComp->SetLinearVelocity({ 0.f, 0.f, 0.f });
+	//}
 
-	if (KEY_DOWN(O))
-	{
-		this->showCursor = !this->showCursor;
-		ShowCursor(this->showCursor);
-	}
+	//if (KEY_DOWN(O))
+	//{
+	//	this->showCursor = !this->showCursor;
+	//	ShowCursor(this->showCursor);
+	//}
 
-	if (KEY_DOWN(V))
-	{
-		this->freeCam = !this->freeCam;
-		
-		rbComp->SetLinearVelocity({ 0.f, 0.f, 0.f });
-		rbComp->EnableGravity(!this->freeCam);
-	}
+	//if (KEY_DOWN(V))
+	//{
+	//	this->freeCam = !this->freeCam;
+	//	
+	//	rbComp->SetLinearVelocity({ 0.f, 0.f, 0.f });
+	//	rbComp->EnableGravity(!this->freeCam);
+	//}
 
-	if (KEY_DOWN(F))
-	{
-		this->canRotate = !this->canRotate;
-		rbComp->SetLinearVelocity({ 0.f, 0.f, 0.f });
-		//rbComp->EnableGravity(!this->canRotate);
-		ShowCursor(!this->canRotate);
-		if (this->canRotate)
-			Input::Instance().SetMouseMode(dx::Mouse::MODE_RELATIVE);
-		else
-			Input::Instance().SetMouseMode(dx::Mouse::MODE_ABSOLUTE);
-	}
+	//if (KEY_DOWN(F))
+	//{
+	//	this->canRotate = !this->canRotate;
+	//	rbComp->SetLinearVelocity({ 0.f, 0.f, 0.f });
+	//	//rbComp->EnableGravity(!this->canRotate);
+	//	ShowCursor(!this->canRotate);
+	//	if (this->canRotate)
+	//		Input::Instance().SetMouseMode(dx::Mouse::MODE_RELATIVE);
+	//	else
+	//		Input::Instance().SetMouseMode(dx::Mouse::MODE_ABSOLUTE);
+	//}
 	
 	float length = 0.f;
 	dx::XMVECTOR lengthVec;

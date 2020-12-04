@@ -535,8 +535,6 @@ void GameScene::OnActivate()
 	//PrintSceneHierarchy(root, 0);
 	house->GetComponent<NodeWalkerComp>()->InitializePath(world.GetPath());
 	house->GetComponent<NodeWalkerComp>()->SetWorld(&world);
-	//Place signs
-	SetSignPositions(state);
 
 	if (house != nullptr && player != nullptr)
 	{
@@ -577,6 +575,8 @@ void GameScene::OnActivate()
 		}
 		// NÅN MÅSTE FIXA DETTA. JAG PALLAR INTE
 		// NÅN MÅSTE FIXA DETTA. JAG PALLAR INTE
+		// NÅN MÅSTE FIXA DETTA. JAG PALLAR INTE 
+		// NÅN MÅSTE FIXA DETTA. JAG PALLAR INTE
 		// NÅN MÅSTE FIXA DETTA. JAG PALLAR INTE
 		else if (Engine::Instance->start)
 
@@ -612,11 +612,13 @@ void GameScene::OnActivate()
 	/* Ugly solution */
 	player->GetComponent<PlayerComp>()->GetArms()->GetComponent< PlayerAnimHandlerComp>()->SetStarted(true);
 
+	//Place signs
+	SetSignPositions(state);
 
 	sceneSwitch = false;
 	delayTimer = 0.0f;
 	physicsDelay = 5.0f;
-	std::cout << "Game Scene activated " << std::endl;
+	//std::cout << "Game Scene activated " << std::endl;
 	guiManager->GetGUIObject("loading")->SetVisible(true);
 	//house->GetComponent<NodeWalkerComp>()->canWalk = true;
 	house->GetComponent<NodeWalkerComp>()->Reset();
@@ -631,7 +633,7 @@ void GameScene::OnDeactivate()
 
 	physicsDelay = 1000.0f;
 	guiManager->GetGUIObject("loading")->SetVisible(true);
-	std::cout << "Game Scene deactivated" << std::endl;
+	//std::cout << "Game Scene deactivated" << std::endl;
 	world.DeconstructSegment();
 	renderer->RemoveRenderPass(guiManager);
 	enemyManager->DespawnEnemies();
@@ -702,31 +704,31 @@ void GameScene::Update(const float& deltaTime)
 	dx::XMFLOAT3 playerPos;
 	dx::XMStoreFloat3(&playerPos, player->GetTransform().GetWorldPosition());
 
-	if (KEY_DOWN(X))
-		std::cout << "pos: " << playerPos.x << ", " << playerPos.y << ", " << playerPos.z << std::endl;
+	//if (KEY_DOWN(X))
+	//	std::cout << "pos: " << playerPos.x << ", " << playerPos.y << ", " << playerPos.z << std::endl;
 
-	if (KEY_DOWN(B))
-	{
+	//if (KEY_DOWN(B))
+	//{
 
-		std::cout << "RESETTINGS PLAYER" << std::endl;
-		
-		playerPos.x = 0.0f;
-		playerPos.z = 0.0f;
-		playerPos.y = 20.0f;
-		player->GetComponent<RigidBodyComponent>()->SetPosition(dx::XMLoadFloat3(&playerPos));
-		//player->GetTransform().SetWorldPosition();
-	}
+	//	std::cout << "RESETTINGS PLAYER" << std::endl;
+	//	
+	//	playerPos.x = 0.0f;
+	//	playerPos.z = 0.0f;
+	//	playerPos.y = 20.0f;
+	//	player->GetComponent<RigidBodyComponent>()->SetPosition(dx::XMLoadFloat3(&playerPos));
+	//	//player->GetTransform().SetWorldPosition();
+	//}
 
-	if (KEY_DOWN(M))
-	{
-		std::cout << "damaging player" << std::endl;
-		player->GetComponent<PlayerComp>()->LoseHealth(200.0f);
-	}
+	//if (KEY_DOWN(M))
+	//{
+	//	std::cout << "damaging player" << std::endl;
+	//	player->GetComponent<PlayerComp>()->LoseHealth(200.0f);
+	//}
 
-	if (KEY_DOWN(N))
-	{
-		this->PrintSceneHierarchy(root, 0);
-	}
+	//if (KEY_DOWN(N))
+	//{
+	//	this->PrintSceneHierarchy(root, 0);
+	//}
 
 	// Something CP with controllerComp/player wont allow this to happen inside the playerComp
 	if (player->GetComponent<ControllerComp>()->GetInRange())
@@ -747,7 +749,7 @@ void GameScene::Update(const float& deltaTime)
 		SaveState state = SaveHandler::LoadOrCreate();
 		state.segment++;
 		SaveHandler::Save(state);
-		std::cout << "added +1 to segment in save" << std::endl;
+		//std::cout << "added +1 to segment in save" << std::endl;
 
 		OnDeactivate();
 		ShowCursor(false);
@@ -760,7 +762,7 @@ void GameScene::Update(const float& deltaTime)
 		state.segment++;
 		SaveHandler::Save(state);
 
-		std::cout << "added +1 to segment in save" << std::endl;
+		//std::cout << "added +1 to segment in save" << std::endl;
 
 		OnDeactivate();
 		ShowCursor(false);

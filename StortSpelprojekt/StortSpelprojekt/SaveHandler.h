@@ -6,7 +6,7 @@
 #include "SaveState.h"
 
 #define PRINT_IO TRUE
-constexpr const char* FULL_FILE_PATH = "../TMP_SAVES/savefile.dat";
+constexpr const char* FULL_FILE_PATH = "savefile.dat";
 
 namespace SaveHandler
 {

@@ -53,7 +53,7 @@ PlayerComp::PlayerComp(Renderer* renderer, CameraComponent* camComp, Object* hou
 	this->rayDistance = 2.0f;
 	holding = nullptr;
 
-	finishedTutorial = true; // Change to false if you wanna use the tutorial
+	finishedTutorial = false; // Change to false if you wanna use the tutorial
 	foodTutorial = false;
 	fuelTutorial = false;
 	healthTutorial = false;
@@ -68,9 +68,6 @@ PlayerComp::~PlayerComp()
 void PlayerComp::Update(const float& deltaTime)
 {
 	//float frameTime = FCAST(GameClock::Instance().GetFrameTime() / 1000.0);
-
-
-
 	// Fuel drop
 
 	fuelDippingBar->SetScaleBars(ReverseAndClamp(fuel));
@@ -114,34 +111,45 @@ void PlayerComp::FixedUpdate(const float& fixedDeltaTime)
 
 		//temp fix for wierd clock start at 
 	//if (TARGET_FIXED_DELTA < 5.f)
+	if (finishedTutorial)
 	{
-
-
-		//lose fuel if not inside house
-		if (!GetOwner()->GetComponent<ControllerComp>()->GetInside() && fuel > 0.0f)
 		{
-			if (house->GetComponent<NodeWalkerComp>()->GetIsWalking())
-				fuel -= (TARGET_FIXED_DELTA * fuelBurnPerMeter)* STILL_REDUCTION;
 
-			else
-				fuel -= (TARGET_FIXED_DELTA * fuelBurnPerMeter);
 
-		}
+			//lose fuel if not inside house
+			if (!GetOwner()->GetComponent<ControllerComp>()->GetInside() && fuel > 0.0f)
+			{
+				if (house->GetComponent<NodeWalkerComp>()->GetIsWalking())
+					fuel -= (TARGET_FIXED_DELTA * fuelBurnPerMeter) * STILL_REDUCTION;
 
-		// lose food
-		food -= TARGET_FIXED_DELTA * foodLossPerSecond;
+				else
+					fuel -= (TARGET_FIXED_DELTA * fuelBurnPerMeter);
 
-	#if  !IMMORTAL
+			}
+
+			// lose food
+			food -= TARGET_FIXED_DELTA * foodLossPerSecond;
+
+#if  !IMMORTAL
 			if ((health <= 0))
 				Engine::Instance->SwitchScene(SceneIndex::GAME_OVER);
-	#endif //  !IMMORTAL
+#endif //  !IMMORTAL
 
 			if (food < 0)
+			{
 				foodEmpty = true;
+			}
+			else
+				foodEmpty = false;
 
 			if (foodEmpty)
 			{
 				health -= TARGET_FIXED_DELTA * healthLossPerSecond;
+				foodLossPerSecond = 0;
+			}
+			if (!foodEmpty)
+			{
+				foodLossPerSecond = 1.2f;
 			}
 
 			if (distance > hpLossDist && !GetOwner()->GetComponent<ControllerComp>()->GetInside())
@@ -150,6 +158,7 @@ void PlayerComp::FixedUpdate(const float& fixedDeltaTime)
 			// around 90
 			if (distance > maxDist && !GetOwner()->GetComponent<ControllerComp>()->GetInside())
 				health = 0;
+		}
 	}
 }
 
@@ -492,8 +501,8 @@ void PlayerComp::SetStatsFromState(const SaveState& state)
 	this->health = state.playerHealth;
 
 	// defaulting some shit
-	this->foodLossPerSecond = 0.3f;
-	this->fuelBurnPerMeter = 0.5f;
+	this->foodLossPerSecond = 1.0f;
+	this->fuelBurnPerMeter = 1.2f;
 	this->healthLossPerSecond = 0.5f;
 	this->holding = nullptr;
 	this->foodEmpty = false;

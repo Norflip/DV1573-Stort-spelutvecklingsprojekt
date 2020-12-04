@@ -54,11 +54,11 @@ void Scene::Update(const float& deltaTime)
 		}
 
 		// Press P to recompile shaders
-		if (KEY_PRESSED(P))
-		{
-			std::cout << "Compiling: " << std::endl;
-			resources->CompileShaders(renderer->GetDevice());
-		}
+		//if (KEY_PRESSED(P))
+		//{
+		//	//std::cout << "Compiling: " << std::endl;
+		//	resources->CompileShaders(renderer->GetDevice());
+		//}
 	
 
 }
@@ -71,7 +71,6 @@ void Scene::FixedUpdate(const float& fixedDeltaTime)
 		guiManager->GetGUIObject("loading")->SetVisible(true);
 		if (delayTimer > physicsDelay && !sceneSwitch)
 		{
-				player->AddFlag(ObjectFlag::ENABLED);
 			root->FixedUpdate(fixedDeltaTime);
 			//std::cout << GameClock::Instance().GetSeconds() << std::endl;
 			physics->FixedUpdate(fixedDeltaTime);
@@ -117,7 +116,7 @@ void Scene::PrintSceneHierarchy(Object* object, size_t level) const
 		indent += "L  ";
 	}
 
-	std::cout << (indent + object->GetName()) << std::endl;
+	//std::cout << (indent + object->GetName()) << std::endl;
 	
 	if (object->CountChildren() > 0)
 	{

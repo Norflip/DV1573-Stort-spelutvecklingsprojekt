@@ -1,5 +1,6 @@
 #include "stdafx.h"
 #include "Texture.h"
+#include "Engine.h"
 
 Texture::Texture() 
 	: srv(nullptr), buffer(nullptr), width(-1), height(-1), channels(-1)
@@ -106,8 +107,14 @@ Texture* Texture::LoadTexture(ID3D11Device* device, LPCWSTR textureFilepath)
 {
 	ID3D11ShaderResourceView* srv;
 	HRESULT hr = DirectX::CreateWICTextureFromFile(device, textureFilepath, nullptr, &srv);
-	assert(SUCCEEDED(hr));
-	return new Texture(srv);
+
+	if (SUCCEEDED(hr))
+		return new Texture(srv);
+	else
+	{
+		std::cout << "Missing texture: " << textureFilepath << std::endl;
+		return Engine::Instance->GetResources()->GetMissingTexture();	
+	}
 }
 
 float Texture::RandomFloat(float a, float b)

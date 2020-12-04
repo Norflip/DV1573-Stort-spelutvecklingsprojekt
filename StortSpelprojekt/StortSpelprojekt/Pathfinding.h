@@ -53,4 +53,5 @@ class Pathfinding : public Component
 		RigidBodyComponent* enemyRB;
 		EnemyStatsComp* enemyStatsComp;
 		float length;
+		Node* end;
 };
