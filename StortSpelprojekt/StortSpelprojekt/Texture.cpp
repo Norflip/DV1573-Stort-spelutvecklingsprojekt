@@ -1,5 +1,6 @@
 #include "stdafx.h"
 #include "Texture.h"
+#include "Engine.h"
 
 Texture::Texture() 
 	: srv(nullptr), buffer(nullptr), width(-1), height(-1), channels(-1)
@@ -104,10 +105,38 @@ Texture* Texture::CreateFromBuffer(unsigned char* buffer, size_t width, size_t h
 
 Texture* Texture::LoadTexture(ID3D11Device* device, LPCWSTR textureFilepath)
 {
-	ID3D11ShaderResourceView* srv;
-	HRESULT hr = DirectX::CreateWICTextureFromFile(device, textureFilepath, nullptr, &srv);
-	assert(SUCCEEDED(hr));
-	return new Texture(srv);
+	// vi kör på std::string då den har en intern hash funktion för unordered_map
+	std::wstring tmp(textureFilepath);
+	std::string key(tmp.begin(), tmp.end());
+
+	Texture* texture = Engine::Instance->GetResources()->GetMissingTexture();
+	auto found = mTextureCache.find(key);
+	if (found != mTextureCache.end())
+	{
+	//	std::cout << key << " from cache" << std::endl;
+		return found->second;
+	}
+	else
+	{
+		ID3D11ShaderResourceView* srv;
+		HRESULT hr = DirectX::CreateWICTextureFromFile(device, textureFilepath, nullptr, &srv);
+
+		if (SUCCEEDED(hr))
+		{
+			texture = new Texture(srv);
+		}
+		else
+		{
+			std::cout << "Missing texture: " << textureFilepath << std::endl;
+		}
+
+		if (texture != nullptr)
+		{
+			mTextureCache.insert({ key, texture });
+		}
+	}
+
+	return texture;
 }
 
 float Texture::RandomFloat(float a, float b)
