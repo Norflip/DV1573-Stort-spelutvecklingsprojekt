@@ -46,7 +46,7 @@ void ControllerComp::CheckGrounded()
 	//return result;
 }
 
-ControllerComp::ControllerComp(Object* cameraObject, Object* houseObject)
+ControllerComp::ControllerComp(Object* cameraObject, Object* houseObject, float sense)
 {
 	//this->fov = 60.f;
 	//this->fovTimer = 0.f;
@@ -54,6 +54,7 @@ ControllerComp::ControllerComp(Object* cameraObject, Object* houseObject)
 	this->velocity = 0.f;
 	this->velocityTimer = 0.f;
 	this->crouchTimer = 0.f;
+	this->sensitivity = sense;
 
 	this->freeCam = false;
 	this->showCursor = false;
@@ -73,6 +74,8 @@ ControllerComp::ControllerComp(Object* cameraObject, Object* houseObject)
 	this->inside = false;
 	this->inDoorRange = false;
 	this->first = true;
+
+	this->isMoving = MoveState::IDLE;
 }
 
 ControllerComp::~ControllerComp()
@@ -239,10 +242,10 @@ void ControllerComp::Update(const float& deltaTime)
 
 			float xPos = Input::Instance().GetMousePosRelative().x * deltaTime;
 			float yPos = Input::Instance().GetMousePosRelative().y * deltaTime;
-			cameraEuler.x += xPos;
-			cameraEuler.y += yPos;
-			cameraEuler2.x += xPos;
-			cameraEuler2.y += yPos;
+			cameraEuler.x += xPos * this->sensitivity;
+			cameraEuler.y += yPos * this->sensitivity;
+			//cameraEuler2.x += xPos;
+			//cameraEuler2.y += yPos;
 
 			cameraEuler.x = Math::Clamp(cameraEuler.x, -CLAMP_X, CLAMP_X);
 			if (cameraEuler.y >= CLAMP_Y)

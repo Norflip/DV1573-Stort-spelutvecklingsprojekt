@@ -98,16 +98,16 @@ void GameScene::InitializeObjects()
 	Object* playerObject = new Object("player", ObjectFlag::ENABLED);
 	Object* cameraObject = new Object("camera", ObjectFlag::ENABLED);
 	this->player = playerObject;
-	camera = cameraObject->AddComponent<CameraComponent>(window->GetWidth(), window->GetHeight(), 60.0f);
+	camera = cameraObject->AddComponent<CameraComponent>(window->GetWidth(), window->GetHeight(), 70.0f);
 
 
 	cameraObject->GetTransform().SetPosition(playerSpawnVec);
 	playerObject->GetTransform().SetPosition(playerSpawnVec);
-	playerObject->AddComponent<CapsuleColliderComponent>(0.4f, 1.5f, zero);
+	playerObject->AddComponent<CapsuleColliderComponent>(0.4f, 1.9f, zero);
 	playerObject->AddComponent<RigidBodyComponent>(50.f, FilterGroups::PLAYER, (FilterGroups::EVERYTHING), BodyType::DYNAMIC, true);
 
 	playerObject->AddComponent<PlayerComp>(renderer, camera, house, Engine::Instance->GetPhysics(), guiManager, 100.f, 2.f, 40.f, 50.f, 3.f);
-	playerObject->AddComponent<ControllerComp>(cameraObject, houseBaseObject);
+	playerObject->AddComponent<ControllerComp>(cameraObject, houseBaseObject, this->sensitivity);
 	playerObject->GetComponent<PlayerComp>()->SetInteriorPosition(this->interiorPosition.x, this->interiorPosition.y, this->interiorPosition.z);
 
 	Object::AddToHierarchy(playerObject, cameraObject);
@@ -568,11 +568,11 @@ void GameScene::OnActivate()
 			player->GetTransform().SetPosition(playerPos);
 			player->GetComponent<RigidBodyComponent>()->SetPosition(playerPos);
 		}
-		// NÅN MÅSTE FIXA DETTA. JAG PALLAR INTE
-		// NÅN MÅSTE FIXA DETTA. JAG PALLAR INTE
-		// NÅN MÅSTE FIXA DETTA. JAG PALLAR INTE 
-		// NÅN MÅSTE FIXA DETTA. JAG PALLAR INTE
-		// NÅN MÅSTE FIXA DETTA. JAG PALLAR INTE
+		// Nï¿½N Mï¿½STE FIXA DETTA. JAG PALLAR INTE
+		// Nï¿½N Mï¿½STE FIXA DETTA. JAG PALLAR INTE
+		// Nï¿½N Mï¿½STE FIXA DETTA. JAG PALLAR INTE 
+		// Nï¿½N Mï¿½STE FIXA DETTA. JAG PALLAR INTE
+		// Nï¿½N Mï¿½STE FIXA DETTA. JAG PALLAR INTE
 		else if (Engine::Instance->start)
 
 		{
@@ -698,6 +698,12 @@ void GameScene::Update(const float& deltaTime)
 
 	dx::XMFLOAT3 playerPos;
 	dx::XMStoreFloat3(&playerPos, player->GetTransform().GetWorldPosition());
+
+	if (Scene::sensitivity != player->GetComponent<ControllerComp>()->GetSensitivity())
+		player->GetComponent<ControllerComp>()->SetSensitivity(Scene::sensitivity);
+
+	//if (KEY_DOWN(X))
+	//	std::cout << "pos: " << playerPos.x << ", " << playerPos.y << ", " << playerPos.z << std::endl;
 
 	//if (KEY_DOWN(B))
 	//{
