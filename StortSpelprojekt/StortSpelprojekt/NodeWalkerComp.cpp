@@ -3,9 +3,9 @@
 
 NodeWalkerComp::NodeWalkerComp()
 {
-	this->speed = 3.0f;// 16.2f;
+	this->speed = 10.f;// 3.0f;// 16.2f;
 	this->currentNode = thePath.GetFirstPointIndex();
-	this->nextChosen = -1;
+	this->nextChosen = this->currentNode + 1;
 	this->nodeRadius = 0.3f;
 	this->canWalk = false;
 	this->isWalking = true;
@@ -69,9 +69,9 @@ void NodeWalkerComp::InitAnimation()
 void NodeWalkerComp::Reset()
 {
 	//std::cout<<this->currentNode<< std::endl;
-	this->currentNode = 0;
+	this->currentNode = thePath.GetFirstPointIndex();
 	//std::cout << this->nextChosen << std::endl;
-	this->nextChosen = 0;
+	this->nextChosen = this->currentNode + 1;
 	//std::cout << this->canWalk << std::endl;
 
 	//dx::XMFLOAT3 pos3 = { thePath.GetPoint(this->currentNode).x,HEIGHT, thePath.GetPoint(this->currentNode).z };
@@ -157,10 +157,13 @@ void NodeWalkerComp::Update(const float& deltaTime)
 				if (y < 0.0f || y > 30)
 				{
 					y = 0.01f;
-					dx::XMVECTOR forcedPos = GetOwner()->GetTransform().GetPosition();
-					forcedPos.m128_f32[1] = y;
-					rbComp->SetPosition(forcedPos);
-					GetOwner()->GetTransform().SetPosition(forcedPos);
+					dx::XMVECTOR forcedPosVec = GetOwner()->GetTransform().GetPosition();
+					dx::XMFLOAT3 forcedPos;
+					dx::XMStoreFloat3(&forcedPos, forcedPosVec);
+					forcedPos.y = y;
+					forcedPosVec = dx::XMLoadFloat3(&forcedPos);
+					rbComp->SetPosition(forcedPosVec);
+					GetOwner()->GetTransform().SetPosition(forcedPosVec);
 				}
 				//DirectX::XMFLOAT3 dir = { 0.f,0.f,0.f };
 				dx::XMFLOAT3 nextPoint = { thePath.GetPoint(this->currentNode).x, y, thePath.GetPoint(this->currentNode).z };
@@ -168,7 +171,7 @@ void NodeWalkerComp::Update(const float& deltaTime)
 				dx::XMStoreFloat(&this->length, dx::XMVector3Length(vdir));
 				if (this->length < nodeRadius)
 				{
-					StopAnim();
+					//StopAnim();
 					canWalk = false;
 					this->currentNode = this->nextChosen;
 				}
@@ -201,8 +204,8 @@ void NodeWalkerComp::Update(const float& deltaTime)
 				const int skip = 1;
 				if (this->nextChosen <= ICAST(this->thePath.GetLastPointIndex()))
 				{
-					this->nextChosen = currentNode + skip; //skip is 10
-					StartAnim();
+					this->nextChosen = currentNode + skip; //skip is 1
+					//StartAnim();
 					canWalk = true;
 				}
 			}
