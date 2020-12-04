@@ -507,7 +507,7 @@ void Renderer::DrawNewParticles(const Mesh* particleMesh, const Material* drawMa
 	part.material = drawMat;
 	part.streamoutMaterial = streamoutMat;
 	part.particles = particleData;
-	AddItem(part, true, true);
+	AddItem(part, true, true, false);
 }
 
 void Renderer::DrawImmediate(const Mesh* mesh, const Material* material, const CameraComponent* camera, const dx::XMMATRIX& model)
