@@ -103,6 +103,6 @@ public:
 	bool GetInside()const { return this->inside; }
 	void SetInside(bool state) { this->inside = state; }
 
-	void SetSensitivity(const float sens) { this->sensitivity = sens; }
+	void SetSensitivity(const float & sens) { this->sensitivity = sens; }
 	float GetSensitivity()const { return this->sensitivity; }
 };
