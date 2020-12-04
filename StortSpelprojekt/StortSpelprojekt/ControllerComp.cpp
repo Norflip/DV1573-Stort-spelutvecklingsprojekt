@@ -1,6 +1,7 @@
 #include "stdafx.h"
 #include "ControllerComp.h"
 #include "Engine.h"
+#include "GUICompass.h"
 
 void ControllerComp::CheckGrounded()
 {
@@ -10,17 +11,18 @@ void ControllerComp::CheckGrounded()
 	Ray ray(origin, DOWN_VEC);
 	RayHit hitTerrain;
 	RayHit hitProps;
+	RayHit hitPuzzle;
 
 	//TERRAIN or default depending on if u can jump from on top of objects
-	float distance = 1.45f;
+	float distance = 1.60f;
 	Physics* phy = Engine::Instance->GetPhysics();
 
 	phy->RaytestSingle(ray, distance, hitTerrain, FilterGroups::TERRAIN);
 	phy->RaytestSingle(ray, distance, hitProps, FilterGroups::PROPS);
-	
-	
+	phy->RaytestSingle(ray, distance, hitPuzzle, FilterGroups::PUZZLE);
+
 	this->isGrounded = false;
-	if (hitTerrain.object != nullptr || hitProps.object != nullptr) //(hitProps.object != nullptr && hitProps.object->GetName() == "HouseInterior"))// != nullptr )//&& hitProps.object->GetName() == "houseBase"))
+	if (hitTerrain.object != nullptr || hitProps.object != nullptr || hitPuzzle.object != nullptr)// && hitProps.object->GetName() == "HouseInterior") || hitPuzzle.object != nullptr)// != nullptr )//&& hitProps.object->GetName() == "houseBase"))
 	{
 		//this->houseVelocity = { 0.f,0.f,0.f };
 		/*if (hitProps.object != nullptr && hitProps.object->GetName() == "houseBase")
@@ -39,7 +41,7 @@ void ControllerComp::CheckGrounded()
 	}
 	
 	//else
-	//	DShape::DrawLine(ray.origin, ray.GetPoint(distance), { 1,0,0 });
+		//DShape::DrawLine(ray.origin, ray.GetPoint(distance), { 1,0,0 });
 	
 	//return result;
 }
@@ -121,35 +123,36 @@ void ControllerComp::Update(const float& deltaTime)
 	this->velocityTimer += deltaTime; 
 	this->crouchTimer += deltaTime;
 
-	if (KEY_DOWN(D0))
-	{
-		this->cameraObject->GetTransform().SetRotation(dx::XMLoadFloat4(&RESET_ROT));
-		this->cameraOffset = { 0.f,0.f,0.f };
-		this->cameraEuler = { 0.f, 0.f, 0.f };
-		this->jumpDir = { 0.f, 0.f, 0.f };
+	//if (KEY_DOWN(D0))
+	//{
+	//	this->cameraObject->GetTransform().SetRotation(dx::XMLoadFloat4(&RESET_ROT));
+	//	this->cameraOffset = { 0.f,0.f,0.f };
+	//	this->cameraEuler = { 0.f, 0.f, 0.f };
+	//	this->jumpDir = { 0.f, 0.f, 0.f };
 
-		rbComp->SetPosition(dx::XMLoadFloat3(&RESET_POS));
-		rbComp->SetLinearVelocity({ 0.f, 0.f, 0.f });
-	}
+	//	rbComp->SetPosition(dx::XMLoadFloat3(&RESET_POS));
+	//	rbComp->SetLinearVelocity({ 0.f, 0.f, 0.f });
+	//}
 
-	if (KEY_DOWN(O))
-	{
-		this->showCursor = !this->showCursor;
-		ShowCursor(this->showCursor);
-	}
+	//if (KEY_DOWN(O))
+	//{
+	//	this->showCursor = !this->showCursor;
+	//	ShowCursor(this->showCursor);
+	//}
 
-	if (KEY_DOWN(V))
-	{
-		this->freeCam = !this->freeCam;
-		
-		rbComp->SetLinearVelocity({ 0.f, 0.f, 0.f });
-		rbComp->EnableGravity(!this->freeCam);
-	}
+	//if (KEY_DOWN(V))
+	//{
+	//	this->freeCam = !this->freeCam;
+	//	
+	//	rbComp->SetLinearVelocity({ 0.f, 0.f, 0.f });
+	//	rbComp->EnableGravity(!this->freeCam);
+	//}
 
 	if (KEY_DOWN(F))
 	{
 		this->canRotate = !this->canRotate;
 		rbComp->SetLinearVelocity({ 0.f, 0.f, 0.f });
+		//rbComp->EnableGravity(!this->canRotate);
 		ShowCursor(!this->canRotate);
 		if (this->canRotate)
 			Input::Instance().SetMouseMode(dx::Mouse::MODE_RELATIVE);
@@ -169,13 +172,23 @@ void ControllerComp::Update(const float& deltaTime)
 	if (houseWalkComp->GetIsWalking())
 	{
 		// If next to the house
-		if (length > playerComp->GetRadius() || length < 7.0f)
+		if (length > playerComp->GetRadius() || length < SIT_RADIUS)
+		{
+			static_cast<GUICompass*>(playerComp->GetGuiManager()->GetGUIObject("compass"))->GetBarSprite()->SetActivated();
+
 			houseWalkComp->Stop();
+		}
+			
 	}
 	else if (!houseWalkComp->GetIsWalking())
 	{
-		if (length < playerComp->GetRadius() && length > 7.0f && !inside)
+		if (length < playerComp->GetRadius() && length > SIT_RADIUS && !inside)
+		{
 			houseWalkComp->Start();
+
+			static_cast<GUICompass*>(playerComp->GetGuiManager()->GetGUIObject("compass"))->GetBarSprite()->SetActivated(false);
+		}
+			
 
 		if (RMOUSE_DOWN)
 		{
@@ -293,9 +306,12 @@ void ControllerComp::Update(const float& deltaTime)
 				direction = cameraObject->GetTransform().TransformDirection(direction);
 				direction = dx::XMVectorScale(direction, RUN_VELOCITY);
 				dx::XMStoreFloat3(&dir, direction);
-				dx::XMFLOAT3 vel = rbComp->GetLinearVelocity();
+
+				this->GetOwner()->GetTransform().Translate(dir.x* deltaTime, dir.y*deltaTime, dir.z*deltaTime);
+				this->rbComp->SetPosition(GetOwner()->GetTransform().GetPosition());
+				//dx::XMFLOAT3 vel = rbComp->GetLinearVelocity();
 				cameraObject->GetTransform().SetPosition(rbComp->GetPosition());
-				rbComp->SetLinearVelocity({ dir.x , dir.y , dir.z });
+				//rbComp->SetLinearVelocity({ dir.x , dir.y , dir.z });
 				dx::XMVECTOR capsule = dx::XMLoadFloat4(&RESET_ROT);
 				rbComp->SetRotation(capsule);
 				//phy.MutexUnlock();
@@ -340,7 +356,7 @@ void ControllerComp::Update(const float& deltaTime)
 					else if (this->velocity > WALK_VELOCITY) //is more decrease
 						acceleration = -WALK_ACCELERATION;
 
-					// Kan lägga in ljud för att gå på plankor här med, ha en bool för "onHouse" t.ex.
+					// Kan lï¿½gga in ljud fï¿½r att gï¿½ pï¿½ plankor hï¿½r med, ha en bool fï¿½r "onHouse" t.ex.
 					if (isGrounded)
 					{
 						if (!inside)
@@ -448,8 +464,11 @@ void ControllerComp::Update(const float& deltaTime)
 		{
 			//phy.MutexLock();
 			//	Input::Instance().FreeMouse();
+			//PAUSE??
 
-			rbComp->SetLinearVelocity({ 0.f, 0.f, 0.f });
+
+			dx::XMFLOAT3 vel = rbComp->GetLinearVelocity();
+			rbComp->SetLinearVelocity({ 0.f, vel.y, 0.f });
 			dx::XMVECTOR capsule = dx::XMLoadFloat4(&RESET_ROT);
 			rbComp->SetRotation(capsule);
 			//phy.MutexUnlock();

@@ -10,6 +10,16 @@ RigidBodyComponent::RigidBodyComponent(float mass, FilterGroups group, FilterGro
 
 RigidBodyComponent::~RigidBodyComponent()
 {
+	if (body != nullptr)
+	{
+		rp::Transform tr;
+		tr.setPosition(rp::Vector3(0, -5000, 0));
+		body->setTransform(tr);
+
+		physics->UnregisterRigidBody(this);
+		physics->GetWorld()->destroyRigidBody(body);
+		body = nullptr;
+	}
 }
 
 void RigidBodyComponent::Update(const float& deltaTime)
@@ -25,7 +35,9 @@ void RigidBodyComponent::Update(const float& deltaTime)
 	if (bodyPosition.y < -1000)
 	{
 		bodyPosition.y = -1000;
-		std::cout << "BODY OUT OF BOUNDS (y < -1000)" << std::endl;
+		//std::cout << "BODY OUT OF BOUNDS (y < -1000)" << std::endl;
+		//std::cout << "Owner: " << GetOwner()->GetName() << std::endl;
+
 		body->enableGravity(false);
 		GetOwner()->RemoveFlag(ObjectFlag::ENABLED);
 		return;
@@ -97,12 +109,19 @@ dx::XMVECTOR RigidBodyComponent::GetRotation() const
 
 void RigidBodyComponent::Release()
 {
-	for (auto i : collidersList)
+}
+
+void RigidBodyComponent::RecieveMsg(const int& type, const std::string& msg, Object* sender, void* data)
+{
+	if (type == (int)MessageType::SET_FLAG && msg == std::to_string((int)ObjectFlag::ENABLED))
 	{
-		body->removeCollider(i);
+		body->setIsActive(true);
 	}
 
-	physics->GetWorld()->destroyRigidBody(body);
+	if (type == (int)MessageType::REM_FLAG && msg == std::to_string((int)ObjectFlag::ENABLED))
+	{
+		body->setIsActive(false);
+	}
 }
 
 rp::Transform RigidBodyComponent::ConvertToBtTransform(const Transform& transform) const
@@ -135,7 +154,7 @@ void RigidBodyComponent::AddCollidersToBody(Object* obj, rp::RigidBody* body)
 		}
 	}
 
-//	assert(collidersList.size() > 0);
+	//	assert(collidersList.size() > 0);
 	//std::cout << (GetOwner()->GetName() + " has " + std::to_string(colliders.size()) + " colliders\n");
 
 	//CHILDREN
@@ -184,13 +203,13 @@ void RigidBodyComponent::OnOwnerFlagChanged(ObjectFlag old, ObjectFlag newFlag)
 		body->setIsActive(enabled);
 }
 
-void RigidBodyComponent::m_OnCollision(const CollisionInfo& collision)
+void RigidBodyComponent::m_OnCollision(CollisionInfo& collision)
 {
 	for (auto it = callbacks.begin(); it < callbacks.end(); it++)
-		(*it)(collision);
+		((*it)(collision));
 }
 
-void RigidBodyComponent::AddCollisionCallback(std::function<void(CollisionInfo)> callback)
+void RigidBodyComponent::AddCollisionCallback(std::function<void(CollisionInfo&)> callback)
 {
 	callbacks.push_back(callback);
 }

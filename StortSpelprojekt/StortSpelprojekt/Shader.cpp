@@ -62,6 +62,13 @@ void Shader::SetGeometryShader(std::string path, LPCSTR entry)
 	shaderFlags |= ShaderBindFlag::GEOMETRY;
 }
 
+void Shader::SetSOGeometryShader(std::string path, LPCSTR entry)
+{
+	this->geometryPath = path;
+	this->geometryEntry = entry;
+	shaderFlags |= ShaderBindFlag::SOGEOMETRY;
+}
+
 void Shader::SetInputLayoutStructure(size_t arraySize, D3D11_INPUT_ELEMENT_DESC* inputLayoutDesc)
 {
 	this->inputLayoutDescription = inputLayoutDesc;
@@ -75,6 +82,7 @@ void Shader::Compile(ID3D11Device* device)
 	CompileVS(device);
 	CompilePS(device);
 	CompileGS(device);
+	CompileSOGS(device);
 	CompileHS(device);
 	CompileDS(device);
 }
@@ -97,6 +105,11 @@ void Shader::BindToContext(ID3D11DeviceContext* context) const
 	}
 
 	if ((flag & (int)ShaderBindFlag::GEOMETRY) != 0)
+	{
+		context->GSSetShader(geometryShader, 0, 0);
+	}
+
+	if ((flag & (int)ShaderBindFlag::SOGEOMETRY) != 0)
 	{
 		context->GSSetShader(geometryShader, 0, 0);
 	}
@@ -263,6 +276,68 @@ void Shader::CompileGS(ID3D11Device* device)
 	}
 }
 
+void Shader::CompileSOGS(ID3D11Device* device)
+{
+	if (((int)shaderFlags & (int)ShaderBindFlag::SOGEOMETRY) != 0)
+	{
+
+		if (geometryShader != nullptr)
+		{
+			geometryShader->Release();
+			//delete geometryShader;
+			//geometryShader = nullptr;
+		}
+
+		ID3DBlob* errorBlob = nullptr;
+		ID3DBlob* GSBlob = nullptr;
+
+		// Convert the string to a wstring locally, without changing the content
+		std::wstring wPath = std::wstring(geometryPath.begin(), geometryPath.end());
+
+		const D3D_SHADER_MACRO defines[] =
+		{
+#if _DEBUG
+			"_DEBUG", "1",
+#else
+			"_DEBUG", "0",
+#endif
+			NULL, NULL
+		};
+
+		HRESULT GSCompileResult = D3DCompileFromFile
+		(
+			wPath.c_str(),
+			defines,
+			D3D_COMPILE_STANDARD_FILE_INCLUDE,
+			geometryEntry,
+			"gs_5_0",
+			shaderCompilationFlag,
+			0,
+			&GSBlob,
+			&errorBlob
+		);
+
+		ASSERT_SHADER(GSCompileResult, errorBlob, wPath);
+
+		//HRESULT GSCreateResult = device->CreateGeometryShader(GSBlob->GetBufferPointer(), GSBlob->GetBufferSize(), nullptr, &this->geometryShader);
+		//assert(SUCCEEDED(GSCreateResult));
+
+		D3D11_SO_DECLARATION_ENTRY soDeclaration[] = {
+
+			{0,"POSITION", 0, 0,3,0},
+			{0,"VELOCITY", 0, 0, 3, 0},
+			{0,"SIZE", 0, 0, 2, 0},
+			{0,"AGE", 0, 0, 1, 0},
+			{0,"TYPE", 0, 0, 1, 0}
+		};
+		
+		UINT stride = sizeof(Mesh::Particle);
+		HRESULT hr = device->CreateGeometryShaderWithStreamOutput(GSBlob->GetBufferPointer(), GSBlob->GetBufferSize(), 
+			soDeclaration, _countof(soDeclaration), &stride, 1, 0, NULL, &geometryShader);
+		assert(SUCCEEDED(hr));
+	}
+}
+
 void Shader::CompileHS(ID3D11Device* device)
 {
 	if (((int)shaderFlags & (int)ShaderBindFlag::HULL) != 0)
@@ -420,5 +495,8 @@ void Shader::Unbind(ID3D11DeviceContext* context) const
 
 	if ((flag & (int)ShaderBindFlag::COMPUTE) != 0)
 		context->CSSetShader(nullptr, 0, 0);
+
+	if ((flag & (int)ShaderBindFlag::SOGEOMETRY) != 0)
+		context->GSSetShader(nullptr, 0, 0);
 
 }

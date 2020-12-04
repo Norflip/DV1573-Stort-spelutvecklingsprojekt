@@ -15,6 +15,8 @@ private:
 
 	Resource* GetResource(std::string key);
 
+	Texture* missingTexture;
+
 public:
 	ResourceManager();
 	virtual ~ResourceManager();
@@ -36,6 +38,8 @@ public:
 
 	// Initialize resources, will read its private functions
 	void InitializeResources(ID3D11Device* device);
+
+	Texture* GetMissingTexture() const { return missingTexture; }
 
 	// Recompile all the shaders inside the shaderResources
 	void CompileShaders(ID3D11Device* device);

@@ -57,16 +57,11 @@ void Physics::RegisterRigidBody(RigidBodyComponent* rigidBodyComp)
 	rigidBodyComp->m_InitializeBody(this);
 }
 
-void Physics::UnregisterRigidBody(Object* object)
-{
-	auto find = bodyMap.find(object->GetID());
-	if (find != bodyMap.end())
-		bodyMap.erase(find);
-}
-
 void Physics::UnregisterRigidBody(RigidBodyComponent* rigidBodyComp)
 {
-	UnregisterRigidBody(rigidBodyComp->GetOwner());
+	auto find = bodyMap.find(rigidBodyComp->GetOwner()->GetID());
+	if (find != bodyMap.end())
+		bodyMap.erase(find);
 }
 
 void Physics::FixedUpdate(const float& fixedDeltaTime)

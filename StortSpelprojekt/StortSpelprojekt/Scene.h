@@ -1,6 +1,5 @@
 #pragma once
 
-
 //THIS MESS NEEDS TO DIE A HORRIBLE DEATH
 #include "Object.h"
 #include "HeightMap.h"
@@ -25,9 +24,15 @@
 #include "ObjectPooler.h"
 #include "WeaponComponent.h"
 #include "EnemyManager.h"
+#include "Pathfinding.h"
 #include <wchar.h>
 #include "PlayerAnimHandlerComp.h"
 #include "HousePartsComponent.h"
+
+#include "ParticleComponent.h"
+
+#include "Particlesys.h"
+
 
 class GUIFont;
 class SpriteRenderPass;
@@ -53,6 +58,8 @@ public:
 	virtual void FixedUpdate(const float& fixedDeltaTime);
 	virtual void Render();
 	
+	virtual void OnIMGUIFrame() {};
+
 	// Add object to the scene hierarchy
 	void AddObjectToRoot(Object* object);
 	Object* GetRoot() const { return this->root; }
@@ -68,7 +75,11 @@ protected:
 	int currentframe = 0;
 	int frameToDraw = 1;
 	int lastFrame = 1;
+	float physicsDelay = 0.f;
+	float loadScreenDelay = 2.0f;
+	float delayTimer = 0;
 	wchar_t iconText[10];
+
 	Object* root;
 	Renderer* renderer;
 	ResourceManager* resources;
@@ -77,12 +88,16 @@ protected:
 	
 	std::queue<Object*> removeQueue;
 	CameraComponent* camera;
-	
+	bool firstFrame;
+	bool sceneSwitch = false;
 	GameClock clock;
 
 	Input& input;
 	Object* player;
 	EnemyManager* enemyManager;
+
+	ObjectPooler* pooler;
 	GUIManager* guiManager;		
 	std::string debugName;
+
 };

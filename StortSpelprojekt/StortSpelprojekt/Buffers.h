@@ -83,26 +83,6 @@ struct cb_ScreenToViewParams
 	
 };
 
-//ALIGN16
-//struct cb_Lights
-//{
-//	s_PointLight pointLights[POINT_LIGHT_COUNT];
-//	int nrOfPointLights;
-//	dx::XMFLOAT3 sunDirection;
-//	float sunIntensity;
-//	dx::XMFLOAT3 pad;
-//};
-
-//ALIGN16
-//struct cb_Lights
-//{
-//	s_Light lights[LIGHT_COUNT];
-//	int nrOfLights;
-//	dx::XMFLOAT3 sunDirection; //
-//	float sunIntensity; //
-//	dx::XMFLOAT3 pad;
-//};
-
 ALIGN16
 struct cb_Scene
 {
@@ -135,6 +115,33 @@ struct cb_grass
 	float grassWidth;
 	float grassRadius;
 	float grassDisplacement;
+};
+
+
+ALIGN16
+struct cb_particle
+{
+	dx::XMFLOAT4 particleColor;
+	dx::XMFLOAT3 eyePos;
+	float padding;
+
+	dx::XMFLOAT3 emitPos;
+	float padding2;
+
+	dx::XMFLOAT3 emitDir;
+	float gameTime;
+
+	float ageTimeStep;
+
+	float particleMaxAge;
+	float padding3[2];
+
+	DirectX::XMMATRIX viewProjection;
+
+	int usingTexture;
+	dx::XMFLOAT3 particleSpreadMulti;
+
+	int particlesPerSecond;
 };
 
 

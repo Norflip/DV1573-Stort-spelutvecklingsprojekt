@@ -11,7 +11,7 @@
 #include "DepthPass.h"
 #include <time.h>
 
-
+#include "Particlesys.h"
 
 inline int GetBatchID(const Material* material, const Mesh* mesh)
 {
@@ -42,14 +42,18 @@ class Renderer
 			Instanced,
 			Skeleton,
 			Grass,
-			Particles
+			Particles,
+			NewParticles
 		};
 
 		const Mesh* mesh;
 		const Material* material;
-
-		Type type;
+		const Material* streamoutMaterial;	// New
 		
+		cb_particle* particles; // new
+
+		Type type;		
+
 		std::vector<dx::XMFLOAT4X4>* bones;
 		dx::XMMATRIX world;
 		
@@ -66,8 +70,12 @@ public:
 	void Initialize(Window* window);
 
 	void DrawQueueToTarget(RenderQueue& queue, CameraComponent* camera);
+	void RenderFrame(CameraComponent* camera, float time, float distance = 1.f);
+
+	//put renderframe at line 73 at line 78 if this does not work
 	void DrawEmissionTarget(RenderQueue& queue, CameraComponent* camera);
 	void RenderFrame(CameraComponent* camera, float time, float distance = 0.f);
+
 	void RenderFrame(CameraComponent* camera, float time, float distance, RenderTexture& target, bool drawGUI = false, bool applyRenderPasses = true);
 
 	void AddRenderPass(RenderPass*);
@@ -77,6 +85,7 @@ public:
 	void DrawSkeleton(const Mesh* mesh, const Material* material, const dx::XMMATRIX& model, std::vector<dx::XMFLOAT4X4>& bones);
 	void DrawGrass(const Mesh* mesh, const Material* material, const dx::XMMATRIX& model);
 	void DrawParticles(const Mesh* mesh, const Material* material, const dx::XMMATRIX& model);
+	void DrawNewParticles(const Mesh* particleMesh, const Material* drawMat, const Material* streamoutMat, cb_particle* particleData);
 	void DrawImmediate(const Mesh* mesh, const Material* material, const CameraComponent* camera, const dx::XMMATRIX& model);
 	void DrawEmissive(const Mesh* mesh, const Material* material, const dx::XMMATRIX& model);
 	
@@ -84,7 +93,7 @@ public:
 
 	ID3D11Device* GetDevice() const { return this->device; }
 	ID3D11DeviceContext* GetContext() const { return this->context; }
-	Window* GetOutputWindow() const { return this->outputWindow; }
+	Window* GetOutputWindow() const { return this->window; }
 
 	void DrawScreenQuad(const Material* Material);
 
@@ -98,10 +107,19 @@ public:
 
 	void RemoveRenderPass(RenderPass*);
 
-	void InitForwardPlus(CameraComponent* camera, Window* window, Shader& forwardPlusShader);
+	void InitForwardPlus(VirtualCamera* camera);
 	void UpdateForwardPlus(CameraComponent* camera);
 	//std::vector<UINT>& cullLightsOnCPU();
 	void SetIdAndColor(int id, float color);
+
+	void ListParticle(Particlesys* psys) { this->particleList.push_back(psys); }
+	std::vector<Particlesys*> GetParticleList() { return this->particleList; }
+
+	/* new stuffy */
+	void EnableAlphaBlending();
+	void DisableAlphaBlending();	
+	ID3D11DepthStencilState* GetDepthEnable() { return this->dss_On; }
+	ID3D11DepthStencilState* GetDepthDisable() { return this->dss_Off; }
 
 	ALIGN16_ALLOC;
 
@@ -113,6 +131,7 @@ private:
 	void DrawRenderItemSkeleton(const RenderItem& item, CameraComponent* camera);
 	void DrawRenderItemGrass(const RenderItem& item, CameraComponent* camera);
 	void DrawRenderItemParticles(const RenderItem& item, CameraComponent* camera);
+	void DrawRenderItemNewParticles(const RenderItem& item, CameraComponent* camera);
 	void DrawBatch(const Batch& batch, CameraComponent* camera);
 
 	void SetObjectBufferValues(const CameraComponent* camera, dx::XMMATRIX world, bool transpose);
@@ -130,7 +149,10 @@ private:
 	
 	Material* screenQuadMaterial;
 	Mesh* screenQuadMesh;
+	Shader forwardPlusShader;
+	bool forwardPlusInitialized;
 
+	ConstantBuffer<cb_particle> particleBuffer;
 	ConstantBuffer<cb_Object> objectBuffer;
 	ConstantBuffer<cb_Scene> sceneBuffer;
 	ConstantBuffer<cb_Material> materialBuffer;
@@ -179,7 +201,7 @@ private:
 	ID3D11Buffer* skeleton_srvbuffer;
 	ID3D11ShaderResourceView* skeleton_srv;
 
-	Window* outputWindow;
+	Window* window;
 
 	std::unordered_map<int, Batch> opaqueBatches;
 	std::unordered_map<int, Batch> transparentBatches;
@@ -196,8 +218,9 @@ private:
 	//blendstate
 	ID3D11BlendState* blendStateOn;
 	ID3D11BlendState* blendStateOff;
+	
+	ID3D11DepthStencilState* dss;	
 
-	ID3D11DepthStencilState* dss;
 	DepthPass depthPass;
 	const float BLENDSTATEMASK[4] = { 0.0f };
 	
@@ -215,4 +238,13 @@ private:
 	ID3D11RasterizerState* rasterizerStateCullBack;
 	ID3D11RasterizerState* rasterizerStateCullNone;
 	ID3D11RasterizerState* rasterizerStateCCWO;
+
+
+	/* new stuff */
+	bool firstRun;
+	std::vector<Particlesys*> particleList;
+	ID3D11BlendState* particleBlendOn;
+	ID3D11BlendState* particleBlendOff;
+	ID3D11DepthStencilState* dss_Off;
+	ID3D11DepthStencilState* dss_On;
 };

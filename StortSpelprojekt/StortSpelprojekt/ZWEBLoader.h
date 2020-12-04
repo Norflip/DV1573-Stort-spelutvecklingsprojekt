@@ -7,7 +7,7 @@ enum ZWEBLoadType
 	SkeletonAnimation,
 };
 
-namespace ZWEBLoader //TO BE ADDED: FUNCTION TO LOAD LIGHTS
+namespace ZWEBLoader 
 {
 	inline SkeletonAni LoadSkeletonOnly( std::string animationPath, std::map<std::string, unsigned int>& boneIDMap,
 		bool parentAnimation)

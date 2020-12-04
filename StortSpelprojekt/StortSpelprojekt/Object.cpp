@@ -8,6 +8,7 @@ size_t Object::idCounter = 0;
 Object::Object(const std::string& name, ObjectFlag flag) : name(name), flags(flag), transform(this), id(idCounter++), parent(nullptr)
 {
 	assert(!name.empty());
+	this->enable = true;
 }
 
 Object::~Object()
@@ -41,6 +42,11 @@ void Object::Update(const float& deltaTime)
 
 		for (auto i = children.begin(); i < children.end(); i++)
 			(*i)->Update(deltaTime);
+	}
+
+	if (!enable && HasFlag(ObjectFlag::ENABLED))
+	{
+		RemoveFlag(ObjectFlag::ENABLED);
 	}
 }
 

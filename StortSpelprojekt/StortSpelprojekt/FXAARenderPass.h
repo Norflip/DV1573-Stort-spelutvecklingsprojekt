@@ -12,6 +12,10 @@ public:
 	{
 		Shader* shader = resources->GetShaderResource("FXAAShader");
 		material = new Material(shader);
+
+		//auto sampler = DXHelper::CreateSampler(D3D11_FILTER_MAXIMUM_ANISOTROPIC , D3D11_TEXTURE_ADDRESS_WRAP, device);
+		auto sampler = DXHelper::CreateSampler(D3D11_FILTER_ANISOTROPIC, D3D11_TEXTURE_ADDRESS_WRAP, device);
+		material->SetSampler(sampler, 0, ShaderBindFlag::PIXEL);
 	}
 
 	void Pass(Renderer* renderer, CameraComponent* camera, RenderTexture& inTexture, RenderTexture& outTexture) override

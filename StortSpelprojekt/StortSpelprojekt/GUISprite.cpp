@@ -19,7 +19,7 @@ GUISprite::GUISprite(Renderer& renderer , std::string path, float xPos, float yP
 	this->group = group;
 	this->rotation = 0.0f;
 	this->baseColor = dx::XMVectorSet(1.f, 1.f, 1.f, 1.f);
-	this->activeColor = dx::XMVectorSet(1.0f, 0.0f, 0.0f, 1.0f); // default bluetinted
+	this->activeColor = dx::XMVectorSet(1.0f, 0.0f, 0.0f, 1.0f); // default red
 	this->origin = dx::XMVectorSet(1.f, 1.f, 1.f, 1.f);
 	this->SRV = nullptr;
 	this->xPos = renderer.GetOutputWindow()->GetWidth()-xPos;
@@ -142,10 +142,12 @@ void GUISprite::SetScale(float x, float y)
 
 void GUISprite::SetScaleBars(float yValue)
 {
-	if (yScale < 1.0f)
+	if (yScale <= 1.0f)
 		this->yScale = yValue;
-	else
+	else if (yScale > 1.0f)
 		yScale = 1.0f;
+	/*else
+		yScale = 1.0f;*/
 
 	this->scale = dx::XMVectorSet(this->xScale, this->yScale, 0, 0);
 }
@@ -188,8 +190,8 @@ bool GUISprite::IsMouseOver()
 
 void GUISprite::Update()
 {
-	if (clickFunc == ClickFunction::Clickable && IsMouseOver() && Input::Instance().GetLeftMouseKeyDown())
-		std::cout << "Do function" << std::endl;
+	//if (clickFunc == ClickFunction::Clickable && IsMouseOver() && Input::Instance().GetLeftMouseKeyDown())
+		//std::cout << "Do function" << std::endl;
 }
 
 void GUISprite::SetPos(float xPos, float yPos, DrawDirection dir)

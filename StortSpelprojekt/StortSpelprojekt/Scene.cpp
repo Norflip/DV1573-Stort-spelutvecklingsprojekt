@@ -31,40 +31,60 @@ void Scene::SetDepedencies(ResourceManager* resources, Renderer* renderer, Physi
 void Scene::Update(const float& deltaTime)
 {
 
-	while (!removeQueue.empty())
-	{
-		Object* obj = removeQueue.front();
-		removeQueue.pop();
-		Object::RemoveFromHierarchy(obj);
-		delete obj;
-	}
+		while (!removeQueue.empty())
+		{
+			Object* obj = removeQueue.front();
+			removeQueue.pop();
+			Object::RemoveFromHierarchy(obj);
+			delete obj;
+		}
 
-	clock.Update();
-	input.UpdateInputs();
-	root->GetTransform().SetChanged(true);
-	root->Update(deltaTime);
-	GameClock::Instance().Update();
+		clock.Update();
 
-	//renderer->UpdateTime((float)clock.GetSeconds());
+		input.UpdateInputs();
+		root->GetTransform().SetChanged(true);
+		root->Update(deltaTime);
+		GameClock::Instance().Update();
 
-	if (clock.GetSeconds() > 60)
-	{
-		clock.Restart();
-	}
+		//renderer->UpdateTime((float)clock.GetSeconds());
 
-	// Press P to recompile shaders
-	if (KEY_PRESSED(P))
-	{
-		std::cout << "Compiling: " << std::endl;
-		resources->CompileShaders(renderer->GetDevice());
-	}
+		if (clock.GetSeconds() > 60)
+		{
+			clock.Restart();
+		}
+
+		// Press P to recompile shaders
+		//if (KEY_PRESSED(P))
+		//{
+		//	//std::cout << "Compiling: " << std::endl;
+		//	resources->CompileShaders(renderer->GetDevice());
+		//}
+	
 
 }
 
 void Scene::FixedUpdate(const float& fixedDeltaTime)
 {
-	root->FixedUpdate(fixedDeltaTime);
-	physics->FixedUpdate(fixedDeltaTime);
+	// Delays gamestart so the physics can load properly
+	if (firstFrame)
+	{		
+		guiManager->GetGUIObject("loading")->SetVisible(true);
+		if (delayTimer > physicsDelay && !sceneSwitch)
+		{
+			root->FixedUpdate(fixedDeltaTime);
+			//std::cout << GameClock::Instance().GetSeconds() << std::endl;
+			physics->FixedUpdate(fixedDeltaTime);
+			
+			if (delayTimer > (physicsDelay + loadScreenDelay))
+			{
+				player->AddFlag(ObjectFlag::ENABLED);
+				guiManager->GetGUIObject("loading")->SetVisible(false);
+				
+			}
+		}
+		delayTimer += GameClock::Instance().GetFixedFrameTime();
+	}
+	
 }
 
 void Scene::Render()
@@ -96,7 +116,7 @@ void Scene::PrintSceneHierarchy(Object* object, size_t level) const
 		indent += "L  ";
 	}
 
-	std::cout << (indent + object->GetName()) << std::endl;
+	//std::cout << (indent + object->GetName()) << std::endl;
 	
 	if (object->CountChildren() > 0)
 	{

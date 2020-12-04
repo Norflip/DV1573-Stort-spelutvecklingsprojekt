@@ -56,9 +56,9 @@ public:
 	void SetStartPosition(dx::XMVECTOR pos);
 	dx::XMFLOAT3 GetStartPosition() { return this->startPos; }
 	bool GetIsReading() { return this->reading; }
+	GUIManager* GetGuiManager() { return this->guiMan; }
 
 private:
-	//det h�r skriver en kommentar till hold objekt
 	void HoldObject();
 	void PickUpObject();
 	void DropObject();
@@ -108,5 +108,9 @@ private:
 	dx::XMFLOAT3 interiorPosition;
 	dx::XMFLOAT3 startPos;
 		 
+
+	EnemyStatsComp* stats;
+	bool enemyHit;
+	float attackTimer;
 };
 

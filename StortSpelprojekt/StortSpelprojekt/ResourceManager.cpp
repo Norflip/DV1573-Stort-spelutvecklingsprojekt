@@ -17,6 +17,8 @@ ResourceManager::~ResourceManager()
 		delete i.second;
 	}
 
+	delete missingTexture;
+
 	resources.clear();
 	shaderResources.clear();
 }
@@ -81,6 +83,12 @@ void ResourceManager::RemoveResource(std::string key)
 
 void ResourceManager::InitializeResources(ID3D11Device* device)
 {
+	unsigned char* pixel = new unsigned char[4];
+	pixel[0] = pixel[2] = pixel[4] = 255;
+	pixel[1] = 0;
+
+	missingTexture = Texture::CreateFromBuffer(pixel, 1, 1, 4, DXGI_FORMAT_R8G8B8A8_UNORM, device);
+
 	ReadTextures(device);
 	ReadShaders(device);
 	ReadObjects(device);
@@ -160,17 +168,25 @@ void ResourceManager::ReadObjects(ID3D11Device* device)
 			// Ugly presumption that we load a Tree at some point
 			else if (name == "Tree")
 			{
-				std::vector<Material*> materials = ZWEBLoader::LoadMaterials(filepath, GetShaderResource(shader), device);
-				std::vector<Mesh*> meshes = ZWEBLoader::LoadMeshes(ZWEBLoadType::NoAnimation, filepath, device);
+				// Load instanced tree models
+				std::vector<Material*> instancedmaterials = ZWEBLoader::LoadMaterials(filepath, GetShaderResource(shader), device);
+				std::vector<Mesh*> instancedmeshes = ZWEBLoader::LoadMeshes(ZWEBLoadType::NoAnimation, filepath, device);
+				instancedmaterials[0]->SetSampler(sampler, 0, ShaderBindFlag::PIXEL);
+				instancedmaterials[1]->SetSampler(sampler, 0, ShaderBindFlag::PIXEL);
+				instancedmaterials[1]->SetShader(GetShaderResource("alphaInstanceShader"));
+				AddResource("instanced" + name, instancedmeshes[0]);
+				AddResource("instanced" + instancedmeshes[1]->GetMeshName(), instancedmeshes[1]);
+				AddResource("instanced" + name + "Material", instancedmaterials[0]);
+				AddResource("instanced" + instancedmeshes[1]->GetMeshName() + "Material", instancedmaterials[1]);
 
+				//Load non instanced tree models
+				std::vector<Material*> materials = ZWEBLoader::LoadMaterials(filepath, GetShaderResource("defaultShader"), device);
+				std::vector<Mesh*> meshes = ZWEBLoader::LoadMeshes(ZWEBLoadType::NoAnimation, filepath, device);
 				materials[0]->SetSampler(sampler, 0, ShaderBindFlag::PIXEL);
 				materials[1]->SetSampler(sampler, 0, ShaderBindFlag::PIXEL);
-
-				materials[1]->SetShader(GetShaderResource("alphaInstanceShader"));
-
+				//materials[1]->SetShader(GetShaderResource("alphaShader"));
 				AddResource(name, meshes[0]);
 				AddResource(meshes[1]->GetMeshName(), meshes[1]);
-
 				AddResource(name + "Material", materials[0]);
 				AddResource(meshes[1]->GetMeshName() + "Material", materials[1]);
 			}
@@ -192,7 +208,7 @@ void ResourceManager::ReadObjects(ID3D11Device* device)
 	}
 	else
 	{
-		std::cout << "Couldnt open file: " << std::endl;
+		//std::cout << "Couldnt open file: " << std::endl;
 	}
 }
 
@@ -337,6 +353,7 @@ void ResourceManager::ReadShaders(ID3D11Device* device)
 						tempShader->SetInputLayoutStructure(6, tempShader->DEFAULT_INPUT_LAYOUTd);
 					}
 					
+
 					// Compile the shader
 					tempShader->SetVertexShader(vertexPath);
 					if(hullPath != "")
@@ -404,7 +421,7 @@ void ResourceManager::ReadShaders(ID3D11Device* device)
 	}
 	else
 	{
-		std::cout << "Couldnt open file" << std::endl;
+		//std::cout << "Couldnt open file" << std::endl;
 	}
 }
 

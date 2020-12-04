@@ -42,8 +42,8 @@ public:
 	void Initialize() override; // OVERRIDE
 	void OnOwnerFlagChanged(ObjectFlag old, ObjectFlag newFlag);
 
-	virtual void m_OnCollision(const CollisionInfo& collision);
-	virtual void AddCollisionCallback(std::function<void(CollisionInfo)> callback);
+	virtual void m_OnCollision(CollisionInfo& collision);
+	virtual void AddCollisionCallback(std::function<void(CollisionInfo&)> callback);
 
 	virtual void AddForce(const dx::XMFLOAT3& force);
 	virtual void AddForceAtPoint(const dx::XMFLOAT3& force, const dx::XMFLOAT3& offset, bool local = true);
@@ -70,6 +70,8 @@ public:
 
 	void Release();
 
+	void RecieveMsg(const int& type, const std::string& msg, Object* sender, void* data = nullptr) override;
+
 private:
 	rp::Transform ConvertToBtTransform(const Transform& transform) const;
 	void AddCollidersToBody(Object* obj, rp::RigidBody* body);
@@ -88,6 +90,6 @@ private:
 	bool lockRotation;
 	BodyType type;
 	bool autoRegister, initialized;
-	std::vector<std::function<void(CollisionInfo)>> callbacks;
+	std::vector<std::function<void(CollisionInfo&)>> callbacks;
 
 };
