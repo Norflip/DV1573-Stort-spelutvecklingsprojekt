@@ -52,8 +52,13 @@ void Window::Open(size_t width, size_t height)
 	//SendMessage(hwnd, WM_SETICON, ICON_SMALL, (LPARAM)LoadIcon(hInstance, L"MAINICON"));
 }
 
+extern LRESULT ImGui_ImplWin32_WndProcHandler(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam);
+
 LRESULT Window::WindowProc(HWND hwnd, UINT umsg, WPARAM wParam, LPARAM lParam)
 {
+	if (ImGui_ImplWin32_WndProcHandler(hwnd, umsg, wParam, lParam))
+		return true;
+
 	Input::Instance().UpdateMsg(umsg, wParam, lParam);
 	switch (umsg)
 	{

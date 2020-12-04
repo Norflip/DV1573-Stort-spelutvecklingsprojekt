@@ -93,13 +93,6 @@ void GameScene::InitializeObjects()
 	this->player = playerObject;
 	camera = cameraObject->AddComponent<CameraComponent>(window->GetWidth(), window->GetHeight(), 60.0f);
 
-	Shader forwardPlusShader;
-
-	forwardPlusShader.SetComputeShader("Shaders/ForwardPlusRendering.hlsl", "ComputeFrustums");
-	forwardPlusShader.CompileCS(renderer->GetDevice());
-	forwardPlusShader.BindToContext(renderer->GetContext());
-	renderer->InitForwardPlus(camera, window, forwardPlusShader);
-	//forwardPlusShader.Unbind(renderer->GetContext());
 
 	cameraObject->GetTransform().SetPosition(playerSpawnVec);
 	playerObject->GetTransform().SetPosition(playerSpawnVec);
@@ -518,7 +511,7 @@ void GameScene::OnActivate()
 	house->GetComponent<NodeWalkerComp>()->currentNode = 1;
 	SaveState& state = SaveHandler::LoadOrCreate();
 
-	LightManager::Instance().ForceUpdateBuffers(renderer->GetContext(),camera);
+	LightManager::Instance().ForceUpdateBuffers(renderer->GetContext(), camera);
 
 	player->GetComponent<PlayerComp>()->SetStatsFromState(state);
 	Input::Instance().ConfineMouse();
