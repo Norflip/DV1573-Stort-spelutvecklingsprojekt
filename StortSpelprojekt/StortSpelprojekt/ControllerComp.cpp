@@ -148,17 +148,17 @@ void ControllerComp::Update(const float& deltaTime)
 	//	rbComp->EnableGravity(!this->freeCam);
 	//}
 
-	//if (KEY_DOWN(F))
-	//{
-	//	this->canRotate = !this->canRotate;
-	//	rbComp->SetLinearVelocity({ 0.f, 0.f, 0.f });
-	//	//rbComp->EnableGravity(!this->canRotate);
-	//	ShowCursor(!this->canRotate);
-	//	if (this->canRotate)
-	//		Input::Instance().SetMouseMode(dx::Mouse::MODE_RELATIVE);
-	//	else
-	//		Input::Instance().SetMouseMode(dx::Mouse::MODE_ABSOLUTE);
-	//}
+	if (KEY_DOWN(F))
+	{
+		this->canRotate = !this->canRotate;
+		rbComp->SetLinearVelocity({ 0.f, 0.f, 0.f });
+		//rbComp->EnableGravity(!this->canRotate);
+		ShowCursor(!this->canRotate);
+		if (this->canRotate)
+			Input::Instance().SetMouseMode(dx::Mouse::MODE_RELATIVE);
+		else
+			Input::Instance().SetMouseMode(dx::Mouse::MODE_ABSOLUTE);
+	}
 	
 	float length = 0.f;
 	dx::XMVECTOR lengthVec;

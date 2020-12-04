@@ -49,3 +49,5 @@ private:
 	unsigned char* buffer;
 	size_t width, height, channels;
 };
+
+static std::unordered_map<std::string, Texture*> mTextureCache;
