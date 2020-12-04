@@ -93,7 +93,7 @@ void IntroScene::InitializeGUI()
 	volumeSensitivtySprite->SetVisible(false);
 	higherSensitivitySprite->SetVisible(false);
 	sensitivityBarFill->SetScale(this->sensitivity, 1.0f);
-	GUIFont* sensitivityDisplay = new GUIFont(*renderer, "hi", windowWidth / 2 - 600, 550);
+	GUIFont* sensitivityDisplay = new GUIFont(*renderer, "hi", windowWidth / 2 - 300, 550);
 	sensitivityDisplay->SetVisible(false);
 	sensitivityDisplay->AddGroup(GuiGroup::Font);
 	sensitivityDisplay->AddGroup(GuiGroup::Options);
