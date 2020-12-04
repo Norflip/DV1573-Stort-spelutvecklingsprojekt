@@ -113,8 +113,7 @@ Texture* Texture::LoadTexture(ID3D11Device* device, LPCWSTR textureFilepath)
 	auto found = mTextureCache.find(key);
 	if (found != mTextureCache.end())
 	{
-		std::cout << key << " from cache" << std::endl;
-
+	//	std::cout << key << " from cache" << std::endl;
 		return found->second;
 	}
 	else
