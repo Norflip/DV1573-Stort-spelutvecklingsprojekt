@@ -50,8 +50,8 @@ private:
 	//float fovTimer; //use timer class??
 	float velocity;
 	float velocityTimer; //use timer class??
-	
 	float crouchTimer;
+	float sensitivity;
 
 	bool freeCam;
 	bool showCursor;
@@ -67,7 +67,7 @@ private:
 	dx::XMFLOAT3 cameraEuler;
 	dx::XMFLOAT3 outsidePos;
 
-	dx::XMFLOAT3 cameraEuler2;
+	//dx::XMFLOAT3 cameraEuler2;
 	Object* cameraObject;
 	NodeWalkerComp* houseWalkComp;
 	RigidBodyComponent* rbComp;
@@ -88,18 +88,21 @@ private:
 		}
 	};
 protected:
-	dx::XMVECTOR groundRotation2;
+	//dx::XMVECTOR groundRotation2;
 	dx::XMVECTOR groundRotation;
 public:
-	ControllerComp(Object* cameraObject, Object* houseObject);
+	ControllerComp(Object* cameraObject, Object* houseObject, float sense);
 	virtual ~ControllerComp();
 
 	RigidBodyComponent* GetRigidBodyComp() { return this->rbComp; }
 	void Initialize();
 	void Update(const float& deltaTime);
-	float GetVelocity() { return this->velocity; }
-	bool GetInRange() { return this->inDoorRange; }
+	float GetVelocity()const { return this->velocity; }
+	bool GetInRange()const { return this->inDoorRange; }
 	void SetInRange(bool state) { this->inDoorRange = state; }
-	bool GetInside() { return this->inside; }
+	bool GetInside()const { return this->inside; }
 	void SetInside(bool state) { this->inside = state; }
+
+	void SetSensitivity(const float & sens) { this->sensitivity = sens; }
+	float GetSensitivity()const { return this->sensitivity; }
 };
