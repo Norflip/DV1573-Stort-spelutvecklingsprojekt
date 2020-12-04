@@ -16,9 +16,21 @@ RigidBodyComponent::~RigidBodyComponent()
 		tr.setPosition(rp::Vector3(0, -5000, 0));
 		body->setTransform(tr);
 
-		physics->UnregisterRigidBody(this);
+		for (auto i : collidersList)
+		{
+			body->removeCollider(i);
+		}	
+		
 		physics->GetWorld()->destroyRigidBody(body);
+	
+		
+		
+		
+		
 		body = nullptr;
+	
+	
+	
 	}
 }
 

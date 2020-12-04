@@ -42,28 +42,11 @@ public:
 	void MutexLock();
 	void MutexUnlock();
 
-	void RegisterRigidBody(RigidBodyComponent* rigidBodyComp);
-	void UnregisterRigidBody(RigidBodyComponent* rigidBodyComp);
-
 	void FixedUpdate(const float& fixedDeltaTime);
 
 	bool RaytestSingle(const Ray& ray, float maxDistance, RayHit& hit, FilterGroups group = FilterGroups::EVERYTHING) const;
 
-
-	//static Physics* Instance() // singleton
-	//{
-	//	static Physics* instance = new Physics();
-	//	return instance;
-	//}
-
-	//Physics(Physics const&) = delete;
-	//void operator=(Physics const&) = delete;
-
-	//static dx::XMFLOAT3 ToXMFLOAT3(const btVector3& v3) { return dx::XMFLOAT3((float)v3.getX(), (float)v3.getY(), (float)v3.getZ()); }
-	//static btVector3 ToVector3(const dx::XMFLOAT3& xm3) { return btVector3(xm3.x, xm3.y, xm3.z); }
-
 private:
-	void CheckCollisions();
 
 	CollisionEventListener listener;
 	rp::Vector3 gravity;
