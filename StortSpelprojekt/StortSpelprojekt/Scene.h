@@ -58,6 +58,8 @@ public:
 	virtual void FixedUpdate(const float& fixedDeltaTime);
 	virtual void Render();
 	
+	virtual void OnIMGUIFrame() {};
+
 	// Add object to the scene hierarchy
 	void AddObjectToRoot(Object* object);
 	Object* GetRoot() const { return this->root; }

@@ -3,7 +3,7 @@
 #include "Engine.h"
 
 Pathfinding::Pathfinding(PlayerComp* player)
-	: cols(32), rows(32), player(player), pathFound(false), playerRadius(2.5), length(10.0f)
+	: cols(GRIDSIZE), rows(GRIDSIZE), player(player), pathFound(false), playerRadius(2.5), length(10.0f)
 {
 	timer.Start();
 	for (int x = 0; x < cols; x++)
@@ -66,32 +66,32 @@ void Pathfinding::Update(const float& deltaTime)
 		FollowPath();
 	}
 
-	/*dx::XMFLOAT3 enemyPos;
-	dx::XMStoreFloat3(&enemyPos, GetOwner()->GetTransform().GetPosition());
+	//dx::XMFLOAT3 enemyPos;
+	//dx::XMStoreFloat3(&enemyPos, GetOwner()->GetTransform().GetPosition());
 
-	for (int i = 0; i < cols; i++)
-	{
-		for (int j = 0; j < rows; j++)
-		{
-			dx::XMFLOAT3 color;
-			if (grid[i][j]->obstacle)
-			{
-				color = dx::XMFLOAT3(0, 0, 0);
-			}
-			else
-			{
-				if (grid[i][j]->openSet)
-					color = dx::XMFLOAT3(0, 1, 0);
-				else if (grid[i][j]->correctPath)
-					color = dx::XMFLOAT3(0, 0, 1);
-				else if (grid[i][j]->closedSet)
-					color = dx::XMFLOAT3(1, 0, 0);
-				else
-					color = dx::XMFLOAT3(1, 1, 1);
-			}
-			DShape::DrawBox(dx::XMFLOAT3(grid[i][j]->pos.x + (int)enemyPos.x - (cols/2), enemyPos.y + 7, grid[i][j]->pos.y + (int)enemyPos.z - (rows/2)), dx::XMFLOAT3(0.8, 0.8, 0.8), color);
-		}
-	}*/
+	//for (int i = 0; i < cols; i++)
+	//{
+	//	for (int j = 0; j < rows; j++)
+	//	{
+	//		dx::XMFLOAT3 color;
+	//		if (grid[i][j]->obstacle)
+	//		{
+	//			color = dx::XMFLOAT3(0, 0, 0);
+	//		}
+	//		else
+	//		{
+	//			if (grid[i][j]->openSet)
+	//				color = dx::XMFLOAT3(0, 1, 0);
+	//			else if (grid[i][j]->correctPath)
+	//				color = dx::XMFLOAT3(0, 0, 1);
+	//			else if (grid[i][j]->closedSet)
+	//				color = dx::XMFLOAT3(1, 0, 0);
+	//			else
+	//				color = dx::XMFLOAT3(1, 1, 1);
+	//		}
+	//		DShape::DrawBox(dx::XMFLOAT3(grid[i][j]->pos.x + (int)enemyPos.x - (cols/2), enemyPos.y + 7, grid[i][j]->pos.y + (int)enemyPos.z - (rows/2)), dx::XMFLOAT3(0.8, 0.8, 0.8), color);
+	//	}
+	//}
 }
 
 void Pathfinding::SetPlayer(PlayerComp* playerComp)
@@ -124,19 +124,21 @@ void Pathfinding::AStar()
 		grid[(int)start->pos.x][(int)start->pos.y]->openSet = true;
 		while (openSet.size() > 0 && !pathFound)
 		{
-			Node* current = openSet[0];
-			int winner = 0;
-			for (int i = 0; i < openSet.size() - 1; i++)
+			if (openSet.size() > 1)
 			{
-				if (current->fCost >= openSet[i + 1]->fCost)
-				{
-					current = openSet[i+1];
-					winner = i;
-				}
+				std::make_heap(openSet.begin(), openSet.end(), Compare());			//sort openSet
 			}
 
-			//std::make_heap(openSet.begin(), openSet.end(), Compare());			//sort openSet
-
+			Node* current = openSet[0];
+			//int winner = 0;
+			//for (int i = 1; i < openSet.size(); i++)
+			//{
+			//	if (current->fCost > openSet[i]->fCost)
+			//	{
+			//		current = openSet[i];
+			//		winner = i;
+			//	}
+			//}
 
 			if (current != nullptr && current->pos.x == end->pos.x && current->pos.y == end->pos.y)		//if current is end, save the correct path and end loop
 			{
@@ -153,7 +155,8 @@ void Pathfinding::AStar()
 			}
 			else
 			{
-				openSet.erase(openSet.begin() + winner);
+				
+				openSet.erase(openSet.begin());
 				openSet.shrink_to_fit();
 				grid[(int)current->pos.x][(int)current->pos.y]->openSet = false;				//Add best choice to closedSet
 				closedSet.push_back(current);
