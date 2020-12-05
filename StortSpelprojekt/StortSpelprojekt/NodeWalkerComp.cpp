@@ -172,7 +172,7 @@ void NodeWalkerComp::Update(const float& deltaTime)
 				if (this->length < nodeRadius)
 				{
 					//StopAnim();
-					//canWalk = false;
+					canWalk = false;
 					this->currentNode = this->nextChosen;
 				}
 				else
