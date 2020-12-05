@@ -76,7 +76,9 @@ private:
 	rp::Transform ConvertToBtTransform(const Transform& transform) const;
 	void AddCollidersToBody(Object* obj, rp::RigidBody* body);
 
-	std::vector<rp::Collider*> collidersList;
+	std::vector<rp::Collider*> rpColliders;
+	std::vector<Collider*> colliderComponents;
+
 	FilterGroups group;
 	FilterGroups collisionMask;
 

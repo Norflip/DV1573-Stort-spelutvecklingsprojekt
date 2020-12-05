@@ -14,7 +14,14 @@ Scene::Scene(const std::string& debugName) : input(Input::Instance()), debugName
 
 Scene::~Scene()
 {
+	std::unordered_set<size_t> registry;
+	size_t conflicts = 0;
+	DebugCheckForObjectIDConflict(root, registry, conflicts);
+
+
 	delete root;
+
+	int ost = 100;
 	root = nullptr;	
 }
 

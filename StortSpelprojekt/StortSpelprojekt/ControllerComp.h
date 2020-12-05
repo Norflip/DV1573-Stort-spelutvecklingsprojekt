@@ -46,12 +46,10 @@ private:
 		SPRINTING,
 		CROUCHING
 	};
-	//float fov;
-	//float fovTimer; //use timer class??
+
 	float velocity;
 	float velocityTimer; //use timer class??
 	float crouchTimer;
-	float sensitivity;
 
 	bool freeCam;
 	bool showCursor;

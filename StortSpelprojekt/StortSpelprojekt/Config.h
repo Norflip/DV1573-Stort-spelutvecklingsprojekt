@@ -28,7 +28,6 @@ namespace Config
 		if (!contains)
 		{
 			std::cout << "Config is missing key: \"" << key << "\"" << std::endl;
-			DebugPrintValues();
 		}
 #endif
 		return contains;

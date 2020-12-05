@@ -25,6 +25,17 @@ MeshCollider::~MeshCollider()
 	}
 }
 
+void MeshCollider::DeleteShapes()
+{
+	rp::PhysicsCommon& common = Engine::Instance->GetPhysics()->GetCommon();
+
+	for (size_t i = 0; i < colliderInformations.size(); i++)
+	{
+		common.destroyConvexMeshShape(static_cast<rp::ConvexMeshShape*>(colliderInformations[i].shape));
+		delete colliderInformations[i].shape;
+	}
+}
+
 void MeshCollider::InitializeCollider(Physics* physics)
 {
 	size_t i = 0;

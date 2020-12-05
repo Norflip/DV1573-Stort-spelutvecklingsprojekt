@@ -19,6 +19,11 @@ BoxColliderComponent::BoxColliderComponent(dx::XMFLOAT3 extends, dx::XMFLOAT3 po
 
 BoxColliderComponent::~BoxColliderComponent()
 {
+	
+}
+
+void BoxColliderComponent::DeleteShapes()
+{
 	rp::PhysicsCommon& common = Engine::Instance->GetPhysics()->GetCommon();
 
 	for (size_t i = 0; i < colliderInformations.size(); i++)

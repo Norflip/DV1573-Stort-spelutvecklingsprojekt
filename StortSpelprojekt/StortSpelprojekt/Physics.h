@@ -22,7 +22,7 @@ enum class FilterGroups : unsigned short
 };
 DEFINE_ENUM_FLAG_OPERATORS(FilterGroups)
 
-#define LOG_REACT 0
+#define LOG_REACT TRUE
 
 class RigidBodyComponent;
 constexpr dx::XMFLOAT3 DEFAULT_GRAVITY = { 0,-10.0f,0 };

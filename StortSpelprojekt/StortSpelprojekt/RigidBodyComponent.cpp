@@ -16,21 +16,17 @@ RigidBodyComponent::~RigidBodyComponent()
 		tr.setPosition(rp::Vector3(0, -5000, 0));
 		body->setTransform(tr);
 
-		for (auto i : collidersList)
-		{
-			body->removeCollider(i);
-		}	
-		
+		std::cout << std::endl << "del: " << GetOwner()->GetName() << std::endl;
+		std::cout << "bodynmcol: " << body->getNbColliders() << std::endl;
+
 		physics->GetWorld()->destroyRigidBody(body);
-	
-		
-		
-		
-		
+		rpColliders.clear();
+
+		for (size_t i = 0; i < colliderComponents.size(); i++)
+			colliderComponents[i]->DeleteShapes();
+		colliderComponents.clear();
+
 		body = nullptr;
-	
-	
-	
 	}
 }
 
@@ -152,30 +148,31 @@ rp::Transform RigidBodyComponent::ConvertToBtTransform(const Transform& transfor
 
 void RigidBodyComponent::AddCollidersToBody(Object* obj, rp::RigidBody* body)
 {
-	const std::vector<Collider*> colliders = obj->GetComponentsOfSubType<Collider>();
-	for (size_t i = 0; i < colliders.size(); i++)
+	colliderComponents = obj->GetComponentsOfSubType<Collider>();
+	for (size_t i = 0; i < colliderComponents.size(); i++)
 	{
-		colliders[i]->InitializeCollider(physics);
-		size_t shapeCount = colliders[i]->CountCollisionShapes();
+		colliderComponents[i]->InitializeCollider(physics);
+		size_t shapeCount = colliderComponents[i]->CountCollisionShapes();
 		for (size_t j = 0; j < shapeCount; j++)
 		{
-			rp::Collider* collider = body->addCollider(colliders[i]->GetCollisionShape(j), colliders[i]->GetTransform(j));
+			rp::Collider* collider = body->addCollider(colliderComponents[i]->GetCollisionShape(j), colliderComponents[i]->GetTransform(j));
 			collider->setCollisionCategoryBits(static_cast<unsigned short>(group));
 			collider->setCollideWithMaskBits(static_cast<unsigned short>(collisionMask));
-			collidersList.push_back(collider);
+			rpColliders.push_back(collider);
 		}
 	}
 
-	//	assert(collidersList.size() > 0);
+	assert(rpColliders.size() > 0);
+
 	//std::cout << (GetOwner()->GetName() + " has " + std::to_string(colliders.size()) + " colliders\n");
 
 	//CHILDREN
 
-	const std::vector<Object*>& children = GetOwner()->GetChildren();
-	for (size_t i = 0; i < children.size(); i++)
-	{
-		AddCollidersToBody(children[i], body);
-	}
+	//const std::vector<Object*>& children = GetOwner()->GetChildren();
+	//for (size_t i = 0; i < children.size(); i++)
+	//{
+	//	AddCollidersToBody(children[i], body);
+	//}
 }
 
 void RigidBodyComponent::m_InitializeBody(Physics* physics)

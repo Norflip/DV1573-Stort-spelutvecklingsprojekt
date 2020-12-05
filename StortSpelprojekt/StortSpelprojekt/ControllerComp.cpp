@@ -87,8 +87,6 @@ void ControllerComp::Initialize()
 	this->rbComp = GetOwner()->GetComponent<RigidBodyComponent>();
 	rbComp->m_InitializeBody(Engine::Instance->GetPhysics());
 
-	this->sensitivity = Config::GetFloat("sensitivity", 0.5f);
-
 	this->camComp = cameraObject->GetComponent<CameraComponent>();
 	this->capsuleComp = GetOwner()->GetComponent<CapsuleColliderComponent>();
 	this->playerComp = GetOwner()->GetComponent<PlayerComp>();
@@ -115,6 +113,7 @@ void ControllerComp::Initialize()
 
 void ControllerComp::Update(const float& deltaTime)
 {
+
 	//WASD = move
 	//space = jump 
 	//0 = reset position rotation and xClamp
@@ -242,10 +241,12 @@ void ControllerComp::Update(const float& deltaTime)
 			//Input::Instance().ConfineMouse();
 			//SetCursorPos(400, 400); //set this to coordinates middle of screen? get height/width from input?
 
+			float sensitivity = Config::GetFloat("sensitivity", 0.5f);
+
 			float xPos = Input::Instance().GetMousePosRelative().x * deltaTime;
 			float yPos = Input::Instance().GetMousePosRelative().y * deltaTime;
-			cameraEuler.x += xPos * this->sensitivity;
-			cameraEuler.y += yPos * this->sensitivity;
+			cameraEuler.x += xPos * sensitivity;
+			cameraEuler.y += yPos * sensitivity;
 			//cameraEuler2.x += xPos;
 			//cameraEuler2.y += yPos;
 
