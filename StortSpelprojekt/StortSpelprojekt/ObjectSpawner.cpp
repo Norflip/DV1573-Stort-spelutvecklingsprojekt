@@ -341,9 +341,9 @@ void ObjectSpawner::SpawnStatic(Chunk* chunk)
 					Object* props = new Object("props_" + prop.mesh->GetMeshName(), ObjectFlag::DEFAULT);
 					Object::AddToHierarchy(chunk->GetOwner(), props);
 
+					dx::XMFLOAT3 sampleNormal = chunk->SampleNormal(dx, dz);
 
-
-					dx::XMVECTOR randomYRotation = dx::XMQuaternionRotationAxis(dx::XMLoadFloat3(&chunk->SampleNormal(dx, dz)), Random::RadAngle());
+					dx::XMVECTOR randomYRotation = dx::XMQuaternionRotationAxis(dx::XMLoadFloat3(&sampleNormal), Random::RadAngle());
 
 					props->GetTransform().SetWorldPosition({ dx, y, dz });
 					props->GetTransform().SetWorldRotation(randomYRotation);

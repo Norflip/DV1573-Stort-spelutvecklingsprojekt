@@ -40,7 +40,8 @@ void EnemyManager::InitBaseEnemy()
 	enemyPool->Register("baseEnemy", 2, [](ResourceManager* resources)
 	{
 		Object* object = new Object("baseEnemy", ObjectFlag::DEFAULT);
-		object->AddComponent<SkeletonMeshComponent>(resources->GetResource<SkeletonMeshComponent>("EnemySkeleton"));
+		SkeletonMeshComponent* skeleton = object->AddComponent<SkeletonMeshComponent>(resources->GetResource<SkeletonMeshComponent>("EnemySkeleton"));
+		skeleton->SetEnemyType(EnemyType::BASE);
 		object->GetTransform().SetScale({ 0.125f, 0.125f, 0.125f });
 		object->AddComponent<EnemyStatsComp>(100.f, 2.0f, 25.f, 2.0f, 5.f, 3.f, 3.f);
 		dx::XMFLOAT3 zero = { 0.f, 0.f, 0.f };
@@ -63,7 +64,8 @@ void EnemyManager::InitChargerEnemy()
 		Object* object = new Object("chargerEnemy", ObjectFlag::DEFAULT);
 		object->RemoveFlag(ObjectFlag::ENABLED);
 
-		object->AddComponent<SkeletonMeshComponent>(resources->GetResource<SkeletonMeshComponent>("ChargerSkeleton"));
+		SkeletonMeshComponent* skeleton = object->AddComponent<SkeletonMeshComponent>(resources->GetResource<SkeletonMeshComponent>("ChargerSkeleton"));
+		skeleton->SetEnemyType(EnemyType::CHARGER);
 		object->AddComponent<EnemyStatsComp>(100.f, 2.0f, 25.f, 5.f, 10.f, 2.f, 3.f);
 		dx::XMFLOAT3 zero = { 0.f, 0.f, 0.f };
 		object->AddComponent<CapsuleColliderComponent>(0.8f, 0.8f, zero);
