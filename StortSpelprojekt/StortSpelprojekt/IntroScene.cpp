@@ -310,7 +310,7 @@ void IntroScene::Update(const float& deltaTime)
 	if(static_cast<GUISprite*>(guiManager->GetGUIObject("lowerSensitivitySprite"))->IsClicked()) 
 	{
 		//lower sense
-		float currentSense = this->sensitivity;
+		//float currentSense = this->sensitivity;
 		if (this->sensitivity > 0.05f)
 			this->sensitivity -= 0.05f;
 		else
