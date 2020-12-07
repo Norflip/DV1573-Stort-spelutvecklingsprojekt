@@ -25,6 +25,9 @@ public:
 	void FixedUpdate(const float& fixedDeltaTime) override;
 	void Render() override;
 
+	float VramUsage();
+	float RamUsage();
+
 	ALIGN16_ALLOC;
 
 private:

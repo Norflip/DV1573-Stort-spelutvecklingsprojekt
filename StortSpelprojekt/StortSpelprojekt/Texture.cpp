@@ -127,7 +127,7 @@ Texture* Texture::LoadTexture(ID3D11Device* device, LPCWSTR textureFilepath)
 		}
 		else
 		{
-			std::cout << "Missing texture: " << textureFilepath << std::endl;
+			std::cout << "Missing texture: " << key << std::endl;
 		}
 
 		if (texture != nullptr)
