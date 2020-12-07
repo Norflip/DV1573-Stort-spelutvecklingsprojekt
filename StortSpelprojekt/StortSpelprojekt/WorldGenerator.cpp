@@ -77,38 +77,9 @@ void WorldGenerator::Construct(const SaveState& state, const WorldDescription& d
 		RegisterEnviromentProp("PuzzleTree", 0, 5, 1, [](Chunk* chunk, dx::XMVECTOR rootPosition)
 		{
 			Object* root = new Object("puzzel_root");
-			//Object* tree =  Engine::Instance->GetResources()->AssembleObject("Tree", "TreeMaterial");
-
-			//Object* leaves = Engine::Instance->GetResources()->AssembleObject("leaves", "leavesMaterial");
-			//leaves->GetComponent<MeshComponent>()->GetMaterials()[0]->SetTransparent(true);
-			//Object* puzzle = Engine::Instance->GetResources()->AssembleObject("TreePuzzle", "TreePuzzleMaterial");
 			Object* crazyFrog = Engine::Instance->GetResources()->AssembleObject("PuzzleFrogStatue", "PuzzleFrogStatueMaterial");
 			Object* crazyFly = Engine::Instance->GetResources()->AssembleObject("PuzzleFlyStatue", "PuzzleFlyStatueMaterial");
 			Object* frogHead = new Object("frogHead");
-
-			//tree->GetTransform().SetScale({ 2, 2, 2 });
-
-			// bounding box for tree calculations
-			/*Bounds bbInfo;
-			bbInfo.CalculateAABB(tree->GetComponent<MeshComponent>()->GetMeshes());
-			dx::XMFLOAT3 extends = bbInfo.GetExtends();
-			extends.x *= 1.3;
-			extends.y *= 2.0;
-			extends.z *= 1.3;*/
-
-			// For tree
-			//BoxColliderComponent* colliders = tree->AddComponent<BoxColliderComponent>(extends, dx::XMFLOAT3(0, 0, 0));
-			//RigidBodyComponent* trb = tree->AddComponent<RigidBodyComponent>(0.f, FilterGroups::DEFAULT, FilterGroups::EVERYTHING, BodyType::STATIC, true);
-
-			// For puzzle
-			/*puzzle->AddComponent<BoxColliderComponent>(dx::XMFLOAT3(2.018f, 0.1f, 0.969f), dx::XMFLOAT3(1.239f, 0.175f, 0.422f));
-			puzzle->AddComponent<BoxColliderComponent>(dx::XMFLOAT3(0.764f, 0.1f, 2.175f), dx::XMFLOAT3(0.209f, 1.333f, 1.456f));
-			puzzle->AddComponent<BoxColliderComponent>(dx::XMFLOAT3(1.956f, 0.1f, 0.745f), dx::XMFLOAT3(-1.253f, 2.259f, 0.51f));
-			puzzle->AddComponent<BoxColliderComponent>(dx::XMFLOAT3(0.778f, 0.1f, 1.861f), dx::XMFLOAT3(-0.13f, 3.304f, -1.045f));
-			puzzle->AddComponent<BoxColliderComponent>(dx::XMFLOAT3(2.083f, 0.1f, 0.68f), dx::XMFLOAT3(1.092f, 4.476f, -0.118f));
-			puzzle->AddComponent<BoxColliderComponent>(dx::XMFLOAT3(0.6536f, 0.1f, 1.238f), dx::XMFLOAT3(0.259f, 5.515f, 1.238f));
-			puzzle->AddComponent<BoxColliderComponent>(dx::XMFLOAT3(1.195f, 0.1f, 2.041f), dx::XMFLOAT3(-1.337f, 6.57f, 0.183f));
-			RigidBodyComponent* prb = puzzle->AddComponent<RigidBodyComponent>(0.f, FilterGroups::PUZZLE, FilterGroups::EVERYTHING, BodyType::STATIC, true);*/
 
 			// For fly
 			crazyFly->AddComponent<BoxColliderComponent>(dx::XMFLOAT3(0.876f, 0.389f, 0.623f), dx::XMFLOAT3(0, 0.2f, 0));
@@ -139,11 +110,9 @@ void WorldGenerator::Construct(const SaveState& state, const WorldDescription& d
 			//dx::XMVECTOR frogpos = dx::XMVectorAdd(position, dx::XMVECTOR({ 4, 1, 4, 0 }));
 
 			// Set the positions for RB
-			//trb->SetPosition(position);
-			//prb->SetPosition(position);
-			frogrb->SetPosition(position);
+			crazyFrog->GetTransform().SetPosition(position);
 			flyrb->SetPosition(dx::XMVectorAdd(position, dx::XMVECTOR({ 4, 1, 4, 0 })));
-			headrb->SetPosition(dx::XMVectorAdd(position, dx::XMVECTOR({ 0, 0.0f, 0, 0 })));
+			frogHead->GetTransform().SetPosition(dx::XMVectorAdd(position, dx::XMVECTOR({ 0, 0.0f, 0, 0 })));
 
 			// Testing printing shit to find puzzle
 			//dx::XMFLOAT3 pos;
@@ -167,7 +136,6 @@ void WorldGenerator::Construct(const SaveState& state, const WorldDescription& d
 
 					//pickupMat->SetShader(Engine::Instance->GetResources()->GetShaderResource("defaultShader"));
 					Object* pickup = Engine::Instance->GetResources()->AssembleObject("BlueFuel", "BlueFuelMaterial");
-					pickup->GetComponent<MeshComponent>()->SetBatchable(true);
 					Object::AddToHierarchy(info.main->GetParent(), pickup);
 
 					//pickup->AddComponent<MeshComponent>(pickupMesh, pickupMat);
@@ -176,7 +144,6 @@ void WorldGenerator::Construct(const SaveState& state, const WorldDescription& d
 					RigidBodyComponent* rb = pickup->AddComponent<RigidBodyComponent>(10.0f, FilterGroups::HOLDABLE, FilterGroups::EVERYTHING & ~FilterGroups::PLAYER, BodyType::DYNAMIC, true);
 
 					rb->SetPosition(info.main->GetTransform().GetPosition());
-					pickup->GetTransform().SetPosition(info.main->GetTransform().GetPosition());
 
 				}
 				else if(info.main->GetName() == "PuzzleFlyStatue" && info.other->GetName() == "frogHead" && !info.remove)

@@ -196,7 +196,7 @@ void ControllerComp::Update(const float& deltaTime)
 		}
 			
 
-		if (RMOUSE_DOWN)
+		if (KEY_DOWN(E))
 		{
 			if (inside && inDoorRange)
 			{
@@ -204,14 +204,14 @@ void ControllerComp::Update(const float& deltaTime)
 				{
 					dx::XMFLOAT3 pos = this->playerComp->GetStartPosition();
 					rbComp->SetPosition(dx::XMVECTOR{ pos.x, pos.y, pos.z, 0 });
-					GetOwner()->GetTransform().SetPosition(dx::XMVECTOR{ pos.x, pos.y, pos.z, 0 });
+					//GetOwner()->GetTransform().SetPosition(dx::XMVECTOR{ pos.x, pos.y, pos.z, 0 });
 					inside = false;
 					first = false;
 				}
 				else
 				{
 					rbComp->SetPosition(dx::XMVECTOR{ this->outsidePos.x, this->outsidePos.y, this->outsidePos.z, 0 });
-					GetOwner()->GetTransform().SetPosition(dx::XMVECTOR{ this->outsidePos.x, this->outsidePos.y, this->outsidePos.z, 0 });
+					//GetOwner()->GetTransform().SetPosition(dx::XMVECTOR{ this->outsidePos.x, this->outsidePos.y, this->outsidePos.z, 0 });
 					inside = false;
 				}
 			}
@@ -223,7 +223,7 @@ void ControllerComp::Update(const float& deltaTime)
 				dx::XMFLOAT3 interior = this->playerComp->GetInteriorPosition();
 
 				rbComp->SetPosition({ interior.x, interior.y + 3.0f, interior.z, 0.0f });
-				GetOwner()->GetTransform().SetPosition(dx::XMVECTOR{ interior.x, interior.y + 3.0f, interior.z, 0 });
+				//GetOwner()->GetTransform().SetPosition(dx::XMVECTOR{ interior.x, interior.y + 3.0f, interior.z, 0 });
 
 				inside = true;
 				inDoorRange = false;
