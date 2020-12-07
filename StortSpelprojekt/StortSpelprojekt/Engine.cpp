@@ -19,7 +19,7 @@ Engine* Engine::Instance = nullptr;
 Engine::Engine(HINSTANCE hInstance) : window(hInstance), activeSceneIndex(-1), sceneSwitch(-1)
 {
 	this->Instance = this;
-
+	
 	HRESULT hr = CoInitializeEx(nullptr, COINIT_MULTITHREADED);
 	assert(SUCCEEDED(hr));
 
@@ -96,13 +96,20 @@ void Engine::Run()
 
 			if (msg.message == WM_QUIT)
 				Exit();
-			else if (msg.message == WM_SIZE)
+			/*if (msg.message == WM_SIZE)
 			{
-				UINT newWidth = LOWORD(msg.lParam);
-				UINT newHeight = HIWORD(msg.lParam);
-				OnResize(newWidth, newHeight);
-			}
+				if (activeSceneIndex != -1)
+				{
+					UINT newWidth = LOWORD(msg.lParam);
+					UINT newHeight = HIWORD(msg.lParam);
+					OnResize(newWidth, newHeight);
+				}
+				
+			}*/
+			
+			
 		}
+		
 		else
 		{
 			if (sceneSwitch >= 0 && sceneSwitch < SCENE_COUNT)
@@ -141,8 +148,13 @@ void Engine::Run()
 #endif
 				scene->Render();
 			}
-
+			
 			timeLastFrame = currentTime;
+			if (window.GetShouldResize())
+			{
+				OnResize((size_t)window.GetWidth(), (size_t)window.GetHeight());
+				window.SetShouldResize(false);
+			}
 		}
 	}
 

@@ -632,7 +632,7 @@ void DXHelper::OnResize(UINT width, UINT height, IDXGISwapChain* swapchain)
 #ifdef  _DEBUG
 	swapchainFlags |= D3D11_CREATE_DEVICE_DEBUG;
 #endif
-	HRESULT hr = swapchain->ResizeBuffers(2, width, height, DXGI_FORMAT_R8G8B8A8_UNORM, swapchainFlags);
+	HRESULT hr = swapchain->ResizeBuffers(0, 0, 0, DXGI_FORMAT_UNKNOWN, 0);
 
 	assert(SUCCEEDED(hr));
 }

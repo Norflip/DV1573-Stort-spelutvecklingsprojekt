@@ -5,16 +5,19 @@
 #include <fcntl.h>
 #include <io.h>
 #include <iostream>
-
+size_t Window::width = 0;
+size_t Window::height = 0;
+bool Window::shouldResize = false;
 Window::Window(HINSTANCE hInstance) : hInstance(hInstance)
 {
-
+	
 }
 
 Window::~Window()
 {
 	UnregisterClass(CLASS_NAME, hInstance);
 	DestroyWindow(hwnd);
+	shouldResize = false;
 }
 
 void Window::Open(size_t width, size_t height)
@@ -66,7 +69,13 @@ LRESULT Window::WindowProc(HWND hwnd, UINT umsg, WPARAM wParam, LPARAM lParam)
 			PostQuitMessage(0);
 			return 0;
 		case WM_SIZE:
-			PostMessageA(hwnd, umsg, wParam, lParam);
+		{
+			//PostMessageA(hwnd, umsg, wParam, lParam);
+			int width = LOWORD(lParam);
+			int height = HIWORD(lParam);
+			OnResize((size_t)width, (size_t)height);
+		}
+		break;
 		case WM_PAINT:
 		{
 			PAINTSTRUCT ps;
@@ -74,15 +83,17 @@ LRESULT Window::WindowProc(HWND hwnd, UINT umsg, WPARAM wParam, LPARAM lParam)
 			FillRect(hdc, &ps.rcPaint, (HBRUSH)(COLOR_WINDOW + 1));
 			EndPaint(hwnd, &ps);
 		}
+		
 		return 0;
 	}
 
 	return DefWindowProc(hwnd, umsg, wParam, lParam);
+	
 }
 
-void Window::Resize(size_t width, size_t height)
+void Window::OnResize(size_t newWidth, size_t newHeight)
 {
-	this->width = width;
-	this->height = height;
-	
+	width = newWidth;
+	height = newHeight;
+	shouldResize = true;
 }

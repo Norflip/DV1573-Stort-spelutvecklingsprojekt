@@ -32,9 +32,12 @@ public:
 	HWND GetHWND() const { return this->hwnd; }
 	HINSTANCE GetHINSTANCE() { return this->hInstance; }
 	static LRESULT CALLBACK WindowProc(HWND hwnd, UINT umsg, WPARAM wParam, LPARAM lParam);
-	void Resize(size_t width, size_t height);
+	const bool GetShouldResize() { return shouldResize; }
+	void SetShouldResize(bool resize) { shouldResize = resize; }
 private:
+	static void OnResize(size_t width, size_t height);
 	HINSTANCE hInstance;
-	size_t width, height;
+	static size_t width, height;
 	HWND hwnd;
+	static bool shouldResize;
 };

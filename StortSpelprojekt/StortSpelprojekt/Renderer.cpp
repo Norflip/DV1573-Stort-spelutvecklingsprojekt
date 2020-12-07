@@ -116,8 +116,15 @@ void Renderer::Initialize(Window* window)
 
 void Renderer::OnResize(UINT width, UINT height)
 {
+	backbuffer.Release();
+	renderPassSwapBuffers[0].Release();
+	renderPassSwapBuffers[1].Release();
+	dss->Release();
 	DXHelper::OnResize(width, height, swapchain);
-	
+	this->backbuffer = DXHelper::CreateBackbuffer(window->GetWidth(), window->GetHeight(), device, swapchain);
+	this->midbuffer = DXHelper::CreateRenderTexture(window->GetWidth(), window->GetHeight(), device, context, &dss);
+	this->renderPassSwapBuffers[0] = DXHelper::CreateRenderTexture(window->GetWidth(), window->GetHeight(), device, context, &dss);
+	this->renderPassSwapBuffers[1] = DXHelper::CreateRenderTexture(window->GetWidth(), window->GetHeight(), device, context, &dss);
 	OnResizeFPlus();
 }
 

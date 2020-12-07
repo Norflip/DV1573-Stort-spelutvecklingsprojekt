@@ -54,7 +54,7 @@ private:
 	Scene* scenes[SCENE_COUNT];
 	int activeSceneIndex;
 	bool pause;
-
+	
 	Window window;
 	Renderer* renderer;
 	Physics* physics;
