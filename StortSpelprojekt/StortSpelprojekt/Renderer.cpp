@@ -128,7 +128,7 @@ void Renderer::OnResize(UINT width, UINT height)
 	this->renderPassSwapBuffers[0] = DXHelper::CreateRenderTexture(window->GetWidth(), window->GetHeight(), device, context, &dss);
 	this->renderPassSwapBuffers[1] = DXHelper::CreateRenderTexture(window->GetWidth(), window->GetHeight(), device, context, &dss);
 	OnResizeFPlus();
-	present = true;
+	//present = true;
 }
 
 

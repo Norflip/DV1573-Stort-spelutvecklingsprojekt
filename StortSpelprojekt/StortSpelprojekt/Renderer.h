@@ -114,7 +114,7 @@ public:
 	void DisableAlphaBlending();	
 	ID3D11DepthStencilState* GetDepthEnable() { return this->dss_On; }
 	ID3D11DepthStencilState* GetDepthDisable() { return this->dss_Off; }
-
+	bool present;
 	ALIGN16_ALLOC;
 
 private:
@@ -129,7 +129,7 @@ private:
 	void OnResizeFPlus();
 	void SetObjectBufferValues(const CameraComponent* camera, dx::XMMATRIX world, bool transpose);
 	Mesh* CreateScreenQuad();
-
+	
 
 private:
 	IDXGISwapChain* swapchain;
@@ -144,7 +144,7 @@ private:
 	Mesh* screenQuadMesh;
 	Shader forwardPlusShader;
 	bool forwardPlusInitialized;
-	bool present;
+	
 	ConstantBuffer<cb_particle> particleBuffer;
 	ConstantBuffer<cb_Object> objectBuffer;
 	ConstantBuffer<cb_Scene> sceneBuffer;
