@@ -380,6 +380,29 @@ void GameScene::InitializeInterior()
 	AddObjectToRoot(table);
 
 
+	Object* tutorialFood = resources->AssembleObject("Fruits", "FruitsMaterial", true);
+	tutorialFood->GetTransform().SetPosition({ -5.65f, INTERIOR_POSITION.y + 1.0f, -4.6f, 0.0f });
+	tutorialFood->AddComponent<PickupComponent>(PickupType::Food, 30.0f);
+	tutorialFood->AddComponent<BoxColliderComponent>(dx::XMFLOAT3(0.25f, 0.25f, 0.25f), dx::XMFLOAT3(0, 0, 0));
+	tutorialFood->AddComponent<RigidBodyComponent>(10.0f, FilterGroups::PICKUPS, FilterGroups::EVERYTHING & ~FilterGroups::PLAYER, BodyType::DYNAMIC, true);
+	AddObjectToRoot(tutorialFood);
+
+	Object* tutorialHealth = resources->AssembleObject("HealthKit", "HealthKitMaterial", true);
+	tutorialHealth->GetTransform().SetPosition({ -5.0f, INTERIOR_POSITION.y + 1.0f, -4.4f, 0.0f });
+	tutorialHealth->AddComponent<PickupComponent>(PickupType::Health, 30.0f);
+	tutorialHealth->AddComponent<BoxColliderComponent>(dx::XMFLOAT3(0.25f, 0.1f, 0.25f), dx::XMFLOAT3(0, 0, 0));
+	tutorialHealth->AddComponent<RigidBodyComponent>(10.0f, FilterGroups::PICKUPS, FilterGroups::EVERYTHING & ~FilterGroups::PLAYER, BodyType::DYNAMIC, true);
+	AddObjectToRoot(tutorialHealth);
+
+	Object* tutorialFuel = resources->AssembleObject("BlueFuel", "BlueFuelMaterial", false);
+	tutorialFuel->GetTransform().SetPosition({ -5.0f, INTERIOR_POSITION.y + 3.0f, 0.11f, 0.0f });
+	tutorialFuel->AddComponent<PickupComponent>(PickupType::Fuel, 30.0f);
+	tutorialFuel->AddComponent<BoxColliderComponent>(dx::XMFLOAT3(0.3f, 0.35f, 0.15f), dx::XMFLOAT3(0, 0, 0));
+	tutorialFuel->AddComponent<RigidBodyComponent>(10.0f, FilterGroups::HOLDABLE, FilterGroups::EVERYTHING & ~FilterGroups::PLAYER, BodyType::DYNAMIC, true);
+	AddObjectToRoot(tutorialFuel);
+
+
+
 	Object* fireLight = new Object("fireLight");
 	LightComponent* fLight = fireLight->AddComponent<LightComponent>(LightType::POINT_LIGHT, dx::XMFLOAT4(1.0f, 0.29f, 0.0f, 1.0f), 2.2f);
 	fireLight->GetTransform().SetPosition({ -7.0f, -99.f, -1.36f });
@@ -490,29 +513,6 @@ void GameScene::OnActivate()
 
 		}
 	}
-
-
-	Object* tutorialFood = resources->AssembleObject("Fruits", "FruitsMaterial", true);
-	tutorialFood->GetTransform().SetPosition({ -5.65f, INTERIOR_POSITION.y + 1.0f, -4.6f, 0.0f });
-	tutorialFood->AddComponent<PickupComponent>(PickupType::Food, 30.0f);
-	tutorialFood->AddComponent<BoxColliderComponent>(dx::XMFLOAT3(0.25f, 0.25f, 0.25f), dx::XMFLOAT3(0, 0, 0));
-	tutorialFood->AddComponent<RigidBodyComponent>(10.0f, FilterGroups::PICKUPS, FilterGroups::EVERYTHING & ~FilterGroups::PLAYER, BodyType::DYNAMIC, true);
-	AddObjectToRoot(tutorialFood);
-
-	Object* tutorialHealth = resources->AssembleObject("HealthKit", "HealthKitMaterial", true);
-	tutorialHealth->GetTransform().SetPosition({ -5.0f, INTERIOR_POSITION.y + 1.0f, -4.4f, 0.0f });
-	tutorialHealth->AddComponent<PickupComponent>(PickupType::Health, 30.0f);
-	tutorialHealth->AddComponent<BoxColliderComponent>(dx::XMFLOAT3(0.25f, 0.1f, 0.25f), dx::XMFLOAT3(0, 0, 0));
-	tutorialHealth->AddComponent<RigidBodyComponent>(10.0f, FilterGroups::PICKUPS, FilterGroups::EVERYTHING & ~FilterGroups::PLAYER, BodyType::DYNAMIC, true);
-	AddObjectToRoot(tutorialHealth);
-
-	Object* tutorialFuel = resources->AssembleObject("BlueFuel", "BlueFuelMaterial", false);
-	tutorialFuel->GetTransform().SetPosition({ -5.0f, INTERIOR_POSITION.y + 3.0f, 0.11f, 0.0f });
-	tutorialFuel->AddComponent<PickupComponent>(PickupType::Fuel, 30.0f);
-	tutorialFuel->AddComponent<BoxColliderComponent>(dx::XMFLOAT3(0.3f, 0.35f, 0.15f), dx::XMFLOAT3(0, 0, 0));
-	tutorialFuel->AddComponent<RigidBodyComponent>(10.0f, FilterGroups::HOLDABLE, FilterGroups::EVERYTHING & ~FilterGroups::PLAYER, BodyType::DYNAMIC, true);
-	AddObjectToRoot(tutorialFuel);
-
 
 
 	renderer->AddRenderPass(guiManager);

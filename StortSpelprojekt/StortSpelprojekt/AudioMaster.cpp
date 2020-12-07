@@ -211,8 +211,8 @@ void AudioMaster::StopAllSoundEffects()
 void AudioMaster::PlayerOutside(bool state)
 {
 	if(state)
-		environmentSubmix->SetVolume(soundEffectsVolume);
+		environmentSubmix->SetVolume(soundEffectsVolume * soundEffectsVolume);
 	else
-		environmentSubmix->SetVolume(0.2f);
+		environmentSubmix->SetVolume(0.2f * soundEffectsVolume);
 }
 
