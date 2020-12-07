@@ -52,8 +52,8 @@ void GameOverScene::OnActivate()
 {
 	renderer->AddRenderPass(guiManager);
 	Input::Instance().FreeMouse();
-	ShowCursor(true);
 	Input::Instance().SetMouseMode(dx::Mouse::MODE_ABSOLUTE);
+	ShowCursor(true);
 
 	SaveHandler::RemoveSave();
 }
