@@ -45,7 +45,6 @@ void GameScene::InitializeObjects()
 	Object* houseDoor = resources->AssembleObject("HouseDoor", "HouseDoorMaterial");
 	Object* houseExterior = resources->AssembleObject("HouseExterior", "HouseExteriorMaterial");
 	houseExterior->GetComponent<MeshComponent>()->GetMaterials()[0]->SetTransparent(true);
-	Object* houseDoorRigid = new Object("doorRigid");
 
 	houseBaseObject->GetTransform().Rotate(0, -90.0f * Math::ToRadians, 0.0);
 
@@ -80,21 +79,33 @@ void GameScene::InitializeObjects()
 	housesLegsObject->AddComponent<SkeletonMeshComponent>(legsComponent);
 
 	Object::AddToHierarchy(houseBaseObject, housesLegsObject);
+	Object::AddToHierarchy(houseBaseObject, houseDoor);
+	Object::AddToHierarchy(houseBaseObject, houseExterior);
+
 
 	nodeWalker = houseBaseObject->AddComponent<NodeWalkerComp>();
 	nodeWalker->InitAnimation();
 	AddObjectToRoot(houseBaseObject);
 
-	houseDoor->AddComponent<HousePartsComponent>(houseBaseObject->GetComponent<SkeletonMeshComponent>());
+	Object* rigidDoor = new Object("door_body", ObjectFlag::ENABLED);
+	Object::AddToHierarchy(houseDoor, rigidDoor);
+	rigidDoor->GetTransform().SetPosition({ 2, 2, 2 });
+
 	houseExterior->AddComponent<HousePartsComponent>(houseBaseObject->GetComponent<SkeletonMeshComponent>());
 
-	houseDoorRigid->AddComponent<BoxColliderComponent>(dx::XMFLOAT3(0.3f, 0.85f, 0.3f), dx::XMFLOAT3(-1, -1, 1));
-	houseDoorRigid->AddComponent<RigidBodyComponent>(0.0f, FilterGroups::DOOR, FilterGroups::EVERYTHING, BodyType::STATIC, true);
-	houseDoorRigid->AddComponent<HousePartsComponent>(houseBaseObject->GetComponent<SkeletonMeshComponent>());
+	//houseDoor->AddComponent<BoxColliderComponent>(dx::XMFLOAT3(0.3f, 0.85f, 0.3f), dx::XMFLOAT3(0,0,0));
+	//houseDoor->AddComponent<SphereColliderComponent>(1.0f, dx::XMFLOAT3(3.533f, 2.884f, 4.02f));
+	
+//	rigidDoor->AddComponent<SphereColliderComponent>(2.0f, dx::XMFLOAT3(0,0,0));
 
-	AddObjectToRoot(houseDoor);
-	AddObjectToRoot(houseExterior);
-	AddObjectToRoot(houseDoorRigid);
+	rigidDoor->AddComponent<BoxColliderComponent>(dx::XMFLOAT3(0.3f, 0.85f, 0.3f), dx::XMFLOAT3(0, 0, 0));
+	rigidDoor->AddComponent<RigidBodyComponent>(0.0f, FilterGroups::DOOR, FilterGroups::EVERYTHING | ~FilterGroups::PLAYER, BodyType::STATIC, true);
+
+	houseDoor->AddComponent<HousePartsComponent>(houseBaseObject->GetComponent<SkeletonMeshComponent>());
+
+
+	//AddObjectToRoot(houseDoor);
+	//AddObjectToRoot(houseExterior);
 
 	//Player & Camera
 	dx::XMFLOAT3 playerSpawn = { 10,2,10 };
@@ -865,6 +876,11 @@ void GameScene::OnIMGUIFrame()
 		dx::XMFLOAT3 playerPos;
 		dx::XMStoreFloat3(&playerPos, player->GetTransform().GetWorldPosition());
 		std::cout << "player current position: " << playerPos.x << ", " << playerPos.y << ", " << playerPos.z << std::endl;
+
+		dx::XMFLOAT3 housePos;
+		dx::XMStoreFloat3(&housePos, house->GetTransform().GetWorldPosition());
+		std::cout << "house current position: " << housePos.x << ", " << housePos.y << ", " << housePos.z << std::endl;
+
 	}
 
 
