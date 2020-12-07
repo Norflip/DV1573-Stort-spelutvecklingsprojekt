@@ -179,6 +179,7 @@ void ControllerComp::Update(const float& deltaTime)
 		if (length > playerComp->GetRadius() || length < SIT_RADIUS)
 		{
 			static_cast<GUICompass*>(playerComp->GetGuiManager()->GetGUIObject("compass"))->GetBarSprite()->SetActivated();
+			static_cast<GUICompass*>(playerComp->GetGuiManager()->GetGUIObject("compass"))->GetHouseSprite()->SetActivated();
 
 			houseWalkComp->Stop();
 		}
@@ -191,25 +192,26 @@ void ControllerComp::Update(const float& deltaTime)
 			houseWalkComp->Start();
 
 			static_cast<GUICompass*>(playerComp->GetGuiManager()->GetGUIObject("compass"))->GetBarSprite()->SetActivated(false);
+			static_cast<GUICompass*>(playerComp->GetGuiManager()->GetGUIObject("compass"))->GetHouseSprite()->SetActivated(false);
 		}
 			
 
-		if (RMOUSE_DOWN)
+		if (KEY_DOWN(E))
 		{
 			if (inside && inDoorRange)
 			{
 				if (first)
 				{
 					dx::XMFLOAT3 pos = this->playerComp->GetStartPosition();
-					GetOwner()->GetTransform().SetPosition(dx::XMVECTOR{ pos.x, pos.y, pos.z, 0 });
 					rbComp->SetPosition(dx::XMVECTOR{ pos.x, pos.y, pos.z, 0 });
+					//GetOwner()->GetTransform().SetPosition(dx::XMVECTOR{ pos.x, pos.y, pos.z, 0 });
 					inside = false;
 					first = false;
 				}
 				else
 				{
-					GetOwner()->GetTransform().SetPosition(dx::XMVECTOR{ this->outsidePos.x, this->outsidePos.y, this->outsidePos.z, 0 });
 					rbComp->SetPosition(dx::XMVECTOR{ this->outsidePos.x, this->outsidePos.y, this->outsidePos.z, 0 });
+					//GetOwner()->GetTransform().SetPosition(dx::XMVECTOR{ this->outsidePos.x, this->outsidePos.y, this->outsidePos.z, 0 });
 					inside = false;
 				}
 			}
@@ -220,8 +222,8 @@ void ControllerComp::Update(const float& deltaTime)
 				this->outsidePos = { current.m128_f32[0], current.m128_f32[1], current.m128_f32[2] };
 				dx::XMFLOAT3 interior = this->playerComp->GetInteriorPosition();
 
-				GetOwner()->GetTransform().SetPosition(dx::XMVECTOR{ interior.x, interior.y + 3.0f, interior.z, 0 });
 				rbComp->SetPosition({ interior.x, interior.y + 3.0f, interior.z, 0.0f });
+				//GetOwner()->GetTransform().SetPosition(dx::XMVECTOR{ interior.x, interior.y + 3.0f, interior.z, 0 });
 
 				inside = true;
 				inDoorRange = false;
