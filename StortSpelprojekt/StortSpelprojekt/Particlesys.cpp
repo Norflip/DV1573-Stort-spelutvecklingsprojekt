@@ -330,7 +330,7 @@ void Particlesys::Draw(ID3D11DeviceContext* context, CameraComponent* cam)
 	SetEyePos(eyeCam);
 	
 	DrawStreamOut(context, cam);
-	renderer->GetContext()->OMSetDepthStencilState(nullptr, 0);
+	renderer->GetContext()->OMSetDepthStencilState(renderer->GetDepthEnable(), 0);
 	renderer->EnableAlphaBlending();
 	DrawParticles(context, cam);
 	renderer->DisableAlphaBlending();
