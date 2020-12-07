@@ -4,7 +4,10 @@
 #include "DShape.h"
 #include "Input.h"
 #include "Engine.h"
-
+bool Renderer::finished1 = false;
+bool Renderer::finished2 = false;
+bool Renderer::finished3 = false;
+bool Renderer::finished4 = false;
 #if USE_IMGUI
 #include "Imgui\imgui.h"
 #include "Imgui\imgui_impl_win32.h"
@@ -117,7 +120,7 @@ void Renderer::Initialize(Window* window)
 
 void Renderer::OnResize(UINT width, UINT height)
 {
-	present = false;
+	
 	backbuffer.Release();
 	renderPassSwapBuffers[0].Release();
 	renderPassSwapBuffers[1].Release();
@@ -128,7 +131,7 @@ void Renderer::OnResize(UINT width, UINT height)
 	this->renderPassSwapBuffers[0] = DXHelper::CreateRenderTexture(window->GetWidth(), window->GetHeight(), device, context, &dss);
 	this->renderPassSwapBuffers[1] = DXHelper::CreateRenderTexture(window->GetWidth(), window->GetHeight(), device, context, &dss);
 	OnResizeFPlus();
-	//present = true;
+	
 }
 
 
@@ -214,9 +217,10 @@ void Renderer::RenderFrame(CameraComponent* camera, float time, float distance)
 		//swapchain->SetFullscreenState(isFullScreen, nullptr);
 		assert(SUCCEEDED(hr));
 	}
-	if (Input::Instance().GetKeyDown(dx::Keyboard::P))
+	if (/*Input::Instance().GetKeyDown(dx::Keyboard::P)*/finished1&&finished2&&finished3&&finished4)
 	{
 		present = true;
+		finished1 = finished2 = finished3 = finished4 = false;
 	}
 	
 }
@@ -1105,6 +1109,7 @@ void Renderer::OnResizeFPlus()
 	forwardPlusShader.SetComputeShader("Shaders/ForwardPlusRendering.hlsl");
 	forwardPlusShader.CompileCS(device);
 	forwardPlusShader.BindToContext(context);
+	finished1 = true;
 }
 
 void Renderer::EnableAlphaBlending()

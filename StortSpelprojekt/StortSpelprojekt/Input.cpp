@@ -47,6 +47,7 @@ void Input::SetWindow(HWND hwnd, size_t height, size_t width)
 	//can be used to confine cursor in menus/ui
 	GetClientRect(hwnd, &windowRect);
 	MapWindowPoints(hwnd, nullptr, reinterpret_cast<POINT*>(&windowRect), 2);
+	Renderer::finished2 = true;
 }
 
 void Input::ConfineMouse()

@@ -95,6 +95,7 @@ void Window::SetSize(size_t width, size_t height)
 {
 	this->width = width;
 	this->height = height;
+	Renderer::finished3 = true;
 }
 
 void Window::OnResize(size_t newWidth, size_t newHeight)

@@ -69,7 +69,7 @@ void VirtualCamera::UpdateProjectionMatrix(size_t width, size_t height, float va
 	this->lensValue = value;
 	this->farZ = farZ;
 	this->nearZ = nearZ;
-
+	
 	float fWidth = FCAST(width);
 	float fHeight = FCAST(height);
 
@@ -83,6 +83,7 @@ void VirtualCamera::UpdateProjectionMatrix(size_t width, size_t height, float va
 	{
 		dx::XMStoreFloat4x4(&projection, dx::XMMatrixOrthographicLH(fWidth, fHeight, nearZ, farZ));
 	}
+	Renderer::finished4 = true;
 }
 
 void VirtualCamera::Swap(float& a, float& b) const
