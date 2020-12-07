@@ -542,30 +542,16 @@ void GameScene::OnActivate()
 		dx::XMFLOAT3 houseWorldPos = point.AsFloat3(height);
 		house->GetTransform().SetWorldPosition(dx::XMLoadFloat3(&houseWorldPos));
 
-	/*	if (house->HasComponent<RigidBodyComponent>())
-			house->GetComponent<RigidBodyComponent>()->SetPosition(position);*/
-
 		fogCol = FCAST(state.segment) * 0.5f;
 		renderer->SetIdAndColor(state.segment, fogCol);
 
 		if (!Engine::Instance->start)
 		{
-			const float xOffset = 5.0f;
-			const float zOffset = 5.0f;
-			const float playerHeight = 1.75f / 2.0f;
-
-			float height = world.SampleHeight(houseWorldPos.x + xOffset, houseWorldPos.z + zOffset);
-
-			dx::XMVECTOR playerPosition = { houseWorldPos.x + xOffset, height + playerHeight + 0.01f, houseWorldPos.z + zOffset };
-		
-			//house->GetTransform().SetPosition({ houseWorldPos.x, 3.0f, houseWorldPos.z });
-
+			dx::XMVECTOR playerPosition = dx::XMLoadFloat3(&world.GetPlayerPositionFromHouse(house));
 			player->GetTransform().SetPosition(playerPosition);
 			player->GetComponent<RigidBodyComponent>()->SetPosition(playerPosition);
 		}
-		
-		// INUTI HUSET I GUESS
-		else if (Engine::Instance->start)
+		else if (Engine::Instance->start) 		// INUTI HUSET I GUESS
 		{
 			player->GetComponent<PlayerComp>()->SetStatsFromState(state);
 

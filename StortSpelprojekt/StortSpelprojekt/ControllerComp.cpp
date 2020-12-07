@@ -199,44 +199,11 @@ void ControllerComp::Update(const float& deltaTime)
 		{
 			if (inside && inDoorRange)
 			{
-				dx::XMVECTOR current = house->GetTransform().GetWorldPosition();
-				dx::XMStoreFloat3(&outsidePos, current);
-				const float xOffset = 5.0f;
-				const float zOffset = 5.0f;
-				const float playerHeight = 1.75f / 2.0f;
+				dx::XMVECTOR pos = dx::XMLoadFloat3(&world->GetPlayerPositionFromHouse(house));
 
-				outsidePos.x += 2.0f;
-				outsidePos.z += 2.0f;
-				outsidePos.y = this->world->SampleHeight(outsidePos.x, outsidePos.z) + 1.701f;
-
-				GetOwner()->GetTransform().SetWorldPosition(dx::XMVECTOR{ this->outsidePos.x, this->outsidePos.y, this->outsidePos.z, 0 });
-
-				float height = world->SampleHeight(outsidePos.x + xOffset, outsidePos.z + zOffset);
-
-				dx::XMVECTOR playerPosition = { outsidePos.x + xOffset, height + playerHeight + 0.01f, outsidePos.z + zOffset };
-
-				//house->GetTransform().SetPosition({ houseWorldPos.x, 3.0f, houseWorldPos.z });
-
-				GetOwner()->GetTransform().SetPosition(playerPosition);
-				GetOwner()->GetComponent<RigidBodyComponent>()->SetPosition(playerPosition);
+				GetOwner()->GetTransform().SetPosition(pos);
+				GetOwner()->GetComponent<RigidBodyComponent>()->SetPosition(pos);
 				inside = false;
-
-				/*if (first)
-				{
-					dx::XMFLOAT3 pos = this->playerComp->GetStartPosition();
-					GetOwner()->GetTransform().SetPosition(dx::XMVECTOR{ pos.x, pos.y, pos.z, 0 });
-					rbComp->SetPosition(dx::XMVECTOR{ pos.x, pos.y, pos.z, 0 });
-					inside = false;
-					first = false;
-				}
-				else
-				{
-
-
-					GetOwner()->GetTransform().SetPosition(dx::XMVECTOR{ this->outsidePos.x, this->outsidePos.y, this->outsidePos.z, 0 });
-					rbComp->SetPosition(dx::XMVECTOR{ this->outsidePos.x, this->outsidePos.y, this->outsidePos.z, 0 });
-					inside = false;
-				}*/
 			}
 			else if (inDoorRange && !inside)
 			{
