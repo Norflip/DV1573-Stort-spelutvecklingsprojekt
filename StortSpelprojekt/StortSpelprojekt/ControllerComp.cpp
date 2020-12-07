@@ -47,11 +47,11 @@ void ControllerComp::CheckGrounded()
 	//return result;
 }
 
-ControllerComp::ControllerComp(Object* cameraObject, Object* houseObject)
+ControllerComp::ControllerComp(Object* cameraObject, Object* houseObject, World* world)
 {
 	//this->fov = 60.f;
 	//this->fovTimer = 0.f;
-
+	this->world = world;
 	this->velocity = 0.f;
 	this->velocityTimer = 0.f;
 	this->crouchTimer = 0.f;
@@ -65,6 +65,7 @@ ControllerComp::ControllerComp(Object* cameraObject, Object* houseObject)
 	this->cameraOffset = { 0.f,0.f,0.f };
 	this->cameraEuler = { 0.f,45.f,0.f }; //TODO_: fix start angle (looks down or up at start)
 
+	this->house = houseObject;
 	this->cameraObject = cameraObject;
 	this->houseWalkComp = houseObject->GetComponent<NodeWalkerComp>();
 	this->rbComp = nullptr;
@@ -198,7 +199,29 @@ void ControllerComp::Update(const float& deltaTime)
 		{
 			if (inside && inDoorRange)
 			{
-				if (first)
+				dx::XMVECTOR current = house->GetTransform().GetWorldPosition();
+				dx::XMStoreFloat3(&outsidePos, current);
+				const float xOffset = 5.0f;
+				const float zOffset = 5.0f;
+				const float playerHeight = 1.75f / 2.0f;
+
+				outsidePos.x += 2.0f;
+				outsidePos.z += 2.0f;
+				outsidePos.y = this->world->SampleHeight(outsidePos.x, outsidePos.z) + 1.701f;
+
+				GetOwner()->GetTransform().SetWorldPosition(dx::XMVECTOR{ this->outsidePos.x, this->outsidePos.y, this->outsidePos.z, 0 });
+
+				float height = world->SampleHeight(outsidePos.x + xOffset, outsidePos.z + zOffset);
+
+				dx::XMVECTOR playerPosition = { outsidePos.x + xOffset, height + playerHeight + 0.01f, outsidePos.z + zOffset };
+
+				//house->GetTransform().SetPosition({ houseWorldPos.x, 3.0f, houseWorldPos.z });
+
+				GetOwner()->GetTransform().SetPosition(playerPosition);
+				GetOwner()->GetComponent<RigidBodyComponent>()->SetPosition(playerPosition);
+				inside = false;
+
+				/*if (first)
 				{
 					dx::XMFLOAT3 pos = this->playerComp->GetStartPosition();
 					GetOwner()->GetTransform().SetPosition(dx::XMVECTOR{ pos.x, pos.y, pos.z, 0 });
@@ -208,18 +231,16 @@ void ControllerComp::Update(const float& deltaTime)
 				}
 				else
 				{
+
+
 					GetOwner()->GetTransform().SetPosition(dx::XMVECTOR{ this->outsidePos.x, this->outsidePos.y, this->outsidePos.z, 0 });
 					rbComp->SetPosition(dx::XMVECTOR{ this->outsidePos.x, this->outsidePos.y, this->outsidePos.z, 0 });
 					inside = false;
-				}
+				}*/
 			}
 			else if (inDoorRange && !inside)
 			{
-				dx::XMVECTOR current = rbComp->GetPosition();
-
-				this->outsidePos = { current.m128_f32[0], current.m128_f32[1], current.m128_f32[2] };
-				dx::XMFLOAT3 interior = this->playerComp->GetInteriorPosition();
-
+				const dx::XMFLOAT3 interior = INTERIOR_POSITION;
 				GetOwner()->GetTransform().SetPosition(dx::XMVECTOR{ interior.x, interior.y + 3.0f, interior.z, 0 });
 				rbComp->SetPosition({ interior.x, interior.y + 3.0f, interior.z, 0.0f });
 
