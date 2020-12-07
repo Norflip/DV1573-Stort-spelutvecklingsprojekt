@@ -222,7 +222,7 @@ void Engine::FixedUpdateLoop(Engine* engine)
 
 void Engine::OnResize(UINT width, UINT height)
 {
-	
+	GetActiveScene()->OnResize(width, height);
 	renderer->OnResize(width, height);
 	
 }
