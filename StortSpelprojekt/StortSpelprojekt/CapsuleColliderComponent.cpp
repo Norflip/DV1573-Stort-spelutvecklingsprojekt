@@ -17,6 +17,11 @@ CapsuleColliderComponent::CapsuleColliderComponent(std::vector<float> radius, st
 
 CapsuleColliderComponent::~CapsuleColliderComponent()
 {
+	
+}
+
+void CapsuleColliderComponent::DeleteShapes()
+{
 	rp::PhysicsCommon& common = Engine::Instance->GetPhysics()->GetCommon();
 
 	for (size_t i = 0; i < colliderInformations.size(); i++)

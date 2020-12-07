@@ -139,10 +139,12 @@ int Chunk::WorldToIndexHash(float x, float z)
 void Chunk::PhysicRelease()
 {
 	Physics* physics = Engine::Instance->GetPhysics();
-	rp::PhysicsWorld* world = physics->GetWorld();
-	body->removeCollider(collider);
-	world->destroyRigidBody(body);
+
+	//body->removeCollider(collider);
+	physics->GetWorld()->destroyRigidBody(body);
+
 	physics->GetCommon().destroyHeightFieldShape(shape);
+
 
 }
 

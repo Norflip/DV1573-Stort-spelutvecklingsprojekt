@@ -25,7 +25,9 @@ public:
 	void operator=(LightManager const&) = delete;
 	std::vector<s_Light>& GetLightData() { return lightData; }
 	void SetLightData(std::vector<s_Light>& lightData) { this->lightData = lightData; }
-	size_t RegisterLight(LightComponent* pointLight);
+	size_t RegisterLight(LightComponent* light);
+	
+	void UnregisterLight(size_t index);
 
 	LightComponent* GetLight(size_t index);
 	void RemoveLight(size_t index);

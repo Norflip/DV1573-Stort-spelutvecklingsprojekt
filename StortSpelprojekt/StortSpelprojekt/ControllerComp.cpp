@@ -2,6 +2,7 @@
 #include "ControllerComp.h"
 #include "Engine.h"
 #include "GUICompass.h"
+#include "Config.h"
 
 void ControllerComp::CheckGrounded()
 {
@@ -46,7 +47,7 @@ void ControllerComp::CheckGrounded()
 	//return result;
 }
 
-ControllerComp::ControllerComp(Object* cameraObject, Object* houseObject, float sense)
+ControllerComp::ControllerComp(Object* cameraObject, Object* houseObject)
 {
 	//this->fov = 60.f;
 	//this->fovTimer = 0.f;
@@ -54,7 +55,6 @@ ControllerComp::ControllerComp(Object* cameraObject, Object* houseObject, float 
 	this->velocity = 0.f;
 	this->velocityTimer = 0.f;
 	this->crouchTimer = 0.f;
-	this->sensitivity = sense;
 
 	this->freeCam = false;
 	this->showCursor = false;
@@ -113,6 +113,7 @@ void ControllerComp::Initialize()
 
 void ControllerComp::Update(const float& deltaTime)
 {
+
 	//WASD = move
 	//space = jump 
 	//0 = reset position rotation and xClamp
@@ -143,13 +144,13 @@ void ControllerComp::Update(const float& deltaTime)
 	//	ShowCursor(this->showCursor);
 	//}
 
-	//if (KEY_DOWN(V))
-	//{
-	//	this->freeCam = !this->freeCam;
-	//	
-	//	rbComp->SetLinearVelocity({ 0.f, 0.f, 0.f });
-	//	rbComp->EnableGravity(!this->freeCam);
-	//}
+	if (KEY_DOWN(V))
+	{
+		this->freeCam = !this->freeCam;
+		
+		rbComp->SetLinearVelocity({ 0.f, 0.f, 0.f });
+		rbComp->EnableGravity(!this->freeCam);
+	}
 
 	if (KEY_DOWN(F))
 	{
@@ -240,10 +241,12 @@ void ControllerComp::Update(const float& deltaTime)
 			//Input::Instance().ConfineMouse();
 			//SetCursorPos(400, 400); //set this to coordinates middle of screen? get height/width from input?
 
+			float sensitivity = Config::GetFloat("sensitivity", 0.5f);
+
 			float xPos = Input::Instance().GetMousePosRelative().x * deltaTime;
 			float yPos = Input::Instance().GetMousePosRelative().y * deltaTime;
-			cameraEuler.x += xPos * this->sensitivity;
-			cameraEuler.y += yPos * this->sensitivity;
+			cameraEuler.x += xPos * sensitivity;
+			cameraEuler.y += yPos * sensitivity;
 			//cameraEuler2.x += xPos;
 			//cameraEuler2.y += yPos;
 

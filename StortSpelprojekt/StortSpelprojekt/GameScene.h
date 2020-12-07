@@ -6,9 +6,13 @@ class GUIFont;
 class GUICompass;
 class SpriteRenderPass;
 
+constexpr unsigned int LAST_SEGMENT = 3;
+
 ALIGN16
 class GameScene : public Scene
 {	
+
+
 public:
 	GameScene();
 	virtual ~GameScene();
@@ -24,6 +28,14 @@ public:
 	void Update(const float& deltaTime) override;
 	void FixedUpdate(const float& fixedDeltaTime) override;
 	void Render() override;
+
+#if USE_IMGUI
+	void OnIMGUIFrame() override;
+#endif
+	static bool immortal;
+	static bool drawColliders;
+	float VramUsage();
+	float RamUsage();
 
 	ALIGN16_ALLOC;
 

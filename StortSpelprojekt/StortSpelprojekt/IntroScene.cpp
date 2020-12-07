@@ -4,10 +4,11 @@
 #include "GUISprite.h"
 #include "GUIFont.h"
 #include "Engine.h"
+#include "Config.h"
 
 IntroScene::IntroScene() : Scene("IntroScene")
 {
-	
+
 }
 
 IntroScene::~IntroScene()
@@ -29,7 +30,7 @@ void IntroScene::InitializeObjects()
 	this->player = cameraObject;
 	AddObjectToRoot(cameraObject);
 
-	ShowCursor(true); 
+	ShowCursor(true);
 
 	AudioMaster::Instance().PlaySoundEvent("menusound");
 }
@@ -45,21 +46,21 @@ void IntroScene::InitializeGUI()
 	GUISprite* optionSprite = new GUISprite(*renderer, "Textures/Options.png", 100, 400, 0, DrawDirection::Default, ClickFunction::Clickable);
 	GUISprite* loreSprite = new GUISprite(*renderer, "Textures/Lore.png", 100, 550, 0, DrawDirection::Default, ClickFunction::Clickable);
 	GUISprite* quitSprite = new GUISprite(*renderer, "Textures/Exit.png", 100, 850, 0, DrawDirection::Default, ClickFunction::Clickable);
-	GUISprite* backSprite = new GUISprite(*renderer, "Textures/BackButton.png", 100, 100, 0, DrawDirection::Default, ClickFunction::Clickable,GuiGroup::HowToPlay);
+	GUISprite* backSprite = new GUISprite(*renderer, "Textures/BackButton.png", 100, 100, 0, DrawDirection::Default, ClickFunction::Clickable, GuiGroup::HowToPlay);
 	GUISprite* loadSprite = new GUISprite(*renderer, "Textures/Loading.png", 0, 0, 0, DrawDirection::Default, ClickFunction::NotClickable, GuiGroup::Load);
 	GUISprite* musicSprite = new GUISprite(*renderer, "Textures/Music.png", 110, 250, 0, DrawDirection::Default, ClickFunction::NotClickable, GuiGroup::Options);
 	musicSprite->SetVisible(false);
 	loadSprite->SetVisible(false);
-	GUISprite* soundEffectsSprite = new GUISprite(*renderer, "Textures/SoundeffectsButton.png", 160, 400, 0, DrawDirection::Default, ClickFunction::NotClickable, GuiGroup::Options);	
+	GUISprite* soundEffectsSprite = new GUISprite(*renderer, "Textures/SoundeffectsButton.png", 160, 400, 0, DrawDirection::Default, ClickFunction::NotClickable, GuiGroup::Options);
 	soundEffectsSprite->SetVisible(false);
 
-	
-	GUISprite* sensitivitySprite = new GUISprite(*renderer, "Textures/sensButton.png", 140,550,0,DrawDirection::Default, ClickFunction::NotClickable, GuiGroup::Options);
+
+	GUISprite* sensitivitySprite = new GUISprite(*renderer, "Textures/sensButton.png", 140, 550, 0, DrawDirection::Default, ClickFunction::NotClickable, GuiGroup::Options);
 	sensitivitySprite->SetVisible(false);
 
 
 
-	GUISprite* credits = new GUISprite(*renderer, "Textures/credits.png",100, 700, 0, DrawDirection::Default, ClickFunction::Clickable);
+	GUISprite* credits = new GUISprite(*renderer, "Textures/credits.png", 100, 700, 0, DrawDirection::Default, ClickFunction::Clickable);
 	credits->AddGroup(GuiGroup::Default);
 
 
@@ -79,7 +80,7 @@ void IntroScene::InitializeGUI()
 	GUISprite* higherSoundEffectMusic = new GUISprite(*renderer, "Textures/higherVolume.png", 1150, 400, 0, DrawDirection::Default, ClickFunction::Clickable, GuiGroup::Options);
 	lowerSoundEffectMusic->SetVisible(false);
 	volumeSoundEffectMusic->SetVisible(false);
-	higherSoundEffectMusic->SetVisible(false);	
+	higherSoundEffectMusic->SetVisible(false);
 	volumeBarFillSoundeffects->SetVisible(false);
 	volumeBarFillSoundeffects->SetScale(AudioMaster::Instance().GetVolume(AudioTypes::Sound), 1.0f);
 
@@ -93,12 +94,12 @@ void IntroScene::InitializeGUI()
 	//volumeSensitivtySprite->SetVisible(false);
 	higherSensitivitySprite->SetVisible(false);
 	//sensitivityBarFill->SetScale(this->sensitivity, 1.0f);
-	GUIFont* sensitivityDisplay = new GUIFont(*renderer, "hi", windowWidth / 2 +30, 585);
+	GUIFont* sensitivityDisplay = new GUIFont(*renderer, "hi", windowWidth / 2 + 30, 585);
 	sensitivityDisplay->SetVisible(false);
 	sensitivityDisplay->AddGroup(GuiGroup::Font);
 	sensitivityDisplay->AddGroup(GuiGroup::Options);
 	sensitivityDisplay->RemoveGroup(GuiGroup::Default);
-	
+
 
 
 	GUIFont* fpsDisplay = new GUIFont(*renderer, "fps", windowWidth / 2, 50);
@@ -123,13 +124,13 @@ void IntroScene::InitializeGUI()
 	howToPlayString += "Put the fuel into the fire inside the house so that the house can keep moving\n";
 	howToPlayString += "But be aware of the monster which resides in the forest\n";
 
-	GUIFont* howToPlayText = new GUIFont(*renderer,howToPlayString, 100, 250);
+	GUIFont* howToPlayText = new GUIFont(*renderer, howToPlayString, 100, 250);
 	howToPlayText->SetFontSize({ 0.7f,0.7f });
 	howToPlayText->SetVisible(false);
 	howToPlayText->RemoveGroup(GuiGroup::Default);
 	howToPlayText->AddGroup(GuiGroup::HowToPlay);
 	howToPlayText->AddGroup(GuiGroup::Font);
-	
+
 	//
 	// TEXT FOR HOWTOPLAY	
 	std::string loreString = "";
@@ -137,7 +138,7 @@ void IntroScene::InitializeGUI()
 	loreString += "The farm was formerly called Fulbonas,\n";
 	loreString += "but the former owner Jacob von der Linde changed the name in the 1660s to honor his daughter Catharina. \n";
 	loreString += "Many findings show that the area was already inhabited over 6, 000 years ago.";
-	
+
 	GUIFont* loreText = new GUIFont(*renderer, loreString, 100, 250);
 	loreText->SetFontSize({ 0.5f,0.5f });
 	loreText->SetVisible(false);
@@ -195,6 +196,16 @@ void IntroScene::OnActivate()
 {
 	input.SetMouseMode(dx::Mouse::MODE_ABSOLUTE);
 	renderer->AddRenderPass(guiManager);
+
+	float musicVolume = Config::GetFloat("volumeMusic", 0.5f);
+	AudioMaster::Instance().SetVolume(AudioTypes::Music, musicVolume);
+	static_cast<GUISprite*>(guiManager->GetGUIObject("volumeBarFillMusic"))->SetScale(musicVolume, 1);
+
+	float soundVolume = Config::GetFloat("volumeSound", 0.5f);
+	AudioMaster::Instance().SetVolume(AudioTypes::Sound, soundVolume);
+	static_cast<GUISprite*>(guiManager->GetGUIObject("volumeBarFillSoundeffects"))->SetScale(soundVolume, 1);
+
+	configChanged = false;
 }
 
 void IntroScene::OnDeactivate()
@@ -230,7 +241,7 @@ void IntroScene::Update(const float& deltaTime)
 		//AudioMaster::Instance().StopSoundEvent("menusound");
 		//Engine::Instance->SwitchScene(SceneIndex::INTRO);
 		//return;
-		
+
 	}
 	//
 
@@ -239,20 +250,30 @@ void IntroScene::Update(const float& deltaTime)
 		AudioMaster::Instance().StopSoundEvent("menusound");
 		Engine::Instance->Exit();
 		return;
-	}	
+	}
 
 	if (static_cast<GUISprite*>(guiManager->GetGUIObject("loreSprite"))->IsClicked())
 		guiManager->ChangeGuiGroup(GuiGroup::Lore);
 
 	if (static_cast<GUISprite*>(guiManager->GetGUIObject("optionSprite"))->IsClicked())
+	{
+		this->sensitivity = Config::GetFloat("sensitivity", 0.5f);
 		guiManager->ChangeGuiGroup(GuiGroup::Options);
+	}
 
-	 if (static_cast<GUISprite*>(guiManager->GetGUIObject("howToPlaySprite"))->IsClicked())
+	if (static_cast<GUISprite*>(guiManager->GetGUIObject("howToPlaySprite"))->IsClicked())
 		guiManager->ChangeGuiGroup(GuiGroup::HowToPlay);
 
-	if (static_cast<GUISprite*>(guiManager->GetGUIObject("backSprite"))->IsClicked())	
-		guiManager->ChangeGuiGroup(GuiGroup::Default);
+	if (static_cast<GUISprite*>(guiManager->GetGUIObject("backSprite"))->IsClicked())
+	{
+		if (configChanged)
+		{
+			Config::Save();
+			configChanged = false;
+		}
 
+		guiManager->ChangeGuiGroup(GuiGroup::Default);
+	}
 
 	/* Volume stuff for music */
 	if (static_cast<GUISprite*>(guiManager->GetGUIObject("lowerMusicSprite"))->IsClicked())
@@ -262,6 +283,9 @@ void IntroScene::Update(const float& deltaTime)
 			currentVol -= 0.1f;
 		else
 			currentVol = 0.0f;
+
+		Config::SetFloat("volumeMusic", currentVol);
+		configChanged = true;
 
 		AudioMaster::Instance().SetVolume(AudioTypes::Music, currentVol);
 		static_cast<GUISprite*>(guiManager->GetGUIObject("volumeBarFillMusic"))->SetScale(currentVol, 1);
@@ -275,10 +299,13 @@ void IntroScene::Update(const float& deltaTime)
 		else
 			currentVol = 1.0f;
 
+		Config::SetFloat("volumeMusic", currentVol);
+		configChanged = true;
+
 		AudioMaster::Instance().SetVolume(AudioTypes::Music, currentVol);
 		static_cast<GUISprite*>(guiManager->GetGUIObject("volumeBarFillMusic"))->SetScale(currentVol, 1);
 	}
-	
+
 
 	/* Volume stuff for soundeffects */
 	if (static_cast<GUISprite*>(guiManager->GetGUIObject("lowerSoundeffectSprite"))->IsClicked())
@@ -288,6 +315,9 @@ void IntroScene::Update(const float& deltaTime)
 			currentVol -= 0.1f;
 		else
 			currentVol = 0.0f;
+
+		Config::SetFloat("volumeSound", currentVol);
+		configChanged = true;
 
 		AudioMaster::Instance().SetVolume(AudioTypes::Sound, currentVol);
 		static_cast<GUISprite*>(guiManager->GetGUIObject("volumeBarFillSoundeffects"))->SetScale(currentVol, 1);
@@ -301,20 +331,25 @@ void IntroScene::Update(const float& deltaTime)
 		else
 			currentVol = 1.0f;
 
+		Config::SetFloat("volumeSound", currentVol);
+		configChanged = true;
+
 		AudioMaster::Instance().SetVolume(AudioTypes::Sound, currentVol);
 		static_cast<GUISprite*>(guiManager->GetGUIObject("volumeBarFillSoundeffects"))->SetScale(currentVol, 1);
 	}
 
 
 	/* Volume stuff for sensitivity */
-	if(static_cast<GUISprite*>(guiManager->GetGUIObject("lowerSensitivitySprite"))->IsClicked()) 
+	if (static_cast<GUISprite*>(guiManager->GetGUIObject("lowerSensitivitySprite"))->IsClicked())
 	{
 		//lower sense
-		//float currentSense = this->sensitivity;
 		if (this->sensitivity > 0.05f)
 			this->sensitivity -= 0.05f;
 		else
 			this->sensitivity = 0.05f;
+
+		Config::SetFloat("sensitivity", sensitivity);
+		configChanged = true;
 		//static_cast<GUISprite*>(guiManager->GetGUIObject("sensitivityBarFill"))->SetScale(this->sensitivity, 1.f);
 	}
 	if (static_cast<GUISprite*>(guiManager->GetGUIObject("higherSensitivitySprite"))->IsClicked())
@@ -324,6 +359,9 @@ void IntroScene::Update(const float& deltaTime)
 			this->sensitivity += 0.05f;
 		else
 			this->sensitivity = 1.0f;
+
+		Config::SetFloat("sensitivity", sensitivity);
+		configChanged = true;
 		//static_cast<GUISprite*>(guiManager->GetGUIObject("sensitivityBarFill"))->SetScale(sensitivity, 1.f);
 	}
 

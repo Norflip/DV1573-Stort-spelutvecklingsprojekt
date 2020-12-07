@@ -10,12 +10,18 @@ Scene::Scene(const std::string& debugName) : input(Input::Instance()), debugName
 	renderer = nullptr;
 	camera = nullptr;
 	this->root = new Object("root");
-	this->sensitivity = 0.5f;
 }
 
 Scene::~Scene()
 {
+	std::unordered_set<size_t> registry;
+	size_t conflicts = 0;
+	DebugCheckForObjectIDConflict(root, registry, conflicts);
+
+
 	delete root;
+
+	int ost = 100;
 	root = nullptr;	
 }
 
@@ -164,4 +170,5 @@ void Scene::DebugCheckForObjectIDConflict(Object* current, std::unordered_set<si
 	for (size_t i = 0; i < children.size(); i++)
 		DebugCheckForObjectIDConflict(children[i], registry, conflicCounter);
 }
+
 

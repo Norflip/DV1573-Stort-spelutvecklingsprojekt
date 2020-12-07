@@ -120,9 +120,7 @@ private:
 template<typename T>
 inline bool Object::HasComponent() const
 {
-	size_t AAA = GetComponentTypeID<T>();
-
-	return componentBitSet[AAA];
+	return componentBitSet[GetComponentTypeID<T>()];
 }
 
 template<typename T, typename ...TArgs>

@@ -31,7 +31,7 @@ PlayerComp::PlayerComp(Renderer* renderer, CameraComponent* camComp, Object* hou
 	this->throwStrength = 50;
 	this->hpLossDist = 70;
 	this->maxDist = 130;
-	this->holdAngle = dx::SimpleMath::Vector3( 0.3f, -0.4f, 0.8f );
+	this->holdAngle = dx::SimpleMath::Vector3(0.3f, -0.4f, 0.8f);
 	this->house = house;
 	this->hpLossPerDistance = 0.0001f;
 	//Reset();
@@ -94,7 +94,7 @@ void PlayerComp::Update(const float& deltaTime)
 		guiMan->GetGUIObject("door")->SetVisible(false);
 		guiMan->GetGUIObject("fuel")->SetVisible(false);
 	}
-	
+
 	pickedUpLastFrame = false;
 
 	if (!finishedTutorial)
@@ -109,8 +109,8 @@ void PlayerComp::FixedUpdate(const float& fixedDeltaTime)
 	sm::Vector3 playerPos = this->GetOwner()->GetTransform().GetPosition();
 	distance = playerPos.Distance(playerPos, housePos);
 
-		//temp fix for wierd clock start at 
-	//if (TARGET_FIXED_DELTA < 5.f)
+	//temp fix for wierd clock start at 
+//if (TARGET_FIXED_DELTA < 5.f)
 	if (finishedTutorial)
 	{
 		{
@@ -127,37 +127,40 @@ void PlayerComp::FixedUpdate(const float& fixedDeltaTime)
 
 			}
 
-			// lose food
-			food -= TARGET_FIXED_DELTA * foodLossPerSecond;
-
-#if  !IMMORTAL
-			if ((health <= 0))
-				Engine::Instance->SwitchScene(SceneIndex::GAME_OVER);
-#endif //  !IMMORTAL
-
-			if (food < 0)
+			if (!GameScene::immortal)
 			{
-				foodEmpty = true;
-			}
-			else
-				foodEmpty = false;
+				// lose food
+				food -= TARGET_FIXED_DELTA * foodLossPerSecond;
 
-			if (foodEmpty)
-			{
-				health -= TARGET_FIXED_DELTA * healthLossPerSecond;
-				foodLossPerSecond = 0;
-			}
-			if (!foodEmpty)
-			{
-				foodLossPerSecond = 1.2f;
+				if ((health <= 0))
+					Engine::Instance->SwitchScene(SceneIndex::GAME_OVER);
+
+				if (food < 0)
+				{
+					foodEmpty = true;
+				}
+				else
+					foodEmpty = false;
+
+				if (foodEmpty)
+				{
+					health -= TARGET_FIXED_DELTA * healthLossPerSecond;
+					foodLossPerSecond = 0;
+				}
+				if (!foodEmpty)
+				{
+					foodLossPerSecond = 1.2f;
+				}
+
+				if (distance > hpLossDist && !GetOwner()->GetComponent<ControllerComp>()->GetInside())
+					health -= distance * hpLossPerDistance;
+
+				// around 90
+				if (distance > maxDist && !GetOwner()->GetComponent<ControllerComp>()->GetInside())
+					health = 0;
 			}
 
-			if (distance > hpLossDist && !GetOwner()->GetComponent<ControllerComp>()->GetInside())
-				health -= distance * hpLossPerDistance;
 
-			// around 90
-			if (distance > maxDist && !GetOwner()->GetComponent<ControllerComp>()->GetInside())
-				health = 0;
 		}
 	}
 }
@@ -206,7 +209,7 @@ void PlayerComp::PickUpObject()
 					arms->RemoveFlag(ObjectFlag::ENABLED);
 					arms->GetComponent<PlayerAnimHandlerComp>()->SetEnabled(false);
 					if (holding->HasComponent<ParticleSystemComponent>())
-							holding->GetComponent<ParticleSystemComponent>()->SetActive(false);
+						holding->GetComponent<ParticleSystemComponent>()->SetActive(false);
 
 				}
 			}
@@ -251,7 +254,7 @@ void PlayerComp::PickUpObject()
 					}*/
 
 					if (hit.object->HasComponent<ParticleSystemComponent>())
-							hit.object->GetComponent<ParticleSystemComponent>()->SetActive(false);
+						hit.object->GetComponent<ParticleSystemComponent>()->SetActive(false);
 
 					hit.object->GetComponent<PickupComponent>()->SetActive(false);
 					//RigidBodyComponent* rbComp = hit.object->GetComponent<RigidBodyComponent>();
@@ -285,7 +288,7 @@ void PlayerComp::DropObject()
 			//objectRb->setLinearVelocity({ dx::XMVectorGetX(camRot) * forceAmount ,  dx::XMVectorGetY(camRot) * forceAmount,  dx::XMVectorGetZ(camRot) * forceAmount });
 
 			if (holding->HasComponent<ParticleSystemComponent>())
-					holding->GetComponent<ParticleSystemComponent>()->SetActive(true);
+				holding->GetComponent<ParticleSystemComponent>()->SetActive(true);
 
 			float tossSpeed = throwStrength / rbComp->GetMass();
 			objectRb->setLinearVelocity({ dx::XMVectorGetX(camRot) * tossSpeed ,  dx::XMVectorGetY(camRot) * tossSpeed,  dx::XMVectorGetZ(camRot) * tossSpeed });
@@ -348,7 +351,7 @@ void PlayerComp::RayCast(const float& deltaTime)
 					fuel = 100.0f;
 
 				if (holding->HasComponent<ParticleSystemComponent>())
-						holding->GetComponent<ParticleSystemComponent>()->SetActive(false);
+					holding->GetComponent<ParticleSystemComponent>()->SetActive(false);
 
 				holding->GetComponent<PickupComponent>()->SetActive(false);
 				holding = nullptr;
@@ -419,15 +422,15 @@ void PlayerComp::RayCast(const float& deltaTime)
 				RigidBodyComponent* rbComp = hit.object->GetComponent<RigidBodyComponent>();
 				rp::RigidBody* objectRb = rbComp->GetRigidBody();
 				hit.object->GetComponent<BoxColliderComponent>()->SetRotation(0, { 5, 5, 5, 5 });
-		
+
 				clickable->GetComponent<SelectableComponent>()->SetActive(true);
-				
+
 			}
 		}
 	}
 
 	//ATTACK ENEMIES
-	if (LMOUSE_DOWN && holding == nullptr && 
+	if (LMOUSE_DOWN && holding == nullptr &&
 		arms->GetComponent< PlayerAnimHandlerComp>()->GetCooldown() > 1.0f && enemyHit == false)
 	{
 		if (physics->RaytestSingle(ray, 5.0f, hit, FilterGroups::ENEMIES))
@@ -439,7 +442,7 @@ void PlayerComp::RayCast(const float& deltaTime)
 				if (stats != nullptr && stats->IsEnabled() && stats->GetHealth() >= 0.0f)
 				{
 					enemyHit = true;
-					
+
 
 					//if (stats->GetHealth() <= 0.0f)
 					//{
@@ -458,7 +461,7 @@ void PlayerComp::RayCast(const float& deltaTime)
 
 		/*else if (physics->RaytestSingle(ray, 5.0f, hit, FilterGroups::PROPS))
 		{
-			AudioMaster::Instance().PlaySoundEvent("choptree");			
+			AudioMaster::Instance().PlaySoundEvent("choptree");
 		}*/
 	}
 
@@ -474,7 +477,7 @@ void PlayerComp::RayCast(const float& deltaTime)
 			enemyHit = false;
 		}
 	}
-	
+
 	// Health drop
 	healthDippingBar->SetScaleBars(ReverseAndClamp(health));
 
@@ -482,7 +485,7 @@ void PlayerComp::RayCast(const float& deltaTime)
 	//healthDippingBar->SetScaleDipping(0);
 }
 
-float PlayerComp::GetDangerDistance() 
+float PlayerComp::GetDangerDistance()
 {
 	//IF WE ARE INSIDE
 	if (GetOwner()->GetComponent<ControllerComp>()->GetInside())

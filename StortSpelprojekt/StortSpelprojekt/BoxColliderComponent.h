@@ -12,6 +12,8 @@ public:
 	BoxColliderComponent(dx::XMFLOAT3 extends, dx::XMFLOAT3 position);
 	virtual~BoxColliderComponent();
 
+	void DeleteShapes() override;
+
 	void InitializeCollider (Physics* physics) override;
 	dx::XMFLOAT3 GetExtends(size_t index = 0) const { return this->extends[0]; }
 
