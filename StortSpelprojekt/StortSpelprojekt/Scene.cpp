@@ -25,6 +25,11 @@ Scene::~Scene()
 	root = nullptr;	
 }
 
+void Scene::OnResize(UINT width, UINT height)
+{
+	this->camera->UpdateProjectionMatrix((size_t)width, (size_t)height, this->camera->GetFOV(), this->camera->GetNearZ(), this->camera->GetFarZ());
+}
+
 void Scene::SetDepedencies(ResourceManager* resources, Renderer* renderer, Physics* physics, Window* window)
 {
 	this->resources = resources;

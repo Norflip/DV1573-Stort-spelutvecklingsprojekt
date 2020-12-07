@@ -68,7 +68,7 @@ public:
 	virtual ~Renderer();
 
 	void Initialize(Window* window);
-
+	void OnResize(UINT width, UINT height);
 	void DrawQueueToTarget(RenderQueue& queue, CameraComponent* camera);
 	void RenderFrame(CameraComponent* camera, float time, float distance = 1.f);
 	void RenderFrame(CameraComponent* camera, float time, float distance, RenderTexture& target, bool drawGUI = false, bool applyRenderPasses = true);
@@ -103,7 +103,7 @@ public:
 
 	void InitForwardPlus(VirtualCamera* camera);
 	void UpdateForwardPlus(CameraComponent* camera);
-	//std::vector<UINT>& cullLightsOnCPU();
+	
 	void SetIdAndColor(int id, float color);
 
 	void ListParticle(Particlesys* psys) { this->particleList.push_back(psys); }
@@ -126,7 +126,7 @@ private:
 	void DrawRenderItemParticles(const RenderItem& item, CameraComponent* camera);
 	void DrawRenderItemNewParticles(const RenderItem& item, CameraComponent* camera);
 	void DrawBatch(const Batch& batch, CameraComponent* camera);
-
+	void OnResizeFPlus();
 	void SetObjectBufferValues(const CameraComponent* camera, dx::XMMATRIX world, bool transpose);
 	Mesh* CreateScreenQuad();
 

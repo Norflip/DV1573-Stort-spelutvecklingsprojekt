@@ -65,7 +65,7 @@ LRESULT Window::WindowProc(HWND hwnd, UINT umsg, WPARAM wParam, LPARAM lParam)
 		case WM_DESTROY:
 			PostQuitMessage(0);
 			return 0;
-
+		
 		case WM_PAINT:
 		{
 			PAINTSTRUCT ps;
@@ -77,4 +77,10 @@ LRESULT Window::WindowProc(HWND hwnd, UINT umsg, WPARAM wParam, LPARAM lParam)
 	}
 
 	return DefWindowProc(hwnd, umsg, wParam, lParam);
+}
+
+void Window::Resize(size_t width, size_t height)
+{
+	this->width = width;
+	this->height = height;
 }

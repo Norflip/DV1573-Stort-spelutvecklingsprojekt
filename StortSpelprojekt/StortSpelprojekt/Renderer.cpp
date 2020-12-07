@@ -114,6 +114,13 @@ void Renderer::Initialize(Window* window)
 	DXHelper::CreateInstanceBuffer(device, MAX_BATCH_COUNT, sizeof(dx::XMFLOAT4X4), tmpBatchInstanceData, &batchInstanceBuffer);
 }
 
+void Renderer::OnResize(UINT width, UINT height)
+{
+	DXHelper::OnResize(width, height, swapchain);
+	
+	OnResizeFPlus();
+}
+
 
 void Renderer::DrawQueueToTarget(RenderQueue& queue, CameraComponent* camera)
 {
@@ -1042,6 +1049,44 @@ void Renderer::UpdateForwardPlus(CameraComponent* camera)
 	context->PSSetShaderResources(11, 1, &nullSRV);
 	
 	//context->Dispatch(1, 1, 1);
+}
+
+void Renderer::OnResizeFPlus()
+{
+	forwardPlusShader.Unbind(context);
+	forwardPlusShader.SetComputeShader("Shaders/ForwardPlusRendering.hlsl", "ComputeFrustums");
+	forwardPlusShader.CompileCS(device);
+	forwardPlusShader.BindToContext(context);
+
+	this->width = window->GetWidth();
+	this->height = window->GetHeight();
+	int screenWidth = std::max(window->GetWidth(), 1u);
+	int screenHeight = std::max(window->GetHeight(), 1u);
+	int lightCullingBlockSize = 32;
+	this->numThreads = dx::XMUINT3(UICAST(std::ceil((float)screenWidth / (float)lightCullingBlockSize)), UICAST(std::ceil((float)screenHeight / (float)lightCullingBlockSize)), 1);
+	this->numThreadGroups = dx::XMUINT3(UICAST(std::ceil((float)numThreads.x / (float)lightCullingBlockSize)), UICAST(std::ceil((float)numThreads.y / (float)lightCullingBlockSize)), 1);
+
+	//Dispatch Forward+
+
+	cb_DispatchParams& dataDP = dispatchParamsBuffer.GetData();
+	dataDP.numThreadGroups = dx::XMUINT4(numThreadGroups.x, numThreadGroups.y, numThreadGroups.z, 1);
+	dataDP.numThreads = dx::XMUINT4(numThreads.x, numThreads.y, numThreads.z, 1);
+	dispatchParamsBuffer.SetData(dataDP);
+	dispatchParamsBuffer.UpdateBuffer(context);
+
+	//ScreenToViewParams Forward+
+	cb_ScreenToViewParams& dataSVP = screenToViewParams.GetData();
+	
+	dataSVP.inverseProjection = sceneBuffer.GetData().invProjection;
+	dataSVP.screenDimensions.x = FCAST(window->GetWidth());
+	dataSVP.screenDimensions.y = FCAST(window->GetHeight());
+	screenToViewParams.SetData(dataSVP);
+	screenToViewParams.UpdateBuffer(context);
+
+	forwardPlusShader.Unbind(context);
+	forwardPlusShader.SetComputeShader("Shaders/ForwardPlusRendering.hlsl");
+	forwardPlusShader.CompileCS(device);
+	forwardPlusShader.BindToContext(context);
 }
 
 void Renderer::EnableAlphaBlending()

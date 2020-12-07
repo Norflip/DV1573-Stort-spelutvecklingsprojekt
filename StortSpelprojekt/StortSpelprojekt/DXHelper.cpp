@@ -3,7 +3,7 @@
 void DXHelper::CreateSwapchain(const Window& window, _Out_ ID3D11Device** device, _Out_ ID3D11DeviceContext** context, _Out_ IDXGISwapChain** swapchain)
 
 {
-
+	
 	size_t width = window.GetWidth();
 	size_t height = window.GetHeight();
 
@@ -16,7 +16,7 @@ void DXHelper::CreateSwapchain(const Window& window, _Out_ ID3D11Device** device
 	DXGI_SWAP_CHAIN_DESC swapChainDescription;
 	ZeroMemory(&swapChainDescription, sizeof(DXGI_SWAP_CHAIN_DESC));
 
-	swapChainDescription.BufferCount = 2;	 // one back buffer???
+	swapChainDescription.BufferCount = 2;
 	swapChainDescription.BufferDesc.Width = width;
 	swapChainDescription.BufferDesc.Height = height;
 	swapChainDescription.BufferDesc.Format = DXGI_FORMAT_R8G8B8A8_UNORM;
@@ -131,7 +131,7 @@ void DXHelper::CreateRSState(ID3D11Device* device, ID3D11RasterizerState** cullB
 
 RenderTexture DXHelper::CreateBackbuffer(size_t width, size_t height, ID3D11Device* device,  IDXGISwapChain* swapchain)
 {
-
+	
 	RenderTexture rt;
 	rt.width = width;
 	rt.height = height;
@@ -624,6 +624,17 @@ ID3D11RasterizerState* DXHelper::CreateRasterizerState(D3D11_CULL_MODE cullMode,
 	assert(SUCCEEDED(resultCreateRasterizer));
 
 	return rasterizerState;
+}
+
+void DXHelper::OnResize(UINT width, UINT height, IDXGISwapChain* swapchain)
+{
+	UINT swapchainFlags = D3D11_CREATE_DEVICE_BGRA_SUPPORT;
+#ifdef  _DEBUG
+	swapchainFlags |= D3D11_CREATE_DEVICE_DEBUG;
+#endif
+	HRESULT hr = swapchain->ResizeBuffers(2, width, height, DXGI_FORMAT_R8G8B8A8_UNORM, swapchainFlags);
+
+	assert(SUCCEEDED(hr));
 }
 
 

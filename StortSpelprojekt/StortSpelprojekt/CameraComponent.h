@@ -21,7 +21,9 @@ public:
 
 	void SetFOV(float fov);
 	dx::XMMATRIX GetViewMatrix() const;
-
+	const float GetFOV() {return fov; }
+	const float GetNearZ() { return CAMERA_NEAR_Z; }
+	const float GetFarZ() { return CAMERA_FAR_Z; }
 	void UpdateView();
 	bool InView(const Bounds& bounds, const dx::XMMATRIX world);
 	Ray MouseToRay(const unsigned int& x, const unsigned int& y) const;
@@ -29,5 +31,7 @@ public:
 
 private:
 	std::vector<dx::XMFLOAT4> planes;
+	float fov;
+	
 };
 

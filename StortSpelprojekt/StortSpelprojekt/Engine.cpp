@@ -96,6 +96,12 @@ void Engine::Run()
 
 			if (msg.message == WM_QUIT)
 				Exit();
+			else if (msg.message == WM_SIZE)
+			{
+				UINT newWidth = LOWORD(msg.lParam);
+				UINT newHeight = HIWORD(msg.lParam);
+				OnResize(newWidth, newHeight);
+			}
 		}
 		else
 		{
@@ -212,4 +218,11 @@ void Engine::FixedUpdateLoop(Engine* engine)
 
 		timeLastFrame = currentTime;
 	}
+}
+
+void Engine::OnResize(UINT width, UINT height)
+{
+	
+	renderer->OnResize(width, height);
+	
 }
