@@ -21,13 +21,11 @@ private:
 
 	bool isWalking;
 	float length;
-	//dx::XMFLOAT3 lastPos;
 	dx::XMFLOAT3 moveVec;
 	SkeletonMeshComponent* base;
 	SkeletonMeshComponent* legs;
 	RigidBodyComponent* rbComp;
 	PlayerComp* playerComp;
-	//dx::XMFLOAT3 pos3;
 	World* world;
 
 	void StartAnim();

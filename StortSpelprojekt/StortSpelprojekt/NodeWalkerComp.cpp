@@ -10,9 +10,7 @@ NodeWalkerComp::NodeWalkerComp()
 	this->canWalk = false;
 	this->isWalking = true;
 	this->length = 0.f;
-	//this->lastPos = { 0,0,0 };
 	this->moveVec = { 0,0,0 };
-	//this->pos3 = { 0,0,0 };
 }
 
 NodeWalkerComp::~NodeWalkerComp()
