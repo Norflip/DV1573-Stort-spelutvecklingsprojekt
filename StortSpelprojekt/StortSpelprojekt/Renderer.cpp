@@ -122,7 +122,7 @@ void Renderer::OnResize(UINT width, UINT height)
 	renderPassSwapBuffers[0].Release();
 	renderPassSwapBuffers[1].Release();
 	dss->Release();
-	DXHelper::OnResize(width, height, swapchain);
+	DXHelper::OnResize(width, height, swapchain, present);
 	this->backbuffer = DXHelper::CreateBackbuffer(window->GetWidth(), window->GetHeight(), device, swapchain);
 	this->midbuffer = DXHelper::CreateRenderTexture(window->GetWidth(), window->GetHeight(), device, context, &dss);
 	this->renderPassSwapBuffers[0] = DXHelper::CreateRenderTexture(window->GetWidth(), window->GetHeight(), device, context, &dss);
@@ -213,6 +213,10 @@ void Renderer::RenderFrame(CameraComponent* camera, float time, float distance)
 		HRESULT hr = swapchain->Present(0, 0); //1 here?
 		//swapchain->SetFullscreenState(isFullScreen, nullptr);
 		assert(SUCCEEDED(hr));
+	}
+	if (Input::Instance().GetKeyDown(dx::Keyboard::P))
+	{
+		present = true;
 	}
 	
 }

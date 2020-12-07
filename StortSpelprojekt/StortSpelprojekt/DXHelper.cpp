@@ -626,7 +626,7 @@ ID3D11RasterizerState* DXHelper::CreateRasterizerState(D3D11_CULL_MODE cullMode,
 	return rasterizerState;
 }
 
-void DXHelper::OnResize(UINT width, UINT height, IDXGISwapChain* swapchain)
+void DXHelper::OnResize(UINT width, UINT height, IDXGISwapChain* swapchain, bool& test)
 {
 	UINT swapchainFlags = D3D11_CREATE_DEVICE_BGRA_SUPPORT;
 #ifdef  _DEBUG
@@ -635,6 +635,7 @@ void DXHelper::OnResize(UINT width, UINT height, IDXGISwapChain* swapchain)
 	HRESULT hr = swapchain->ResizeBuffers(0, 0, 0, DXGI_FORMAT_UNKNOWN, 0);
 	
 	assert(SUCCEEDED(hr));
+	//test = true;
 }
 
 

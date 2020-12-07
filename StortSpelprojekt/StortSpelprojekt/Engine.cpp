@@ -106,7 +106,10 @@ void Engine::Run()
 				}
 				
 			}*/
-			
+			/*if (Input::Instance().GetKeyDown(dx::Keyboard::P))
+			{
+				renderer->present = true;
+			}*/
 			
 		}
 		
@@ -150,10 +153,7 @@ void Engine::Run()
 			}
 			
 			timeLastFrame = currentTime;
-			if (Input::Instance().GetKeyDown(dx::Keyboard::P))
-			{
-				renderer->present = true;
-			}
+			
 			if (window.GetShouldResize())
 			{
 				OnResize((size_t)window.GetChangedWidth(), (size_t)window.GetChangedHeight());
@@ -216,6 +216,7 @@ void Engine::FixedUpdateLoop(Engine* engine)
 
 	while (engine->IsRunning())
 	{
+		
 		auto elapsed = std::chrono::duration<double, std::milli>(std::chrono::high_resolution_clock::now() - startTimePoint);
 		float currentTime = static_cast<float>(elapsed.count() / 1000.0f);
 		float deltaTime = currentTime - timeLastFrame;
