@@ -365,26 +365,6 @@ void Renderer::RenderFrame(CameraComponent* camera, float time, float distance, 
 
 }
 
-void Renderer::RenderEmptyGUIFrame()
-{
-	//ClearRenderTarget(backbuffer);
-	//SetRenderTarget(backbuffer, false);
-
-	//context->PSSetShaderResources(0, 1, &backbuffer.srv);
-	//DrawScreenQuad(screenQuadMaterial);
-
-	for (auto i = passes.begin(); i < passes.end(); i++)
-	{
-		RenderPass* pass = *i;
-		if (pass->IsEnabled() && pass->GetType() == RenderPass::PassType::GUI)
-		{
-			pass->Pass(this, nullptr, renderPassSwapBuffers[0], renderPassSwapBuffers[0]);
-		}
-	}
-
-	//HRESULT hr = swapchain->Present(0, 0);
-}
-
 void Renderer::AddRenderPass(RenderPass* pass)
 {
 	pass->m_Initialize(device);

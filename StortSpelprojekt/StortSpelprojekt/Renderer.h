@@ -73,8 +73,6 @@ public:
 	void RenderFrame(CameraComponent* camera, float time, float distance = 1.f, bool useImgui = true);
 	void RenderFrame(CameraComponent* camera, float time, float distance, RenderTexture& target, bool drawGUI = false, bool applyRenderPasses = true);
 
-	void RenderEmptyGUIFrame();
-
 	void AddRenderPass(RenderPass*);
 	
 	void Draw(const Mesh* mesh, const Material* material, const dx::XMMATRIX& model, bool batchable);
