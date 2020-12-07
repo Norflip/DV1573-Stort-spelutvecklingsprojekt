@@ -10,11 +10,7 @@ struct SoundEvent
 	unsigned int waveLength;			/* Length of the wave */
 	std::vector<BYTE> audioData;		/* Audio data */
 	XAUDIO2_BUFFER audioBuffer;			/* The actual buffer with the audio data */
-
-	float fallof;						/* Falloff distance */
-	unsigned int priority;				/* Music priority */
-	unsigned int index;					/* the index of the actual sound to play */
-
+		
 	bool playing;
 	bool looping;
 
@@ -25,7 +21,7 @@ struct SoundEvent
 class AudioMaster
 {
 private:
-	// The main audio engine ( XAudio2 with Windows Media Component ) 
+	// The main audio engine 
 	AudioEngine* engine;				
 	WAVEFORMATEX* waveFormatEx;
 	
@@ -46,7 +42,7 @@ private:
 	float musicVolume = 1.0f;
 	float environmentVolume = 1.0f;
 
-	SoundEvent menuTest, pickupSound, pickupFuel, axeSwingSound, punchSound, walkSound, runSound, windSound, chop, insideWalk;
+	SoundEvent menuTest, pickupSound, pickupFuel, axeSwingSound, punchSound, walkSound, runSound, windSound, chop, insideWalk, ambientSound;
 
 public:
 	AudioMaster();
@@ -73,6 +69,6 @@ public:
 	AudioMaster(AudioMaster const&) = delete;
 	void operator = (AudioMaster const& ) = delete;
 
-	/* Store shiet */
+	/* Store sounds */
 	std::unordered_map<std::string, SoundEvent> soundTracks;
 };

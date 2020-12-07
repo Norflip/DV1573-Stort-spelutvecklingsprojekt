@@ -626,7 +626,7 @@ void GameScene::OnActivate()
 	//this->PrintSceneHierarchy(root, 0);
 	//enemyManager->SpawnEnemies();
 
-	AudioMaster::Instance().PlaySoundEvent("wind");
+	
 
 	/* Ugly solution */
 	player->GetComponent<PlayerComp>()->GetArms()->GetComponent< PlayerAnimHandlerComp>()->SetStarted(true);
@@ -641,6 +641,10 @@ void GameScene::OnActivate()
 	guiManager->GetGUIObject("loading")->SetVisible(true);
 	//house->GetComponent<NodeWalkerComp>()->canWalk = true;
 	house->GetComponent<NodeWalkerComp>()->Reset();
+
+	AudioMaster::Instance().PlaySoundEvent("wind");
+	AudioMaster::Instance().PlaySoundEvent("ambient");
+
 }
 
 void GameScene::OnDeactivate()
