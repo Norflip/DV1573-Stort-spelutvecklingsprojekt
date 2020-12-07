@@ -150,9 +150,13 @@ void Engine::Run()
 			}
 			
 			timeLastFrame = currentTime;
+			if (Input::Instance().GetKeyDown(dx::Keyboard::P))
+			{
+				renderer->present = true;
+			}
 			if (window.GetShouldResize())
 			{
-				OnResize((size_t)window.GetWidth(), (size_t)window.GetHeight());
+				OnResize((size_t)window.GetChangedWidth(), (size_t)window.GetChangedHeight());
 				window.SetShouldResize(false);
 			}
 		}
@@ -235,6 +239,7 @@ void Engine::FixedUpdateLoop(Engine* engine)
 void Engine::OnResize(UINT width, UINT height)
 {
 	renderer->present = false;
+	Input::Instance().SetWindow(window.GetHWND(), (size_t)height, (size_t)width);
 	GetActiveScene()->OnResize(width, height);
 	renderer->OnResize(width, height);
 	
