@@ -36,7 +36,7 @@ Renderer::~Renderer()
 	skeleton_srv->Release();
 	dss->Release();
 	rasterizerStateCCWO->Release();
-	
+
 
 	delete[] tmpBatchInstanceData;
 	RELEASE(o_LightGrid_tex);
@@ -56,7 +56,7 @@ Renderer::~Renderer()
 	RELEASE(t_LightIndexList_uavbuffer);
 	RELEASE(t_LightIndexList_srv);
 	RELEASE(t_LightIndexList_uav);
-	
+
 
 }
 
@@ -65,8 +65,8 @@ void Renderer::Initialize(Window* window)
 	this->window = window;
 
 	DXHelper::CreateSwapchain(*window, &device, &context, &swapchain);
-	this->backbuffer = DXHelper::CreateBackbuffer(window->GetWidth() , window->GetHeight(), device, swapchain);
-	this->midbuffer = DXHelper::CreateRenderTexture(window->GetWidth() , window->GetHeight(), device, context, &dss);
+	this->backbuffer = DXHelper::CreateBackbuffer(window->GetWidth(), window->GetHeight(), device, swapchain);
+	this->midbuffer = DXHelper::CreateRenderTexture(window->GetWidth(), window->GetHeight(), device, context, &dss);
 	this->renderPassSwapBuffers[0] = DXHelper::CreateRenderTexture(window->GetWidth(), window->GetHeight(), device, context, &dss);
 	this->renderPassSwapBuffers[1] = DXHelper::CreateRenderTexture(window->GetWidth(), window->GetHeight(), device, context, &dss);
 	srv_skeleton_data.resize(60);
@@ -77,9 +77,9 @@ void Renderer::Initialize(Window* window)
 
 	/* new particle stuff */
 	particleBuffer.Initialize(0, ShaderBindFlag::SOGEOMETRY | ShaderBindFlag::VERTEX | ShaderBindFlag::GEOMETRY | ShaderBindFlag::PIXEL, device);
-	
-	sceneBuffer.Initialize(CB_SCENE_SLOT, ShaderBindFlag::PIXEL | ShaderBindFlag::DOMAINS | ShaderBindFlag::VERTEX|ShaderBindFlag::COMPUTE, device);
-	objectBuffer.Initialize(CB_OBJECT_SLOT, ShaderBindFlag::VERTEX | ShaderBindFlag::DOMAINS|ShaderBindFlag::GEOMETRY, device);
+
+	sceneBuffer.Initialize(CB_SCENE_SLOT, ShaderBindFlag::PIXEL | ShaderBindFlag::DOMAINS | ShaderBindFlag::VERTEX | ShaderBindFlag::COMPUTE, device);
+	objectBuffer.Initialize(CB_OBJECT_SLOT, ShaderBindFlag::VERTEX | ShaderBindFlag::DOMAINS | ShaderBindFlag::GEOMETRY, device);
 	materialBuffer.Initialize(CB_MATERIAL_SLOT, ShaderBindFlag::PIXEL, device);
 
 	DXHelper::CreateStructuredBuffer(device, &skeleton_srvbuffer, srv_skeleton_data.data(), sizeof(dx::XMFLOAT4X4), srv_skeleton_data.size(), &skeleton_srv);
@@ -105,7 +105,7 @@ void Renderer::Initialize(Window* window)
 
 	//	CreateInstanceBuffer(device, MAX_BATCH_COUNT, )
 
-	
+
 	forwardPlusShader.SetComputeShader("Shaders/ForwardPlusRendering.hlsl", "ComputeFrustums");
 	forwardPlusShader.CompileCS(device);
 
@@ -164,10 +164,10 @@ void Renderer::DrawQueueToTarget(RenderQueue& queue, CameraComponent* camera)
 }
 
 
-void Renderer::RenderFrame(CameraComponent* camera, float time, float distance)
+void Renderer::RenderFrame(CameraComponent* camera, float time, float distance, bool useImgui)
 {
 	// UPDATE SCENE
-	
+
 	/*if (KEY_PRESSED(Y) && isFullScreen == true)
 	{
 		isFullScreen = false;
@@ -178,18 +178,25 @@ void Renderer::RenderFrame(CameraComponent* camera, float time, float distance)
 	}*/
 
 #if USE_IMGUI
-	// Start the Dear ImGui frame
-	ImGui_ImplDX11_NewFrame();
-	ImGui_ImplWin32_NewFrame();
-	ImGui::NewFrame();
+	if (useImgui)
+	{
+		// Start the Dear ImGui frame
+		ImGui_ImplDX11_NewFrame();
+		ImGui_ImplWin32_NewFrame();
+		ImGui::NewFrame();
+
+		Engine::Instance->OnIMGUIFrame();
+	}
 #endif
-	Engine::Instance->OnIMGUIFrame();
 
 	RenderFrame(camera, time, distance, backbuffer, true, true);
 
 #if USE_IMGUI
-	ImGui::Render();
-	ImGui_ImplDX11_RenderDrawData(ImGui::GetDrawData());
+	if (useImgui)
+	{
+		ImGui::Render();
+		ImGui_ImplDX11_RenderDrawData(ImGui::GetDrawData());
+	}
 #endif
 	HRESULT hr = swapchain->Present(0, 0); //1 here?
 	//swapchain->SetFullscreenState(isFullScreen, nullptr);
@@ -246,15 +253,15 @@ void Renderer::RenderFrame(CameraComponent* camera, float time, float distance, 
 
 
 	if (!forwardPlusInitialized)
-	{ 
+	{
 		InitForwardPlus(camera);
 		forwardPlusInitialized = true;
 	}
 
 	UpdateForwardPlus(camera);
 
-//	ID3D11ShaderResourceView* nullSRV[1] = { nullptr };
-//	context->PSSetShaderResources(0, 1, nullSRV);
+	//	ID3D11ShaderResourceView* nullSRV[1] = { nullptr };
+	//	context->PSSetShaderResources(0, 1, nullSRV);
 
 	ClearRenderTarget(midbuffer);
 	SetRenderTarget(midbuffer);
@@ -267,7 +274,7 @@ void Renderer::RenderFrame(CameraComponent* camera, float time, float distance, 
 			pass->Pass(this, camera, renderPassSwapBuffers[0], renderPassSwapBuffers[0]);
 		}
 	}
-	
+
 	context->OMSetDepthStencilState(dss, 0);
 	DXHelper::BindStructuredBuffer(context, 10, ShaderBindFlag::PIXEL, &o_LightIndexList_srv);
 	context->PSSetShaderResources(11, 1, &o_LightGrid_texSRV);
@@ -292,13 +299,13 @@ void Renderer::RenderFrame(CameraComponent* camera, float time, float distance, 
 	for (auto i : transparentBatches)
 		DrawBatch(i.second, camera);
 	transparentBatches.clear();
-	
+
 
 
 	//context->OMSetDepthStencilState(dss_Off, 0);
 	//EnableAlphaBlending();
 	for (auto i : particleList)
-		i->Draw(context, camera);	
+		i->Draw(context, camera);
 	//DisableAlphaBlending();
 	context->OMSetBlendState(blendStateOff, BLENDSTATEMASK, 0xffffffff);
 	context->OMSetDepthStencilState(dss, 0);
@@ -342,7 +349,7 @@ void Renderer::RenderFrame(CameraComponent* camera, float time, float distance, 
 	DrawScreenQuad(screenQuadMaterial);
 
 
-	
+
 
 	if (drawGUI)
 	{
@@ -356,6 +363,26 @@ void Renderer::RenderFrame(CameraComponent* camera, float time, float distance, 
 		}
 	}
 
+}
+
+void Renderer::RenderEmptyGUIFrame()
+{
+	//ClearRenderTarget(backbuffer);
+	//SetRenderTarget(backbuffer, false);
+
+	//context->PSSetShaderResources(0, 1, &backbuffer.srv);
+	//DrawScreenQuad(screenQuadMaterial);
+
+	for (auto i = passes.begin(); i < passes.end(); i++)
+	{
+		RenderPass* pass = *i;
+		if (pass->IsEnabled() && pass->GetType() == RenderPass::PassType::GUI)
+		{
+			pass->Pass(this, nullptr, renderPassSwapBuffers[0], renderPassSwapBuffers[0]);
+		}
+	}
+
+	//HRESULT hr = swapchain->Present(0, 0);
 }
 
 void Renderer::AddRenderPass(RenderPass* pass)
@@ -661,14 +688,14 @@ void Renderer::DrawRenderItemNewParticles(const RenderItem& item, CameraComponen
 	particleBuffer.SetData(*part);
 	particleBuffer.UpdateBuffer(context);
 
-	
-	
-	ID3D11Buffer* initBuffer = item.mesh->GetInitBuffer(); 
+
+
+	ID3D11Buffer* initBuffer = item.mesh->GetInitBuffer();
 	ID3D11Buffer* streamoutBuffer = item.mesh->GetStreamoutBuffer();
 	ID3D11Buffer* drawBuffer = item.mesh->GetInitBuffer();
 	const Material* soMat = item.streamoutMaterial;
 	const Material* drawMat = item.material;
-	
+
 	context->IASetPrimitiveTopology(item.mesh->GetTopology());
 
 	soMat->BindToContext(context);
@@ -950,17 +977,17 @@ void Renderer::InitForwardPlus(VirtualCamera* camera)
 	forwardPlusShader.CompileCS(device);
 	forwardPlusShader.BindToContext(context);
 
-	
+
 	//opaque_light index counter
-	
+
 	o_LightIndexCounter.push_back(0);
 	DXHelper::CreateStructuredBuffer(device, &o_LightIndexCounter_uavbuffer, o_LightIndexCounter.data(), sizeof(UINT), o_LightIndexCounter.size(), &o_LightIndexCounter_uav);
-	
+
 	//transparent_light index counter
-	
+
 	t_LightIndexCounter.push_back(0);
 	DXHelper::CreateStructuredBuffer(device, &t_LightIndexCounter_uavbuffer, t_LightIndexCounter.data(), sizeof(UINT), t_LightIndexCounter.size(), &t_LightIndexCounter_uav);
-	
+
 	//avarage overlapping lights per tile = 200
 	//int indexList = numThreadGroups.x * numThreadGroups.y * numThreadGroups.z * 40;
 	int indexList = count * 40;
@@ -972,18 +999,18 @@ void Renderer::InitForwardPlus(VirtualCamera* camera)
 		t_LightIndexList[index] = 0;
 	}*/
 	DXHelper::CreateStructuredBuffer(device, &o_LightIndexList_uavbuffer, o_LightIndexList.data(), sizeof(UINT), o_LightIndexList.size(), &o_LightIndexList_uav, &o_LightIndexList_srv);
-	
+
 	DXHelper::CreateStructuredBuffer(device, &t_LightIndexList_uavbuffer, t_LightIndexList.data(), sizeof(UINT), t_LightIndexList.size(), &t_LightIndexList_uav, &t_LightIndexList_srv);
-	depthPass.Init(device, width,height);
-	
-	
+	depthPass.Init(device, width, height);
+
+
 }
 
 void Renderer::UpdateForwardPlus(CameraComponent* camera)
 {
 	//this is to be run for lightculling compute shader
 	//////DEPTH PASS BEGIN---------------------------
-	
+
 	depthPass.BindNull(context);
 	depthPass.BindDSV(context);
 	context->OMSetDepthStencilState(dss, 0);
@@ -1031,7 +1058,7 @@ void Renderer::UpdateForwardPlus(CameraComponent* camera)
 
 	context->CSSetUnorderedAccessViews(5, 1, &o_LightGrid_tex, NULL); //u5
 	context->CSSetUnorderedAccessViews(6, 1, &t_LightGrid_tex, NULL); //u6
-	
+
 	context->Dispatch(numThreads.x, numThreads.y, numThreads.z);
 	//context->Dispatch(numThreadGroups.x, numThreadGroups.y, numThreadGroups.z);
 	context->CSSetUnorderedAccessViews(3, 1, &nullUAV, NULL); //u3
@@ -1040,7 +1067,7 @@ void Renderer::UpdateForwardPlus(CameraComponent* camera)
 	context->CSSetUnorderedAccessViews(6, 1, &nullUAV, NULL); //u6
 	context->PSSetShaderResources(10, 1, &nullSRV);
 	context->PSSetShaderResources(11, 1, &nullSRV);
-	
+
 	//context->Dispatch(1, 1, 1);
 }
 
