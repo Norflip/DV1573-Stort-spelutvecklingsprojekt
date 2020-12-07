@@ -173,9 +173,8 @@ void PlayerComp::HoldObject()
 		wepOffTrans.Translation(holdAngle);
 		wepOffRot = wepOffRot.CreateFromAxisAngle(up, dx::XMConvertToRadians(-40.0f));
 		wepWorld = wepOffRot * wepOffTrans * inverseViewMatrix;
-		holding->AddFlag(ObjectFlag::NO_CULL);
-		//something here doesn work properly
-		//GetOwner()->AddFlag(ObjectFlag::NO_CULL);
+		//holding->AddFlag(ObjectFlag::NO_CULL);
+
 		wepWorld.Decompose(weaponScale, weaponRot, weaponPos);
 		holding->GetTransform().SetPosition(weaponPos);
 		holding->GetTransform().SetRotation(weaponRot);
@@ -200,11 +199,12 @@ void PlayerComp::PickUpObject()
 					holding = hit.object;
 					RigidBodyComponent* rbComp = hit.object->GetComponent<RigidBodyComponent>();
 					rp::RigidBody* objectRb = rbComp->GetRigidBody();
-					//rbComp->RemoveCollidersFromBody(objectRb);
+
 					rbComp->SetEnabled(false);
 					//hit.object->GetComponent<BoxColliderComponent>()->SetEnabled(false);
 					hit.object->GetComponent<BoxColliderComponent>()->SetRotation(0, { 5, 5, 5, 5 });
-					//hit.object->RemoveFlag(ObjectFlag::ENABLED);
+					
+					holding->AddFlag(ObjectFlag::NO_CULL);
 					currentWeapon->RemoveFlag(ObjectFlag::ENABLED);
 					arms->RemoveFlag(ObjectFlag::ENABLED);
 					arms->GetComponent<PlayerAnimHandlerComp>()->SetEnabled(false);
@@ -296,6 +296,12 @@ void PlayerComp::DropObject()
 			currentWeapon->AddFlag(ObjectFlag::ENABLED);
 			arms->AddFlag(ObjectFlag::ENABLED);
 			arms->GetComponent<PlayerAnimHandlerComp>()->SetEnabled(true);
+
+			if (guiMan->GetGUIObject("fuel")->GetVisible())
+			{
+				guiMan->GetGUIObject("fuel")->SetVisible(false);
+				guiMan->GetGUIObject("dot")->SetVisible(true);
+			}
 		}
 	}
 

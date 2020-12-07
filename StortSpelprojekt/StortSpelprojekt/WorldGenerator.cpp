@@ -162,20 +162,21 @@ void WorldGenerator::Construct(const SaveState& state, const WorldDescription& d
 				{
 					info.main->SetEnable(false);
 
-					Mesh* pickupMesh = Engine::Instance->GetResources()->GetResource<Mesh>("Propane");
-					Material* pickupMat = Engine::Instance->GetResources()->GetResource<Material>("PropaneMaterial");
+					//Mesh* pickupMesh = Engine::Instance->GetResources()->GetResource<Mesh>("BlueFuel");
+					//Material* pickupMat = Engine::Instance->GetResources()->GetResource<Material>("BlueFuelMaterial");
 
-					pickupMat->SetShader(Engine::Instance->GetResources()->GetShaderResource("defaultShader"));
-
-					Object* pickup = new Object("puzzlePickup");
+					//pickupMat->SetShader(Engine::Instance->GetResources()->GetShaderResource("defaultShader"));
+					Object* pickup = Engine::Instance->GetResources()->AssembleObject("BlueFuel", "BlueFuelMaterial");
+					pickup->GetComponent<MeshComponent>()->SetBatchable(true);
 					Object::AddToHierarchy(info.main->GetParent(), pickup);
 
-					pickup->AddComponent<MeshComponent>(pickupMesh, pickupMat);
+					//pickup->AddComponent<MeshComponent>(pickupMesh, pickupMat);
 					pickup->AddComponent<PickupComponent>(PickupType::Fuel, 35.0f);
 					pickup->AddComponent<BoxColliderComponent>(dx::XMFLOAT3(0.3f, 0.35f, 0.15f), dx::XMFLOAT3(0, 0, 0));
 					RigidBodyComponent* rb = pickup->AddComponent<RigidBodyComponent>(10.0f, FilterGroups::HOLDABLE, FilterGroups::EVERYTHING & ~FilterGroups::PLAYER, BodyType::DYNAMIC, true);
 
 					rb->SetPosition(info.main->GetTransform().GetPosition());
+					pickup->GetTransform().SetPosition(info.main->GetTransform().GetPosition());
 
 				}
 				else if(info.main->GetName() == "PuzzleFlyStatue" && info.other->GetName() == "frogHead" && !info.remove)
