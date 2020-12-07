@@ -236,12 +236,16 @@ void WorldGenerator::Deconstruct()
 {
 	if (constructed)
 	{
+		std::cout << "CHUNKS: " << chunkMap.size() << std::endl;
+
 		for (auto i : chunkMap)
 		{
 			i.second->PhysicRelease();
 			Object::RemoveFromHierarchy(i.second->GetOwner());
-			delete i.second;
+			delete i.second->GetOwner();
 		}
+
+
 
 		spawner->Despawn();
 		constructed = false;

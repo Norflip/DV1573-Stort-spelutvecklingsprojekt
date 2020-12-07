@@ -4,10 +4,12 @@
 #include "DShape.h"
 #include "Input.h"
 #include "Engine.h"
+
+#if USE_IMGUI
 #include "Imgui\imgui.h"
 #include "Imgui\imgui_impl_win32.h"
 #include "Imgui\imgui_impl_dx11.h"
-
+#endif
 
 Renderer::Renderer() : device(nullptr), context(nullptr), swapchain(nullptr), skeleton_srvbuffer(nullptr), skeleton_srv(nullptr), batchInstanceBuffer(nullptr)
 {
@@ -175,19 +177,20 @@ void Renderer::RenderFrame(CameraComponent* camera, float time, float distance)
 		isFullScreen = true;
 	}*/
 
-
+#if USE_IMGUI
 	// Start the Dear ImGui frame
 	ImGui_ImplDX11_NewFrame();
 	ImGui_ImplWin32_NewFrame();
 	ImGui::NewFrame();
-
+#endif
 	Engine::Instance->OnIMGUIFrame();
 
 	RenderFrame(camera, time, distance, backbuffer, true, true);
 
+#if USE_IMGUI
 	ImGui::Render();
 	ImGui_ImplDX11_RenderDrawData(ImGui::GetDrawData());
-
+#endif
 	HRESULT hr = swapchain->Present(0, 0); //1 here?
 	//swapchain->SetFullscreenState(isFullScreen, nullptr);
 	assert(SUCCEEDED(hr));

@@ -42,6 +42,8 @@ public:
 	void Initialize() override; // OVERRIDE
 	void OnOwnerFlagChanged(ObjectFlag old, ObjectFlag newFlag);
 
+	void SyncWithTransform();
+
 	virtual void m_OnCollision(CollisionInfo& collision);
 	virtual void AddCollisionCallback(std::function<void(CollisionInfo&)> callback);
 
@@ -76,7 +78,9 @@ private:
 	rp::Transform ConvertToBtTransform(const Transform& transform) const;
 	void AddCollidersToBody(Object* obj, rp::RigidBody* body);
 
-	std::vector<rp::Collider*> collidersList;
+	std::vector<rp::Collider*> rpColliders;
+	std::vector<Collider*> colliderComponents;
+
 	FilterGroups group;
 	FilterGroups collisionMask;
 

@@ -25,6 +25,4 @@
 			}} \
 
 #define MULTITHREAD_PHYSICS FALSE
-#define DRAW_COLLIDERS FALSE
-#define IMMORTAL FALSE
-
+#define USE_IMGUI TRUE

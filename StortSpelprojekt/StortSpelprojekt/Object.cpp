@@ -13,10 +13,6 @@ Object::Object(const std::string& name, ObjectFlag flag) : name(name), flags(fla
 
 Object::~Object()
 {
-	for (auto i = components.begin(); i < components.end(); i++)
-		delete (*i);
-	components.clear();
-
 	size_t childCount = children.size();
 	if (childCount > 0)
 	{
@@ -28,6 +24,23 @@ Object::~Object()
 
 		children.clear();
 	}
+
+	for (int i = maxComponents - 1; i >= 0; i--)
+	{
+		if (componentBitSet[i])
+		{
+			componentArray[i].clear();
+			componentBitSet[i] = false;
+		}
+	}
+
+	for (auto i = components.rbegin(); i < components.rend(); i++)
+	{
+		delete (*i);
+	}
+
+
+	components.clear();
 }
 
 void Object::Update(const float& deltaTime)
@@ -107,7 +120,7 @@ void Object::RemoveFlag(ObjectFlag flag)
 
 void Object::SetParent(Object* parent)
 {
-	this->parent = parent; 
+	this->parent = parent;
 	transform.SetChanged(true);
 	this->SendMsg((int)MessageType::PARENT_CHANGED, "", this, true, parent);
 }
