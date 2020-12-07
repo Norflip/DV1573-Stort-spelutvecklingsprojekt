@@ -457,6 +457,7 @@ void GameScene::InitializeInterior()
 
 void GameScene::OnActivate()
 {
+
 	house->GetComponent<NodeWalkerComp>()->currentNode = 1;
 	SaveState& state = SaveHandler::LoadOrCreate();
 
@@ -557,7 +558,7 @@ void GameScene::OnActivate()
 	delayTimer = 0.0f;
 	physicsDelay = 5.0f;
 	//std::cout << "Game Scene activated " << std::endl;
-	guiManager->GetGUIObject("loading")->SetVisible(true);
+//	guiManager->GetGUIObject("loading")->SetVisible(false);
 	//house->GetComponent<NodeWalkerComp>()->canWalk = true;
 	house->GetComponent<NodeWalkerComp>()->Reset();
 }
@@ -570,7 +571,10 @@ void GameScene::OnDeactivate()
 	delayTimer = 0.0f;
 
 	physicsDelay = 1000.0f;
+//	
 	guiManager->GetGUIObject("loading")->SetVisible(true);
+
+
 	//std::cout << "Game Scene deactivated" << std::endl;
 	world.DeconstructSegment();
 	renderer->RemoveRenderPass(guiManager);
@@ -626,7 +630,9 @@ void GameScene::Update(const float& deltaTime)
 	{
 		onceTest = false;
 		house->GetComponent<NodeWalkerComp>()->Reset();
+		guiManager->GetGUIObject("loading")->SetVisible(false);
 	}
+
 	Scene::Update(deltaTime);
 	world.UpdateRelevantChunks(player->GetTransform(), camera);
 	//world.DrawDebug();
@@ -652,27 +658,12 @@ void GameScene::Update(const float& deltaTime)
 	{
 		//set first frame till false
 
-		SaveState state = SaveHandler::LoadOrCreate();
-		state.segment++;
-		SaveHandler::Save(state);
-		//std::cout << "added +1 to segment in save" << std::endl;
-
-		OnDeactivate();
-		ShowCursor(false);
-		OnActivate();
+		TransitionToNextSegment();
 		rightSign->GetComponent<SelectableComponent>()->SetActive(false);
 	}
 	else if (leftSign->GetComponent<SelectableComponent>()->GetActive())
 	{
-		SaveState state = SaveHandler::LoadOrCreate();
-		state.segment++;
-		SaveHandler::Save(state);
-
-		//std::cout << "added +1 to segment in save" << std::endl;
-
-		OnDeactivate();
-		ShowCursor(false);
-		OnActivate();
+		TransitionToNextSegment();
 		leftSign->GetComponent<SelectableComponent>()->SetActive(false);
 	}
 
@@ -806,13 +797,7 @@ void GameScene::OnIMGUIFrame()
 
 	if (ImGui::Button("EASY WIN BBY"))
 	{
-		SaveState state = SaveHandler::LoadOrCreate();
-		state.segment++;
-		SaveHandler::Save(state);
-
-		OnDeactivate();
-		ShowCursor(false);
-		OnActivate();
+		TransitionToNextSegment();
 	}
 }
 #endif
@@ -879,4 +864,20 @@ float GameScene::RamUsage()
 	CloseHandle(hProcess);
 
 	return memoryUsage;
+}
+
+void GameScene::TransitionToNextSegment()
+{
+	SaveState state = SaveHandler::LoadOrCreate();
+	state.segment++;
+	SaveHandler::Save(state);
+	
+	guiManager->GetGUIObject("loading")->SetVisible(true);	
+	renderer->RenderFrame(camera, (float)clock.GetSeconds(), player->GetComponent<PlayerComp>()->GetDangerDistance(), false);
+
+	OnDeactivate();
+	ShowCursor(false);
+	OnActivate();
+
+	//guiManager->GetGUIObject("loading")->SetVisible(false);
 }

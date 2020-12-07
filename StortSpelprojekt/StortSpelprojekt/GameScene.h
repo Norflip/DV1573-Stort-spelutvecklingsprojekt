@@ -40,6 +40,8 @@ public:
 	ALIGN16_ALLOC;
 
 private:
+	void TransitionToNextSegment();
+
 	World world;
 	Object* house;
 
