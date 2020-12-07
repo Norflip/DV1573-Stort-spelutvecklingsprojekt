@@ -628,7 +628,6 @@ void Renderer::AddItem(const RenderItem& item, bool transparent, bool cullDepth,
 
 		if (found == emissiveItemQueue.end())
 			emissiveItemQueue.insert({ materialID, std::queue<RenderItem>() });
-		
 		emissiveItemQueue[materialID].push(item);
 	}
 

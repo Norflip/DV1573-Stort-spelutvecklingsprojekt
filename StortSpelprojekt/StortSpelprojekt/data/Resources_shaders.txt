@@ -73,4 +73,4 @@ PS: Shaders/Glow_ps.hlsl
 
 Name: EmissiveShader
 VS: Shaders/Default_vs.hlsl
-PS:Shaders/Emissive_ps.hlsl
+PS: Shaders/Emissive_ps.hlsl

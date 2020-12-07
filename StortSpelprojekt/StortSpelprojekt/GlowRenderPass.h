@@ -14,7 +14,7 @@ public:
 
 	void m_Initialize(ID3D11Device* device) override
 	{
-		Shader* shader = resources->GetShaderResource("EmissiveShader");
+		Shader* shader = resources->GetShaderResource("GlowShader");
 		//shader->SetVertexShader("Shaders/Glow_vs.hlsl");
 		//shader->SetPixelShader("Shaders/Glow_ps.hlsl");
 		//shader->Compile(device);
