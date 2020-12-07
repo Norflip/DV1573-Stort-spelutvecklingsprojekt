@@ -144,7 +144,7 @@ private:
 	Mesh* screenQuadMesh;
 	Shader forwardPlusShader;
 	bool forwardPlusInitialized;
-
+	bool present;
 	ConstantBuffer<cb_particle> particleBuffer;
 	ConstantBuffer<cb_Object> objectBuffer;
 	ConstantBuffer<cb_Scene> sceneBuffer;

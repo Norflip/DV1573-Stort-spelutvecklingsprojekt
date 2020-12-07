@@ -15,6 +15,7 @@ Renderer::Renderer() : device(nullptr), context(nullptr), swapchain(nullptr), sk
 {
 	firstRun = true;
 	srand(unsigned int(time(0)));
+	present = false;
 }
 
 Renderer::~Renderer()
@@ -116,6 +117,7 @@ void Renderer::Initialize(Window* window)
 
 void Renderer::OnResize(UINT width, UINT height)
 {
+	present = false;
 	backbuffer.Release();
 	renderPassSwapBuffers[0].Release();
 	renderPassSwapBuffers[1].Release();
@@ -126,6 +128,7 @@ void Renderer::OnResize(UINT width, UINT height)
 	this->renderPassSwapBuffers[0] = DXHelper::CreateRenderTexture(window->GetWidth(), window->GetHeight(), device, context, &dss);
 	this->renderPassSwapBuffers[1] = DXHelper::CreateRenderTexture(window->GetWidth(), window->GetHeight(), device, context, &dss);
 	OnResizeFPlus();
+	present = true;
 }
 
 
@@ -205,9 +208,13 @@ void Renderer::RenderFrame(CameraComponent* camera, float time, float distance)
 	ImGui::Render();
 	ImGui_ImplDX11_RenderDrawData(ImGui::GetDrawData());
 #endif
-	HRESULT hr = swapchain->Present(0, 0); //1 here?
-	//swapchain->SetFullscreenState(isFullScreen, nullptr);
-	assert(SUCCEEDED(hr));
+	if (present)
+	{
+		HRESULT hr = swapchain->Present(0, 0); //1 here?
+		//swapchain->SetFullscreenState(isFullScreen, nullptr);
+		assert(SUCCEEDED(hr));
+	}
+	
 }
 
 void Renderer::RenderFrame(CameraComponent* camera, float time, float distance, RenderTexture& target, bool drawGUI, bool applyRenderPasses)

@@ -5,8 +5,8 @@
 #include <fcntl.h>
 #include <io.h>
 #include <iostream>
-size_t Window::width = 0;
-size_t Window::height = 0;
+size_t Window::changedWidth = 0;
+size_t Window::changedHeight = 0;
 bool Window::shouldResize = false;
 Window::Window(HINSTANCE hInstance) : hInstance(hInstance)
 {
@@ -91,9 +91,15 @@ LRESULT Window::WindowProc(HWND hwnd, UINT umsg, WPARAM wParam, LPARAM lParam)
 	
 }
 
+void Window::SetSize(size_t width, size_t height)
+{
+	this->width = width;
+	this->height = height;
+}
+
 void Window::OnResize(size_t newWidth, size_t newHeight)
 {
-	width = newWidth;
-	height = newHeight;
+	changedWidth = newWidth;
+	changedHeight = newHeight;
 	shouldResize = true;
 }

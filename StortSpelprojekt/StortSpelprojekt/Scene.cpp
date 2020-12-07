@@ -27,7 +27,7 @@ Scene::~Scene()
 
 void Scene::OnResize(UINT width, UINT height)
 {
-	//this->window->OnResize((size_t)width, (size_t)height);
+	this->window->SetSize((size_t)width, (size_t)height);
 	this->camera->UpdateProjectionMatrix((size_t)width, (size_t)height, this->camera->GetFOV(), this->camera->GetNearZ(), this->camera->GetFarZ());
 }
 
