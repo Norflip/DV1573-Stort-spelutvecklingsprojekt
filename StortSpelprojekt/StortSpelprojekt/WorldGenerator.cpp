@@ -83,14 +83,10 @@ void WorldGenerator::Construct(const SaveState& state, const WorldDescription& d
 
 			// For fly
 			crazyFly->AddComponent<BoxColliderComponent>(dx::XMFLOAT3(0.876f, 0.389f, 0.623f), dx::XMFLOAT3(0, 0.2f, 0));
-			//crazyFly->AddComponent<MeshCollider>(crazyFly->GetComponent<MeshComponent>()->GetMeshes()[0], dx::XMFLOAT3({ 0, 1, 0 }));
 			RigidBodyComponent* flyrb = crazyFly->AddComponent<RigidBodyComponent>(10.0f, FilterGroups::HOLDABLE, FilterGroups::EVERYTHING & ~FilterGroups::PLAYER, BodyType::DYNAMIC, true);
 
 			// For frog
-			//crazyFrog->AddComponent<SphereColliderComponent>(1.685, dx::XMFLOAT3(0, -0.0f, 0));
-			//crazyFrog->AddComponent<BoxColliderComponent>(dx::XMFLOAT3(2.f, 2.f, 2.2f), dx::XMFLOAT3(0, -0.3f, 0));
 			crazyFrog->AddComponent<CapsuleColliderComponent>(2.0f, 1.6f, dx::XMFLOAT3(0, -2.0f, 0));
-			//crazyFrog->AddComponent<MeshCollider>(crazyFrog->GetComponent<MeshComponent>()->GetMeshes()[0], dx::XMFLOAT3({ 0, 0, 0 }));
 			RigidBodyComponent* frogrb = crazyFrog->AddComponent<RigidBodyComponent>(0.0f, FilterGroups::PROPS, FilterGroups::EVERYTHING, BodyType::STATIC, true);
 
 			// For froghead
@@ -100,14 +96,9 @@ void WorldGenerator::Construct(const SaveState& state, const WorldDescription& d
 			// Position for puzzle
 			dx::XMVECTOR position(dx::XMVectorAdd(rootPosition, dx::XMVECTOR({ CHUNK_SIZE / 2.0f, 3.5f, CHUNK_SIZE / 2.0f })));
 
-			//Object::AddToHierarchy(chunk->GetOwner(), tree);
-			//Object::AddToHierarchy(tree, leaves);
-			//Object::AddToHierarchy(chunk->GetOwner(), puzzle);
 			Object::AddToHierarchy(chunk->GetOwner(), crazyFrog);
 			Object::AddToHierarchy(chunk->GetOwner(), crazyFly);
 			Object::AddToHierarchy(chunk->GetOwner(), frogHead);
-
-			//dx::XMVECTOR frogpos = dx::XMVectorAdd(position, dx::XMVECTOR({ 4, 1, 4, 0 }));
 
 			// Set the positions for RB
 			crazyFrog->GetTransform().SetPosition(position);
@@ -131,14 +122,9 @@ void WorldGenerator::Construct(const SaveState& state, const WorldDescription& d
 				{
 					info.main->SetEnable(false);
 
-					//Mesh* pickupMesh = Engine::Instance->GetResources()->GetResource<Mesh>("BlueFuel");
-					//Material* pickupMat = Engine::Instance->GetResources()->GetResource<Material>("BlueFuelMaterial");
-
-					//pickupMat->SetShader(Engine::Instance->GetResources()->GetShaderResource("defaultShader"));
-					Object* pickup = Engine::Instance->GetResources()->AssembleObject("BlueFuel", "BlueFuelMaterial");
+					Object* pickup = Engine::Instance->GetResources()->AssembleObject("BlueFuel", "BlueFuelMaterial", false);
 					Object::AddToHierarchy(info.main->GetParent(), pickup);
 
-					//pickup->AddComponent<MeshComponent>(pickupMesh, pickupMat);
 					pickup->AddComponent<PickupComponent>(PickupType::Fuel, 35.0f);
 					pickup->AddComponent<BoxColliderComponent>(dx::XMFLOAT3(0.3f, 0.35f, 0.15f), dx::XMFLOAT3(0, 0, 0));
 					RigidBodyComponent* rb = pickup->AddComponent<RigidBodyComponent>(10.0f, FilterGroups::HOLDABLE, FilterGroups::EVERYTHING & ~FilterGroups::PLAYER, BodyType::DYNAMIC, true);
