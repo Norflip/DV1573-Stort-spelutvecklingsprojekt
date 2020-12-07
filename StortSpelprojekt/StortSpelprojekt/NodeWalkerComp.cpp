@@ -180,21 +180,10 @@ void NodeWalkerComp::Update(const float& deltaTime)
 					float rotation = angle * Math::ToRadians;
 					dx::XMVECTOR right = GetOwner()->GetTransform().TransformDirection({ 1,0,0 });
 					dx::XMVECTOR targetRotation = dx::XMQuaternionMultiply(dx::XMQuaternionRotationAxis(right, 0), dx::XMQuaternionRotationAxis({ 0,1,0 }, rotation));
-
 					dx::XMVECTOR newRotation = dx::XMQuaternionSlerp(GetOwner()->GetTransform().GetWorldRotation(), targetRotation, deltaTime);
 
-
 					GetOwner()->GetTransform().SetRotation(newRotation);
-					
-					//rbComp->SetRotation(eulerRotation);
-
-
-					////'''''''''''''
-
 					GetOwner()->GetTransform().Translate(moveVec.x, moveVec.y, moveVec.z);
-					//this->rbComp->SyncWithTransform();
-
-					//this->rbComp->SetPosition(GetOwner()->GetTransform().GetWorldPosition());
 				}
 			}
 			else
