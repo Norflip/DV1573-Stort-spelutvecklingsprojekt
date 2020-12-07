@@ -31,51 +31,58 @@ RigidBodyComponent::~RigidBodyComponent()
 
 void RigidBodyComponent::Update(const float& deltaTime)
 {
-	currentTransform = body->getTransform();
-
-	const float delta = std::min(deltaTime, 1.0f);
-	//rp::Transform interpolatedTransform = rp::Transform::interpolateTransforms(previousTransform, currentTransform, delta);
-
-	Transform& transform = GetOwner()->GetTransform();
-	rp::Vector3 bodyPosition = currentTransform.getPosition();
-
-	if (bodyPosition.y < -1000)
+	if (type != BodyType::STATIC)
 	{
-		bodyPosition.y = -1000;
-		//std::cout << "BODY OUT OF BOUNDS (y < -1000)" << std::endl;
-		//std::cout << "Owner: " << GetOwner()->GetName() << std::endl;
+		currentTransform = body->getTransform();
 
-		body->enableGravity(false);
-		GetOwner()->RemoveFlag(ObjectFlag::ENABLED);
-		return;
-	}
+		const float delta = std::min(deltaTime, 1.0f);
+		//rp::Transform interpolatedTransform = rp::Transform::interpolateTransforms(previousTransform, currentTransform, delta);
 
-	transform.SetPosition(dx::XMVectorSet(
-		static_cast <float>(bodyPosition.x),
-		static_cast <float>(bodyPosition.y),
-		static_cast <float>(bodyPosition.z),
-		0.0f
-	));
+		Transform& transform = GetOwner()->GetTransform();
+		rp::Vector3 bodyPosition = currentTransform.getPosition();
 
-	if (!lockRotation)
-	{
-		rp::Quaternion bodyOrientation = currentTransform.getOrientation();
-		float x = static_cast <float>(bodyOrientation.x);
-		float y = static_cast <float>(bodyOrientation.y);
-		float z = static_cast <float>(bodyOrientation.z);
-		float w = static_cast <float>(bodyOrientation.w);
-		transform.SetRotation(dx::XMVectorSet(x, y, z, w));
+		if (bodyPosition.y < -1000)
+		{
+			bodyPosition.y = -1000;
+			//std::cout << "BODY OUT OF BOUNDS (y < -1000)" << std::endl;
+			//std::cout << "Owner: " << GetOwner()->GetName() << std::endl;
+
+			body->enableGravity(false);
+			GetOwner()->RemoveFlag(ObjectFlag::ENABLED);
+			return;
+		}
+
+		transform.SetPosition(dx::XMVectorSet(
+			static_cast <float>(bodyPosition.x),
+			static_cast <float>(bodyPosition.y),
+			static_cast <float>(bodyPosition.z),
+			0.0f
+		));
+
+		if (!lockRotation)
+		{
+			rp::Quaternion bodyOrientation = currentTransform.getOrientation();
+			float x = static_cast <float>(bodyOrientation.x);
+			float y = static_cast <float>(bodyOrientation.y);
+			float z = static_cast <float>(bodyOrientation.z);
+			float w = static_cast <float>(bodyOrientation.w);
+			transform.SetRotation(dx::XMVectorSet(x, y, z, w));
+		}
+		else
+		{
+			dx::XMFLOAT4 rot;
+			dx::XMStoreFloat4(&rot, transform.GetRotation());
+
+			currentTransform.setOrientation(rp::Quaternion(rot.x, rot.y, rot.z, rot.w));
+			body->setTransform(currentTransform);
+		}
+
+		previousTransform = currentTransform;
 	}
 	else
 	{
-		dx::XMFLOAT4 rot;
-		dx::XMStoreFloat4(&rot, transform.GetRotation());
-
-		currentTransform.setOrientation(rp::Quaternion(rot.x, rot.y, rot.z, rot.w));
-		body->setTransform(currentTransform);
+		SyncWithTransform();
 	}
-
-	previousTransform = currentTransform;
 }
 
 void RigidBodyComponent::SetPosition(dx::XMVECTOR position)
@@ -136,11 +143,11 @@ rp::Transform RigidBodyComponent::ConvertToBtTransform(const Transform& transfor
 	rp::Transform temp;
 
 	dx::XMFLOAT3 tmpPosition;
-	dx::XMStoreFloat3(&tmpPosition, transform.GetPosition());
+	dx::XMStoreFloat3(&tmpPosition, transform.GetWorldPosition());
 	temp.setPosition(rp::Vector3(tmpPosition.x, tmpPosition.y, tmpPosition.z));
 
 	dx::XMFLOAT4 tmpRotation;
-	dx::XMStoreFloat4(&tmpRotation, transform.GetRotation());
+	dx::XMStoreFloat4(&tmpRotation, transform.GetWorldRotation());
 	temp.setOrientation(rp::Quaternion(tmpRotation.x, tmpRotation.y, tmpRotation.z, tmpRotation.w));
 	return temp;
 }
