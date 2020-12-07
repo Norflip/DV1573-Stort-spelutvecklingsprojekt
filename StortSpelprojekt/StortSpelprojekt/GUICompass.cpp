@@ -10,6 +10,9 @@ GUICompass::GUICompass(Renderer& renderer, Window* window, Object* houseObj, Obj
 	this->window = window;
 	backgroundBar = new GUISprite(renderer, "Textures/Compass.png", 0, 00, 0.2f, DrawDirection::Center, ClickFunction::NotClickable);
 	house = new GUISprite(renderer, "Textures/House.png", 0, 0, 0.0f, DrawDirection::Center, ClickFunction::NotClickable);
+
+	//house->SetActiveColor(dx::XMVECTOR({ 1.0f, 0.0f, 0.0f, 1.0f }));
+
 	backgroundBar->Move({ 0.f, 30.f });
 	compassYpos = backgroundBar->GetYpos();
 	compassXpos = backgroundBar->GetXpos();

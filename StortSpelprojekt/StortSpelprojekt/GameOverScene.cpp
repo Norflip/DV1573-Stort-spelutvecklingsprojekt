@@ -76,8 +76,9 @@ void GameOverScene::Update(const float& deltaTime)
 
 	if (static_cast<GUISprite*>(guiManager->GetGUIObject("restart"))->IsClicked())
 	{
-		Engine::Instance->SwitchScene(SceneIndex::GAME);
 		Engine::Instance->start = true;
+		Engine::Instance->SwitchScene(SceneIndex::GAME);
+		return;
 	}
 
 	guiManager->UpdateAll();

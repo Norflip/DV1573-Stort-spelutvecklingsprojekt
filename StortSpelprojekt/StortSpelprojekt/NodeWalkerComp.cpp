@@ -13,17 +13,6 @@ NodeWalkerComp::NodeWalkerComp()
 	//this->lastPos = { 0,0,0 };
 	this->moveVec = { 0,0,0 };
 	//this->pos3 = { 0,0,0 };
-	//later generate this nodes 
-	//this->nodes.push_back(Node("start", 0, { 0.f,0.f,0.f }, 1, -1, -1));
-	//this->nodes.push_back(Node("1a", 1, { 5.f,0.f,5.f }, -1, 2, 3));
-	//this->nodes.push_back(Node("2a", 2, { 10.f,0.f,15.f }, 4, -1, 5));
-	//this->nodes.push_back(Node("2b", 3, { 20.f,0.f,7.f }, 6, 7, 8));
-	//this->nodes.push_back(Node("3a", 4, { 12.f,0.f,30.f }, -1, -1, 9));
-	//this->nodes.push_back(Node("3b", 5, { 18.f,0.f,25.f }, 9, -1, -1));
-	//this->nodes.push_back(Node("3c", 6, { 26.f,0.f,20.f }, 9, -1, -1));
-	//this->nodes.push_back(Node("3d", 7, { 30.f,0.f,15.f }, 9, -1, -1));
-	//this->nodes.push_back(Node("3e", 8, { 35.f,0.f,10.f }, -1, 9, -1));
-	//this->nodes.push_back(Node("Final Stage", 9, { 40.f,0.f,40.f }, -1, -1, -1));
 }
 
 NodeWalkerComp::~NodeWalkerComp()
@@ -168,6 +157,9 @@ void NodeWalkerComp::Update(const float& deltaTime)
 				dx::XMFLOAT3 nextPoint = { thePath.GetPoint(this->currentNode).x, HEIGHT, thePath.GetPoint(this->currentNode).z };
 				dx::XMVECTOR vdir = dx::XMVectorSubtract(dx::XMLoadFloat3(&nextPoint), GetOwner()->GetTransform().GetPosition());
 				dx::XMStoreFloat(&this->length, dx::XMVector3Length(vdir));
+
+
+
 				if (this->length < nodeRadius)
 				{
 					//StopAnim();
@@ -179,23 +171,18 @@ void NodeWalkerComp::Update(const float& deltaTime)
 					vdir = dx::XMVector3Normalize(vdir);
 					vdir = dx::XMVectorScale(vdir, speed * deltaTime);
 					dx::XMStoreFloat3(&moveVec, vdir);
-					//this->moveVec = dir;
+				
+					dx::XMFLOAT3 dirToRoad;
+					dx::XMStoreFloat3(&dirToRoad, vdir);
 
-					// BÖRJA HÄR EMIL! :D
-					////'''''''''''''''''''
-					//dx::XMVECTOR dirVec = vdir;
-					//dx::XMFLOAT3 dirToRoad;
-					//dx::XMStoreFloat3(&dirToRoad, dirVec);
-					//float angle = /*180.f*/-90.0f + atan2f(dirToRoad.x, dirToRoad.z) * (180.f / Math::PI);
-					//float rotation = angle * Math::ToRadians;
-					//dx::XMVECTOR right = GetOwner()->GetTransform().TransformDirection({ 1,0,0 });
-					//dx::XMVECTOR eulerRotation = dx::XMQuaternionMultiply(dx::XMQuaternionRotationAxis(right, 0), dx::XMQuaternionRotationAxis({ 0,1,0 }, rotation));
-					//GetOwner()->GetTransform().SetRotation(eulerRotation);
-					//rbComp->SetRotation(eulerRotation);
-					////'''''''''''''
+					float angle = -90.0f + atan2f(dirToRoad.x, dirToRoad.z) * (180.f / Math::PI);
+					float rotation = angle * Math::ToRadians;
+					dx::XMVECTOR right = GetOwner()->GetTransform().TransformDirection({ 1,0,0 });
+					dx::XMVECTOR targetRotation = dx::XMQuaternionMultiply(dx::XMQuaternionRotationAxis(right, 0), dx::XMQuaternionRotationAxis({ 0,1,0 }, rotation));
+					dx::XMVECTOR newRotation = dx::XMQuaternionSlerp(GetOwner()->GetTransform().GetWorldRotation(), targetRotation, deltaTime);
 
+					GetOwner()->GetTransform().SetRotation(newRotation);
 					GetOwner()->GetTransform().Translate(moveVec.x, moveVec.y, moveVec.z);
-					this->rbComp->SetPosition(GetOwner()->GetTransform().GetWorldPosition());
 				}
 			}
 			else

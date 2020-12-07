@@ -174,8 +174,7 @@ void PlayerComp::HoldObject()
 		wepOffRot = wepOffRot.CreateFromAxisAngle(up, dx::XMConvertToRadians(-40.0f));
 		wepWorld = wepOffRot * wepOffTrans * inverseViewMatrix;
 		holding->AddFlag(ObjectFlag::NO_CULL);
-		//something here doesn work properly
-		//GetOwner()->AddFlag(ObjectFlag::NO_CULL);
+
 		wepWorld.Decompose(weaponScale, weaponRot, weaponPos);
 		holding->GetTransform().SetPosition(weaponPos);
 		holding->GetTransform().SetRotation(weaponRot);
@@ -200,11 +199,12 @@ void PlayerComp::PickUpObject()
 					holding = hit.object;
 					RigidBodyComponent* rbComp = hit.object->GetComponent<RigidBodyComponent>();
 					rp::RigidBody* objectRb = rbComp->GetRigidBody();
-					//rbComp->RemoveCollidersFromBody(objectRb);
+
 					rbComp->SetEnabled(false);
 					//hit.object->GetComponent<BoxColliderComponent>()->SetEnabled(false);
 					hit.object->GetComponent<BoxColliderComponent>()->SetRotation(0, { 5, 5, 5, 5 });
-					//hit.object->RemoveFlag(ObjectFlag::ENABLED);
+					
+					holding->AddFlag(ObjectFlag::NO_CULL);
 					currentWeapon->RemoveFlag(ObjectFlag::ENABLED);
 					arms->RemoveFlag(ObjectFlag::ENABLED);
 					arms->GetComponent<PlayerAnimHandlerComp>()->SetEnabled(false);
@@ -269,7 +269,7 @@ void PlayerComp::DropObject()
 {
 	if (holding != nullptr)
 	{
-		if (KEY_DOWN(E) && !pickedUpLastFrame)
+		if (KEY_DOWN(E) && !pickedUpLastFrame && !guiMan->GetGUIObject("fuel")->GetVisible() && !guiMan->GetGUIObject("door")->GetVisible())
 		{
 			holding->RemoveFlag(ObjectFlag::NO_CULL);
 			dx::XMVECTOR camRot = cam->GetOwner()->GetTransform().GetRotation();
@@ -296,6 +296,12 @@ void PlayerComp::DropObject()
 			currentWeapon->AddFlag(ObjectFlag::ENABLED);
 			arms->AddFlag(ObjectFlag::ENABLED);
 			arms->GetComponent<PlayerAnimHandlerComp>()->SetEnabled(true);
+
+			if (guiMan->GetGUIObject("fuel")->GetVisible())
+			{
+				guiMan->GetGUIObject("fuel")->SetVisible(false);
+				guiMan->GetGUIObject("dot")->SetVisible(true);
+			}
 		}
 	}
 
@@ -313,17 +319,17 @@ void PlayerComp::InsertWeapon(WeaponComponent* weapon, std::string name)
 	currentWeapon = weapon->GetOwner();
 }
 
-void PlayerComp::SetInteriorPosition(float x, float y, float z)
-{
-	this->interiorPosition = { x, y, z };
-}
-
-void PlayerComp::SetStartPosition(dx::XMVECTOR pos)
-{
-	this->startPos.x = dx::XMVectorGetX(pos);
-	this->startPos.y = dx::XMVectorGetY(pos);
-	this->startPos.z = dx::XMVectorGetZ(pos);
-}
+//void PlayerComp::SetInteriorPosition(float x, float y, float z)
+//{
+//	this->interiorPosition = { x, y, z };
+//}
+//
+//void PlayerComp::SetStartPosition(dx::XMVECTOR pos)
+//{
+//	this->startPos.x = dx::XMVectorGetX(pos);
+//	this->startPos.y = dx::XMVectorGetY(pos);
+//	this->startPos.z = dx::XMVectorGetZ(pos);
+//}
 
 float PlayerComp::ReverseAndClamp(float inputValue)
 {
@@ -342,7 +348,7 @@ void PlayerComp::RayCast(const float& deltaTime)
 			guiMan->GetGUIObject("fuel")->SetVisible(true);
 			guiMan->GetGUIObject("dot")->SetVisible(false);
 
-			if (RMOUSE_DOWN)
+			if (KEY_DOWN(E))
 			{
 				float refill = holding->GetComponent<PickupComponent>()->GetAmount();
 				if ((fuel + refill) <= 100.0f)
@@ -390,7 +396,7 @@ void PlayerComp::RayCast(const float& deltaTime)
 		}
 		else
 		{
-			if (RMOUSE_DOWN)
+			if (KEY_DOWN(E))
 			{
 				if (hit.object != nullptr)
 				{
@@ -461,6 +467,13 @@ void PlayerComp::RayCast(const float& deltaTime)
 		{
 			AudioMaster::Instance().PlaySoundEvent("choptree");
 		}*/
+	}
+
+	if (KEY_DOWN(Z))
+	{
+		std::cout << "Player: " << " " << GetOwner()->GetTransform().GetPosition().m128_f32[0] << " " << GetOwner()->GetTransform().GetPosition().m128_f32[1] << " " << GetOwner()->GetTransform().GetPosition().m128_f32[2] << std::endl;
+		if(holding != nullptr)
+			std::cout << "Holding: " << " " << holding->GetTransform().GetPosition().m128_f32[0] << " " << GetOwner()->GetTransform().GetPosition().m128_f32[1] << " " << GetOwner()->GetTransform().GetPosition().m128_f32[2] << std::endl;
 	}
 
 	if (enemyHit)

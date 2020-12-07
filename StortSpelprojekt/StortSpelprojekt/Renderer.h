@@ -70,7 +70,7 @@ public:
 	void Initialize(Window* window);
 
 	void DrawQueueToTarget(RenderQueue& queue, CameraComponent* camera);
-	void RenderFrame(CameraComponent* camera, float time, float distance = 1.f);
+	void RenderFrame(CameraComponent* camera, float time, float distance = 1.f, bool useImgui = true);
 	void RenderFrame(CameraComponent* camera, float time, float distance, RenderTexture& target, bool drawGUI = false, bool applyRenderPasses = true);
 
 	void AddRenderPass(RenderPass*);
