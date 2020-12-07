@@ -214,6 +214,6 @@ void AudioMaster::PlayerOutside(bool state)
 	if(state)
 		environmentSubmix->SetVolume(soundEffectsVolume);
 	else
-		environmentSubmix->SetVolume(0.2f);
+		environmentSubmix->SetVolume(0.2f * soundEffectsVolume);
 }
 
