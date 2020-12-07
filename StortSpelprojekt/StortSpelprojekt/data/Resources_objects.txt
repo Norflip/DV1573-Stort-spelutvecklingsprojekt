@@ -1,4 +1,4 @@
-Objects: 50
+Objects: 51
 
 Charger: Models/Enemies/Charger_Model.ZWEB
 Shader: skeletonShader
@@ -56,25 +56,25 @@ Test3: Models/Debug/cylinder.ZWEB
 Shader: defaultShader
 
 Banana: Models/Pickups/Banana.ZWEB
-Shader: defaultShader
+Shader: instanceShader
 
 HealthKit: Models/Pickups/Health_Kit.ZWEB
-Shader: defaultShader
+Shader: instanceShader
 
 CharRef: Models/Debug/char_ref.ZWEB
 Shader: defaultShader
 
 FuelCanGreen: Models/Pickups/Fuel_Can_Green.ZWEB
-Shader: defaultShader
+Shader: instanceShader
 
 Soup: Models/Pickups/Soup_Can.ZWEB
-Shader: defaultShader
+Shader: instanceShader
 
 Tree: Models/Props/tree.ZWEB
 Shader: instanceShader
 
 Apple: Models/Pickups/Apple.ZWEB
-Shader: defaultShader
+Shader: instanceShader
 
 Axe: Models/Weapons/AXE.ZWEB
 Shader: defaultShader
@@ -86,28 +86,28 @@ Bat: Models/Weapons/Bat.ZWEB
 Shader: defaultShader
 
 Fruits: Models/Pickups/Fruit_Basket.ZWEB
-Shader: defaultShader
+Shader: instanceShader
 
 FuelCanBlue: Models/Pickups/Fuel_Can_Blue.ZWEB
-Shader: defaultShader
+Shader: instanceShader
 
 FuelCanRed: Models/Pickups/Fuel_Can_Red.ZWEB
-Shader: defaultShader
+Shader: instanceShader
 
 Hammer: Models/Weapons/Hammer.ZWEB
 Shader: defaultShader
 
 HealthJar: Models/Pickups/Health_Jar.ZWEB
-Shader: defaultShader
+Shader: instanceShader
 
 Log: Models/Props/Log.ZWEB
 Shader: instanceShader
 
 Pear: Models/Pickups/Pear.ZWEB
-Shader: defaultShader
+Shader: instanceShader
 
 Propane: Models/Pickups/Propane.ZWEB
-Shader: defaultShader
+Shader: instanceShader
 
 Rock1: Models/Props/Rock_1.ZWEB
 Shader: instanceShader
@@ -151,7 +151,7 @@ Shader: defaultShader
 InsideDoor: Models/House/InsideDoor.ZWEB
 Shader: defaultShader
 
-Endsign: Models/Props/Endsign.ZWEB
+Endsign: Models/Props/endSignEmil.ZWEB
 Shader: defaultShader
 
 LeftDirectionSign: Models/Props/LeftDirectionSign.ZWEB
@@ -176,4 +176,7 @@ HouseExterior: Models/House/House_Exterior.ZWEB
 Shader: defaultShader
 
 Table: Models/House/Table.ZWEB
+Shader: defaultShader
+
+TreePuzzle: Models/Puzzles/Puzzle.ZWEB
 Shader: defaultShader

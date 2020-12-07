@@ -88,11 +88,11 @@ void SkeletonMeshComponent::RunAnimation(const float& deltaTime)
 	}
 	if (currentAni == SkeletonStateMachine::IDLE)
 	{
-		finalTransforms = skeletonAnimations[0].Makeglobal(time, dx::XMMatrixIdentity(), *skeletonAnimations[0].GetRootKeyJoints());
+		finalTransforms = skeletonAnimations[trackMap[SkeletonStateMachine::IDLE]].Makeglobal(time, dx::XMMatrixIdentity(), *skeletonAnimations[trackMap[SkeletonStateMachine::IDLE]].GetRootKeyJoints());
 	}
 	else if (currentAni == SkeletonStateMachine::WALK)
 	{
-		finalTransforms = skeletonAnimations[1].Makeglobal(time, dx::XMMatrixIdentity(), *skeletonAnimations[1].GetRootKeyJoints());
+		finalTransforms = skeletonAnimations[trackMap[SkeletonStateMachine::WALK]].Makeglobal(time, dx::XMMatrixIdentity(), *skeletonAnimations[trackMap[SkeletonStateMachine::WALK]].GetRootKeyJoints());
 	}
 	else if (currentAni == SkeletonStateMachine::RUN || currentAni == SkeletonStateMachine::UP)
 	{
@@ -332,7 +332,7 @@ void SkeletonMeshComponent::PlayOnce(const float& deltaTime)
 {
 	float time = 0.0f;
 	bool doneOnce = false;
-	
+	doneDeath = false;
 
 	if (currentAni == SkeletonStateMachine::IDLE)
 	{
@@ -405,9 +405,9 @@ void SkeletonMeshComponent::PlayOnce(const float& deltaTime)
 
 	else if (currentAni == SkeletonStateMachine::UP)
 	{
-		if (!doneOnce)
+		if (!doneUp)
 		{
-			timer.Start();
+			/*timer.Start();
 			timer.Update();
 			time = (float)timer.GetSeconds();
 			time *= timeScale;
@@ -424,6 +424,19 @@ void SkeletonMeshComponent::PlayOnce(const float& deltaTime)
 				timer.Stop();
 				doneOnce = true;
 				doneUp = true;
+			}*/
+			count += deltaTime;
+
+			if (count < skeletonAnimations[trackMap[SkeletonStateMachine::UP]].GetAniLength() / skeletonAnimations[trackMap[SkeletonStateMachine::UP]].GetFPS())
+			{
+
+				finalTransforms = skeletonAnimations[trackMap[SkeletonStateMachine::UP]].Makeglobal(count, dx::XMMatrixIdentity(), *skeletonAnimations[trackMap[SkeletonStateMachine::UP]].GetRootKeyJoints());
+
+			}
+			else
+			{
+				doneUp = true;
+				count = 0.0f;
 			}
 		}
 	}
@@ -454,9 +467,9 @@ void SkeletonMeshComponent::PlayOnce(const float& deltaTime)
 
 	else if (currentAni == SkeletonStateMachine::DOWN)
 	{
-		if (!doneOnce)
+		if (!doneDown)
 		{
-			timer.Start();
+			/*timer.Start();
 			timer.Update();
 			time = (float)timer.GetSeconds();
 			time *= timeScale;
@@ -471,7 +484,21 @@ void SkeletonMeshComponent::PlayOnce(const float& deltaTime)
 				timer.Stop();
 				doneOnce = true;
 				doneDown = true;
+			}*/
+			count += deltaTime;
+
+			if (count < skeletonAnimations[trackMap[SkeletonStateMachine::DOWN]].GetAniLength() / skeletonAnimations[trackMap[SkeletonStateMachine::DOWN]].GetFPS())
+			{
+
+				finalTransforms = skeletonAnimations[trackMap[SkeletonStateMachine::DOWN]].Makeglobal(count, dx::XMMatrixIdentity(), *skeletonAnimations[trackMap[SkeletonStateMachine::DOWN]].GetRootKeyJoints());
+
 			}
+			else
+			{
+				doneDown = true;
+				count = 0.0f;
+			}
+
 		}
 	}
 	else if (currentAni == SkeletonStateMachine::DEATH)
@@ -489,8 +516,7 @@ void SkeletonMeshComponent::PlayOnce(const float& deltaTime)
 			}
 			else
 			{
-				timer.Stop();
-				doneOnce = true;
+				
 				doneDeath = true;
 				count = 0.0f;
 			}

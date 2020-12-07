@@ -3,6 +3,7 @@
 #include "WorldGenerator.h"
 #include "Engine.h"
 #include "LightComponent.h"
+#include "MeshCollider.h"
 
 WorldGenerator::WorldGenerator() : constructed(false), treePoints(dx::XMFLOAT2(0, 0), dx::XMFLOAT2(0, 0))
 {
@@ -57,20 +58,138 @@ void WorldGenerator::Construct(const SaveState& state, const WorldDescription& d
 		AddChunksFromPath(indexes, chunks);
 		AddPadding(CHUNK_PADDING, indexes, chunks, minIndex, maxIndex);
 
-		RegisterEnviromentProp("test", 0, 10, 4, [](Chunk* chunk, dx::XMVECTOR rootPosition)  
-			{
-				Object* root = new Object("puzzel_root");
-				Object* puzzelModel = Engine::Instance->GetResources()->AssembleObject("Propane", "PropaneMaterial");
-				Object::AddToHierarchy(root, puzzelModel);
-				puzzelModel->GetTransform().SetLocalPosition({ CHUNK_SIZE / 2.0f, 5.0f, CHUNK_SIZE / 2.0f });
-				puzzelModel->GetTransform().SetScale({ 10, 10, 10 });
+		//RegisterEnviromentProp("test", 0, 10, 4, [](Chunk* chunk, dx::XMVECTOR rootPosition)  
+		//	{
+		//		Object* root = new Object("puzzel_root");
+		//		Object* puzzelModel = Engine::Instance->GetResources()->AssembleObject("Propane", "PropaneMaterial");
+		//		Object::AddToHierarchy(root, puzzelModel);
+		//		puzzelModel->GetTransform().SetLocalPosition({ CHUNK_SIZE / 2.0f, 5.0f, CHUNK_SIZE / 2.0f });
+		//		puzzelModel->GetTransform().SetScale({ 10, 10, 10 });
 
-				//dx::XMFLOAT3 pos;
-				//dx::XMStoreFloat3(&pos, rootPosition);
-				//std::cout << "PAAZZL: " << pos.x << ", " << pos.y << ", " << pos.z << "\n";
+		//		//dx::XMFLOAT3 pos;
+		//		//dx::XMStoreFloat3(&pos, rootPosition);
+		//		//std::cout << "PAAZZL: " << pos.x << ", " << pos.y << ", " << pos.z << "\n";
 
-				return root;
-			});
+		//		return root;
+		//	});
+
+		// Ugly ass spawn for tree/frog puzzle
+		RegisterEnviromentProp("PuzzleTree", 0, 5, 1, [](Chunk* chunk, dx::XMVECTOR rootPosition)
+		{
+			Object* root = new Object("puzzel_root");
+			//Object* tree =  Engine::Instance->GetResources()->AssembleObject("Tree", "TreeMaterial");
+
+			//Object* leaves = Engine::Instance->GetResources()->AssembleObject("leaves", "leavesMaterial");
+			//leaves->GetComponent<MeshComponent>()->GetMaterials()[0]->SetTransparent(true);
+			//Object* puzzle = Engine::Instance->GetResources()->AssembleObject("TreePuzzle", "TreePuzzleMaterial");
+			Object* crazyFrog = Engine::Instance->GetResources()->AssembleObject("PuzzleFrogStatue", "PuzzleFrogStatueMaterial");
+			Object* crazyFly = Engine::Instance->GetResources()->AssembleObject("PuzzleFlyStatue", "PuzzleFlyStatueMaterial");
+			Object* frogHead = new Object("frogHead");
+
+			//tree->GetTransform().SetScale({ 2, 2, 2 });
+
+			// bounding box for tree calculations
+			/*Bounds bbInfo;
+			bbInfo.CalculateAABB(tree->GetComponent<MeshComponent>()->GetMeshes());
+			dx::XMFLOAT3 extends = bbInfo.GetExtends();
+			extends.x *= 1.3;
+			extends.y *= 2.0;
+			extends.z *= 1.3;*/
+
+			// For tree
+			//BoxColliderComponent* colliders = tree->AddComponent<BoxColliderComponent>(extends, dx::XMFLOAT3(0, 0, 0));
+			//RigidBodyComponent* trb = tree->AddComponent<RigidBodyComponent>(0.f, FilterGroups::DEFAULT, FilterGroups::EVERYTHING, BodyType::STATIC, true);
+
+			// For puzzle
+			/*puzzle->AddComponent<BoxColliderComponent>(dx::XMFLOAT3(2.018f, 0.1f, 0.969f), dx::XMFLOAT3(1.239f, 0.175f, 0.422f));
+			puzzle->AddComponent<BoxColliderComponent>(dx::XMFLOAT3(0.764f, 0.1f, 2.175f), dx::XMFLOAT3(0.209f, 1.333f, 1.456f));
+			puzzle->AddComponent<BoxColliderComponent>(dx::XMFLOAT3(1.956f, 0.1f, 0.745f), dx::XMFLOAT3(-1.253f, 2.259f, 0.51f));
+			puzzle->AddComponent<BoxColliderComponent>(dx::XMFLOAT3(0.778f, 0.1f, 1.861f), dx::XMFLOAT3(-0.13f, 3.304f, -1.045f));
+			puzzle->AddComponent<BoxColliderComponent>(dx::XMFLOAT3(2.083f, 0.1f, 0.68f), dx::XMFLOAT3(1.092f, 4.476f, -0.118f));
+			puzzle->AddComponent<BoxColliderComponent>(dx::XMFLOAT3(0.6536f, 0.1f, 1.238f), dx::XMFLOAT3(0.259f, 5.515f, 1.238f));
+			puzzle->AddComponent<BoxColliderComponent>(dx::XMFLOAT3(1.195f, 0.1f, 2.041f), dx::XMFLOAT3(-1.337f, 6.57f, 0.183f));
+			RigidBodyComponent* prb = puzzle->AddComponent<RigidBodyComponent>(0.f, FilterGroups::PUZZLE, FilterGroups::EVERYTHING, BodyType::STATIC, true);*/
+
+			// For fly
+			crazyFly->AddComponent<BoxColliderComponent>(dx::XMFLOAT3(0.876f, 0.389f, 0.623f), dx::XMFLOAT3(0, 0.2f, 0));
+			//crazyFly->AddComponent<MeshCollider>(crazyFly->GetComponent<MeshComponent>()->GetMeshes()[0], dx::XMFLOAT3({ 0, 1, 0 }));
+			RigidBodyComponent* flyrb = crazyFly->AddComponent<RigidBodyComponent>(10.0f, FilterGroups::HOLDABLE, FilterGroups::EVERYTHING & ~FilterGroups::PLAYER, BodyType::DYNAMIC, true);
+
+			// For frog
+			//crazyFrog->AddComponent<SphereColliderComponent>(1.685, dx::XMFLOAT3(0, -0.0f, 0));
+			//crazyFrog->AddComponent<BoxColliderComponent>(dx::XMFLOAT3(2.f, 2.f, 2.2f), dx::XMFLOAT3(0, -0.3f, 0));
+			crazyFrog->AddComponent<CapsuleColliderComponent>(2.0f, 1.6f, dx::XMFLOAT3(0, -2.0f, 0));
+			//crazyFrog->AddComponent<MeshCollider>(crazyFrog->GetComponent<MeshComponent>()->GetMeshes()[0], dx::XMFLOAT3({ 0, 0, 0 }));
+			RigidBodyComponent* frogrb = crazyFrog->AddComponent<RigidBodyComponent>(0.0f, FilterGroups::PROPS, FilterGroups::EVERYTHING, BodyType::STATIC, true);
+
+			// For froghead
+			frogHead->AddComponent<BoxColliderComponent>(dx::XMFLOAT3({ 0.878f, 0.33f, 1.419f }), dx::XMFLOAT3({ 0, 2.335f, -0.021f }));
+			RigidBodyComponent* headrb = frogHead->AddComponent<RigidBodyComponent>(0.0f, FilterGroups::PUZZLE, FilterGroups::EVERYTHING, BodyType::STATIC, true);
+
+			// Position for puzzle
+			dx::XMVECTOR position(dx::XMVectorAdd(rootPosition, dx::XMVECTOR({ CHUNK_SIZE / 2.0f, 3.5f, CHUNK_SIZE / 2.0f })));
+
+			//Object::AddToHierarchy(chunk->GetOwner(), tree);
+			//Object::AddToHierarchy(tree, leaves);
+			//Object::AddToHierarchy(chunk->GetOwner(), puzzle);
+			Object::AddToHierarchy(chunk->GetOwner(), crazyFrog);
+			Object::AddToHierarchy(chunk->GetOwner(), crazyFly);
+			Object::AddToHierarchy(chunk->GetOwner(), frogHead);
+
+			//dx::XMVECTOR frogpos = dx::XMVectorAdd(position, dx::XMVECTOR({ 4, 1, 4, 0 }));
+
+			// Set the positions for RB
+			//trb->SetPosition(position);
+			//prb->SetPosition(position);
+			frogrb->SetPosition(position);
+			flyrb->SetPosition(dx::XMVectorAdd(position, dx::XMVECTOR({ 4, 1, 4, 0 })));
+			headrb->SetPosition(dx::XMVectorAdd(position, dx::XMVECTOR({ 0, 0.0f, 0, 0 })));
+
+			// Testing printing shit to find puzzle
+			//dx::XMFLOAT3 pos;
+			//dx::XMStoreFloat3(&pos, position);
+			//std::cout << "PAAZZL: " << pos.x << ", " << pos.y << ", " << pos.z << "\n";
+
+			CollisionInfo info;
+			info.main = crazyFly;
+			info.other = frogHead;
+			info.remove = false;
+
+			std::function<void(CollisionInfo&)> collisionCallback = [](CollisionInfo info) {
+
+
+				if (info.main->GetName() == "PuzzleFlyStatue" && info.other->GetName() == "frogHead" && info.remove && info.main->HasFlag(ObjectFlag::ENABLED))
+				{
+					info.main->SetEnable(false);
+
+					Mesh* pickupMesh = Engine::Instance->GetResources()->GetResource<Mesh>("Propane");
+					Material* pickupMat = Engine::Instance->GetResources()->GetResource<Material>("PropaneMaterial");
+
+					pickupMat->SetShader(Engine::Instance->GetResources()->GetShaderResource("defaultShader"));
+
+					Object* pickup = new Object("puzzlePickup");
+					Object::AddToHierarchy(info.main->GetParent(), pickup);
+
+					pickup->AddComponent<MeshComponent>(pickupMesh, pickupMat);
+					pickup->AddComponent<PickupComponent>(PickupType::Fuel, 35.0f);
+					pickup->AddComponent<BoxColliderComponent>(dx::XMFLOAT3(0.3f, 0.35f, 0.15f), dx::XMFLOAT3(0, 0, 0));
+					RigidBodyComponent* rb = pickup->AddComponent<RigidBodyComponent>(10.0f, FilterGroups::HOLDABLE, FilterGroups::EVERYTHING & ~FilterGroups::PLAYER, BodyType::DYNAMIC, true);
+
+					rb->SetPosition(info.main->GetTransform().GetPosition());
+
+				}
+				else if(info.main->GetName() == "PuzzleFlyStatue" && info.other->GetName() == "frogHead" && !info.remove)
+				{
+					info.remove = true;
+				}
+					
+			};
+			collisionCallback(info);
+
+			flyrb->AddCollisionCallback(collisionCallback);
+
+			return root;
+		});
 
 		path = Path(indexes);
 		SetPathPointsToChunkType(path, chunks);
@@ -265,32 +384,27 @@ Chunk* WorldGenerator::CreateChunk(ChunkIndexInfo& indexInfo, Object* root, cons
 		}
 
 		Object* object = prop.factory(chunk, chunkPosition);
-		Object::AddToHierarchy(chunk->GetOwner(), object);
-		//std::cout << " CREATED PUZZEL " << std::endl;
+		Object::AddToHierarchy(chunkObject, object);
 		prop.usedCount++;
 	}
 
-	//Texture texture(chunkDataSRV);
-
-	Texture* grassTexture = Texture::LoadTexture(renderer->GetDevice(), L"Textures/newGrass.png");
-	Texture* roadTexture = Texture::LoadTexture(renderer->GetDevice(), L"Textures/Stone_Floor_003_COLOR.jpg");
+	ResourceManager* resources = Engine::Instance->GetResources();
+	Texture* grassTexture = resources->GetResource<Texture>("Grass");
+	Texture* roadTexture = resources->GetResource<Texture>("Road");
 
 	material->SetTexture(chunk->GetData().dataTexture, 0, ShaderBindFlag::PIXEL | ShaderBindFlag::VERTEX);
 	material->SetTexture(grassTexture, 1, ShaderBindFlag::PIXEL);
 	material->SetTexture(roadTexture, 2, ShaderBindFlag::PIXEL);
 
 	auto dataSampler = DXHelper::CreateSampler(D3D11_FILTER_MIN_MAG_MIP_POINT, D3D11_TEXTURE_ADDRESS_CLAMP, renderer->GetDevice());
-	material->SetSampler(dataSampler, 0, ShaderBindFlag::PIXEL | ShaderBindFlag::VERTEX);
-
 	auto textureSampler = DXHelper::CreateSampler(D3D11_FILTER_MIN_MAG_MIP_LINEAR, D3D11_TEXTURE_ADDRESS_WRAP, renderer->GetDevice());
+	material->SetSampler(dataSampler, 0, ShaderBindFlag::PIXEL | ShaderBindFlag::VERTEX);
 	material->SetSampler(textureSampler, 1, ShaderBindFlag::PIXEL);
 
 	Bounds bounds(dx::XMFLOAT3(0, 0, 0), dx::XMFLOAT3(CHUNK_SIZE, TERRAIN_SCALE + 1.0f, CHUNK_SIZE));
 	chunkObject->AddComponent<MeshComponent>(chunkMesh, material, bounds);
 
-	int i = HASH2D_I(indexInfo.index.x, indexInfo.index.y);
-	chunkMap.insert({ i, chunk });
-
+	chunkMap.insert({ HASH2D_I(indexInfo.index.x, indexInfo.index.y), chunk });
 	return chunk;
 }
 

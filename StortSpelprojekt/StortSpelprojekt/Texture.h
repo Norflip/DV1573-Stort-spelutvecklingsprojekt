@@ -33,6 +33,7 @@ public:
 	Texture(ID3D11ShaderResourceView* srv, unsigned char* buffer, size_t width, size_t height, size_t channels);
 	virtual ~Texture();
 
+	Texture* CreateRandom1DTexture(ID3D11Device* device);
 	static Texture* CreateFromBuffer (unsigned char* buffer, size_t width, size_t height, size_t channels, DXGI_FORMAT format, ID3D11Device* device);
 	static Texture* LoadTexture (ID3D11Device* device, LPCWSTR textureFilepath);
 
@@ -40,9 +41,13 @@ public:
 	ID3D11ShaderResourceView* GetSRV() const { return this->srv; }
 	
 	ALIGN16_ALLOC;
+private:
+	float RandomFloat(float a, float b);
 
 private:
 	ID3D11ShaderResourceView* srv;	
 	unsigned char* buffer;
 	size_t width, height, channels;
 };
+
+static std::unordered_map<std::string, Texture*> mTextureCache;

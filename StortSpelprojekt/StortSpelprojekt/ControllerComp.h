@@ -16,7 +16,7 @@ constexpr float WALK_FOV = 50.f;
 
 constexpr float CROUCH_VELOCITY = 0.6f;
 constexpr float CROUCH_ACCELERATION = 0.03f;
-constexpr float WALK_VELOCITY = 3.f;
+constexpr float WALK_VELOCITY = 4.f;
 constexpr float WALK_ACCELERATION = 0.063f;
 constexpr float RUN_VELOCITY = 7.f;
 constexpr float RUN_ACCELERATION = 0.10f;
@@ -26,6 +26,7 @@ constexpr float CROUCH_OFFSET_PER = 0.02f;
 constexpr float CROUCH_LIMIT = -0.5f;
 constexpr float CROUCH_INC_RATE = 0.005f; //how often changes occur
 constexpr float JUMP_VELOCITY = 5.f;
+constexpr float SIT_RADIUS = 10.f;
 
 constexpr dx::XMFLOAT3 RESET_POS = {20.f,6.f,20.f};
 constexpr dx::XMFLOAT4 RESET_ROT = { 0.f,0.f,0.f,1.f };
@@ -49,8 +50,8 @@ private:
 	//float fovTimer; //use timer class??
 	float velocity;
 	float velocityTimer; //use timer class??
-	
 	float crouchTimer;
+	float sensitivity;
 
 	bool freeCam;
 	bool showCursor;
@@ -66,7 +67,7 @@ private:
 	dx::XMFLOAT3 cameraEuler;
 	dx::XMFLOAT3 outsidePos;
 
-	dx::XMFLOAT3 cameraEuler2;
+	//dx::XMFLOAT3 cameraEuler2;
 	Object* cameraObject;
 	NodeWalkerComp* houseWalkComp;
 	RigidBodyComponent* rbComp;
@@ -87,18 +88,21 @@ private:
 		}
 	};
 protected:
-	dx::XMVECTOR groundRotation2;
+	//dx::XMVECTOR groundRotation2;
 	dx::XMVECTOR groundRotation;
 public:
-	ControllerComp(Object* cameraObject, Object* houseObject);
+	ControllerComp(Object* cameraObject, Object* houseObject, float sense);
 	virtual ~ControllerComp();
 
 	RigidBodyComponent* GetRigidBodyComp() { return this->rbComp; }
 	void Initialize();
 	void Update(const float& deltaTime);
-	float GetVelocity() { return this->velocity; }
-	bool GetInRange() { return this->inDoorRange; }
+	float GetVelocity()const { return this->velocity; }
+	bool GetInRange()const { return this->inDoorRange; }
 	void SetInRange(bool state) { this->inDoorRange = state; }
-	bool GetInside() { return this->inside; }
+	bool GetInside()const { return this->inside; }
 	void SetInside(bool state) { this->inside = state; }
+
+	void SetSensitivity(const float & sens) { this->sensitivity = sens; }
+	float GetSensitivity()const { return this->sensitivity; }
 };

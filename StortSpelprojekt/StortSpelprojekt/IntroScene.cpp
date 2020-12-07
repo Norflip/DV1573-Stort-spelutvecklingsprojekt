@@ -31,7 +31,6 @@ void IntroScene::InitializeObjects()
 
 	ShowCursor(true); 
 
-
 	AudioMaster::Instance().PlaySoundEvent("menusound");
 }
 
@@ -45,7 +44,7 @@ void IntroScene::InitializeGUI()
 	GUISprite* howToPlaySprite = new GUISprite(*renderer, "Textures/howToPlay.png", 20, 250, 0, DrawDirection::Default, ClickFunction::Clickable);
 	GUISprite* optionSprite = new GUISprite(*renderer, "Textures/Options.png", 100, 400, 0, DrawDirection::Default, ClickFunction::Clickable);
 	GUISprite* loreSprite = new GUISprite(*renderer, "Textures/Lore.png", 100, 550, 0, DrawDirection::Default, ClickFunction::Clickable);
-	GUISprite* quitSprite = new GUISprite(*renderer, "Textures/Exit.png", 100, 700, 0, DrawDirection::Default, ClickFunction::Clickable);
+	GUISprite* quitSprite = new GUISprite(*renderer, "Textures/Exit.png", 100, 850, 0, DrawDirection::Default, ClickFunction::Clickable);
 	GUISprite* backSprite = new GUISprite(*renderer, "Textures/BackButton.png", 100, 100, 0, DrawDirection::Default, ClickFunction::Clickable,GuiGroup::HowToPlay);
 	GUISprite* loadSprite = new GUISprite(*renderer, "Textures/Loading.png", 0, 0, 0, DrawDirection::Default, ClickFunction::NotClickable, GuiGroup::Load);
 	GUISprite* musicSprite = new GUISprite(*renderer, "Textures/Music.png", 110, 250, 0, DrawDirection::Default, ClickFunction::NotClickable, GuiGroup::Options);
@@ -53,6 +52,15 @@ void IntroScene::InitializeGUI()
 	loadSprite->SetVisible(false);
 	GUISprite* soundEffectsSprite = new GUISprite(*renderer, "Textures/SoundeffectsButton.png", 160, 400, 0, DrawDirection::Default, ClickFunction::NotClickable, GuiGroup::Options);	
 	soundEffectsSprite->SetVisible(false);
+
+	
+	GUISprite* sensitivitySprite = new GUISprite(*renderer, "Textures/sensButton.png", 140,550,0,DrawDirection::Default, ClickFunction::NotClickable, GuiGroup::Options);
+	sensitivitySprite->SetVisible(false);
+
+
+
+	GUISprite* credits = new GUISprite(*renderer, "Textures/credits.png",100, 700, 0, DrawDirection::Default, ClickFunction::Clickable);
+	credits->AddGroup(GuiGroup::Default);
 
 
 	GUISprite* volumeBarFillMusic = new GUISprite(*renderer, "Textures/volumeBarFill.png", 900, 250, 0, DrawDirection::Default, ClickFunction::NotClickable, GuiGroup::Options);
@@ -75,6 +83,24 @@ void IntroScene::InitializeGUI()
 	volumeBarFillSoundeffects->SetVisible(false);
 	volumeBarFillSoundeffects->SetScale(AudioMaster::Instance().GetVolume(AudioTypes::Sound), 1.0f);
 
+
+	//GUISprite* sensitivityBarFill = new GUISprite(*renderer, "Textures/volumeBarFill.png", 900, 550, 0, DrawDirection::Default, ClickFunction::NotClickable, GuiGroup::Options);
+	GUISprite* lowerSensitivitySprite = new GUISprite(*renderer, "Textures/lowerVolume.png", 800, 550, 0, DrawDirection::Default, ClickFunction::Clickable, GuiGroup::Options);
+	//GUISprite* volumeSensitivtySprite = new GUISprite(*renderer, "Textures/volumeButton.png", 900, 550, 0, DrawDirection::Default, ClickFunction::NotClickable, GuiGroup::Options);
+	GUISprite* higherSensitivitySprite = new GUISprite(*renderer, "Textures/higherVolume.png", 1150, 550, 0, DrawDirection::Default, ClickFunction::Clickable, GuiGroup::Options);
+	//sensitivityBarFill->SetVisible(false);
+	lowerSensitivitySprite->SetVisible(false);
+	//volumeSensitivtySprite->SetVisible(false);
+	higherSensitivitySprite->SetVisible(false);
+	//sensitivityBarFill->SetScale(this->sensitivity, 1.0f);
+	GUIFont* sensitivityDisplay = new GUIFont(*renderer, "hi", windowWidth / 2 +30, 585);
+	sensitivityDisplay->SetVisible(false);
+	sensitivityDisplay->AddGroup(GuiGroup::Font);
+	sensitivityDisplay->AddGroup(GuiGroup::Options);
+	sensitivityDisplay->RemoveGroup(GuiGroup::Default);
+	
+
+
 	GUIFont* fpsDisplay = new GUIFont(*renderer, "fps", windowWidth / 2, 50);
 	fpsDisplay->AddGroup(GuiGroup::Font);
 	fpsDisplay->AddGroup(GuiGroup::Default);
@@ -82,12 +108,21 @@ void IntroScene::InitializeGUI()
 
 	std::string howToPlayString = "";
 	howToPlayString += "Wasd: move around\n";
-	howToPlayString += "Mouse to aim\n";
-	howToPlayString += "V = First Person / Flying Camera\n";
-	howToPlayString += "O = Show / Hide Cursor\n";
-	howToPlayString += "Zero = Reset player pos\n\n";
-	howToPlayString += " Your goal is to survive and bring the house to the end of the road\n";
-	howToPlayString += " You can gather food, fuel and healthpacks that are scattered \n    throughout the woods\n";
+	howToPlayString += "Mouse: look around\n";
+	howToPlayString += "Space: jump\n";
+	howToPlayString += "Esc: pause\n";
+	//howToPlayString += "V = First Person / Flying Camera\n";
+	//howToPlayString += "O = Show / Hide Cursor\n";
+	//howToPlayString += "Zero = Reset player pos\n\n";
+	howToPlayString += "E: pick up and throw items\n";
+	howToPlayString += "LMB: attack\n";
+	howToPlayString += "RMB: interact with door and fire\n\n";
+
+	howToPlayString += "Your goal is to survive and bring the house to the end of the road\n";
+	howToPlayString += "You can gather food, fuel and healthpacks which are scattered\n    throughout the woods\n";
+	howToPlayString += "Put the fuel into the fire inside the house so that the house can keep moving\n";
+	howToPlayString += "But be aware of the monster which resides in the forest\n";
+
 	GUIFont* howToPlayText = new GUIFont(*renderer,howToPlayString, 100, 250);
 	howToPlayText->SetFontSize({ 0.7f,0.7f });
 	howToPlayText->SetVisible(false);
@@ -98,7 +133,10 @@ void IntroScene::InitializeGUI()
 	//
 	// TEXT FOR HOWTOPLAY	
 	std::string loreString = "";
-	loreString += "The name Katrineholm comes from the farm Cathrineholm by Lake Nasnaren. \nThe farm was formerly called Fulbonas\nbut the then owner Jacob von der Linde changed the name in the 1660s to honor his daughter Catharina. \nMany finds show that the area was already inhabited over 6,000 years ago.";
+	loreString += "The name Katrineholm comes from the farm Cathrineholm which is located at Lake Nasnaren. \n";
+	loreString += "The farm was formerly called Fulbonas,\n";
+	loreString += "but the former owner Jacob von der Linde changed the name in the 1660s to honor his daughter Catharina. \n";
+	loreString += "Many findings show that the area was already inhabited over 6, 000 years ago.";
 	
 	GUIFont* loreText = new GUIFont(*renderer, loreString, 100, 250);
 	loreText->SetFontSize({ 0.5f,0.5f });
@@ -126,6 +164,8 @@ void IntroScene::InitializeGUI()
 	guiManager->AddGUIObject(howToPlayText, "howToPlayText");
 	guiManager->AddGUIObject(loreText, "loreText");
 
+	guiManager->AddGUIObject(credits, "credits");
+
 	//
 
 	/* Soundseffects */
@@ -142,6 +182,13 @@ void IntroScene::InitializeGUI()
 	guiManager->AddGUIObject(volumeMusicSprite, "volumeMusicSprite");
 	guiManager->AddGUIObject(higherMusicSprite, "higherMusicSprite");
 
+	/* Sensitivity */
+	guiManager->AddGUIObject(sensitivitySprite, "sensitivityText");
+	//guiManager->AddGUIObject(sensitivityBarFill, "sensitivityBarFill");
+	guiManager->AddGUIObject(lowerSensitivitySprite, "lowerSensitivitySprite");
+	//guiManager->AddGUIObject(volumeSensitivtySprite, "guiManager->AddGUIObject");
+	guiManager->AddGUIObject(higherSensitivitySprite, "higherSensitivitySprite");
+	guiManager->AddGUIObject(sensitivityDisplay, "sensitivityDisplay");
 }
 
 void IntroScene::OnActivate()
@@ -162,7 +209,9 @@ void IntroScene::Update(const float& deltaTime)
 	Scene::Update(deltaTime);
 	//Cleanup Later
 	static_cast<GUIFont*>(guiManager->GetGUIObject("fps"))->SetString(std::to_string((int)GameClock::Instance().GetFramesPerSecond()));
-
+	std::string sTxt = std::to_string(this->sensitivity);
+	sTxt.erase(sTxt.begin() + 4, sTxt.end());
+	static_cast<GUIFont*>(guiManager->GetGUIObject("sensitivityDisplay"))->SetString(sTxt);
 	if (static_cast<GUISprite*>(guiManager->GetGUIObject("startSprite"))->IsClicked())
 	{
 		guiManager->ChangeGuiGroup(GuiGroup::Load);
@@ -170,6 +219,20 @@ void IntroScene::Update(const float& deltaTime)
 		Engine::Instance->SwitchScene(SceneIndex::GAME);
 		return;
 	}
+
+	//
+	if (static_cast<GUISprite*>(guiManager->GetGUIObject("credits"))->IsClicked())
+	{
+		//guiManager->ChangeGuiGroup(GuiGroup::Load);
+		AudioMaster::Instance().PlaySoundEvent("menusound");
+		Engine::Instance->SwitchScene(SceneIndex::CREDITS);
+		return;
+		//AudioMaster::Instance().StopSoundEvent("menusound");
+		//Engine::Instance->SwitchScene(SceneIndex::INTRO);
+		//return;
+		
+	}
+	//
 
 	if (static_cast<GUISprite*>(guiManager->GetGUIObject("quitSprite"))->IsClicked())
 	{
@@ -242,6 +305,27 @@ void IntroScene::Update(const float& deltaTime)
 		static_cast<GUISprite*>(guiManager->GetGUIObject("volumeBarFillSoundeffects"))->SetScale(currentVol, 1);
 	}
 
+
+	/* Volume stuff for sensitivity */
+	if(static_cast<GUISprite*>(guiManager->GetGUIObject("lowerSensitivitySprite"))->IsClicked()) 
+	{
+		//lower sense
+		float currentSense = this->sensitivity;
+		if (this->sensitivity > 0.05f)
+			this->sensitivity -= 0.05f;
+		else
+			this->sensitivity = 0.05f;
+		//static_cast<GUISprite*>(guiManager->GetGUIObject("sensitivityBarFill"))->SetScale(this->sensitivity, 1.f);
+	}
+	if (static_cast<GUISprite*>(guiManager->GetGUIObject("higherSensitivitySprite"))->IsClicked())
+	{
+		//higher sense 
+		if (this->sensitivity < 1.0f)
+			this->sensitivity += 0.05f;
+		else
+			this->sensitivity = 1.0f;
+		//static_cast<GUISprite*>(guiManager->GetGUIObject("sensitivityBarFill"))->SetScale(sensitivity, 1.f);
+	}
 
 	guiManager->UpdateAll();
 }

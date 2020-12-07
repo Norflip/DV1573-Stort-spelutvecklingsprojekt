@@ -14,7 +14,7 @@ class World;
 
 class WorldGenerator
 {
-	const int CHUNK_PADDING = 4;
+	const int CHUNK_PADDING = 3;
 	const float MIN_TERRAIN_HEIGHT = 0.1f;
 	const float TERRAIN_BASE_HEIGHT = 1.0f;
 
@@ -82,13 +82,7 @@ private:
 	Shader* grassShader;
 	Shader* chunkShader;
 
-	Texture* grassTexture;
-	Texture* roadTexture;
-
 	std::vector<EnviromentProp> enviromentProps;
-
-	std::vector<Mesh*> stylizedTreeModel;
-	std::vector<Material*> stylizedTreeMaterial;
 
 	Path path;
 	std::unordered_map<int, Chunk*> chunkMap;

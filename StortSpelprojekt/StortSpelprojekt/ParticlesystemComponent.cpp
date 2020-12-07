@@ -1,5 +1,6 @@
 #include "stdafx.h"
 #include "ParticlesystemComponent.h"
+#include "Engine.h"
 
 ParticleSystemComponent::ParticleSystemComponent(Renderer* renderer, Shader* shader) : mesh(new Mesh(vertexBuffer, indexBuffer))
 {
@@ -7,14 +8,19 @@ ParticleSystemComponent::ParticleSystemComponent(Renderer* renderer, Shader* sha
 	this->particlesShader = shader;
 	this->mat = new Material(particlesShader);
 
+	this->particleColor = dx::XMFLOAT3(1.0f, 1.0f, 1.0f);
+
 	/* Default stuff about every particle */
-	this->differenceOnX = 0.2f;
-	this->differenceOnY = 0.2f;
-	this->differenceOnZ = 0.2f;
+	this->differenceOnX = 0.3f;
+	this->differenceOnY = 0.3f;
+	this->differenceOnZ = 0.3f;
 	this->particleVelocity = 0.8f;
 	this->particleVelocityVariation = 0.2f;
-	this->particleSize = 0.03f;
-	this->maxParticles = 10;
+	this->particleSize = 0.05f;
+	this->maxParticles = 20;
+
+	// calculate the furthest points
+	cullBounds.SetMinMax(dx::XMFLOAT3(-differenceOnX, -differenceOnY, -differenceOnZ), dx::XMFLOAT3(differenceOnX, differenceOnY, differenceOnZ));
 
 	this->currentParticleCount = 0;
 	this->accumulatedTime = 0.0f;
@@ -75,7 +81,7 @@ void ParticleSystemComponent::Shutdown()
 	}
 }
 
-void ParticleSystemComponent::InitializeParticles(ID3D11Device* device, LPCWSTR textureFilename)
+void ParticleSystemComponent::InitializeParticles(ID3D11Device* device, const std::string& texureKey)
 {
 	//maxParticles = 10;
 	particleList = new Particles[maxParticles];
@@ -91,10 +97,14 @@ void ParticleSystemComponent::InitializeParticles(ID3D11Device* device, LPCWSTR 
 	mesh->SetIndexCount(indexCount);
 	mesh->SetVertexCount(vertexCount);
 
-	LoadTexture(device, textureFilename);
+	Texture* texture = Engine::Instance->GetResources()->GetResource<Texture>(texureKey);
+	assert(texture != nullptr);
+
+	mat->SetTexture(texture, TEXTURE_DIFFUSE_SLOT, ShaderBindFlag::PIXEL);
+	mat->SetSampler(DXHelper::CreateSampler(D3D11_FILTER_MIN_MAG_MIP_LINEAR, D3D11_TEXTURE_ADDRESS_WRAP, device), 0, ShaderBindFlag::PIXEL);
 }
 
-void ParticleSystemComponent::InitializeFirelikeParticles(ID3D11Device* device, LPCWSTR textureFilename)
+void ParticleSystemComponent::InitializeFirelikeParticles(ID3D11Device* device, const std::string& texureKey)
 {
 	maxParticles = 50;
 	particleSize = 0.1f;
@@ -104,10 +114,11 @@ void ParticleSystemComponent::InitializeFirelikeParticles(ID3D11Device* device, 
 		particleList[i].active = false;
 
 
-	particlesPosition.x = GetOwner()->GetTransform().GetPosition().m128_f32[0]-0.05f;
+	particlesPosition.x = GetOwner()->GetTransform().GetPosition().m128_f32[0] - 0.05f;
 	particlesPosition.y = GetOwner()->GetTransform().GetPosition().m128_f32[1] - 0.02f;
 	particlesPosition.z = GetOwner()->GetTransform().GetPosition().m128_f32[2];
 	fire = true;
+
 	/* Init and pass it to mesh, can do a initializefunction in mesh later.. or something. */
 	InitializeBuffers(device);
 	mesh->SetVertexBuffer(vertexBuffer);
@@ -115,7 +126,8 @@ void ParticleSystemComponent::InitializeFirelikeParticles(ID3D11Device* device, 
 	mesh->SetIndexCount(indexCount);
 	mesh->SetVertexCount(vertexCount);
 
-	LoadTexture(device, textureFilename);
+	mat->SetTexture(Engine::Instance->GetResources()->GetResource<Texture>(texureKey), TEXTURE_DIFFUSE_SLOT, ShaderBindFlag::PIXEL);
+	mat->SetSampler(DXHelper::CreateSampler(D3D11_FILTER_MIN_MAG_MIP_LINEAR, D3D11_TEXTURE_ADDRESS_WRAP, device), 0, ShaderBindFlag::PIXEL);
 }
 
 void ParticleSystemComponent::SetDifference(float x, float y, float z)
@@ -123,18 +135,20 @@ void ParticleSystemComponent::SetDifference(float x, float y, float z)
 	this->differenceOnX = x;
 	this->differenceOnY = y;
 	this->differenceOnZ = z;
-}
 
-void ParticleSystemComponent::LoadTexture(ID3D11Device* device, LPCWSTR textureFilename)
-{
-	HRESULT hr = dx::CreateWICTextureFromFile(device, textureFilename, nullptr, &srv);
-	if (FAILED(hr))
-		MessageBox(0, L"Failed to 'Load WIC Texture'", L"Graphics scene Initialization Message", MB_ICONERROR);
-
-	/* Mat info */
-	mat->SetTexture(new Texture(srv), TEXTURE_DIFFUSE_SLOT, ShaderBindFlag::PIXEL);
-	mat->SetSampler(DXHelper::CreateSampler(D3D11_FILTER_MIN_MAG_MIP_LINEAR, D3D11_TEXTURE_ADDRESS_WRAP, device), 0, ShaderBindFlag::PIXEL);
+	cullBounds.SetMinMax(dx::XMFLOAT3(-differenceOnX, -differenceOnY, -differenceOnZ), dx::XMFLOAT3(differenceOnX, differenceOnY, differenceOnZ));
 }
+//
+//void ParticleSystemComponent::LoadTexture(ID3D11Device* device, LPCWSTR textureFilename)
+//{
+//	HRESULT hr = dx::CreateWICTextureFromFile(device, textureFilename, nullptr, &srv);
+//	if (FAILED(hr))
+//		MessageBox(0, L"Failed to 'Load WIC Texture'", L"Graphics scene Initialization Message", MB_ICONERROR);
+//
+//	/* Mat info */
+//	mat->SetTexture(new Texture(srv), TEXTURE_DIFFUSE_SLOT, ShaderBindFlag::PIXEL);
+//	mat->SetSampler(DXHelper::CreateSampler(D3D11_FILTER_MIN_MAG_MIP_LINEAR, D3D11_TEXTURE_ADDRESS_WRAP, device), 0, ShaderBindFlag::PIXEL);
+//}
 
 void ParticleSystemComponent::InitializeBuffers(ID3D11Device* device)
 {
@@ -214,9 +228,10 @@ void ParticleSystemComponent::CreateParticle(float frameTime)
 		float positionY = (((float)rand() - (float)rand()) / RAND_MAX) * differenceOnY;
 		float positionZ = (((float)rand() - (float)rand()) / RAND_MAX) * differenceOnZ;
 		float velocity = particleVelocity + (((float)rand() - (float)rand()) / RAND_MAX) * particleVelocityVariation;
-		float red = 1.0f;
-		float green = 1.0f;
-		float blue = 1.0f;
+		float red = 1.f;
+		float green = 1.f;
+		float blue = 0.f;
+		float alpha = 0.95f;
 
 		/*
 			Sort the listarray and find a place for the new particle.
@@ -249,6 +264,7 @@ void ParticleSystemComponent::CreateParticle(float frameTime)
 			particleList[i].red = particleList[j].red;
 			particleList[i].green = particleList[j].green;
 			particleList[i].blue = particleList[j].blue;
+			particleList[i].alpha = particleList[j].alpha;
 			particleList[i].velocity = particleList[j].velocity;
 			particleList[i].active = particleList[j].active;
 			i--;
@@ -262,6 +278,7 @@ void ParticleSystemComponent::CreateParticle(float frameTime)
 		particleList[index].red = red;
 		particleList[index].green = green;
 		particleList[index].blue = blue;
+		particleList[index].alpha = alpha;
 		particleList[index].velocity = velocity;
 		particleList[index].active = true;
 	}
@@ -271,7 +288,9 @@ void ParticleSystemComponent::UpdateParticles(float frameTime)
 {
 	for (int i = 0; i < currentParticleCount; i++)
 	{
-		particleList[i].posy = particleList[i].posy + (particleList[i].velocity * ((float)frameTime * 0.2f));
+		particleList[i].posy = particleList[i].posy + (particleList[i].velocity * ((float)frameTime * 1.3f));
+
+		particleList[i].alpha -= (float)frameTime * 0.5f;
 	}
 }
 
@@ -280,7 +299,7 @@ void ParticleSystemComponent::DeleteParticles()
 	/* Kill all the particles that have gone over a certain height range */
 	for (int i = 0; i < maxParticles; i++)
 	{
-		if ((particleList[i].active == true) && (particleList[i].posy > 0.5f))
+		if (/*(particleList[i].active == true) && (particleList[i].posy > 0.5f) ||*/ ((particleList[i].active == true) && particleList[i].alpha <= 0.0f))
 		{
 			particleList[i].active = false;
 			currentParticleCount--;
@@ -293,6 +312,7 @@ void ParticleSystemComponent::DeleteParticles()
 				particleList[j].red = particleList[j + 1].red;
 				particleList[j].green = particleList[j + 1].green;
 				particleList[j].blue = particleList[j + 1].blue;
+				particleList[j].alpha = particleList[j + 1].alpha;
 				particleList[j].velocity = particleList[j + 1].velocity;
 				particleList[j].active = particleList[j + 1].active;
 			}
@@ -322,37 +342,37 @@ void ParticleSystemComponent::UpdateBuffers()
 		// Bottom left.
 		verticesPtr[index].position = dx::XMFLOAT3(particleList[i].posx - particleSize, (particleList[i].posy) - particleSize, particleList[i].posz);
 		verticesPtr[index].texcoord = dx::XMFLOAT2(0.0f, 1.0f);
-		verticesPtr[index].color = dx::XMFLOAT4(particleList[i].red, particleList[i].green, particleList[i].blue, 1.0f);
+		verticesPtr[index].color = dx::XMFLOAT4(particleList[i].red, particleList[i].green, particleList[i].blue, particleList[i].alpha);
 		index++;
 
 		// Top left.
 		verticesPtr[index].position = dx::XMFLOAT3(particleList[i].posx - particleSize, (particleList[i].posy) + particleSize, particleList[i].posz);
 		verticesPtr[index].texcoord = dx::XMFLOAT2(0.0f, 0.0f);
-		verticesPtr[index].color = dx::XMFLOAT4(particleList[i].red, particleList[i].green, particleList[i].blue, 1.0f);
+		verticesPtr[index].color = dx::XMFLOAT4(particleList[i].red, particleList[i].green, particleList[i].blue, particleList[i].alpha);
 		index++;
 
 		// Bottom right.
 		verticesPtr[index].position = dx::XMFLOAT3(particleList[i].posx + particleSize, (particleList[i].posy) - particleSize, particleList[i].posz);
 		verticesPtr[index].texcoord = dx::XMFLOAT2(1.0f, 1.0f);
-		verticesPtr[index].color = dx::XMFLOAT4(particleList[i].red, particleList[i].green, particleList[i].blue, 1.0f);
+		verticesPtr[index].color = dx::XMFLOAT4(particleList[i].red, particleList[i].green, particleList[i].blue, particleList[i].alpha);
 		index++;
 
 		// Bottom right.
 		verticesPtr[index].position = dx::XMFLOAT3(particleList[i].posx + particleSize, (particleList[i].posy) - particleSize, particleList[i].posz);
 		verticesPtr[index].texcoord = dx::XMFLOAT2(1.0f, 1.0f);
-		verticesPtr[index].color = dx::XMFLOAT4(particleList[i].red, particleList[i].green, particleList[i].blue, 1.0f);
+		verticesPtr[index].color = dx::XMFLOAT4(particleList[i].red, particleList[i].green, particleList[i].blue, particleList[i].alpha);
 		index++;
 
 		// Top left.
 		verticesPtr[index].position = dx::XMFLOAT3(particleList[i].posx - particleSize, (particleList[i].posy) + particleSize, particleList[i].posz);
 		verticesPtr[index].texcoord = dx::XMFLOAT2(0.0f, 0.0f);
-		verticesPtr[index].color = dx::XMFLOAT4(particleList[i].red, particleList[i].green, particleList[i].blue, 1.0f);
+		verticesPtr[index].color = dx::XMFLOAT4(particleList[i].red, particleList[i].green, particleList[i].blue, particleList[i].alpha);
 		index++;
 
 		// Top right.
 		verticesPtr[index].position = dx::XMFLOAT3(particleList[i].posx + particleSize, (particleList[i].posy) + particleSize, particleList[i].posz);
 		verticesPtr[index].texcoord = dx::XMFLOAT2(1.0f, 0.0f);
-		verticesPtr[index].color = dx::XMFLOAT4(particleList[i].red, particleList[i].green, particleList[i].blue, 1.0f);
+		verticesPtr[index].color = dx::XMFLOAT4(particleList[i].red, particleList[i].green, particleList[i].blue, particleList[i].alpha);
 		index++;
 	}
 
@@ -381,13 +401,13 @@ void ParticleSystemComponent::Update(const float& deltaTime)
 void ParticleSystemComponent::Draw(Renderer* renderer, CameraComponent* camera)
 {
 	if (active)
-	{		
+	{
 		dx::XMMATRIX worldParticles = dx::XMMatrixIdentity();
 
 		if (!fire)
 		{
 			dx::XMStoreFloat3(&particlesPosition, GetOwner()->GetTransform().GetWorldPosition());
-			particlesPosition.y += 0.4f;
+			particlesPosition.y += 0.5f;
 
 			dx::XMFLOAT3 pos;
 			dx::XMStoreFloat3(&pos, camera->GetOwner()->GetTransform().GetPosition());
@@ -408,8 +428,8 @@ void ParticleSystemComponent::Draw(Renderer* renderer, CameraComponent* camera)
 			worldParticles = particlesFireRotationY * particlesFireTranslation;
 			worldmatrix = worldParticles;
 		}
-		
 
-		renderer->DrawParticles(mesh, mat, worldmatrix);
+		if (camera->InView(cullBounds, worldmatrix))
+			renderer->DrawParticles(mesh, mat, worldmatrix);
 	}
 }

@@ -9,6 +9,11 @@ namespace Math
 	constexpr float ToRadians = 0.017453f;
 	constexpr float ToDegree = 57.295779f;
 	constexpr float PI = 3.14159265359f;
+	
+	inline float Dot(dx::XMFLOAT3 a, dx::XMFLOAT3 b)
+	{
+		return (a.x * b.x) + (a.y * b.y) + (a.z * b.z);
+	}
 
 	inline int Wrap(int index, int length)
 	{

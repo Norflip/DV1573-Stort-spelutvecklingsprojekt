@@ -14,6 +14,16 @@ MeshCollider::MeshCollider(Mesh* mesh, std::vector<dx::XMFLOAT3> positions)
 
 }
 
+MeshCollider::~MeshCollider()
+{
+	rp::PhysicsCommon& common = Engine::Instance->GetPhysics()->GetCommon();
+
+	for (size_t i = 0; i < colliderInformations.size(); i++)
+	{
+		common.destroyConvexMeshShape(static_cast<rp::ConvexMeshShape*>(colliderInformations[i].shape));
+	}
+}
+
 void MeshCollider::InitializeCollider(Physics* physics)
 {
 	size_t i = 0;
@@ -89,19 +99,20 @@ void MeshCollider::Update(const float& deltaTime)
 	std::vector<Mesh::Vertex> vertices = mesh->GetVertices();
 	std::vector<size_t> indices = mesh->GetIndices();
 
+	dx::XMMATRIX model = GetOwner()->GetTransform().GetWorldMatrix();
+
 	for (size_t i = 0; i < colliderInformations.size(); i++)
 	{
 		dx::XMVECTOR p = dx::XMLoadFloat3(&colliderInformations[i].position);
+		dx::XMVECTOR r = dx::XMLoadFloat4(&colliderInformations[i].rotation);
 
 		for (size_t j = 0; j < triangles; j++)
 		{
 			for (size_t k = 0; k < COUNT; k++)
 			{
 				dx::XMVECTOR vector = dx::XMVectorScale(dx::XMLoadFloat3(&vertices[indices[j * COUNT + k]].position), OFFSET);
-				dx::XMStoreFloat3(&positions[k], dx::XMVectorAdd(vector, p));
+				dx::XMStoreFloat3(&positions[k], dx::XMVector3Transform(vector, model));
 			}
-
-		//	std::cout << "P: " << positions[0].x << ", " << positions[0].y << ", " << positions[0].z << std::endl;
 
 			size_t i0 = COUNT -1;
 			for (size_t i1 = 0; i1 < COUNT; i1++)

@@ -46,14 +46,19 @@ void Window::Open(size_t width, size_t height)
 	this->hwnd = CreateWindowEx(0, CLASS_NAME, projectTitel, WS_OVERLAPPEDWINDOW, windowRect.left, windowRect.top, wWidth, wHeight, nullptr, nullptr, hInstance, nullptr);
 
 	//Moving window
-	SetWindowPos(hwnd, nullptr, 100, 100, 0, 0, SWP_NOSIZE | SWP_NOZORDER);
+	SetWindowPos(hwnd, nullptr, 0, 0, 0, 0, SWP_NOSIZE | SWP_NOZORDER);		// Window 100 100 before
 	ShowWindow(hwnd, SW_SHOW);
 	int i = wWidth;
 	//SendMessage(hwnd, WM_SETICON, ICON_SMALL, (LPARAM)LoadIcon(hInstance, L"MAINICON"));
 }
 
+extern LRESULT ImGui_ImplWin32_WndProcHandler(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam);
+
 LRESULT Window::WindowProc(HWND hwnd, UINT umsg, WPARAM wParam, LPARAM lParam)
 {
+	if (ImGui_ImplWin32_WndProcHandler(hwnd, umsg, wParam, lParam))
+		return true;
+
 	Input::Instance().UpdateMsg(umsg, wParam, lParam);
 	switch (umsg)
 	{

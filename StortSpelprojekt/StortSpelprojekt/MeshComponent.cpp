@@ -41,7 +41,7 @@ void MeshComponent::Draw(Renderer* renderer, CameraComponent* camera)
 	}
 }
 
-void MeshComponent::SetInstanceable(size_t index, std::vector<dx::XMFLOAT4X4> instanceData, size_t instanceCount, ID3D11Device* device)
+void MeshComponent::SetInstanceable(std::vector<dx::XMFLOAT4X4> instanceData, size_t instanceCount, ID3D11Device* device)
 {
 	//Initialize(device);
 	this->instanceCount = instanceCount;

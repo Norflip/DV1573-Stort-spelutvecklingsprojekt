@@ -15,6 +15,8 @@ private:
 
 	Resource* GetResource(std::string key);
 
+	Texture* missingTexture;
+
 public:
 	ResourceManager();
 	virtual ~ResourceManager();
@@ -37,9 +39,11 @@ public:
 	// Initialize resources, will read its private functions
 	void InitializeResources(ID3D11Device* device);
 
+	Texture* GetMissingTexture() const { return missingTexture; }
+
 	// Recompile all the shaders inside the shaderResources
 	void CompileShaders(ID3D11Device* device);
-	Object* AssembleObject(std::string meshName, std::string materialName, ObjectFlag flag = ObjectFlag::DEFAULT);
+	Object* AssembleObject(std::string meshName, std::string materialName, bool batchable = false, ObjectFlag flag = ObjectFlag::DEFAULT);
 };
 
 // Template function to get a resource from the unordered_map

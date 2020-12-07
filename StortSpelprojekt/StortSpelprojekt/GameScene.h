@@ -19,7 +19,7 @@ public:
 	void InitializeInterior();
 	void OnActivate() override;
 	void OnDeactivate() override;
-	void SetSignPositions();
+	void SetSignPositions(SaveState& state);
 
 	void Update(const float& deltaTime) override;
 	void FixedUpdate(const float& fixedDeltaTime) override;
@@ -31,6 +31,8 @@ private:
 	World world;
 	Object* house;
 
+	Particlesys* testParticles;
+
 	dx::XMFLOAT3 interiorPosition;
 	Object* leftSign;
 	Object* rightSign;
@@ -38,5 +40,7 @@ private:
 	NodeWalkerComp* nodeWalker;
 
 	float fogCol;
-	bool start;
+
+	bool onceTest = true;
+	bool end;
 };

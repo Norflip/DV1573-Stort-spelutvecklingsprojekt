@@ -4,8 +4,8 @@
 FrogPuzzle::FrogPuzzle(ResourceManager* resourceManager)
 {
 	this->resource = resourceManager;
-	this->frog = resource->AssembleObject("PuzzleFrogStatue", "PuzzleFrogStatueMaterial");
-	this->fly = resource->AssembleObject("PuzzleFlyStatue", "PuzzleFlyStatueMaterial");
+	this->frog = resource->AssembleObject("PuzzleFrogStatue", "PuzzleFrogStatueMaterial", false);
+	this->fly = resource->AssembleObject("PuzzleFlyStatue", "PuzzleFlyStatueMaterial", false);
 
 }
 

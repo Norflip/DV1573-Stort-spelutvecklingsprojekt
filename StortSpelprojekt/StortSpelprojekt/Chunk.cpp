@@ -12,7 +12,6 @@ Chunk::Chunk(dx::XMINT2 index, ChunkType type) : index(index), type(type)
 
 Chunk::~Chunk()
 {
-	
 }
 
 void Chunk::Update(const float& deltaTime)
@@ -61,6 +60,25 @@ float Chunk::SampleInfluence(const float& x, const float& z) const
 		influence = data.influenceMap[col + row * (CHUNK_SIZE + 1)];
 	
 	return influence;
+}
+
+dx::XMFLOAT3 Chunk::SampleNormal(const float& x, const float& z) const
+{
+	float hLeft = SampleHeight(x - 1, z);
+	float hRight = SampleHeight(x + 1, z);
+	float hDown = SampleHeight(x, z - 1);
+	float hUp = SampleHeight(x, z + 1);
+
+	dx::XMFLOAT3 normal;
+	dx::XMVECTOR horizontal = dx::XMVector3Normalize({ 1.0f, 0.0f, hLeft - hRight });
+	dx::XMVECTOR vertical = dx::XMVector3Normalize({ 0.0f, 1.0f, hUp - hDown });
+	dx::XMStoreFloat3(&normal, dx::XMVector3Cross(horizontal, vertical));
+
+	float tmp = normal.y;
+	normal.y = normal.z;
+	normal.z = tmp;
+
+	return normal;
 }
 
 bool Chunk::TryGetLocalColRow(const float& x, const float& z, int& col, int& row) const

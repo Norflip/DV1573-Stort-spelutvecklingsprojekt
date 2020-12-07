@@ -14,13 +14,13 @@ std::string CreditsScene::GetCreditsString()
 	std::string tab = "    ";
 	std::string gameName = "Once upon a Time in Katrineholm";
 	std::string credits = "Staff Credits";
-	std::string course = std::string("Kurs/Course\n") + "DV1573 H20 lp12 "+"\n"+"Stort spelutvecklingsprojekt i grupp med agil metodik\n" + tab +"(The Great Gameproject course)";
+	std::string course = std::string("Kurs/Course\n") + "DV1573/UD1448 H20 lp12 "+"\n"+"Stort spelutvecklingsprojekt i grupp med agil metodik\n" + tab +"(The Great Gameproject course)";
 	std::string school = "BTH - Blekinge Tekniska Hogskola";
 
 	std::string gameIdea = "Game Idea by"; 
 	std::string group = "Grupp 1 / Group 1";
 
-	std::string roleLead = "Lead Programmer";
+	std::string roleLead = "Project Leader";
 	std::string roleSystem = "System & Engine Programming";
 	std::string roleGraphicsProgamming = "Graphics Programming";
 	std::string roleProgramming; "Game Logic Programming"; //Enemyprogramming & Playerprogramming, Houseprogramming;
@@ -34,7 +34,7 @@ std::string CreditsScene::GetCreditsString()
 		+ tab + "React physics 3D" + "\n"
 		+ tab + "ZWEB-Loader by Emil" + "\n"
 		+ tab + "DirectX 11" + "\n"
-		+ tab + "sound-lib" + "\n";
+		+ tab + "xAudio2" + "\n";
 	std::string specialThanks = "Special Thanks";
 	std::string testing;
 	std::string thanks = std::string("The End!") + "\n" + "Thanks for Playing!";
@@ -62,15 +62,15 @@ std::string CreditsScene::GetCreditsString()
 		+ tab + m_Emil + "\n" + tab + m_Filip + "\n" + tab + m_Fredrik + "\n"
 		+ tab + m_Jakob + "\n" + tab + m_John + "\n" + tab + m_Karlos + "\n"
 		+ tab + m_Patrik + "\n" + tab + m_Tristan + "\n" + tab + m_Viktor + "\n\n";
-	theCredits += roleLead + "\n" +tab+ "SampleText" + "\n\n";
-	theCredits += roleSystem + "\n" +tab+ "SampleText" + "\n\n";
+	theCredits += roleLead + "\n" +tab+ m_Jakob + "\n\n";
+	theCredits += roleSystem + "\n" +tab+ m_Filip + "\n\n";
 	theCredits += roleGraphicsProgamming + "\n"+tab + "SampleText" + "\n\n";
 	theCredits += roleProgramming + "\n" +tab+ "SampleText" + "\n\n";
-	theCredits += roleGui + "\n" +tab+ "SampleText" + "\n\n";
-	theCredits += roleBugfix + "\n" +tab+ "SampleText" + "\n\n";
-	theCredits += role3DArt + "\n" +tab+ "SampleText" + "\n\n";
-	theCredits += roleMusicSound + "\n"+tab + "SampleText" + "\n\n";
-	theCredits += roleScrumMaster + "\n"+tab + "SampleText" + "\n\n";
+	theCredits += roleGui + "\n" +tab+ m_Jakob + "\n\n";
+	theCredits += roleBugfix + "\n" +tab+ "All" + "\n\n";
+	theCredits += role3DArt + "\n" +tab+ m_Viktor + "\n\n";
+	theCredits += roleMusicSound + "\n"+tab + m_Patrik + "\n\n";
+	theCredits += roleScrumMaster + "\n"+tab + m_Patrik + "\n"+tab + m_Emil + "\n\n";
 	theCredits += thirdParty + "\n\n";
 	theCredits += specialThanks + "\n" +tab+ "SampleText" + "\n\n";
 	theCredits += "\n\n" + thanks;
@@ -96,7 +96,7 @@ std::string CreditsScene::GetCreditsString()
 
 CreditsScene::CreditsScene() : Scene("CreditsScene")
 {
-	creditsPos = { 0,0 };
+	creditsPos = { 0.f,0.f };
 }
 
 CreditsScene::~CreditsScene()
@@ -122,7 +122,7 @@ void CreditsScene::InitializeGUI()
 {
 	float windowWidth = static_cast<float>(window->GetWidth());
 
-	GUISprite* returnToMenu = new GUISprite(*renderer, "Textures/Restart.png", 100, 200, 0, DrawDirection::Default, ClickFunction::Clickable);
+	GUISprite* returnToMenu = new GUISprite(*renderer, "Textures/BackButton.png", 100, 200, 0, DrawDirection::Default, ClickFunction::Clickable);
 	GUISprite* quit = new GUISprite(*renderer, "Textures/Exit.png", 100, 400, 0, DrawDirection::Default, ClickFunction::Clickable);
 	GUIFont* fpsDisplay = new GUIFont(*renderer, "fps", windowWidth / 2, 50);
 
@@ -130,7 +130,7 @@ void CreditsScene::InitializeGUI()
 	quit->SetActivated();
 
 	guiManager = new GUIManager(renderer, 100);
-	creditsPos = { windowWidth / 2-500, 1080 };
+	creditsPos = { windowWidth / 2 - 500, 1080 };
 	std::string text = GetCreditsString();
 
 	GUIFont* title_credits = new GUIFont(*renderer, text, creditsPos.x, creditsPos.y);//gameName, credits,course, school, //change text
@@ -182,7 +182,8 @@ void CreditsScene::Update(const float& deltaTime)
 
 	if (static_cast<GUISprite*>(guiManager->GetGUIObject("returnToMenu"))->IsClicked())
 	{
-		AudioMaster::Instance().StopSoundEvent("menusound");
+		static_cast<GUIFont*>(guiManager->GetGUIObject("credits"))->SetPosition(creditsPos.x, creditsPos.y);
+		AudioMaster::Instance().PlaySoundEvent("menusound");
 		Engine::Instance->SwitchScene(SceneIndex::INTRO);
 		return;
 	}

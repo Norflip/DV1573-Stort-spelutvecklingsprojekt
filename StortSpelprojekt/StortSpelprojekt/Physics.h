@@ -17,7 +17,8 @@ enum class FilterGroups : unsigned short
 	DOOR = 1 << 7,
 	FIRE = 1 << 8,
 	CLICKABLE = 1 << 9,
-	EVERYTHING = DEFAULT | TERRAIN | PICKUPS | PLAYER | ENEMIES | PROPS | HOLDABLE | DOOR | FIRE | CLICKABLE
+	PUZZLE = 1 << 10,
+	EVERYTHING = DEFAULT | TERRAIN | PICKUPS | PLAYER | ENEMIES | PROPS | HOLDABLE | DOOR | FIRE | CLICKABLE | PUZZLE
 };
 DEFINE_ENUM_FLAG_OPERATORS(FilterGroups)
 
@@ -42,7 +43,6 @@ public:
 	void MutexUnlock();
 
 	void RegisterRigidBody(RigidBodyComponent* rigidBodyComp);
-	void UnregisterRigidBody(Object* object);
 	void UnregisterRigidBody(RigidBodyComponent* rigidBodyComp);
 
 	void FixedUpdate(const float& fixedDeltaTime);

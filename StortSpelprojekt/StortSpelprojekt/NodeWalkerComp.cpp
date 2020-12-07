@@ -3,9 +3,9 @@
 
 NodeWalkerComp::NodeWalkerComp()
 {
-	this->speed = 1.0f;// 16.2f;
+	this->speed = 3.0f;// 16.2f;
 	this->currentNode = thePath.GetFirstPointIndex();
-	this->nextChosen = -1;
+	this->nextChosen = this->currentNode + 1;
 	this->nodeRadius = 0.3f;
 	this->canWalk = false;
 	this->isWalking = true;
@@ -68,14 +68,16 @@ void NodeWalkerComp::InitAnimation()
 
 void NodeWalkerComp::Reset()
 {
+	//std::cout<<this->currentNode<< std::endl;
 	this->currentNode = thePath.GetFirstPointIndex();
-	this->nextChosen = -1;
-	this->canWalk = false;
+	//std::cout << this->nextChosen << std::endl;
+	this->nextChosen = this->currentNode + 1;
+	//std::cout << this->canWalk << std::endl;
 
-	dx::XMFLOAT3 pos3 = { thePath.GetPoint(this->currentNode).x,HEIGHT, thePath.GetPoint(this->currentNode).z };
-	dx::XMVECTOR startPos = dx::XMLoadFloat3(&pos3);
-	this->GetOwner()->GetTransform().SetPosition(startPos);
-	this->rbComp->SetPosition(startPos);
+	//dx::XMFLOAT3 pos3 = { thePath.GetPoint(this->currentNode).x,HEIGHT, thePath.GetPoint(this->currentNode).z };
+	//dx::XMVECTOR startPos = dx::XMLoadFloat3(&pos3);
+	//this->GetOwner()->GetTransform().SetPosition(startPos);
+	//this->rbComp->SetPosition(startPos);
 }
 
 void NodeWalkerComp::Start()
@@ -152,14 +154,24 @@ void NodeWalkerComp::Update(const float& deltaTime)
 			if (canWalk)
 			{
 				float y = this->world->SampleHeight(thePath.GetPoint(this->currentNode).x, thePath.GetPoint(this->currentNode).z);
-
+				if (y < 0.0f || y > 30)
+				{
+					y = 0.01f;
+					dx::XMVECTOR forcedPosVec = GetOwner()->GetTransform().GetPosition();
+					dx::XMFLOAT3 forcedPos;
+					dx::XMStoreFloat3(&forcedPos, forcedPosVec);
+					forcedPos.y = y;
+					forcedPosVec = dx::XMLoadFloat3(&forcedPos);
+					rbComp->SetPosition(forcedPosVec);
+					GetOwner()->GetTransform().SetPosition(forcedPosVec);
+				}
 				//DirectX::XMFLOAT3 dir = { 0.f,0.f,0.f };
 				dx::XMFLOAT3 nextPoint = { thePath.GetPoint(this->currentNode).x, y, thePath.GetPoint(this->currentNode).z };
 				dx::XMVECTOR vdir = dx::XMVectorSubtract(dx::XMLoadFloat3(&nextPoint), GetOwner()->GetTransform().GetPosition());
 				dx::XMStoreFloat(&this->length, dx::XMVector3Length(vdir));
 				if (this->length < nodeRadius)
 				{
-					StopAnim();
+					//StopAnim();
 					canWalk = false;
 					this->currentNode = this->nextChosen;
 				}
@@ -170,6 +182,19 @@ void NodeWalkerComp::Update(const float& deltaTime)
 					dx::XMStoreFloat3(&moveVec, vdir);
 					//this->moveVec = dir;
 
+					// BÖRJA HÄR EMIL! :D
+					////'''''''''''''''''''
+					//dx::XMVECTOR dirVec = vdir;
+					//dx::XMFLOAT3 dirToRoad;
+					//dx::XMStoreFloat3(&dirToRoad, dirVec);
+					//float angle = /*180.f*/-90.0f + atan2f(dirToRoad.x, dirToRoad.z) * (180.f / Math::PI);
+					//float rotation = angle * Math::ToRadians;
+					//dx::XMVECTOR right = GetOwner()->GetTransform().TransformDirection({ 1,0,0 });
+					//dx::XMVECTOR eulerRotation = dx::XMQuaternionMultiply(dx::XMQuaternionRotationAxis(right, 0), dx::XMQuaternionRotationAxis({ 0,1,0 }, rotation));
+					//GetOwner()->GetTransform().SetRotation(eulerRotation);
+					//rbComp->SetRotation(eulerRotation);
+					////'''''''''''''
+
 					GetOwner()->GetTransform().Translate(moveVec.x, moveVec.y, moveVec.z);
 					this->rbComp->SetPosition(GetOwner()->GetTransform().GetWorldPosition());
 				}
@@ -179,8 +204,8 @@ void NodeWalkerComp::Update(const float& deltaTime)
 				const int skip = 1;
 				if (this->nextChosen <= ICAST(this->thePath.GetLastPointIndex()))
 				{
-					this->nextChosen = currentNode + skip; //skip is 10
-					StartAnim();
+					this->nextChosen = currentNode + skip; //skip is 1
+					//StartAnim();
 					canWalk = true;
 				}
 			}
@@ -192,14 +217,14 @@ void NodeWalkerComp::Update(const float& deltaTime)
 		legs->SetTrack(SkeletonStateMachine::IDLE, false);
 	}
 
-	if (KEY_DOWN(I)) //used to display info and test paths
-	{
-		std::cout << "Current Node: (" << std::to_string(this->currentNode) << ")" << std::endl
-			<< "Next Node: " << std::to_string(nextChosen) << std::endl
-			<< "Can Walk: " << canWalk << std::endl
-			<< "Length: " << std::to_string(this->length) << std::endl;
+	//if (KEY_DOWN(I)) //used to display info and test paths
+	//{
+	//	std::cout << "Current Node: (" << std::to_string(this->currentNode) << ")" << std::endl
+	//		<< "Next Node: " << std::to_string(nextChosen) << std::endl
+	//		<< "Can Walk: " << canWalk << std::endl
+	//		<< "Length: " << std::to_string(this->length) << std::endl;
 
-	}
+	//}
 
 	if (KEY_DOWN(R))
 		this->Reset();

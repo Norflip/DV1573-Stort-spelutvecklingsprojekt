@@ -10,7 +10,13 @@
 #include "Resource.h"
 #include <cmath>
 
-enum SkeletonStateMachine
+enum class EnemyType
+{
+	BASE,
+	CHARGER,
+	NONE
+};
+enum class SkeletonStateMachine
 {
 	IDLE,
 	WALK,
@@ -66,7 +72,8 @@ public:
 	SkeletonStateMachine GetCurrentAnimation() { return this->currentAni; }
 	Bounds GetBounds() { return this->bounds; }
 	void SetTimeScale(float time) { this->timeScale = time; }
-
+	const EnemyType GetEnemyType() { return enemyType; }
+	void SetEnemyType(const EnemyType& enemyType) { this->enemyType = enemyType; }
 	ALIGN16_ALLOC;
 
 private:
@@ -89,6 +96,6 @@ private:
 	bool doneUp, doneDown;
 	bool doneDeath = false;
 	float count = 0.0f;
-	
+	EnemyType enemyType = EnemyType::NONE;
 };
 

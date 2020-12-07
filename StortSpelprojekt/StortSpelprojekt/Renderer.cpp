@@ -3,10 +3,15 @@
 #include "RenderPass.h"
 #include "DShape.h"
 #include "Input.h"
+#include "Engine.h"
+#include "Imgui\imgui.h"
+#include "Imgui\imgui_impl_win32.h"
+#include "Imgui\imgui_impl_dx11.h"
 
 
 Renderer::Renderer() : device(nullptr), context(nullptr), swapchain(nullptr), skeleton_srvbuffer(nullptr), skeleton_srv(nullptr), batchInstanceBuffer(nullptr)
 {
+	firstRun = true;
 	srand(unsigned int(time(0)));
 }
 
@@ -55,7 +60,7 @@ Renderer::~Renderer()
 
 void Renderer::Initialize(Window* window)
 {
-	this->outputWindow = window;
+	this->window = window;
 
 	DXHelper::CreateSwapchain(*window, &device, &context, &swapchain);
 	this->backbuffer = DXHelper::CreateBackbuffer(window->GetWidth() , window->GetHeight(), device, swapchain);
@@ -64,16 +69,13 @@ void Renderer::Initialize(Window* window)
 	this->renderPassSwapBuffers[1] = DXHelper::CreateRenderTexture(window->GetWidth(), window->GetHeight(), device, context, &dss);
 	srv_skeleton_data.resize(60);
 
-
-
 	DXHelper::CreateRSState(device, &rasterizerStateCullBack, &rasterizerStateCullNone, &rasterizerStateCCWO);
-
-
-
 
 	LightManager::Instance().Initialize(device);
 
-
+	/* new particle stuff */
+	particleBuffer.Initialize(0, ShaderBindFlag::SOGEOMETRY | ShaderBindFlag::VERTEX | ShaderBindFlag::GEOMETRY | ShaderBindFlag::PIXEL, device);
+	
 	sceneBuffer.Initialize(CB_SCENE_SLOT, ShaderBindFlag::PIXEL | ShaderBindFlag::DOMAINS | ShaderBindFlag::VERTEX|ShaderBindFlag::COMPUTE, device);
 	objectBuffer.Initialize(CB_OBJECT_SLOT, ShaderBindFlag::VERTEX | ShaderBindFlag::DOMAINS|ShaderBindFlag::GEOMETRY, device);
 	materialBuffer.Initialize(CB_MATERIAL_SLOT, ShaderBindFlag::PIXEL, device);
@@ -82,6 +84,9 @@ void Renderer::Initialize(Window* window)
 	DXHelper::BindStructuredBuffer(context, skeleton_srvbuffer, srv_skeleton_data.data(), BONES_SRV_SLOT, ShaderBindFlag::VERTEX, &skeleton_srv);
 	DXHelper::CreateBlendState(device, &blendStateOn, &blendStateOff);
 
+	/* two new shit */
+	DXHelper::CreateParticleBlendState(device, &particleBlendOn, &particleBlendOff);
+	DXHelper::CreateDepthStencilStates(device, &dss_On, &dss_Off);
 
 	/* Screenquad shader */
 	Shader* screenQuadShader = new Shader;
@@ -97,6 +102,11 @@ void Renderer::Initialize(Window* window)
 	DShape::Instance().m_Initialize(device);
 
 	//	CreateInstanceBuffer(device, MAX_BATCH_COUNT, )
+
+	
+	forwardPlusShader.SetComputeShader("Shaders/ForwardPlusRendering.hlsl", "ComputeFrustums");
+	forwardPlusShader.CompileCS(device);
+
 
 	tmpBatchInstanceData = new dx::XMFLOAT4X4[MAX_BATCH_COUNT];
 	DXHelper::CreateInstanceBuffer(device, MAX_BATCH_COUNT, sizeof(dx::XMFLOAT4X4), tmpBatchInstanceData, &batchInstanceBuffer);
@@ -134,6 +144,9 @@ void Renderer::DrawQueueToTarget(RenderQueue& queue, CameraComponent* camera)
 					case RenderItem::Type::Particles:
 						DrawRenderItemParticles(item, camera); break;
 
+					case RenderItem::Type::NewParticles:
+						DrawRenderItemNewParticles(item, camera); break;
+
 					case RenderItem::Type::Default:
 					default:
 
@@ -146,9 +159,6 @@ void Renderer::DrawQueueToTarget(RenderQueue& queue, CameraComponent* camera)
 			mat->UnbindToContext(context);
 		}
 	}
-
-	// clear queues
-	queue.clear();
 }
 
 
@@ -164,7 +174,20 @@ void Renderer::RenderFrame(CameraComponent* camera, float time, float distance)
 	{
 		isFullScreen = true;
 	}*/
+
+
+	// Start the Dear ImGui frame
+	ImGui_ImplDX11_NewFrame();
+	ImGui_ImplWin32_NewFrame();
+	ImGui::NewFrame();
+
+	Engine::Instance->OnIMGUIFrame();
+
 	RenderFrame(camera, time, distance, backbuffer, true, true);
+
+	ImGui::Render();
+	ImGui_ImplDX11_RenderDrawData(ImGui::GetDrawData());
+
 	HRESULT hr = swapchain->Present(0, 0); //1 here?
 	//swapchain->SetFullscreenState(isFullScreen, nullptr);
 	assert(SUCCEEDED(hr));
@@ -197,12 +220,12 @@ void Renderer::RenderFrame(CameraComponent* camera, float time, float distance, 
 	data.factor = color;
 	data.time = time;
 	data.distanceToHouse = distance;
-	//std::cout << xPos << std::endl;
+	//std::cout << distance << std::endl;
 	//std::cout << yPos << std::endl;
 	xPos += (float)Input::Instance().GetPrevMousePosRelative().y;
 	yPos += (float)Input::Instance().GetPrevMousePosRelative().x;
 	data.mousePos = { xPos,yPos };
-	data.screenSize = { (float)outputWindow->GetWidth(), (float)outputWindow->GetHeight() };
+	data.screenSize = { (float)window->GetWidth(), (float)window->GetHeight() };
 	//data.mousePos = { (float)Input::Instance().GetMousePos().x, (float)Input::Instance().GetMousePos().y };
 	// put in mouse pos delta here
 	dx::XMStoreFloat3(&data.cameraPosition, camera->GetOwner()->GetTransform().GetPosition());
@@ -218,10 +241,17 @@ void Renderer::RenderFrame(CameraComponent* camera, float time, float distance, 
 
 	//LightManager::Instance().UpdateBuffers(context,camera);
 
+
+	if (!forwardPlusInitialized)
+	{ 
+		InitForwardPlus(camera);
+		forwardPlusInitialized = true;
+	}
+
 	UpdateForwardPlus(camera);
 
-	ID3D11ShaderResourceView* nullSRV[1] = { nullptr };
-	context->PSSetShaderResources(0, 1, nullSRV);
+//	ID3D11ShaderResourceView* nullSRV[1] = { nullptr };
+//	context->PSSetShaderResources(0, 1, nullSRV);
 
 	ClearRenderTarget(midbuffer);
 	SetRenderTarget(midbuffer);
@@ -235,28 +265,44 @@ void Renderer::RenderFrame(CameraComponent* camera, float time, float distance, 
 		}
 	}
 	
-
 	context->OMSetDepthStencilState(dss, 0);
 	DXHelper::BindStructuredBuffer(context, 10, ShaderBindFlag::PIXEL, &o_LightIndexList_srv);
 	context->PSSetShaderResources(11, 1, &o_LightGrid_texSRV);
 	SetCullBack(true);
+
 	DrawQueueToTarget(opaqueItemQueue, camera);
+	opaqueItemQueue.clear();
+
 	DShape::Instance().m_Draw(camera->GetViewMatrix() * camera->GetProjectionMatrix(), context);
 
 	for (auto i : opaqueBatches)
 		DrawBatch(i.second, camera);
-	
 	opaqueBatches.clear();
+
 	DXHelper::BindStructuredBuffer(context, 10, ShaderBindFlag::PIXEL, &t_LightIndexList_srv);
 	context->PSSetShaderResources(11, 1, &t_LightGrid_texSRV);
 	SetCullBack(false);
+
 	DrawQueueToTarget(transparentItemQueue, camera);
+	transparentItemQueue.clear();
+
 	for (auto i : transparentBatches)
 		DrawBatch(i.second, camera);
-
 	transparentBatches.clear();
+	
 
-	SetCullBack(true);
+
+	//context->OMSetDepthStencilState(dss_Off, 0);
+	//EnableAlphaBlending();
+	for (auto i : particleList)
+		i->Draw(context, camera);	
+	//DisableAlphaBlending();
+	context->OMSetBlendState(blendStateOff, BLENDSTATEMASK, 0xffffffff);
+	context->OMSetDepthStencilState(dss, 0);
+
+
+
+	//SetCullBack(true);
 	size_t passCount = 0;
 	size_t bufferIndex = 0;
 
@@ -291,6 +337,9 @@ void Renderer::RenderFrame(CameraComponent* camera, float time, float distance, 
 
 	context->PSSetShaderResources(0, 1, &lastBuffer.srv);
 	DrawScreenQuad(screenQuadMaterial);
+
+
+	
 
 	if (drawGUI)
 	{
@@ -336,20 +385,6 @@ void Renderer::Draw(const Mesh* mesh, const Material* material, const dx::XMMATR
 			batch.mesh = mesh;
 			batch.transformations.push_back(modelInFloats);
 			batches.insert({ batchID, batch });
-		}
-
-		auto& batchesDepth = material->IsTransparent() ? transparentBatchesDepth : opaqueBatchesDepth;
-		if (batchesDepth.find(batchID) != batchesDepth.end())
-		{
-			batchesDepth[batchID].transformations.push_back(modelInFloats);
-		}
-		else
-		{
-			Batch batch;
-			batch.material = material;
-			batch.mesh = mesh;
-			batch.transformations.push_back(modelInFloats);
-			batchesDepth.insert({ batchID, batch });
 		}
 	}
 	else
@@ -407,6 +442,17 @@ void Renderer::DrawParticles(const Mesh* mesh, const Material* material, const d
 	AddItem(part, true, true);
 }
 
+void Renderer::DrawNewParticles(const Mesh* particleMesh, const Material* drawMat, const Material* streamoutMat, cb_particle* particleData)
+{
+	RenderItem part;
+	part.type = RenderItem::Type::NewParticles;
+	part.mesh = particleMesh;
+	part.material = drawMat;
+	part.streamoutMaterial = streamoutMat;
+	part.particles = particleData;
+	AddItem(part, true, true);
+}
+
 void Renderer::DrawImmediate(const Mesh* mesh, const Material* material, const CameraComponent* camera, const dx::XMMATRIX& model)
 {
 	SetObjectBufferValues(camera, model, true);
@@ -434,7 +480,7 @@ void Renderer::SetCullBack(bool cullNone)
 	{
 		context->RSSetState(rasterizerStateCullBack);
 		//context->OMSetBlendState(blendStateOff, BLENDSTATEMASK, 0xffffffff);
-		context->OMSetBlendState(blendStateOn, BLENDSTATEMASK, 0xffffffff);
+		context->OMSetBlendState(blendStateOff, BLENDSTATEMASK, 0xffffffff);		// ON BEFORE?
 	}
 }
 
@@ -479,16 +525,16 @@ void Renderer::AddItem(const RenderItem& item, bool transparent, bool cullDepth)
 
 		if (found == transparentItemQueue.end())
 			transparentItemQueue.insert({ materialID, std::queue<RenderItem>() });
-
 		transparentItemQueue[materialID].push(item);
-		if (!cullDepth)
-		{
-			auto foundDepth = transparentItemQueueDepth.find(materialID);
-			if (foundDepth == transparentItemQueueDepth.end())
-				transparentItemQueueDepth.insert({ materialID, std::queue<RenderItem>() });
-			transparentItemQueueDepth[materialID].push(item);
-		}
-		
+
+		//if (!cullDepth)
+		//{
+		//	auto foundDepth = transparentItemQueueDepth.find(materialID);
+		//	if (foundDepth == transparentItemQueueDepth.end())
+		//		transparentItemQueueDepth.insert({ materialID, std::queue<RenderItem>() });
+		//	transparentItemQueueDepth[materialID].push(item);
+		//}
+		//
 	}
 	else
 	{
@@ -497,15 +543,15 @@ void Renderer::AddItem(const RenderItem& item, bool transparent, bool cullDepth)
 
 		if (found == opaqueItemQueue.end())
 			opaqueItemQueue.insert({ materialID, std::queue<RenderItem>() });
-
 		opaqueItemQueue[materialID].push(item);
-		if (!cullDepth)
+
+		/*if (!cullDepth)
 		{
 			auto foundDepth = opaqueItemQueueDepth.find(materialID);
 			if (foundDepth == opaqueItemQueueDepth.end())
 				opaqueItemQueueDepth.insert({ materialID, std::queue<RenderItem>() });
 			opaqueItemQueueDepth[materialID].push(item);
-		}
+		}*/
 	}
 }
 
@@ -606,6 +652,96 @@ void Renderer::DrawRenderItemParticles(const RenderItem& item, CameraComponent* 
 	context->DrawIndexed(item.mesh->GetIndexCountPart(), 0, 0);
 }
 
+void Renderer::DrawRenderItemNewParticles(const RenderItem& item, CameraComponent* camera)
+{
+	cb_particle* part = item.particles;
+	particleBuffer.SetData(*part);
+	particleBuffer.UpdateBuffer(context);
+
+	
+	
+	ID3D11Buffer* initBuffer = item.mesh->GetInitBuffer(); 
+	ID3D11Buffer* streamoutBuffer = item.mesh->GetStreamoutBuffer();
+	ID3D11Buffer* drawBuffer = item.mesh->GetInitBuffer();
+	const Material* soMat = item.streamoutMaterial;
+	const Material* drawMat = item.material;
+	
+	context->IASetPrimitiveTopology(item.mesh->GetTopology());
+
+	soMat->BindToContext(context);
+
+	UINT stride = sizeof(Mesh::Particle);
+	UINT offset = 0;
+
+
+	if (firstRun)
+		context->IASetVertexBuffers(0, 1, &initBuffer, &stride, &offset);
+	else
+		context->IASetVertexBuffers(0, 1, &drawBuffer, &stride, &offset);
+
+	context->SOSetTargets(1, &streamoutBuffer, &offset);
+
+	if (firstRun)
+	{
+		context->Draw(1, 0);
+		firstRun = false;
+	}
+	else
+	{
+		context->DrawAuto();
+	}
+
+	// Ping-pong the vertex buffers
+	ID3D11Buffer* bufferArray[1] = { 0 };
+	context->SOSetTargets(1, bufferArray, &offset);
+	std::swap(drawBuffer, streamoutBuffer);
+
+
+	/* Clear */
+	ID3D11ShaderResourceView* nullSRV[1] = { nullptr };
+	context->GSSetShaderResources(0, 1, nullSRV);
+
+	ID3D11SamplerState* nullSampler[1] = { nullptr };
+	context->GSSetSamplers(0, 1, nullSampler);
+
+	context->GSSetConstantBuffers(0, 1, bufferArray);
+	context->VSSetShader(nullptr, 0, 0);
+	context->GSSetShader(nullptr, 0, 0);
+	context->PSSetShader(nullptr, 0, 0);
+
+
+
+	/* DRAW STUFF */
+
+	particleBuffer.SetData(*part);
+	particleBuffer.UpdateBuffer(context);
+
+	drawMat->BindToContext(context);
+	context->IASetVertexBuffers(0, 1, &drawBuffer, &stride, &offset);
+
+	context->DrawAuto();
+
+
+
+	/* Clear */
+	//ID3D11Buffer* bufferArray[1] = { 0 };
+	//ID3D11ShaderResourceView* nullSRV[1] = { nullptr };
+	context->PSSetShaderResources(0, 1, nullSRV);
+
+	//ID3D11SamplerState* nullSampler[1] = { nullptr };
+	context->PSSetSamplers(0, 1, nullSampler);
+
+	context->GSSetConstantBuffers(0, 1, bufferArray);
+	context->GSSetConstantBuffers(1, 1, bufferArray);
+	context->VSSetConstantBuffers(0, 1, bufferArray);
+	context->VSSetConstantBuffers(1, 1, bufferArray);
+	context->PSSetConstantBuffers(0, 1, bufferArray);
+
+	context->VSSetShader(nullptr, 0, 0);
+	context->GSSetShader(nullptr, 0, 0);
+	context->PSSetShader(nullptr, 0, 0);
+}
+
 void Renderer::DrawBatch(const Batch& batch, CameraComponent* camera)
 {
 	// Skapa indexbuffer
@@ -613,6 +749,7 @@ void Renderer::DrawBatch(const Batch& batch, CameraComponent* camera)
 	size_t instanceCount = std::min(batch.transformations.size(), UICAST(MAX_BATCH_COUNT));
 	if (instanceCount == 0)
 		return;
+
 
 	SetObjectBufferValues(camera, dx::XMMatrixIdentity(), true);
 	objectBuffer.UpdateBuffer(context);
@@ -623,15 +760,15 @@ void Renderer::DrawBatch(const Batch& batch, CameraComponent* camera)
 
 	GetContext()->Map(batchInstanceBuffer, 0, D3D11_MAP_WRITE_DISCARD, 0, &mappedData);
 	dx::XMFLOAT4X4* dataView = reinterpret_cast<dx::XMFLOAT4X4*>(mappedData.pData);
-
 	for (size_t i = 0; i < batch.transformations.size(); i++)
 	{
 		dataView[i] = batch.transformations[i];
 	}
-
 	GetContext()->Unmap(batchInstanceBuffer, 0);
 
-
+	batch.material->BindToContext(context);
+	materialBuffer.SetData(batch.material->GetMaterialData());
+	materialBuffer.UpdateBuffer(context);
 
 	UINT stride[2] = { sizeof(Mesh::Vertex), sizeof(dx::XMFLOAT4X4) };
 	UINT offset[2] = { 0 };
@@ -646,7 +783,7 @@ void Renderer::DrawBatch(const Batch& batch, CameraComponent* camera)
 
 	context->DrawIndexedInstanced(batch.mesh->GetIndexCount(), instanceCount, 0, 0, 0);
 
-	//std::cout << "BATCHING(" << batch.material->IsTransparent() << "): " << batch.mesh->GetMeshName() << " / " << batch.material->GetID() << " : " << instanceCount << "\n";
+	//std::cout << "BATCHING(" << batch.material->IsTransparent() << "): " << batch.mesh->GetMeshName() << " id(" << batch.material->GetID() << "), count: " << instanceCount << "\n";
 }
 
 void Renderer::SetObjectBufferValues(const CameraComponent* camera, dx::XMMATRIX world, bool transpose)
@@ -717,10 +854,10 @@ void Renderer::DrawScreenQuad(const Material* material)
 }
 
 
-void Renderer::InitForwardPlus(CameraComponent* camera, Window* window, Shader& forwardPlusShader)
+void Renderer::InitForwardPlus(VirtualCamera* camera)
 {
-	
-	
+	forwardPlusShader.BindToContext(context);
+
 	this->width = window->GetWidth();
 	this->height = window->GetHeight();
 	int screenWidth = std::max(window->GetWidth(), 1u);
@@ -848,19 +985,17 @@ void Renderer::UpdateForwardPlus(CameraComponent* camera)
 	depthPass.BindDSV(context);
 	context->OMSetDepthStencilState(dss, 0);
 	SetCullBack(true);
-	DrawQueueToTarget(opaqueItemQueueDepth, camera);
-	
-	for (auto i : opaqueBatchesDepth)
-		DrawBatch(i.second, camera);
 
-	opaqueBatchesDepth.clear();
+	//std::cout << opaqueItemQueue.size() << std::endl;
+
+	DrawQueueToTarget(opaqueItemQueue, camera);
+	for (auto i : opaqueBatches)
+		DrawBatch(i.second, camera);
 
 	SetCullBack(false);
-	DrawQueueToTarget(transparentItemQueueDepth, camera);
-	for (auto i : transparentBatchesDepth)
+	DrawQueueToTarget(transparentItemQueue, camera);
+	for (auto i : transparentBatches)
 		DrawBatch(i.second, camera);
-
-	transparentBatchesDepth.clear();
 
 	SetCullBack(true);
 
@@ -877,6 +1012,9 @@ void Renderer::UpdateForwardPlus(CameraComponent* camera)
 	context->CSSetUnorderedAccessViews(6, 1, &nullUAV, NULL); //u6
 	context->PSSetShaderResources(10, 1, &nullSRV);
 	context->PSSetShaderResources(11, 1, &nullSRV);
+
+	forwardPlusShader.BindToContext(context);
+
 	context->OMSetDepthStencilState(dss, 0);
 	context->CSSetShaderResources(1, 1, depthPass.GetDepthSRV());
 	DXHelper::BindStructuredBuffer(context, 9, ShaderBindFlag::COMPUTE, &inFrustums_srv);
@@ -902,4 +1040,17 @@ void Renderer::UpdateForwardPlus(CameraComponent* camera)
 	
 	//context->Dispatch(1, 1, 1);
 }
+
+void Renderer::EnableAlphaBlending()
+{
+	float blendfact[4] = { 0.0f,0.0f,0.0f,0.0f };
+	context->OMSetBlendState(particleBlendOn, blendfact, 0xffffffff);
+}
+
+void Renderer::DisableAlphaBlending()
+{
+	float blendfact[4] = { 0.0f,0.0f,0.0f,0.0f };
+	context->OMSetBlendState(particleBlendOff, blendfact, 0xffffffff);
+}
+
 
