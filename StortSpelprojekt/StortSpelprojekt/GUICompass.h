@@ -17,6 +17,7 @@ public:
     float GetDistance()const { return distance; }
     virtual void SetPosition(float x, float y) override;
     GUISprite* GetBarSprite() { return this->backgroundBar; }
+    GUISprite* GetHouseSprite() { return this->house; }
     ALIGN16_ALLOC;
 private:
     Object* playerObj;

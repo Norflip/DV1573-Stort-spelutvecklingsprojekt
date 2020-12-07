@@ -180,6 +180,7 @@ void ControllerComp::Update(const float& deltaTime)
 		if (length > playerComp->GetRadius() || length < SIT_RADIUS)
 		{
 			static_cast<GUICompass*>(playerComp->GetGuiManager()->GetGUIObject("compass"))->GetBarSprite()->SetActivated();
+			static_cast<GUICompass*>(playerComp->GetGuiManager()->GetGUIObject("compass"))->GetHouseSprite()->SetActivated();
 
 			houseWalkComp->Stop();
 		}
@@ -192,10 +193,11 @@ void ControllerComp::Update(const float& deltaTime)
 			houseWalkComp->Start();
 
 			static_cast<GUICompass*>(playerComp->GetGuiManager()->GetGUIObject("compass"))->GetBarSprite()->SetActivated(false);
+			static_cast<GUICompass*>(playerComp->GetGuiManager()->GetGUIObject("compass"))->GetHouseSprite()->SetActivated(false);
 		}
 			
 
-		if (RMOUSE_DOWN)
+		if (KEY_DOWN(E))
 		{
 			if (inside && inDoorRange)
 			{
@@ -210,7 +212,8 @@ void ControllerComp::Update(const float& deltaTime)
 				const dx::XMFLOAT3 interior = INTERIOR_POSITION;
 				GetOwner()->GetTransform().SetPosition(dx::XMVECTOR{ interior.x, interior.y + 3.0f, interior.z, 0 });
 				rbComp->SetPosition({ interior.x, interior.y + 3.0f, interior.z, 0.0f });
-
+				//GetOwner()->GetTransform().SetPosition(dx::XMVECTOR{ interior.x, interior.y + 3.0f, interior.z, 0 });
+			
 				inside = true;
 				inDoorRange = false;
 			}

@@ -153,40 +153,6 @@ void GameScene::InitializeObjects()
 
 	world.Initialize(root, resources, renderer);
 
-	///* PICKUP STUFF DONT DELETE THESEEE */
-	//Object* healthkitObject = resources->AssembleObject("HealthKit", "HealthKitMaterial");
-	//healthkitObject->AddFlag(ObjectFlag::DEFAULT);
-	//healthkitObject->GetComponent<MeshComponent>()->SetBatchable(true);
-	//healthkitObject->GetTransform().SetPosition({ 23,2,50 });
-	//healthkitObject->AddComponent<BoxColliderComponent>(dx::XMFLOAT3{ 0.5f, 0.5f, 0.5f }, dx::XMFLOAT3{ 0, 0, 0 });
-	//healthkitObject->AddComponent<PickupComponent>(PickupType::Health, 20.0f);
-	//healthkitObject->AddComponent<RigidBodyComponent>(0.f, FilterGroups::PICKUPS, (FilterGroups::EVERYTHING & ~FilterGroups::PLAYER), BodyType::DYNAMIC, true);
-	//AddObjectToRoot(healthkitObject);
-
-	/////* Fuel pickup stuff temporary */
-	//Object* fuelCanObject = resources->AssembleObject("FuelCanGreen", "FuelCanGreenMaterial");
-	//fuelCanObject->AddFlag(ObjectFlag::DEFAULT);
-	//fuelCanObject->GetComponent<MeshComponent>()->SetBatchable(true);
-	//fuelCanObject->GetTransform().SetPosition({ 22,2,52 });
-	//fuelCanObject->AddComponent<BoxColliderComponent>(dx::XMFLOAT3{ 0.3f, 0.3f, 0.3f }, dx::XMFLOAT3{ 0, 0, 0 });
-	//fuelCanObject->AddComponent<PickupComponent>(PickupType::Fuel, 20.0f);
-	//fuelCanObject->AddComponent<RigidBodyComponent>(10.f, FilterGroups::HOLDABLE, (FilterGroups::EVERYTHING & ~FilterGroups::PLAYER), BodyType::DYNAMIC, true);
-	//AddObjectToRoot(fuelCanObject);
-
-	/////* Banana pickup stuff temporary */
-	//Shader* particleShader = resources->GetShaderResource("particleShader");
-	//Object* beansObject = resources->AssembleObject("Soup", "SoupMaterial");
-	//beansObject->AddFlag(ObjectFlag::DEFAULT);
-	//beansObject->GetComponent<MeshComponent>()->SetBatchable(true);
-	//beansObject->GetTransform().SetPosition({ 22, 2.0f, 53 });
-	//beansObject->AddComponent<BoxColliderComponent>(dx::XMFLOAT3{ 0.5f, 0.5f, 0.5f }, dx::XMFLOAT3{ 0, 0, 0 });
-	//beansObject->AddComponent<PickupComponent>(PickupType::Food, 20.0f);
-	//beansObject->AddComponent<RigidBodyComponent>(0.f, FilterGroups::PICKUPS, (FilterGroups::EVERYTHING & ~FilterGroups::PLAYER), BodyType::DYNAMIC, true);
-
-	//beansObject->AddComponent<ParticleSystemComponent>(renderer, particleShader);
-	//beansObject->GetComponent<ParticleSystemComponent>()->InitializeParticles(renderer->GetDevice(), "Stars");
-	//AddObjectToRoot(beansObject);
-
 	//Player Arms
 	Object* playerArms = new Object("PlayerArms", ObjectFlag::DEFAULT | ObjectFlag::NO_CULL);
 	SkeletonMeshComponent* armsSkeleton = resources->GetResource<SkeletonMeshComponent>("PlayerArmsSkeleton");
@@ -230,55 +196,8 @@ void GameScene::InitializeObjects()
 	enemyManager->InitBaseEnemy();
 	enemyManager->InitChargerEnemy();
 
-	/* PuzzleModels */
-	//Object* puzzleFrog = resources->AssembleObject("PuzzleFrogStatue", "PuzzleFrogStatueMaterial", ObjectFlag::DEFAULT);
-	////puzzleManager = new PuzzleManager(resources, player, house);
-	//puzzleFrog->GetTransform().SetPosition({ 26, 1.5f, 50 });
-	//puzzleFrog->AddComponent<BoxColliderComponent>(dx::XMFLOAT3{ 2.0f, 2.0f, 2.0f }, dx::XMFLOAT3{ 0, 0, 0 });
-	//puzzleFrog->AddComponent<RigidBodyComponent>(0.0f, FilterGroups::PROPS, FilterGroups::EVERYTHING, BodyType::DYNAMIC, true);
-	///*puzzleFrog->AddComponent<BoxColliderComponent>(dx::XMFLOAT3{ 2.0f, 2.0f, 2.0f }, dx::XMFLOAT3{ 0, 0, 0 });
-	//puzzleFrog->AddComponent<RigidBodyComponent>(50.f, FilterGroups::PROPS, (FilterGroups::EVERYTHING), BodyType::DYNAMIC, true);*/
-	//AddObject(puzzleFrog);
-
-	/*Object* puzzleFly = resources->AssembleObject("PuzzleFlyStatue", "PuzzleFlyStatueMaterial", false, ObjectFlag::DEFAULT | ObjectFlag::NO_CULL);
-	puzzleFly->GetTransform().SetPosition({ 28, 1.3f, 50 });
-	puzzleFly->AddComponent<BoxColliderComponent>(dx::XMFLOAT3{ 1.0f, 1.0f, 1.0f }, dx::XMFLOAT3{ 0, 0, 0 });
-	puzzleFly->AddComponent<RigidBodyComponent>(0.0f, FilterGroups::HOLDABLE, FilterGroups::EVERYTHING, BodyType::DYNAMIC, true);
-	puzzleFly->AddComponent<ParticleSystemComponent>(renderer, particleShader);
-	puzzleFly->GetComponent<ParticleSystemComponent>()->SetMaxParticles(50);
-	puzzleFly->GetComponent<ParticleSystemComponent>()->SetParticleSize(0.1f);
-	puzzleFly->GetComponent<ParticleSystemComponent>()->InitializeParticles(renderer->GetDevice(), "Fire1");
-	AddObjectToRoot(puzzleFly);*/
-
-	/*Shader* fireShader = resources->GetShaderResource("fireShader");*/
-
-	/* Different firestuff stuffy stuff  */
-	/*Object* puzzleFlyTest2 = resources->AssembleObject("PuzzleFlyStatue", "PuzzleFlyStatueMaterial", ObjectFlag::DEFAULT | ObjectFlag::NO_CULL);
-	puzzleFlyTest2->GetTransform().SetPosition({ 28, 1.3f, 48 });
-	puzzleFlyTest2->AddComponent<FireTextureComponent>(renderer, fireShader);
-	puzzleFlyTest2->GetComponent<FireTextureComponent>()->InitializeFire(renderer->GetDevice());
-	AddObject(puzzleFlyTest2);*/
-
-	//Object* fire = puzzleFlyTest2->GetComponent<FireTextureComponent>()->GetFireObject();
-	//AddObject(fire);	
-	/*FrogPuzzle* frogpuzzle = new FrogPuzzle(resources);
-	frogpuzzle*/
-
 	GUICompass* compass = new GUICompass(*renderer, window, house, player);
 	guiManager->AddGUIObject(compass, "compass");
-
-	/*Shader* SOShader = new Shader;
-	SOShader->SetInputLayoutStructure(5, SOShader->DEFAULT_INPUT_LAYOUT_PARTICLE);
-	SOShader->SetVertexShader("Shaders/ParticleSO_vs.hlsl");
-	SOShader->SetSOGeometryShader("Shaders/ParticleSO_gs.hlsl");
-	SOShader->Compile(renderer->GetDevice());
-
-	Shader* DrawShader = new Shader;
-	DrawShader->SetInputLayoutStructure(5, SOShader->DEFAULT_INPUT_LAYOUT_PARTICLE);
-	DrawShader->SetVertexShader("Shaders/ParticleDraw_vs.hlsl");
-	DrawShader->SetGeometryShader("Shaders/ParticleDraw_gs.hlsl");
-	DrawShader->SetPixelShader("Shaders/ParticleDraw_ps.hlsl");
-	DrawShader->Compile(renderer->GetDevice());*/
 }
 
 void GameScene::InitializeGUI()
@@ -574,21 +493,21 @@ void GameScene::OnActivate()
 
 
 	Object* tutorialFood = resources->AssembleObject("Fruits", "FruitsMaterial", true);
-	tutorialFood->GetTransform().SetPosition({ -5.65f, INTERIOR_POSITION.y + 1.0f, -4.6f, 0.0f });
+	tutorialFood->GetTransform().SetPosition({ -5.65f, interiorPosition.y + 1.0f, -4.6f, 0.0f });
 	tutorialFood->AddComponent<PickupComponent>(PickupType::Food, 30.0f);
 	tutorialFood->AddComponent<BoxColliderComponent>(dx::XMFLOAT3(0.25f, 0.25f, 0.25f), dx::XMFLOAT3(0, 0, 0));
 	tutorialFood->AddComponent<RigidBodyComponent>(10.0f, FilterGroups::PICKUPS, FilterGroups::EVERYTHING & ~FilterGroups::PLAYER, BodyType::DYNAMIC, true);
 	AddObjectToRoot(tutorialFood);
 
 	Object* tutorialHealth = resources->AssembleObject("HealthKit", "HealthKitMaterial", true);
-	tutorialHealth->GetTransform().SetPosition({ -5.0f, INTERIOR_POSITION.y + 1.0f, -4.4f, 0.0f });
+	tutorialHealth->GetTransform().SetPosition({ -5.0f, interiorPosition.y + 1.0f, -4.4f, 0.0f });
 	tutorialHealth->AddComponent<PickupComponent>(PickupType::Health, 30.0f);
 	tutorialHealth->AddComponent<BoxColliderComponent>(dx::XMFLOAT3(0.25f, 0.1f, 0.25f), dx::XMFLOAT3(0, 0, 0));
 	tutorialHealth->AddComponent<RigidBodyComponent>(10.0f, FilterGroups::PICKUPS, FilterGroups::EVERYTHING & ~FilterGroups::PLAYER, BodyType::DYNAMIC, true);
 	AddObjectToRoot(tutorialHealth);
 
-	Object* tutorialFuel = resources->AssembleObject("FuelCanRed", "FuelCanRedMaterial", true);
-	tutorialFuel->GetTransform().SetPosition({ -5.0f, INTERIOR_POSITION.y + 3.0f, 0.11f, 0.0f });
+	Object* tutorialFuel = resources->AssembleObject("BlueFuel", "BlueFuelMaterial", false);
+	tutorialFuel->GetTransform().SetPosition({ -5.0f, interiorPosition.y + 3.0f, 0.11f, 0.0f });
 	tutorialFuel->AddComponent<PickupComponent>(PickupType::Fuel, 30.0f);
 	tutorialFuel->AddComponent<BoxColliderComponent>(dx::XMFLOAT3(0.3f, 0.35f, 0.15f), dx::XMFLOAT3(0, 0, 0));
 	tutorialFuel->AddComponent<RigidBodyComponent>(10.0f, FilterGroups::HOLDABLE, FilterGroups::EVERYTHING & ~FilterGroups::PLAYER, BodyType::DYNAMIC, true);
