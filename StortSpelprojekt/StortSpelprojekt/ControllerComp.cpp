@@ -57,10 +57,10 @@ ControllerComp::ControllerComp(Object* cameraObject, Object* houseObject)
 	this->crouchTimer = 0.f;
 
 	this->freeCam = false;
-	this->showCursor = false;
+	//this->showCursor = false;
 	this->canRotate = true;
 	this->isGrounded = false;
-	this->houseVelocity = { 0.f,0.f,0.f };
+	//this->houseVelocity = { 0.f,0.f,0.f };
 	this->jumpDir = { 0.f,0.f,0.f };
 	this->cameraOffset = { 0.f,0.f,0.f };
 	this->cameraEuler = { 0.f,45.f,0.f }; //TODO_: fix start angle (looks down or up at start)
@@ -90,12 +90,13 @@ void ControllerComp::Initialize()
 	this->camComp = cameraObject->GetComponent<CameraComponent>();
 	this->capsuleComp = GetOwner()->GetComponent<CapsuleColliderComponent>();
 	this->playerComp = GetOwner()->GetComponent<PlayerComp>();
-	ShowCursor(!this->canRotate);
-
+	
+	this->canRotate = true;
 	if (this->canRotate)
 		Input::Instance().SetMouseMode(dx::Mouse::MODE_RELATIVE);
 	else
 		Input::Instance().SetMouseMode(dx::Mouse::MODE_ABSOLUTE);
+	ShowCursor(!this->canRotate);
 
 	this->camComp->SetFOV(WALK_FOV);
 	this->rbComp->LockRotation(true);
@@ -108,6 +109,16 @@ void ControllerComp::Initialize()
 
 	dx::XMVECTOR reset = dx::XMLoadFloat4(&RESET_ROT);
 	this->cameraObject->GetTransform().SetRotation(reset);
+}
+
+void ControllerComp::Reset()
+{
+	this->canRotate = true;
+	if (this->canRotate)
+		Input::Instance().SetMouseMode(dx::Mouse::MODE_RELATIVE);
+	else
+		Input::Instance().SetMouseMode(dx::Mouse::MODE_ABSOLUTE);
+	ShowCursor(!this->canRotate);
 }
 
 
@@ -157,11 +168,11 @@ void ControllerComp::Update(const float& deltaTime)
 		this->canRotate = !this->canRotate;
 		rbComp->SetLinearVelocity({ 0.f, 0.f, 0.f });
 		//rbComp->EnableGravity(!this->canRotate);
-		ShowCursor(!this->canRotate);
 		if (this->canRotate)
 			Input::Instance().SetMouseMode(dx::Mouse::MODE_RELATIVE);
 		else
 			Input::Instance().SetMouseMode(dx::Mouse::MODE_ABSOLUTE);
+		ShowCursor(!this->canRotate);
 	}
 	
 	float length = 0.f;
@@ -176,7 +187,7 @@ void ControllerComp::Update(const float& deltaTime)
 	if (houseWalkComp->GetIsWalking())
 	{
 		// If next to the house
-		if (length > playerComp->GetRadius() || length < SIT_RADIUS)
+		if (length > playerComp->GetRadius() || length < SIT_RADIUS || houseWalkComp->GetHouseProgress()==1.f)
 		{
 			static_cast<GUICompass*>(playerComp->GetGuiManager()->GetGUIObject("compass"))->GetBarSprite()->SetActivated();
 
@@ -186,7 +197,7 @@ void ControllerComp::Update(const float& deltaTime)
 	}
 	else if (!houseWalkComp->GetIsWalking())
 	{
-		if (length < playerComp->GetRadius() && length > SIT_RADIUS && !inside)
+		if (length < playerComp->GetRadius() && length > SIT_RADIUS && !inside && houseWalkComp->GetHouseProgress()<1.f)
 		{
 			houseWalkComp->Start();
 
@@ -239,7 +250,11 @@ void ControllerComp::Update(const float& deltaTime)
 		if (this->canRotate)
 		{
 			//Input::Instance().ConfineMouse();
-			//SetCursorPos(400, 400); //set this to coordinates middle of screen? get height/width from input?
+			int width = 0.f;
+			int height = 0.f;
+
+			camComp->GetWinSize(width, height);
+			SetCursorPos(width * 0.5, height * 0.5); //set this to coordinates middle of screen? get height/width from input?
 
 			float sensitivity = Config::GetFloat("sensitivity", 0.5f);
 
@@ -456,7 +471,7 @@ void ControllerComp::Update(const float& deltaTime)
 					dx::XMStoreFloat3(&newDir, jumpVec);
 					newDir.x = (newDir.x + dir.x) * 0.5f;
 					newDir.z = (newDir.z + dir.z) * 0.5f;
-					rbComp->SetLinearVelocity({ newDir.x + houseVelocity.x, vel.y + jumpVelocity, newDir.z + houseVelocity.z });
+					rbComp->SetLinearVelocity({ newDir.x /*+ houseVelocity.x*/, vel.y + jumpVelocity, newDir.z/* + houseVelocity.z*/ });
 				}
 				dx::XMVECTOR capsule = dx::XMLoadFloat4(&RESET_ROT);
 				//capsuleComp->SetRotation(capsule);			
@@ -519,7 +534,7 @@ void ControllerComp::Update(const float& deltaTime)
 			dx::XMStoreFloat3(&newDir, jumpVec);
 			newDir.x = (newDir.x + dir.x) * 0.5f;
 			newDir.z = (newDir.z + dir.z) * 0.5f;
-			rbComp->SetLinearVelocity({ newDir.x + houseVelocity.x, vel.y + jumpVelocity, newDir.z + houseVelocity.z });
+			rbComp->SetLinearVelocity({ newDir.x /*+ houseVelocity.x*/, vel.y + jumpVelocity, newDir.z /*+ houseVelocity.z*/ });
 		}
 		dx::XMVECTOR capsule = dx::XMLoadFloat4(&RESET_ROT);
 		//capsuleComp->SetRotation(capsule);			

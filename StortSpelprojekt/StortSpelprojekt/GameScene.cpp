@@ -115,6 +115,9 @@ void GameScene::InitializeObjects()
 	playerObject->AddComponent<ControllerComp>(cameraObject, houseBaseObject);
 	playerObject->GetComponent<PlayerComp>()->SetInteriorPosition(this->interiorPosition.x, this->interiorPosition.y, this->interiorPosition.z);
 
+	/* For fuel info from playercomp */
+	nodeWalker->SetPlayerComp(playerObject->GetComponent<PlayerComp>());
+
 	Object::AddToHierarchy(playerObject, cameraObject);
 	AddObjectToRoot(playerObject);
 
@@ -138,9 +141,6 @@ void GameScene::InitializeObjects()
 	dx::XMStoreFloat3(&sunDirection, dx::XMVector3Normalize(dx::XMVectorSet(0, -1, 1, 0)));
 	sunComponent->SetDirection(sunDirection);
 	AddObjectToRoot(sunLight);
-
-	/* For fuel info from playercomp */
-	nodeWalker->GetPlayerInfo(playerObject->GetComponent<PlayerComp>());
 
 	world.Initialize(root, resources, renderer);
 
@@ -527,20 +527,26 @@ void GameScene::InitializeInterior()
 
 void GameScene::OnActivate()
 {
-	house->GetComponent<NodeWalkerComp>()->currentNode = 1;
+	//house->GetComponent<NodeWalkerComp>()->currentNode = 1;
 	SaveState& state = SaveHandler::LoadOrCreate();
-
+	enemyManager->SetSegment(state.segment);
 	LightManager::Instance().ForceUpdateBuffers(renderer->GetContext(), camera);
 
-	Input::Instance().ConfineMouse();
-	Input::Instance().SetMouseMode(dx::Mouse::Mode::MODE_RELATIVE);
-	ShowCursor(false);
+	//Input::Instance().ConfineMouse();
+	//Input::Instance().SetMouseMode(dx::Mouse::Mode::MODE_RELATIVE);
+	////Input::Instance().SetMouseMode(dx::Mouse::Mode::MODE_ABSOLUTE);
+	//ShowCursor(false);
+
+	player->Reset();
 
 	world.ConstructSegment(state);
 
 	//PrintSceneHierarchy(root, 0);
-	house->GetComponent<NodeWalkerComp>()->InitializePath(world.GetPath());
-	house->GetComponent<NodeWalkerComp>()->SetWorld(&world);
+	NodeWalkerComp* nodeWalk = house->GetComponent<NodeWalkerComp>();
+	nodeWalk->InitializePath(world.GetPath());
+	nodeWalk->SetWorld(&world);
+	nodeWalk->SetPlayerComp(player->GetComponent<PlayerComp>());
+	enemyManager->SetWorld(&world);
 
 	if (house != nullptr && player != nullptr)
 	{
@@ -584,6 +590,19 @@ void GameScene::OnActivate()
 		// N�N M�STE FIXA DETTA. JAG PALLAR INTE 
 		// N�N M�STE FIXA DETTA. JAG PALLAR INTE
 		// N�N M�STE FIXA DETTA. JAG PALLAR INTE
+		// N�N M�STE FIXA DETTA. JAG PALLAR INTE
+		// N�N M�STE FIXA DETTA. JAG PALLAR INTE 
+		// N�N M�STE FIXA DETTA. JAG PALLAR INTE
+		// N�N M�STE FIXA DETTA. JAG PALLAR INTE
+		// N�N M�STE FIXA DETTA. JAG PALLAR INTE
+		// N�N M�STE FIXA DETTA. JAG PALLAR INTE
+		// N�N M�STE FIXA DETTA. JAG PALLAR INTE 
+		// N�N M�STE FIXA DETTA. JAG PALLAR INTE
+		// N�N M�STE FIXA DETTA. JAG PALLAR INTE
+		// N�N M�STE FIXA DETTA. JAG PALLAR INTE
+		// N�N M�STE FIXA DETTA. JAG PALLAR INTE 
+		// N�N M�STE FIXA DETTA. JAG PALLAR INTE
+		// N�N M�STE FIXA DETTA. JAG PALLAR INTE
 		else if (Engine::Instance->start)
 
 		{
@@ -603,6 +622,7 @@ void GameScene::OnActivate()
 			player->GetComponent<RigidBodyComponent>()->SetPosition(playerPos);
 
 			player->GetComponent<ControllerComp>()->SetInside(true);
+			
 
 			Engine::Instance->start = false;
 
@@ -618,7 +638,7 @@ void GameScene::OnActivate()
 	AudioMaster::Instance().PlaySoundEvent("wind");
 
 	/* Ugly solution */
-	player->GetComponent<PlayerComp>()->GetArms()->GetComponent< PlayerAnimHandlerComp>()->SetStarted(true);
+	player->GetComponent<PlayerComp>()->GetArms()->GetComponent<PlayerAnimHandlerComp>()->SetStarted(true);
 
 	//Place signs
 	SetSignPositions(state);
@@ -629,7 +649,7 @@ void GameScene::OnActivate()
 	//std::cout << "Game Scene activated " << std::endl;
 	guiManager->GetGUIObject("loading")->SetVisible(true);
 	//house->GetComponent<NodeWalkerComp>()->canWalk = true;
-	house->GetComponent<NodeWalkerComp>()->Reset();
+	//house->GetComponent<NodeWalkerComp>()->Reset();
 }
 
 void GameScene::OnDeactivate()
@@ -725,6 +745,7 @@ void GameScene::Update(const float& deltaTime)
 		SaveState state = SaveHandler::LoadOrCreate();
 		state.segment++;
 		SaveHandler::Save(state);
+		
 		//std::cout << "added +1 to segment in save" << std::endl;
 
 		OnDeactivate();
@@ -737,7 +758,7 @@ void GameScene::Update(const float& deltaTime)
 		SaveState state = SaveHandler::LoadOrCreate();
 		state.segment++;
 		SaveHandler::Save(state);
-
+		
 		//std::cout << "added +1 to segment in save" << std::endl;
 
 		OnDeactivate();
@@ -745,6 +766,8 @@ void GameScene::Update(const float& deltaTime)
 		OnActivate();
 		leftSign->GetComponent<SelectableComponent>()->SetActive(false);
 	}
+	
+
 
 	//Win
 	if (end)

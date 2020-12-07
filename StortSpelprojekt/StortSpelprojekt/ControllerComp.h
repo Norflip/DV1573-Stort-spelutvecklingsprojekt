@@ -10,7 +10,7 @@ constexpr float CLAMP_X = 90.f * Math::ToRadians;
 constexpr float CLAMP_Y = 180.f * Math::ToRadians;
 
 
-constexpr float WALK_FOV = 50.f;
+constexpr float WALK_FOV = 60.f;
 //constexpr float RUN_FOV = 60.f;
 
 
@@ -52,14 +52,14 @@ private:
 	float crouchTimer;
 
 	bool freeCam;
-	bool showCursor;
+	//bool showCursor;
 	bool canRotate;
 	bool isGrounded;
 	bool inside;
 	bool inDoorRange;
 	bool first;
 
-	dx::XMFLOAT3 houseVelocity;
+	//dx::XMFLOAT3 houseVelocity;
 	dx::XMFLOAT3 jumpDir; 
 	dx::XMFLOAT3 cameraOffset;
 	dx::XMFLOAT3 cameraEuler;
@@ -94,6 +94,7 @@ public:
 
 	RigidBodyComponent* GetRigidBodyComp() { return this->rbComp; }
 	void Initialize();
+	void Reset();
 	void Update(const float& deltaTime);
 	float GetVelocity()const { return this->velocity; }
 	bool GetInRange()const { return this->inDoorRange; }

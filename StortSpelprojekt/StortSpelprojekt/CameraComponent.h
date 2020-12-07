@@ -27,6 +27,7 @@ public:
 	Ray MouseToRay(const unsigned int& x, const unsigned int& y) const;
 	std::vector<dx::XMFLOAT4> GetFrustumPlanes()const;
 
+	void GetWinSize(int& width, int& height);
 private:
 	std::vector<dx::XMFLOAT4> planes;
 };
