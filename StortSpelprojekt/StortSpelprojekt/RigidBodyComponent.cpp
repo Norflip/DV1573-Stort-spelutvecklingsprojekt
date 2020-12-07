@@ -10,14 +10,13 @@ RigidBodyComponent::RigidBodyComponent(float mass, FilterGroups group, FilterGro
 
 RigidBodyComponent::~RigidBodyComponent()
 {
+	//std::cout << std::endl << "del: " << GetOwner()->GetName() << " has body: " << (body != nullptr ? "true" : "false") << std::endl;
+
 	if (body != nullptr)
 	{
 		rp::Transform tr;
 		tr.setPosition(rp::Vector3(0, -5000, 0));
 		body->setTransform(tr);
-
-		std::cout << std::endl << "del: " << GetOwner()->GetName() << std::endl;
-		std::cout << "bodynmcol: " << body->getNbColliders() << std::endl;
 
 		physics->GetWorld()->destroyRigidBody(body);
 		rpColliders.clear();
@@ -210,6 +209,12 @@ void RigidBodyComponent::OnOwnerFlagChanged(ObjectFlag old, ObjectFlag newFlag)
 	bool enabled = ((int)(ObjectFlag::ENABLED & newFlag) != 0);
 	if (body != nullptr)
 		body->setIsActive(enabled);
+}
+
+void RigidBodyComponent::SyncWithTransform()
+{
+	rp::Transform transf = ConvertToBtTransform(GetOwner()->GetTransform());
+	body->setTransform(transf);
 }
 
 void RigidBodyComponent::m_OnCollision(CollisionInfo& collision)

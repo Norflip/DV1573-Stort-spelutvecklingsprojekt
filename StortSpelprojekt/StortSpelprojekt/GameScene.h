@@ -6,9 +6,13 @@ class GUIFont;
 class GUICompass;
 class SpriteRenderPass;
 
+constexpr unsigned int LAST_SEGMENT = 3;
+
 ALIGN16
 class GameScene : public Scene
 {	
+
+
 public:
 	GameScene();
 	virtual ~GameScene();

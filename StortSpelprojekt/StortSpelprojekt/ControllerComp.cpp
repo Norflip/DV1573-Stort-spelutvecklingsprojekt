@@ -144,13 +144,13 @@ void ControllerComp::Update(const float& deltaTime)
 	//	ShowCursor(this->showCursor);
 	//}
 
-	//if (KEY_DOWN(V))
-	//{
-	//	this->freeCam = !this->freeCam;
-	//	
-	//	rbComp->SetLinearVelocity({ 0.f, 0.f, 0.f });
-	//	rbComp->EnableGravity(!this->freeCam);
-	//}
+	if (KEY_DOWN(V))
+	{
+		this->freeCam = !this->freeCam;
+		
+		rbComp->SetLinearVelocity({ 0.f, 0.f, 0.f });
+		rbComp->EnableGravity(!this->freeCam);
+	}
 
 	if (KEY_DOWN(F))
 	{

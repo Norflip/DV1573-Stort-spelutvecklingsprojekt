@@ -20,6 +20,7 @@ public:
 	
 private:
 	Mesh* mesh;
+	std::vector<rp::PolyhedronMesh*> polyhedronMeshes;
 };
 
 static std::unordered_map<Mesh*, qh::ConvexHull<float>> m_hullCache;

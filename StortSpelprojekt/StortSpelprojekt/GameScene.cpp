@@ -193,6 +193,12 @@ void GameScene::InitializeObjects()
 	AddObjectToRoot(axeObject);
 
 	roadSign = resources->AssembleObject("Endsign", "EndsignMaterial");
+	roadSign->AddComponent<BoxColliderComponent>(dx::XMFLOAT3{ 2.0f, 3.0f, 4.0f }, dx::XMFLOAT3{ 0,0,0 });
+	roadSign->AddComponent<SelectableComponent>();
+	roadSign->AddComponent<RigidBodyComponent>(0.0f, FilterGroups::CLICKABLE, (FilterGroups::EVERYTHING & ~FilterGroups::PLAYER), BodyType::STATIC, true);
+	roadSign->RemoveFlag(ObjectFlag::ENABLED);
+	AddObjectToRoot(roadSign);
+
 	rightSign = resources->AssembleObject("LeftDirectionSign", "LeftDirectionSignMaterial");
 	leftSign = resources->AssembleObject("RightDirectionSign", "RightDirectionSignMaterial");
 
@@ -204,7 +210,6 @@ void GameScene::InitializeObjects()
 	leftSign->AddComponent<SelectableComponent>();
 	leftSign->AddComponent<RigidBodyComponent>(0.0f, FilterGroups::CLICKABLE, (FilterGroups::EVERYTHING & ~FilterGroups::PLAYER), BodyType::STATIC, true);
 
-	AddObjectToRoot(roadSign);
 	AddObjectToRoot(rightSign);
 	AddObjectToRoot(leftSign);
 
@@ -645,6 +650,7 @@ void GameScene::OnDeactivate()
 
 void GameScene::SetSignPositions(SaveState& state)
 {
+	
 	if (state.segment == 7)
 	{
 		end = true;
@@ -652,9 +658,10 @@ void GameScene::SetSignPositions(SaveState& state)
 		signPosition = dx::XMFLOAT3{ world.GetPath().GetSignPosition().x , 1.0f ,world.GetPath().GetSignPosition().y };
 
 		roadSign->GetTransform().SetPosition({ signPosition.x, signPosition.y - 1.0f, signPosition.z });
-		roadSign->AddComponent<BoxColliderComponent>(dx::XMFLOAT3{ 2.0f, 3.0f, 4.0f }, dx::XMFLOAT3{ 0,0,0 });
-		roadSign->AddComponent<SelectableComponent>();
-		roadSign->AddComponent<RigidBodyComponent>(0.0f, FilterGroups::CLICKABLE, (FilterGroups::EVERYTHING & ~FilterGroups::PLAYER), BodyType::STATIC, true);
+		roadSign->AddFlag(ObjectFlag::ENABLED);
+
+		rightSign->RemoveFlag(ObjectFlag::ENABLED);
+		leftSign->RemoveFlag(ObjectFlag::ENABLED);
 
 		/*std::vector<dx::XMINT2> indexes = world.GetPath().GetIndexes();
 		dx::XMINT2 spawnIndex = indexes[0];
@@ -664,26 +671,18 @@ void GameScene::SetSignPositions(SaveState& state)
 	else
 	{
 		dx::XMFLOAT3 signPosition;
-		dx::XMFLOAT3 signRotation;
 		signPosition = dx::XMFLOAT3{ world.GetPath().GetSignPosition().x , 1.5f ,world.GetPath().GetSignPosition().y };
-		signRotation = dx::XMFLOAT3{ 0.0f ,world.GetPath().GetSignRotation().y, 0.0f };
 
 		//Right Sign
 		rightSign->GetTransform().SetPosition({ signPosition.x + 1.0f, signPosition.y - 1.0f, signPosition.z });
-		rightSign->GetTransform().SetRotation({ signRotation.x, signRotation.y, signRotation.z });
-		rightSign->AddComponent<BoxColliderComponent>(dx::XMFLOAT3{ 1.0f, 1.0f, 1.0f }, dx::XMFLOAT3{ 0,0,0 });
-		rightSign->AddComponent<SelectableComponent>();
-		rightSign->AddComponent<RigidBodyComponent>(0.0f, FilterGroups::CLICKABLE, (FilterGroups::EVERYTHING & ~FilterGroups::PLAYER), BodyType::STATIC, true);
+		rightSign->GetComponent<RigidBodyComponent>()->SyncWithTransform();
+		rightSign->GetComponent<SelectableComponent>()->SetActive(false);
 
 		//Left Sign
 		leftSign->GetTransform().SetPosition({ signPosition.x - 1.0f, signPosition.y - 1.0f, signPosition.z });
-		leftSign->GetTransform().SetRotation({ signRotation.x, signRotation.y, signRotation.z });
-		leftSign->AddComponent<BoxColliderComponent>(dx::XMFLOAT3{ 1.0f, 1.0f, 1.0f }, dx::XMFLOAT3{ 0,0,0 });
-		leftSign->AddComponent<SelectableComponent>();
-		leftSign->AddComponent<RigidBodyComponent>(0.0f, FilterGroups::CLICKABLE, (FilterGroups::EVERYTHING & ~FilterGroups::PLAYER), BodyType::STATIC, true);
-
+		leftSign->GetComponent<RigidBodyComponent>()->SyncWithTransform();
+		leftSign->GetComponent<SelectableComponent>()->SetActive(false);
 	}
-
 }
 
 void GameScene::Update(const float& deltaTime)
@@ -701,6 +700,10 @@ void GameScene::Update(const float& deltaTime)
 
 	dx::XMFLOAT3 playerPos;
 	dx::XMStoreFloat3(&playerPos, player->GetTransform().GetWorldPosition());
+
+	dx::XMVECTOR distance = dx::XMVector3Length(dx::XMVectorSubtract(rightSign->GetTransform().GetWorldPosition(), player->GetTransform().GetWorldPosition()));
+	std::cout << distance.m128_f32[0] << std::endl;
+
 
 	//if (KEY_DOWN(X))
 	//	std::cout << "pos: " << playerPos.x << ", " << playerPos.y << ", " << playerPos.z << std::endl;
@@ -757,6 +760,7 @@ void GameScene::Update(const float& deltaTime)
 		OnActivate();
 		leftSign->GetComponent<SelectableComponent>()->SetActive(false);
 	}
+
 	//Win
 	if (end)
 	{
@@ -863,6 +867,17 @@ void GameScene::OnIMGUIFrame()
 		dx::XMFLOAT3 playerPos;
 		dx::XMStoreFloat3(&playerPos, player->GetTransform().GetWorldPosition());
 		std::cout << "player current position: " << playerPos.x << ", " << playerPos.y << ", " << playerPos.z << std::endl;
+	}
+
+	if (ImGui::Button("EASY WIN BBY"))
+	{
+		SaveState state = SaveHandler::LoadOrCreate();
+		state.segment++;
+		SaveHandler::Save(state);
+
+		OnDeactivate();
+		ShowCursor(false);
+		OnActivate();
 	}
 }
 #endif

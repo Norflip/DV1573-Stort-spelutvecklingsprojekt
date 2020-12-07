@@ -16,13 +16,7 @@ MeshCollider::MeshCollider(Mesh* mesh, std::vector<dx::XMFLOAT3> positions)
 
 MeshCollider::~MeshCollider()
 {
-	rp::PhysicsCommon& common = Engine::Instance->GetPhysics()->GetCommon();
 
-	for (size_t i = 0; i < colliderInformations.size(); i++)
-	{
-		common.destroyConvexMeshShape(static_cast<rp::ConvexMeshShape*>(colliderInformations[i].shape));
-		delete colliderInformations[i].shape;
-	}
 }
 
 void MeshCollider::DeleteShapes()
@@ -32,7 +26,11 @@ void MeshCollider::DeleteShapes()
 	for (size_t i = 0; i < colliderInformations.size(); i++)
 	{
 		common.destroyConvexMeshShape(static_cast<rp::ConvexMeshShape*>(colliderInformations[i].shape));
-		delete colliderInformations[i].shape;
+	}
+
+	for (size_t i = 0; i < polyhedronMeshes.size(); i++)
+	{
+		common.destroyPolyhedronMesh(polyhedronMeshes[i]);
 	}
 }
 
@@ -94,6 +92,7 @@ void MeshCollider::InitializeCollider(Physics* physics)
 		rp::PolyhedronMesh* polyhedronMesh = common.createPolyhedronMesh(vertexArray);
 		rp::ConvexMeshShape* convexMeshShape = common.createConvexMeshShape(polyhedronMesh);
 
+		polyhedronMeshes.push_back(polyhedronMesh);
 		colliderInformations[i].shape = convexMeshShape;
 	}
 }

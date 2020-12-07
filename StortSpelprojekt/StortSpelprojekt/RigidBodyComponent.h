@@ -42,6 +42,8 @@ public:
 	void Initialize() override; // OVERRIDE
 	void OnOwnerFlagChanged(ObjectFlag old, ObjectFlag newFlag);
 
+	void SyncWithTransform();
+
 	virtual void m_OnCollision(CollisionInfo& collision);
 	virtual void AddCollisionCallback(std::function<void(CollisionInfo&)> callback);
 

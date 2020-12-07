@@ -21,7 +21,6 @@ LightManager::~LightManager()
 
 void LightManager::Initialize(ID3D11Device* device)
 {
-	
 	the_Lights.resize(this->lightCount);
 	DXHelper::CreateStructuredBuffer(device, &the_Light_srvbuffer, the_Lights.data(), sizeof(s_Light), the_Lights.size(), &the_Light_srv);
 }
@@ -35,6 +34,13 @@ size_t LightManager::RegisterLight(LightComponent* light)
 	}
 	else
 		return -1;
+}
+
+void LightManager::UnregisterLight(size_t index)
+{
+	auto find = lightMap.find(index);
+	assert(find != lightMap.end() && index != -1);
+	lightMap.erase(find);
 }
 
 LightComponent* LightManager::GetLight(size_t index)

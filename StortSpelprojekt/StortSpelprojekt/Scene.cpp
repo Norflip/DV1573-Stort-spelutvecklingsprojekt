@@ -171,3 +171,4 @@ void Scene::DebugCheckForObjectIDConflict(Object* current, std::unordered_set<si
 		DebugCheckForObjectIDConflict(children[i], registry, conflicCounter);
 }
 
+
