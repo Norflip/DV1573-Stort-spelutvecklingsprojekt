@@ -703,28 +703,8 @@ void GameScene::Update(const float& deltaTime)
 
 	enemyManager->SpawnRandomEnemy(deltaTime);
 
-	dx::XMFLOAT3 playerPos;
-	dx::XMStoreFloat3(&playerPos, player->GetTransform().GetWorldPosition());
-
-	dx::XMVECTOR distance = dx::XMVector3Length(dx::XMVectorSubtract(rightSign->GetTransform().GetWorldPosition(), player->GetTransform().GetWorldPosition()));
-	std::cout << distance.m128_f32[0] << std::endl;
-
-
 	//if (KEY_DOWN(X))
 	//	std::cout << "pos: " << playerPos.x << ", " << playerPos.y << ", " << playerPos.z << std::endl;
-
-	//if (KEY_DOWN(B))
-	//{
-
-	//	std::cout << "RESETTINGS PLAYER" << std::endl;
-	//	
-	//	playerPos.x = 0.0f;
-	//	playerPos.z = 0.0f;
-	//	playerPos.y = 20.0f;
-	//	player->GetComponent<RigidBodyComponent>()->SetPosition(dx::XMLoadFloat3(&playerPos));
-	//	//player->GetTransform().SetWorldPosition();
-	//}
-
 
 	// Something CP with controllerComp/player wont allow this to happen inside the playerComp
 	if (player->GetComponent<ControllerComp>()->GetInRange())
@@ -863,6 +843,18 @@ void GameScene::OnIMGUIFrame()
 		player->GetComponent<PlayerComp>()->LoseHealth(200.0f);
 	}
 
+	if (ImGui::Button("Reset player position"))
+	{
+		std::cout << "RESETTINGS PLAYER" << std::endl;
+		dx::XMFLOAT3 playerPos;
+		dx::XMStoreFloat3(&playerPos, player->GetTransform().GetWorldPosition());
+		playerPos.x = 0.0f;
+		playerPos.z = 0.0f;
+		playerPos.y = 20.0f;
+		player->GetComponent<RigidBodyComponent>()->SetPosition(dx::XMLoadFloat3(&playerPos));
+		player->GetTransform().SetWorldPosition(dx::XMLoadFloat3(&playerPos));
+	}
+
 	if (ImGui::Button("Print scene"))
 	{
 		this->PrintSceneHierarchy(root, 0);
@@ -874,6 +866,8 @@ void GameScene::OnIMGUIFrame()
 		dx::XMStoreFloat3(&playerPos, player->GetTransform().GetWorldPosition());
 		std::cout << "player current position: " << playerPos.x << ", " << playerPos.y << ", " << playerPos.z << std::endl;
 	}
+
+
 
 	if (ImGui::Button("EASY WIN BBY"))
 	{
