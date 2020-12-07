@@ -319,17 +319,17 @@ void PlayerComp::InsertWeapon(WeaponComponent* weapon, std::string name)
 	currentWeapon = weapon->GetOwner();
 }
 
-void PlayerComp::SetInteriorPosition(float x, float y, float z)
-{
-	this->interiorPosition = { x, y, z };
-}
-
-void PlayerComp::SetStartPosition(dx::XMVECTOR pos)
-{
-	this->startPos.x = dx::XMVectorGetX(pos);
-	this->startPos.y = dx::XMVectorGetY(pos);
-	this->startPos.z = dx::XMVectorGetZ(pos);
-}
+//void PlayerComp::SetInteriorPosition(float x, float y, float z)
+//{
+//	this->interiorPosition = { x, y, z };
+//}
+//
+//void PlayerComp::SetStartPosition(dx::XMVECTOR pos)
+//{
+//	this->startPos.x = dx::XMVectorGetX(pos);
+//	this->startPos.y = dx::XMVectorGetY(pos);
+//	this->startPos.z = dx::XMVectorGetZ(pos);
+//}
 
 float PlayerComp::ReverseAndClamp(float inputValue)
 {
