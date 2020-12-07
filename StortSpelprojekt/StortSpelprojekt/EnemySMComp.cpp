@@ -53,6 +53,7 @@ void EnemySMComp::Animate()
 	if (statsComponent->GetHealth() <= 0.0f || length >= ENEMY_RADIUS_LIMIT)
 	{
 		SetState(EnemyState::IDLE);
+		GetOwner()->GetComponent<Pathfinding>()->SetEnabled(false);
 		
 		skeletonComponent->SetTrack(SkeletonStateMachine::DEATH, true);
 
@@ -77,7 +78,15 @@ void EnemySMComp::Animate()
 		}
 		else if (currentState == EnemyState::PATROL)
 		{
-			skeletonComponent->SetTrack(SkeletonStateMachine::RUN, false);
+			if (skeletonComponent->GetEnemyType() == EnemyType::BASE)
+			{
+				skeletonComponent->SetTrack(SkeletonStateMachine::WALK, false);
+			}
+			else
+			{
+				skeletonComponent->SetTrack(SkeletonStateMachine::RUN, false);
+			}
+			
 		}
 
 		else

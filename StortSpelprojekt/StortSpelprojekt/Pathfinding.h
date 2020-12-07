@@ -3,6 +3,8 @@
 #include "GameClock.h"
 #include "PlayerComp.h"
 
+constexpr int GRIDSIZE = 32;
+
 class Pathfinding : public Component
 {
 	public:
@@ -29,7 +31,7 @@ class Pathfinding : public Component
 		{
 			bool operator()(const Node* nodeA, const Node* nodeB)
 			{
-				return nodeA->fCost > nodeB->fCost;
+				return nodeA->fCost >= nodeB->fCost;
 			}
 		};
 
@@ -44,7 +46,7 @@ class Pathfinding : public Component
 
 		int cols;
 		int rows;
-		Node* grid[32][32];
+		Node* grid[GRIDSIZE][GRIDSIZE];
 		GameClock timer;
 		PlayerComp* player;
 		std::vector<Node*> correctPath;

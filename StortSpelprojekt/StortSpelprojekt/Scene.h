@@ -94,6 +94,7 @@ protected:
 
 	Input& input;
 	Object* player;
+	inline static float sensitivity;
 	EnemyManager* enemyManager;
 
 	ObjectPooler* pooler;
