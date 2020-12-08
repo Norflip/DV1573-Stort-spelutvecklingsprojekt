@@ -873,7 +873,9 @@ float GameScene::RamUsage()
 void GameScene::TransitionToNextSegment()
 {
 	SaveState state = SaveHandler::LoadOrCreate();
+	state.upgradeCurrency += POINTS_CLEARED_LEVEL*1.25f;
 	state.segment++;
+	
 	SaveHandler::Save(state);
 	
 	guiManager->GetGUIObject("loading")->SetVisible(true);	

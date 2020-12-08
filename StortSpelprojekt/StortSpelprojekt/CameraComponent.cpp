@@ -54,8 +54,7 @@ std::vector<dx::XMFLOAT4> CameraComponent::GetFrustumPlanes() const
 	return planes;
 }
 
-void CameraComponent::GetWinSize(int& width, int& height)
+dx::XMINT2 CameraComponent::GetWinSize()const
 {
-	width = this->width;
-	height = this->height; 
+	return dx::XMINT2(this->width, this->height);
 }

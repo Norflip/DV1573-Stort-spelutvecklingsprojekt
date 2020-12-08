@@ -244,11 +244,9 @@ void ControllerComp::Update(const float& deltaTime)
 				ShowCursor(false);
 
 			//Input::Instance().ConfineMouse();
-			int width = 0.f;
-			int height = 0.f;
-
-			camComp->GetWinSize(width, height);
-			SetCursorPos(width * 0.5, height * 0.5); //set this to coordinates middle of screen? get height/width from input?
+		
+			dx::XMINT2 winSize = camComp->GetWinSize();
+			SetCursorPos(winSize.x * 0.5, winSize.y * 0.5); //set this to coordinates middle of screen? get height/width from input?
 
 			float sensitivity = Config::GetFloat("sensitivity", 0.5f);
 
