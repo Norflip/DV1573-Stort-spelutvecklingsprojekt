@@ -120,7 +120,7 @@ void Renderer::Initialize(Window* window)
 }
 
 
-void Renderer::DrawQueueToTarget(RenderQueue& queue, CameraComponent* camera)
+void Renderer::DrawQueueToTarget(RenderQueue& queue, CameraComponent* camera, bool bindMaterial)
 {
 	for (auto i : queue)
 	{
@@ -129,9 +129,13 @@ void Renderer::DrawQueueToTarget(RenderQueue& queue, CameraComponent* camera)
 		if (!queue.empty())
 		{
 			const Material* mat = queue.front().material;
-			mat->BindToContext(context);
-			materialBuffer.SetData(mat->GetMaterialData());
-			materialBuffer.UpdateBuffer(context);
+
+			if (bindMaterial)
+			{
+				mat->BindToContext(context);
+				materialBuffer.SetData(mat->GetMaterialData());
+				materialBuffer.UpdateBuffer(context);
+			}
 
 			while (!queue.empty())
 			{
@@ -163,51 +167,8 @@ void Renderer::DrawQueueToTarget(RenderQueue& queue, CameraComponent* camera)
 
 				queue.pop();
 			}
-			mat->UnbindToContext(context);
-		}
-	}
-}
-
-void Renderer::DrawEmissionTarget(RenderQueue& queue, CameraComponent* camera)
-{
-	for (auto i : queue)
-	{
-		// bind material from first item in queue
-		auto queue = i.second;
-		if (!queue.empty())
-		{
-			/*const Material* mat = queue.front().material;
-			mat->BindToContext(context);
-			materialBuffer.SetData(mat->GetMaterialData());
-			materialBuffer.UpdateBuffer(context);*/
-			const Material* mat = queue.front().material;
-			mat->BindToContext(context);
-			materialBuffer.SetData(mat->GetMaterialData());
-			materialBuffer.UpdateBuffer(context);
-
-			while (!queue.empty())
-			{
-				auto item = queue.front();
-
-				switch (item.type)
-				{
-				case RenderItem::Type::Instanced:
-					if (item.material->IsEmissive())
-					{
-						DrawRenderItemInstanced(item, camera); break;
-					}
-
-				case RenderItem::Type::Default:
-				default:
-					if (item.material->IsEmissive())
-					{
-						DrawRenderItem(item, camera); break;
-					}
-				}
-
-				queue.pop();
-			}
-			mat->UnbindToContext(context);
+			if(bindMaterial)
+				mat->UnbindToContext(context);
 		}
 	}
 }
@@ -340,8 +301,9 @@ void Renderer::RenderFrame(CameraComponent* camera, float time, float distance, 
 		DrawBatch(i.second, camera);
 	transparentBatches.clear();
 	
+	DrawQueueToTarget(emissiveItemQueue, camera);
+	emissiveItemQueue.clear();
 
-	DrawEmissionTarget(emissiveItemQueue, camera);
 	for (auto i : emissiveBatches)
 		DrawBatch(i.second, camera);
 
@@ -532,7 +494,7 @@ void Renderer::DrawImmediate(const Mesh* mesh, const Material* material, const C
 //	item.mesh = mesh;
 //	item.material = material;
 //	item.world = model;
-//	AddItem(item, false, true);
+//	AddItem(item, false, true, true);
 //}
 
 void Renderer::SetCullBack(bool cullNone)
