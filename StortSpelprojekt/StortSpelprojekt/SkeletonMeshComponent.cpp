@@ -100,6 +100,7 @@ void SkeletonMeshComponent::RunAnimation(const float& deltaTime)
 
 		///STREATEGI FÖR DAGEN
 		/// HÄMTA ALLA VARIABLER FRÅN BONE STRUCKTEN FÖR SIG OCH FÖRSÖK BLENDA MELLAN DEM
+		/// //GÖR EN FUNKTION SOM TAR IN TVÅ STRUCTS
 
 
 		std::vector<dx::SimpleMath::Matrix> offSets(skeletonAnimations[trackMap[SkeletonStateMachine::RUN]].GetOffsets().size());
@@ -124,7 +125,7 @@ void SkeletonMeshComponent::RunAnimation(const float& deltaTime)
 			quat1 = skeletonAnimations[trackMap[SkeletonStateMachine::RUN]].GetKeyFrames()[i][0].rotationQuaternion;
 			quat2 = skeletonAnimations[trackMap[SkeletonStateMachine::ATTACK]].GetKeyFrames()[i][0].rotationQuaternion;
 
-			quatFinal = quat1 * (1 - blendFactor) + quat2 * blendFactor; /*final.Slerp(diff, diff2, blendFactor);*/
+			quatFinal = /*quat1 * (1 - blendFactor) + quat2 * blendFactor;*/ quatFinal.Slerp(quat1, quat2, blendFactor);
 
 			trans1 = skeletonAnimations[trackMap[SkeletonStateMachine::RUN]].GetKeyFrames()[i][0].translationVector;
 			trans2 = skeletonAnimations[trackMap[SkeletonStateMachine::ATTACK]].GetKeyFrames()[i][0].translationVector;
@@ -140,8 +141,8 @@ void SkeletonMeshComponent::RunAnimation(const float& deltaTime)
 		float animLength = skeletonAnimations[trackMap[SkeletonStateMachine::RUN]].GetAniLength() * (1 - blendFactor) + skeletonAnimations[trackMap[SkeletonStateMachine::ATTACK]].GetAniLength() * blendFactor;
 		float fps = skeletonAnimations[trackMap[SkeletonStateMachine::RUN]].GetFPS() * (1 - blendFactor) + skeletonAnimations[trackMap[SkeletonStateMachine::ATTACK]].GetFPS() * blendFactor;
 
-		/*skeletonAnimations[trackMap[SkeletonStateMachine::RUN]].SetQuaternionsDirect(quatFinal);
-		skeletonAnimations[trackMap[SkeletonStateMachine::RUN]].SetTransVector(transFinal);*/
+		skeletonAnimations[trackMap[SkeletonStateMachine::RUN]].SetQuaternionsDirect(quatFinal);
+		skeletonAnimations[trackMap[SkeletonStateMachine::RUN]].SetTransVector(transFinal);
 
 		skeletonAnimations[trackMap[SkeletonStateMachine::RUN]].SetUpIDMapAndFrames(skeletonAnimations[trackMap[SkeletonStateMachine::ATTACK]].GetBoneIDMap(), fps, animLength);
 		//skeletonAnimations[trackMap[SkeletonStateMachine::RUN]].SetOffsetsDirect(offSets); //Set the offsets
