@@ -134,10 +134,13 @@ void IntroScene::InitializeGUI()
 	//
 	// TEXT FOR HOWTOPLAY	
 	std::string loreString = "";
-	loreString += "The name Katrineholm comes from the farm Cathrineholm which is located at Lake Nasnaren. \n";
-	loreString += "The farm was formerly called Fulbonas,\n";
-	loreString += "but the former owner Jacob von der Linde changed the name in the 1660s to honor his daughter Catharina. \n";
-	loreString += "Many findings show that the area was already inhabited over 6, 000 years ago.";
+	loreString += "Far back in the ancient times of Katrineholm, there is a dark and mysterious forest.\n";
+	loreString += "Not long ago, the forest was a peaceful place, with animals inhabiting the place.\n";
+	loreString += "But now the forest has been enchanted by an unknown being.\n";
+	loreString += "A thick strange mist lingers in every corner of the forest, with a toxic effect to all who dares to enter.\n";
+	loreString += "Our hero, Maiya, is stranded in the forest with her ancestors enchanted walking house, a house which she will now need more than ever.\n";
+	loreString += "In order to make it out of the forest, Maiya needs to keep the house moving by refuelling it with fuel scattered in the forest.\n";
+	loreString += "But be aware, there a more horrors than the mist in the deep forest.\n";
 
 	GUIFont* loreText = new GUIFont(*renderer, loreString, 100, 250);
 	loreText->SetFontSize({ 0.5f,0.5f });
