@@ -109,22 +109,37 @@ void SkeletonMeshComponent::RunAnimation(const float& deltaTime)
 		dx::SimpleMath::Quaternion diff2;
 		dx::SimpleMath::Quaternion final;
 
-		blendFactor = 1.0f;
+		blendFactor = 0.0f;
+		blendFactor += 0.0001f;
+		if (blendFactor >= 1.0f)
+			blendFactor = 0.0f;
 
 		//ROTATION QUAT VERKAR INTE VARA KORREKT
-		for (int i = 0; i < skeletonAnimations[trackMap[SkeletonStateMachine::RUN]].GetKeyFrames().size(); i++)
+		for (int i = 0; i < animKeyFrames.size(); i++)
 		{
-			diff = skeletonAnimations[trackMap[SkeletonStateMachine::RUN]].GetKeyFrames()[i][0].rotationQuaternion;
-			diff2 = skeletonAnimations[trackMap[SkeletonStateMachine::ATTACK]].GetKeyFrames()[i][0].rotationQuaternion;
+			animKeyFrames[i] = skeletonAnimations[trackMap[SkeletonStateMachine::ATTACK]].GetKeyFrames()[i];
 
-			diff = (diff * (blendFactor - 1)) + (diff2 * blendFactor); /*final.Slerp(diff, diff2, blendFactor);*/
+			//diff = skeletonAnimations[trackMap[SkeletonStateMachine::RUN]].GetKeyFrames()[i][0].rotationQuaternion;
+			//diff2 = skeletonAnimations[trackMap[SkeletonStateMachine::ATTACK]].GetKeyFrames()[i][0].rotationQuaternion;
+
+			//diff = (diff * (blendFactor - 1)) + (diff2 * blendFactor); /*final.Slerp(diff, diff2, blendFactor);*/
 		}
 	
-		//skeletonAnimations[trackMap[SkeletonStateMachine::RUN]].SetUpIDMapAndFrames(skeletonAnimations[trackMap[SkeletonStateMachine::RUN]].GetBoneIDMap(), skeletonAnimations[trackMap[SkeletonStateMachine::RUN]].GetFPS(), skeletonAnimations[trackMap[SkeletonStateMachine::RUN]].GetAniLength());
-		//skeletonAnimations[trackMap[SkeletonStateMachine::RUN]].SetOffsetsDirect(offSets); //Set the offsets
-		//skeletonAnimations[trackMap[SkeletonStateMachine::RUN]].SetKeyFramesDirect(animKeyFrames);
+		/*for (int i = 0; i < offSets.size(); i++)
+		{
+			offSets[i] = skeletonAnimations[trackMap[SkeletonStateMachine::RUN]].GetOffsets()[i];
+		}*/
 
-		skeletonAnimations[trackMap[SkeletonStateMachine::RUN]].SetQuaternionsDirect(diff);
+
+		float animLength = skeletonAnimations[trackMap[SkeletonStateMachine::RUN]].GetAniLength() * (1 - blendFactor) + skeletonAnimations[trackMap[SkeletonStateMachine::ATTACK]].GetAniLength() * blendFactor;
+		float fps = skeletonAnimations[trackMap[SkeletonStateMachine::RUN]].GetFPS() * (1 - blendFactor) + skeletonAnimations[trackMap[SkeletonStateMachine::ATTACK]].GetFPS() * blendFactor;
+
+
+		skeletonAnimations[trackMap[SkeletonStateMachine::RUN]].SetUpIDMapAndFrames(skeletonAnimations[trackMap[SkeletonStateMachine::ATTACK]].GetBoneIDMap(), fps, animLength);
+		//skeletonAnimations[trackMap[SkeletonStateMachine::RUN]].SetOffsetsDirect(offSets); //Set the offsets
+		skeletonAnimations[trackMap[SkeletonStateMachine::RUN]].SetKeyFramesDirect(animKeyFrames);
+
+		//skeletonAnimations[trackMap[SkeletonStateMachine::RUN]].SetQuaternionsDirect(diff);
 
 		finalTransforms = skeletonAnimations[trackMap[SkeletonStateMachine::RUN]].Makeglobal(time, dx::XMMatrixIdentity(), *skeletonAnimations[trackMap[SkeletonStateMachine::RUN]].GetRootKeyJoints());
 		//lerp(diff, diff2, blendFactor);
