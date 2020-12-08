@@ -563,7 +563,7 @@ void GameScene::OnDeactivate()
 
 	//renderer->ClearParticles();
 
-	ShowCursor(true);
+	//ShowCursor(true);
 	//this->PrintSceneHierarchy(root, 0);
 	player->GetComponent<PlayerComp>()->GetArms()->GetComponent< PlayerAnimHandlerComp>()->SetStarted(false);
 }
@@ -607,6 +607,12 @@ void GameScene::SetSignPositions(SaveState& state)
 
 void GameScene::Update(const float& deltaTime)
 {
+	//std::string text = "cursor is "; 
+	//if (Input::Instance().GetIsVisible())
+	//	text += "visible";
+	//else text += "not visible";
+	//std::cout << text<<std::endl;
+	
 	if ((delayTimer > (physicsDelay + loadScreenDelay + 2)) && onceTest)
 	{
 		onceTest = false;
@@ -859,7 +865,7 @@ void GameScene::TransitionToNextSegment()
 	renderer->RenderFrame(camera, (float)clock.GetSeconds(), player->GetComponent<PlayerComp>()->GetDangerDistance(), false);
 
 	OnDeactivate();
-	ShowCursor(false);
+	//ShowCursor(false);
 	OnActivate();
 
 	//guiManager->GetGUIObject("loading")->SetVisible(false);

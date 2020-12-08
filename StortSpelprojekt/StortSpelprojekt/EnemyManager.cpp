@@ -136,7 +136,6 @@ void EnemyManager::SpawnRandomEnemy(const float& deltaTime)
 			randPos.z = playerPos.z + Random::Range(-50, 50+1);
 			randPos.y = this->world->SampleHeight(playerPos.x, playerPos.z) + 0.5f; //height over ground
 			randVec = dx::XMLoadFloat3(&randPos);
-			//std::cout << length << std::endl;
 			dx::XMStoreFloat(&lengthP, dx::XMVector3Length(dx::XMVectorSubtract(playerVec, randVec)));
 			dx::XMStoreFloat(&lengthH, dx::XMVector3Length(dx::XMVectorSubtract(houseVec, randVec)));
 			dx::XMStoreFloat(&lengthPH, dx::XMVector3Length(dx::XMVectorSubtract(playerVec, houseVec)));
@@ -149,20 +148,17 @@ void EnemyManager::SpawnRandomEnemy(const float& deltaTime)
 			//total number of enemies is increased depending on how far and length from house
 			float houseProgress = house->GetComponent<NodeWalkerComp>()->GetHouseProgress();
 			this->nrOfEnemiesTotal = ENEMY_BASE_TOTAL + (this->currentLevel * 1.5) + (double(lengthPH) * 0.02f) + (double(houseProgress) * 4.f); // lengthPH/50
-			std::cout << "Level: " << this->currentLevel <<", potential enemies: "<<nrOfEnemiesTotal<<", current nr: "<< enemyVector.size()<< std::endl;
+			//std::cout << "Level: " << this->currentLevel <<", potential enemies: "<<nrOfEnemiesTotal<<", current nr: "<< enemyVector.size()<< std::endl;
 
 			//check if player is above -10, a length from player is above value, a length from house is above value, coord is inside cam-view
 			if (playerPos.y > -10.f &&lengthP > ENEMY_SPAWN_RADIUS && lengthH > ENEMY_SPAWN_RADIUS && !camComp->InView(enemyBounds, world))  //!SphereInFrustum(theFrustum, randPos))
 			{
 				//spawn enemies & increment nrof
-				//aliveEnemies++;
 				enemySpawnTimer = 0;
 
 				//enemies spawns faster depending on how far progress the player made
 				this->enemySpawnRate = Random::Range(ENEMY_SPAWN_RATE_MIN - (houseProgress * 0.5f), ENEMY_SPAWN_RATE_MAX - (houseProgress ));
-				
 				//std::cout <<"spawnrate: "<< this->enemySpawnRate <<", total possible: "<<nrOfEnemiesTotal<< std::endl;
-
 
 				int enemyType = Random::Range(0, 2);
 				if (enemyType == 0) // base_enemy

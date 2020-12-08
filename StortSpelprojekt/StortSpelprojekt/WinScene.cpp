@@ -29,7 +29,6 @@ void WinScene::InitializeObjects()
 	//cameraObject3->AddComponent<ControllerComponent>();
 	AddObjectToRoot(cameraObject);
 
-	//ShowCursor(true);
 
 }
 
@@ -55,7 +54,7 @@ void WinScene::InitializeGUI()
 void WinScene::OnActivate()
 {
 	input.SetMouseMode(dx::Mouse::MODE_ABSOLUTE);
-	ShowCursor(true);
+	//ShowCursor(true);
 	renderer->AddRenderPass(guiManager);
 }
 
@@ -67,6 +66,9 @@ void WinScene::OnDeactivate()
 
 void WinScene::Update(const float& deltaTime)
 {
+	if (!Input::Instance().GetIsVisible())
+		ShowCursor(true);
+
 	Scene::Update(deltaTime);
 	static_cast<GUIFont*>(guiManager->GetGUIObject("fps"))->SetString(std::to_string((int)GameClock::Instance().GetFramesPerSecond()));
 

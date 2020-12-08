@@ -240,6 +240,9 @@ void ControllerComp::Update(const float& deltaTime)
 	{
 		if (this->canRotate)
 		{
+			if (Input::Instance().GetIsVisible())
+				ShowCursor(false);
+
 			//Input::Instance().ConfineMouse();
 			int width = 0.f;
 			int height = 0.f;
@@ -474,10 +477,8 @@ void ControllerComp::Update(const float& deltaTime)
 		}
 		else
 		{
-			//phy.MutexLock();
-			//	Input::Instance().FreeMouse();
-			//PAUSE??
-
+			if (!Input::Instance().GetIsVisible())
+				ShowCursor(true);
 
 			dx::XMFLOAT3 vel = rbComp->GetLinearVelocity();
 			rbComp->SetLinearVelocity({ 0.f, vel.y, 0.f });
