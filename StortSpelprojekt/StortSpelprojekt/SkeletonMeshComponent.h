@@ -16,7 +16,7 @@ enum class EnemyType
 	CHARGER,
 	NONE
 };
-enum class SkeletonStateMachine
+enum SkeletonStateMachine
 {
 	IDLE,
 	WALK,
@@ -82,8 +82,14 @@ private:
 	Material* material;
 	std::vector<SkeletonAni> skeletonAnimations;
 	float elapsedTime = 0.0f;
+
+	float blendFactor = 1.0f;
+
 	std::unordered_map<SkeletonStateMachine, unsigned int> trackMap;
+
 	std::vector<dx::XMFLOAT4X4> finalTransforms;
+	std::vector<dx::XMFLOAT4X4> testTransform;
+
 	SkeletonStateMachine currentAni = SkeletonStateMachine::NONE;
 	Bounds bounds;
 	float componentDeltaTime = 0.0f;

@@ -96,7 +96,36 @@ void SkeletonMeshComponent::RunAnimation(const float& deltaTime)
 	}
 	else if (currentAni == SkeletonStateMachine::RUN || currentAni == SkeletonStateMachine::UP)
 	{
-		finalTransforms = skeletonAnimations[2].Makeglobal(time, dx::XMMatrixIdentity(), *skeletonAnimations[2].GetRootKeyJoints());
+		//A = A1 * (f - 1) + A2 * f
+
+	
+		//FEL FÖR UPPMÄRKSAMHET YÄÄÄ
+		//TESTA ATT LÄGGA IN ALLA ANIMATIONER I MAPS I START OCH SEDAN BLENDA MELLAN MAPSEN
+
+		dx::SimpleMath::Quaternion diff;
+		dx::SimpleMath::Quaternion diff2;
+		dx::SimpleMath::Quaternion final;
+
+		blendFactor = 0.5f;
+
+		//ROTATION QUAT VERKAR INTE VARA KORREKT
+		for (int i = 0; i < skeletonAnimations[trackMap[SkeletonStateMachine::RUN]].GetKeyFrames().size(); i++)
+		{
+			diff = skeletonAnimations[trackMap[SkeletonStateMachine::RUN]].GetKeyFrames()[i][0].rotationQuaternion;
+			diff2 = skeletonAnimations[trackMap[SkeletonStateMachine::ATTACK]].GetKeyFrames()[i][0].rotationQuaternion;
+
+			diff = final.Slerp(diff, diff2, blendFactor);
+
+		}
+	
+			finalTransforms = skeletonAnimations[trackMap[SkeletonStateMachine::RUN]].Makeglobal(time, dx::XMMatrixIdentity(), *skeletonAnimations[trackMap[SkeletonStateMachine::RUN]].GetRootKeyJoints());
+		//lerp(diff, diff2, blendFactor);
+
+		//TESTA ATT LERPA SOM FOGGEN I FOG PIXELSHADERN
+		//finalTransforms = skeletonAnimations[trackMap[SkeletonStateMachine::RUN]].Makeglobal(time, dx::XMMatrixIdentity(), *skeletonAnimations[trackMap[SkeletonStateMachine::RUN]].GetRootKeyJoints());
+
+		//testTransform = skeletonAnimations[3].Makeglobal(time, dx::XMMatrixIdentity(), *skeletonAnimations[3].GetRootKeyJoints());
+
 	}
 	else if (currentAni == SkeletonStateMachine::ATTACK || currentAni == SkeletonStateMachine::DOWN)
 	{
@@ -325,6 +354,8 @@ void SkeletonMeshComponent::CreateBlendedAnimation()
 	//blendedAnim.SetKeyFramesDirect(finalAnimKeyFrames);
 
 	//skeletonAnimations[2] = blendedAnim;
+
+	SetAnimationTrack(blendedAnim, SkeletonStateMachine::BLENDED);
 
 }
 

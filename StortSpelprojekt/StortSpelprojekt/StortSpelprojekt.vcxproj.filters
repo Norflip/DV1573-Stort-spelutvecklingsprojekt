@@ -623,9 +623,6 @@
     <ClInclude Include="SelectableComponent.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="WorldGenerator.h">
-      <Filter>Source Files\SpawnSystems</Filter>
-      </ClInclude>
     <ClInclude Include="Pathfinding.h">
       <Filter>Header Files</Filter>
     </ClInclude>
