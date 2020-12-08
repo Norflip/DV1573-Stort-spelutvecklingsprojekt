@@ -98,7 +98,7 @@ POINT Input::GetMousePos() const
 {
 	int x = mouse.GetState().x;
 	int y = mouse.GetState().y;
-
+	
 	return POINT{ mouse.GetState().x,mouse.GetState().y };
 }
 

@@ -9,6 +9,8 @@ class SpriteRenderPass;
 constexpr unsigned int LAST_SEGMENT = 3;
 constexpr dx::XMFLOAT3 INTERIOR_POSITION = { 0.0f, -100.0f, 0.0f };
 
+constexpr unsigned int POINTS_CLEARED_LEVEL = 100; //base currency earned from clearing one segment
+
 ALIGN16
 class GameScene : public Scene
 {	

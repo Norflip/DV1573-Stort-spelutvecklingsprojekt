@@ -8,7 +8,7 @@
 #include <unordered_map>
 #include "EnemyManager.h"
 
-#define ENEMY_RADIUS_LIMIT 100.f //Kill Enemy outside of this length from player
+#define ENEMY_RADIUS_LIMIT 70.f //Kill Enemy outside of this length from player
 //(kill enemies since they never will be encountered)
 
 enum class EnemyState
