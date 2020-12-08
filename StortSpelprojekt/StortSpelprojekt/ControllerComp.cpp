@@ -201,7 +201,8 @@ void ControllerComp::Update(const float& deltaTime)
 		{
 			if (inside && inDoorRange)
 			{
-				dx::XMVECTOR pos = dx::XMLoadFloat3(&world->GetPlayerPositionFromHouse(house));
+				dx::XMFLOAT3 posFromHouse = world->GetPlayerPositionFromHouse(house);
+				dx::XMVECTOR pos = dx::XMLoadFloat3(&posFromHouse);
 
 				GetOwner()->GetTransform().SetPosition(pos);
 				GetOwner()->GetComponent<RigidBodyComponent>()->SetPosition(pos);

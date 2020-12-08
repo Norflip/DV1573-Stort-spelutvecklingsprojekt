@@ -489,7 +489,8 @@ void GameScene::OnActivate()
 
 		if (!Engine::Instance->start)
 		{
-			dx::XMVECTOR playerPosition = dx::XMLoadFloat3(&world.GetPlayerPositionFromHouse(house));
+			dx::XMFLOAT3 posFromHouse = world.GetPlayerPositionFromHouse(house);
+			dx::XMVECTOR playerPosition = dx::XMLoadFloat3(&posFromHouse);
 			player->GetTransform().SetPosition(playerPosition);
 			player->GetComponent<RigidBodyComponent>()->SetPosition(playerPosition);
 		}
