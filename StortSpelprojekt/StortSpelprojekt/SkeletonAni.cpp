@@ -93,7 +93,7 @@ std::vector<dx::XMFLOAT4X4>& SkeletonAni::Makeglobal(float elapsedTime, const Di
 {
     DirectX::SimpleMath::Matrix toRoot = Lerp(elapsedTime, keys) * globalParent; //These matrices are local, need to make them global recursively.
 
-    unsigned int ftIndex = keys[0].index; //all of these indices have the same index number.
+    ftIndex = keys[0].index; //all of these indices have the same index number.
 
     DirectX::SimpleMath::Matrix finalTransform = offsetM[ftIndex] * toRoot;
 
@@ -254,6 +254,11 @@ void SkeletonAni::SetKeyFramesDirect(std::vector<std::vector<Bone>>& directKeys)
 void SkeletonAni::SetQuaternionsDirect(dx::SimpleMath::Quaternion directQuat)
 {
     this->rotQ = directQuat;
+}
+
+void SkeletonAni::SetTransVector(dx::SimpleMath::Vector3 transVec)
+{
+    this->transV = transVec;
 }
 
 

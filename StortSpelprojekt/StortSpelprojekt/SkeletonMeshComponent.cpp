@@ -98,31 +98,37 @@ void SkeletonMeshComponent::RunAnimation(const float& deltaTime)
 	{
 		//A = A1 * (f - 1) + A2 * f
 
-	
-		//FEL FÖR UPPMÄRKSAMHET YÄÄÄ
-		//TESTA ATT LÄGGA IN ALLA ANIMATIONER I MAPS I START OCH SEDAN BLENDA MELLAN MAPSEN
+		///STREATEGI FÖR DAGEN
+		/// HÄMTA ALLA VARIABLER FRÅN BONE STRUCKTEN FÖR SIG OCH FÖRSÖK BLENDA MELLAN DEM
+
 
 		std::vector<dx::SimpleMath::Matrix> offSets(skeletonAnimations[trackMap[SkeletonStateMachine::RUN]].GetOffsets().size());
 		std::vector<std::vector<Bone>> animKeyFrames(skeletonAnimations[trackMap[SkeletonStateMachine::RUN]].GetKeyFrames().size());
 
-		dx::SimpleMath::Quaternion diff;
-		dx::SimpleMath::Quaternion diff2;
-		dx::SimpleMath::Quaternion final;
+		dx::SimpleMath::Quaternion quat1;
+		dx::SimpleMath::Quaternion quat2;
+		dx::SimpleMath::Quaternion quatFinal;
 
-		blendFactor = 0.0f;
-		blendFactor += 0.0001f;
-		if (blendFactor >= 1.0f)
-			blendFactor = 0.0f;
+		dx::SimpleMath::Vector3 trans1;
+		dx::SimpleMath::Vector3 trans2;
+		dx::SimpleMath::Vector3 transFinal;
 
+
+		blendFactor = 1.0f;
+		
 		//ROTATION QUAT VERKAR INTE VARA KORREKT
 		for (int i = 0; i < animKeyFrames.size(); i++)
 		{
-			animKeyFrames[i] = skeletonAnimations[trackMap[SkeletonStateMachine::ATTACK]].GetKeyFrames()[i];
 
-			//diff = skeletonAnimations[trackMap[SkeletonStateMachine::RUN]].GetKeyFrames()[i][0].rotationQuaternion;
-			//diff2 = skeletonAnimations[trackMap[SkeletonStateMachine::ATTACK]].GetKeyFrames()[i][0].rotationQuaternion;
+			//animKeyFrames[i][0].rotationQuaternion = skeletonAnimations[trackMap[SkeletonStateMachine::RUN]].GetKeyFrames()[i][0].rotationQuaternion * (1 - blendFactor) + skeletonAnimations[trackMap[SkeletonStateMachine::ATTACK]].GetKeyFrames()[i][0].rotationQuaternion * blendFactor;
+			quat1 = skeletonAnimations[trackMap[SkeletonStateMachine::RUN]].GetKeyFrames()[i][0].rotationQuaternion;
+			quat2 = skeletonAnimations[trackMap[SkeletonStateMachine::ATTACK]].GetKeyFrames()[i][0].rotationQuaternion;
 
-			//diff = (diff * (blendFactor - 1)) + (diff2 * blendFactor); /*final.Slerp(diff, diff2, blendFactor);*/
+			quatFinal = quat1 * (1 - blendFactor) + quat2 * blendFactor; /*final.Slerp(diff, diff2, blendFactor);*/
+
+			trans1 = skeletonAnimations[trackMap[SkeletonStateMachine::RUN]].GetKeyFrames()[i][0].translationVector;
+			trans2 = skeletonAnimations[trackMap[SkeletonStateMachine::ATTACK]].GetKeyFrames()[i][0].translationVector;
+			transFinal = trans1 * (1 - blendFactor) + trans2 * blendFactor;
 		}
 	
 		/*for (int i = 0; i < offSets.size(); i++)
@@ -134,12 +140,12 @@ void SkeletonMeshComponent::RunAnimation(const float& deltaTime)
 		float animLength = skeletonAnimations[trackMap[SkeletonStateMachine::RUN]].GetAniLength() * (1 - blendFactor) + skeletonAnimations[trackMap[SkeletonStateMachine::ATTACK]].GetAniLength() * blendFactor;
 		float fps = skeletonAnimations[trackMap[SkeletonStateMachine::RUN]].GetFPS() * (1 - blendFactor) + skeletonAnimations[trackMap[SkeletonStateMachine::ATTACK]].GetFPS() * blendFactor;
 
+		/*skeletonAnimations[trackMap[SkeletonStateMachine::RUN]].SetQuaternionsDirect(quatFinal);
+		skeletonAnimations[trackMap[SkeletonStateMachine::RUN]].SetTransVector(transFinal);*/
 
 		skeletonAnimations[trackMap[SkeletonStateMachine::RUN]].SetUpIDMapAndFrames(skeletonAnimations[trackMap[SkeletonStateMachine::ATTACK]].GetBoneIDMap(), fps, animLength);
 		//skeletonAnimations[trackMap[SkeletonStateMachine::RUN]].SetOffsetsDirect(offSets); //Set the offsets
-		skeletonAnimations[trackMap[SkeletonStateMachine::RUN]].SetKeyFramesDirect(animKeyFrames);
-
-		//skeletonAnimations[trackMap[SkeletonStateMachine::RUN]].SetQuaternionsDirect(diff);
+		//skeletonAnimations[trackMap[SkeletonStateMachine::RUN]].SetKeyFramesDirect(animKeyFrames);
 
 		finalTransforms = skeletonAnimations[trackMap[SkeletonStateMachine::RUN]].Makeglobal(time, dx::XMMatrixIdentity(), *skeletonAnimations[trackMap[SkeletonStateMachine::RUN]].GetRootKeyJoints());
 		//lerp(diff, diff2, blendFactor);
@@ -287,8 +293,8 @@ void SkeletonMeshComponent::SetTrack(const SkeletonStateMachine& type, bool play
 
 void SkeletonMeshComponent::CreateCombinedAnimation(SkeletonStateMachine state1, SkeletonStateMachine state2, int startJoint, int endJoint)
 {
-	int anim1 = state1;
-	int anim2 = state2;
+	int anim1 = trackMap[state1];
+	int anim2 = trackMap[state2];
 
 	//LITE PROGRESS
 	SkeletonAni combinedAnim;

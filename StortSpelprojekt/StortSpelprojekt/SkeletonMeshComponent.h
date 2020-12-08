@@ -16,7 +16,7 @@ enum class EnemyType
 	CHARGER,
 	NONE
 };
-enum SkeletonStateMachine
+enum class SkeletonStateMachine
 {
 	IDLE,
 	WALK,
