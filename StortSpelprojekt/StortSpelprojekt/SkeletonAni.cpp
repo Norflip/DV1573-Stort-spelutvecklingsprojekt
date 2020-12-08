@@ -251,6 +251,11 @@ void SkeletonAni::SetKeyFramesDirect(std::vector<std::vector<Bone>>& directKeys)
     this->keyBones = directKeys;
 }
 
+void SkeletonAni::SetQuaternionsDirect(dx::SimpleMath::Quaternion directQuat)
+{
+    this->rotQ = directQuat;
+}
+
 
 
 

@@ -52,6 +52,7 @@ public:
 	float GetAniLength();
 	void SetOffsetsDirect(std::vector<dx::SimpleMath::Matrix>& directOffsets);
 	void SetKeyFramesDirect(std::vector<std::vector<Bone>>& directKeys);
+	void SetQuaternionsDirect(dx::SimpleMath::Quaternion directQuat);
 
 	std::vector<dx::XMFLOAT4X4> GetBones() { return this->bones; }
 	dx::SimpleMath::Matrix& Lerp(float elapsedTime, std::vector<Bone>& keys);
