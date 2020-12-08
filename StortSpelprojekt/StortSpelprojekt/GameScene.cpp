@@ -502,8 +502,8 @@ void GameScene::OnActivate()
 			}
 
 			renderer->SetIdAndColor(fogId, fogCol);
-
-			dx::XMVECTOR playerPosition = dx::XMLoadFloat3(&world.GetPlayerPositionFromHouse(house));
+			dx::XMFLOAT3 playerPos = world.GetPlayerPositionFromHouse(house);
+			dx::XMVECTOR playerPosition = dx::XMLoadFloat3(&playerPos);
 			player->GetTransform().SetPosition(playerPosition);
 			player->GetComponent<RigidBodyComponent>()->SetPosition(playerPosition);
 		}
