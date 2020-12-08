@@ -626,9 +626,6 @@ void GameScene::Update(const float& deltaTime)
 
 	enemyManager->SpawnRandomEnemy(deltaTime);
 
-	//if (KEY_DOWN(X))
-	//	std::cout << "pos: " << playerPos.x << ", " << playerPos.y << ", " << playerPos.z << std::endl;
-
 	// Something CP with controllerComp/player wont allow this to happen inside the playerComp
 	if (player->GetComponent<ControllerComp>()->GetInRange())
 	{
@@ -661,7 +658,12 @@ void GameScene::Update(const float& deltaTime)
 	{
 		if (endSign->GetComponent<SelectableComponent>()->GetActive())
 		{
+			SaveState& state = SaveHandler::LoadOrCreate();
+			state.nrOfGameWins++;
+			SaveHandler::Save(state);
+
 			Engine::Instance->SwitchScene(SceneIndex::WIN);
+			
 		}
 	}
 	
