@@ -205,24 +205,7 @@ void Renderer::RenderFrame(CameraComponent* camera, float time, float distance, 
 
 void Renderer::RenderFrame(CameraComponent* camera, float time, float distance, RenderTexture& target, bool drawGUI, bool applyRenderPasses)
 {
-
-
 	// UPPDATERA SCENE
-	// ----------
-
-	// Tempor�rt f�r att �ndra skybox texture
-	//ids = 0;
-	//color = 0.0f;
-
-	//color += (float)0.005f;
-	if (color > 1.0f)
-	{
-		color -= 1.0f;
-		if (ids != 3)
-			ids += 1;
-		else
-			ids = 0;
-	}
 
 	cb_Scene& data = sceneBuffer.GetData();
 

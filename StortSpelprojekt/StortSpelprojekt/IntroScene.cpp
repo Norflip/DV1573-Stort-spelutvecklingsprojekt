@@ -30,7 +30,7 @@ void IntroScene::InitializeObjects()
 	this->player = cameraObject;
 	AddObjectToRoot(cameraObject);
 
-	ShowCursor(true);
+	
 
 	AudioMaster::Instance().PlaySoundEvent("menusound");
 }
@@ -184,6 +184,7 @@ void IntroScene::InitializeGUI()
 void IntroScene::OnActivate()
 {
 	input.SetMouseMode(dx::Mouse::MODE_ABSOLUTE);
+	//ShowCursor(true);
 	renderer->AddRenderPass(guiManager);
 
 	float musicVolume = Config::GetFloat("volumeMusic", 0.5f);
@@ -205,6 +206,8 @@ void IntroScene::OnDeactivate()
 
 void IntroScene::Update(const float& deltaTime)
 {
+	if (!Input::Instance().GetIsVisible())
+		ShowCursor(true);
 
 	Scene::Update(deltaTime);
 	//Cleanup Later

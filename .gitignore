@@ -381,7 +381,5 @@ MigrationBackup/
 
 # Ionide (cross platform F# VS Code tools) working folder
 .ionide/
-StortSpelprojekt/StortSpelprojekt/savefile.dat
-StortSpelprojekt/StortSpelprojekt/imgui.ini
 StortSpelprojekt/StortSpelprojekt/imgui.ini
 StortSpelprojekt/StortSpelprojekt/config.cfg

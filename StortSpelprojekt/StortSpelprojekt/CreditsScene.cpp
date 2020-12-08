@@ -167,6 +167,9 @@ void CreditsScene::OnDeactivate()
 
 void CreditsScene::Update(const float& deltaTime)
 {
+	if (!Input::Instance().GetIsVisible())
+		ShowCursor(true);
+
 	Scene::Update(deltaTime);
 	static_cast<GUIFont*>(guiManager->GetGUIObject("fps"))->SetString("fps " + std::to_string((int)GameClock::Instance().GetFramesPerSecond()));
 
