@@ -1040,6 +1040,13 @@ void Renderer::UpdateForwardPlus(CameraComponent* camera)
 
 	SetCullBack(true);
 
+	//DrawQueueToTarget(emissiveItemQueue, camera);
+	//for (auto i : emissiveBatches)
+	//	DrawBatch(i.second, camera);
+
+	//SetCullBack(true);
+
+
 	depthPass.BindNull(context);
 	//////DEPTH PASS END-----------------------------------------------
 	ClearRenderTarget(midbuffer);
