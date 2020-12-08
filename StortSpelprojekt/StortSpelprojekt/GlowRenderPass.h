@@ -35,7 +35,7 @@ public:
 		//renderer->GetContext()->PSSetShaderResources(1, 1, nullSRV);
 	}
 
-	void LoadTextureGlow(ID3D11Device* device)
+	/*void LoadTextureGlow(ID3D11Device* device)
 	{
 		const LPCWSTR GLOW_TEXTURE_PATH = L"Textures/lampa_glowMap.png";
 
@@ -43,7 +43,7 @@ public:
 		glowMaterial->SetTexture(glowTexture, 0, ShaderBindFlag::PIXEL);
 
 		glowMaterial->SetSampler(DXHelper::CreateSampler(D3D11_FILTER_MIN_MAG_MIP_LINEAR, D3D11_TEXTURE_ADDRESS_WRAP, device), 0, ShaderBindFlag::PIXEL);
-	}
+	}*/
 
 	ALIGN16_ALLOC;
 

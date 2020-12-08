@@ -306,6 +306,7 @@ void Renderer::RenderFrame(CameraComponent* camera, float time, float distance, 
 
 	for (auto i : emissiveBatches)
 		DrawBatch(i.second, camera);
+	emissiveItemQueue.clear();
 
 	SetCullBack(true);
 

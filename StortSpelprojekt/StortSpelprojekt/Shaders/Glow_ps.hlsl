@@ -23,7 +23,7 @@ float4 main(PS_INPUT_GLOW input) : SV_TARGET
     float brightness = 1;
     
     //pixel range
-    int range = 2;
+    int range = 1;
     
     for (int x = -range; x <= range; x++)
     {
