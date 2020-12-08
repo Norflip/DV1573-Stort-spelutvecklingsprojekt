@@ -22,6 +22,7 @@ bool GameScene::drawColliders = false;
 GameScene::GameScene() : Scene("GameScene")
 {
 	fogCol = 0;
+	fogId = 0;
 	end = false;
 	firstFrame = false;
 }
@@ -490,17 +491,28 @@ void GameScene::OnActivate()
 		dx::XMFLOAT3 houseWorldPos = point.AsFloat3(height);
 		house->GetTransform().SetWorldPosition(dx::XMLoadFloat3(&houseWorldPos));
 
-		fogCol = FCAST(state.segment) * 0.5f;
-		renderer->SetIdAndColor(state.segment, fogCol);
-
 		if (!Engine::Instance->start)
 		{
+			fogCol += 0.5f;
+			fogId += 0.5f;
+
+			if (fogCol >= 1.0f)
+			{
+				fogCol = 0.0f;
+			}
+
+			renderer->SetIdAndColor(fogId, fogCol);
+
 			dx::XMVECTOR playerPosition = dx::XMLoadFloat3(&world.GetPlayerPositionFromHouse(house));
 			player->GetTransform().SetPosition(playerPosition);
 			player->GetComponent<RigidBodyComponent>()->SetPosition(playerPosition);
 		}
 		else if (Engine::Instance->start) 		// INUTI HUSET I GUESS
 		{
+			fogCol = 0.0f;
+			fogId = 0.0f;
+			renderer->SetIdAndColor(fogId, fogCol);
+
 			player->GetComponent<PlayerComp>()->SetStatsFromState(state);
 
 			dx::XMVECTOR playerPos = { INTERIOR_POSITION.x, INTERIOR_POSITION.y + 3.0f, INTERIOR_POSITION.z, 0.0f };
@@ -521,6 +533,7 @@ void GameScene::OnActivate()
 		}
 	}
 
+	std::cout << "FogCol: " << fogCol << " FogId: " << fogId << std::endl;
 
 	renderer->AddRenderPass(guiManager);
 
