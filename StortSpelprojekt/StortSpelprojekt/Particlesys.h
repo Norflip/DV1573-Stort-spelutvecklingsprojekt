@@ -5,21 +5,11 @@
 const dx::XMFLOAT4 fireRedColor = dx::XMFLOAT4(0.5f, 0.2f, 0.2f, 1.0f);
 const dx::XMFLOAT4 grayColor = dx::XMFLOAT4(0.2f, 0.2f, 0.2f, 1.0f);
 
+
 class Particlesys
 {
 
-private:
-	/*__declspec(align(16))
-		struct cBufferPerObject
-	{
-		cBufferPerObject() { ZeroMemory(this, sizeof(this)); }
-
-		DirectX::XMMATRIX worldViewProj;
-		DirectX::XMMATRIX world;
-		DirectX::XMMATRIX view;
-		DirectX::XMMATRIX projection;
-		DirectX::XMMATRIX viewProjection;
-	};*/
+private:	
 
 	__declspec(align(16))
 		struct cBufferPerFrame
@@ -100,7 +90,7 @@ public:
 	void SetTexture(ID3D11Device* device, LPCWSTR particleTexture);
 
 	void Reset();
-	void Update(float deltaTime, float gameTime);
+	void Update(float deltaTime, float gameTime, float fuel);
 	void Draw(ID3D11DeviceContext* context, CameraComponent* cam);
 
 	float RandomFloat(float a, float b);
@@ -132,6 +122,7 @@ private:
 	dx::XMFLOAT3 emitDir;
 	dx::XMFLOAT2 particleSize;
 	dx::XMFLOAT3 particleSpreadMulti;
+	dx::XMFLOAT3 particleSpreadModify;
 
 	ID3D11Buffer* initializeVB;
 	ID3D11Buffer* drawVB;

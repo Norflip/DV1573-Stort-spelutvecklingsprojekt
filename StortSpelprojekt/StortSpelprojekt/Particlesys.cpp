@@ -284,7 +284,7 @@ void Particlesys::Reset()
 	particleAge = 0.0f;
 }
 
-void Particlesys::Update(float deltaTime, float gameTime)
+void Particlesys::Update(float deltaTime, float gameTime, float fuel)
 {
 	gameTimer = gameTime;
 	ageTimeStep = deltaTime;
@@ -317,10 +317,21 @@ void Particlesys::Update(float deltaTime, float gameTime)
 
 	dx::XMFLOAT3 pos;
 	dx::XMStoreFloat3(&pos, objectRef->GetTransform().GetPosition());
-	pos.y += 0.2f;
+	pos.y += 0.1f;
 	pos.z += 0.f + a;
 	pos.x -= 0.2f;
 	SetEmitPos(pos);	
+
+
+	float m = fuel / 100.0f;
+	dx::XMFLOAT3 spread;
+	spread = particleSpreadMulti;
+	//spread.x *= m;
+	spread.y *= m;
+	//spread.z *= m;
+
+	particleSpreadModify = spread;
+
 }
 
 void Particlesys::Draw(ID3D11DeviceContext* context, CameraComponent* cam)
@@ -360,7 +371,7 @@ void Particlesys::DrawStreamOut(ID3D11DeviceContext* context, CameraComponent* c
 	cbPerFrame.particleMaxAge = particleMaxAge;
 	cbPerFrame.particleColor = particleColor;
 	cbPerFrame.usingTexture = usingTexture;
-	cbPerFrame.particleSpreadMulti = particleSpreadMulti;
+	cbPerFrame.particleSpreadMulti = particleSpreadModify;
 	cbPerFrame.particlesPerSecond = particlesPerSecond;
 
 	context->UpdateSubresource(cbufferPerFrame, 0, nullptr, &cbPerFrame, 0, 0);
