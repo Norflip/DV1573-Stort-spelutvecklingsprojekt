@@ -113,6 +113,22 @@ void Renderer::Initialize(Window* window)
 
 	tmpBatchInstanceData = new dx::XMFLOAT4X4[MAX_BATCH_COUNT];
 	DXHelper::CreateInstanceBuffer(device, MAX_BATCH_COUNT, sizeof(dx::XMFLOAT4X4), tmpBatchInstanceData, &batchInstanceBuffer);
+
+
+	float pixelScale = tanf(0.5f * (dx::XM_PI / 2.0f)) / (float)(window->GetHeight()); //the height of the window.
+
+	cb_grass grassCBufferData;
+	grassCBufferData.pixelSize = pixelScale;
+	grassCBufferData.grassDisplacement = 2;
+	grassCBufferData.grassRadius = 0.5;
+	grassCBufferData.grassWidth = 1.5;
+
+
+	grassBuffer.Initialize(CB_GRASS_PARAMETERS_SLOT, ShaderBindFlag::DOMAINS | ShaderBindFlag::GEOMETRY, device);
+	grassBuffer.SetData(grassCBufferData);
+	grassBuffer.UpdateBuffer(context);
+
+
 }
 
 void Renderer::OnResize(UINT width, UINT height)
@@ -128,6 +144,16 @@ void Renderer::OnResize(UINT width, UINT height)
 	this->renderPassSwapBuffers[0] = DXHelper::CreateRenderTexture(window->GetWidth(), window->GetHeight(), device, context, &dss);
 	this->renderPassSwapBuffers[1] = DXHelper::CreateRenderTexture(window->GetWidth(), window->GetHeight(), device, context, &dss);
 	OnResizeFPlus();
+	float pixelScale = tanf(0.5f * (dx::XM_PI / 2.0f)) / (float)(window->GetHeight()); //the height of the window.
+
+	cb_grass grassCBufferData;
+	grassCBufferData.pixelSize = pixelScale;
+	grassCBufferData.grassDisplacement = 2;
+	grassCBufferData.grassRadius = 0.5;
+	grassCBufferData.grassWidth = 1.5;
+
+	grassBuffer.SetData(grassCBufferData);
+	grassBuffer.UpdateBuffer(context);
 	present = true;
 }
 

@@ -27,7 +27,7 @@ public:
 
 	void InitializeGrass(Mesh* chunkMesh, ID3D11Device* device, ID3D11DeviceContext* context);
 	void Draw(Renderer* renderer, CameraComponent* camera) override;
-
+	void ReBind(ID3D11DeviceContext* context);
 	Material* GetMaterial() const { return this->grassMat; }
 	ALIGN16_ALLOC;
 
@@ -44,11 +44,10 @@ private:
 	ID3D11Buffer* grassIndexBfr = nullptr;
 	ID3D11ShaderResourceView* grassIndexSrv = nullptr;
 
+
 	ID3D11Buffer* grassBCBfr = nullptr;
-
 	ID3D11ShaderResourceView* grassBCSRV = nullptr;
-
-	ConstantBuffer<cb_grass> grassBuffer;
+	
 
 	Bounds bounds;
 	//ChunkType chunkType;

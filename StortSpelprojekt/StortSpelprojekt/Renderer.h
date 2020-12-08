@@ -240,4 +240,7 @@ private:
 	ID3D11BlendState* particleBlendOff;
 	ID3D11DepthStencilState* dss_Off;
 	ID3D11DepthStencilState* dss_On;
+
+	
+	ConstantBuffer<cb_grass> grassBuffer;
 };

@@ -16,7 +16,7 @@ public:
 	virtual ~World();
 
 	void Initialize(Object* root, ResourceManager* resources, Renderer* renderer);
-
+	void UpdateGrass(ID3D11DeviceContext* context);
 	void ConstructSegment(const SaveState& state);
 	void DeconstructSegment();
 	

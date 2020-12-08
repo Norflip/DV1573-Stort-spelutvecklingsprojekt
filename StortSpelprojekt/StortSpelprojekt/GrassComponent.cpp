@@ -114,7 +114,7 @@ void GrassComponent::InitializeGrass(Mesh* chunkMesh, ID3D11Device* device, ID3D
 	DXHelper::CreateStructuredBuffer(device, &grassBCBfr, bcData.data(), sizeof(dx::XMFLOAT4), MAX_STRANDS, &grassBCSRV);
 	DXHelper::BindStructuredBuffer(context, grassBCBfr, bcData.data(), GRASS_COORD_SRV_SLOT, ShaderBindFlag::DOMAINS, &grassBCSRV);
 	//Window sice needed here
-	float pixelScale = tanf(0.5f * (dx::XM_PI / 2.0f)) / (float)(900); //the height of the window.
+	/*float pixelScale = tanf(0.5f * (dx::XM_PI / 2.0f)) / (float)(900); //the height of the window.
 
 	cb_grass grassCBufferData;
 	grassCBufferData.pixelSize = pixelScale;
@@ -122,10 +122,10 @@ void GrassComponent::InitializeGrass(Mesh* chunkMesh, ID3D11Device* device, ID3D
 	grassCBufferData.grassRadius = 0.5;
 	grassCBufferData.grassWidth = 1.5;
 
-
+	
 	grassBuffer.Initialize(CB_GRASS_PARAMETERS_SLOT, ShaderBindFlag::DOMAINS | ShaderBindFlag::GEOMETRY, device);
 	grassBuffer.SetData(grassCBufferData);
-	grassBuffer.UpdateBuffer(context);
+	grassBuffer.UpdateBuffer(context);*/
 }
 
 void GrassComponent::Draw(Renderer* renderer, CameraComponent* camera)
@@ -133,6 +133,14 @@ void GrassComponent::Draw(Renderer* renderer, CameraComponent* camera)
 	dx::XMMATRIX world = this->GetOwner()->GetTransform().GetWorldMatrix();
 	if (camera->InView(bounds, world))
 		renderer->DrawGrass(grassMesh, grassMat, world);
+}
+
+void GrassComponent::ReBind(ID3D11DeviceContext* context)
+{
+	ShaderBindFlag flag = ShaderBindFlag::VERTEX | ShaderBindFlag::HULL | ShaderBindFlag::DOMAINS;
+	DXHelper::BindStructuredBuffer(context, GRASS_STRAWS_SRV_SLOT, flag, &grassSrv);
+	DXHelper::BindStructuredBuffer(context, GRASS_INDICES_SRV_SLOT, flag, &grassIndexSrv);
+	DXHelper::BindStructuredBuffer(context, GRASS_COORD_SRV_SLOT, ShaderBindFlag::DOMAINS, &grassBCSRV);
 }
 
 

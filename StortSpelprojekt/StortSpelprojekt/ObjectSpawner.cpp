@@ -293,6 +293,8 @@ Object* ObjectSpawner::DefaultCreateItem(std::string key, PickupType type, float
 	return object;
 }
 
+
+
 static float spawnChance = 0.0f;
 static float spawnIncrement = 0.2f;
 static float spawnDecrement = 0.15f;

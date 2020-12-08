@@ -22,7 +22,7 @@ class Window
 public:
 	Window(HINSTANCE hInstance);
 	virtual ~Window();
-	static bool kawaBonga;
+	
 	/// <summary>Opens the win32 window.</summary>
 	void Open(size_t width, size_t height);
 	size_t GetWidth() const { return this->width; }

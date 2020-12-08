@@ -19,6 +19,14 @@ void World::Initialize(Object* root, ResourceManager* resources, Renderer* rende
 	ResetRelevanceIndex();
 }
 
+void World::UpdateGrass(ID3D11DeviceContext* context)
+{
+	for (auto i : relevant)
+	{
+		i->GetOwner()->GetComponent<GrassComponent>()->ReBind(context);
+	}
+}
+
 void World::ConstructSegment(const SaveState& state)
 {
 	Random::SetSeed(state.GetSegmentedSeed());

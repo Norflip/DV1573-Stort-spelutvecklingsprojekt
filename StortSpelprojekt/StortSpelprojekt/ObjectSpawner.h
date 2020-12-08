@@ -67,7 +67,7 @@ public:
 	void DrawDebug();
 
 	static Object* DefaultCreateItem(std::string key, PickupType type, float value);
-
+	
 private:
 	void SpawnStatic(Chunk* chunk);
 	void SpawnItem(Chunk* chunk);

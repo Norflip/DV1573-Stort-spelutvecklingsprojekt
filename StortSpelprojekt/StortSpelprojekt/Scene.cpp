@@ -10,6 +10,7 @@ Scene::Scene(const std::string& debugName) : input(Input::Instance()), debugName
 	renderer = nullptr;
 	camera = nullptr;
 	this->root = new Object("root");
+	resize = false;
 }
 
 Scene::~Scene()
@@ -22,6 +23,8 @@ void Scene::OnResize(UINT width, UINT height)
 {
 	this->window->SetSize((size_t)width, (size_t)height);
 	this->camera->UpdateProjectionMatrix((size_t)width, (size_t)height, this->camera->GetFOV(), this->camera->GetNearZ(), this->camera->GetFarZ());
+	resize = true;
+	
 }
 
 void Scene::SetDepedencies(ResourceManager* resources, Renderer* renderer, Physics* physics, Window* window)

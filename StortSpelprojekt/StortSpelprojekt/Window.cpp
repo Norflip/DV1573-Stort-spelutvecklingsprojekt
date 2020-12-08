@@ -5,7 +5,7 @@
 #include <fcntl.h>
 #include <io.h>
 #include <iostream>
-bool Window::kawaBonga = false;
+
 size_t Window::changedWidth = 0;
 size_t Window::changedHeight = 0;
 bool Window::shouldResize = false;

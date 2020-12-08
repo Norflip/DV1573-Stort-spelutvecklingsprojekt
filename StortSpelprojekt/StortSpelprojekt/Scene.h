@@ -80,7 +80,7 @@ protected:
 	float loadScreenDelay = 2.0f;
 	float delayTimer = 0;
 	wchar_t iconText[10];
-
+	bool resize;
 	Object* root;
 	Renderer* renderer;
 	ResourceManager* resources;
