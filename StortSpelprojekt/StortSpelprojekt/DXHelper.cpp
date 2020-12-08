@@ -585,7 +585,7 @@ void DXHelper::BindStructuredBuffer(ID3D11DeviceContext* context, ID3D11Buffer* 
 void DXHelper::BindStructuredBuffer(ID3D11DeviceContext* context, size_t slot, ShaderBindFlag flag, ID3D11ShaderResourceView** srv)
 {
 	int bflag = static_cast<int>(flag);
-
+	
 	if ((bflag & (int)ShaderBindFlag::PIXEL) != 0)
 		context->PSSetShaderResources(slot, 1, srv);
 
@@ -626,16 +626,15 @@ ID3D11RasterizerState* DXHelper::CreateRasterizerState(D3D11_CULL_MODE cullMode,
 	return rasterizerState;
 }
 
-void DXHelper::OnResize(UINT width, UINT height, IDXGISwapChain* swapchain, bool& test)
+void DXHelper::OnResize(UINT width, UINT height, IDXGISwapChain* swapchain, ID3D11DeviceContext* context)
 {
-	UINT swapchainFlags = D3D11_CREATE_DEVICE_BGRA_SUPPORT;
-#ifdef  _DEBUG
-	swapchainFlags |= D3D11_CREATE_DEVICE_DEBUG;
-#endif
-	HRESULT hr = swapchain->ResizeBuffers(0, 0, 0, DXGI_FORMAT_UNKNOWN, 0);
+	UINT swapchainFlags = DXGI_SWAP_CHAIN_FLAG_ALLOW_MODE_SWITCH;
+	
+	context->ClearState();
+	HRESULT hr = swapchain->ResizeBuffers(0, 0, 0, DXGI_FORMAT_UNKNOWN, swapchainFlags); //These are 0 so the default settings are used.
 	
 	assert(SUCCEEDED(hr));
-	//test = true;
+	
 }
 
 

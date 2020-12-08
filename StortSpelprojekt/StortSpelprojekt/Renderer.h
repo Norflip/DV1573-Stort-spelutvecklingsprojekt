@@ -114,11 +114,8 @@ public:
 	void DisableAlphaBlending();	
 	ID3D11DepthStencilState* GetDepthEnable() { return this->dss_On; }
 	ID3D11DepthStencilState* GetDepthDisable() { return this->dss_Off; }
-	bool present;
-	static bool finished1;
-	static bool finished2;
-	static bool finished3;
-	static bool finished4;
+	
+	
 	ALIGN16_ALLOC;
 
 private:
@@ -148,7 +145,7 @@ private:
 	Mesh* screenQuadMesh;
 	Shader forwardPlusShader;
 	bool forwardPlusInitialized;
-	
+	bool present;
 	ConstantBuffer<cb_particle> particleBuffer;
 	ConstantBuffer<cb_Object> objectBuffer;
 	ConstantBuffer<cb_Scene> sceneBuffer;

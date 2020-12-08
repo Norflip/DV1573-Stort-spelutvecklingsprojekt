@@ -5,6 +5,7 @@
 #include <fcntl.h>
 #include <io.h>
 #include <iostream>
+bool Window::kawaBonga = false;
 size_t Window::changedWidth = 0;
 size_t Window::changedHeight = 0;
 bool Window::shouldResize = false;
@@ -95,12 +96,15 @@ void Window::SetSize(size_t width, size_t height)
 {
 	this->width = width;
 	this->height = height;
-	Renderer::finished3 = true;
+	
 }
 
 void Window::OnResize(size_t newWidth, size_t newHeight)
 {
+	
 	changedWidth = newWidth;
 	changedHeight = newHeight;
 	shouldResize = true;
+	
+	
 }

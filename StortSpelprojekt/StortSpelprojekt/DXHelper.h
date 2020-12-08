@@ -82,6 +82,6 @@ namespace DXHelper
 	void BindStructuredBuffer(ID3D11DeviceContext* context, ID3D11Buffer* buffer, void* data, size_t slot, ShaderBindFlag flag, ID3D11ShaderResourceView** srv);
 	void BindStructuredBuffer(ID3D11DeviceContext* context, size_t slot, ShaderBindFlag flag, ID3D11ShaderResourceView** srv);
 	ID3D11RasterizerState* CreateRasterizerState(D3D11_CULL_MODE cullMode, D3D11_FILL_MODE fillMode, ID3D11Device* device);
-	void OnResize(UINT width, UINT height, IDXGISwapChain* swapchain, bool&);
+	void OnResize(UINT width, UINT height, IDXGISwapChain* swapchain, ID3D11DeviceContext*);
 
 }
