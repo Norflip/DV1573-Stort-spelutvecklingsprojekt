@@ -22,6 +22,7 @@ bool GameScene::drawColliders = false;
 GameScene::GameScene() : Scene("GameScene")
 {
 	fogCol = 0;
+	fogId = 0;
 	end = false;
 	firstFrame = false;
 }
@@ -124,6 +125,9 @@ void GameScene::InitializeObjects()
 	playerObject->AddComponent<PlayerComp>(renderer, camera, house, Engine::Instance->GetPhysics(), guiManager, 100.f, 2.f, 40.f, 50.f, 3.f);
 	playerObject->AddComponent<ControllerComp>(cameraObject, houseBaseObject, &world);
 
+	/* For fuel info from playercomp */
+	nodeWalker->SetPlayerComp(playerObject->GetComponent<PlayerComp>());
+
 	Object::AddToHierarchy(playerObject, cameraObject);
 	AddObjectToRoot(playerObject);
 
@@ -147,9 +151,6 @@ void GameScene::InitializeObjects()
 	dx::XMStoreFloat3(&sunDirection, dx::XMVector3Normalize(dx::XMVectorSet(0, -1, 1, 0)));
 	sunComponent->SetDirection(sunDirection);
 	AddObjectToRoot(sunLight);
-
-	/* For fuel info from playercomp */
-	nodeWalker->GetPlayerInfo(playerObject->GetComponent<PlayerComp>());
 
 	world.Initialize(root, resources, renderer);
 
@@ -461,20 +462,26 @@ void GameScene::OnActivate()
 	//guiManager->GetGUIObject("loading")->SetVisible(true);
 	//renderer->RenderFrame(camera, (float)clock.GetSeconds(), player->GetComponent<PlayerComp>()->GetDangerDistance(), false);
 
-	house->GetComponent<NodeWalkerComp>()->currentNode = 1;
+	//house->GetComponent<NodeWalkerComp>()->currentNode = 1;
 	SaveState& state = SaveHandler::LoadOrCreate();
-
+	enemyManager->SetSegment(state.segment);
 	LightManager::Instance().ForceUpdateBuffers(renderer->GetContext(), camera);
 
-	Input::Instance().ConfineMouse();
-	Input::Instance().SetMouseMode(dx::Mouse::Mode::MODE_RELATIVE);
-	ShowCursor(false);
+	//Input::Instance().ConfineMouse();
+	//Input::Instance().SetMouseMode(dx::Mouse::Mode::MODE_RELATIVE);
+	////Input::Instance().SetMouseMode(dx::Mouse::Mode::MODE_ABSOLUTE);
+	//ShowCursor(false);
+
+	player->Reset();
 
 	world.ConstructSegment(state);
 
 	//PrintSceneHierarchy(root, 0);
-	house->GetComponent<NodeWalkerComp>()->InitializePath(world.GetPath());
-	house->GetComponent<NodeWalkerComp>()->SetWorld(&world);
+	NodeWalkerComp* nodeWalk = house->GetComponent<NodeWalkerComp>();
+	nodeWalk->InitializePath(world.GetPath());
+	nodeWalk->SetWorld(&world);
+	nodeWalk->SetPlayerComp(player->GetComponent<PlayerComp>());
+	enemyManager->SetWorld(&world);
 
 	if (house != nullptr && player != nullptr)
 	{
@@ -484,18 +491,28 @@ void GameScene::OnActivate()
 		dx::XMFLOAT3 houseWorldPos = point.AsFloat3(height);
 		house->GetTransform().SetWorldPosition(dx::XMLoadFloat3(&houseWorldPos));
 
-		fogCol = FCAST(state.segment) * 0.5f;
-		renderer->SetIdAndColor(state.segment, fogCol);
-
 		if (!Engine::Instance->start)
 		{
-			dx::XMFLOAT3 posFromHouse = world.GetPlayerPositionFromHouse(house);
-			dx::XMVECTOR playerPosition = dx::XMLoadFloat3(&posFromHouse);
+			fogCol += 0.5f;
+			fogId += 0.5f;
+
+			if (fogCol >= 1.0f)
+			{
+				fogCol = 0.0f;
+			}
+
+			renderer->SetIdAndColor(fogId, fogCol);
+
+			dx::XMVECTOR playerPosition = dx::XMLoadFloat3(&world.GetPlayerPositionFromHouse(house));
 			player->GetTransform().SetPosition(playerPosition);
 			player->GetComponent<RigidBodyComponent>()->SetPosition(playerPosition);
 		}
 		else if (Engine::Instance->start) 		// INUTI HUSET I GUESS
 		{
+			fogCol = 0.0f;
+			fogId = 0.0f;
+			renderer->SetIdAndColor(fogId, fogCol);
+
 			player->GetComponent<PlayerComp>()->SetStatsFromState(state);
 
 			dx::XMVECTOR playerPos = { INTERIOR_POSITION.x, INTERIOR_POSITION.y + 3.0f, INTERIOR_POSITION.z, 0.0f };
@@ -509,12 +526,14 @@ void GameScene::OnActivate()
 			player->GetComponent<RigidBodyComponent>()->SetPosition(playerPos);
 
 			player->GetComponent<ControllerComp>()->SetInside(true);
+			
 
 			Engine::Instance->start = false;
 
 		}
 	}
 
+	std::cout << "FogCol: " << fogCol << " FogId: " << fogId << std::endl;
 
 	renderer->AddRenderPass(guiManager);
 
@@ -524,7 +543,7 @@ void GameScene::OnActivate()
 	AudioMaster::Instance().PlaySoundEvent("wind");
 
 	/* Ugly solution */
-	player->GetComponent<PlayerComp>()->GetArms()->GetComponent< PlayerAnimHandlerComp>()->SetStarted(true);
+	player->GetComponent<PlayerComp>()->GetArms()->GetComponent<PlayerAnimHandlerComp>()->SetStarted(true);
 
 	//Place signs
 	SetSignPositions(state);
@@ -535,7 +554,7 @@ void GameScene::OnActivate()
 	//std::cout << "Game Scene activated " << std::endl;
 //	guiManager->GetGUIObject("loading")->SetVisible(false);
 	//house->GetComponent<NodeWalkerComp>()->canWalk = true;
-	house->GetComponent<NodeWalkerComp>()->Reset();
+	//house->GetComponent<NodeWalkerComp>()->Reset();
 }
 
 void GameScene::OnDeactivate()
@@ -557,7 +576,7 @@ void GameScene::OnDeactivate()
 
 	//renderer->ClearParticles();
 
-	ShowCursor(true);
+	//ShowCursor(true);
 	//this->PrintSceneHierarchy(root, 0);
 	player->GetComponent<PlayerComp>()->GetArms()->GetComponent< PlayerAnimHandlerComp>()->SetStarted(false);
 }
@@ -601,6 +620,12 @@ void GameScene::SetSignPositions(SaveState& state)
 
 void GameScene::Update(const float& deltaTime)
 {
+	//std::string text = "cursor is "; 
+	//if (Input::Instance().GetIsVisible())
+	//	text += "visible";
+	//else text += "not visible";
+	//std::cout << text<<std::endl;
+	
 	if ((delayTimer > (physicsDelay + loadScreenDelay + 2)) && onceTest)
 	{
 		onceTest = false;
@@ -613,9 +638,6 @@ void GameScene::Update(const float& deltaTime)
 	//world.DrawDebug();
 
 	enemyManager->SpawnRandomEnemy(deltaTime);
-
-	//if (KEY_DOWN(X))
-	//	std::cout << "pos: " << playerPos.x << ", " << playerPos.y << ", " << playerPos.z << std::endl;
 
 	// Something CP with controllerComp/player wont allow this to happen inside the playerComp
 	if (player->GetComponent<ControllerComp>()->GetInRange())
@@ -641,13 +663,20 @@ void GameScene::Update(const float& deltaTime)
 		TransitionToNextSegment();
 		leftSign->GetComponent<SelectableComponent>()->SetActive(false);
 	}
+	
+
 
 	//Win
 	if (end)
 	{
 		if (endSign->GetComponent<SelectableComponent>()->GetActive())
 		{
+			SaveState& state = SaveHandler::LoadOrCreate();
+			state.nrOfGameWins++;
+			SaveHandler::Save(state);
+
 			Engine::Instance->SwitchScene(SceneIndex::WIN);
+			
 		}
 	}
 	
@@ -848,14 +877,16 @@ float GameScene::RamUsage()
 void GameScene::TransitionToNextSegment()
 {
 	SaveState state = SaveHandler::LoadOrCreate();
+	state.upgradeCurrency += POINTS_CLEARED_LEVEL*1.25f;
 	state.segment++;
+	
 	SaveHandler::Save(state);
 	
 	guiManager->GetGUIObject("loading")->SetVisible(true);	
 	renderer->RenderFrame(camera, (float)clock.GetSeconds(), player->GetComponent<PlayerComp>()->GetDangerDistance(), false);
 
 	OnDeactivate();
-	ShowCursor(false);
+	//ShowCursor(false);
 	OnActivate();
 
 	//guiManager->GetGUIObject("loading")->SetVisible(false);
