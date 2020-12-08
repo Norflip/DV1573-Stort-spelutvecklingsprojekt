@@ -38,13 +38,18 @@ rp::CollisionShape* Collider::GetCollisionShape(size_t index) const
     return this->colliderInformations[index].shape;
 }
 
-rp::Transform Collider::GetTransform(size_t index) const
+rp::Transform& Collider::GetTransform(size_t index)
 {
     assert(index >= 0 && index < colliderInformations.size());
-    rp::Transform transform = this->colliderInformations[index].transform;
+    rp::Transform& transform = this->colliderInformations[index].transform;
 
-  //  dx::XMFLOAT4 rot = colliderInformations[index].rotation;
+    dx::XMFLOAT3 pos = this->colliderInformations[index].position;
+    transform.setPosition(rp::Vector3(pos.x, pos.y, pos.z));
+
+    // fungerar inte med meshCollider
+   // dx::XMFLOAT4 rot = colliderInformations[index].rotation;
   //  transform.setOrientation(rp::Quaternion(rot.x, rot.y, rot.z, rot.w));
+
     return transform;
 }
 

@@ -11,6 +11,8 @@ public:
 	CapsuleColliderComponent(std::vector<float> radius, std::vector<float> heights, std::vector<dx::XMFLOAT3> positions);
 
 	virtual~CapsuleColliderComponent();
+
+	void DeleteShapes() override;
 	void InitializeCollider(Physics* physics) override;
 
 private:

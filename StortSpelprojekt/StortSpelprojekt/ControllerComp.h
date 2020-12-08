@@ -46,12 +46,10 @@ private:
 		SPRINTING,
 		CROUCHING
 	};
-	//float fov;
-	//float fovTimer; //use timer class??
+
 	float velocity;
 	float velocityTimer; //use timer class??
 	float crouchTimer;
-	float sensitivity;
 
 	bool freeCam;
 	bool showCursor;
@@ -74,6 +72,8 @@ private:
 	CameraComponent* camComp;
 	CapsuleColliderComponent* capsuleComp;
 	PlayerComp* playerComp;
+	World* world;
+	Object* house;
 
 	void CheckGrounded();
 
@@ -91,7 +91,7 @@ protected:
 	//dx::XMVECTOR groundRotation2;
 	dx::XMVECTOR groundRotation;
 public:
-	ControllerComp(Object* cameraObject, Object* houseObject, float sense);
+	ControllerComp(Object* cameraObject, Object* houseObject, World* world);
 	virtual ~ControllerComp();
 
 	RigidBodyComponent* GetRigidBodyComp() { return this->rbComp; }
@@ -102,7 +102,4 @@ public:
 	void SetInRange(bool state) { this->inDoorRange = state; }
 	bool GetInside()const { return this->inside; }
 	void SetInside(bool state) { this->inside = state; }
-
-	void SetSensitivity(const float & sens) { this->sensitivity = sens; }
-	float GetSensitivity()const { return this->sensitivity; }
 };

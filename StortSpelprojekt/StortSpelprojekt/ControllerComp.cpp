@@ -2,6 +2,7 @@
 #include "ControllerComp.h"
 #include "Engine.h"
 #include "GUICompass.h"
+#include "Config.h"
 
 void ControllerComp::CheckGrounded()
 {
@@ -46,15 +47,14 @@ void ControllerComp::CheckGrounded()
 	//return result;
 }
 
-ControllerComp::ControllerComp(Object* cameraObject, Object* houseObject, float sense)
+ControllerComp::ControllerComp(Object* cameraObject, Object* houseObject, World* world)
 {
 	//this->fov = 60.f;
 	//this->fovTimer = 0.f;
-
+	this->world = world;
 	this->velocity = 0.f;
 	this->velocityTimer = 0.f;
 	this->crouchTimer = 0.f;
-	this->sensitivity = sense;
 
 	this->freeCam = false;
 	this->showCursor = false;
@@ -65,6 +65,7 @@ ControllerComp::ControllerComp(Object* cameraObject, Object* houseObject, float 
 	this->cameraOffset = { 0.f,0.f,0.f };
 	this->cameraEuler = { 0.f,45.f,0.f }; //TODO_: fix start angle (looks down or up at start)
 
+	this->house = houseObject;
 	this->cameraObject = cameraObject;
 	this->houseWalkComp = houseObject->GetComponent<NodeWalkerComp>();
 	this->rbComp = nullptr;
@@ -113,6 +114,7 @@ void ControllerComp::Initialize()
 
 void ControllerComp::Update(const float& deltaTime)
 {
+
 	//WASD = move
 	//space = jump 
 	//0 = reset position rotation and xClamp
@@ -143,13 +145,13 @@ void ControllerComp::Update(const float& deltaTime)
 	//	ShowCursor(this->showCursor);
 	//}
 
-	//if (KEY_DOWN(V))
-	//{
-	//	this->freeCam = !this->freeCam;
-	//	
-	//	rbComp->SetLinearVelocity({ 0.f, 0.f, 0.f });
-	//	rbComp->EnableGravity(!this->freeCam);
-	//}
+	if (KEY_DOWN(V))
+	{
+		this->freeCam = !this->freeCam;
+		
+		rbComp->SetLinearVelocity({ 0.f, 0.f, 0.f });
+		rbComp->EnableGravity(!this->freeCam);
+	}
 
 	if (KEY_DOWN(F))
 	{
@@ -178,6 +180,7 @@ void ControllerComp::Update(const float& deltaTime)
 		if (length > playerComp->GetRadius() || length < SIT_RADIUS)
 		{
 			static_cast<GUICompass*>(playerComp->GetGuiManager()->GetGUIObject("compass"))->GetBarSprite()->SetActivated();
+			static_cast<GUICompass*>(playerComp->GetGuiManager()->GetGUIObject("compass"))->GetHouseSprite()->SetActivated();
 
 			houseWalkComp->Stop();
 		}
@@ -190,38 +193,27 @@ void ControllerComp::Update(const float& deltaTime)
 			houseWalkComp->Start();
 
 			static_cast<GUICompass*>(playerComp->GetGuiManager()->GetGUIObject("compass"))->GetBarSprite()->SetActivated(false);
+			static_cast<GUICompass*>(playerComp->GetGuiManager()->GetGUIObject("compass"))->GetHouseSprite()->SetActivated(false);
 		}
 			
 
-		if (RMOUSE_DOWN)
+		if (KEY_DOWN(E))
 		{
 			if (inside && inDoorRange)
 			{
-				if (first)
-				{
-					dx::XMFLOAT3 pos = this->playerComp->GetStartPosition();
-					GetOwner()->GetTransform().SetPosition(dx::XMVECTOR{ pos.x, pos.y, pos.z, 0 });
-					rbComp->SetPosition(dx::XMVECTOR{ pos.x, pos.y, pos.z, 0 });
-					inside = false;
-					first = false;
-				}
-				else
-				{
-					GetOwner()->GetTransform().SetPosition(dx::XMVECTOR{ this->outsidePos.x, this->outsidePos.y, this->outsidePos.z, 0 });
-					rbComp->SetPosition(dx::XMVECTOR{ this->outsidePos.x, this->outsidePos.y, this->outsidePos.z, 0 });
-					inside = false;
-				}
+				dx::XMVECTOR pos = dx::XMLoadFloat3(&world->GetPlayerPositionFromHouse(house));
+
+				GetOwner()->GetTransform().SetPosition(pos);
+				GetOwner()->GetComponent<RigidBodyComponent>()->SetPosition(pos);
+				inside = false;
 			}
 			else if (inDoorRange && !inside)
 			{
-				dx::XMVECTOR current = rbComp->GetPosition();
-
-				this->outsidePos = { current.m128_f32[0], current.m128_f32[1], current.m128_f32[2] };
-				dx::XMFLOAT3 interior = this->playerComp->GetInteriorPosition();
-
+				const dx::XMFLOAT3 interior = INTERIOR_POSITION;
 				GetOwner()->GetTransform().SetPosition(dx::XMVECTOR{ interior.x, interior.y + 3.0f, interior.z, 0 });
 				rbComp->SetPosition({ interior.x, interior.y + 3.0f, interior.z, 0.0f });
-
+				//GetOwner()->GetTransform().SetPosition(dx::XMVECTOR{ interior.x, interior.y + 3.0f, interior.z, 0 });
+			
 				inside = true;
 				inDoorRange = false;
 			}
@@ -240,10 +232,12 @@ void ControllerComp::Update(const float& deltaTime)
 			//Input::Instance().ConfineMouse();
 			//SetCursorPos(400, 400); //set this to coordinates middle of screen? get height/width from input?
 
+			float sensitivity = Config::GetFloat("sensitivity", 0.5f);
+
 			float xPos = Input::Instance().GetMousePosRelative().x * deltaTime;
 			float yPos = Input::Instance().GetMousePosRelative().y * deltaTime;
-			cameraEuler.x += xPos * this->sensitivity;
-			cameraEuler.y += yPos * this->sensitivity;
+			cameraEuler.x += xPos * sensitivity;
+			cameraEuler.y += yPos * sensitivity;
 			//cameraEuler2.x += xPos;
 			//cameraEuler2.y += yPos;
 

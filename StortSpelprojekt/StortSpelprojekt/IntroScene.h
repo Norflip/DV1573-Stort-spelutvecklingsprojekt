@@ -7,9 +7,6 @@ class SpriteRenderPass;
 ALIGN16
 class IntroScene : public Scene
 {
-private:
-	
-
 public:
 	IntroScene();
 	virtual ~IntroScene();
@@ -26,4 +23,7 @@ public:
 	
 	ALIGN16_ALLOC;
 
+private:
+	bool configChanged;
+	float sensitivity;
 };

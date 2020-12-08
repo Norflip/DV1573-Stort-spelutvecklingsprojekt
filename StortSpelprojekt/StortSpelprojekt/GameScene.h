@@ -6,6 +6,9 @@ class GUIFont;
 class GUICompass;
 class SpriteRenderPass;
 
+constexpr unsigned int LAST_SEGMENT = 3;
+constexpr dx::XMFLOAT3 INTERIOR_POSITION = { 0.0f, -100.0f, 0.0f };
+
 ALIGN16
 class GameScene : public Scene
 {	
@@ -25,21 +28,31 @@ public:
 	void FixedUpdate(const float& fixedDeltaTime) override;
 	void Render() override;
 
-	ALIGN16_ALLOC;
+#if USE_IMGUI
+	void OnIMGUIFrame() override;
+#endif
+	static bool immortal;
+	static bool drawColliders;
+	float VramUsage();
+	float RamUsage();
 
+	ALIGN16_ALLOC;
+	
 private:
+	void TransitionToNextSegment();
+
 	World world;
 	Object* house;
 
 	Particlesys* testParticles;
 
-	dx::XMFLOAT3 interiorPosition;
 	Object* leftSign;
 	Object* rightSign;
-	Object* roadSign;
+	Object* endSign;
 	NodeWalkerComp* nodeWalker;
 
 	float fogCol;
+	float fogId;
 
 	bool onceTest = true;
 	bool end;

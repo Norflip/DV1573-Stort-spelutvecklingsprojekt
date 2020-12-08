@@ -132,6 +132,22 @@ void World::GetChunksInRadius(const dx::XMINT2& index, int radius, std::vector<C
 	}
 }
 
+dx::XMFLOAT3 World::GetPlayerPositionFromHouse(Object* house) const
+{
+	dx::XMFLOAT3 worldPos;
+	dx::XMVECTOR current = house->GetTransform().GetWorldPosition();
+	dx::XMStoreFloat3(&worldPos, current);
+	const float xOffset = 5.0f;
+	const float zOffset = 5.0f;
+	const float playerHeight = 1.75f / 2.0f;
+
+	worldPos.x += xOffset;
+	worldPos.z += zOffset;
+	worldPos.y = SampleHeight(worldPos.x, worldPos.z) + playerHeight + 0.001f;
+
+	return worldPos;
+}
+
 WorldDescription World::DescriptionFromState(const SaveState& state) const
 {
 	WorldDescription description(state.seed);
@@ -195,15 +211,15 @@ void World::RegisterFood(ObjectSpawner* spawner, const std::map<std::string, int
 
 void World::RegisterFuel(ObjectSpawner* spawner, const std::map<std::string, int>& queueCountTable) const
 {
-	spawner->RegisterItem("FuelGreen", TryGetQueueCount("FuelGreen", queueCountTable), [](ResourceManager* resources)
+	/*spawner->RegisterItem("FuelGreen", TryGetQueueCount("FuelGreen", queueCountTable), [](ResourceManager* resources)
 		{
 			return ObjectSpawner::DefaultCreateItem("FuelCanGreen", PickupType::Fuel, 20.0f);
-		});
+		});*/
 
-	spawner->RegisterItem("FuelBlue", TryGetQueueCount("FuelBlue", queueCountTable), [](ResourceManager* resources)
+	/*spawner->RegisterItem("FuelBlue", TryGetQueueCount("FuelBlue", queueCountTable), [](ResourceManager* resources)
 		{
 			return ObjectSpawner::DefaultCreateItem("FuelCanBlue", PickupType::Fuel, 20.0f);
-		});
+		});*/
 
 	spawner->RegisterItem("FuelRed", TryGetQueueCount("FuelRed", queueCountTable), [](ResourceManager* resources)
 		{
@@ -239,6 +255,6 @@ void World::RegisterStatic(ObjectSpawner* spawner, const std::map<std::string, i
 
 	spawner->RegisterInstancedItem("Rock1", 0.5f, 1, UP);
 	spawner->RegisterInstancedItem("Rock2", 0.5f, 1, UP);
-	spawner->RegisterInstancedItem("Rock3", 0.5f, 1, UP);
+	//spawner->RegisterInstancedItem("Rock3", 0.5f, 1, UP);
 	spawner->RegisterInstancedItem("Log",	0.5f, 1, UP);
 }

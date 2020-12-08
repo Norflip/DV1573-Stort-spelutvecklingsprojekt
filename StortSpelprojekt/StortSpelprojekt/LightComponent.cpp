@@ -31,12 +31,12 @@ LightComponent::LightComponent(LightType type, dx::XMFLOAT4 color, float range)
 
 LightComponent::~LightComponent() 
 {
-
+	LightManager::Instance().UnregisterLight(index);
 }
 
 void LightComponent::Initialize()
 {
-	LightManager::Instance().RegisterLight(this);
+	index = LightManager::Instance().RegisterLight(this);
 }
 
 dx::XMFLOAT4 LightComponent::GetColor()const

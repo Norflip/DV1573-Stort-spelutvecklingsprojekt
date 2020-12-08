@@ -1,4 +1,4 @@
-Objects: 51
+Objects: 39
 
 Charger: Models/Enemies/Charger_Model.ZWEB
 Shader: skeletonShader
@@ -46,25 +46,10 @@ Animations: 4
 Lamp: Models/Props/lampa.ZWEB
 Shader: defaultShader
 
-Test: Models/Debug/brickSphere.ZWEB
-Shader: instanceShader
-
-Test2: Models/Debug/sylvanas.ZWEB
-Shader: defaultShader
-
-Test3: Models/Debug/cylinder.ZWEB
-Shader: defaultShader
-
 Banana: Models/Pickups/Banana.ZWEB
 Shader: instanceShader
 
 HealthKit: Models/Pickups/Health_Kit.ZWEB
-Shader: instanceShader
-
-CharRef: Models/Debug/char_ref.ZWEB
-Shader: defaultShader
-
-FuelCanGreen: Models/Pickups/Fuel_Can_Green.ZWEB
 Shader: instanceShader
 
 Soup: Models/Pickups/Soup_Can.ZWEB
@@ -79,23 +64,11 @@ Shader: instanceShader
 Axe: Models/Weapons/AXE.ZWEB
 Shader: defaultShader
 
-Basket: Models/Props/Basket.ZWEB
-Shader: instanceShader
-
-Bat: Models/Weapons/Bat.ZWEB
-Shader: defaultShader
-
 Fruits: Models/Pickups/Fruit_Basket.ZWEB
-Shader: instanceShader
-
-FuelCanBlue: Models/Pickups/Fuel_Can_Blue.ZWEB
 Shader: instanceShader
 
 FuelCanRed: Models/Pickups/Fuel_Can_Red.ZWEB
 Shader: instanceShader
-
-Hammer: Models/Weapons/Hammer.ZWEB
-Shader: defaultShader
 
 HealthJar: Models/Pickups/Health_Jar.ZWEB
 Shader: instanceShader
@@ -115,9 +88,6 @@ Shader: instanceShader
 Rock2: Models/Props/Rock_2.ZWEB
 Shader: instanceShader
 
-Rock3: Models/Props/Rock_3.ZWEB
-Shader: instanceShader
-
 Curtains: Models/House/Curtains.ZWEB
 Shader: defaultShader
 
@@ -125,9 +95,6 @@ Fireplace: Models/House/Fireplace.ZWEB
 Shader: defaultShader
 
 Logs: Models/House/Logs.ZWEB
-Shader: defaultShader
-
-Flowerpot: Models/House/Flowerpot.ZWEB
 Shader: defaultShader
 
 Bed: Models/House/Bed.ZWEB
@@ -169,14 +136,11 @@ Shader: defaultShader
 PuzzleFrogStatue: Models/Puzzles/Puzzle_Frog_statue.ZWEB
 Shader: defaultShader
 
-Quad: Models/Quad.ZWEB
-Shader: fireShader
-
 HouseExterior: Models/House/House_Exterior.ZWEB
 Shader: defaultShader
 
 Table: Models/House/Table.ZWEB
 Shader: defaultShader
 
-TreePuzzle: Models/Puzzles/Puzzle.ZWEB
+BlueFuel: Models/Pickups/Fuel_Can_Blue.ZWEB
 Shader: defaultShader

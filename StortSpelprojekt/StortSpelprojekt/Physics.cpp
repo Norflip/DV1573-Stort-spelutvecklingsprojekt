@@ -15,15 +15,15 @@ Physics::~Physics()
 void Physics::Initialize(dx::XMFLOAT3 gravity)
 {
 	world = common.createPhysicsWorld();
-	// Change the number of iterations of the velocity solver 
-	world->setNbIterationsVelocitySolver(15);
 
-	// Change the number of iterations of the position solver 
-	world->setNbIterationsPositionSolver(8);
+	// ändra dessa under en viss tid i början?
+	world->setNbIterationsVelocitySolver(10); 
+	world->setNbIterationsPositionSolver(5);
 	world->setEventListener(&listener);
 
 	this->gravity = rp::Vector3(gravity.x, gravity.y, gravity.z);
 	world->setGravity(this->gravity);
+
 
 #if LOG_REACT
 	// Create the default logger 
@@ -51,26 +51,10 @@ void Physics::MutexUnlock()
 	//physicsThreadMutex.unlock();
 }
 
-void Physics::RegisterRigidBody(RigidBodyComponent* rigidBodyComp)
-{
-	assert(world != nullptr);
-	rigidBodyComp->m_InitializeBody(this);
-}
-
-void Physics::UnregisterRigidBody(RigidBodyComponent* rigidBodyComp)
-{
-	auto find = bodyMap.find(rigidBodyComp->GetOwner()->GetID());
-	if (find != bodyMap.end())
-		bodyMap.erase(find);
-}
-
 void Physics::FixedUpdate(const float& fixedDeltaTime)
 {
 	MutexLock();
-
 	world->update(fixedDeltaTime);
-	CheckCollisions();
-
 	MutexUnlock();
 }
 
@@ -85,9 +69,3 @@ bool Physics::RaytestSingle(const Ray& ray, float maxDistance, RayHit& hit, Filt
 
 	return callback.hit.didHit;
 }
-
-void Physics::CheckCollisions()
-{
-	
-}
-
