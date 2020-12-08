@@ -72,6 +72,8 @@ private:
 	CameraComponent* camComp;
 	CapsuleColliderComponent* capsuleComp;
 	PlayerComp* playerComp;
+	World* world;
+	Object* house;
 
 	void CheckGrounded();
 
@@ -89,7 +91,7 @@ protected:
 	//dx::XMVECTOR groundRotation2;
 	dx::XMVECTOR groundRotation;
 public:
-	ControllerComp(Object* cameraObject, Object* houseObject);
+	ControllerComp(Object* cameraObject, Object* houseObject, World* world);
 	virtual ~ControllerComp();
 
 	RigidBodyComponent* GetRigidBodyComp() { return this->rbComp; }

@@ -34,6 +34,9 @@ public:
 	WorldDescription& GetDescription() { return this->description; }
 	const WorldDescription& GetDescription() const { return this->description; }
 
+	dx::XMFLOAT3 GetPlayerPositionFromHouse(Object* house) const;
+
+
 private:
 	WorldDescription DescriptionFromState(const SaveState& state) const;
 

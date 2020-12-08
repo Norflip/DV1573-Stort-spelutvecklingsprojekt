@@ -1,4 +1,4 @@
-Objects: 38
+Objects: 39
 
 Charger: Models/Enemies/Charger_Model.ZWEB
 Shader: skeletonShader
@@ -140,4 +140,7 @@ HouseExterior: Models/House/House_Exterior.ZWEB
 Shader: defaultShader
 
 Table: Models/House/Table.ZWEB
+Shader: defaultShader
+
+BlueFuel: Models/Pickups/Fuel_Can_Blue.ZWEB
 Shader: defaultShader

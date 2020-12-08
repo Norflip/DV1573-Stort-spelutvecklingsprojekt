@@ -132,6 +132,22 @@ void World::GetChunksInRadius(const dx::XMINT2& index, int radius, std::vector<C
 	}
 }
 
+dx::XMFLOAT3 World::GetPlayerPositionFromHouse(Object* house) const
+{
+	dx::XMFLOAT3 worldPos;
+	dx::XMVECTOR current = house->GetTransform().GetWorldPosition();
+	dx::XMStoreFloat3(&worldPos, current);
+	const float xOffset = 5.0f;
+	const float zOffset = 5.0f;
+	const float playerHeight = 1.75f / 2.0f;
+
+	worldPos.x += xOffset;
+	worldPos.z += zOffset;
+	worldPos.y = SampleHeight(worldPos.x, worldPos.z) + playerHeight + 0.001f;
+
+	return worldPos;
+}
+
 WorldDescription World::DescriptionFromState(const SaveState& state) const
 {
 	WorldDescription description(state.seed);
