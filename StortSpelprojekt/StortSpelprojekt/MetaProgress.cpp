@@ -25,6 +25,10 @@ MetaProgress::~MetaProgress()
 {
 }
 
+void MetaProgress::Initialize()
+{
+}
+
 void MetaProgress::Print()
 {
 	std::cout << "Progress:" << std::endl
@@ -87,6 +91,14 @@ void MetaProgress::EnemyKilled(const std::string& enemytype)
 		cEnemiesKilled++;
 	else if (enemytype == "baseEnemy")
 		bEnemiesKilled++;
+}
+
+void MetaProgress::SetNodeReached(const int& currentNode)
+{
+}
+
+void MetaProgress::SetLevelsCleared(const int& currentLevel)
+{
 }
 
 void MetaProgress::IncFuelUsed(int value)
