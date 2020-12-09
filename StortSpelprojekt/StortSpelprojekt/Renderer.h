@@ -70,12 +70,6 @@ public:
 	void Initialize(Window* window);
 
 	void DrawQueueToTarget(RenderQueue& queue, CameraComponent* camera, bool bindMaterial = true);
-	//put void renderframe at line 73 at line 78 if this does not work
-	//void DrawEmissionTarget(RenderQueue& queue, CameraComponent* camera);
-	//void RenderFrame(CameraComponent* camera, float time, float distance = 0.f);
-
-	//void RenderFrame(CameraComponent* camera, float time, float distance = 1.f);
-	//void DrawQueueToTarget(RenderQueue& queue, CameraComponent* camera);
 	void RenderFrame(CameraComponent* camera, float time, float distance = 1.f, bool useImgui = true);
 	void RenderFrame(CameraComponent* camera, float time, float distance, RenderTexture& target, bool drawGUI = false, bool applyRenderPasses = true);
 
