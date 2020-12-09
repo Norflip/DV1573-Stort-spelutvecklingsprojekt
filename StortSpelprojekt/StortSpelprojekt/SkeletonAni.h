@@ -57,7 +57,9 @@ public:
 	//BLEND GREJJS VIKTOR
 	void SetQuaternionsDirect(dx::SimpleMath::Quaternion directQuat);
 	void SetTransVector(dx::SimpleMath::Vector3 transVec);
-	void SetFtIndex(unsigned int index);
+
+	//BLENDA STRUCTS MED FILIPS CURSED KOD
+	Bone MergeKeys(std::vector<std::vector<Bone>> keys1, std::vector<std::vector<Bone>> keys2, float factor);
 
 	std::vector<dx::XMFLOAT4X4> GetBones() { return this->bones; }
 	dx::SimpleMath::Matrix& Lerp(float elapsedTime, std::vector<Bone>& keys);

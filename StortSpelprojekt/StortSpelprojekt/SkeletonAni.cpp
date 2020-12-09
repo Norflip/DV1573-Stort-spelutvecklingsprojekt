@@ -261,6 +261,25 @@ void SkeletonAni::SetTransVector(dx::SimpleMath::Vector3 transVec)
     this->transV = transVec;
 }
 
+Bone SkeletonAni::MergeKeys(std::vector<std::vector<Bone>> keys1, std::vector<std::vector<Bone>> keys2, float factor)
+{
+    float* kf1 = (float*)(&keys1);
+    float* kf2 = (float*)(&keys2);
+
+    const size_t elements = sizeof(Bone) / sizeof(float);
+    float* result = new float[elements];
+
+    for (size_t i = 0; i < elements; i++)
+    {
+        result[i] = kf1[i] * (1 - factor) + kf2[i] * factor;
+    }
+
+    Bone newBones = *((Bone*)(result));
+    delete[] result;
+
+    return newBones;
+}
+
 
 
 

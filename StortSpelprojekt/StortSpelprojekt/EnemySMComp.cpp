@@ -36,6 +36,7 @@ void EnemySMComp::SetState(EnemyState state)
 void EnemySMComp::Start()
 {
 	//enemyAttackComp = GetOwner()->GetComponent<EnemyAttackComp>();
+	skeletonComponent->CreateBlendedAnimation();
 }
 
 void EnemySMComp::Initialize()

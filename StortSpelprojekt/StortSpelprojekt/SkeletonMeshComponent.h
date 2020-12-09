@@ -55,6 +55,7 @@ public:
 
 	void SetTrack(const SkeletonStateMachine& type, bool playOnce);
 	
+	void PlayBlendAnimations(SkeletonStateMachine state1, SkeletonStateMachine state2, float factor);
 	void BlendAnimations();
 	void CreateCombinedAnimation(SkeletonStateMachine state1, SkeletonStateMachine state2, int startJoint, int endJoint);
 	void CreateBlendedAnimation();

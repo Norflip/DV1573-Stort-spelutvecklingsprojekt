@@ -96,66 +96,7 @@ void SkeletonMeshComponent::RunAnimation(const float& deltaTime)
 	}
 	else if (currentAni == SkeletonStateMachine::RUN || currentAni == SkeletonStateMachine::UP)
 	{
-		//A = A1 * (f - 1) + A2 * f
-
-		///STREATEGI FÖR DAGEN
-		/// HÄMTA ALLA VARIABLER FRÅN BONE STRUCKTEN FÖR SIG OCH FÖRSÖK BLENDA MELLAN DEM
-		/// //GÖR EN FUNKTION SOM TAR IN TVÅ STRUCTS
-
-
-		std::vector<dx::SimpleMath::Matrix> offSets(skeletonAnimations[trackMap[SkeletonStateMachine::RUN]].GetOffsets().size());
-		std::vector<std::vector<Bone>> animKeyFrames(skeletonAnimations[trackMap[SkeletonStateMachine::RUN]].GetKeyFrames().size());
-
-		dx::SimpleMath::Quaternion quat1;
-		dx::SimpleMath::Quaternion quat2;
-		dx::SimpleMath::Quaternion quatFinal;
-
-		dx::SimpleMath::Vector3 trans1;
-		dx::SimpleMath::Vector3 trans2;
-		dx::SimpleMath::Vector3 transFinal;
-
-
-		blendFactor = 1.0f;
-		
-		//ROTATION QUAT VERKAR INTE VARA KORREKT
-		for (int i = 0; i < animKeyFrames.size(); i++)
-		{
-
-			//animKeyFrames[i][0].rotationQuaternion = skeletonAnimations[trackMap[SkeletonStateMachine::RUN]].GetKeyFrames()[i][0].rotationQuaternion * (1 - blendFactor) + skeletonAnimations[trackMap[SkeletonStateMachine::ATTACK]].GetKeyFrames()[i][0].rotationQuaternion * blendFactor;
-			quat1 = skeletonAnimations[trackMap[SkeletonStateMachine::RUN]].GetKeyFrames()[i][0].rotationQuaternion;
-			quat2 = skeletonAnimations[trackMap[SkeletonStateMachine::ATTACK]].GetKeyFrames()[i][0].rotationQuaternion;
-
-			quatFinal = /*quat1 * (1 - blendFactor) + quat2 * blendFactor;*/ quatFinal.Slerp(quat1, quat2, blendFactor);
-
-			trans1 = skeletonAnimations[trackMap[SkeletonStateMachine::RUN]].GetKeyFrames()[i][0].translationVector;
-			trans2 = skeletonAnimations[trackMap[SkeletonStateMachine::ATTACK]].GetKeyFrames()[i][0].translationVector;
-			transFinal = trans1 * (1 - blendFactor) + trans2 * blendFactor;
-		}
-	
-		/*for (int i = 0; i < offSets.size(); i++)
-		{
-			offSets[i] = skeletonAnimations[trackMap[SkeletonStateMachine::RUN]].GetOffsets()[i];
-		}*/
-
-
-		float animLength = skeletonAnimations[trackMap[SkeletonStateMachine::RUN]].GetAniLength() * (1 - blendFactor) + skeletonAnimations[trackMap[SkeletonStateMachine::ATTACK]].GetAniLength() * blendFactor;
-		float fps = skeletonAnimations[trackMap[SkeletonStateMachine::RUN]].GetFPS() * (1 - blendFactor) + skeletonAnimations[trackMap[SkeletonStateMachine::ATTACK]].GetFPS() * blendFactor;
-
-		skeletonAnimations[trackMap[SkeletonStateMachine::RUN]].SetQuaternionsDirect(quatFinal);
-		skeletonAnimations[trackMap[SkeletonStateMachine::RUN]].SetTransVector(transFinal);
-
-		skeletonAnimations[trackMap[SkeletonStateMachine::RUN]].SetUpIDMapAndFrames(skeletonAnimations[trackMap[SkeletonStateMachine::ATTACK]].GetBoneIDMap(), fps, animLength);
-		//skeletonAnimations[trackMap[SkeletonStateMachine::RUN]].SetOffsetsDirect(offSets); //Set the offsets
-		//skeletonAnimations[trackMap[SkeletonStateMachine::RUN]].SetKeyFramesDirect(animKeyFrames);
-
 		finalTransforms = skeletonAnimations[trackMap[SkeletonStateMachine::RUN]].Makeglobal(time, dx::XMMatrixIdentity(), *skeletonAnimations[trackMap[SkeletonStateMachine::RUN]].GetRootKeyJoints());
-		//lerp(diff, diff2, blendFactor);
-
-		//TESTA ATT LERPA SOM FOGGEN I FOG PIXELSHADERN
-		//finalTransforms = skeletonAnimations[trackMap[SkeletonStateMachine::RUN]].Makeglobal(time, dx::XMMatrixIdentity(), *skeletonAnimations[trackMap[SkeletonStateMachine::RUN]].GetRootKeyJoints());
-
-		//testTransform = skeletonAnimations[3].Makeglobal(time, dx::XMMatrixIdentity(), *skeletonAnimations[3].GetRootKeyJoints());
-
 	}
 	else if (currentAni == SkeletonStateMachine::ATTACK || currentAni == SkeletonStateMachine::DOWN)
 	{
@@ -343,50 +284,9 @@ void SkeletonMeshComponent::CreateBlendedAnimation()
 
 	SkeletonAni blendedAnim;
 
-	////blendedAnim = skeletonAnimations[2];
-
-	//dx::SimpleMath::Quaternion rotation;
-	//float length1 = skeletonAnimations[2].GetAniLength() * 1.0f;
-	//float length2 = skeletonAnimations[3].GetAniLength() * 1.0f;
-	//float factor = 0.0f;
-
-	//std::vector<dx::SimpleMath::Matrix> offSets(skeletonAnimations[2].GetOffsets().size());
-	//std::vector<std::vector<Bone>> firstAnimKeyFrames(skeletonAnimations[2].GetKeyFrames().size());
-	//std::vector<std::vector<Bone>> secondAnimKeyFrames(skeletonAnimations[3].GetKeyFrames().size());
-	//std::vector<std::vector<Bone>> finalAnimKeyFrames;
-
-	//factor += 0.001f;
-	//rotation.Slerp((skeletonAnimations[2].GetKeyFrames()[0][0].rotationQuaternion * (factor - 1)), (skeletonAnimations[3].GetKeyFrames()[0][0].rotationQuaternion * (factor)), 1.0f);
-	//for (int i = 0; i < skeletonAnimations[2].GetKeyFrames().size(); i++)
-	//{
-	//	
-	//	//blendedAnim.GetKeyFrames()[i][0].rotationQuaternion = 
-	//}
-
-	//for (int i = 0; i < finalAnimKeyFrames.size(); i++)
-	//{
-	//	finalAnimKeyFrames[i] = skeletonAnimations[2].GetKeyFrames()[i];
-	//}
-
-	//for (int i = 0; i < offSets.size(); i++)
-	//{
-	//	offSets[i] = skeletonAnimations[2].GetOffsets()[i];
-	//}
-	//
-	//if (factor == 1.0f)
-	//{
-	//	factor = 0.0f;
-	//}
-
-
-	//blendedAnim.SetUpIDMapAndFrames(skeletonAnimations[2].GetBoneIDMap(), skeletonAnimations[2].GetFPS(), skeletonAnimations[2].GetAniLength());
-	//blendedAnim.SetOffsetsDirect(offSets); //Set the offsets
-	//blendedAnim.SetKeyFramesDirect(finalAnimKeyFrames);
-
-	//skeletonAnimations[2] = blendedAnim;
+	blendedAnim = skeletonAnimations[0];
 
 	SetAnimationTrack(blendedAnim, SkeletonStateMachine::BLENDED);
-
 }
 
 void SkeletonMeshComponent::PlayOnce(const float& deltaTime)
@@ -676,6 +576,73 @@ void SkeletonMeshComponent::PlayOnce(const float& deltaTime)
 			}
 		}
 	}
+}
+
+void SkeletonMeshComponent::PlayBlendAnimations(SkeletonStateMachine state1, SkeletonStateMachine state2, float factor)
+{
+	std::vector<dx::SimpleMath::Matrix> offSets(skeletonAnimations[trackMap[SkeletonStateMachine::RUN]].GetOffsets().size());
+	std::vector<std::vector<Bone>> animKeyFrames(skeletonAnimations[trackMap[SkeletonStateMachine::RUN]].GetKeyFrames().size());
+
+	//A = A1 * (f - 1) + A2 * f
+
+		///STREATEGI FÖR DAGEN
+		/// HÄMTA ALLA VARIABLER FRÅN BONE STRUCKTEN FÖR SIG OCH FÖRSÖK BLENDA MELLAN DEM
+		/// //GÖR EN FUNKTION SOM TAR IN TVÅ STRUCTS
+
+		//dx::SimpleMath::Quaternion quat1;
+		//dx::SimpleMath::Quaternion quat2;
+		//dx::SimpleMath::Quaternion quatFinal;
+
+		//dx::SimpleMath::Vector3 trans1;
+		//dx::SimpleMath::Vector3 trans2;
+		//dx::SimpleMath::Vector3 transFinal;
+
+		//blendFactor = 1.0f;
+		//
+		////ROTATION QUAT VERKAR INTE VARA KORREKT
+		//for (int i = 0; i < animKeyFrames.size(); i++)
+		//{
+
+		//	//animKeyFrames[i][0].rotationQuaternion = skeletonAnimations[trackMap[SkeletonStateMachine::RUN]].GetKeyFrames()[i][0].rotationQuaternion * (1 - blendFactor) + skeletonAnimations[trackMap[SkeletonStateMachine::ATTACK]].GetKeyFrames()[i][0].rotationQuaternion * blendFactor;
+		//	quat1 = skeletonAnimations[trackMap[SkeletonStateMachine::RUN]].GetKeyFrames()[i][0].rotationQuaternion;
+		//	quat2 = skeletonAnimations[trackMap[SkeletonStateMachine::ATTACK]].GetKeyFrames()[i][0].rotationQuaternion;
+
+		//	quatFinal = /*quat1 * (1 - blendFactor) + quat2 * blendFactor;*/ quatFinal.Slerp(quat1, quat2, blendFactor);
+
+		//	trans1 = skeletonAnimations[trackMap[SkeletonStateMachine::RUN]].GetKeyFrames()[i][0].translationVector;
+		//	trans2 = skeletonAnimations[trackMap[SkeletonStateMachine::ATTACK]].GetKeyFrames()[i][0].translationVector;
+		//	transFinal = trans1 * (1 - blendFactor) + trans2 * blendFactor;
+		//}
+
+		/*for (int i = 0; i < offSets.size(); i++)
+		{
+			offSets[i] = skeletonAnimations[trackMap[SkeletonStateMachine::RUN]].GetOffsets()[i];
+		}*/
+
+	skeletonAnimations[trackMap[SkeletonStateMachine::BLENDED]].MergeKeys(
+		skeletonAnimations[trackMap[state1]].GetKeyFrames(),
+		skeletonAnimations[trackMap[state2]].GetKeyFrames(),
+		factor);
+
+
+	float animLength = skeletonAnimations[trackMap[state1]].GetAniLength() * (1 - factor) + skeletonAnimations[trackMap[state2]].GetAniLength() * factor;
+	float fps = skeletonAnimations[trackMap[state1]].GetFPS() * (1 - factor) + skeletonAnimations[trackMap[state2]].GetFPS() * factor;
+
+	//skeletonAnimations[trackMap[SkeletonStateMachine::RUN]].SetQuaternionsDirect(quatFinal);
+	//skeletonAnimations[trackMap[SkeletonStateMachine::RUN]].SetTransVector(transFinal);
+
+	skeletonAnimations[trackMap[SkeletonStateMachine::BLENDED]].SetUpIDMapAndFrames(skeletonAnimations[trackMap[state1]].GetBoneIDMap(), fps, animLength);
+	//skeletonAnimations[trackMap[SkeletonStateMachine::RUN]].SetOffsetsDirect(offSets); //Set the offsets
+	//skeletonAnimations[trackMap[SkeletonStateMachine::RUN]].SetKeyFramesDirect(animKeyFrames);
+
+	finalTransforms = skeletonAnimations[trackMap[SkeletonStateMachine::BLENDED]].Makeglobal(componentDeltaTime, dx::XMMatrixIdentity(), *skeletonAnimations[trackMap[SkeletonStateMachine::BLENDED]].GetRootKeyJoints());
+	//lerp(diff, diff2, blendFactor);
+
+	//TESTA ATT LERPA SOM FOGGEN I FOG PIXELSHADERN
+	//finalTransforms = skeletonAnimations[trackMap[SkeletonStateMachine::RUN]].Makeglobal(time, dx::XMMatrixIdentity(), *skeletonAnimations[trackMap[SkeletonStateMachine::RUN]].GetRootKeyJoints());
+
+	//testTransform = skeletonAnimations[3].Makeglobal(time, dx::XMMatrixIdentity(), *skeletonAnimations[3].GetRootKeyJoints());
+
 }
 
 void SkeletonMeshComponent::BlendAnimations()
