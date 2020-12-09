@@ -4,13 +4,15 @@
 #include "PSBlendModes.hlsl"
 Texture2D diffuseMap : register (t0);
 Texture2D normalMap : register (t1);
-TextureCube skymap : register(t2); //just testing
+Texture2D emissiveTexture : register(t2);
+//TextureCube skymap : register(t2); //just testing
 SamplerState defaultSampleType : register (s0);
 
 float4 main(VS_OUTPUT input) : SV_TARGET
 {	
 	float4 textureColor = float4(0.5f, 0.5f, 0.5f, 1.0f);
 	float4 normalmap = float4(1.0f, 1.0f, 1.0f, 1.0f);
+    float4 emissiveColor = float4(0.0f, 0.0f, 0.0f, 1.0f);
 	
 	if (hasAlbedo)
 		textureColor = diffuseMap.Sample(defaultSampleType, input.uv);
@@ -22,7 +24,8 @@ float4 main(VS_OUTPUT input) : SV_TARGET
 	}
 
 	if(hasEmissiveMap)
-        return float4(1, 1, 1, 1);
+        emissiveColor = emissiveTexture.Sample(defaultSampleType, input.uv);
+		
 	
 	float3 normalized = normalize(input.normal);
 
@@ -41,5 +44,6 @@ float4 main(VS_OUTPUT input) : SV_TARGET
 	finalColor.a = 1.0f;
 
 	//return float4(input.normal, 1.0f);
-	return finalColor; 
+	return finalColor + emissiveColor; 
+    //return emissiveColor;
 }
