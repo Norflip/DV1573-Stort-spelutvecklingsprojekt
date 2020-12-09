@@ -7,7 +7,7 @@ class RenderPass
 public:
 	enum class PassType
 	{
-		SKYBOX,
+		PRE_PASS,
 		GUI,
 		POST_PROCESSING
 	};

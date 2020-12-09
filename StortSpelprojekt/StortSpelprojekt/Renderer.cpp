@@ -67,10 +67,12 @@ void Renderer::Initialize(Window* window)
 
 	DXHelper::CreateSwapchain(*window, &device, &context, &swapchain);
 	this->backbuffer = DXHelper::CreateBackbuffer(window->GetWidth(), window->GetHeight(), device, swapchain);
-	this->midbuffer = DXHelper::CreateRenderTexture(window->GetWidth(), window->GetHeight(), device, context, &dss);
-	this->renderPassSwapBuffers[0] = DXHelper::CreateRenderTexture(window->GetWidth(), window->GetHeight(), device, context, &dss);
-	this->renderPassSwapBuffers[1] = DXHelper::CreateRenderTexture(window->GetWidth(), window->GetHeight(), device, context, &dss);
+	this->midbuffer = DXHelper::CreateRenderTexture(window->GetWidth(), window->GetHeight(), device, &dss);
+	this->renderPassSwapBuffers[0] = DXHelper::CreateRenderTexture(window->GetWidth(), window->GetHeight(), device, &dss);
+	this->renderPassSwapBuffers[1] = DXHelper::CreateRenderTexture(window->GetWidth(), window->GetHeight(), device, &dss);
 	srv_skeleton_data.resize(60);
+
+	context->OMSetDepthStencilState(dss, 1);
 
 	DXHelper::CreateRSState(device, &rasterizerStateCullBack, &rasterizerStateCullNone, &rasterizerStateCCWO);
 
@@ -122,7 +124,7 @@ void Renderer::Initialize(Window* window)
 }
 
 
-void Renderer::DrawQueueToTarget(RenderQueue& queue, CameraComponent* camera, bool bindMaterial)
+void Renderer::DrawQueueToTarget(RenderQueue& queue, CameraComponent* camera, bool bindMaterial, bool pop)
 {
 	for (auto i : queue)
 	{
@@ -167,9 +169,11 @@ void Renderer::DrawQueueToTarget(RenderQueue& queue, CameraComponent* camera, bo
 						break;
 				}
 
-				queue.pop();
+				if (pop)
+					queue.pop();
 			}
-			if(bindMaterial)
+
+			if (bindMaterial)
 				mat->UnbindToContext(context);
 		}
 	}
@@ -264,9 +268,9 @@ void Renderer::RenderFrame(CameraComponent* camera, float time, float distance, 
 	for (auto i = passes.begin(); i < passes.end(); i++)
 	{
 		RenderPass* pass = *i;
-		if (pass->IsEnabled() && pass->GetType() == RenderPass::PassType::SKYBOX)
+		if (pass->IsEnabled() && pass->GetType() == RenderPass::PassType::PRE_PASS)
 		{
-			pass->Pass(this, camera, renderPassSwapBuffers[0], renderPassSwapBuffers[0]);
+			pass->Pass(this, camera, midbuffer, midbuffer);
 		}
 	}
 
@@ -294,7 +298,7 @@ void Renderer::RenderFrame(CameraComponent* camera, float time, float distance, 
 	for (auto i : transparentBatches)
 		DrawBatch(i.second, camera);
 	transparentBatches.clear();
-	
+
 	DrawQueueToTarget(emissiveItemQueue, camera);
 	emissiveItemQueue.clear();
 
@@ -540,6 +544,24 @@ void Renderer::SetIdAndColor(int id, float color)
 }
 
 
+void Renderer::SetShaderResourceView(const std::string& key, ID3D11ShaderResourceView* srv)
+{
+	auto find = storedSRVs.find(key);
+	if (find != storedSRVs.end())
+		storedSRVs[key] = srv;
+	else
+		storedSRVs.insert({ key, srv });
+}
+
+ID3D11ShaderResourceView* Renderer::GetShaderResourceView(const std::string& key) const
+{
+	ID3D11ShaderResourceView* srv = nullptr;
+	auto find = storedSRVs.find(key);
+	if (find != storedSRVs.end())
+		srv = find->second;
+	return srv;
+}
+
 void Renderer::AddItem(const RenderItem& item, bool transparent, bool cullDepth, bool emissive)
 
 {
@@ -561,7 +583,7 @@ void Renderer::AddItem(const RenderItem& item, bool transparent, bool cullDepth,
 		//}
 		//
 	}
-	else if(!transparent)
+	else if (!transparent)
 	{
 		size_t materialID = item.material->GetID();
 		auto found = opaqueItemQueue.find(materialID);

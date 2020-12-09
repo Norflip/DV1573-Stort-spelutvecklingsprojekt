@@ -34,6 +34,7 @@ class Renderer
 		std::vector<dx::XMFLOAT4X4> transformations;
 	};
 
+public:
 	struct RenderItem
 	{
 		enum class Type
@@ -69,7 +70,7 @@ public:
 
 	void Initialize(Window* window);
 
-	void DrawQueueToTarget(RenderQueue& queue, CameraComponent* camera, bool bindMaterial = true);
+	void DrawQueueToTarget(RenderQueue& queue, CameraComponent* camera, bool bindMaterial = true, bool pop = true);
 	void RenderFrame(CameraComponent* camera, float time, float distance = 1.f, bool useImgui = true);
 	void RenderFrame(CameraComponent* camera, float time, float distance, RenderTexture& target, bool drawGUI = false, bool applyRenderPasses = true);
 
@@ -117,6 +118,12 @@ public:
 	ID3D11DepthStencilState* GetDepthDisable() { return this->dss_Off; }
 
 	ALIGN16_ALLOC;
+
+	void SetShaderResourceView(const std::string& key, ID3D11ShaderResourceView* srv);
+	ID3D11ShaderResourceView* GetShaderResourceView(const std::string& key) const;
+
+	RenderQueue& GetEmissiveQueue() { return this->emissiveItemQueue; }
+	const RenderQueue& GetEmissiveQueue() const  { return this->emissiveItemQueue; }
 
 private:
 
@@ -209,7 +216,7 @@ private:
 	RenderQueue emissiveItemQueue;
 
 	std::vector<RenderPass*> passes;
-
+	std::unordered_map<std::string, ID3D11ShaderResourceView*> storedSRVs;
 	//blendstate
 	ID3D11BlendState* blendStateOn;
 	ID3D11BlendState* blendStateOff;

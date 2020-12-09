@@ -185,7 +185,7 @@ RenderTexture DXHelper::CreateBackbuffer(size_t width, size_t height, ID3D11Devi
 	return rt;
 }
 
-RenderTexture DXHelper::CreateRenderTexture(size_t width, size_t height, ID3D11Device* device, ID3D11DeviceContext* context, ID3D11DepthStencilState** dss)
+RenderTexture DXHelper::CreateRenderTexture(size_t width, size_t height, ID3D11Device* device, ID3D11DepthStencilState** dss)
 {
 	RenderTexture rt;
 	rt.width = width;
@@ -268,8 +268,6 @@ RenderTexture DXHelper::CreateRenderTexture(size_t width, size_t height, ID3D11D
 	//ID3D11DepthStencilState* dss;
 	HRESULT createDepthStencilResult = device->CreateDepthStencilState(&depthStencilStateDsc, dss);
 	assert(SUCCEEDED(createDepthStencilResult));
-
-	context->OMSetDepthStencilState(*dss, 1);
 
 
 	ID3D11Texture2D* depthTex;

@@ -2,7 +2,7 @@
 #include "SkyboxRenderPass.h"
 
 SkyboxRenderPass::SkyboxRenderPass(int priority, ResourceManager* resources)
-	: RenderPass(priority, RenderPass::PassType::SKYBOX), resources(resources), material(nullptr), mesh(nullptr)
+	: RenderPass(priority, RenderPass::PassType::PRE_PASS), resources(resources), material(nullptr), mesh(nullptr)
 {
 	scaleRot = dx::XMMatrixScaling(-10.0f, -10.0f, -10.0f) * dx::XMMatrixRotationRollPitchYaw(0, 0, 180.0f * Math::ToRadians);
 }
