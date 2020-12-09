@@ -6,6 +6,7 @@
 #include "Scene.h"
 #include "AudioMaster.h"
 #include "WeaponComponent.h"
+#include "MetaProgress.h"
 
 class EnemyStatsComp;
 

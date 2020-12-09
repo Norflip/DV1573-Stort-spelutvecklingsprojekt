@@ -133,7 +133,11 @@ void PlayerComp::FixedUpdate(const float& fixedDeltaTime)
 				food -= TARGET_FIXED_DELTA * foodLossPerSecond;
 
 				if ((health <= 0))
+				{
 					Engine::Instance->SwitchScene(SceneIndex::GAME_OVER);
+					MetaProgress::Instance().SaveScore();
+					MetaProgress::Instance().Reset();
+				}
 
 				if (food < 0)
 				{
@@ -234,6 +238,7 @@ void PlayerComp::PickUpObject()
 
 						if (!healthTutorial)
 							healthTutorial = true;
+						MetaProgress::Instance().IncHealUsed(value);
 					}
 					else if (pickupType == PickupType::Food)
 					{
@@ -244,6 +249,7 @@ void PlayerComp::PickUpObject()
 
 						if (!foodTutorial)
 							foodTutorial = true;
+						MetaProgress::Instance().IncFoodUsed(value);
 					}
 					/*else if (pickupType == PickupType::Fuel)
 					{
@@ -350,6 +356,7 @@ void PlayerComp::RayCast(const float& deltaTime)
 
 			if (KEY_DOWN(E))
 			{
+				
 				float refill = holding->GetComponent<PickupComponent>()->GetAmount();
 				if ((fuel + refill) <= 100.0f)
 					fuel += refill;
@@ -359,6 +366,7 @@ void PlayerComp::RayCast(const float& deltaTime)
 				if (holding->HasComponent<ParticleSystemComponent>())
 					holding->GetComponent<ParticleSystemComponent>()->SetActive(false);
 
+				MetaProgress::Instance().IncFuelUsed(refill);
 				holding->GetComponent<PickupComponent>()->SetActive(false);
 				holding = nullptr;
 				currentWeapon->AddFlag(ObjectFlag::ENABLED);

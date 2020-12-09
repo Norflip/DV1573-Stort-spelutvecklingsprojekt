@@ -464,7 +464,9 @@ void GameScene::OnActivate()
 
 	//house->GetComponent<NodeWalkerComp>()->currentNode = 1;
 	SaveState& state = SaveHandler::LoadOrCreate();
+	MetaProgress::Instance().LoadSave(state);
 	enemyManager->SetSegment(state.segment);
+
 	LightManager::Instance().ForceUpdateBuffers(renderer->GetContext(), camera);
 
 	//Input::Instance().ConfineMouse();
@@ -503,7 +505,8 @@ void GameScene::OnActivate()
 
 			renderer->SetIdAndColor(fogId, fogCol);
 
-			dx::XMVECTOR playerPosition = dx::XMLoadFloat3(&world.GetPlayerPositionFromHouse(house));
+			dx::XMFLOAT3 pos3 = world.GetPlayerPositionFromHouse(house);
+			dx::XMVECTOR playerPosition = dx::XMLoadFloat3(&pos3);
 			player->GetTransform().SetPosition(playerPosition);
 			player->GetComponent<RigidBodyComponent>()->SetPosition(playerPosition);
 		}
@@ -626,6 +629,9 @@ void GameScene::Update(const float& deltaTime)
 	//else text += "not visible";
 	//std::cout << text<<std::endl;
 	
+	if (KEY_DOWN(U))
+		MetaProgress::Instance().Print();
+
 	if ((delayTimer > (physicsDelay + loadScreenDelay + 2)) && onceTest)
 	{
 		onceTest = false;
@@ -673,6 +679,7 @@ void GameScene::Update(const float& deltaTime)
 		{
 			SaveState& state = SaveHandler::LoadOrCreate();
 			state.nrOfGameWins++;
+			
 			SaveHandler::Save(state);
 
 			Engine::Instance->SwitchScene(SceneIndex::WIN);
@@ -873,9 +880,9 @@ float GameScene::RamUsage()
 void GameScene::TransitionToNextSegment()
 {
 	SaveState state = SaveHandler::LoadOrCreate();
-	state.upgradeCurrency += POINTS_CLEARED_LEVEL*1.25f;
+	//state.upgradeCurrency += POINTS_CLEARED_LEVEL * 1.25f;
 	state.segment++;
-	
+	MetaProgress::Instance().SetLevelsCleared(state.segment);
 	SaveHandler::Save(state);
 	
 	guiManager->GetGUIObject("loading")->SetVisible(true);	

@@ -91,11 +91,11 @@ void EnemyManager::RemoveEnemy(Object* enemy)
 {
 	//std::cout << "enemy died: " <<enemy->GetName()<< std::endl;
 	//aliveEnemies--;
-	if ("baseEnemy")
+	if (enemy->GetName() == "baseEnemy")
 	{
 		nrOfBaseEnemies--;
 	}
-	else if ("chargerEnemy")
+	else if (enemy->GetName() == "chargerEnemy")
 	{
 		nrOfChargeEnemies--;
 	}
