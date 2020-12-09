@@ -18,6 +18,7 @@ MetaProgress::MetaProgress()
 	this->fuelUsed = 0;
 	this->foodUsed = 0;
 	this->healUsed = 0;
+	this->puzzleSolved = 0;
 
 }
 
@@ -25,18 +26,19 @@ MetaProgress::~MetaProgress()
 {
 }
 
-void MetaProgress::Initialize()
-{
-}
+//void MetaProgress::Initialize()
+//{
+//}
 
 void MetaProgress::Print()
 {
-	std::cout << "Progress:" << std::endl
+	std::cout << "Meta Info:" << std::endl
 		<< "score: " << score << ", highScore: " << highscore << std::endl
 		<< "currency earned:" << currencyEarned << ", currency total: " << currencyTotal << std::endl
-		<< "current node: " << nodesReached << ", segment cleared: " << levelsCleared << ", game wins: " << nrOfGameWins << std::endl
+		<< "[Progress] current node: " << nodesReached << ", segment cleared: " << levelsCleared << ", game wins: " << nrOfGameWins << std::endl
 		<< "[Kills] base: " << bEnemiesKilled << ", charge: " << cEnemiesKilled << std::endl
 		<< "[Items] fuel: " << fuelUsed << ", food: " << foodUsed << ", heals: " << healUsed << std::endl
+		<< "[Misc n shet] puzzles: " << puzzleSolved << std::endl
 		<< "===========" << std::endl << std::endl;
 }
 
@@ -79,14 +81,14 @@ void MetaProgress::Reset()
 	this->fuelUsed = 0;
 	this->foodUsed = 0;
 	this->healUsed = 0;
-
+	this->puzzleSolved = 0;
 	//this->nrOfGameWins = 0;
 
 }
 
 void MetaProgress::EnemyKilled(const std::string& enemytype)
 {
-	std::cout << "type: " << enemytype << std::endl;
+	//std::cout << "type: " << enemytype << std::endl;
 	if (enemytype == "chargerEnemy")
 		cEnemiesKilled++;
 	else if (enemytype == "baseEnemy")
@@ -95,10 +97,12 @@ void MetaProgress::EnemyKilled(const std::string& enemytype)
 
 void MetaProgress::SetNodeReached(const int& currentNode)
 {
+	this->nodesReached = currentNode;
 }
 
 void MetaProgress::SetLevelsCleared(const int& currentLevel)
 {
+	this->levelsCleared = currentLevel;
 }
 
 void MetaProgress::IncFuelUsed(int value)
@@ -120,4 +124,11 @@ void MetaProgress::IncHealUsed(int value)
 	this->score += SCORE_HEAL_USED + value;
 	this->currencyEarned += ((SCORE_HEAL_USED + value) * SCORE_TO_CURRENCY);
 	this->healUsed++;
+}
+
+void MetaProgress::IncPuzzleSolved(int value)
+{
+	this->score += SCORE_PUZZLE_SOLVED + value;
+	this->currencyEarned += ((SCORE_PUZZLE_SOLVED + value) * SCORE_TO_CURRENCY);
+	this->puzzleSolved++;
 }

@@ -24,6 +24,7 @@ void NodeWalkerComp::InitializePath(Path thePath)
 
 	this->currentNode = thePath.GetFirstPointIndex();
 	this->isWalking = true;
+	this->canWalk = true;
 	//std::cout <<"Nr of: "<< thePath.CountPoints() << std::endl;
 	//dx::XMFLOAT3 pos3 = { thePath.GetPoint(this->currentNode).x + offset,HEIGHT, thePath.GetPoint(this->currentNode).y + offset };
 	dx::XMFLOAT3 pos = { thePath.GetPoint(this->currentNode).x,HEIGHT, thePath.GetPoint(this->currentNode).z };
@@ -156,13 +157,13 @@ void NodeWalkerComp::Update(const float& deltaTime)
 				dx::XMVECTOR vdir = dx::XMVectorSubtract(dx::XMLoadFloat3(&nextPoint), GetOwner()->GetTransform().GetPosition());
 				dx::XMStoreFloat(&this->length, dx::XMVector3Length(vdir));
 
-
-
 				if (this->length < nodeRadius)
 				{
 					//StopAnim();
 					canWalk = false;
 					this->currentNode += 1;// this->nextChosen;
+					MetaProgress::Instance().SetNodeReached(currentNode);
+					
 				}
 				else
 				{

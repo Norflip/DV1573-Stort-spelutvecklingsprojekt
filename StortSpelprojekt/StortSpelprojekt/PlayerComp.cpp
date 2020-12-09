@@ -134,9 +134,11 @@ void PlayerComp::FixedUpdate(const float& fixedDeltaTime)
 
 				if ((health <= 0))
 				{
-					Engine::Instance->SwitchScene(SceneIndex::GAME_OVER);
 					MetaProgress::Instance().SaveScore();
+					SaveState & save = SaveHandler::LoadOrCreate();
+					MetaProgress::Instance().SaveProgress(save);
 					MetaProgress::Instance().Reset();
+					Engine::Instance->SwitchScene(SceneIndex::GAME_OVER);
 				}
 
 				if (food < 0)
