@@ -49,6 +49,10 @@ public:
 			}
 		}
 
+		// UNBINDA GLOWTARGET HÄR. Kommer ge fel annars
+
+
+
 		// vi sparar glow texturer till renderer så vi sedan kan hämta den i nästa pass
 		renderer->SetShaderResourceView("glow", target.srv);
 
