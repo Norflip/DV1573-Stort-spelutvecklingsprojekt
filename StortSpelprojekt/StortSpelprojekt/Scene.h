@@ -58,8 +58,9 @@ public:
 	virtual void FixedUpdate(const float& fixedDeltaTime);
 	virtual void Render();
 	
+#if USE_IMGUI
 	virtual void OnIMGUIFrame() {};
-
+#endif
 	// Add object to the scene hierarchy
 	void AddObjectToRoot(Object* object);
 	Object* GetRoot() const { return this->root; }
@@ -94,7 +95,6 @@ protected:
 
 	Input& input;
 	Object* player;
-	inline static float sensitivity;
 	EnemyManager* enemyManager;
 
 	ObjectPooler* pooler;

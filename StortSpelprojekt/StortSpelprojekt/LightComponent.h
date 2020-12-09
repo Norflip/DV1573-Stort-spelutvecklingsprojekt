@@ -46,6 +46,7 @@ public:
 private:
 	bool dirty;
 	dx::XMFLOAT4 lightColor;
+	size_t index;
 	//dx::XMFLOAT4 lightPosition;
 	//(lightPositionVs is calculated every frame)
 	dx::XMFLOAT3 lightDirection;

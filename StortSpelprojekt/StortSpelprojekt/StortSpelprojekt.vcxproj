@@ -266,6 +266,7 @@
     <ClInclude Include="AudioMaster.h" />
     <ClInclude Include="AudioEngine.h" />
     <ClInclude Include="GlowRenderPass.h" />
+    <ClInclude Include="Config.h" />
     <ClInclude Include="Imgui\imconfig.h" />
     <ClInclude Include="Imgui\imgui.h" />
     <ClInclude Include="Imgui\imgui_impl_dx11.h" />

@@ -10,65 +10,79 @@ RigidBodyComponent::RigidBodyComponent(float mass, FilterGroups group, FilterGro
 
 RigidBodyComponent::~RigidBodyComponent()
 {
+	//std::cout << std::endl << "del: " << GetOwner()->GetName() << " has body: " << (body != nullptr ? "true" : "false") << std::endl;
+
 	if (body != nullptr)
 	{
 		rp::Transform tr;
 		tr.setPosition(rp::Vector3(0, -5000, 0));
 		body->setTransform(tr);
 
-		physics->UnregisterRigidBody(this);
 		physics->GetWorld()->destroyRigidBody(body);
+		rpColliders.clear();
+
+		for (size_t i = 0; i < colliderComponents.size(); i++)
+			colliderComponents[i]->DeleteShapes();
+		colliderComponents.clear();
+
 		body = nullptr;
 	}
 }
 
 void RigidBodyComponent::Update(const float& deltaTime)
 {
-	currentTransform = body->getTransform();
-
-	const float delta = std::min(deltaTime, 1.0f);
-	//rp::Transform interpolatedTransform = rp::Transform::interpolateTransforms(previousTransform, currentTransform, delta);
-
-	Transform& transform = GetOwner()->GetTransform();
-	rp::Vector3 bodyPosition = currentTransform.getPosition();
-
-	if (bodyPosition.y < -1000)
+	if (type != BodyType::STATIC)
 	{
-		bodyPosition.y = -1000;
-		//std::cout << "BODY OUT OF BOUNDS (y < -1000)" << std::endl;
-		//std::cout << "Owner: " << GetOwner()->GetName() << std::endl;
+		currentTransform = body->getTransform();
 
-		body->enableGravity(false);
-		GetOwner()->RemoveFlag(ObjectFlag::ENABLED);
-		return;
-	}
+		const float delta = std::min(deltaTime, 1.0f);
+		//rp::Transform interpolatedTransform = rp::Transform::interpolateTransforms(previousTransform, currentTransform, delta);
 
-	transform.SetPosition(dx::XMVectorSet(
-		static_cast <float>(bodyPosition.x),
-		static_cast <float>(bodyPosition.y),
-		static_cast <float>(bodyPosition.z),
-		0.0f
-	));
+		Transform& transform = GetOwner()->GetTransform();
+		rp::Vector3 bodyPosition = currentTransform.getPosition();
 
-	if (!lockRotation)
-	{
-		rp::Quaternion bodyOrientation = currentTransform.getOrientation();
-		float x = static_cast <float>(bodyOrientation.x);
-		float y = static_cast <float>(bodyOrientation.y);
-		float z = static_cast <float>(bodyOrientation.z);
-		float w = static_cast <float>(bodyOrientation.w);
-		transform.SetRotation(dx::XMVectorSet(x, y, z, w));
+		if (bodyPosition.y < -1000)
+		{
+			bodyPosition.y = -1000;
+			//std::cout << "BODY OUT OF BOUNDS (y < -1000)" << std::endl;
+			//std::cout << "Owner: " << GetOwner()->GetName() << std::endl;
+
+			body->enableGravity(false);
+			GetOwner()->RemoveFlag(ObjectFlag::ENABLED);
+			return;
+		}
+
+		transform.SetPosition(dx::XMVectorSet(
+			static_cast <float>(bodyPosition.x),
+			static_cast <float>(bodyPosition.y),
+			static_cast <float>(bodyPosition.z),
+			0.0f
+		));
+
+		if (!lockRotation)
+		{
+			rp::Quaternion bodyOrientation = currentTransform.getOrientation();
+			float x = static_cast <float>(bodyOrientation.x);
+			float y = static_cast <float>(bodyOrientation.y);
+			float z = static_cast <float>(bodyOrientation.z);
+			float w = static_cast <float>(bodyOrientation.w);
+			transform.SetRotation(dx::XMVectorSet(x, y, z, w));
+		}
+		else
+		{
+			dx::XMFLOAT4 rot;
+			dx::XMStoreFloat4(&rot, transform.GetRotation());
+
+			currentTransform.setOrientation(rp::Quaternion(rot.x, rot.y, rot.z, rot.w));
+			body->setTransform(currentTransform);
+		}
+
+		previousTransform = currentTransform;
 	}
 	else
 	{
-		dx::XMFLOAT4 rot;
-		dx::XMStoreFloat4(&rot, transform.GetRotation());
-
-		currentTransform.setOrientation(rp::Quaternion(rot.x, rot.y, rot.z, rot.w));
-		body->setTransform(currentTransform);
+		SyncWithTransform();
 	}
-
-	previousTransform = currentTransform;
 }
 
 void RigidBodyComponent::SetPosition(dx::XMVECTOR position)
@@ -129,41 +143,42 @@ rp::Transform RigidBodyComponent::ConvertToBtTransform(const Transform& transfor
 	rp::Transform temp;
 
 	dx::XMFLOAT3 tmpPosition;
-	dx::XMStoreFloat3(&tmpPosition, transform.GetPosition());
+	dx::XMStoreFloat3(&tmpPosition, transform.GetWorldPosition());
 	temp.setPosition(rp::Vector3(tmpPosition.x, tmpPosition.y, tmpPosition.z));
 
 	dx::XMFLOAT4 tmpRotation;
-	dx::XMStoreFloat4(&tmpRotation, transform.GetRotation());
+	dx::XMStoreFloat4(&tmpRotation, transform.GetWorldRotation());
 	temp.setOrientation(rp::Quaternion(tmpRotation.x, tmpRotation.y, tmpRotation.z, tmpRotation.w));
 	return temp;
 }
 
 void RigidBodyComponent::AddCollidersToBody(Object* obj, rp::RigidBody* body)
 {
-	const std::vector<Collider*> colliders = obj->GetComponentsOfSubType<Collider>();
-	for (size_t i = 0; i < colliders.size(); i++)
+	colliderComponents = obj->GetComponentsOfSubType<Collider>();
+	for (size_t i = 0; i < colliderComponents.size(); i++)
 	{
-		colliders[i]->InitializeCollider(physics);
-		size_t shapeCount = colliders[i]->CountCollisionShapes();
+		colliderComponents[i]->InitializeCollider(physics);
+		size_t shapeCount = colliderComponents[i]->CountCollisionShapes();
 		for (size_t j = 0; j < shapeCount; j++)
 		{
-			rp::Collider* collider = body->addCollider(colliders[i]->GetCollisionShape(j), colliders[i]->GetTransform(j));
+			rp::Collider* collider = body->addCollider(colliderComponents[i]->GetCollisionShape(j), colliderComponents[i]->GetTransform(j));
 			collider->setCollisionCategoryBits(static_cast<unsigned short>(group));
 			collider->setCollideWithMaskBits(static_cast<unsigned short>(collisionMask));
-			collidersList.push_back(collider);
+			rpColliders.push_back(collider);
 		}
 	}
 
-	//	assert(collidersList.size() > 0);
+	assert(rpColliders.size() > 0);
+
 	//std::cout << (GetOwner()->GetName() + " has " + std::to_string(colliders.size()) + " colliders\n");
 
 	//CHILDREN
 
-	const std::vector<Object*>& children = GetOwner()->GetChildren();
-	for (size_t i = 0; i < children.size(); i++)
-	{
-		AddCollidersToBody(children[i], body);
-	}
+	//const std::vector<Object*>& children = GetOwner()->GetChildren();
+	//for (size_t i = 0; i < children.size(); i++)
+	//{
+	//	AddCollidersToBody(children[i], body);
+	//}
 }
 
 void RigidBodyComponent::m_InitializeBody(Physics* physics)
@@ -201,6 +216,12 @@ void RigidBodyComponent::OnOwnerFlagChanged(ObjectFlag old, ObjectFlag newFlag)
 	bool enabled = ((int)(ObjectFlag::ENABLED & newFlag) != 0);
 	if (body != nullptr)
 		body->setIsActive(enabled);
+}
+
+void RigidBodyComponent::SyncWithTransform()
+{
+	rp::Transform transf = ConvertToBtTransform(GetOwner()->GetTransform());
+	body->setTransform(transf);
 }
 
 void RigidBodyComponent::m_OnCollision(CollisionInfo& collision)

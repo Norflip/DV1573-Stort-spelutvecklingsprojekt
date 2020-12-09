@@ -677,6 +677,9 @@
     <ClInclude Include="Imgui\imstb_truetype.h">
       <Filter>ThirdParty\Imgui</Filter>
     </ClInclude>
+    <ClInclude Include="Config.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <Filter Include="Header Files">

@@ -12,6 +12,8 @@ EnemyManager::EnemyManager()
 	resources = nullptr;
 	root = nullptr;
 
+	currentLevel = 0;
+	nrOfEnemiesTotal = ENEMY_BASE_TOTAL;
 	nrOfBaseEnemies = 0;
 	nrOfChargeEnemies = 0;
 	//aliveEnemies = 0;
@@ -26,6 +28,7 @@ void EnemyManager::Initialize(Object* playerObj, Object* houseObj, PlayerComp* p
 {
 	this->enemySpawnTimer = 0.f;
 	//this->aliveEnemies = 0.f;
+	this->nrOfEnemiesTotal = ENEMY_BASE_TOTAL;
 	this->resources = Engine::Instance->GetResources();
 	this->player = playerObj;
 	this->house = houseObj;
@@ -47,6 +50,8 @@ void EnemyManager::InitBaseEnemy()
 		dx::XMFLOAT3 zero = { 0.f, 0.f, 0.f };
 		object->AddComponent<CapsuleColliderComponent>(1.6f, 1.8f, zero);
 		object->AddComponent<RigidBodyComponent>(100.f, FilterGroups::ENEMIES, (FilterGroups::EVERYTHING & ~FilterGroups::PICKUPS) & ~FilterGroups::HOLDABLE, BodyType::KINEMATIC, true);
+		
+		
 		EnemySMComp* stateMachine = object->AddComponent<EnemySMComp>(EnemyState::IDLE);
 		stateMachine->RegisterState(EnemyState::PATROL, object->AddComponent<EnemyPatrolComp>());
 		stateMachine->RegisterState(EnemyState::IDLE, object->AddComponent<EnemyIdleComp>());
@@ -108,7 +113,7 @@ void EnemyManager::SpawnRandomEnemy(const float& deltaTime)
 	//spawn on timer intervall if nrof enemies is less than cap
 	//std::cout << aliveEnemies <<" - " <<enemyVector.size()<< " - new enemy spawns in: " << enemySpawnRate << "sec, time: " << enemySpawnTimer << " sec." << std::endl;
 	//std::cout <<enemyVector.size()<< " - new enemy spawns in: " << enemySpawnRate << "sec, time: " << enemySpawnTimer << " sec." << std::endl;
-	if (enemySpawnTimer >= enemySpawnRate && /*aliveEnemies*/ enemyVector.size()< ENEMY_TOTAL)
+	if (enemySpawnTimer >= enemySpawnRate && /*aliveEnemies*/ enemyVector.size()< this->nrOfEnemiesTotal )
 	{
 		dx::XMVECTOR houseVec = house->GetTransform().GetPosition();
 
@@ -119,7 +124,7 @@ void EnemyManager::SpawnRandomEnemy(const float& deltaTime)
 		//make sure it's outside frustum of player camera and a bit away from player
 		float lengthP = 0; //length enemy to player
 		float lengthH = 0; //length enemy to house
-
+		float lengthPH = 0; //length player to house
 		if (camComp->GetFrustumPlanes().size() == 6)
 		{
 			//random points
@@ -128,27 +133,32 @@ void EnemyManager::SpawnRandomEnemy(const float& deltaTime)
 
 			//while inside radius of player or inside cam frustum do random again
 			randPos.x = playerPos.x + Random::Range(-50, 50+1);
-			randPos.y = playerPos.y + 2.5f; //height over ground
 			randPos.z = playerPos.z + Random::Range(-50, 50+1);
+			randPos.y = this->world->SampleHeight(playerPos.x, playerPos.z) + 0.5f; //height over ground
 			randVec = dx::XMLoadFloat3(&randPos);
-			//std::cout << length << std::endl;
 			dx::XMStoreFloat(&lengthP, dx::XMVector3Length(dx::XMVectorSubtract(playerVec, randVec)));
 			dx::XMStoreFloat(&lengthH, dx::XMVector3Length(dx::XMVectorSubtract(houseVec, randVec)));
-
+			dx::XMStoreFloat(&lengthPH, dx::XMVector3Length(dx::XMVectorSubtract(playerVec, houseVec)));
+			
 			Bounds enemyBounds;
 			enemyBounds.SetMinMax({ -0.5f,-1.f,-0.5f }, { 0.5f,1.f,0.5f });
 			
 			dx::XMMATRIX world = dx::XMMatrixTranslation(randPos.x, randPos.y, randPos.z);
 
+			//total number of enemies is increased depending on how far and length from house
+			float houseProgress = house->GetComponent<NodeWalkerComp>()->GetHouseProgress();
+			this->nrOfEnemiesTotal = ENEMY_BASE_TOTAL + (this->currentLevel * 1.5) + (double(lengthPH) * 0.02f) + (double(houseProgress) * 4.f); // lengthPH/50
+			//std::cout << "Level: " << this->currentLevel <<", potential enemies: "<<nrOfEnemiesTotal<<", current nr: "<< enemyVector.size()<< std::endl;
+
 			//check if player is above -10, a length from player is above value, a length from house is above value, coord is inside cam-view
 			if (playerPos.y > -10.f &&lengthP > ENEMY_SPAWN_RADIUS && lengthH > ENEMY_SPAWN_RADIUS && !camComp->InView(enemyBounds, world))  //!SphereInFrustum(theFrustum, randPos))
 			{
 				//spawn enemies & increment nrof
-				//aliveEnemies++;
 				enemySpawnTimer = 0;
 
-				this->enemySpawnRate = Random::Range(ENEMY_SPAWN_RATE_MIN, ENEMY_SPAWN_RATE_MAX);
-				
+				//enemies spawns faster depending on how far progress the player made
+				this->enemySpawnRate = Random::Range(ENEMY_SPAWN_RATE_MIN - (houseProgress * 0.5f), ENEMY_SPAWN_RATE_MAX - (houseProgress ));
+				//std::cout <<"spawnrate: "<< this->enemySpawnRate <<", total possible: "<<nrOfEnemiesTotal<< std::endl;
 
 				int enemyType = Random::Range(0, 2);
 				if (enemyType == 0) // base_enemy

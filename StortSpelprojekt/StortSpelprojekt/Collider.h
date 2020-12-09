@@ -18,10 +18,12 @@ class Collider
 public:
 	Collider(std::vector<dx::XMFLOAT3> positions);
 	Collider(dx::XMFLOAT3 position);
-	virtual ~Collider() {} 		// delete shape should be done in the physics world
+	virtual ~Collider() {} 
+
+	virtual void DeleteShapes() = 0;
 
 	virtual rp::CollisionShape* GetCollisionShape(size_t index) const;// { assert(index >= 0 && index < this->colliderInformations.size()); return this->colliderInformations[index].shape; }
-	virtual rp::Transform GetTransform(size_t index = 0) const;// { assert(index >= 0 && index < this->colliderInformations.size()); return this->colliderInformations[index].transform; }
+	virtual rp::Transform& GetTransform(size_t index = 0);// { assert(index >= 0 && index < this->colliderInformations.size()); return this->colliderInformations[index].transform; }
 	void SetRotation(size_t index, dx::XMFLOAT4 quaternion);
 
 	size_t CountCollisionShapes() const { return this->colliderInformations.size(); }

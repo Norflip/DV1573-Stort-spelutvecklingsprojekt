@@ -2,6 +2,7 @@
 #include "ControllerComp.h"
 #include "Engine.h"
 #include "GUICompass.h"
+#include "Config.h"
 
 void ControllerComp::CheckGrounded()
 {
@@ -46,25 +47,25 @@ void ControllerComp::CheckGrounded()
 	//return result;
 }
 
-ControllerComp::ControllerComp(Object* cameraObject, Object* houseObject, float sense)
+ControllerComp::ControllerComp(Object* cameraObject, Object* houseObject, World* world)
 {
 	//this->fov = 60.f;
 	//this->fovTimer = 0.f;
-
+	this->world = world;
 	this->velocity = 0.f;
 	this->velocityTimer = 0.f;
 	this->crouchTimer = 0.f;
-	this->sensitivity = sense;
 
 	this->freeCam = false;
-	this->showCursor = false;
+	//this->showCursor = false;
 	this->canRotate = true;
 	this->isGrounded = false;
-	this->houseVelocity = { 0.f,0.f,0.f };
+	//this->houseVelocity = { 0.f,0.f,0.f };
 	this->jumpDir = { 0.f,0.f,0.f };
 	this->cameraOffset = { 0.f,0.f,0.f };
 	this->cameraEuler = { 0.f,45.f,0.f }; //TODO_: fix start angle (looks down or up at start)
 
+	this->house = houseObject;
 	this->cameraObject = cameraObject;
 	this->houseWalkComp = houseObject->GetComponent<NodeWalkerComp>();
 	this->rbComp = nullptr;
@@ -90,12 +91,13 @@ void ControllerComp::Initialize()
 	this->camComp = cameraObject->GetComponent<CameraComponent>();
 	this->capsuleComp = GetOwner()->GetComponent<CapsuleColliderComponent>();
 	this->playerComp = GetOwner()->GetComponent<PlayerComp>();
-	ShowCursor(!this->canRotate);
-
+	
+	this->canRotate = true;
 	if (this->canRotate)
 		Input::Instance().SetMouseMode(dx::Mouse::MODE_RELATIVE);
 	else
 		Input::Instance().SetMouseMode(dx::Mouse::MODE_ABSOLUTE);
+	ShowCursor(!this->canRotate);
 
 	this->camComp->SetFOV(WALK_FOV);
 	this->rbComp->LockRotation(true);
@@ -110,9 +112,20 @@ void ControllerComp::Initialize()
 	this->cameraObject->GetTransform().SetRotation(reset);
 }
 
+void ControllerComp::Reset()
+{
+	this->canRotate = true;
+	if (this->canRotate)
+		Input::Instance().SetMouseMode(dx::Mouse::MODE_RELATIVE);
+	else
+		Input::Instance().SetMouseMode(dx::Mouse::MODE_ABSOLUTE);
+	ShowCursor(!this->canRotate);
+}
+
 
 void ControllerComp::Update(const float& deltaTime)
 {
+
 	//WASD = move
 	//space = jump 
 	//0 = reset position rotation and xClamp
@@ -143,24 +156,24 @@ void ControllerComp::Update(const float& deltaTime)
 	//	ShowCursor(this->showCursor);
 	//}
 
-	//if (KEY_DOWN(V))
-	//{
-	//	this->freeCam = !this->freeCam;
-	//	
-	//	rbComp->SetLinearVelocity({ 0.f, 0.f, 0.f });
-	//	rbComp->EnableGravity(!this->freeCam);
-	//}
+	if (KEY_DOWN(V))
+	{
+		this->freeCam = !this->freeCam;
+		
+		rbComp->SetLinearVelocity({ 0.f, 0.f, 0.f });
+		rbComp->EnableGravity(!this->freeCam);
+	}
 
 	if (KEY_DOWN(F))
 	{
 		this->canRotate = !this->canRotate;
 		rbComp->SetLinearVelocity({ 0.f, 0.f, 0.f });
 		//rbComp->EnableGravity(!this->canRotate);
-		ShowCursor(!this->canRotate);
 		if (this->canRotate)
 			Input::Instance().SetMouseMode(dx::Mouse::MODE_RELATIVE);
 		else
 			Input::Instance().SetMouseMode(dx::Mouse::MODE_ABSOLUTE);
+		ShowCursor(!this->canRotate);
 	}
 	
 	float length = 0.f;
@@ -175,9 +188,10 @@ void ControllerComp::Update(const float& deltaTime)
 	if (houseWalkComp->GetIsWalking())
 	{
 		// If next to the house
-		if (length > playerComp->GetRadius() || length < SIT_RADIUS)
+		if (length > playerComp->GetRadius() || length < SIT_RADIUS || houseWalkComp->GetHouseProgress()==1.f)
 		{
 			static_cast<GUICompass*>(playerComp->GetGuiManager()->GetGUIObject("compass"))->GetBarSprite()->SetActivated();
+			static_cast<GUICompass*>(playerComp->GetGuiManager()->GetGUIObject("compass"))->GetHouseSprite()->SetActivated();
 
 			houseWalkComp->Stop();
 		}
@@ -185,43 +199,32 @@ void ControllerComp::Update(const float& deltaTime)
 	}
 	else if (!houseWalkComp->GetIsWalking())
 	{
-		if (length < playerComp->GetRadius() && length > SIT_RADIUS && !inside)
+		if (length < playerComp->GetRadius() && length > SIT_RADIUS && !inside && houseWalkComp->GetHouseProgress()<1.f)
 		{
 			houseWalkComp->Start();
 
 			static_cast<GUICompass*>(playerComp->GetGuiManager()->GetGUIObject("compass"))->GetBarSprite()->SetActivated(false);
+			static_cast<GUICompass*>(playerComp->GetGuiManager()->GetGUIObject("compass"))->GetHouseSprite()->SetActivated(false);
 		}
 			
 
-		if (RMOUSE_DOWN)
+		if (KEY_DOWN(E))
 		{
 			if (inside && inDoorRange)
 			{
-				if (first)
-				{
-					dx::XMFLOAT3 pos = this->playerComp->GetStartPosition();
-					GetOwner()->GetTransform().SetPosition(dx::XMVECTOR{ pos.x, pos.y, pos.z, 0 });
-					rbComp->SetPosition(dx::XMVECTOR{ pos.x, pos.y, pos.z, 0 });
-					inside = false;
-					first = false;
-				}
-				else
-				{
-					GetOwner()->GetTransform().SetPosition(dx::XMVECTOR{ this->outsidePos.x, this->outsidePos.y, this->outsidePos.z, 0 });
-					rbComp->SetPosition(dx::XMVECTOR{ this->outsidePos.x, this->outsidePos.y, this->outsidePos.z, 0 });
-					inside = false;
-				}
+				dx::XMVECTOR pos = dx::XMLoadFloat3(&world->GetPlayerPositionFromHouse(house));
+
+				GetOwner()->GetTransform().SetPosition(pos);
+				GetOwner()->GetComponent<RigidBodyComponent>()->SetPosition(pos);
+				inside = false;
 			}
 			else if (inDoorRange && !inside)
 			{
-				dx::XMVECTOR current = rbComp->GetPosition();
-
-				this->outsidePos = { current.m128_f32[0], current.m128_f32[1], current.m128_f32[2] };
-				dx::XMFLOAT3 interior = this->playerComp->GetInteriorPosition();
-
+				const dx::XMFLOAT3 interior = INTERIOR_POSITION;
 				GetOwner()->GetTransform().SetPosition(dx::XMVECTOR{ interior.x, interior.y + 3.0f, interior.z, 0 });
 				rbComp->SetPosition({ interior.x, interior.y + 3.0f, interior.z, 0.0f });
-
+				//GetOwner()->GetTransform().SetPosition(dx::XMVECTOR{ interior.x, interior.y + 3.0f, interior.z, 0 });
+			
 				inside = true;
 				inDoorRange = false;
 			}
@@ -237,13 +240,20 @@ void ControllerComp::Update(const float& deltaTime)
 	{
 		if (this->canRotate)
 		{
+			if (Input::Instance().GetIsVisible())
+				ShowCursor(false);
+
 			//Input::Instance().ConfineMouse();
-			//SetCursorPos(400, 400); //set this to coordinates middle of screen? get height/width from input?
+		
+			dx::XMINT2 winSize = camComp->GetWinSize();
+			SetCursorPos(winSize.x * 0.5, winSize.y * 0.5); //set this to coordinates middle of screen? get height/width from input?
+
+			float sensitivity = Config::GetFloat("sensitivity", 0.5f);
 
 			float xPos = Input::Instance().GetMousePosRelative().x * deltaTime;
 			float yPos = Input::Instance().GetMousePosRelative().y * deltaTime;
-			cameraEuler.x += xPos * this->sensitivity;
-			cameraEuler.y += yPos * this->sensitivity;
+			cameraEuler.x += xPos * sensitivity;
+			cameraEuler.y += yPos * sensitivity;
 			//cameraEuler2.x += xPos;
 			//cameraEuler2.y += yPos;
 
@@ -453,7 +463,7 @@ void ControllerComp::Update(const float& deltaTime)
 					dx::XMStoreFloat3(&newDir, jumpVec);
 					newDir.x = (newDir.x + dir.x) * 0.5f;
 					newDir.z = (newDir.z + dir.z) * 0.5f;
-					rbComp->SetLinearVelocity({ newDir.x + houseVelocity.x, vel.y + jumpVelocity, newDir.z + houseVelocity.z });
+					rbComp->SetLinearVelocity({ newDir.x /*+ houseVelocity.x*/, vel.y + jumpVelocity, newDir.z/* + houseVelocity.z*/ });
 				}
 				dx::XMVECTOR capsule = dx::XMLoadFloat4(&RESET_ROT);
 				//capsuleComp->SetRotation(capsule);			
@@ -465,10 +475,8 @@ void ControllerComp::Update(const float& deltaTime)
 		}
 		else
 		{
-			//phy.MutexLock();
-			//	Input::Instance().FreeMouse();
-			//PAUSE??
-
+			if (!Input::Instance().GetIsVisible())
+				ShowCursor(true);
 
 			dx::XMFLOAT3 vel = rbComp->GetLinearVelocity();
 			rbComp->SetLinearVelocity({ 0.f, vel.y, 0.f });
@@ -516,7 +524,7 @@ void ControllerComp::Update(const float& deltaTime)
 			dx::XMStoreFloat3(&newDir, jumpVec);
 			newDir.x = (newDir.x + dir.x) * 0.5f;
 			newDir.z = (newDir.z + dir.z) * 0.5f;
-			rbComp->SetLinearVelocity({ newDir.x + houseVelocity.x, vel.y + jumpVelocity, newDir.z + houseVelocity.z });
+			rbComp->SetLinearVelocity({ newDir.x /*+ houseVelocity.x*/, vel.y + jumpVelocity, newDir.z /*+ houseVelocity.z*/ });
 		}
 		dx::XMVECTOR capsule = dx::XMLoadFloat4(&RESET_ROT);
 		//capsuleComp->SetRotation(capsule);			

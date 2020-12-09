@@ -10,7 +10,7 @@ constexpr float CLAMP_X = 90.f * Math::ToRadians;
 constexpr float CLAMP_Y = 180.f * Math::ToRadians;
 
 
-constexpr float WALK_FOV = 50.f;
+constexpr float WALK_FOV = 60.f;
 //constexpr float RUN_FOV = 60.f;
 
 
@@ -46,22 +46,20 @@ private:
 		SPRINTING,
 		CROUCHING
 	};
-	//float fov;
-	//float fovTimer; //use timer class??
+
 	float velocity;
 	float velocityTimer; //use timer class??
 	float crouchTimer;
-	float sensitivity;
 
 	bool freeCam;
-	bool showCursor;
+	//bool showCursor;
 	bool canRotate;
 	bool isGrounded;
 	bool inside;
 	bool inDoorRange;
 	bool first;
 
-	dx::XMFLOAT3 houseVelocity;
+	//dx::XMFLOAT3 houseVelocity;
 	dx::XMFLOAT3 jumpDir; 
 	dx::XMFLOAT3 cameraOffset;
 	dx::XMFLOAT3 cameraEuler;
@@ -74,6 +72,8 @@ private:
 	CameraComponent* camComp;
 	CapsuleColliderComponent* capsuleComp;
 	PlayerComp* playerComp;
+	World* world;
+	Object* house;
 
 	void CheckGrounded();
 
@@ -91,18 +91,16 @@ protected:
 	//dx::XMVECTOR groundRotation2;
 	dx::XMVECTOR groundRotation;
 public:
-	ControllerComp(Object* cameraObject, Object* houseObject, float sense);
+	ControllerComp(Object* cameraObject, Object* houseObject, World* world);
 	virtual ~ControllerComp();
 
 	RigidBodyComponent* GetRigidBodyComp() { return this->rbComp; }
 	void Initialize();
+	void Reset();
 	void Update(const float& deltaTime);
 	float GetVelocity()const { return this->velocity; }
 	bool GetInRange()const { return this->inDoorRange; }
 	void SetInRange(bool state) { this->inDoorRange = state; }
 	bool GetInside()const { return this->inside; }
 	void SetInside(bool state) { this->inside = state; }
-
-	void SetSensitivity(const float & sens) { this->sensitivity = sens; }
-	float GetSensitivity()const { return this->sensitivity; }
 };
