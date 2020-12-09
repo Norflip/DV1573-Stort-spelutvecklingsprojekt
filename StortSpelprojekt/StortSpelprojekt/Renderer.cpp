@@ -540,7 +540,7 @@ void Renderer::SetIdAndColor(int id, float color)
 }
 
 
-void Renderer::SetShaderResourceView(const std::string& key, ID3D11ShaderResourceView* srv)
+void Renderer::StoreShaderResourceView(const std::string& key, ID3D11ShaderResourceView* srv)
 {
 	auto find = storedSRVs.find(key);
 	if (find != storedSRVs.end())
@@ -549,7 +549,7 @@ void Renderer::SetShaderResourceView(const std::string& key, ID3D11ShaderResourc
 		storedSRVs.insert({ key, srv });
 }
 
-ID3D11ShaderResourceView* Renderer::GetShaderResourceView(const std::string& key) const
+ID3D11ShaderResourceView* Renderer::LoadShaderResourceView(const std::string& key) const
 {
 	ID3D11ShaderResourceView* srv = nullptr;
 	auto find = storedSRVs.find(key);
