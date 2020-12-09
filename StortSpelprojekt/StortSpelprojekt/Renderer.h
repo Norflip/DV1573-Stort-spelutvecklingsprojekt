@@ -119,8 +119,8 @@ public:
 
 	ALIGN16_ALLOC;
 
-	void SetShaderResourceView(const std::string& key, ID3D11ShaderResourceView* srv);
-	ID3D11ShaderResourceView* GetShaderResourceView(const std::string& key) const;
+	void StoreShaderResourceView(const std::string& key, ID3D11ShaderResourceView* srv);
+	ID3D11ShaderResourceView* LoadShaderResourceView(const std::string& key) const;
 
 	RenderQueue& GetEmissiveQueue() { return this->emissiveItemQueue; }
 	const RenderQueue& GetEmissiveQueue() const  { return this->emissiveItemQueue; }

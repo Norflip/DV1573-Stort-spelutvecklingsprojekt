@@ -54,7 +54,7 @@ public:
 
 
 		// vi sparar glow texturer till renderer så vi sedan kan hämta den i nästa pass
-		renderer->SetShaderResourceView("glow", target.srv);
+		renderer->StoreShaderResourceView("glow", target.srv);
 
 		// vi sätter tillbaka till det vanliga render target för att renderar resten av scenen
 		renderer->SetRenderTarget(current, true);
@@ -88,7 +88,7 @@ public:
 		renderer->ClearRenderTarget(target, false);
 		renderer->SetRenderTarget(target, false);
 
-		ID3D11ShaderResourceView* srv = renderer->GetShaderResourceView("glow");
+		ID3D11ShaderResourceView* srv = renderer->LoadShaderResourceView("glow");
 
 		// I renderpass shadern GlowShader så blir första texturen scenen i sig och den andra all data från glow texturen som vi gjorde i tidigare GlowPreRenderPass
 
