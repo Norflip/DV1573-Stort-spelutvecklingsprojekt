@@ -21,6 +21,9 @@ float4 main(VS_OUTPUT input) : SV_TARGET
 		input.normal = CalculateNormalMapping(input.normal, input.tangent, normalmap);
 	}
 
+	if(hasEmissiveMap)
+        return float4(1, 1, 1, 1);
+	
 	float3 normalized = normalize(input.normal);
 
 	float3 viewDirection = cameraPosition - input.worldPosition;

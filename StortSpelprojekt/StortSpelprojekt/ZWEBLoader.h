@@ -7,14 +7,14 @@ enum ZWEBLoadType
 	SkeletonAnimation,
 };
 
-namespace ZWEBLoader 
+namespace ZWEBLoader
 {
-	inline SkeletonAni LoadSkeletonOnly( std::string animationPath, std::map<std::string, unsigned int>& boneIDMap,
+	inline SkeletonAni LoadSkeletonOnly(std::string animationPath, std::map<std::string, unsigned int>& boneIDMap,
 		bool parentAnimation)
 	{
 		ZWEB::ZWEBImporter importer;
 		bool success = importer.importAnimation(animationPath);
-		
+
 		SkeletonAni skeletonAnimation;
 		//map must be set first so it can be used to set up the other stuff.
 		skeletonAnimation.SetUpIDMapAndFrames(boneIDMap, importer.getSkeletonAnimationHeader().fps, importer.getSkeletonAnimationHeader().nrOfAnimationFrames);
@@ -86,7 +86,7 @@ namespace ZWEBLoader
 			for (unsigned int vertex = 0; vertex < verticesZweb.size(); vertex++)
 			{
 				vertices[vertex].position = DirectX::XMFLOAT3(verticesZweb[vertex].pos[0], verticesZweb[vertex].pos[1], verticesZweb[vertex].pos[2]); //these are flipped inside zweb.
-				
+
 				vertices[vertex].uv = DirectX::XMFLOAT2(verticesZweb[vertex].uv[0], 1.0f - verticesZweb[vertex].uv[1]);
 				vertices[vertex].normal = DirectX::XMFLOAT3(verticesZweb[vertex].normal[0], verticesZweb[vertex].normal[1], verticesZweb[vertex].normal[2]);// *-1.0f);
 				vertices[vertex].tangent = DirectX::XMFLOAT3(verticesZweb[vertex].tangent[0], verticesZweb[vertex].tangent[1], verticesZweb[vertex].tangent[2]);
@@ -94,7 +94,7 @@ namespace ZWEBLoader
 			}
 			std::map<std::string, unsigned int> boneIDMap; //This is to make sure correct Vertex is mapped to the Correct Bone/Joint.
 			boneIDMap.clear();
-			
+
 			if (type == ZWEBLoadType::SkeletonAnimation)
 			{
 				std::vector<VertexHeader> controlVerticesZweb = importer.getControlPoints(mesh); //Controlpoints are indexed, converting them into non indexed here.
@@ -136,14 +136,14 @@ namespace ZWEBLoader
 
 						vertices[vertex].boneID = controlVertices[index].boneID; //add it to the list
 						vertices[vertex].skinWeight = controlVertices[index].skinWeight;
-						
+
 					}
 				}
 			}
 
 			Mesh* meshObject = new Mesh(vertices, indicesZweb);
 			meshObject->Initialize(device);
-			
+
 			meshObject->SetMeshName((std::string)importer.getMeshInfo(mesh).name);
 			meshObject->SetBoneIDS(boneIDMap);
 
@@ -172,7 +172,7 @@ namespace ZWEBLoader
 		for (unsigned short material = 0; material < importer.getSceneInfo().nrOfMaterials; material++)
 		{
 			Material* mat = new Material(shader);
-			cb_Material materialData; 
+			cb_Material materialData;
 
 			materialData.ambient = DirectX::XMFLOAT4(importer.getMaterialInfo(material).ka[0], importer.getMaterialInfo(material).ka[1], importer.getMaterialInfo(material).ka[2], 1.0f);
 			materialData.diffuse = DirectX::XMFLOAT4(importer.getMaterialInfo(material).kd[0], importer.getMaterialInfo(material).kd[1], importer.getMaterialInfo(material).kd[2], 1.0f);
@@ -189,7 +189,7 @@ namespace ZWEBLoader
 			{
 				std::string path = "Textures/" + diffuseTName; //Using a fixed path so that you don't need to export the texture in the right folder, just place it manually in here instead.
 				std::wstring pathWSTR(path.begin(), path.end());
-				
+
 				Texture* texture = Texture::LoadTexture(device, pathWSTR.c_str());
 				mat->SetTexture(texture, 0, ShaderBindFlag::PIXEL);
 				materialData.hasAlbedo = 1;
@@ -202,7 +202,7 @@ namespace ZWEBLoader
 			{
 				std::string path = "Textures/" + normalTName;
 				std::wstring pathWSTR(path.begin(), path.end());
-				
+
 				Texture* texture = Texture::LoadTexture(device, pathWSTR.c_str());
 				mat->SetTexture(texture, 1, ShaderBindFlag::PIXEL); //This is default but can be manually changed afterwards.
 				materialData.hasNormalMap = 1;
@@ -215,14 +215,9 @@ namespace ZWEBLoader
 			{
 				std::string path = "Textures/" + opacityName;
 				std::wstring pathWSTR(path.begin(), path.end());
-				
+
 				Texture* texture = Texture::LoadTexture(device, pathWSTR.c_str());
 				mat->SetTexture(texture, 3, ShaderBindFlag::PIXEL); //This is default but can be manually changed afterwards.
-				materialData.hasEmissiveMap = 1;
-			}
-			else
-			{
-				materialData.hasEmissiveMap = 0;
 			}
 
 			if (emissiveName != " ")
@@ -232,6 +227,11 @@ namespace ZWEBLoader
 
 				Texture* texture = Texture::LoadTexture(device, pathWSTR.c_str());
 				mat->SetTexture(texture, 2, ShaderBindFlag::PIXEL); //This is default but can be manually changed afterwards.
+				materialData.hasEmissiveMap = 1;
+			}
+			else
+			{
+				materialData.hasEmissiveMap = 0;
 			}
 
 			mat->SetMaterialData(materialData);
