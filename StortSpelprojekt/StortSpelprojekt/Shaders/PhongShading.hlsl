@@ -6,7 +6,7 @@ float4 CalculatePointLight(Light light,float3 normal, float3 objectPosition, flo
 	float4 ambient = float4(0.0f, 0.0f, 0.0f, 0.0f);
 	float4 specular = float4(0.0f, 0.0f, 0.0f, 0.0f);
 	float4 diffuse = float4(0.0f, 0.0f, 0.0f, 0.0f);
-	float4 emissive = float4(0.0f, 0.0f, 0.0f, 0.0f);
+	//float4 emissive = float4(0.0f, 0.0f, 0.0f, 0.0f);
 	float4 finalColor = float4(0.0f, 0.0f, 0.0f, 0.0f);
 
 	float3 lightVec = light.lightPosition.xyz - objectPosition;
@@ -30,10 +30,10 @@ float4 CalculatePointLight(Light light,float3 normal, float3 objectPosition, flo
         ambient = saturate(matAmbient * light.lightColor * attenuationFactor);
         diffuse = saturate(diffuseFactor * matDiffuse * light.lightColor * attenuationFactor);
         specular = saturate(shine * matSpecular * light.lightColor * attenuationFactor);
-        emissive = saturate(shine * matEmissive * light.lightColor * attenuationFactor);
+        //emissive = saturate(shine * matEmissive * light.lightColor * attenuationFactor);
     }
 
-	finalColor = ambient + diffuse + specular + emissive;
+	finalColor = ambient + diffuse + specular /*+ emissive*/;
 	return finalColor *light.intensity;
 }
 

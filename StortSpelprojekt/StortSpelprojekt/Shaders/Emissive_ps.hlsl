@@ -7,7 +7,7 @@ float4 main(VS_OUTPUT input) : SV_TARGET
 {
     float4 emissiveColor = float4(0.0f, 0.0f, 0.0f, 1.0f);
     
-    //emissiveColor = emissiveTexture.Sample(emissiveSampler, input.uv);
-    
+    emissiveColor = emissiveTexture.Sample(emissiveSampler, input.uv);
+ 
     return emissiveColor;
 }
