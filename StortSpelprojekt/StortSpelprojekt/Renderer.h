@@ -127,7 +127,7 @@ public:
 
 private:
 
-	void AddItem(const RenderItem& item, bool transparent, bool cullDepth, bool emissive);
+	void AddItem(const RenderItem& item, bool transparent, bool cullDepth, bool emissive = false);
 	void DrawRenderItem(const RenderItem& item, CameraComponent* camera);
 	void DrawRenderItemInstanced(const RenderItem& item, CameraComponent* camera);
 	void DrawRenderItemSkeleton(const RenderItem& item, CameraComponent* camera);

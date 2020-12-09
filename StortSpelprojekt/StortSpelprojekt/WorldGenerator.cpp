@@ -172,6 +172,7 @@ void WorldGenerator::Construct(const SaveState& state, const WorldDescription& d
 		spawner->SpawnSpecific(positions, { 0,1,0 }, angles, "Lamp", chunkMap, [](Object* obj)
 			{
 				obj->GetTransform().SetScale({ 1.2f, 1.2f, 1.2f });
+				obj->GetComponent<MeshComponent>()->GetMaterials()[0]->SetEmissive(true);
 
 				Object* light = new Object("lantern_pointLight");
 				light->GetTransform().SetPosition({ 1.0f, 3.0f, 0.f });

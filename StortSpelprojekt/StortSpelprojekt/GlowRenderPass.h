@@ -14,7 +14,9 @@ public:
 
 	void m_Initialize(ID3D11Device* device) override
 	{
-		//Shader* shader = resources->GetShaderResource("GlowShader");
+		/*
+			Sätt till en vettig width / height. 
+		*/
 		size_t TMP_WIDTH = 800;
 		size_t TMP_HEIGHT = 800;
 		ID3D11DepthStencilState* dss;
@@ -24,6 +26,7 @@ public:
 
 	void Pass(Renderer* renderer, CameraComponent* camera, RenderTexture& current, RenderTexture& target) override
 	{
+
 		renderer->ClearRenderTarget(glowTarget, true);
 		renderer->SetRenderTarget(glowTarget, true);
 
@@ -41,7 +44,8 @@ public:
 				// OM item är vanlig... kör en Default_vs + emissive_ps.
 
 
-				std::cout << item.mesh->GetMeshName() << std::endl;
+				// Denna drar ner prestandan.. men det visar att saker faktiskt finns i queuen.
+				//std::cout << "GLOWING? : " << item.mesh->GetMeshName() << std::endl;
 			}
 		}
 
@@ -49,7 +53,7 @@ public:
 		renderer->SetShaderResourceView("glow", target.srv);
 
 		// vi sätter tillbaka till det vanliga render target för att renderar resten av scenen
-		renderer->SetRenderTarget(current, false);
+		renderer->SetRenderTarget(current, true);
 	}
 
 	ALIGN16_ALLOC;
@@ -70,11 +74,8 @@ public:
 
 	void m_Initialize(ID3D11Device* device) override
 	{
+		// denna är bara renderpass shadern.
 		Shader* shader = resources->GetShaderResource("GlowShader");
-		//shader->SetVertexShader("Shaders/Glow_vs.hlsl");
-		//shader->SetPixelShader("Shaders/Glow_ps.hlsl");
-		//shader->Compile(device);
-		//LoadTextureGlow(device);
 		material = new Material(shader);
 	}
 
@@ -84,6 +85,8 @@ public:
 		renderer->SetRenderTarget(target, false);
 
 		ID3D11ShaderResourceView* srv = renderer->GetShaderResourceView("glow");
+
+		// I renderpass shadern GlowShader så blir första texturen scenen i sig och den andra all data från glow texturen som vi gjorde i tidigare GlowPreRenderPass
 
 		renderer->GetContext()->PSSetShaderResources(0, 1, &current.srv);
 		renderer->GetContext()->PSSetShaderResources(1, 1, &srv);
@@ -95,20 +98,9 @@ public:
 		renderer->GetContext()->PSSetShaderResources(1, 1, nullSRV);
 	}
 
-	/*void LoadTextureGlow(ID3D11Device* device)
-	{
-		const LPCWSTR GLOW_TEXTURE_PATH = L"Textures/lampa_glowMap.png";
-
-		glowTexture = Texture::LoadTexture(device, GLOW_TEXTURE_PATH);
-		glowMaterial->SetTexture(glowTexture, 0, ShaderBindFlag::PIXEL);
-
-		glowMaterial->SetSampler(DXHelper::CreateSampler(D3D11_FILTER_MIN_MAG_MIP_LINEAR, D3D11_TEXTURE_ADDRESS_WRAP, device), 0, ShaderBindFlag::PIXEL);
-	}*/
-
 	ALIGN16_ALLOC;
 
 private:
-
 	Shader* shader;
 	Material* material;
 	ResourceManager* resources;

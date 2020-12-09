@@ -262,9 +262,6 @@ void Renderer::RenderFrame(CameraComponent* camera, float time, float distance, 
 	//	ID3D11ShaderResourceView* nullSRV[1] = { nullptr };
 	//	context->PSSetShaderResources(0, 1, nullSRV);
 
-	ClearRenderTarget(midbuffer);
-	SetRenderTarget(midbuffer);
-
 	for (auto i = passes.begin(); i < passes.end(); i++)
 	{
 		RenderPass* pass = *i;
@@ -425,7 +422,6 @@ void Renderer::DrawInstanced(const Mesh* mesh, const size_t& count, ID3D11Buffer
 	item.instanceBuffer = instanceBuffer;
 	item.instanceCount = count;
 	AddItem(item, material->IsTransparent(), false, material->IsEmissive());
-
 }
 
 void Renderer::DrawSkeleton(const Mesh* mesh, const Material* material, const dx::XMMATRIX& model, std::vector<dx::XMFLOAT4X4>& bones)
@@ -436,7 +432,7 @@ void Renderer::DrawSkeleton(const Mesh* mesh, const Material* material, const dx
 	item.type = RenderItem::Type::Skeleton;
 	item.bones = &bones;
 	item.world = model;
-	AddItem(item, false, false, false);
+	AddItem(item, false, false);
 }
 
 void Renderer::DrawGrass(const Mesh* mesh, const Material* material, const dx::XMMATRIX& model)
@@ -447,7 +443,7 @@ void Renderer::DrawGrass(const Mesh* mesh, const Material* material, const dx::X
 	item.material = material;
 	item.world = model;
 	//CullDepth True?
-	AddItem(item, false, false, false);
+	AddItem(item, false, false);
 }
 
 void Renderer::DrawParticles(const Mesh* mesh, const Material* material, const dx::XMMATRIX& model)
@@ -457,7 +453,7 @@ void Renderer::DrawParticles(const Mesh* mesh, const Material* material, const d
 	part.mesh = mesh;
 	part.material = material;
 	part.world = model;
-	AddItem(part, true, false, true);
+	AddItem(part, true, false);
 }
 
 void Renderer::DrawNewParticles(const Mesh* particleMesh, const Material* drawMat, const Material* streamoutMat, cb_particle* particleData)
@@ -468,7 +464,7 @@ void Renderer::DrawNewParticles(const Mesh* particleMesh, const Material* drawMa
 	part.material = drawMat;
 	part.streamoutMaterial = streamoutMat;
 	part.particles = particleData;
-	AddItem(part, true, true, false);
+	AddItem(part, true, true);
 }
 
 void Renderer::DrawImmediate(const Mesh* mesh, const Material* material, const CameraComponent* camera, const dx::XMMATRIX& model)
@@ -600,6 +596,7 @@ void Renderer::AddItem(const RenderItem& item, bool transparent, bool cullDepth,
 			opaqueItemQueueDepth[materialID].push(item);
 		}*/
 	}
+
 	if (emissive)
 	{
 		size_t materialID = item.material->GetID();
