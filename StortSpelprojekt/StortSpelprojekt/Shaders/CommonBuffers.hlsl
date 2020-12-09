@@ -50,10 +50,12 @@ cbuffer cb_Material : register(b1)
     float4 matAmbient;
     float4 matDiffuse;
     float4 matSpecular;
+    float4 matEmissive;
 	
     bool hasAlbedo;
     bool hasNormalMap;
-    float2 pad_cbm;
+    bool hasEmissiveMap;
+    float/*2*/ pad_cbm;
 }
 
 cbuffer cb_Scene : register(b2)

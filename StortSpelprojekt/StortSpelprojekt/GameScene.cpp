@@ -380,7 +380,6 @@ void GameScene::InitializeInterior()
 	table->AddComponent<RigidBodyComponent>(0.0f, FilterGroups::PROPS, FilterGroups::EVERYTHING, BodyType::STATIC, true);
 	AddObjectToRoot(table);
 
-
 	Object* tutorialFood = resources->AssembleObject("Fruits", "FruitsMaterial", true);
 	tutorialFood->GetTransform().SetPosition({ -5.65f, INTERIOR_POSITION.y + 1.0f, -4.6f, 0.0f });
 	tutorialFood->AddComponent<PickupComponent>(PickupType::Food, 30.0f);

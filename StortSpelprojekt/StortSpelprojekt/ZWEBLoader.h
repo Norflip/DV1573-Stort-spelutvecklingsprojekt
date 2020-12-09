@@ -218,6 +218,11 @@ namespace ZWEBLoader
 				
 				Texture* texture = Texture::LoadTexture(device, pathWSTR.c_str());
 				mat->SetTexture(texture, 3, ShaderBindFlag::PIXEL); //This is default but can be manually changed afterwards.
+				materialData.hasEmissiveMap = 1;
+			}
+			else
+			{
+				materialData.hasEmissiveMap = 0;
 			}
 
 			if (emissiveName != " ")

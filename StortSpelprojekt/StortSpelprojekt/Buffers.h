@@ -29,11 +29,13 @@ struct cb_Material
 	dx::XMFLOAT4 ambient;
 	dx::XMFLOAT4 diffuse;
 	dx::XMFLOAT4 specular;
+	dx::XMFLOAT4 emissive;
 	
 	int hasAlbedo;
 	int hasNormalMap;
+	int hasEmissiveMap;
 	float paddingOne;
-	float paddingTwo;
+	//float paddingTwo;
 };
 
 

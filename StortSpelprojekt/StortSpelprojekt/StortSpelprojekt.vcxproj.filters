@@ -630,7 +630,7 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="GlowRenderPass.h">
-	  <Filter>Header Files</Filter>
+      <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="Pathfinding.h">
       <Filter>Header Files</Filter>
