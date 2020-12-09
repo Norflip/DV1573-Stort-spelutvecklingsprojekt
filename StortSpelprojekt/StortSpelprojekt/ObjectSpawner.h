@@ -6,6 +6,7 @@
 #include "SaveState.h"
 #include "ResourceManager.h"
 #include "PickupComponent.h"
+#include "ItemManager.h"
 
 #include <DirectXMath.h>
 namespace dx = DirectX;
@@ -16,11 +17,6 @@ class World;
 
 class ObjectSpawner
 {
-	struct Item
-	{
-		std::string key;
-	};
-
 	struct Prop
 	{
 		Mesh* mesh;
@@ -54,14 +50,14 @@ public:
 	ObjectSpawner();
 	virtual ~ObjectSpawner();
 
-	void Initialize(Object* root, World* world, Renderer* renderer);
+	void Initialize(Object* root, World* world, ItemManager* items, Renderer* renderer);
 
 	void Spawn(const SaveState& state, const Bounds& worldBounds, std::unordered_map<int, Chunk*>& chunkMap);
 	void Despawn();
 
 	void SpawnSpecific(std::vector<dx::XMFLOAT2> positions, dx::XMVECTOR axis, std::vector<float> angles, std::string modelName, std::unordered_map<int, Chunk*>& chunkMap, std::function<void(Object*)> modifier);
 
-	void RegisterItem(std::string key, size_t queueCount, std::function<Object* (ResourceManager*)> factory);
+	//void RegisterItem(std::string key, size_t queueCount, std::function<Object* (ResourceManager*)> factory);
 	void RegisterInstancedItem(std::string key, float yOffsetFactor, size_t queueCount, dx::XMUINT3 rotationAxis);
 	void RegisterInstancedItem(Mesh* mesh, Material* material, float yOffset, size_t queueCount, dx::XMUINT3 rotationAxis);
 	void DrawDebug();
@@ -82,20 +78,20 @@ private:
 	void ShuffleVector(std::vector<T>& v) const;
 
 private:
-	std::vector<Object*> activeItems;
 	std::vector<Object*> props;
 
-	std::vector<dx::XMFLOAT3> TMP_POS;
+	//std::vector<dx::XMFLOAT3> TMP_POS;
 
 	ObjectPooler* pooler;
 	Object* root;
 	World* world;
 	QuadTree* environmentQT;
+	ItemManager* items;
 
 	std::vector<dx::XMFLOAT2> itemSpawnPositions;
 	std::vector<dx::XMFLOAT2> propSpawnPositions;
 
-	std::vector<Item> itemRegistry;
+	//std::vector<Item> itemRegistry;
 	std::vector<Prop> instancedProps;
 	TreeModel baseTreeModel;
 

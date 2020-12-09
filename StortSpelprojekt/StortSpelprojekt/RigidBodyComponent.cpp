@@ -201,6 +201,8 @@ void RigidBodyComponent::m_InitializeBody(Physics* physics)
 
 		AddCollidersToBody(GetOwner(), body);
 		initialized = true;
+
+		body->setIsActive(GetOwner()->HasFlag(ObjectFlag::ENABLED));
 	}
 }
 

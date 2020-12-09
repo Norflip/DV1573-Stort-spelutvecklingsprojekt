@@ -330,6 +330,7 @@
     <ClCompile Include="Imgui\imgui_widgets.cpp">
       <Filter>ThirdParty\Imgui</Filter>
     </ClCompile>
+    <ClCompile Include="ItemManager.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="ObjectSpawner.h">
@@ -667,6 +668,9 @@
     </ClInclude>
     <ClInclude Include="Config.h">
       <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="ItemManager.h">
+      <Filter>Source Files\SpawnSystems</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

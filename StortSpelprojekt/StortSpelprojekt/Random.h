@@ -13,6 +13,7 @@ namespace Random
 	
 	inline void SetSeed(unsigned int seed)
 	{
+		srand(seed);
 		m_rngEngine.seed(seed);
 		m_seeded = true;
 	}

@@ -13,14 +13,14 @@ WorldGenerator::~WorldGenerator()
 {
 }
 
-void WorldGenerator::Initialize(Object* root, World* world, Renderer* renderer)
+void WorldGenerator::Initialize(Object* root, World* world, ItemManager* items, Renderer* renderer)
 {
 	this->root = root;
 	this->renderer = renderer;
 	this->initialized = true;
 
 	this->spawner = new ObjectSpawner();
-	this->spawner->Initialize(root, world, renderer);
+	this->spawner->Initialize(root, world, items, renderer);
 
 	ResourceManager* resources = Engine::Instance->GetResources();
 	this->chunkShader = resources->GetShaderResource("terrainShader");

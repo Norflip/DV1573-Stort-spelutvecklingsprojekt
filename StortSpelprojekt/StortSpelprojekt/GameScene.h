@@ -20,6 +20,9 @@ public:
 	void InitializeObjects() override;
 	void InitializeGUI() override;
 	void InitializeInterior();
+
+
+
 	void OnActivate() override;
 	void OnDeactivate() override;
 	void SetSignPositions(SaveState& state);
@@ -43,7 +46,7 @@ private:
 
 	World world;
 	Object* house;
-
+	ObjectPooler* pooler;
 	Particlesys* testParticles;
 
 	Object* leftSign;

@@ -14,13 +14,14 @@ ObjectSpawner::~ObjectSpawner()
 {
 }
 
-void ObjectSpawner::Initialize(Object* root, World* world, Renderer* renderer)
+void ObjectSpawner::Initialize(Object* root, World* world, ItemManager* items, Renderer* renderer)
 {
 	ResourceManager* resources = Engine::Instance->GetResources();
 	this->pooler = new ObjectPooler(resources);
 	this->root = root;
 	this->renderer = renderer;
 	this->world = world;
+	this->items = items;
 
 	// DEFAULT TREE
 	baseTreeModel.meshes.push_back(resources->GetResource<Mesh>("instancedTree"));
@@ -63,20 +64,7 @@ void ObjectSpawner::Spawn(const SaveState& state, const Bounds& worldBounds, std
 
 void ObjectSpawner::Despawn()
 {
-	if (activeItems.size() > 0)
-	{
-		for (auto i : activeItems)
-		{
-			pooler->ReturnItem(i);
-
-			//Object* obj = i;
-			//obj->GetComponent<RigidBodyComponent>()->Release();
-			//Transform::ClearFromHierarchy(obj->GetTransform());
-			//delete obj;
-		}
-	}
-
-	activeItems.clear();
+	items->DespawnAll();
 }
 
 void ObjectSpawner::SpawnSpecific(std::vector<dx::XMFLOAT2> positions, dx::XMVECTOR axis, std::vector<float> angles, std::string modelName, std::unordered_map<int, Chunk*>& chunkMap, std::function<void(Object*)> modifier)
@@ -101,15 +89,15 @@ void ObjectSpawner::SpawnSpecific(std::vector<dx::XMFLOAT2> positions, dx::XMVEC
 	}
 }
 
-void ObjectSpawner::RegisterItem(std::string key, size_t queueCount, std::function<Object* (ResourceManager*)> factory)
-{
-	Item item;
-	item.key = key;
-	pooler->Register(key, 0, factory);
-
-	for (size_t i = 0; i < queueCount; i++)
-		itemRegistry.push_back(item);
-}
+//void ObjectSpawner::RegisterItem(std::string key, size_t queueCount, std::function<Object* (ResourceManager*)> factory)
+//{
+//	Item item;
+//	item.key = key;
+//	pooler->Register(key, 0, factory);
+//
+//	for (size_t i = 0; i < queueCount; i++)
+//		itemRegistry.push_back(item);
+//}
 
 void ObjectSpawner::RegisterInstancedItem(std::string key, float yOffsetFactor, size_t queueCount, dx::XMUINT3 rotationAxis)
 {
@@ -384,13 +372,17 @@ void ObjectSpawner::SpawnItem(Chunk* chunk)
 {
 	if (itemRegistry.size() > 0 && chunk->GetType() == ChunkType::TERRAIN)
 	{
-		const size_t ITEMS_PER_CHUNK = 3;
+		const size_t MIN_ITEMS_PER_CHUNK = 2;
+		const size_t MAX_ITEMS_PER_CHUNK = 5;
+
+
 		std::vector<dx::XMFLOAT2> positions = PossionDiscSampler::Sample(2.0f, CHUNK_SIZE, CHUNK_SIZE);
 
 		if (positions.size() > 0)
 		{
 			ShuffleVector(positions);
 			size_t spawnCount = 0;
+			size_t ITEMS_PER_CHUNK = UICAST(Random::Range(ICAST(MIN_ITEMS_PER_CHUNK), ICAST(MAX_ITEMS_PER_CHUNK + 1)));
 
 			for (size_t i = 0; i < positions.size() && spawnCount < ITEMS_PER_CHUNK; i++)
 			{
