@@ -38,7 +38,7 @@ struct RenderTexture
 
 	D3D11_VIEWPORT viewport;
 
-	RenderTexture() : rtv(nullptr), srv(nullptr), dsv(nullptr), width(-1), height(-1) {}
+	RenderTexture() : rtv(nullptr), srv(nullptr), dsv(nullptr), depthSRV(nullptr), width(-1), height(-1) {}
 	void Release () 
 	{
 		RELEASE(rtv);
