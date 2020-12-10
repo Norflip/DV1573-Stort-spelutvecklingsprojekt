@@ -261,23 +261,157 @@ void SkeletonAni::SetTransVector(dx::SimpleMath::Vector3 transVec)
     this->transV = transVec;
 }
 
-Bone SkeletonAni::MergeKeys(std::vector<std::vector<Bone>> keys1, std::vector<std::vector<Bone>> keys2, float factor)
+void SkeletonAni::MergeKeys(Bone keys, float factor, float i)
 {
-    float* kf1 = (float*)(&keys1);
-    float* kf2 = (float*)(&keys2);
+    /*
+    FUNDERING:
+    Kan det vara så att jag måste normalisera båda animatioernas frames så att båda har t.ex 20 frames?
+    */
 
-    const size_t elements = sizeof(Bone) / sizeof(float);
-    float* result = new float[elements];
+    //float* kf1 = (float*)(&this->keyBones);
+    //float* kf2 = (float*)(&keys);
 
-    for (size_t i = 0; i < elements; i++)
-    {
-        result[i] = kf1[i] * (1 - factor) + kf2[i] * factor;
-    }
+    //const size_t elements = sizeof(Bone) / sizeof(float);
+    //float* result = new float[elements];
 
-    Bone newBones = *((Bone*)(result));
-    delete[] result;
+    //for (size_t i = 0; i < elements; i++)
+    //{
+    //    result[i] = kf1[i] * (1 - factor) + kf2[i] * factor;
+    //}
 
-    return newBones;
+    //std::vector<std::vector<Bone>> newBones = *((std::vector<std::vector<Bone>>*)(result));
+    //delete[] result;
+
+    //return newBones;
+
+    //FÖRSÖK 2
+    
+    //float* frame1 = (float*)(&this->keyBones[index][0].frame);
+    //float* frame2 = (float*)(&keys[index][0].frame);
+
+    //int* index1 = (int*)(&this->keyBones[index][0].index);
+    //int* index2 = (int*)(&keys[index][0].index);
+
+    //dx::SimpleMath::Quaternion* quat1 = (dx::SimpleMath::Quaternion*)(&this->keyBones[index][0].rotationQuaternion);
+    //dx::SimpleMath::Quaternion* quat2 = (dx::SimpleMath::Quaternion*)(&keys[index][0].rotationQuaternion);
+
+    //dx::SimpleMath::Vector3* vec1 = (dx::SimpleMath::Vector3*)(&this->keyBones[index][0].translationVector);
+    //dx::SimpleMath::Vector3* vec2 = (dx::SimpleMath::Vector3*)(& keys[index][0].translationVector);
+
+
+    //
+    //const size_t frames = sizeof(frame1) / sizeof(float);
+    //const size_t indicies = sizeof(index1) / sizeof(int);
+    //const size_t quaternions = sizeof(quat1) / sizeof(dx::SimpleMath::Quaternion);
+    //const size_t vectors = sizeof(vec1) / sizeof(dx::SimpleMath::Vector3);
+
+
+
+    //float* frameResult = new float[frames];
+    //int* indexResult = new int[indicies];
+    //dx::SimpleMath::Quaternion* quatResult = new dx::SimpleMath::Quaternion[quaternions];
+    //dx::SimpleMath::Vector3* vectorResult = new dx::SimpleMath::Vector3[vectors];
+
+
+
+    //for (size_t i = 0; i < frames; i++)
+    //{
+    //    frameResult[i] = frame1[i] * (1 - factor) + frame2[i] * factor;
+    //}
+
+    //for (size_t i = 0; i < indicies; i++)
+    //{
+    //    indexResult[i] = index1[i] * (1 - factor) + index2[i] * factor;
+    //}
+
+    ////quatResult[i].Slerp(quat1[i], quat2[i], factor);
+    //for (size_t i = 0; i < quaternions; i++)
+    //{
+    //    quatResult[i] = quat1[i] * (1 - factor) + quat2[i] * factor;
+    //}
+
+    //for (size_t i = 0; i < vectors; i++)
+    //{
+    //    vectorResult[i] = vec1[i] * (1 - factor) + vec2[i] * factor;
+    //}
+
+    //Bone newBones;
+    //newBones.frame = *((float*)(frameResult));
+    //newBones.index = *((int*)(indexResult));
+    //newBones.rotationQuaternion = *((dx::SimpleMath::Quaternion*)(quatResult));
+    //newBones.translationVector = *((dx::SimpleMath::Vector3*)(vectorResult));
+
+    //delete[] frameResult;
+    //delete[] indexResult;
+    //delete[] quatResult;
+    //delete[] vectorResult;
+
+   // return newBones;
+    
+    //FÖRSÖK 3
+
+    float frame1 = this->keyBones[i][0].frame;
+    float frame2 = keys.frame;
+    float frameFinal;
+
+    int index1 = this->keyBones[i][0].index;
+    int index2 = keys.index;
+    float indexFinal;
+
+    dx::SimpleMath::Quaternion quat1 = this->keyBones[i][0].rotationQuaternion;
+    dx::SimpleMath::Quaternion quat2 = keys.rotationQuaternion;
+    dx::SimpleMath::Quaternion quatFinal;
+
+    dx::SimpleMath::Vector3 vec1 = this->keyBones[i][0].translationVector;
+    dx::SimpleMath::Vector3 vec2 = keys.translationVector;
+    dx::SimpleMath::Vector3 vecFinal;
+    
+    frameFinal = frame1 * (1 - factor) + frame2 * factor;
+    indexFinal = index1 * (1 - factor) + index2 * factor;
+    quatFinal = rotQ.Slerp(quat1, quat2, factor);
+    vecFinal = transV.Lerp(vec1, vec2, factor);
+
+    //MÅSTE SÄTTA ALLA SAKERNA MED LOOPAR - TROLIGTVIS
+    //kanske inte ens är nära :(
+
+    
+    this->keyBones[i][0].frame = frameFinal;
+    this->keyBones[i][0].index = indexFinal;
+    this->keyBones[i][0].rotationQuaternion = quatFinal;
+    this->keyBones[i][0].translationVector = vecFinal;
+}
+
+void SkeletonAni::MergeOffsets(std::vector<dx::SimpleMath::Matrix> offset, float factor, float i)
+{
+    this->offsetM[i] = this->offsetM[i] * (1 - factor) + offset[i] * factor;
+}
+
+void SkeletonAni::SetBlendFPS(float fps, float factor)
+{
+    //float blendFps1 = this->fps;
+    //float blendFps2 = fps;
+
+    //float result;
+
+    //result = blendFps1 * (1 - factor) + blendFps2 * factor;
+
+    //return result;
+
+    this->fps = this->fps * (1 - factor) + fps * factor;
+}
+
+void SkeletonAni::SetBlendAnimLength(float animLength, float factor)
+{
+    //float blendLength1 = this->length;
+    //float blendLength2 = animLength;
+
+    //float result;
+
+    //result = blendLength1 * (1 - factor) + blendLength2 * factor;
+
+    //return result;
+
+    this->length = this->length * (1 - factor) + animLength * factor;
 }
 
 

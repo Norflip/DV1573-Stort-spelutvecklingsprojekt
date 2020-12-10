@@ -108,7 +108,7 @@ void SkeletonMeshComponent::RunAnimation(const float& deltaTime)
 	}
 	else if (currentAni == SkeletonStateMachine::BLENDED)
 	{
-		finalTransforms = skeletonAnimations[6].Makeglobal(time, dx::XMMatrixIdentity(), *skeletonAnimations[6].GetRootKeyJoints());
+		finalTransforms = skeletonAnimations[trackMap[SkeletonStateMachine::RUN]].Makeglobal(time, dx::XMMatrixIdentity(), *skeletonAnimations[trackMap[SkeletonStateMachine::RUN]].GetRootKeyJoints());
 	}
 	else if (currentAni == SkeletonStateMachine::LOAD)
 	{
@@ -120,7 +120,7 @@ void SkeletonMeshComponent::RunAnimation(const float& deltaTime)
 	}
 	else if (currentAni == SkeletonStateMachine::COMBINED)
 	{
-		finalTransforms = skeletonAnimations[5].Makeglobal(time, dx::XMMatrixIdentity(), *skeletonAnimations[5].GetRootKeyJoints());
+		finalTransforms = skeletonAnimations[6].Makeglobal(time, dx::XMMatrixIdentity(), *skeletonAnimations[6].GetRootKeyJoints());
 	}
 
 }
@@ -538,12 +538,12 @@ void SkeletonMeshComponent::PlayOnce(const float& deltaTime)
 		time *= timeScale;
 
 		//Get the playtime for the animation in seconds.
-		float animLength = skeletonAnimations[6].GetAniLength() / skeletonAnimations[6].GetFPS();
+		float animLength = skeletonAnimations[trackMap[SkeletonStateMachine::RUN]].GetAniLength() / skeletonAnimations[trackMap[SkeletonStateMachine::RUN]].GetFPS();
 
 		if (time <= animLength)
 		{
 			//std::cout << time << std::endl;
-			finalTransforms = skeletonAnimations[6].Makeglobal(time, dx::XMMatrixIdentity(), *skeletonAnimations[6].GetRootKeyJoints());
+			finalTransforms = skeletonAnimations[trackMap[SkeletonStateMachine::RUN]].Makeglobal(time, dx::XMMatrixIdentity(), *skeletonAnimations[trackMap[SkeletonStateMachine::RUN]].GetRootKeyJoints());
 		}
 		else
 		{
@@ -580,69 +580,52 @@ void SkeletonMeshComponent::PlayOnce(const float& deltaTime)
 
 void SkeletonMeshComponent::PlayBlendAnimations(SkeletonStateMachine state1, SkeletonStateMachine state2, float factor)
 {
-	std::vector<dx::SimpleMath::Matrix> offSets(skeletonAnimations[trackMap[SkeletonStateMachine::RUN]].GetOffsets().size());
-	std::vector<std::vector<Bone>> animKeyFrames(skeletonAnimations[trackMap[SkeletonStateMachine::RUN]].GetKeyFrames().size());
-
 	//A = A1 * (f - 1) + A2 * f
 
-		///STREATEGI FÖR DAGEN
-		/// HÄMTA ALLA VARIABLER FRÅN BONE STRUCKTEN FÖR SIG OCH FÖRSÖK BLENDA MELLAN DEM
-		/// //GÖR EN FUNKTION SOM TAR IN TVÅ STRUCTS
+	std::cout << "before blend length: " << skeletonAnimations[trackMap[state1]].GetAniLength() << std::endl;
+	std::cout << "before blend fps: " << skeletonAnimations[trackMap[state1]].GetFPS() << std::endl;
 
-		//dx::SimpleMath::Quaternion quat1;
-		//dx::SimpleMath::Quaternion quat2;
-		//dx::SimpleMath::Quaternion quatFinal;
+	/*skeletonAnimations[trackMap[state1]].SetBlendAnimLength(skeletonAnimations[trackMap[state2]].GetAniLength(), factor);
+	skeletonAnimations[trackMap[state1]].SetBlendFPS(skeletonAnimations[trackMap[state2]].GetFPS(), factor);*/
 
-		//dx::SimpleMath::Vector3 trans1;
-		//dx::SimpleMath::Vector3 trans2;
-		//dx::SimpleMath::Vector3 transFinal;
+	std::cout << "after blend length: " << skeletonAnimations[trackMap[state1]].GetAniLength() << std::endl;
+	std::cout << "after blend fps: " << skeletonAnimations[trackMap[state1]].GetFPS() << std::endl;
 
-		//blendFactor = 1.0f;
-		//
-		////ROTATION QUAT VERKAR INTE VARA KORREKT
-		//for (int i = 0; i < animKeyFrames.size(); i++)
-		//{
+	float size = skeletonAnimations[trackMap[state1]].GetKeyFrames().size() * (1 - factor) + skeletonAnimations[trackMap[state2]].GetKeyFrames().size() * 1;
 
-		//	//animKeyFrames[i][0].rotationQuaternion = skeletonAnimations[trackMap[SkeletonStateMachine::RUN]].GetKeyFrames()[i][0].rotationQuaternion * (1 - blendFactor) + skeletonAnimations[trackMap[SkeletonStateMachine::ATTACK]].GetKeyFrames()[i][0].rotationQuaternion * blendFactor;
-		//	quat1 = skeletonAnimations[trackMap[SkeletonStateMachine::RUN]].GetKeyFrames()[i][0].rotationQuaternion;
-		//	quat2 = skeletonAnimations[trackMap[SkeletonStateMachine::ATTACK]].GetKeyFrames()[i][0].rotationQuaternion;
+	
 
-		//	quatFinal = /*quat1 * (1 - blendFactor) + quat2 * blendFactor;*/ quatFinal.Slerp(quat1, quat2, blendFactor);
+	//tror det är fel på hur jag räknar gameframe och ben
+	
+	for (auto i = 0; i < size; i++)
+	{
+		std::cout << "size: " << i << std::endl;
 
-		//	trans1 = skeletonAnimations[trackMap[SkeletonStateMachine::RUN]].GetKeyFrames()[i][0].translationVector;
-		//	trans2 = skeletonAnimations[trackMap[SkeletonStateMachine::ATTACK]].GetKeyFrames()[i][0].translationVector;
-		//	transFinal = trans1 * (1 - blendFactor) + trans2 * blendFactor;
-		//}
+		skeletonAnimations[trackMap[state1]].MergeKeys(
+			skeletonAnimations[trackMap[state2]].GetKeyFrames()[i][0],
+			factor, i);
 
-		/*for (int i = 0; i < offSets.size(); i++)
-		{
-			offSets[i] = skeletonAnimations[trackMap[SkeletonStateMachine::RUN]].GetOffsets()[i];
-		}*/
+	}
+	
+	
 
-	skeletonAnimations[trackMap[SkeletonStateMachine::BLENDED]].MergeKeys(
-		skeletonAnimations[trackMap[state1]].GetKeyFrames(),
-		skeletonAnimations[trackMap[state2]].GetKeyFrames(),
-		factor);
+	//funkar inte som jag vill
+	//for (int i = 0; i < size; i++)
+	//{
+	//	skeletonAnimations[trackMap[state1]].MergeOffsets(skeletonAnimations[trackMap[state2]].GetOffsets(), factor, i);
+	//}
+	
 
+	//float animLength = skeletonAnimations[trackMap[state1]].GetAniLength() * (1 - factor) + skeletonAnimations[trackMap[state2]].GetAniLength() * factor;
+	//float fps = skeletonAnimations[trackMap[state1]].GetFPS() * (1 - factor) + skeletonAnimations[trackMap[state2]].GetFPS() * factor;
 
-	float animLength = skeletonAnimations[trackMap[state1]].GetAniLength() * (1 - factor) + skeletonAnimations[trackMap[state2]].GetAniLength() * factor;
-	float fps = skeletonAnimations[trackMap[state1]].GetFPS() * (1 - factor) + skeletonAnimations[trackMap[state2]].GetFPS() * factor;
+	//skeletonAnimations[trackMap[state1]].SetUpIDMapAndFrames(skeletonAnimations[trackMap[state1]].GetBoneIDMap(), fps, animLength);
 
-	//skeletonAnimations[trackMap[SkeletonStateMachine::RUN]].SetQuaternionsDirect(quatFinal);
-	//skeletonAnimations[trackMap[SkeletonStateMachine::RUN]].SetTransVector(transFinal);
+	//SetAnimationTrack(blendedAnim, SkeletonStateMachine::BLENDED);
 
-	skeletonAnimations[trackMap[SkeletonStateMachine::BLENDED]].SetUpIDMapAndFrames(skeletonAnimations[trackMap[state1]].GetBoneIDMap(), fps, animLength);
-	//skeletonAnimations[trackMap[SkeletonStateMachine::RUN]].SetOffsetsDirect(offSets); //Set the offsets
-	//skeletonAnimations[trackMap[SkeletonStateMachine::RUN]].SetKeyFramesDirect(animKeyFrames);
+	finalTransforms = skeletonAnimations[trackMap[state1]].Makeglobal(componentDeltaTime, dx::XMMatrixIdentity(), *skeletonAnimations[trackMap[state1]].GetRootKeyJoints());
 
-	finalTransforms = skeletonAnimations[trackMap[SkeletonStateMachine::BLENDED]].Makeglobal(componentDeltaTime, dx::XMMatrixIdentity(), *skeletonAnimations[trackMap[SkeletonStateMachine::BLENDED]].GetRootKeyJoints());
-	//lerp(diff, diff2, blendFactor);
-
-	//TESTA ATT LERPA SOM FOGGEN I FOG PIXELSHADERN
-	//finalTransforms = skeletonAnimations[trackMap[SkeletonStateMachine::RUN]].Makeglobal(time, dx::XMMatrixIdentity(), *skeletonAnimations[trackMap[SkeletonStateMachine::RUN]].GetRootKeyJoints());
-
-	//testTransform = skeletonAnimations[3].Makeglobal(time, dx::XMMatrixIdentity(), *skeletonAnimations[3].GetRootKeyJoints());
-
+	currentAni = state1;
 }
 
 void SkeletonMeshComponent::BlendAnimations()

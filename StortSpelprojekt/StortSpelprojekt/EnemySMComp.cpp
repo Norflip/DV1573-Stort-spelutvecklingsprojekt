@@ -36,7 +36,8 @@ void EnemySMComp::SetState(EnemyState state)
 void EnemySMComp::Start()
 {
 	//enemyAttackComp = GetOwner()->GetComponent<EnemyAttackComp>();
-	skeletonComponent->CreateBlendedAnimation();
+	//skeletonComponent->CreateBlendedAnimation();
+	
 }
 
 void EnemySMComp::Initialize()
@@ -72,7 +73,8 @@ void EnemySMComp::Animate()
 	{
 		if (currentState == EnemyState::ATTACK)
 		{
-			skeletonComponent->SetTrack(SkeletonStateMachine::RUN, false);
+			skeletonComponent->PlayBlendAnimations(SkeletonStateMachine::RUN, SkeletonStateMachine::ATTACK, 1.0f);
+			//skeletonComponent->SetTrack(SkeletonStateMachine::RUN, false);
 
 			if (attackComponent->GetIsAttacking())
 			{
@@ -125,8 +127,6 @@ void EnemySMComp::Update(const float& deltaTime)
 	{
 		Animate();
 	}
-
-	skeletonComponent->CreateBlendedAnimation();
 }
 
 void EnemySMComp::RegisterState(EnemyState state, Component* comp)
