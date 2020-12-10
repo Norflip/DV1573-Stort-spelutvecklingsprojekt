@@ -50,6 +50,8 @@ public:
 	bool GetRightMouseKeyDown() const;
 	//Gets keyUp once per click
 	bool GetRightMouseKeyUp() const;
+	//Gets mouse visible
+	bool GetIsVisible() const { return mouse.IsVisible(); }
 
 	POINT GetMousePos() const;
 	POINT GetMousePosRelative() const;
