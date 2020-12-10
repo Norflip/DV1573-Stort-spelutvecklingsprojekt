@@ -330,6 +330,9 @@
     <ClCompile Include="Imgui\imgui_widgets.cpp">
       <Filter>ThirdParty\Imgui</Filter>
     </ClCompile>
+    <ClCompile Include="MetaProgress.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="ObjectSpawner.h">
@@ -666,6 +669,9 @@
       <Filter>ThirdParty\Imgui</Filter>
     </ClInclude>
     <ClInclude Include="Config.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="MetaProgress.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>

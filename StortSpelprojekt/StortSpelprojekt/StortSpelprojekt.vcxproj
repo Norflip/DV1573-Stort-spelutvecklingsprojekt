@@ -139,6 +139,8 @@
       <ForcedIncludeFiles>stdafx.h</ForcedIncludeFiles>
       <PrecompiledHeaderFile>stdafx.h</PrecompiledHeaderFile>
       <LanguageStandard>stdcpp17</LanguageStandard>
+      <LanguageStandard_C>stdc17</LanguageStandard_C>
+      <WholeProgramOptimization>false</WholeProgramOptimization>
     </ClCompile>
     <Link>
       <SubSystem>Windows</SubSystem>
@@ -148,6 +150,9 @@
       <AdditionalLibraryDirectories>..\ZWEB\ZWEBBuild\bin\release;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
       <AdditionalDependencies>ZWEBImporter.lib;reactphysics3d.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
+    <ProjectReference>
+      <LinkLibraryDependencies>false</LinkLibraryDependencies>
+    </ProjectReference>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
     <ClCompile>
@@ -177,6 +182,7 @@
     <ClCompile Include="Imgui\imgui_impl_dx11.cpp" />
     <ClCompile Include="Imgui\imgui_impl_win32.cpp" />
     <ClCompile Include="Imgui\imgui_widgets.cpp" />
+    <ClCompile Include="MetaProgress.cpp" />
     <ClCompile Include="Pathfinding.cpp" />
     <ClCompile Include="CreditsScene.cpp" />
     <ClCompile Include="DepthPass.cpp" />
@@ -274,6 +280,7 @@
     <ClInclude Include="Imgui\imstb_rectpack.h" />
     <ClInclude Include="Imgui\imstb_textedit.h" />
     <ClInclude Include="Imgui\imstb_truetype.h" />
+    <ClInclude Include="MetaProgress.h" />
     <ClInclude Include="Pathfinding.h" />
     <ClInclude Include="CreditsScene.h" />
     <ClInclude Include="ParticleComponent.h" />

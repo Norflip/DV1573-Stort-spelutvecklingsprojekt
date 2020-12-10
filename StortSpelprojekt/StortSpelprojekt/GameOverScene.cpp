@@ -33,11 +33,17 @@ void GameOverScene::InitializeObjects()
 void GameOverScene::InitializeGUI()
 {
 	float windowWidth = FCAST(window->GetWidth());
+	float windowHeight = FCAST(window->GetHeight());
 	//spriteBatch = new DirectX::SpriteBatch(renderer->GetContext());
 	GUISprite* lose = new GUISprite(*renderer, "Textures/Died.png", windowWidth / 2 - 120, 100, 0, DrawDirection::Default, ClickFunction::NotClickable);
 	GUISprite* restart = new GUISprite(*renderer, "Textures/Restart.png", 100, 200, 0, DrawDirection::Default, ClickFunction::Clickable);
 	GUISprite* quit = new GUISprite(*renderer, "Textures/Exit.png", 100, 400, 0, DrawDirection::Default, ClickFunction::Clickable);
 	GUIFont* fpsDisplay = new GUIFont(*renderer, "fps", windowWidth / 2, 50);
+	GUIFont* deathReason = new GUIFont(*renderer, "death", windowWidth / 2-240, 250);
+	deathReason->SetFontSize({ 1,1 });
+	GUIFont* scoreDisplay = new GUIFont(*renderer, "info", windowWidth / 2 - 460, windowHeight/2-200);
+	scoreDisplay->SetFontSize({ 0.6f,0.6f });
+
 	restart->SetActivated();
 	quit->SetActivated();
 
@@ -46,6 +52,9 @@ void GameOverScene::InitializeGUI()
 	guiManager->AddGUIObject(fpsDisplay, "fps");
 	guiManager->AddGUIObject(restart, "restart");
 	guiManager->AddGUIObject(quit, "quit");
+
+	guiManager->AddGUIObject(deathReason, "death");
+	guiManager->AddGUIObject(scoreDisplay, "scoreDisplay");
 }
 
 void GameOverScene::OnActivate()
@@ -71,6 +80,13 @@ void GameOverScene::Update(const float& deltaTime)
 	Scene::Update(deltaTime);
 	
 	static_cast<GUIFont*>(guiManager->GetGUIObject("fps"))->SetString(std::to_string((int)GameClock::Instance().GetFramesPerSecond()));
+	std::string deathReason = "Killed by ";
+	deathReason += MetaProgress::Instance().GetKilledBy();
+	static_cast<GUIFont*>(guiManager->GetGUIObject("death"))->SetString(deathReason);
+
+	//GUIFont* test = (GUIFont*)guiManager->GetGUIObject("scoreDisplay");
+	static_cast<GUIFont*>(guiManager->GetGUIObject("scoreDisplay"))->SetString(MetaProgress::Instance().GetInfo());
+
 
 	if(static_cast<GUISprite*>(guiManager->GetGUIObject("quit"))->IsClicked())
 	{
