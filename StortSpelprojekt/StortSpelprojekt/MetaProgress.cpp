@@ -9,6 +9,8 @@ MetaProgress::MetaProgress()
 
 	this->score = 0;
 	this->currencyEarned = 0;
+	this->highScoreBeaten = false;
+	this->segmentBeaten = false;
 
 	this->bEnemiesKilled = 0;
 	this->cEnemiesKilled = 0;
@@ -49,18 +51,22 @@ std::string MetaProgress::GetInfo()
 	//int totalNodes = MetaProgress::Instance().GetNodesReached() + MetaProgress::Instance().GetLevelsCleared() * 19;
 
 	std::string scoreInfo = "Results\n";
+	std::string space = "     ";
+	scoreInfo += "[Scores]\n"+space+"Score: " + std::to_string(score) + ", High-Score: " + std::to_string(highscore);
+	if (highScoreBeaten)
+		scoreInfo += "[New Highscore!!]";
+	scoreInfo += +"\n";
+	scoreInfo += "[Upgrade-currency]\n"+space+ "Earned: " + std::to_string(currencyEarned) + " --> Total: " + std::to_string(currencyTotal) + "\n";
+	scoreInfo += "[Game-progress]\n"+space+"Segment:" + std::to_string(levelsCleared) + ", Record-Segment: " + std::to_string(levelsRecord);
+	if (segmentBeaten)
+		scoreInfo += "[New Record!!]";
+	scoreInfo += +"\n";
+	scoreInfo += space+"Last CheckPoint: " + std::to_string(nodesReached) + ", Game Wins: " + std::to_string(nrOfGameWins) +"\n";
 
-	scoreInfo += "[Scores] Score: " + std::to_string(score) + ", High-Score: " + std::to_string(highscore) + "\n";
-	scoreInfo += "[Upgrade-currency] Earned: " + std::to_string(currencyEarned) + " --> Total: " + std::to_string(currencyTotal) + "\n";
-	scoreInfo += "[Game-progress] Segment:" + std::to_string(MetaProgress::Instance().GetLevelsCleared())
-		+ ", Last CheckPoint: " + std::to_string(MetaProgress::Instance().GetNodesReached()) + ", Game Wins: " + std::to_string(MetaProgress::Instance().GetNrOfGameWins()) +"\n";
-
-	scoreInfo += "[Kills] Regular-Enemy: " + std::to_string(bEnemiesKilled) + ", Charger-Enemy: " + std::to_string(cEnemiesKilled) + "\n";
-	scoreInfo += "[Items] Fuel: " + std::to_string(fuelUsed) + ", Food: " + std::to_string(foodUsed) + ", Healpacks: " + std::to_string(healUsed) + "\n";
-	scoreInfo += "[Misc] puzzles: " + std::to_string(puzzleSolved) + "\n";
+	scoreInfo += "[Kills]\n"+space+"Regular-Enemy: " + std::to_string(bEnemiesKilled) + ", Charger-Enemy: " + std::to_string(cEnemiesKilled) + "\n";
+	scoreInfo += "[Items]\n"+space+"Fuel: " + std::to_string(fuelUsed) + ", Food: " + std::to_string(foodUsed) + ", Healpacks: " + std::to_string(healUsed) + "\n";
+	scoreInfo += "[Misc]\n"+space+"puzzles: " + std::to_string(puzzleSolved) + "\n";
 	
-	
-
 
 	return scoreInfo;
 }
@@ -70,8 +76,15 @@ void MetaProgress::SaveScore()
 	if (this->score > this->highscore)
 	{
 		this->highscore = this->score;
+		this->highScoreBeaten = true;
 	}
 	this->currencyTotal += this->currencyEarned;
+
+	if (this->levelsCleared > levelsRecord)
+	{
+		this->levelsRecord = this->levelsCleared;
+		this->segmentBeaten = true;
+	}
 }
 
 void MetaProgress::SaveProgress(SaveState& theSave)
@@ -80,6 +93,7 @@ void MetaProgress::SaveProgress(SaveState& theSave)
 	theSave.upgradeCurrency = this->currencyTotal;
 	theSave.nrOfGameWins = this->nrOfGameWins;
 	theSave.segment = this->levelsCleared;
+	theSave.segmentRecord = this->levelsRecord;
 	LoadSave(theSave);
 }
 
@@ -89,17 +103,21 @@ void MetaProgress::LoadSave(SaveState& theSave)
 	this->highscore = theSave.highscore;
 	this->nrOfGameWins = theSave.nrOfGameWins;
 	this->levelsCleared = theSave.segment;
+	this->levelsRecord = theSave.segmentRecord;
 }
 
 void MetaProgress::Reset()
 {
 	this->score = 0;
 	this->currencyEarned = 0;
+	this->highScoreBeaten = false;
+	this->segmentBeaten = false;
 
 	this->bEnemiesKilled = 0;
 	this->cEnemiesKilled = 0;
 	this->nodesReached = 0;
 	this->levelsCleared = 0;
+	this->levelsRecord = 0;
 	
 	this->fuelUsed = 0;
 	this->foodUsed = 0;

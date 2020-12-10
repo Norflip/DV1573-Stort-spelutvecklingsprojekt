@@ -64,12 +64,15 @@ private:
 	//variables keeping track of this turn/session
 	unsigned int score;
 	unsigned int currencyEarned;
+	bool highScoreBeaten;
+	bool segmentBeaten;
 
 	//track stuff
 	unsigned int bEnemiesKilled;
 	unsigned int cEnemiesKilled;
 	unsigned int nodesReached; //how far house traveled
 	unsigned int levelsCleared; //how many segments cleared
+	unsigned int levelsRecord;
 
 	unsigned int fuelUsed; 
 	unsigned int foodUsed;
@@ -78,9 +81,5 @@ private:
 
 	std::string deathReason;
 	
-	//boost stats
-	//(give enemies higher stats depending on nrofgame wins and level recached)
-	//[x] enemies gets attack and health boos from levels
-	//[ ] player gets health? and attack??
 
 };

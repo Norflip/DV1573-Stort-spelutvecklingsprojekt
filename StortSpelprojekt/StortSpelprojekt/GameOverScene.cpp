@@ -41,8 +41,8 @@ void GameOverScene::InitializeGUI()
 	GUIFont* fpsDisplay = new GUIFont(*renderer, "fps", windowWidth / 2, 50);
 	GUIFont* deathReason = new GUIFont(*renderer, "death", windowWidth / 2-240, 250);
 	deathReason->SetFontSize({ 1,1 });
-	GUIFont* scoreDisplay = new GUIFont(*renderer, "info", windowWidth / 2 - 460, windowHeight/2-100);
-	scoreDisplay->SetFontSize({ 0.8f,0.8f });
+	GUIFont* scoreDisplay = new GUIFont(*renderer, "info", windowWidth / 2 - 460, windowHeight/2-200);
+	scoreDisplay->SetFontSize({ 0.6f,0.6f });
 
 	restart->SetActivated();
 	quit->SetActivated();

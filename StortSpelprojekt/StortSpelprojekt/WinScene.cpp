@@ -42,8 +42,8 @@ void WinScene::InitializeGUI()
 	GUIFont* fpsDisplay = new GUIFont(*renderer, "fps", windowWidth / 2, 50);
 	restart->SetActivated();
 	quit->SetActivated();
-	GUIFont* scoreDisplay = new GUIFont(*renderer, "info", windowWidth / 2 - 460, windowHeight / 2 - 100);
-	scoreDisplay->SetFontSize({ 0.8f,0.8f });
+	GUIFont* scoreDisplay = new GUIFont(*renderer, "info", windowWidth / 2 - 460, windowHeight / 2 - 200);
+	scoreDisplay->SetFontSize({ 0.6f,0.6f });
 
 	guiManager = new GUIManager(renderer, 100);
 

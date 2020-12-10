@@ -15,6 +15,7 @@ struct SaveState
 	unsigned int upgradeCurrency;
 	unsigned int highscore;
 	unsigned int nrOfGameWins;
+	unsigned int segmentRecord;
 	static SaveState Default ()
 	{
 		SaveState state;
@@ -27,6 +28,7 @@ struct SaveState
 		state.upgradeCurrency = 0;
 		state.highscore = 0;
 		state.nrOfGameWins = 0;
+		state.segmentRecord = 0;
 
 		return state;
 	}
