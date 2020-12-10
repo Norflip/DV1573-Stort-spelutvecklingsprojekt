@@ -4,6 +4,7 @@
 #include "WorldDescription.h"
 #include "WorldGenerator.h"
 #include "SaveState.h"
+#include "ItemManager.h"
 
 class World
 {
@@ -15,7 +16,7 @@ public:
 	World();
 	virtual ~World();
 
-	void Initialize(Object* root, ResourceManager* resources, Renderer* renderer);
+	void Initialize(Object* root, ItemManager* items, Renderer* renderer);
 
 	void ConstructSegment(const SaveState& state);
 	void DeconstructSegment();
@@ -34,7 +35,7 @@ public:
 	WorldDescription& GetDescription() { return this->description; }
 	const WorldDescription& GetDescription() const { return this->description; }
 
-	dx::XMFLOAT3 GetPlayerPositionFromHouse(Object* house) const;
+	dx::XMFLOAT3 GetPlayerPositionFromHouse(Object* house)const;
 
 
 private:
@@ -54,6 +55,7 @@ private:
 	WorldDescription description;
 	Renderer* renderer;
 	ResourceManager* resources;
+	ItemManager* items;
 	std::vector<Chunk*> relevant;	
 	dx::XMINT2 lastRelevantIndex;
 };

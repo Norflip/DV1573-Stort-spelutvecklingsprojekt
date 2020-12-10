@@ -173,7 +173,7 @@ void ControllerComp::Update(const float& deltaTime)
 			Input::Instance().SetMouseMode(dx::Mouse::MODE_RELATIVE);
 		else
 			Input::Instance().SetMouseMode(dx::Mouse::MODE_ABSOLUTE);
-		ShowCursor(!this->canRotate);
+		//ShowCursor(!this->canRotate);
 	}
 	
 	float length = 0.f;
@@ -212,7 +212,8 @@ void ControllerComp::Update(const float& deltaTime)
 		{
 			if (inside && inDoorRange)
 			{
-				dx::XMVECTOR pos = dx::XMLoadFloat3(&world->GetPlayerPositionFromHouse(house));
+				dx::XMFLOAT3 pos3 = world->GetPlayerPositionFromHouse(house);
+				dx::XMVECTOR pos = dx::XMLoadFloat3(&pos3);
 
 				GetOwner()->GetTransform().SetPosition(pos);
 				GetOwner()->GetComponent<RigidBodyComponent>()->SetPosition(pos);
