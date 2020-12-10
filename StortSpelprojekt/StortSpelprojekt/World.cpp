@@ -188,27 +188,27 @@ void World::RegisterFood(ObjectSpawner* spawner, const std::map<std::string, int
 {
 	items->Register("Baked_beans", PickupType::Food, TryGetQueueCount("Baked_beans", queueCountTable), [](ResourceManager* resources)
 		{
-			return ObjectSpawner::DefaultCreateItem("Soup", PickupType::Food, 25.0f);
+			return ItemManager::DefaultCreateItem("Soup", PickupType::Food, 25.0f);
 		});
 
 	items->Register("Banana", PickupType::Food, TryGetQueueCount("Banana", queueCountTable), [](ResourceManager* resources)
 		{
-			return ObjectSpawner::DefaultCreateItem("Banana", PickupType::Food, 15.0f);
+			return ItemManager::DefaultCreateItem("Banana", PickupType::Food, 15.0f);
 		});
 
 	items->Register("Apple", PickupType::Food, TryGetQueueCount("Apple", queueCountTable), [](ResourceManager* resources)
 		{
-			return ObjectSpawner::DefaultCreateItem("Apple", PickupType::Food, 15.0f);
+			return ItemManager::DefaultCreateItem("Apple", PickupType::Food, 15.0f);
 		});
 
 	items->Register("Fruits", PickupType::Food, TryGetQueueCount("Fruits", queueCountTable), [](ResourceManager* resources)
 		{
-			return ObjectSpawner::DefaultCreateItem("Fruits", PickupType::Food, 35.0f);
+			return ItemManager::DefaultCreateItem("Fruits", PickupType::Food, 35.0f);
 		});
 
 	items->Register("Pear", PickupType::Food, TryGetQueueCount("Pear", queueCountTable), [](ResourceManager* resources)
 		{
-			return ObjectSpawner::DefaultCreateItem("Pear", PickupType::Food, 35.0f);
+			return ItemManager::DefaultCreateItem("Pear", PickupType::Food, 35.0f);
 		});
 }
 
@@ -226,12 +226,12 @@ void World::RegisterFuel(ObjectSpawner* spawner, const std::map<std::string, int
 
 	items->Register("FuelRed", PickupType::Fuel, TryGetQueueCount("FuelRed", queueCountTable), [](ResourceManager* resources)
 		{
-			return ObjectSpawner::DefaultCreateItem("FuelCanRed", PickupType::Fuel, 20.0f);
+			return ItemManager::DefaultCreateItem("FuelCanRed", PickupType::Fuel, 20.0f);
 		});
 
 	items->Register("Propane", PickupType::Fuel, TryGetQueueCount("Propane", queueCountTable), [](ResourceManager* resources)
 		{
-			return ObjectSpawner::DefaultCreateItem("Propane", PickupType::Fuel, 35.0f);
+			return ItemManager::DefaultCreateItem("Propane", PickupType::Fuel, 35.0f);
 		});
 }
 
@@ -239,11 +239,11 @@ void World::RegisterHealth(ObjectSpawner* spawner, const std::map<std::string, i
 {
 	items->Register("Health_kit", PickupType::Health, TryGetQueueCount("Health_kit", queueCountTable), [](ResourceManager* resources)
 		{
-			return ObjectSpawner::DefaultCreateItem("HealthKit", PickupType::Health, 40.0f);
+			return ItemManager::DefaultCreateItem("HealthKit", PickupType::Health, 40.0f);
 		});
 	items->Register("Pills", PickupType::Health, TryGetQueueCount("Pills", queueCountTable), [](ResourceManager* resources)
 		{
-			return ObjectSpawner::DefaultCreateItem("HealthJar", PickupType::Health, 25.0f);
+			return ItemManager::DefaultCreateItem("HealthJar", PickupType::Health, 25.0f);
 		});
 }
 

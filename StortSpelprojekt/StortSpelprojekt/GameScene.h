@@ -46,14 +46,13 @@ private:
 
 	World world;
 	Object* house;
-	ObjectPooler* pooler;
 	Particlesys* testParticles;
 
 	Object* leftSign;
 	Object* rightSign;
 	Object* endSign;
 	NodeWalkerComp* nodeWalker;
-
+	ItemManager* items;
 	float fogCol;
 
 	bool onceTest = true;

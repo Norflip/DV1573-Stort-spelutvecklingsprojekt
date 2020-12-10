@@ -62,8 +62,6 @@ public:
 	void RegisterInstancedItem(Mesh* mesh, Material* material, float yOffset, size_t queueCount, dx::XMUINT3 rotationAxis);
 	void DrawDebug();
 
-	static Object* DefaultCreateItem(std::string key, PickupType type, float value);
-
 private:
 	void SpawnStatic(Chunk* chunk);
 	void SpawnItem(Chunk* chunk);

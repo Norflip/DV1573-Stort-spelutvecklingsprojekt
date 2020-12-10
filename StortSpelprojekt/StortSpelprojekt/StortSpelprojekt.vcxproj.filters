@@ -76,6 +76,9 @@
     <FxCompile Include="Shaders\Leaf_vs.hlsl">
       <Filter>Resource Files</Filter>
     </FxCompile>
+    <FxCompile Include="Shaders\VHS_ps.hlsl">
+      <Filter>Resource Files</Filter>
+    </FxCompile>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="BoxColliderComponent.cpp">

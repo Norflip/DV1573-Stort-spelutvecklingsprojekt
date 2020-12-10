@@ -151,7 +151,8 @@ void GameScene::InitializeObjects()
 	/* For fuel info from playercomp */
 	nodeWalker->GetPlayerInfo(playerObject->GetComponent<PlayerComp>());
 
-	world.Initialize(root, resources, renderer);
+	items = new ItemManager();
+	world.Initialize(root, items, renderer);
 
 	//Player Arms
 	Object* playerArms = new Object("PlayerArms", ObjectFlag::DEFAULT | ObjectFlag::NO_CULL);
@@ -690,6 +691,7 @@ void GameScene::Update(const float& deltaTime)
 	//testParticles->SetEyePos(eyeCam);
 	//testParticles->Update(deltaTime, GameClock::Instance().GetSeconds());
 
+	items->UpdateNearbySpawns(eyeCam);
 
 	//dx::XMFLOAT3 eyeCam;
 	//dx::XMStoreFloat3(&eyeCam, camera->GetOwner()->GetTransform().GetPosition());
@@ -764,10 +766,12 @@ void GameScene::OnIMGUIFrame()
 		dx::XMFLOAT3 housePos;
 		dx::XMStoreFloat3(&housePos, house->GetTransform().GetWorldPosition());
 		std::cout << "house current position: " << housePos.x << ", " << housePos.y << ", " << housePos.z << std::endl;
-
 	}
 
-
+	if (ImGui::Button("Recompile shaders"))
+	{
+		resources->CompileShaders(renderer->GetDevice());
+	}
 
 	if (ImGui::Button("EASY WIN BBY"))
 	{

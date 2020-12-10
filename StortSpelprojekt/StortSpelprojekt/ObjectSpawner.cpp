@@ -263,24 +263,6 @@ bool ObjectSpawner::ValidSpawnPoint(const dx::XMFLOAT2& point, Chunk* chunk, flo
 	return valid;
 }
 
-Object* ObjectSpawner::DefaultCreateItem(std::string key, PickupType type, float value)
-{
-	Object* object = Engine::Instance->GetResources()->AssembleObject(key, key + "Material", true);
-
-	object->AddComponent<PickupComponent>(type, value);
-	if (type == PickupType::Fuel)
-	{
-		object->AddComponent<BoxColliderComponent>(dx::XMFLOAT3(0.3f, 0.35f, 0.15f), dx::XMFLOAT3(0, 0, 0));
-		object->AddComponent<RigidBodyComponent>(10.0f, FilterGroups::HOLDABLE, FilterGroups::EVERYTHING & ~FilterGroups::PLAYER, BodyType::DYNAMIC, true);
-	}
-	else
-	{
-		object->AddComponent<BoxColliderComponent>(dx::XMFLOAT3(0.25f, 0.25f, 0.25f), dx::XMFLOAT3(0, 0, 0));
-		object->AddComponent<RigidBodyComponent>(10.0f, FilterGroups::PICKUPS, FilterGroups::EVERYTHING & ~FilterGroups::PLAYER, BodyType::DYNAMIC, true);
-	}
-	return object;
-}
-
 static float spawnChance = 0.0f;
 static float spawnIncrement = 0.2f;
 static float spawnDecrement = 0.15f;
@@ -370,11 +352,15 @@ void ObjectSpawner::SpawnStatic(Chunk* chunk)
 static size_t m_itemIndex = 0;
 void ObjectSpawner::SpawnItem(Chunk* chunk)
 {
-	if (itemRegistry.size() > 0 && chunk->GetType() == ChunkType::TERRAIN)
+	if (chunk->GetType() == ChunkType::TERRAIN)
 	{
+		dx::XMINT2 index = chunk->GetIndex();
+		PickupType priorityType = PickupType::Food;
+		if (index.x & 2 == 0 && index.y & 2 == 0)
+			priorityType = PickupType::Fuel;
+		
 		const size_t MIN_ITEMS_PER_CHUNK = 2;
-		const size_t MAX_ITEMS_PER_CHUNK = 5;
-
+		const size_t MAX_ITEMS_PER_CHUNK = 4;
 
 		std::vector<dx::XMFLOAT2> positions = PossionDiscSampler::Sample(2.0f, CHUNK_SIZE, CHUNK_SIZE);
 
@@ -383,6 +369,8 @@ void ObjectSpawner::SpawnItem(Chunk* chunk)
 			ShuffleVector(positions);
 			size_t spawnCount = 0;
 			size_t ITEMS_PER_CHUNK = UICAST(Random::Range(ICAST(MIN_ITEMS_PER_CHUNK), ICAST(MAX_ITEMS_PER_CHUNK + 1)));
+
+			std::cout << "ITEM_COUNT: " << ITEMS_PER_CHUNK << std::endl;
 
 			for (size_t i = 0; i < positions.size() && spawnCount < ITEMS_PER_CHUNK; i++)
 			{
@@ -396,16 +384,21 @@ void ObjectSpawner::SpawnItem(Chunk* chunk)
 				{
 					float y = chunk->SampleHeight(pos.x, pos.y);
 
-					Item& item = itemRegistry[m_itemIndex];
-					Object* object = pooler->GetItem(item.key);
 					dx::XMVECTOR position = dx::XMVectorSet(pos.x, y + 1.0f, pos.y, 0.0f);
+					Object* object = nullptr;
+
+					if (i == 0)
+						object = items->SpawnRandomOfType(priorityType, position, root);
+					else
+						object = items->SpawnRandom(position, root);
+
+
+					//Item& item = itemRegistry[m_itemIndex];
+					//Object* object = pooler->GetItem(item.key);
 					//object->GetComponent<MeshComponent>()->SetBatchable(true);
 
-					object->GetComponent<RigidBodyComponent>()->SetPosition(position);
-					object->GetComponent<RigidBodyComponent>()->GetRigidBody()->setIsActive(true);
-
-					Object::AddToHierarchy(root, object);
-					activeItems.push_back(object);
+					//Object::AddToHierarchy(root, object);
+					//activeItems.push_back(object);
 
 					if (!object->HasComponent<ParticleSystemComponent>())
 					{
@@ -414,13 +407,11 @@ void ObjectSpawner::SpawnItem(Chunk* chunk)
 						particles->InitializeParticles(renderer->GetDevice(), "Particle");
 					}
 
-					m_itemIndex++;
-					m_itemIndex %= itemRegistry.size();
-
 					spawnCount++;
 				}
 			}
 		}
+
 	}
 }
 

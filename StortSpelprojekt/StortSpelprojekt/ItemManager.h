@@ -20,10 +20,13 @@ public:
 
 	void UpdateNearbySpawns(const dx::XMFLOAT3& eye);
 
-	Object* SpawnRandomOfType(PickupType type, const dx::XMFLOAT3& position, bool spawnInstant = false);
-	Object* SpawnSpecific(const std::string& key, const dx::XMFLOAT3& position, bool spawnInstant = false);
+	Object* SpawnRandom(const dx::XMVECTOR& position, Object* container, bool spawnInstant = false);
+	Object* SpawnRandomOfType(PickupType type, const dx::XMVECTOR& position, Object* container, bool spawnInstant = false);
+	Object* SpawnSpecific(const std::string& key, const dx::XMVECTOR& position, Object* container, bool spawnInstant = false);
 	void Despawn(Object* object);
 	void DespawnAll();
+
+	static Object* DefaultCreateItem(std::string key, PickupType type, float value);
 
 private:
 	QuadTree* itemsSpawnQT;

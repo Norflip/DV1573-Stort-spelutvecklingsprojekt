@@ -23,6 +23,7 @@ void ItemManager::Register(const std::string& key, PickupType type, size_t queue
 	pooler->Register(key, 0, factory);
 	for (size_t i = 0; i < queueCount; i++)
 		allItemRegistry.push_back(key);
+	pickupKeyRegistry[UICAST(type)].push_back(key);
 }
 
 void ItemManager::Unregister(const std::string& key)
@@ -63,27 +64,47 @@ void ItemManager::UpdateNearbySpawns(const dx::XMFLOAT3& eye)
 		std::cout << "SPAWNED: " << spawnCount << std::endl;
 }
 
-Object* ItemManager::SpawnRandomOfType(PickupType type, const dx::XMFLOAT3& position, bool spawnInstant)
+Object* ItemManager::SpawnRandom(const dx::XMVECTOR& position, Object* container, bool spawnInstant)
 {
-	assert(type >= 0 && type < MAX_PICKUP_TYPES);
-	auto& allkeys = pickupKeyRegistry[UICAST(type)];
-	std::string key = allkeys[Random::Range(0, allkeys.size())];
-	return SpawnSpecific(key, position, spawnInstant);
+	return SpawnSpecific(allItemRegistry[UICAST(Random::Range(0, allItemRegistry.size()))], position, container, spawnInstant);
 }
 
-Object* ItemManager::SpawnSpecific(const std::string& key, const dx::XMFLOAT3& position, bool spawnInstant)
+Object* ItemManager::SpawnRandomOfType(PickupType type, const dx::XMVECTOR& position, Object* container, bool spawnInstant)
+{
+	assert(UICAST(type) >= 0 && UICAST(type) < MAX_PICKUP_TYPES);
+	auto& allkeys = pickupKeyRegistry[UICAST(type)];
+	std::string key = allkeys[Random::Range(0, allkeys.size())];
+
+	return SpawnSpecific(key, position, container, spawnInstant);
+}
+
+Object* ItemManager::SpawnSpecific(const std::string& key, const dx::XMVECTOR& position, Object* container, bool spawnInstant)
 {
 	Object* object = pooler->GetItem(key);
-	object->GetTransform().SetWorldPosition(dx::XMLoadFloat3(&position));
+
+	if (container != nullptr)
+		Object::AddToHierarchy(container, object);
+
+	RigidBodyComponent* body = object->GetComponent<RigidBodyComponent>();
+	if (body != nullptr)
+	{
+		body->SetPosition(position);
+		body->GetRigidBody()->setIsActive(true);
+	}
+	object->GetTransform().SetWorldPosition(position);
+
 	activeItems.push_back(object);
 
-	if (!spawnInstant)
+	/*if (!spawnInstant)
 	{
-		dx::XMFLOAT2 min(position.x - 1, position.z - 1);
-		dx::XMFLOAT2 max(position.x + 1, position.z + 1);
+		dx::XMFLOAT3 pos;
+		dx::XMStoreFloat3(&spos, position);
+
+		dx::XMFLOAT2 min(pos.x - 1, pos.z - 1);
+		dx::XMFLOAT2 max(pos.x + 1, pos.z + 1);
 		object->RemoveFlag(ObjectFlag::ENABLED);
 		itemsSpawnQT->Insert(min, max, object);
-	}
+	}*/
 
 	return object;
 }
@@ -103,4 +124,28 @@ void ItemManager::DespawnAll()
 		pooler->ReturnItem(activeItems[i]);
 		activeItems.erase(activeItems.begin() + i);
 	}
+}
+
+
+Object* ItemManager::DefaultCreateItem(std::string key, PickupType type, float value)
+{
+	Object* object = Engine::Instance->GetResources()->AssembleObject(key, key + "Material", true);
+
+	object->AddComponent<PickupComponent>(type, value);
+	if (type == PickupType::Fuel)
+	{
+		object->AddComponent<BoxColliderComponent>(dx::XMFLOAT3(0.3f, 0.35f, 0.15f), dx::XMFLOAT3(0, 0, 0));
+		object->AddComponent<RigidBodyComponent>(10.0f, FilterGroups::HOLDABLE, FilterGroups::EVERYTHING & ~FilterGroups::PLAYER, BodyType::DYNAMIC, true);
+	}
+	else
+	{
+		object->AddComponent<BoxColliderComponent>(dx::XMFLOAT3(0.25f, 0.25f, 0.25f), dx::XMFLOAT3(0, 0, 0));
+		object->AddComponent<RigidBodyComponent>(10.0f, FilterGroups::PICKUPS, FilterGroups::EVERYTHING & ~FilterGroups::PLAYER, BodyType::DYNAMIC, true);
+	}
+
+	Renderer* renderer = Engine::Instance->GetRenderer();
+	ParticleSystemComponent* particles = object->AddComponent<ParticleSystemComponent>(renderer, Engine::Instance->GetResources()->GetShaderResource("particleShader"));
+	particles->InitializeParticles(renderer->GetDevice(), "Particle");
+
+	return object;
 }
