@@ -9,6 +9,9 @@ struct WorldDescription
 	int minEnviromentProps;
 	int maxEnviromentProps;
 
+	int leftIndex;
+	int rightIndex;
+
 	std::map<std::string, int> queueModifier;
 	Noise::Settings noiseSettings;
 
