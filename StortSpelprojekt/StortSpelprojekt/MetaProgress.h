@@ -22,6 +22,7 @@ public:
 	//void Initialize();
 
 	void Print();
+	std::string GetInfo();
 	void SaveScore(); // saves score when player dies.. and then resets
 	void SaveProgress(SaveState& theSave);
 	void LoadSave(SaveState & theSave); //load when enter gamescene.. OnActive
@@ -30,6 +31,7 @@ public:
 
 	void EnemyKilled(const std::string& enemytype); //done
 	void SetNodeReached(const int& currentNode);
+	unsigned int GetNodesReached()const { return this->nodesReached; };
 	void SetLevelsCleared(const int& currentLevel);
 	unsigned int GetLevelsCleared()const { return this->levelsCleared; };
 
@@ -37,6 +39,10 @@ public:
 	std::string GetKilledBy()const { return this->deathReason; };
 	
 	unsigned int GetHighScore()const { return highscore; }
+	unsigned int GetScore()const { return score; }
+	unsigned int GetCurrencyTotal()const { return currencyTotal; }
+	unsigned int GetCurrencyEarned()const { return currencyEarned; }
+	unsigned int GetNrOfGameWins()const { return nrOfGameWins; }
 
 	void IncFuelUsed(int value); //done
 	void IncFoodUsed(int value); //done
@@ -77,9 +83,4 @@ private:
 	//[x] enemies gets attack and health boos from levels
 	//[ ] player gets health? and attack??
 
-
-	
-
-	//hold GUI?
-	//hold calc?
 };

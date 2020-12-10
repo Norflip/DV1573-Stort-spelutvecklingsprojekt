@@ -137,20 +137,20 @@ void PlayerComp::FixedUpdate(const float& fixedDeltaTime)
 					MetaProgress::Instance().SaveScore();
 					SaveState & save = SaveHandler::LoadOrCreate();
 					MetaProgress::Instance().SaveProgress(save);
-					MetaProgress::Instance().Reset();
 					Engine::Instance->SwitchScene(SceneIndex::GAME_OVER);
 				}
 
 				if (food < 0)
 				{
 					foodEmpty = true;
-					MetaProgress::Instance().SetKilledBy("hunger deficiency.");
+					
 				}
 				else
 					foodEmpty = false;
 
 				if (foodEmpty)
 				{
+					MetaProgress::Instance().SetKilledBy("hunger deficiency.");
 					health -= TARGET_FIXED_DELTA * healthLossPerSecond;
 					foodLossPerSecond = 0;
 				}

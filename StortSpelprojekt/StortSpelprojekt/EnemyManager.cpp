@@ -239,8 +239,8 @@ void EnemyManager::SpawnEnemy(std::string key, dx::XMVECTOR position)
 	enemyStats->RaiseStats(1+ ENEMY_HEALTH_MULTIPLIER * level,1+ ENEMY_ATTACK_MULTIPLIER * level);
 		
 
-	std::cout << "enemy ["<<enemyVector.size()<<"]"<<std::endl
-		<<" hp: " <<enemyStats->GetHealth()<<", attack: "<< enemyStats->GetAttack()<<std::endl;
+	//std::cout << "enemy ["<<enemyVector.size()<<"]"<<std::endl
+	//	<<" hp: " <<enemyStats->GetHealth()<<", attack: "<< enemyStats->GetAttack()<<std::endl;
 
 	enemyVector.push_back(enemy);
 }

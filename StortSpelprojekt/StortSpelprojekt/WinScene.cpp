@@ -35,13 +35,15 @@ void WinScene::InitializeObjects()
 void WinScene::InitializeGUI()
 {
 	float windowWidth = static_cast<float>(window->GetWidth());
-
+	float windowHeight = FCAST(window->GetHeight());
 	GUISprite* win = new GUISprite(*renderer, "Textures/Win.png", windowWidth / 2 - 120, 100, 0, DrawDirection::Default, ClickFunction::NotClickable);
 	GUISprite* restart = new GUISprite(*renderer, "Textures/Restart.png", 100, 200, 0, DrawDirection::Default, ClickFunction::Clickable);
 	GUISprite* quit = new GUISprite(*renderer, "Textures/Exit.png", 100, 400, 0, DrawDirection::Default, ClickFunction::Clickable);
 	GUIFont* fpsDisplay = new GUIFont(*renderer, "fps", windowWidth / 2, 50);
 	restart->SetActivated();
 	quit->SetActivated();
+	GUIFont* scoreDisplay = new GUIFont(*renderer, "info", windowWidth / 2 - 460, windowHeight / 2 - 100);
+	scoreDisplay->SetFontSize({ 0.8f,0.8f });
 
 	guiManager = new GUIManager(renderer, 100);
 
@@ -49,6 +51,8 @@ void WinScene::InitializeGUI()
 	guiManager->AddGUIObject(win, "win");
 	guiManager->AddGUIObject(restart, "restart");
 	guiManager->AddGUIObject(quit, "quit");
+
+	guiManager->AddGUIObject(scoreDisplay, "scoreDisplay");
 }
 
 void WinScene::OnActivate()
@@ -71,7 +75,7 @@ void WinScene::Update(const float& deltaTime)
 
 	Scene::Update(deltaTime);
 	static_cast<GUIFont*>(guiManager->GetGUIObject("fps"))->SetString(std::to_string((int)GameClock::Instance().GetFramesPerSecond()));
-
+	static_cast<GUIFont*>(guiManager->GetGUIObject("scoreDisplay"))->SetString(MetaProgress::Instance().GetInfo());
 	if (static_cast<GUISprite*>(guiManager->GetGUIObject("quit"))->IsClicked())
 	{
 		AudioMaster::Instance().StopSoundEvent("menusound");

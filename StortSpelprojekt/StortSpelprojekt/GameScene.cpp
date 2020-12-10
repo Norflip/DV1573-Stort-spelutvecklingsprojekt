@@ -461,7 +461,7 @@ void GameScene::OnActivate()
 {
 	//guiManager->GetGUIObject("loading")->SetVisible(true);
 	//renderer->RenderFrame(camera, (float)clock.GetSeconds(), player->GetComponent<PlayerComp>()->GetDangerDistance(), false);
-
+	MetaProgress::Instance().Reset();
 	//house->GetComponent<NodeWalkerComp>()->currentNode = 1;
 	SaveState& state = SaveHandler::LoadOrCreate();
 	MetaProgress::Instance().LoadSave(state);

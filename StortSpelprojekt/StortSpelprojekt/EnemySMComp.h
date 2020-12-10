@@ -9,7 +9,7 @@
 #include "EnemyManager.h"
 #include "MetaProgress.h"
 
-#define ENEMY_RADIUS_LIMIT 70.f //Kill Enemy outside of this length from player
+#define ENEMY_RADIUS_LIMIT 100.f //Kill Enemy outside of this length from player
 //(kill enemies since they never will be encountered)
 
 enum class EnemyState
@@ -23,8 +23,6 @@ enum class EnemyState
     UNLOAD,
     DEATH
 };
-
-
 
 class EnemySMComp : public Component
 {

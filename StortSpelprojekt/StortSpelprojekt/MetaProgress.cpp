@@ -43,6 +43,28 @@ void MetaProgress::Print()
 		<< "===========" << std::endl << std::endl;
 }
 
+std::string MetaProgress::GetInfo()
+{
+
+	//int totalNodes = MetaProgress::Instance().GetNodesReached() + MetaProgress::Instance().GetLevelsCleared() * 19;
+
+	std::string scoreInfo = "Results\n";
+
+	scoreInfo += "[Scores] Score: " + std::to_string(score) + ", High-Score: " + std::to_string(highscore) + "\n";
+	scoreInfo += "[Upgrade-currency] Earned: " + std::to_string(currencyEarned) + " --> Total: " + std::to_string(currencyTotal) + "\n";
+	scoreInfo += "[Game-progress] Segment:" + std::to_string(MetaProgress::Instance().GetLevelsCleared())
+		+ ", Last CheckPoint: " + std::to_string(MetaProgress::Instance().GetNodesReached()) + ", Game Wins: " + std::to_string(MetaProgress::Instance().GetNrOfGameWins()) +"\n";
+
+	scoreInfo += "[Kills] Regular-Enemy: " + std::to_string(bEnemiesKilled) + ", Charger-Enemy: " + std::to_string(cEnemiesKilled) + "\n";
+	scoreInfo += "[Items] Fuel: " + std::to_string(fuelUsed) + ", Food: " + std::to_string(foodUsed) + ", Healpacks: " + std::to_string(healUsed) + "\n";
+	scoreInfo += "[Misc] puzzles: " + std::to_string(puzzleSolved) + "\n";
+	
+	
+
+
+	return scoreInfo;
+}
+
 void MetaProgress::SaveScore()
 {
 	if (this->score > this->highscore)
