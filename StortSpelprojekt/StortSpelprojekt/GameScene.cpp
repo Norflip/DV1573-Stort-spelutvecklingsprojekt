@@ -414,8 +414,8 @@ void GameScene::InitializeInterior()
 	fLight->SetIntensity(1.f);
 	AddObjectToRoot(fireLight);
 
-	testParticles = new Particlesys(/*Engine::Instance->GetResources()->GetShaderResource("soshader"), Engine::Instance->GetResources()->GetShaderResource("drawshader")*/);
-	testParticles->InitializeParticleShaders(renderer->GetDevice(), window->GetHWND());
+	testParticles = new Particlesys(Engine::Instance->GetResources()->GetShaderResource("ParticleShaderSO"), Engine::Instance->GetResources()->GetShaderResource("ParticleShaderDraw"));
+	//testParticles->InitializeParticleShaders(renderer->GetDevice(), window->GetHWND());
 
 	testParticles->SetTexture(renderer->GetDevice(), L"Textures/fire.png");
 	testParticles->SetMaxParticles(200);
@@ -668,7 +668,6 @@ void GameScene::Update(const float& deltaTime)
 		leftSign->GetComponent<SelectableComponent>()->SetActive(false);
 	}
 	
-
 
 	//Win
 	if (end)

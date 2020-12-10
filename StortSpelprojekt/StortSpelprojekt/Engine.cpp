@@ -96,6 +96,9 @@ void Engine::Run()
 
 			if (msg.message == WM_QUIT)
 				Exit();
+
+			if (KEY_DOWN(Escape))
+				Exit();
 		}
 		else
 		{
