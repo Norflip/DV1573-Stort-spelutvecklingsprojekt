@@ -38,11 +38,31 @@ public:
 			while (!i.second.empty())
 			{
 				Renderer::RenderItem item = i.second.front();
-				i.second.pop();
 
+				i.second.pop();
 				// Om item är instancable.. kör en Instanceable_vs + emissive_ps t.ex
 				// OM item är vanlig... kör en Default_vs + emissive_ps.
+				/*switch (item.type)
+				{
+					case Renderer::RenderItem::Type::Instanced:
+						shader->SetVertexShader("Shaders/Instance_vs.hlsl");
+						shader->SetPixelShader("Shaders/Emissive_ps.hlsl");
+						material = new Material(shader);
+						renderer->GetContext()->PSSetShaderResources(0, 1, &target.srv);
+						renderer->DrawScreenQuad(material);
+						break;
 
+					case Renderer::RenderItem::Type::Default:
+					default:
+						shader->SetVertexShader("Shaders/Default_vs.hlsl");
+						shader->SetPixelShader("Shaders/Default_ps.hlsl");
+						material = new Material(shader);
+						renderer->GetContext()->PSSetShaderResources(0, 1, &target.srv);
+						renderer->DrawScreenQuad(material);
+						break;
+
+				}*/
+				
 
 				// Denna drar ner prestandan.. men det visar att saker faktiskt finns i queuen.
 				//std::cout << "GLOWING? : " << item.mesh->GetMeshName() << std::endl;
@@ -50,8 +70,6 @@ public:
 		}
 
 		// UNBINDA GLOWTARGET HÄR. Kommer ge fel annars
-
-
 
 		// vi sparar glow texturer till renderer så vi sedan kan hämta den i nästa pass
 		renderer->StoreShaderResourceView("glow", target.srv);
@@ -65,7 +83,8 @@ public:
 private:
 
 	RenderTexture glowTarget;
-
+	Shader* shader = new Shader;
+	Material* material;
 };
 
 ALIGN16
