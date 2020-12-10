@@ -12,9 +12,10 @@ struct SaveState
 	float playerFuel;
 	float playerFood;
 	bool showTutortial;
-	float upgradeCurrency;
+	unsigned int upgradeCurrency;
 	unsigned int highscore;
 	unsigned int nrOfGameWins;
+	unsigned int segmentRecord;
 	static SaveState Default ()
 	{
 		SaveState state;
@@ -24,9 +25,10 @@ struct SaveState
 		state.showTutortial = true;
 		state.segment = 0;
 		state.seed = rand();
-		state.upgradeCurrency = 0.f;
+		state.upgradeCurrency = 0;
 		state.highscore = 0;
 		state.nrOfGameWins = 0;
+		state.segmentRecord = 0;
 
 		return state;
 	}

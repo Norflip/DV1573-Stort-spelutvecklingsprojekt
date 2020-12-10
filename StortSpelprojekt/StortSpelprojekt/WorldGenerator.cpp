@@ -111,10 +111,12 @@ void WorldGenerator::Construct(const SaveState& state, const WorldDescription& d
 				{
 					info.main->SetEnable(false);
 					ItemManager::instance->SpawnSpecific("Propane", info.main->GetTransform().GetWorldPosition(), info.main->GetParent());
+					MetaProgress::Instance().IncPuzzleSolved(0);
 				}
 				else if(info.main->GetName() == "PuzzleFlyStatue" && info.other->GetName() == "frogHead" && !info.remove)
 				{
 					info.remove = true;
+					
 				}
 			};
 

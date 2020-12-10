@@ -3,6 +3,7 @@
 #include "Path.h"
 #include "Input.h"
 #include "World.h"
+#include "MetaProgress.h"
 
 // why are these global?
 constexpr float HEIGHT = 0.6f; //height from ground
@@ -15,7 +16,6 @@ private:
 	Path thePath;
 	float speed;
 	int currentNode;
-	//int nextChosen;
 	bool canWalk;
 	float nodeRadius;
 
@@ -45,9 +45,9 @@ public:
 
 	void SetPlayerComp(PlayerComp* playerComp) { this->playerComp = playerComp; }
 	dx::XMFLOAT3 GetMoveVec();
-	bool GetIsWalking() const { return isWalking; };
+	bool GetIsWalking() const { return isWalking; }
 	void SetWorld(World* world) { this->world = world; }
-	//bool GetHouseInGoal(); //returns if house is on last node 
+	int GetCurrentNode()const { return this->currentNode; }
 	float GetHouseProgress(); //returns how far the house has gone between 0 and 1 (0 is 0% and 1 is 100%) 
 };
 

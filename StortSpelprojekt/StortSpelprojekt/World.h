@@ -35,7 +35,7 @@ public:
 	WorldDescription& GetDescription() { return this->description; }
 	const WorldDescription& GetDescription() const { return this->description; }
 
-	dx::XMFLOAT3 GetPlayerPositionFromHouse(Object* house) const;
+	dx::XMFLOAT3 GetPlayerPositionFromHouse(Object* house)const;
 
 
 private:
