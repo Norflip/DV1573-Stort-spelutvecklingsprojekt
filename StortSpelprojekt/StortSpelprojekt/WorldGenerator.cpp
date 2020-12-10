@@ -18,7 +18,7 @@ void WorldGenerator::Initialize(Object* root, World* world, ItemManager* items, 
 	this->root = root;
 	this->renderer = renderer;
 	this->initialized = true;
-
+	this->items = items;
 	this->spawner = new ObjectSpawner();
 	this->spawner->Initialize(root, world, items, renderer);
 
@@ -105,43 +105,20 @@ void WorldGenerator::Construct(const SaveState& state, const WorldDescription& d
 			flyrb->SetPosition(dx::XMVectorAdd(position, dx::XMVECTOR({ 4, 1, 4, 0 })));
 			frogHead->GetTransform().SetPosition(dx::XMVectorAdd(position, dx::XMVECTOR({ 0, 0.0f, 0, 0 })));
 
-			// Testing printing shit to find puzzle
-			//dx::XMFLOAT3 pos;
-			//dx::XMStoreFloat3(&pos, position);
-			//std::cout << "PAAZZL: " << pos.x << ", " << pos.y << ", " << pos.z << "\n";
-
-			CollisionInfo info;
-			info.main = crazyFly;
-			info.other = frogHead;
-			info.remove = false;
-
 			std::function<void(CollisionInfo&)> collisionCallback = [](CollisionInfo info) {
-
 
 				if (info.main->GetName() == "PuzzleFlyStatue" && info.other->GetName() == "frogHead" && info.remove && info.main->HasFlag(ObjectFlag::ENABLED))
 				{
 					info.main->SetEnable(false);
-
-					Object* pickup = Engine::Instance->GetResources()->AssembleObject("BlueFuel", "BlueFuelMaterial", false);
-					Object::AddToHierarchy(info.main->GetParent(), pickup);
-
-					pickup->AddComponent<PickupComponent>(PickupType::Fuel, 35.0f);
-					pickup->AddComponent<BoxColliderComponent>(dx::XMFLOAT3(0.3f, 0.35f, 0.15f), dx::XMFLOAT3(0, 0, 0));
-					RigidBodyComponent* rb = pickup->AddComponent<RigidBodyComponent>(10.0f, FilterGroups::HOLDABLE, FilterGroups::EVERYTHING & ~FilterGroups::PLAYER, BodyType::DYNAMIC, true);
-
-					rb->SetPosition(info.main->GetTransform().GetPosition());
-
+					ItemManager::instance->SpawnSpecific("Propane", info.main->GetTransform().GetWorldPosition(), info.main->GetParent());
 				}
 				else if(info.main->GetName() == "PuzzleFlyStatue" && info.other->GetName() == "frogHead" && !info.remove)
 				{
 					info.remove = true;
 				}
-					
 			};
-			collisionCallback(info);
 
 			flyrb->AddCollisionCallback(collisionCallback);
-
 			return root;
 		});
 

@@ -77,7 +77,8 @@ private:
 private:
 	bool constructed, initialized;
 	ObjectSpawner* spawner;
-	
+	ItemManager* items;
+
 	cb_Material materialData;
 	Shader* grassShader;
 	Shader* chunkShader;

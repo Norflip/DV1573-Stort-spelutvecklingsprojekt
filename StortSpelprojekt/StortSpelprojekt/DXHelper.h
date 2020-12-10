@@ -41,9 +41,10 @@ struct RenderTexture
 	RenderTexture() : rtv(nullptr), srv(nullptr), dsv(nullptr), width(-1), height(-1) {}
 	void Release () 
 	{
-		if (rtv) rtv->Release();
-		if (srv) srv->Release();
-		if (dsv) dsv->Release();
+		RELEASE(rtv);
+		RELEASE(srv);
+		RELEASE(dsv);
+		RELEASE(depthSRV);
 	}
 };
 

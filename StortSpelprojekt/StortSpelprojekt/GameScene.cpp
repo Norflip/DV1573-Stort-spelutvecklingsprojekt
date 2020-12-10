@@ -32,6 +32,9 @@ GameScene::~GameScene()
 
 void GameScene::Initialize()
 {
+	items = new ItemManager();
+	world.Initialize(root, items, renderer);
+
 	InitializeGUI();
 	InitializeObjects();
 	InitializeInterior();
@@ -150,9 +153,6 @@ void GameScene::InitializeObjects()
 
 	/* For fuel info from playercomp */
 	nodeWalker->GetPlayerInfo(playerObject->GetComponent<PlayerComp>());
-
-	items = new ItemManager();
-	world.Initialize(root, items, renderer);
 
 	//Player Arms
 	Object* playerArms = new Object("PlayerArms", ObjectFlag::DEFAULT | ObjectFlag::NO_CULL);
@@ -381,28 +381,6 @@ void GameScene::InitializeInterior()
 	AddObjectToRoot(table);
 
 
-	Object* tutorialFood = resources->AssembleObject("Fruits", "FruitsMaterial", true);
-	tutorialFood->GetTransform().SetPosition({ -5.65f, INTERIOR_POSITION.y + 1.0f, -4.6f, 0.0f });
-	tutorialFood->AddComponent<PickupComponent>(PickupType::Food, 30.0f);
-	tutorialFood->AddComponent<BoxColliderComponent>(dx::XMFLOAT3(0.25f, 0.25f, 0.25f), dx::XMFLOAT3(0, 0, 0));
-	tutorialFood->AddComponent<RigidBodyComponent>(10.0f, FilterGroups::PICKUPS, FilterGroups::EVERYTHING & ~FilterGroups::PLAYER, BodyType::DYNAMIC, true);
-	AddObjectToRoot(tutorialFood);
-
-	Object* tutorialHealth = resources->AssembleObject("HealthKit", "HealthKitMaterial", true);
-	tutorialHealth->GetTransform().SetPosition({ -5.0f, INTERIOR_POSITION.y + 1.0f, -4.4f, 0.0f });
-	tutorialHealth->AddComponent<PickupComponent>(PickupType::Health, 30.0f);
-	tutorialHealth->AddComponent<BoxColliderComponent>(dx::XMFLOAT3(0.25f, 0.1f, 0.25f), dx::XMFLOAT3(0, 0, 0));
-	tutorialHealth->AddComponent<RigidBodyComponent>(10.0f, FilterGroups::PICKUPS, FilterGroups::EVERYTHING & ~FilterGroups::PLAYER, BodyType::DYNAMIC, true);
-	AddObjectToRoot(tutorialHealth);
-
-	Object* tutorialFuel = resources->AssembleObject("BlueFuel", "BlueFuelMaterial", false);
-	tutorialFuel->GetTransform().SetPosition({ -5.0f, INTERIOR_POSITION.y + 3.0f, 0.11f, 0.0f });
-	tutorialFuel->AddComponent<PickupComponent>(PickupType::Fuel, 30.0f);
-	tutorialFuel->AddComponent<BoxColliderComponent>(dx::XMFLOAT3(0.3f, 0.35f, 0.15f), dx::XMFLOAT3(0, 0, 0));
-	tutorialFuel->AddComponent<RigidBodyComponent>(10.0f, FilterGroups::HOLDABLE, FilterGroups::EVERYTHING & ~FilterGroups::PLAYER, BodyType::DYNAMIC, true);
-	AddObjectToRoot(tutorialFuel);
-
-
 
 	Object* fireLight = new Object("fireLight");
 	LightComponent* fLight = fireLight->AddComponent<LightComponent>(LightType::POINT_LIGHT, dx::XMFLOAT4(1.0f, 0.29f, 0.0f, 1.0f), 2.2f);
@@ -462,7 +440,6 @@ void GameScene::OnActivate()
 	//guiManager->GetGUIObject("loading")->SetVisible(true);
 	//renderer->RenderFrame(camera, (float)clock.GetSeconds(), player->GetComponent<PlayerComp>()->GetDangerDistance(), false);
 
-	house->GetComponent<NodeWalkerComp>()->currentNode = 1;
 	SaveState& state = SaveHandler::LoadOrCreate();
 
 	LightManager::Instance().ForceUpdateBuffers(renderer->GetContext(), camera);
@@ -474,6 +451,7 @@ void GameScene::OnActivate()
 	world.ConstructSegment(state);
 
 	//PrintSceneHierarchy(root, 0);
+	house->GetComponent<NodeWalkerComp>()->currentNode = 1;
 	house->GetComponent<NodeWalkerComp>()->InitializePath(world.GetPath());
 	house->GetComponent<NodeWalkerComp>()->SetWorld(&world);
 
@@ -515,6 +493,10 @@ void GameScene::OnActivate()
 		}
 	}
 
+
+	items->SpawnSpecific("Fruits", { -5.65f, INTERIOR_POSITION.y + 1.0f, -4.6f, 0.0f }, root);
+	items->SpawnSpecific("Health_kit", { -5.0f, INTERIOR_POSITION.y + 1.0f, -4.4f, 0.0f }, root);
+	items->SpawnSpecific("FuelRed", { -5.0f, INTERIOR_POSITION.y + 3.0f, 0.11f, 0.0f }, root);
 
 	renderer->AddRenderPass(guiManager);
 
@@ -691,7 +673,6 @@ void GameScene::Update(const float& deltaTime)
 	//testParticles->SetEyePos(eyeCam);
 	//testParticles->Update(deltaTime, GameClock::Instance().GetSeconds());
 
-	items->UpdateNearbySpawns(eyeCam);
 
 	//dx::XMFLOAT3 eyeCam;
 	//dx::XMStoreFloat3(&eyeCam, camera->GetOwner()->GetTransform().GetPosition());

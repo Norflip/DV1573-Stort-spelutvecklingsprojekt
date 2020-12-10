@@ -2,20 +2,22 @@
 #include "ItemManager.h"
 #include "Engine.h"
 
-ItemManager::ItemManager() : ItemManager(Bounds(dx::XMFLOAT3(-1000, -1000, -1000), dx::XMFLOAT3(1000, 1000, 1000)))
+ItemManager* ItemManager::instance = nullptr;
+ItemManager::ItemManager()
 {
-}
-
-ItemManager::ItemManager(const Bounds& worldBounds)
-{
-	itemsSpawnQT = new QuadTree(worldBounds);
+	instance = this;
 	pooler = new ObjectPooler(Engine::Instance->GetResources());
 }
 
 ItemManager::~ItemManager()
 {
-	if (itemsSpawnQT != nullptr)
-		delete itemsSpawnQT;
+	for (size_t i = 0; i < activeItems.size(); i++)
+	{
+		Object::RemoveFromHierarchy(activeItems[i]);
+		delete activeItems[i];
+	}
+
+	activeItems.clear();
 }
 
 void ItemManager::Register(const std::string& key, PickupType type, size_t queueCount, std::function<Object* (ResourceManager*)> factory)
@@ -44,41 +46,21 @@ void ItemManager::ChangeQueueCount(const std::string& key, size_t count)
 		allItemRegistry.push_back(key);
 }
 
-void ItemManager::UpdateNearbySpawns(const dx::XMFLOAT3& eye)
+Object* ItemManager::SpawnRandom(const dx::XMVECTOR& position, Object* container)
 {
-	dx::XMFLOAT2 min(eye.x - SPAWN_DISTANCE, eye.z - SPAWN_DISTANCE);
-	dx::XMFLOAT2 max(eye.x + SPAWN_DISTANCE, eye.z + SPAWN_DISTANCE);
-
-	size_t spawnCount = 0;
-	auto nodes = itemsSpawnQT->GetNodesInArea(min, max);
-	for (auto i : nodes)
-	{
-		Object* object = static_cast<Object*>(i.data);
-		if (object != nullptr)
-			object->AddFlag(ObjectFlag::ENABLED);
-		spawnCount++;
-		itemsSpawnQT->Remove(i);
-	}
-
-	if (spawnCount > 0)
-		std::cout << "SPAWNED: " << spawnCount << std::endl;
+	return SpawnSpecific(allItemRegistry[UICAST(Random::Range(0, allItemRegistry.size()))], position, container);
 }
 
-Object* ItemManager::SpawnRandom(const dx::XMVECTOR& position, Object* container, bool spawnInstant)
-{
-	return SpawnSpecific(allItemRegistry[UICAST(Random::Range(0, allItemRegistry.size()))], position, container, spawnInstant);
-}
-
-Object* ItemManager::SpawnRandomOfType(PickupType type, const dx::XMVECTOR& position, Object* container, bool spawnInstant)
+Object* ItemManager::SpawnRandomOfType(PickupType type, const dx::XMVECTOR& position, Object* container)
 {
 	assert(UICAST(type) >= 0 && UICAST(type) < MAX_PICKUP_TYPES);
 	auto& allkeys = pickupKeyRegistry[UICAST(type)];
 	std::string key = allkeys[Random::Range(0, allkeys.size())];
 
-	return SpawnSpecific(key, position, container, spawnInstant);
+	return SpawnSpecific(key, position, container);
 }
 
-Object* ItemManager::SpawnSpecific(const std::string& key, const dx::XMVECTOR& position, Object* container, bool spawnInstant)
+Object* ItemManager::SpawnSpecific(const std::string& key, const dx::XMVECTOR& position, Object* container)
 {
 	Object* object = pooler->GetItem(key);
 
@@ -94,18 +76,6 @@ Object* ItemManager::SpawnSpecific(const std::string& key, const dx::XMVECTOR& p
 	object->GetTransform().SetWorldPosition(position);
 
 	activeItems.push_back(object);
-
-	/*if (!spawnInstant)
-	{
-		dx::XMFLOAT3 pos;
-		dx::XMStoreFloat3(&spos, position);
-
-		dx::XMFLOAT2 min(pos.x - 1, pos.z - 1);
-		dx::XMFLOAT2 max(pos.x + 1, pos.z + 1);
-		object->RemoveFlag(ObjectFlag::ENABLED);
-		itemsSpawnQT->Insert(min, max, object);
-	}*/
-
 	return object;
 }
 
