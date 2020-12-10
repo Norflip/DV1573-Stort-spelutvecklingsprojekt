@@ -5,10 +5,10 @@
 #include "Pathfinding.h"
 #include "Math.h"
 #include "Random.h"
-constexpr float ENEMY_SPAWN_RATE_MAX = 8.f; //how fast enemies spawn
+constexpr float ENEMY_SPAWN_RATE_MAX = 9.f; //how fast enemies spawn
 constexpr float ENEMY_SPAWN_RATE_MIN = 2.f; 
 constexpr float ENEMY_SPAWN_RADIUS = 15.f; //distance from player
-constexpr int ENEMY_TOTAL = 9; //max nr of enemies
+constexpr int ENEMY_BASE_TOTAL = 12; //base value of max nr of enemies
 
 class EnemyManager
 {
@@ -24,9 +24,11 @@ class EnemyManager
 		void RemoveEnemy(Object* enemy);
 		
 		void SpawnRandomEnemy(const float& deltaTime);
-		//void TerminateEnemies();
 		//void SpawnEnemies();
 		void DespawnEnemies();
+
+		void SetWorld(World* world) { this->world = world; }
+		void SetSegment(int segment) { this->currentLevel = segment; }
 
 	private:
 		void SpawnEnemy(std::string key, dx::XMVECTOR position);
@@ -38,8 +40,11 @@ class EnemyManager
 		CameraComponent* camComp;
 		ResourceManager* resources;
 		Object* root;
+		World* world;
+		int currentLevel;
 
 		//size_t nrOfEnemies; //total
+		int nrOfEnemiesTotal;
 		float enemySpawnRate;
 		size_t nrOfBaseEnemies;
 		size_t nrOfChargeEnemies;

@@ -417,23 +417,21 @@ void PlayerComp::RayCast(const float& deltaTime)
 		}
 	}
 
+	physics->RaytestSingle(ray, rayDistance, hit, FilterGroups::CLICKABLE);
 	//Click signs
-	if (KEY_DOWN(E))
+	if (KEY_DOWN(E) && hit.object != nullptr && house->GetComponent<NodeWalkerComp>()->GetHouseProgress()==1.f)
 	{
-		if (physics->RaytestSingle(ray, rayDistance, hit, FilterGroups::CLICKABLE))
-		{
-			if (hit.object != nullptr)
-			{
-				clickable = hit.object;
-				RigidBodyComponent* rbComp = hit.object->GetComponent<RigidBodyComponent>();
-				rp::RigidBody* objectRb = rbComp->GetRigidBody();
-				hit.object->GetComponent<BoxColliderComponent>()->SetRotation(0, { 5, 5, 5, 5 });
+		clickable = hit.object;
+		AudioMaster::Instance().PlaySoundEvent("punch");
+		RigidBodyComponent* rbComp = hit.object->GetComponent<RigidBodyComponent>();
+		rp::RigidBody* objectRb = rbComp->GetRigidBody();
+		hit.object->GetComponent<BoxColliderComponent>()->SetRotation(0, { 5, 5, 5, 5 });
 
-				clickable->GetComponent<SelectableComponent>()->SetActive(true);
+		clickable->GetComponent<SelectableComponent>()->SetActive(true);
 
-			}
-		}
 	}
+		
+	
 
 	//ATTACK ENEMIES
 	if (LMOUSE_DOWN && holding == nullptr &&

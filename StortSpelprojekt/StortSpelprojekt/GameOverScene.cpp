@@ -52,8 +52,8 @@ void GameOverScene::OnActivate()
 {
 	renderer->AddRenderPass(guiManager);
 	Input::Instance().FreeMouse();
-	ShowCursor(true);
 	Input::Instance().SetMouseMode(dx::Mouse::MODE_ABSOLUTE);
+	//ShowCursor(true);
 
 	SaveHandler::RemoveSave();
 }
@@ -65,6 +65,9 @@ void GameOverScene::OnDeactivate()
 
 void GameOverScene::Update(const float& deltaTime)
 {
+	if (!Input::Instance().GetIsVisible())
+		ShowCursor(true);
+
 	Scene::Update(deltaTime);
 	
 	static_cast<GUIFont*>(guiManager->GetGUIObject("fps"))->SetString(std::to_string((int)GameClock::Instance().GetFramesPerSecond()));

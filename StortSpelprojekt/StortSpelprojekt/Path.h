@@ -92,7 +92,11 @@ public:
 	void GetLanternInformation(std::vector<dx::XMFLOAT2>& positions, std::vector<float>& axisAngle) const;
 
 	size_t GetFirstPointIndex() const { return 0; }
-	size_t GetLastPointIndex() const { return points.size() - 1; }
+	size_t GetLastPointIndex() const 
+	{ 
+		//std::cout << "Last house node is: " << points.size() << std::endl;
+		return points.size();// -1;
+	}
 	void DrawDebug();
 
 private:
