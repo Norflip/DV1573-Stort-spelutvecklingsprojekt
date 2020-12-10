@@ -155,9 +155,6 @@ void GameScene::InitializeObjects()
 	sunComponent->SetDirection(sunDirection);
 	AddObjectToRoot(sunLight);
 
-	/* For fuel info from playercomp */
-	nodeWalker->GetPlayerInfo(playerObject->GetComponent<PlayerComp>());
-
 	//Player Arms
 	Object* playerArms = new Object("PlayerArms", ObjectFlag::DEFAULT | ObjectFlag::NO_CULL);
 	SkeletonMeshComponent* armsSkeleton = resources->GetResource<SkeletonMeshComponent>("PlayerArmsSkeleton");
