@@ -143,7 +143,6 @@ void PlayerComp::FixedUpdate(const float& fixedDeltaTime)
 				if (food < 0)
 				{
 					foodEmpty = true;
-					
 				}
 				else
 					foodEmpty = false;
