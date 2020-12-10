@@ -38,6 +38,9 @@ void GameOverScene::InitializeGUI()
 	GUISprite* restart = new GUISprite(*renderer, "Textures/Restart.png", 100, 200, 0, DrawDirection::Default, ClickFunction::Clickable);
 	GUISprite* quit = new GUISprite(*renderer, "Textures/Exit.png", 100, 400, 0, DrawDirection::Default, ClickFunction::Clickable);
 	GUIFont* fpsDisplay = new GUIFont(*renderer, "fps", windowWidth / 2, 50);
+	GUIFont* deathReason = new GUIFont(*renderer, "death", windowWidth / 2-240, 250);
+	deathReason->SetFontSize({ 1,1 });
+
 	restart->SetActivated();
 	quit->SetActivated();
 
@@ -46,6 +49,8 @@ void GameOverScene::InitializeGUI()
 	guiManager->AddGUIObject(fpsDisplay, "fps");
 	guiManager->AddGUIObject(restart, "restart");
 	guiManager->AddGUIObject(quit, "quit");
+
+	guiManager->AddGUIObject(deathReason, "death");
 }
 
 void GameOverScene::OnActivate()
@@ -71,7 +76,9 @@ void GameOverScene::Update(const float& deltaTime)
 	Scene::Update(deltaTime);
 	
 	static_cast<GUIFont*>(guiManager->GetGUIObject("fps"))->SetString(std::to_string((int)GameClock::Instance().GetFramesPerSecond()));
-
+	std::string deathReason = "Killed by ";
+	deathReason += MetaProgress::Instance().GetKilledBy();
+	static_cast<GUIFont*>(guiManager->GetGUIObject("death"))->SetString(deathReason);
 	if(static_cast<GUISprite*>(guiManager->GetGUIObject("quit"))->IsClicked())
 	{
 		Engine::Instance->Exit();

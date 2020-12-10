@@ -144,6 +144,7 @@ void PlayerComp::FixedUpdate(const float& fixedDeltaTime)
 				if (food < 0)
 				{
 					foodEmpty = true;
+					MetaProgress::Instance().SetKilledBy("hunger deficiency.");
 				}
 				else
 					foodEmpty = false;
@@ -159,11 +160,17 @@ void PlayerComp::FixedUpdate(const float& fixedDeltaTime)
 				}
 
 				if (distance > hpLossDist && !GetOwner()->GetComponent<ControllerComp>()->GetInside())
+				{
 					health -= distance * hpLossPerDistance;
+					MetaProgress::Instance().SetKilledBy("fog intoxication.");
+				}
 
 				// around 90
 				if (distance > maxDist && !GetOwner()->GetComponent<ControllerComp>()->GetInside())
+				{
 					health = 0;
+					MetaProgress::Instance().SetKilledBy("fog insta-death.");
+				}
 			}
 
 

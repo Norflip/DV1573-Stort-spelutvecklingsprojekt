@@ -173,7 +173,7 @@ void ControllerComp::Update(const float& deltaTime)
 			Input::Instance().SetMouseMode(dx::Mouse::MODE_RELATIVE);
 		else
 			Input::Instance().SetMouseMode(dx::Mouse::MODE_ABSOLUTE);
-		ShowCursor(!this->canRotate);
+		//ShowCursor(!this->canRotate);
 	}
 	
 	float length = 0.f;

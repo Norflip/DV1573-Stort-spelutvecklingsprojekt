@@ -7,13 +7,16 @@ EnemyManager::EnemyManager()
 	enemyPool = nullptr;
 	//enemyVector
 	player = nullptr;
+	house = nullptr;
 	playerComp = nullptr;
 	camComp = nullptr;
 	resources = nullptr;
 	root = nullptr;
+	world = nullptr;
 
 	currentLevel = 0;
 	nrOfEnemiesTotal = ENEMY_BASE_TOTAL;
+	enemySpawnRate = 1.f;
 	nrOfBaseEnemies = 0;
 	nrOfChargeEnemies = 0;
 	//aliveEnemies = 0;
@@ -132,9 +135,9 @@ void EnemyManager::SpawnRandomEnemy(const float& deltaTime)
 			dx::XMVECTOR randVec;
 
 			//while inside radius of player or inside cam frustum do random again
-			randPos.x = playerPos.x + Random::Range(-50, 50+1);
-			randPos.z = playerPos.z + Random::Range(-50, 50+1);
-			randPos.y = this->world->SampleHeight(playerPos.x, playerPos.z) + 0.5f; //height over ground
+			randPos.x = playerPos.x + Random::Range(-40, 40+1);
+			randPos.z = playerPos.z + Random::Range(-40, 40+1);
+			randPos.y = this->world->SampleHeight(randPos.x, randPos.z) + 1.5f; //height over ground
 			randVec = dx::XMLoadFloat3(&randPos);
 			dx::XMStoreFloat(&lengthP, dx::XMVector3Length(dx::XMVectorSubtract(playerVec, randVec)));
 			dx::XMStoreFloat(&lengthH, dx::XMVector3Length(dx::XMVectorSubtract(houseVec, randVec)));
@@ -228,8 +231,16 @@ void EnemyManager::SpawnEnemy(std::string key, dx::XMVECTOR position)
 	enemy->GetComponent<RigidBodyComponent>()->SetPosition(position);
 	Object::AddToHierarchy(root, enemy);
 	
-	enemy->GetComponent<EnemyStatsComp>()->SetManager(this);
-	enemy->GetComponent<EnemyStatsComp>()->Reset();
+	EnemyStatsComp* enemyStats = enemy->GetComponent<EnemyStatsComp>();
+	enemyStats->SetManager(this);
+	enemyStats->Reset();
+
+	int level = MetaProgress::Instance().GetLevelsCleared();
+	enemyStats->RaiseStats(1+ ENEMY_HEALTH_MULTIPLIER * level,1+ ENEMY_ATTACK_MULTIPLIER * level);
+		
+
+	std::cout << "enemy ["<<enemyVector.size()<<"]"<<std::endl
+		<<" hp: " <<enemyStats->GetHealth()<<", attack: "<< enemyStats->GetAttack()<<std::endl;
 
 	enemyVector.push_back(enemy);
 }

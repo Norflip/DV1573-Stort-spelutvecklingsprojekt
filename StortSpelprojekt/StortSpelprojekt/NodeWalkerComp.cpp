@@ -118,8 +118,20 @@ void NodeWalkerComp::StopAnim()
 
 void NodeWalkerComp::Update(const float& deltaTime)
 {
+	dx::XMVECTOR posVec = GetOwner()->GetTransform().GetPosition();
+	dx::XMFLOAT3 pos;
+	dx::XMStoreFloat3(&pos, posVec);
+	if (pos.y < 0.0f || pos.y > 30)//|| y < 0.0f || y > 30)
+	{
+		std::cout << "pos.y: " << pos.y << std::endl
+			<<"fixing house pos...."<<std::endl; //", y: " << y << std::endl;
+		
+		pos.y = 0.01f;
+		posVec = dx::XMLoadFloat3(&pos);
+		rbComp->SetPosition(posVec);
+		GetOwner()->GetTransform().SetPosition(posVec);
+	}
 	
-	//dx::XMStoreFloat3(&this->lastPos, GetOwner()->GetTransform().GetPosition());
 	if (playerComp->GetFuel() > 0.0f)
 	{
 		if (base->SetAndGetDoneUp())
@@ -138,21 +150,6 @@ void NodeWalkerComp::Update(const float& deltaTime)
 		{
 			if (canWalk)
 			{
-				//float y = this->world->SampleHeight(thePath.GetPoint(this->currentNode).x, thePath.GetPoint(this->currentNode).z);
-				dx::XMVECTOR posVec = GetOwner()->GetTransform().GetPosition();
-				dx::XMFLOAT3 pos;
-				dx::XMStoreFloat3(&pos, posVec);
-				if (pos.y < 0.0f || pos.y > 30 )//|| y < 0.0f || y > 30)
-				{ 
-					std::cout << "pos.y: " << pos.y << std::endl; //", y: " << y << std::endl;
-					//y = 0.01f;
-					pos.y = 0.01f;
-	
-					posVec = dx::XMLoadFloat3(&pos);
-					rbComp->SetPosition(posVec);
-					GetOwner()->GetTransform().SetPosition(posVec);
-				}
-				//DirectX::XMFLOAT3 dir = { 0.f,0.f,0.f };
 				dx::XMFLOAT3 nextPoint = { thePath.GetPoint(this->currentNode).x, HEIGHT, thePath.GetPoint(this->currentNode).z };
 				dx::XMVECTOR vdir = dx::XMVectorSubtract(dx::XMLoadFloat3(&nextPoint), GetOwner()->GetTransform().GetPosition());
 				dx::XMStoreFloat(&this->length, dx::XMVector3Length(vdir));
@@ -205,18 +202,19 @@ void NodeWalkerComp::Update(const float& deltaTime)
 		legs->SetTrack(SkeletonStateMachine::IDLE, false);
 	}
 
-	if (KEY_DOWN(I)) //used to display info and test paths
-	{
-		std::cout << "Current Node: " << std::to_string(this->currentNode) << std::endl
-			//<< "Next Node: " << std::to_string(nextChosen) << std::endl
-			<< "Last Node: " << std::to_string(this->thePath.GetLastPointIndex()) << std::endl
-			<< "Can Walk: " << canWalk << std::endl
-			<< "Length: " << std::to_string(this->length) << std::endl;
+	//if (KEY_DOWN(I)) //used to display info and test paths
+	//{
+	//	std::cout << "Current Node: " << std::to_string(this->currentNode) << std::endl
+	//		//<< "Next Node: " << std::to_string(nextChosen) << std::endl
+	//		<< "Last Node in system: " << std::to_string(this->thePath.GetLastPointIndex()) << std::endl
+	//		<< "Can Walk: " << canWalk << std::endl
+	//		<< "Is Walking: " << isWalking << std::endl
+	//		<< "Length: " << std::to_string(this->length) << std::endl;
 
-	}
+	//}
 
-	if (KEY_DOWN(R))
-		this->Reset();
+	//if (KEY_DOWN(R))
+	//	this->Reset();
 }
 
 dx::XMFLOAT3 NodeWalkerComp::GetMoveVec()

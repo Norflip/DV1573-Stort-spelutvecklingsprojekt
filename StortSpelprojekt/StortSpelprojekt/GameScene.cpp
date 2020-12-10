@@ -773,6 +773,7 @@ void GameScene::OnIMGUIFrame()
 	if (ImGui::Button("Kill player"))
 	{
 		player->GetComponent<PlayerComp>()->LoseHealth(200.0f);
+		MetaProgress::Instance().SetKilledBy("ImGui.");
 	}
 
 	if (ImGui::Button("Reset player position"))

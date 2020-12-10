@@ -19,6 +19,7 @@ MetaProgress::MetaProgress()
 	this->foodUsed = 0;
 	this->healUsed = 0;
 	this->puzzleSolved = 0;
+	this->deathReason = "unknown.";
 
 }
 
@@ -83,6 +84,7 @@ void MetaProgress::Reset()
 	this->healUsed = 0;
 	this->puzzleSolved = 0;
 	//this->nrOfGameWins = 0;
+	//this->deathReason = "unknown.";
 
 }
 

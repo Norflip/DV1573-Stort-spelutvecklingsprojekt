@@ -7,8 +7,12 @@
 #include "Random.h"
 constexpr float ENEMY_SPAWN_RATE_MAX = 9.f; //how fast enemies spawn
 constexpr float ENEMY_SPAWN_RATE_MIN = 2.f; 
-constexpr float ENEMY_SPAWN_RADIUS = 15.f; //distance from player
+constexpr float ENEMY_SPAWN_RADIUS = 10.f; //distance from player
 constexpr int ENEMY_BASE_TOTAL = 12; //base value of max nr of enemies
+
+//multiplier per level/segment
+constexpr float ENEMY_HEALTH_MULTIPLIER = 0.2f;  
+constexpr float ENEMY_ATTACK_MULTIPLIER = 0.4f; 
 
 class EnemyManager
 {

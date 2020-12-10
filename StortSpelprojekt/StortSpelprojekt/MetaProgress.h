@@ -31,6 +31,12 @@ public:
 	void EnemyKilled(const std::string& enemytype); //done
 	void SetNodeReached(const int& currentNode);
 	void SetLevelsCleared(const int& currentLevel);
+	unsigned int GetLevelsCleared()const { return this->levelsCleared; };
+
+	void SetKilledBy(std::string reason) { this->deathReason = reason; };
+	std::string GetKilledBy()const { return this->deathReason; };
+	
+	unsigned int GetHighScore()const { return highscore; }
 
 	void IncFuelUsed(int value); //done
 	void IncFoodUsed(int value); //done
@@ -64,10 +70,15 @@ private:
 	unsigned int healUsed;
 	unsigned int puzzleSolved;
 
+	std::string deathReason;
+	
 	//boost stats
 	//(give enemies higher stats depending on nrofgame wins and level recached)
+	//[x] enemies gets attack and health boos from levels
+	//[ ] player gets health? and attack??
 
-	//Reason of Death
+
+	
 
 	//hold GUI?
 	//hold calc?
