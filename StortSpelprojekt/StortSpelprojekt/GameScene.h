@@ -22,6 +22,9 @@ public:
 	void InitializeObjects() override;
 	void InitializeGUI() override;
 	void InitializeInterior();
+
+
+
 	void OnActivate() override;
 	void OnDeactivate() override;
 	void SetSignPositions(SaveState& state);
@@ -45,14 +48,13 @@ private:
 
 	World world;
 	Object* house;
-
 	Particlesys* testParticles;
 
 	Object* leftSign;
 	Object* rightSign;
 	Object* endSign;
 	NodeWalkerComp* nodeWalker;
-
+	ItemManager* items;
 	float fogCol;
 	float fogId;
 

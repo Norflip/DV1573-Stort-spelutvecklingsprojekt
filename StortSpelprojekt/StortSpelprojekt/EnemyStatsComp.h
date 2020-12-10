@@ -24,6 +24,7 @@ class EnemyStatsComp : public Component
 		void SetAttackSpeed(float attackSpeed) { this->attackSpeed = attackSpeed; }
 
 		//void SetBaseHealth(float health) { this->baseHealth = health; }
+		void RaiseStats(float hpMult,float atkMult);
 		void Reset();
 	
 		void SetManager(EnemyManager* manager) { this->manager = manager; }
@@ -41,6 +42,6 @@ private:
 
 		float baseHealth;
 		//float baseSpeed;
-		//float baseAttack;
+		float baseAttack;
 		//float baseAttackSpeed;
 };

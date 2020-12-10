@@ -127,6 +127,11 @@ void EnemyAttackComp::UpdateAttackPlayer(const float& deltaTime)
 		{
 			timer.Restart();
 			player->LoseHealth(enemyStatsComp->GetAttack());
+			
+			std::string text = GetOwner()->GetName();
+			text.resize(text.size() - 5);
+			text += " enemy attack.";
+			MetaProgress::Instance().SetKilledBy(text);
 		}
 	}
 }

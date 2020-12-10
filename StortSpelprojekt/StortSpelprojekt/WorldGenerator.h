@@ -45,7 +45,7 @@ public:
 public:
 	WorldGenerator();
 	virtual ~WorldGenerator();
-	void Initialize(Object* root, World* world, Renderer* renderer);
+	void Initialize(Object* root, World* world, ItemManager* items, Renderer* renderer);
 
 	void Construct(const SaveState& state, const WorldDescription& description);
 	void Deconstruct();
@@ -77,7 +77,8 @@ private:
 private:
 	bool constructed, initialized;
 	ObjectSpawner* spawner;
-	
+	ItemManager* items;
+
 	cb_Material materialData;
 	Shader* grassShader;
 	Shader* chunkShader;
