@@ -38,7 +38,6 @@ void IntroScene::InitializeObjects()
 void IntroScene::InitializeGUI()
 {
 	float windowWidth = FCAST(window->GetWidth());
-
 	//spriteBatch = new DirectX::SpriteBatch(renderer->GetContext());
 	GUISprite* titleSprite = new GUISprite(*renderer, "Textures/OnceUponATime.png", windowWidth / 2 - 100, 100, 0, DrawDirection::Default, ClickFunction::NotClickable);
 	GUISprite* startSprite = new GUISprite(*renderer, "Textures/Start.png", 100, 100, 0, DrawDirection::Default, ClickFunction::Clickable);
@@ -54,15 +53,11 @@ void IntroScene::InitializeGUI()
 	GUISprite* soundEffectsSprite = new GUISprite(*renderer, "Textures/SoundeffectsButton.png", 160, 400, 0, DrawDirection::Default, ClickFunction::NotClickable, GuiGroup::Options);
 	soundEffectsSprite->SetVisible(false);
 
-
 	GUISprite* sensitivitySprite = new GUISprite(*renderer, "Textures/sensButton.png", 140, 550, 0, DrawDirection::Default, ClickFunction::NotClickable, GuiGroup::Options);
 	sensitivitySprite->SetVisible(false);
 
-
-
 	GUISprite* credits = new GUISprite(*renderer, "Textures/credits.png", 100, 700, 0, DrawDirection::Default, ClickFunction::Clickable);
 	credits->AddGroup(GuiGroup::Default);
-
 
 	GUISprite* volumeBarFillMusic = new GUISprite(*renderer, "Textures/volumeBarFill.png", 900, 250, 0, DrawDirection::Default, ClickFunction::NotClickable, GuiGroup::Options);
 	GUISprite* lowerMusicSprite = new GUISprite(*renderer, "Textures/lowerVolume.png", 800, 250, 0, DrawDirection::Default, ClickFunction::Clickable, GuiGroup::Options);
@@ -84,7 +79,6 @@ void IntroScene::InitializeGUI()
 	volumeBarFillSoundeffects->SetVisible(false);
 	volumeBarFillSoundeffects->SetScale(AudioMaster::Instance().GetVolume(AudioTypes::Sound), 1.0f);
 
-
 	//GUISprite* sensitivityBarFill = new GUISprite(*renderer, "Textures/volumeBarFill.png", 900, 550, 0, DrawDirection::Default, ClickFunction::NotClickable, GuiGroup::Options);
 	GUISprite* lowerSensitivitySprite = new GUISprite(*renderer, "Textures/lowerVolume.png", 800, 550, 0, DrawDirection::Default, ClickFunction::Clickable, GuiGroup::Options);
 	//GUISprite* volumeSensitivtySprite = new GUISprite(*renderer, "Textures/volumeButton.png", 900, 550, 0, DrawDirection::Default, ClickFunction::NotClickable, GuiGroup::Options);
@@ -99,8 +93,6 @@ void IntroScene::InitializeGUI()
 	sensitivityDisplay->AddGroup(GuiGroup::Font);
 	sensitivityDisplay->AddGroup(GuiGroup::Options);
 	sensitivityDisplay->RemoveGroup(GuiGroup::Default);
-
-
 
 	GUIFont* fpsDisplay = new GUIFont(*renderer, "fps", windowWidth / 2, 50);
 	fpsDisplay->AddGroup(GuiGroup::Font);
@@ -131,13 +123,15 @@ void IntroScene::InitializeGUI()
 	howToPlayText->AddGroup(GuiGroup::HowToPlay);
 	howToPlayText->AddGroup(GuiGroup::Font);
 
-	//
 	// TEXT FOR HOWTOPLAY	
 	std::string loreString = "";
-	loreString += "The name Katrineholm comes from the farm Cathrineholm which is located at Lake Nasnaren. \n";
-	loreString += "The farm was formerly called Fulbonas,\n";
-	loreString += "but the former owner Jacob von der Linde changed the name in the 1660s to honor his daughter Catharina. \n";
-	loreString += "Many findings show that the area was already inhabited over 6, 000 years ago.";
+	loreString += "Far back in the ancient times of Katrineholm, there is a dark and mysterious forest.\n";
+	loreString += "Not long ago, the forest was a peaceful place, with animals inhabiting the place.\n";
+	loreString += "But now the forest has been enchanted by an unknown being.\n";
+	loreString += "A thick strange mist lingers in every corner of the forest, with a toxic effect to all who dares to enter.\n";
+	loreString += "Our hero, Maiya, is stranded in the forest with her ancestors enchanted walking house, a house which she will now need more than ever.\n";
+	loreString += "In order to make it out of the forest, Maiya needs to keep the house moving by refuelling it with fuel scattered in the forest.\n";
+	loreString += "But be aware, there a more horrors than the mist in the deep forest.\n";
 
 	GUIFont* loreText = new GUIFont(*renderer, loreString, 100, 250);
 	loreText->SetFontSize({ 0.5f,0.5f });
@@ -145,8 +139,6 @@ void IntroScene::InitializeGUI()
 	loreText->RemoveGroup(GuiGroup::Default);
 	loreText->AddGroup(GuiGroup::Lore);
 	loreText->AddGroup(GuiGroup::Font);
-
-	//
 
 	backSprite->SetVisible(false);
 	backSprite->AddGroup(GuiGroup::Lore);
@@ -164,10 +156,7 @@ void IntroScene::InitializeGUI()
 	guiManager->AddGUIObject(fpsDisplay, "fps");
 	guiManager->AddGUIObject(howToPlayText, "howToPlayText");
 	guiManager->AddGUIObject(loreText, "loreText");
-
 	guiManager->AddGUIObject(credits, "credits");
-
-	//
 
 	/* Soundseffects */
 	guiManager->AddGUIObject(soundEffectsSprite, "soundeffectText");

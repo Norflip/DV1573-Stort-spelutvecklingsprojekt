@@ -130,11 +130,13 @@ void WorldGenerator::Construct(const SaveState& state, const WorldDescription& d
 					RigidBodyComponent* rb = pickup->AddComponent<RigidBodyComponent>(10.0f, FilterGroups::HOLDABLE, FilterGroups::EVERYTHING & ~FilterGroups::PLAYER, BodyType::DYNAMIC, true);
 
 					rb->SetPosition(info.main->GetTransform().GetPosition());
-
+					
+					MetaProgress::Instance().IncPuzzleSolved(0);
 				}
 				else if(info.main->GetName() == "PuzzleFlyStatue" && info.other->GetName() == "frogHead" && !info.remove)
 				{
 					info.remove = true;
+					
 				}
 					
 			};

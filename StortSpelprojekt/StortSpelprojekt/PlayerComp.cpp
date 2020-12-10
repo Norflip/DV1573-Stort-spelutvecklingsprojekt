@@ -133,7 +133,12 @@ void PlayerComp::FixedUpdate(const float& fixedDeltaTime)
 				food -= TARGET_FIXED_DELTA * foodLossPerSecond;
 
 				if ((health <= 0))
+				{
+					MetaProgress::Instance().SaveScore();
+					SaveState & save = SaveHandler::LoadOrCreate();
+					MetaProgress::Instance().SaveProgress(save);
 					Engine::Instance->SwitchScene(SceneIndex::GAME_OVER);
+				}
 
 				if (food < 0)
 				{
@@ -144,6 +149,7 @@ void PlayerComp::FixedUpdate(const float& fixedDeltaTime)
 
 				if (foodEmpty)
 				{
+					MetaProgress::Instance().SetKilledBy("hunger deficiency.");
 					health -= TARGET_FIXED_DELTA * healthLossPerSecond;
 					foodLossPerSecond = 0;
 				}
@@ -153,11 +159,17 @@ void PlayerComp::FixedUpdate(const float& fixedDeltaTime)
 				}
 
 				if (distance > hpLossDist && !GetOwner()->GetComponent<ControllerComp>()->GetInside())
+				{
 					health -= distance * hpLossPerDistance;
+					MetaProgress::Instance().SetKilledBy("fog intoxication.");
+				}
 
 				// around 90
 				if (distance > maxDist && !GetOwner()->GetComponent<ControllerComp>()->GetInside())
+				{
 					health = 0;
+					MetaProgress::Instance().SetKilledBy("fog insta-death.");
+				}
 			}
 
 
@@ -234,6 +246,7 @@ void PlayerComp::PickUpObject()
 
 						if (!healthTutorial)
 							healthTutorial = true;
+						MetaProgress::Instance().IncHealUsed(value);
 					}
 					else if (pickupType == PickupType::Food)
 					{
@@ -244,6 +257,7 @@ void PlayerComp::PickUpObject()
 
 						if (!foodTutorial)
 							foodTutorial = true;
+						MetaProgress::Instance().IncFoodUsed(value);
 					}
 					/*else if (pickupType == PickupType::Fuel)
 					{
@@ -350,6 +364,7 @@ void PlayerComp::RayCast(const float& deltaTime)
 
 			if (KEY_DOWN(E))
 			{
+				
 				float refill = holding->GetComponent<PickupComponent>()->GetAmount();
 				if ((fuel + refill) <= 100.0f)
 					fuel += refill;
@@ -359,6 +374,7 @@ void PlayerComp::RayCast(const float& deltaTime)
 				if (holding->HasComponent<ParticleSystemComponent>())
 					holding->GetComponent<ParticleSystemComponent>()->SetActive(false);
 
+				MetaProgress::Instance().IncFuelUsed(refill);
 				holding->GetComponent<PickupComponent>()->SetActive(false);
 				holding = nullptr;
 				currentWeapon->AddFlag(ObjectFlag::ENABLED);
