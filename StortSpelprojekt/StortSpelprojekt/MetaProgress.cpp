@@ -29,10 +29,6 @@ MetaProgress::~MetaProgress()
 {
 }
 
-//void MetaProgress::Initialize()
-//{
-//}
-
 void MetaProgress::Print()
 {
 	std::cout << "Meta Info:" << std::endl
@@ -47,25 +43,23 @@ void MetaProgress::Print()
 
 std::string MetaProgress::GetInfo()
 {
-
 	//int totalNodes = MetaProgress::Instance().GetNodesReached() + MetaProgress::Instance().GetLevelsCleared() * 19;
-
 	std::string scoreInfo = "Results\n";
 	std::string space = "     ";
-	scoreInfo += "[Scores]\n"+space+"Score: " + std::to_string(score) + ", High-Score: " + std::to_string(highscore);
+	scoreInfo += "[Scores]";
 	if (highScoreBeaten)
-		scoreInfo += "[New Highscore!!]";
-	scoreInfo += +"\n";
+		scoreInfo += "  -->[ New Highscore!! ]<--";
+	scoreInfo += "\n" + space + "Score: " + std::to_string(score) + ", High-Score: " + std::to_string(highscore) + "\n";
 	scoreInfo += "[Upgrade-currency]\n"+space+ "Earned: " + std::to_string(currencyEarned) + " --> Total: " + std::to_string(currencyTotal) + "\n";
-	scoreInfo += "[Game-progress]\n"+space+"Segment:" + std::to_string(levelsCleared) + ", Record-Segment: " + std::to_string(levelsRecord);
+	scoreInfo += "[Game-progress]";
 	if (segmentBeaten)
-		scoreInfo += "[New Record!!]";
-	scoreInfo += +"\n";
+		scoreInfo += "  -->[ New Record!! ]<--";
+	scoreInfo += "\n" + space + "Level Reached:" + std::to_string(levelsCleared) + ", Record-Level: " + std::to_string(levelsRecord) + "\n";
 	scoreInfo += space+"Last CheckPoint: " + std::to_string(nodesReached) + ", Game Wins: " + std::to_string(nrOfGameWins) +"\n";
 
 	scoreInfo += "[Kills]\n"+space+"Regular-Enemy: " + std::to_string(bEnemiesKilled) + ", Charger-Enemy: " + std::to_string(cEnemiesKilled) + "\n";
-	scoreInfo += "[Items]\n"+space+"Fuel: " + std::to_string(fuelUsed) + ", Food: " + std::to_string(foodUsed) + ", Healpacks: " + std::to_string(healUsed) + "\n";
-	scoreInfo += "[Misc]\n"+space+"puzzles: " + std::to_string(puzzleSolved) + "\n";
+	scoreInfo += "[Items]\n"+space+"Fuel: " + std::to_string(fuelUsed) + ", Food: " + std::to_string(foodUsed) + ", Healthpacks: " + std::to_string(healUsed) + "\n";
+	scoreInfo += "[Misc]\n"+space+"Puzzles: " + std::to_string(puzzleSolved) + "\n";
 	
 
 	return scoreInfo;
@@ -125,7 +119,6 @@ void MetaProgress::Reset()
 	this->puzzleSolved = 0;
 	//this->nrOfGameWins = 0;
 	//this->deathReason = "unknown.";
-
 }
 
 void MetaProgress::EnemyKilled(const std::string& enemytype)

@@ -19,15 +19,13 @@ class MetaProgress
 public:
 	MetaProgress();
 	~MetaProgress();
-	//void Initialize();
-
+	
 	void Print();
 	std::string GetInfo();
 	void SaveScore(); // saves score when player dies.. and then resets
 	void SaveProgress(SaveState& theSave);
 	void LoadSave(SaveState & theSave); //load when enter gamescene.. OnActive
 	void Reset();
-
 
 	void EnemyKilled(const std::string& enemytype); //done
 	void SetNodeReached(const int& currentNode);
