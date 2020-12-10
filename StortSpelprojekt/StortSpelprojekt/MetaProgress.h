@@ -3,8 +3,12 @@
 
 constexpr unsigned int SCORE_C_ENEMY = 100;  
 constexpr unsigned int SCORE_B_ENEMY = 80;
-constexpr unsigned int SCORE_NODE_REACHED = 200;
-constexpr unsigned int SCORE_LEVEL_CLEARED = 1000;
+constexpr unsigned int SCORE_NODE_REACHED = 200; //does not use
+constexpr unsigned int SCORE_LEVEL_CLEARED = 1000; //does not use
+//fuel reduction
+//health loss reduction
+//hunger loss reduction
+
 
 constexpr unsigned int SCORE_FUEL_USED = 80;
 constexpr unsigned int SCORE_FOOD_USED = 120;

@@ -123,11 +123,18 @@ void MetaProgress::Reset()
 
 void MetaProgress::EnemyKilled(const std::string& enemytype)
 {
-	//std::cout << "type: " << enemytype << std::endl;
 	if (enemytype == "chargerEnemy")
+	{
+		this->score += SCORE_C_ENEMY;
+		this->currencyEarned += SCORE_C_ENEMY * SCORE_TO_CURRENCY;
 		cEnemiesKilled++;
+	}
 	else if (enemytype == "baseEnemy")
+	{
+		this->score += SCORE_B_ENEMY;
+		this->GetCurrencyEarned += SCORE_B_ENEMY * SCORE_TO_CURRENCY;
 		bEnemiesKilled++;
+	}
 }
 
 void MetaProgress::SetNodeReached(const int& currentNode)
