@@ -169,4 +169,6 @@ private:
 	int particlesPerSecond;	
 
 	bool left = false, right = true;
+
+	DWORD shaderCompilationFlag;
 };

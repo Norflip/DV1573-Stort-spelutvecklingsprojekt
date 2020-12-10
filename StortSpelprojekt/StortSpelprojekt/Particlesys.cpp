@@ -30,6 +30,12 @@ Particlesys::Particlesys(/*Shader* soShader, Shader* drawShader*/)
 	streamoutGS = L"Shaders/ParticleSO_gs.hlsl";
 	drawGS = L"Shaders/ParticleDraw_gs.hlsl";
 	drawPS = L"Shaders/ParticleDraw_ps.hlsl";	
+
+	shaderCompilationFlag = D3DCOMPILE_ENABLE_STRICTNESS;
+#ifdef _DEBUG
+	shaderCompilationFlag = shaderCompilationFlag | D3DCOMPILE_DEBUG;
+#endif
+
 }
 
 Particlesys::~Particlesys()
@@ -43,8 +49,18 @@ Particlesys::~Particlesys()
 
 bool Particlesys::InitializeParticleShaders(ID3D11Device* device, HWND hwnd)
 {
+	const D3D_SHADER_MACRO defines[] =
+	{
+#if _DEBUG
+			"_DEBUG", "1",
+#else
+			"_DEBUG", "0",
+#endif
+			NULL, NULL
+	};
+
 	/* VS SHADERS */
-	hr = D3DCompileFromFile(streamoutVS, nullptr, D3D_COMPILE_STANDARD_FILE_INCLUDE, "main", "vs_5_0", D3DCOMPILE_ENABLE_STRICTNESS, NULL, &streamoutVSBlob, &ErrorBlob);
+	hr = D3DCompileFromFile(streamoutVS, defines, D3D_COMPILE_STANDARD_FILE_INCLUDE, "main", "vs_5_0", shaderCompilationFlag, NULL, &streamoutVSBlob, &ErrorBlob);
 	if (FAILED(hr)) {
 		if (ErrorBlob) {
 			OutputDebugStringA((char*)ErrorBlob->GetBufferPointer());
@@ -62,7 +78,7 @@ bool Particlesys::InitializeParticleShaders(ID3D11Device* device, HWND hwnd)
 		return false;
 	}
 
-	hr = D3DCompileFromFile(drawVS, nullptr, D3D_COMPILE_STANDARD_FILE_INCLUDE, "main", "vs_5_0", D3DCOMPILE_ENABLE_STRICTNESS, NULL, &drawVSBlob, &ErrorBlob);
+	hr = D3DCompileFromFile(drawVS, defines, D3D_COMPILE_STANDARD_FILE_INCLUDE, "main", "vs_5_0", shaderCompilationFlag, NULL, &drawVSBlob, &ErrorBlob);
 	if (FAILED(hr)) {
 		if (ErrorBlob) {
 			OutputDebugStringA((char*)ErrorBlob->GetBufferPointer());
@@ -83,7 +99,7 @@ bool Particlesys::InitializeParticleShaders(ID3D11Device* device, HWND hwnd)
 	/* VS SHADERS END */
 
 	/* GS SHADERS */
-	hr = D3DCompileFromFile(streamoutGS, nullptr, D3D_COMPILE_STANDARD_FILE_INCLUDE, "main", "gs_5_0", D3DCOMPILE_ENABLE_STRICTNESS, NULL, &streamoutGSBlob, &ErrorBlob);
+	hr = D3DCompileFromFile(streamoutGS, defines, D3D_COMPILE_STANDARD_FILE_INCLUDE, "main", "gs_5_0", shaderCompilationFlag, NULL, &streamoutGSBlob, &ErrorBlob);
 	if (FAILED(hr)) {
 		if (ErrorBlob) {
 			OutputDebugStringA((char*)ErrorBlob->GetBufferPointer());
@@ -101,7 +117,7 @@ bool Particlesys::InitializeParticleShaders(ID3D11Device* device, HWND hwnd)
 		return false;
 	}
 
-	hr = D3DCompileFromFile(drawGS, nullptr, D3D_COMPILE_STANDARD_FILE_INCLUDE, "main", "gs_5_0", D3DCOMPILE_ENABLE_STRICTNESS, NULL, &drawGSBlob, &ErrorBlob);
+	hr = D3DCompileFromFile(drawGS, defines, D3D_COMPILE_STANDARD_FILE_INCLUDE, "main", "gs_5_0", shaderCompilationFlag, NULL, &drawGSBlob, &ErrorBlob);
 	if (FAILED(hr)) {
 		if (ErrorBlob) {
 			OutputDebugStringA((char*)ErrorBlob->GetBufferPointer());
@@ -122,7 +138,7 @@ bool Particlesys::InitializeParticleShaders(ID3D11Device* device, HWND hwnd)
 	/* GS SHADERS END */
 
 	/* PS SHADERS */
-	hr = D3DCompileFromFile(drawPS, nullptr, D3D_COMPILE_STANDARD_FILE_INCLUDE, "main", "ps_5_0", D3DCOMPILE_ENABLE_STRICTNESS, NULL, &drawPSBlob, &ErrorBlob);
+	hr = D3DCompileFromFile(drawPS, defines, D3D_COMPILE_STANDARD_FILE_INCLUDE, "main", "ps_5_0", shaderCompilationFlag, NULL, &drawPSBlob, &ErrorBlob);
 	if (FAILED(hr)) {
 		if (ErrorBlob) {
 			OutputDebugStringA((char*)ErrorBlob->GetBufferPointer());
