@@ -370,8 +370,6 @@ void ObjectSpawner::SpawnItem(Chunk* chunk)
 			size_t spawnCount = 0;
 			size_t ITEMS_PER_CHUNK = UICAST(Random::Range(ICAST(MIN_ITEMS_PER_CHUNK), ICAST(MAX_ITEMS_PER_CHUNK + 1)));
 
-			std::cout << "ITEM_COUNT: " << ITEMS_PER_CHUNK << std::endl;
-
 			for (size_t i = 0; i < positions.size() && spawnCount < ITEMS_PER_CHUNK; i++)
 			{
 				dx::XMFLOAT2 pos = positions[i];
@@ -391,21 +389,6 @@ void ObjectSpawner::SpawnItem(Chunk* chunk)
 						object = items->SpawnRandomOfType(priorityType, position, root);
 					else
 						object = items->SpawnRandom(position, root);
-
-
-					//Item& item = itemRegistry[m_itemIndex];
-					//Object* object = pooler->GetItem(item.key);
-					//object->GetComponent<MeshComponent>()->SetBatchable(true);
-
-					//Object::AddToHierarchy(root, object);
-					//activeItems.push_back(object);
-
-					if (!object->HasComponent<ParticleSystemComponent>())
-					{
-						/* Particles */
-						ParticleSystemComponent* particles = object->AddComponent<ParticleSystemComponent>(renderer, Engine::Instance->GetResources()->GetShaderResource("particleShader"));
-						particles->InitializeParticles(renderer->GetDevice(), "Particle");
-					}
 
 					spawnCount++;
 				}

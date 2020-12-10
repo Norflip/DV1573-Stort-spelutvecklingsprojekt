@@ -7,5 +7,3 @@ Road: Textures/Stone_Floor_003_COLOR.jpg
 Fire1: Textures/fire1.png
 
 Particle: Textures/particle3.png
-
-Noise: Textures/colored_noise.png
