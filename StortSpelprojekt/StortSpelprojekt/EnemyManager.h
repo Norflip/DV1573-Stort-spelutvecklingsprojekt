@@ -5,10 +5,10 @@
 #include "Pathfinding.h"
 #include "Math.h"
 #include "Random.h"
-constexpr float ENEMY_SPAWN_RATE_MAX = 2;//9.f; //how fast enemies spawn
-constexpr float ENEMY_SPAWN_RATE_MIN = 0;//2.f; 
+constexpr float ENEMY_SPAWN_RATE_MAX = 5;//9.f; //how fast enemies spawn
+constexpr float ENEMY_SPAWN_RATE_MIN = 2;//2.f; 
 constexpr float ENEMY_SPAWN_RADIUS = 10.f; //distance from player
-constexpr int ENEMY_BASE_TOTAL = 120; //base value of max nr of enemies
+constexpr int ENEMY_BASE_TOTAL = 40;//12; //base value of max nr of enemies
 
 //multiplier per level/segment
 constexpr float ENEMY_HEALTH_MULTIPLIER = 0.2f;  
