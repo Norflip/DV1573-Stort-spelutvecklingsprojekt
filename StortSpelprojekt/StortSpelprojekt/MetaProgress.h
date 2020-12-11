@@ -13,7 +13,7 @@ constexpr unsigned int SCORE_LEVEL_CLEARED = 1000; //does not use
 constexpr unsigned int SCORE_FUEL_USED = 80;
 constexpr unsigned int SCORE_FOOD_USED = 120;
 constexpr unsigned int SCORE_HEAL_USED = 70;
-constexpr unsigned int SCORE_PUZZLE_SOLVED = 1500;
+constexpr unsigned int SCORE_PUZZLE_SOLVED = 500;
 
 constexpr float SCORE_TO_CURRENCY = 0.05f;
 

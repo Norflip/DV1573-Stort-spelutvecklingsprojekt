@@ -953,7 +953,7 @@ void Renderer::InitForwardPlus(VirtualCamera* camera)
 
 	//avarage overlapping lights per tile = 200
 	//int indexList = numThreadGroups.x * numThreadGroups.y * numThreadGroups.z * 40;
-	int indexList = count * 40;
+	int indexList = count * 200;// 40;
 	o_LightIndexList.resize(indexList); //count *30 
 	t_LightIndexList.resize(indexList);
 	/*for (int index = 0; index < 32; index++)

@@ -5,10 +5,10 @@
 #include "Pathfinding.h"
 #include "Math.h"
 #include "Random.h"
-constexpr float ENEMY_SPAWN_RATE_MAX = 9.f; //how fast enemies spawn
-constexpr float ENEMY_SPAWN_RATE_MIN = 2.f; 
+constexpr float ENEMY_SPAWN_RATE_MAX = 2;//9.f; //how fast enemies spawn
+constexpr float ENEMY_SPAWN_RATE_MIN = 0;//2.f; 
 constexpr float ENEMY_SPAWN_RADIUS = 10.f; //distance from player
-constexpr int ENEMY_BASE_TOTAL = 12; //base value of max nr of enemies
+constexpr int ENEMY_BASE_TOTAL = 120; //base value of max nr of enemies
 
 //multiplier per level/segment
 constexpr float ENEMY_HEALTH_MULTIPLIER = 0.2f;  
@@ -55,6 +55,8 @@ class EnemyManager
 		//size_t aliveEnemies; //current number of enemies //can use vector size
 		float enemySpawnTimer;
 
+
+		int numLights;
 		//bool PointInFrustum(dx::XMFLOAT4 frustum[4], dx::XMFLOAT3 point);
 		//bool PointInFrustum(const std::vector<dx::XMFLOAT4>& frustum, const dx::XMFLOAT3& point);
 		//bool SphereInFrustum(const std::vector<dx::XMFLOAT4>& frustum, const dx::XMFLOAT3& point);

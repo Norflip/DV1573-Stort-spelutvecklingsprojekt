@@ -21,6 +21,8 @@ EnemyManager::EnemyManager()
 	nrOfChargeEnemies = 0;
 	//aliveEnemies = 0;
 	enemySpawnTimer = 0;
+
+	this->numLights = 0;
 }
 
 EnemyManager::~EnemyManager()
@@ -241,6 +243,22 @@ void EnemyManager::SpawnEnemy(std::string key, dx::XMVECTOR position)
 
 	//std::cout << "enemy ["<<enemyVector.size()<<"]"<<std::endl
 	//	<<" hp: " <<enemyStats->GetHealth()<<", attack: "<< enemyStats->GetAttack()<<std::endl;
+
+	this->numLights++;
+	float red = (float)Random::Range(0, 100 + 1) / 100;
+	float green = (float)Random::Range(0, 100 + 1) / 100;
+	float blue = (float)Random::Range(0, 100 + 1) / 100;
+	std::cout << this->numLights << " - r: " << red << ", g: " << green << ", b:" << blue << std::endl;
+	Object* light = new Object("lantern_pointLight");
+	light->GetTransform().SetPosition({0.f, 1.f, 0.f}); //pink - 0.8f, 0.2f, 0.4f
+	LightComponent* lc = light->AddComponent<LightComponent>(LightType::POINT_LIGHT, dx::XMFLOAT4(red,green,blue, 1.0f), 5.0f);
+	lc->SetEnabled(true);
+	lc->SetIntensity(1.0f);
+	//Object::AddToHierarchy(root, light);
+	Object::AddToHierarchy(enemy, light);
+	std::cout << "x: " << light->GetTransform().GetWorldPosition().m128_f32[0] << ", y: " << light->GetTransform().GetWorldPosition().m128_f32[1] << ", z: " << light->GetTransform().GetWorldPosition().m128_f32[2] << std::endl;
+
+
 
 	enemyVector.push_back(enemy);
 }

@@ -169,6 +169,7 @@ void ObjectSpawner::AddTreesToChunk(const TreeModel& treeModel, Chunk* chunk, si
 		{
 			if (Random::Value() > NO_TREE_CHANCE && ValidSpawnPoint(points[i], chunk, TREE_SPAWN_FACTOR))
 				validPoints.push_back(points[i]);
+
 		}
 
 		size_t nrOfInstancedStyTrees = validPoints.size();
@@ -221,6 +222,8 @@ void ObjectSpawner::AddTreesToChunk(const TreeModel& treeModel, Chunk* chunk, si
 				dx::XMFLOAT4 rot;
 				dx::XMStoreFloat4(&rot, combinedRot);
 				colliderRotations.push_back(rot);
+
+
 			}
 
 			Object* treeObject = new Object("tree", ObjectFlag::DEFAULT | ObjectFlag::NO_CULL);
@@ -239,6 +242,7 @@ void ObjectSpawner::AddTreesToChunk(const TreeModel& treeModel, Chunk* chunk, si
 
 			treeObject->AddComponent<RigidBodyComponent>(0.f, FilterGroups::DEFAULT, FilterGroups::EVERYTHING, BodyType::STATIC, true);
 
+			
 		}
 	}
 }

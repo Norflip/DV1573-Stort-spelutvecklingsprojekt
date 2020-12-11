@@ -416,7 +416,7 @@ void GameScene::InitializeInterior()
 
 	testParticles = new Particlesys(/*Engine::Instance->GetResources()->GetShaderResource("soshader"), Engine::Instance->GetResources()->GetShaderResource("drawshader")*/);
 	testParticles->InitializeParticleShaders(renderer->GetDevice(), window->GetHWND());
-
+	
 	testParticles->SetTexture(renderer->GetDevice(), L"Textures/fire.png");
 	testParticles->SetMaxParticles(200);
 	//testParticles->SetParticleColor(dx::XMFLOAT4(fireRedColor));
