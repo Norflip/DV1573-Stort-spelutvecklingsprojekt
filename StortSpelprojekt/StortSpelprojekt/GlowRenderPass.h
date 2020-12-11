@@ -36,43 +36,89 @@ public:
 		for (auto i : renderq)
 		{
 			while (!i.second.empty())
+			//while (i.second.size() != 0)
 			{
 				Renderer::RenderItem item = i.second.front();
 
-				i.second.pop();
 				// Om item är instancable.. kör en Instanceable_vs + emissive_ps t.ex
 				// OM item är vanlig... kör en Default_vs + emissive_ps.
-				switch (item.type)
-				{
-					case Renderer::RenderItem::Type::Instanced:
-						/*shader->SetVertexShader("Shaders/Instance_vs.hlsl");
-						shader->SetPixelShader("Shaders/Emissive_ps.hlsl");
-						material = new Material(shader);
-						renderer->GetContext()->PSSetShaderResources(0, 1, &target.srv);
-						renderer->DrawScreenQuad(material);*/
-						break;
 
-					case Renderer::RenderItem::Type::Default:
-					default:
-						/*shader->SetVertexShader("Shaders/Default_vs.hlsl");
-						shader->SetPixelShader("Shaders/Default_ps.hlsl");
-						material = new Material(shader);
-						renderer->GetContext()->PSSetShaderResources(0, 1, &target.srv);
-						renderer->DrawScreenQuad(material);*/
-						break;
+				//switch (item.type)
+				//{
+				//	case Renderer::RenderItem::Type::Instanced:
+				//		/*shader->SetVertexShader("Shaders/Instance_vs.hlsl");
+				//		shader->SetPixelShader("Shaders/Emissive_ps.hlsl");
+				//		material = new Material(shader);
+				//		renderer->GetContext()->PSSetShaderResources(0, 1, &target.srv);
+				//		renderer->DrawScreenQuad(material);*/
+				//		//shader->SetVertexShader("Shaders/Instance_vs.hlsl");
+				//		//shader->SetPixelShader("Shaders/Emissive_ps.hlsl");
+				//		//renderer->LoadShaderResourceView("glow");
+				//		std::cout << "Get Into Instance case" << std::endl;
+				//		
+				//		break;
+				//
+				//	case Renderer::RenderItem::Type::Default:
+				//	default:
+				//		/*shader->SetVertexShader("Shaders/Default_vs.hlsl");
+				//		shader->SetPixelShader("Shaders/Default_ps.hlsl");
+				//		material = new Material(shader);
+				//		renderer->GetContext()->PSSetShaderResources(0, 1, &target.srv);
+				//		renderer->DrawScreenQuad(material);*/
+				//		//shader->SetVertexShader("Shaders/Default_vs.hlsl");
+				//		//shader->SetPixelShader("Shaders/Emissive_ps.hlsl");
+				//		//renderer->LoadShaderResourceView("default");
+				//		
+				//		break;
+				//
+				//}
+				/*item.material = new Material(shader);
+				renderer->GetContext()->PSSetShaderResources(0, 1, &target.srv);
+				renderer->DrawScreenQuad(item.material);*/
+
+
+
+				if (item.type == Renderer::RenderItem::Type::Instanced)
+				{
+					//shader->SetVertexShader("Shaders/Instance_vs.hlsl");
+					//shader->SetPixelShader("Shaders/Emissive_ps.hlsl");
+					//shader->SetPixelShader("Shaders/Default_ps.hlsl");
+					std::cout << "Get Into Instance case" << std::endl;
 
 				}
-				
+				else if (item.type == Renderer::RenderItem::Type::Default)
+				{
+					shader->SetVertexShader("Shaders/Default_vs.hlsl");
+					shader->SetPixelShader("Shaders/Emissive_ps.hlsl");
+					std::cout << "Get Into default case" << std::endl;
+				}
+				else
+				{
+					std::cout << "got nowhere" << std::endl;
+
+				}
+
+				item.material = new Material(shader);
+				renderer->GetContext()->PSSetShaderResources(0, 1, &target.srv);
+				renderer->DrawScreenQuad(item.material);
 
 				// Denna drar ner prestandan.. men det visar att saker faktiskt finns i queuen.
-				//std::cout << "GLOWING? : " << item.mesh->GetMeshName() << std::endl;
+				//std::cout << "GLOWING? : " << item.mesh->GetMeshName()<< " " << i.second.size() << std::endl;
+
+				i.second.pop();
+
 			}
 		}
 
 		// UNBINDA GLOWTARGET HÄR. Kommer ge fel annars
+		ID3D11RenderTargetView* null = nullptr;
+		renderer->GetContext()->OMSetRenderTargets(1, &glowTarget.rtv, glowTarget.dsv);
+
+
 
 		// vi sparar glow texturer till renderer så vi sedan kan hämta den i nästa pass
 		renderer->StoreShaderResourceView("glow", target.srv);
+		//renderer->GetContext()->PSSetShaderResources(0, 1, nullptr);
 
 		// vi sätter tillbaka till det vanliga render target för att renderar resten av scenen
 		renderer->SetRenderTarget(current, true);
