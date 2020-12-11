@@ -97,6 +97,10 @@ void Engine::Run()
 
 			if (msg.message == WM_QUIT)
 				Exit();
+			
+			if (KEY_DOWN(Escape))
+				Exit();
+
 			if (activeSceneIndex != -1)
 			{
 				if (window.GetShouldResize())

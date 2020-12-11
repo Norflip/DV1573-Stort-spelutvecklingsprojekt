@@ -84,15 +84,11 @@ private:
 	ID3D11Buffer* streamoutVB;
 
 	ID3D11ShaderResourceView* particleSRV;
-	ID3D11ShaderResourceView* randomNumberSRV;
-	//Texture* particleTex;
-	//Texture* random1DTexture;
+	ID3D11ShaderResourceView* randomNumberSRV;	
 
 	cb_particle* particleBufferSend;
 	cb_particle particleBuffer; 
 	ID3D11Buffer* cb_Per_Particle;
 
-	HRESULT hr;
-
-	
+	HRESULT hr;	
 };
