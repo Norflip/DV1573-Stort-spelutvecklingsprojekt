@@ -393,8 +393,8 @@ void GameScene::InitializeInterior()
 	fLight->SetIntensity(1.f);
 	AddObjectToRoot(fireLight);
 
-	testParticles = new Particlesys(/*Engine::Instance->GetResources()->GetShaderResource("soshader"), Engine::Instance->GetResources()->GetShaderResource("drawshader")*/);
-	testParticles->InitializeParticleShaders(renderer->GetDevice(), window->GetHWND());
+	testParticles = new Particlesys(Engine::Instance->GetResources()->GetShaderResource("ParticleShaderSO"), Engine::Instance->GetResources()->GetShaderResource("ParticleShaderDraw"));
+	//testParticles->InitializeParticleShaders(renderer->GetDevice(), window->GetHWND());
 
 	testParticles->SetTexture(renderer->GetDevice(), L"Textures/fire.png");
 	testParticles->SetMaxParticles(200);
@@ -402,7 +402,7 @@ void GameScene::InitializeInterior()
 	testParticles->SetParticleSize(dx::XMFLOAT2(0.8f, 0.8f));
 	//testParticles->SetEmitPos(dx::XMFLOAT3(28, 1.7f, 50));
 	testParticles->SetEmitDir(dx::XMFLOAT3(0.0f, 0.5f, 0.0f));
-	testParticles->SetParticleSpreadMulti(dx::XMFLOAT3(0.15f, 0.3f, 0.15f));
+	testParticles->SetParticleSpreadMulti(dx::XMFLOAT3(0.25f, 0.35f, 0.25f)); // testParticles->SetParticleSpreadMulti(dx::XMFLOAT3(0.15f, 0.3f, 0.15f));
 
 	testParticles->InitializeParticles(renderer->GetDevice(), renderer, fireLight);
 	renderer->ListParticle(testParticles);
@@ -526,7 +526,7 @@ void GameScene::OnActivate()
 	//this->PrintSceneHierarchy(root, 0);
 	//enemyManager->SpawnEnemies();
 
-	AudioMaster::Instance().PlaySoundEvent("wind");
+	
 
 	/* Ugly solution */
 	player->GetComponent<PlayerComp>()->GetArms()->GetComponent<PlayerAnimHandlerComp>()->SetStarted(true);
@@ -540,7 +540,11 @@ void GameScene::OnActivate()
 	//std::cout << "Game Scene activated " << std::endl;
 //	guiManager->GetGUIObject("loading")->SetVisible(false);
 	//house->GetComponent<NodeWalkerComp>()->canWalk = true;
-	//house->GetComponent<NodeWalkerComp>()->Reset();
+	house->GetComponent<NodeWalkerComp>()->Reset();
+
+	AudioMaster::Instance().PlaySoundEvent("wind");
+	AudioMaster::Instance().PlaySoundEvent("ambient");
+
 }
 
 void GameScene::OnDeactivate()
@@ -654,7 +658,6 @@ void GameScene::Update(const float& deltaTime)
 	}
 	
 
-
 	//Win
 	if (end)
 	{
@@ -681,45 +684,17 @@ void GameScene::Update(const float& deltaTime)
 	//+ " y: " + std::to_string((int)playerPosF.z));
 	guiManager->UpdateAll();
 
-	/*static float a = 0.0f;
-	if (left)
-	{
-		if (a > -10.0f)
-			a -= 0.075f;
-		else
-		{
-			right = true;
-			left = false;
-		}
-	}
-	else if (right)
-	{
-		if (a < 10.0f)
-			a += 0.075f;
-		else
-		{
-			right = false;
-			left = true;
-		}
+	
+	
+	float fuel = player->GetComponent<PlayerComp>()->GetFuel();
 
-	}
-
-	testParticles->SetEmitPos(dx::XMFLOAT3(28.0f + a, 1.7f, 50.0f));*/
 	dx::XMFLOAT3 eyeCam;
-	dx::XMStoreFloat3(&eyeCam, camera->GetOwner()->GetTransform().GetPosition());
-	//testParticles->SetEyePos(eyeCam);
-	//testParticles->Update(deltaTime, GameClock::Instance().GetSeconds());
-
-
-	//dx::XMFLOAT3 eyeCam;
-	//dx::XMStoreFloat3(&eyeCam, camera->GetOwner()->GetTransform().GetPosition());
+	dx::XMStoreFloat3(&eyeCam, camera->GetOwner()->GetTransform().GetPosition());	
 	for (auto i : renderer->GetParticleList())
 	{
 		i->SetEyePos(eyeCam);
-		i->Update(deltaTime, GameClock::Instance().GetSeconds());
+		i->Update(deltaTime, GameClock::Instance().GetSeconds(), fuel);
 	}
-	//renderer->GetParticlesys(testParticles);
-
 }
 
 void GameScene::FixedUpdate(const float& fixedDeltaTime)

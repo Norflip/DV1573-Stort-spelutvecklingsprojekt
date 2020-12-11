@@ -79,16 +79,15 @@ void IntroScene::InitializeGUI()
 	volumeBarFillSoundeffects->SetVisible(false);
 	volumeBarFillSoundeffects->SetScale(AudioMaster::Instance().GetVolume(AudioTypes::Sound), 1.0f);
 
-	//GUISprite* sensitivityBarFill = new GUISprite(*renderer, "Textures/volumeBarFill.png", 900, 550, 0, DrawDirection::Default, ClickFunction::NotClickable, GuiGroup::Options);
+
+	
 	GUISprite* lowerSensitivitySprite = new GUISprite(*renderer, "Textures/lowerVolume.png", 800, 550, 0, DrawDirection::Default, ClickFunction::Clickable, GuiGroup::Options);
-	//GUISprite* volumeSensitivtySprite = new GUISprite(*renderer, "Textures/volumeButton.png", 900, 550, 0, DrawDirection::Default, ClickFunction::NotClickable, GuiGroup::Options);
-	GUISprite* higherSensitivitySprite = new GUISprite(*renderer, "Textures/higherVolume.png", 1150, 550, 0, DrawDirection::Default, ClickFunction::Clickable, GuiGroup::Options);
-	//sensitivityBarFill->SetVisible(false);
+	GUISprite* higherSensitivitySprite = new GUISprite(*renderer, "Textures/higherVolume.png", 1150, 550, 0, DrawDirection::Default, ClickFunction::Clickable, GuiGroup::Options);	
+
 	lowerSensitivitySprite->SetVisible(false);
-	//volumeSensitivtySprite->SetVisible(false);
 	higherSensitivitySprite->SetVisible(false);
-	//sensitivityBarFill->SetScale(this->sensitivity, 1.0f);
 	GUIFont* sensitivityDisplay = new GUIFont(*renderer, "hi", windowWidth / 2 + 30, 585);
+	sensitivityDisplay->SetFontSize({ 1.f,1.f });
 	sensitivityDisplay->SetVisible(false);
 	sensitivityDisplay->AddGroup(GuiGroup::Font);
 	sensitivityDisplay->AddGroup(GuiGroup::Options);

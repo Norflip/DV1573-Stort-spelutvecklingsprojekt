@@ -1,4 +1,4 @@
-Shaders: 15
+Shaders: 17
 
 Name: default
 
@@ -66,3 +66,14 @@ PS: Shaders/FogTest_ps.hlsl
 Name: FXAAShader
 VS: Shaders/ScreenQuad_vs.hlsl
 PS: Shaders/FXAA_ps.hlsl
+
+Name: ParticleShaderSO
+Input: particleSO
+VS: Shaders/ParticleSO_vs.hlsl
+SOGS: Shaders/ParticleSO_gs.hlsl
+
+Name: ParticleShaderDraw
+Input: particleDraw
+VS: Shaders/ParticleDraw_vs.hlsl
+GS: Shaders/ParticleDraw_gs.hlsl
+PS: Shaders/ParticleDraw_ps.hlsl
