@@ -585,8 +585,8 @@ void SkeletonMeshComponent::PlayBlendAnimations(SkeletonStateMachine state1, Ske
 	std::cout << "before blend length: " << skeletonAnimations[trackMap[state1]].GetAniLength() << std::endl;
 	std::cout << "before blend fps: " << skeletonAnimations[trackMap[state1]].GetFPS() << std::endl;
 
-	/*skeletonAnimations[trackMap[state1]].SetBlendAnimLength(skeletonAnimations[trackMap[state2]].GetAniLength(), factor);
-	skeletonAnimations[trackMap[state1]].SetBlendFPS(skeletonAnimations[trackMap[state2]].GetFPS(), factor);*/
+	skeletonAnimations[trackMap[state1]].SetBlendAnimLength(skeletonAnimations[trackMap[state2]].GetAniLength(), factor);
+	skeletonAnimations[trackMap[state1]].SetBlendFPS(skeletonAnimations[trackMap[state2]].GetFPS(), factor);
 
 	std::cout << "after blend length: " << skeletonAnimations[trackMap[state1]].GetAniLength() << std::endl;
 	std::cout << "after blend fps: " << skeletonAnimations[trackMap[state1]].GetFPS() << std::endl;
@@ -597,15 +597,14 @@ void SkeletonMeshComponent::PlayBlendAnimations(SkeletonStateMachine state1, Ske
 
 	//tror det är fel på hur jag räknar gameframe och ben
 	
-	for (auto i = 0; i < size; i++)
-	{
-		std::cout << "size: " << i << std::endl;
+	
+		//std::cout << "size: " << i << std::endl;
 
-		skeletonAnimations[trackMap[state1]].MergeKeys(
-			skeletonAnimations[trackMap[state2]].GetKeyFrames()[i][0],
-			factor, i);
+	skeletonAnimations[trackMap[state1]].MergeKeys(
+		skeletonAnimations[trackMap[state2]].GetKeyFrames(),
+		factor, size);
 
-	}
+	
 	
 	
 

@@ -4,7 +4,7 @@
 //bool AnimationController::Initialize()
 //{
 //    
-//    return false;
+//    return true;
 //}
 //
 //bool AnimationController::AdvanceTime(double deltaTime)
@@ -86,7 +86,7 @@
 //
 //                   //Osäker på denna sektion VIKTOR
 //                   Frame* frame;
-//                   frame->frameName = skeletonAni.GetKeyFrames()[k][0].frame->frameName;
+//                   frame->frameName = skeletonAni.GetKeyFrames()[k][0].name;
 //
 //                   if (frame == NULL) return false;
 //
@@ -104,15 +104,15 @@
 //                if (_animTracks[track2].desc.enable)
 //                {
 //                    std::vector<AnimationKey>& keys = _animTracks[track2].trackKeys;
-//                    for (size_t tk = 0; tk < keys.size(); tk++)
+//                    for (size_t k = 0; k < keys.size(); k++)
 //                    {
-//                        rot = rot.CreateFromQuaternion(keys[tk].rotationQuaternion);
-//                        scale = scale.CreateTranslation(keys[tk].scaleVector);
-//                        translate = translate.CreateTranslation(keys[tk].translationVector);
+//                        rot = rot.CreateFromQuaternion(keys[k].rotationQuaternion);
+//                        scale = scale.CreateTranslation(keys[k].scaleVector);
+//                        translate = translate.CreateTranslation(keys[k].translationVector);
 //
 //                        //Osäker på denna sektion VIKTOR
 //                        Frame* frame;
-//                        frame->frameName = skeletonAni.GetKeyFrames()[tk][0].frame->frameName;
+//                        frame->frameName = skeletonAni.GetKeyFrames()[k][0].name;
 //
 //                        if (frame == NULL) return false;
 //

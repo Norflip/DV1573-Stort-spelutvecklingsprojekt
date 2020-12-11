@@ -59,7 +59,7 @@ public:
 	void SetTransVector(dx::SimpleMath::Vector3 transVec);
 
 	//BLENDA STRUCTS MED FILIPS CURSED KOD
-	void MergeKeys(Bone keys, float factor, float i);
+	void MergeKeys(std::vector<std::vector<Bone>> keys, float factor, float size);
 	void MergeOffsets(std::vector<dx::SimpleMath::Matrix> offset, float factor, float i);
 	void SetBlendAnimLength(float animLength, float factor);
 	void SetBlendFPS(float fps, float factor);

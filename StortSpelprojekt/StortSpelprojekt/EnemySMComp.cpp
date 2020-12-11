@@ -76,7 +76,7 @@ void EnemySMComp::Animate()
 	{
 		if (currentState == EnemyState::ATTACK)
 		{
-			skeletonComponent->PlayBlendAnimations(SkeletonStateMachine::RUN, SkeletonStateMachine::ATTACK, 1.0f);
+			skeletonComponent->PlayBlendAnimations(SkeletonStateMachine::RUN, SkeletonStateMachine::ATTACK, 1.f);
 			//skeletonComponent->SetTrack(SkeletonStateMachine::RUN, false);
 
 			if (attackComponent->GetIsAttacking())
