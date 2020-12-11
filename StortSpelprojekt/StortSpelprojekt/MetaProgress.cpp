@@ -132,7 +132,7 @@ void MetaProgress::EnemyKilled(const std::string& enemytype)
 	else if (enemytype == "baseEnemy")
 	{
 		this->score += SCORE_B_ENEMY;
-		this->GetCurrencyEarned += SCORE_B_ENEMY * SCORE_TO_CURRENCY;
+		this->currencyEarned += SCORE_B_ENEMY * SCORE_TO_CURRENCY;
 		bEnemiesKilled++;
 	}
 }
