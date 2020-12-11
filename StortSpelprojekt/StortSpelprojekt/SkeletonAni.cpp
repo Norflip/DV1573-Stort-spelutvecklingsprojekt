@@ -291,7 +291,7 @@ void SkeletonAni::MergeKeys(std::vector<std::vector<Bone>> keys, float factor, f
     dx::SimpleMath::Vector3 vecCalc;
 
 
-    for (float k = 0; k < this->length; k++)
+    for (float k = 0; k < size; k++)
     {
        
        std::cout << "size: " << k << std::endl;
@@ -310,17 +310,17 @@ void SkeletonAni::MergeKeys(std::vector<std::vector<Bone>> keys, float factor, f
 
 
 
-       size_t frames = sizeof(this->length) / sizeof(float);
-       size_t indicies = sizeof(this->length) / sizeof(int);
-       size_t quaternions = sizeof(this->length) / sizeof(dx::SimpleMath::Quaternion);
-       size_t vectors = sizeof(this->length) / sizeof(dx::SimpleMath::Vector3);
+       size_t frames = sizeof(size) / sizeof(float);
+       size_t indicies = sizeof(size) / sizeof(int);
+       size_t quaternions = sizeof(size) / sizeof(dx::SimpleMath::Quaternion);
+       size_t vectors = sizeof(size) / sizeof(dx::SimpleMath::Vector3);
 
 
 
-       float* frameResult = new float;
-       int* indexResult = new int;
-       dx::SimpleMath::Quaternion* quatResult = new dx::SimpleMath::Quaternion;
-       dx::SimpleMath::Vector3* vectorResult = new dx::SimpleMath::Vector3;
+       float* frameResult = new float[frames];
+       int* indexResult = new int[indicies];
+       dx::SimpleMath::Quaternion* quatResult = new dx::SimpleMath::Quaternion[quaternions];
+       dx::SimpleMath::Vector3* vectorResult = new dx::SimpleMath::Vector3[vectors];
 
 
 
