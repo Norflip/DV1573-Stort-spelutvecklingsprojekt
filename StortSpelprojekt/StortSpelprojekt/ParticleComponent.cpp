@@ -33,9 +33,7 @@ ParticleComponent::~ParticleComponent()
 {
 	if (initializeVB) { initializeVB->Release(); }
 	if (drawVB) { drawVB->Release(); }
-	if (streamoutVB) { streamoutVB->Release(); }
-	/*if (particleSRV) { particleSRV->Release(); }
-	if (randomNumberSRV) { randomNumberSRV->Release(); }*/
+	if (streamoutVB) { streamoutVB->Release(); }	
 }
 
 void ParticleComponent::InitializeParticles(ID3D11Device* device)
@@ -77,12 +75,10 @@ void ParticleComponent::InitializeParticles(ID3D11Device* device)
 	hr = device->CreateShaderResourceView(random, &viewDesc, &randomNumberSRV);
 	assert(SUCCEEDED(hr));
 	delete[] randomValues;
-
-	
+		
 	streamoutMat->SetTexture(new Texture(randomNumberSRV), TEXTURE_DIFFUSE_SLOT, ShaderBindFlag::SOGEOMETRY);
 	streamoutMat->SetSampler(DXHelper::CreateSampler(D3D11_FILTER_MIN_MAG_MIP_LINEAR, D3D11_TEXTURE_ADDRESS_WRAP, device), 0, ShaderBindFlag::SOGEOMETRY);
 	
-
 	/* Particle cb stuffy */
 	D3D11_BUFFER_DESC cBufferDescription;
 	// Setup the description of the camera constant buffer that is in the vertex shader.
@@ -116,47 +112,23 @@ void ParticleComponent::Update(const float& deltaTime)
 void ParticleComponent::Draw(Renderer* renderer, CameraComponent* camera)
 {
 	dx::XMFLOAT3 emitpos;	
-	emitpos.x = GetOwner()->GetTransform().GetPosition().m128_f32[0]; 
-	emitpos.y = GetOwner()->GetTransform().GetPosition().m128_f32[1]; 
-	emitpos.z = GetOwner()->GetTransform().GetPosition().m128_f32[2];
+	dx::XMStoreFloat3(&emitpos, GetOwner()->GetTransform().GetPosition());
 	emitPos = emitpos;
-
-	/*renderer->SetCullBack(false);
-	renderer->GetContext()->OMSetDepthStencilState(renderer->GetDepthDisable(), 0);
-	renderer->EnableAlphaBlending();*/
-	
-	dx::XMFLOAT3 pos;
-	pos.x = camera->GetOwner()->GetTransform().GetPosition().m128_f32[0];
-	pos.y = camera->GetOwner()->GetTransform().GetPosition().m128_f32[1];
-	pos.z = camera->GetOwner()->GetTransform().GetPosition().m128_f32[2];
-	//dx::XMStoreFloat3(&pos, camera->GetOwner()->GetTransform().GetPosition());	
-	eyePos = pos;
-
-
-	//SetEyePos(pos);
-	/*DrawStreamOut(renderer->GetContext(), camera);
-	Draw(renderer->GetContext(), camera);
-
-	
-
-	renderer->DisableAlphaBlending();
-	renderer->GetContext()->OMSetDepthStencilState(renderer->GetDepthEnable(), 0);
-	renderer->SetCullBack(true);*/
-
-
+		
+	dx::XMFLOAT3 eyeCam;
+	dx::XMStoreFloat3(&eyeCam, camera->GetOwner()->GetTransform().GetPosition());	
+	eyePos = eyeCam;
 
 	dx::XMMATRIX viewproj;
-	dx::XMMATRIX proj = camera->GetProjectionMatrix();
-	dx::XMMATRIX view = camera->GetViewMatrix();
-	viewproj = view * proj;
+	viewproj = XMMatrixMultiply(camera->GetViewMatrix(), camera->GetProjectionMatrix());
 
 	particleBufferSend = new cb_particle;
-	particleBufferSend->emitDir = emitDir; // GetEmitDir();
-	particleBufferSend->emitPos = emitPos; // GetEmitPos();
-	particleBufferSend->eyePos = eyePos; // GetEyePos();
+	particleBufferSend->emitDir = emitDir; 
+	particleBufferSend->emitPos = emitPos; 
+	particleBufferSend->eyePos = eyePos; 
 	particleBufferSend->gameTime = gameTimer;
 	particleBufferSend->ageTimeStep = ageTimeStep;
-	particleBufferSend->viewProjection = dx::XMMatrixTranspose(viewproj); //dx::XMStoreFloat4x4(&particleBuffer.viewProjection, dx::XMMatrixTranspose(viewproj));
+	particleBufferSend->viewProjection = dx::XMMatrixTranspose(viewproj); 
 	particleBufferSend->particleMaxAge = particleMaxAge;
 	particleBufferSend->particleColor = particleColor;
 	particleBufferSend->usingTexture = usingTexture;
@@ -167,18 +139,13 @@ void ParticleComponent::Draw(Renderer* renderer, CameraComponent* camera)
 }
 
 void ParticleComponent::SetTexture(ID3D11Device* device, LPCWSTR textureFilename)
-{
-	//particleTex->LoadTexture(device, textureFilename);
-
+{	
 	hr = dx::CreateWICTextureFromFile(device, textureFilename, nullptr, &particleSRV);
 	if (FAILED(hr))
 		MessageBox(0, L"Failed to 'Load WIC Texture'", L"Graphics scene Initialization Message", MB_ICONERROR);
 
 	drawMat->SetTexture(new Texture(particleSRV), TEXTURE_DIFFUSE_SLOT, ShaderBindFlag::PIXEL);
 	drawMat->SetSampler(DXHelper::CreateSampler(D3D11_FILTER_MIN_MAG_MIP_LINEAR, D3D11_TEXTURE_ADDRESS_WRAP, device), 0, ShaderBindFlag::PIXEL);
-
-	/*hr = DirectX::CreateWICTextureFromFile(device, particleTexture, nullptr, &particleSRV);
-	assert(SUCCEEDED(hr));*/
 
 	usingTexture = true;
 }

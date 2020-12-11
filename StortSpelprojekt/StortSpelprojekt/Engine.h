@@ -35,6 +35,7 @@ public:
 	
 	Physics* GetPhysics() const { return this->physics; }
 	ResourceManager* GetResources () const { return this->resourceManager; }
+	Renderer* GetRenderer() const { return this->renderer; }
 
 	void Pause(bool pause) { this->pause = pause; }
 	bool IsPaused() const { return pause; }

@@ -651,11 +651,9 @@ void Renderer::DrawRenderItemNewParticles(const RenderItem& item, CameraComponen
 	particleBuffer.SetData(*part);
 	particleBuffer.UpdateBuffer(context);
 
-
-
 	ID3D11Buffer* initBuffer = item.mesh->GetInitBuffer();
 	ID3D11Buffer* streamoutBuffer = item.mesh->GetStreamoutBuffer();
-	ID3D11Buffer* drawBuffer = item.mesh->GetInitBuffer();
+	ID3D11Buffer* drawBuffer = item.mesh->GetDrawBuffer();
 	const Material* soMat = item.streamoutMaterial;
 	const Material* drawMat = item.material;
 
@@ -665,7 +663,6 @@ void Renderer::DrawRenderItemNewParticles(const RenderItem& item, CameraComponen
 
 	UINT stride = sizeof(Mesh::Particle);
 	UINT offset = 0;
-
 
 	if (firstRun)
 		context->IASetVertexBuffers(0, 1, &initBuffer, &stride, &offset);
@@ -705,7 +702,6 @@ void Renderer::DrawRenderItemNewParticles(const RenderItem& item, CameraComponen
 
 
 	/* DRAW STUFF */
-
 	particleBuffer.SetData(*part);
 	particleBuffer.UpdateBuffer(context);
 

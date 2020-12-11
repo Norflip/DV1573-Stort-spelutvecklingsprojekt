@@ -15,7 +15,7 @@ Scene::Scene(const std::string& debugName) : input(Input::Instance()), debugName
 Scene::~Scene()
 {
 	delete root;
-	root = nullptr;	
+	root = nullptr;
 }
 
 void Scene::SetDepedencies(ResourceManager* resources, Renderer* renderer, Physics* physics, Window* window)
@@ -31,60 +31,51 @@ void Scene::SetDepedencies(ResourceManager* resources, Renderer* renderer, Physi
 void Scene::Update(const float& deltaTime)
 {
 
-		while (!removeQueue.empty())
-		{
-			Object* obj = removeQueue.front();
-			removeQueue.pop();
-			Object::RemoveFromHierarchy(obj);
-			delete obj;
-		}
+	while (!removeQueue.empty())
+	{
+		Object* obj = removeQueue.front();
+		removeQueue.pop();
+		Object::RemoveFromHierarchy(obj);
+		delete obj;
+	}
 
-		clock.Update();
+	clock.Update();
 
-		input.UpdateInputs();
-		root->GetTransform().SetChanged(true);
-		root->Update(deltaTime);
-		GameClock::Instance().Update();
+	input.UpdateInputs();
+	root->GetTransform().SetChanged(true);
+	root->Update(deltaTime);
+	GameClock::Instance().Update();
 
-		//renderer->UpdateTime((float)clock.GetSeconds());
+	//renderer->UpdateTime((float)clock.GetSeconds());
 
-		if (clock.GetSeconds() > 60)
-		{
-			clock.Restart();
-		}
-
-		// Press P to recompile shaders
-		//if (KEY_PRESSED(P))
-		//{
-		//	//std::cout << "Compiling: " << std::endl;
-		//	resources->CompileShaders(renderer->GetDevice());
-		//}
-	
-
+	if (clock.GetSeconds() > 60)
+	{
+		clock.Restart();
+	}
 }
 
 void Scene::FixedUpdate(const float& fixedDeltaTime)
 {
 	// Delays gamestart so the physics can load properly
 	if (firstFrame)
-	{		
+	{
 		guiManager->GetGUIObject("loading")->SetVisible(true);
 		if (delayTimer > physicsDelay && !sceneSwitch)
 		{
 			root->FixedUpdate(fixedDeltaTime);
 			//std::cout << GameClock::Instance().GetSeconds() << std::endl;
 			physics->FixedUpdate(fixedDeltaTime);
-			
+
 			if (delayTimer > (physicsDelay + loadScreenDelay))
 			{
 				player->AddFlag(ObjectFlag::ENABLED);
 				guiManager->GetGUIObject("loading")->SetVisible(false);
-				
+
 			}
 		}
 		delayTimer += GameClock::Instance().GetFixedFrameTime();
 	}
-	
+
 }
 
 void Scene::Render()
@@ -117,7 +108,7 @@ void Scene::PrintSceneHierarchy(Object* object, size_t level) const
 	}
 
 	//std::cout << (indent + object->GetName()) << std::endl;
-	
+
 	if (object->CountChildren() > 0)
 	{
 		auto children = object->GetChildren();
@@ -136,7 +127,7 @@ void Scene::AnimateIcon()
 	if (currentframe > 35)
 		currentframe = 1;
 
-	int frameToDraw = (currentframe / 5)+1;
+	int frameToDraw = (currentframe / 5) + 1;
 	if (lastFrame != frameToDraw)
 	{
 		lastFrame = frameToDraw;
