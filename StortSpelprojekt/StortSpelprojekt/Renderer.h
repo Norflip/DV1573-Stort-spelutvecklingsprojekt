@@ -15,7 +15,7 @@
 
 inline int GetBatchID(const Material* material, const Mesh* mesh)
 {
-	return std::hash<int>()(material->GetID() + 100) ^ std::hash<int>()(mesh->GetID());
+	return std::hash<int>()(material->GetID() + 100) ^ std::hash<int>()(mesh->GetID() + 100);
 }
 
 class RenderPass;
@@ -26,7 +26,7 @@ class Renderer
 	//const FLOAT DEFAULT_BG_COLOR[4] = { 0.3f, 0.1f, 0.2f, 1.0f };
 	const FLOAT DEFAULT_BG_COLOR[4] = { 0.2f, 0.2f, 0.2f, 1.0f };
 
-	static const int MAX_BATCH_COUNT = 512;
+	static const int MAX_BATCH_COUNT = 64;
 	struct Batch
 	{
 		const Material* material;

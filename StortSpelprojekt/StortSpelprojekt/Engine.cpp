@@ -46,6 +46,7 @@ Engine::Engine(HINSTANCE hInstance) : window(hInstance), activeSceneIndex(-1), s
 	ImGui_ImplDX11_Init(renderer->GetDevice(), renderer->GetContext());
 	ImGui::StyleColorsDark();
 #endif
+
 	//renderer->AddRenderPass(new SkyboxRenderPass(-10, resourceManager));
 	renderer->AddRenderPass(new FogRenderPass(0, resourceManager));
 	renderer->AddRenderPass(new FXAARenderPass(1, resourceManager));

@@ -33,6 +33,9 @@ GameScene::~GameScene()
 
 void GameScene::Initialize()
 {
+	items = new ItemManager();
+	world.Initialize(root, items, renderer);
+
 	InitializeGUI();
 	InitializeObjects();
 	InitializeInterior();
@@ -151,8 +154,6 @@ void GameScene::InitializeObjects()
 	dx::XMStoreFloat3(&sunDirection, dx::XMVector3Normalize(dx::XMVectorSet(0, -1, 1, 0)));
 	sunComponent->SetDirection(sunDirection);
 	AddObjectToRoot(sunLight);
-
-	world.Initialize(root, resources, renderer);
 
 	//Player Arms
 	Object* playerArms = new Object("PlayerArms", ObjectFlag::DEFAULT | ObjectFlag::NO_CULL);
@@ -380,7 +381,7 @@ void GameScene::InitializeInterior()
 	table->AddComponent<RigidBodyComponent>(0.0f, FilterGroups::PROPS, FilterGroups::EVERYTHING, BodyType::STATIC, true);
 	AddObjectToRoot(table);
 
-	Object* tutorialFood = resources->AssembleObject("Fruits", "FruitsMaterial", true);
+	/*Object* tutorialFood = resources->AssembleObject("Fruits", "FruitsMaterial", true);
 	tutorialFood->GetTransform().SetPosition({ -5.65f, INTERIOR_POSITION.y + 1.0f, -4.6f, 0.0f });
 	tutorialFood->AddComponent<PickupComponent>(PickupType::Food, 30.0f);
 	tutorialFood->AddComponent<BoxColliderComponent>(dx::XMFLOAT3(0.25f, 0.25f, 0.25f), dx::XMFLOAT3(0, 0, 0));
@@ -399,8 +400,7 @@ void GameScene::InitializeInterior()
 	tutorialFuel->AddComponent<PickupComponent>(PickupType::Fuel, 30.0f);
 	tutorialFuel->AddComponent<BoxColliderComponent>(dx::XMFLOAT3(0.3f, 0.35f, 0.15f), dx::XMFLOAT3(0, 0, 0));
 	tutorialFuel->AddComponent<RigidBodyComponent>(10.0f, FilterGroups::HOLDABLE, FilterGroups::EVERYTHING & ~FilterGroups::PLAYER, BodyType::DYNAMIC, true);
-	AddObjectToRoot(tutorialFuel);
-
+	AddObjectToRoot(tutorialFuel);*/
 
 
 	Object* fireLight = new Object("fireLight");
@@ -536,6 +536,10 @@ void GameScene::OnActivate()
 	}
 
 	std::cout << "FogCol: " << fogCol << " FogId: " << fogId << std::endl;
+
+	items->SpawnSpecific("Fruits", { -5.65f, INTERIOR_POSITION.y + 1.0f, -4.6f, 0.0f }, root);
+	items->SpawnSpecific("Health_kit", { -5.0f, INTERIOR_POSITION.y + 1.0f, -4.4f, 0.0f }, root);
+	items->SpawnSpecific("FuelRed", { -5.0f, INTERIOR_POSITION.y + 3.0f, 0.11f, 0.0f }, root);
 
 	renderer->AddRenderPass(guiManager);
 
@@ -801,10 +805,12 @@ void GameScene::OnIMGUIFrame()
 		dx::XMFLOAT3 housePos;
 		dx::XMStoreFloat3(&housePos, house->GetTransform().GetWorldPosition());
 		std::cout << "house current position: " << housePos.x << ", " << housePos.y << ", " << housePos.z << std::endl;
-
 	}
 
-
+	if (ImGui::Button("Recompile shaders"))
+	{
+		resources->CompileShaders(renderer->GetDevice());
+	}
 
 	if (ImGui::Button("EASY WIN BBY"))
 	{
