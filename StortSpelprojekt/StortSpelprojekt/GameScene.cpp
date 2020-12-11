@@ -31,6 +31,8 @@ GameScene::~GameScene()
 {
 }
 
+
+
 void GameScene::Initialize()
 {
 	items = new ItemManager();
@@ -719,7 +721,11 @@ void GameScene::Update(const float& deltaTime)
 		i->Update(deltaTime, GameClock::Instance().GetSeconds());
 	}
 	//renderer->GetParticlesys(testParticles);
-
+	if (resize)
+	{
+		world.UpdateGrass(renderer->GetContext());
+		resize = false;
+	}
 }
 
 void GameScene::FixedUpdate(const float& fixedDeltaTime)

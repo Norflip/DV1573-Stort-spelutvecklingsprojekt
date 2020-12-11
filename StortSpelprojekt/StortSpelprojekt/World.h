@@ -36,7 +36,7 @@ public:
 	const WorldDescription& GetDescription() const { return this->description; }
 
 	dx::XMFLOAT3 GetPlayerPositionFromHouse(Object* house)const;
-
+	void UpdateGrass(ID3D11DeviceContext* context);
 
 private:
 	WorldDescription DescriptionFromState(const SaveState& state) const;

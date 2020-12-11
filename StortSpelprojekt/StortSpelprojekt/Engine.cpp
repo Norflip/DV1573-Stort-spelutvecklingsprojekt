@@ -97,6 +97,14 @@ void Engine::Run()
 
 			if (msg.message == WM_QUIT)
 				Exit();
+			if (activeSceneIndex != -1)
+			{
+				if (window.GetShouldResize())
+				{
+					OnResize(window.GetChangedWidth(), window.GetChangedHeight());
+					window.SetShouldResize(false);
+				}
+			}
 		}
 		else
 		{
@@ -213,4 +221,12 @@ void Engine::FixedUpdateLoop(Engine* engine)
 
 		timeLastFrame = currentTime;
 	}
+}
+
+void Engine::OnResize(size_t width, size_t height)
+{
+	window.SetSize(width, height);
+	Input::Instance().SetWindow(window.GetHWND(), height, width);
+	GetActiveScene()->OnResize(width, height);
+	renderer->OnResize();
 }

@@ -15,6 +15,7 @@ Renderer::Renderer() : device(nullptr), context(nullptr), swapchain(nullptr), sk
 {
 	firstRun = true;
 	srand(unsigned int(time(0)));
+	
 }
 
 Renderer::~Renderer()
@@ -56,15 +57,47 @@ Renderer::~Renderer()
 	RELEASE(t_LightIndexList_uavbuffer);
 	RELEASE(t_LightIndexList_srv);
 	RELEASE(t_LightIndexList_uav);
+	RELEASE(factory);
+	RELEASE(adapter);
+	RELEASE(dxDevice);
+	RELEASE(dss_On);
+	RELEASE(dss_Off);
 
+}
 
+void Renderer::OnResize()
+{
+	
+	backbuffer.Release();
+	renderPassSwapBuffers[0].Release();
+	renderPassSwapBuffers[1].Release();
+	midbuffer.Release();
+	dss->Release(); //just cus ut gets created again.
+	DXHelper::OnResize(swapchain, context, currentModeDescription, currentlyInFullscreen, *window, device);
+	this->backbuffer = DXHelper::CreateBackbuffer(window->GetWidth(), window->GetHeight(), device, swapchain);
+	this->midbuffer = DXHelper::CreateRenderTexture(window->GetWidth(), window->GetHeight(), device, context, &dss);
+	this->renderPassSwapBuffers[0] = DXHelper::CreateRenderTexture(window->GetWidth(), window->GetHeight(), device, context, &dss);
+	this->renderPassSwapBuffers[1] = DXHelper::CreateRenderTexture(window->GetWidth(), window->GetHeight(), device, context, &dss);
+	OnResizeFPlus();
+	float pixelScale = tanf(0.5f * (dx::XM_PI / 2.0f)) / (float)(window->GetHeight());
+
+	cb_grass grassCBufferData;
+	grassCBufferData.pixelSize = pixelScale;
+	grassCBufferData.grassDisplacement = 2;
+	grassCBufferData.grassRadius = 0.5;
+	grassCBufferData.grassWidth = 1.5;
+
+	grassBuffer.SetData(grassCBufferData);
+	grassBuffer.UpdateBuffer(context);
+	
+	
 }
 
 void Renderer::Initialize(Window* window)
 {
 	this->window = window;
 
-	DXHelper::CreateSwapchain(*window, &device, &context, &swapchain);
+	DXHelper::CreateSwapchain(*window, &device, &context, &swapchain, &adapter, &factory, &dxDevice, currentModeDescription);
 	this->backbuffer = DXHelper::CreateBackbuffer(window->GetWidth(), window->GetHeight(), device, swapchain);
 	this->midbuffer = DXHelper::CreateRenderTexture(window->GetWidth(), window->GetHeight(), device, context, &dss);
 	this->renderPassSwapBuffers[0] = DXHelper::CreateRenderTexture(window->GetWidth(), window->GetHeight(), device, context, &dss);
@@ -112,6 +145,19 @@ void Renderer::Initialize(Window* window)
 
 	tmpBatchInstanceData = new dx::XMFLOAT4X4[MAX_BATCH_COUNT];
 	DXHelper::CreateInstanceBuffer(device, MAX_BATCH_COUNT, sizeof(dx::XMFLOAT4X4), tmpBatchInstanceData, &batchInstanceBuffer);
+
+	float pixelScale = tanf(0.5f * (dx::XM_PI / 2.0f)) / (float)(window->GetHeight());
+
+	cb_grass grassCBufferData;
+	grassCBufferData.pixelSize = pixelScale;
+	grassCBufferData.grassDisplacement = 2;
+	grassCBufferData.grassRadius = 0.5;
+	grassCBufferData.grassWidth = 1.5;
+
+
+	grassBuffer.Initialize(CB_GRASS_PARAMETERS_SLOT, ShaderBindFlag::DOMAINS | ShaderBindFlag::GEOMETRY, device);
+	grassBuffer.SetData(grassCBufferData);
+	grassBuffer.UpdateBuffer(context);
 }
 
 
@@ -198,9 +244,10 @@ void Renderer::RenderFrame(CameraComponent* camera, float time, float distance, 
 		ImGui_ImplDX11_RenderDrawData(ImGui::GetDrawData());
 	}
 #endif
-	HRESULT hr = swapchain->Present(0, 0); //1 here?
-	//swapchain->SetFullscreenState(isFullScreen, nullptr);
+	HRESULT hr = swapchain->Present(0, 0);
+
 	assert(SUCCEEDED(hr));
+	
 }
 
 void Renderer::RenderFrame(CameraComponent* camera, float time, float distance, RenderTexture& target, bool drawGUI, bool applyRenderPasses)
@@ -831,6 +878,81 @@ Mesh* Renderer::CreateScreenQuad()
 	Mesh* quad = new Mesh(vertices, indices);
 	quad->Initialize(device);
 	return quad;
+}
+
+void Renderer::OnResizeFPlus()
+{
+	forwardPlusShader.Unbind(context);
+	forwardPlusShader.SetComputeShader("Shaders/ForwardPlusRendering.hlsl", "ComputeFrustums");
+	forwardPlusShader.CompileCS(device);
+	forwardPlusShader.BindToContext(context);
+
+	this->width = window->GetWidth();
+	this->height = window->GetHeight();
+	int screenWidth = std::max(window->GetWidth(), 1u);
+	int screenHeight = std::max(window->GetHeight(), 1u);
+	int lightCullingBlockSize = 32;
+	this->numThreads = dx::XMUINT3(UICAST(std::ceil((float)screenWidth / (float)lightCullingBlockSize)), UICAST(std::ceil((float)screenHeight / (float)lightCullingBlockSize)), 1);
+	this->numThreadGroups = dx::XMUINT3(UICAST(std::ceil((float)numThreads.x / (float)lightCullingBlockSize)), UICAST(std::ceil((float)numThreads.y / (float)lightCullingBlockSize)), 1);
+
+	//Dispatch Forward+
+
+	cb_DispatchParams& dataDP = dispatchParamsBuffer.GetData();
+	dataDP.numThreadGroups = dx::XMUINT4(numThreadGroups.x, numThreadGroups.y, numThreadGroups.z, 1);
+	dataDP.numThreads = dx::XMUINT4(numThreads.x, numThreads.y, numThreads.z, 1);
+	dispatchParamsBuffer.SetData(dataDP);
+	dispatchParamsBuffer.UpdateBuffer(context);
+
+	//ScreenToViewParams Forward+
+	cb_ScreenToViewParams& dataSVP = screenToViewParams.GetData();
+
+	dataSVP.inverseProjection = sceneBuffer.GetData().invProjection;
+	dataSVP.screenDimensions.x = FCAST(window->GetWidth());
+	dataSVP.screenDimensions.y = FCAST(window->GetHeight());
+	screenToViewParams.SetData(dataSVP);
+	screenToViewParams.UpdateBuffer(context);
+
+	ID3D11Texture2D* tex2D = nullptr;
+	ID3D11Texture2D* tex2D2 = nullptr;
+	D3D11_TEXTURE2D_DESC desc = {};
+	o_LightGrid_tex->Release();
+	t_LightGrid_tex->Release();
+	o_LightGrid_texSRV->Release();
+	t_LightGrid_texSRV->Release();
+	desc.Width = numThreads.x;
+	desc.Height = numThreads.y;
+	desc.MipLevels = 1;
+	desc.ArraySize = 1;
+	desc.Format = DXGI_FORMAT_R32G32_UINT;
+	desc.SampleDesc.Count = 1;
+	desc.Usage = D3D11_USAGE_DEFAULT;
+	desc.BindFlags = D3D11_BIND_UNORDERED_ACCESS | D3D11_BIND_SHADER_RESOURCE;
+	desc.CPUAccessFlags = 0;
+	desc.MiscFlags = 0;
+
+	device->CreateTexture2D(&desc, NULL, &tex2D);
+	device->CreateTexture2D(&desc, NULL, &tex2D2);
+
+	D3D11_UNORDERED_ACCESS_VIEW_DESC uavDesc = {};
+	uavDesc.Format = DXGI_FORMAT_R32G32_UINT;
+	uavDesc.ViewDimension = D3D11_UAV_DIMENSION_TEXTURE2D;
+	D3D11_SHADER_RESOURCE_VIEW_DESC srvDesc = {};
+	srvDesc.Format = DXGI_FORMAT_R32G32_UINT;
+	srvDesc.ViewDimension = D3D11_SRV_DIMENSION_TEXTURE2D;
+	srvDesc.Texture2D.MostDetailedMip = 0;
+	srvDesc.Texture2D.MipLevels = desc.MipLevels;
+
+	device->CreateUnorderedAccessView(tex2D, &uavDesc, &o_LightGrid_tex);
+	device->CreateUnorderedAccessView(tex2D2, &uavDesc, &t_LightGrid_tex);
+	device->CreateShaderResourceView(tex2D, &srvDesc, &o_LightGrid_texSRV);
+	device->CreateShaderResourceView(tex2D, &srvDesc, &t_LightGrid_texSRV);
+	tex2D->Release();
+	tex2D2->Release();
+
+	forwardPlusShader.Unbind(context);
+	forwardPlusShader.SetComputeShader("Shaders/ForwardPlusRendering.hlsl");
+	forwardPlusShader.CompileCS(device);
+	forwardPlusShader.BindToContext(context);
 }
 
 void Renderer::DrawScreenQuad(const Material* material)
