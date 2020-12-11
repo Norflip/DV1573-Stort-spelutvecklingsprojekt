@@ -32,7 +32,7 @@ Engine::Engine(HINSTANCE hInstance) : window(hInstance), activeSceneIndex(-1), s
 
 	resourceManager = new ResourceManager();
 	resourceManager->InitializeResources(renderer->GetDevice());
-	
+
 	physics = new Physics();
 	physics->Initialize();
 
@@ -50,11 +50,11 @@ Engine::Engine(HINSTANCE hInstance) : window(hInstance), activeSceneIndex(-1), s
 	renderer->AddRenderPass(new FogRenderPass(0, resourceManager));
 	renderer->AddRenderPass(new FXAARenderPass(1, resourceManager));
 
-	RegisterScene(SceneIndex::INTRO,	new IntroScene());
-	RegisterScene(SceneIndex::GAME_OVER,new GameOverScene());
-	RegisterScene(SceneIndex::GAME,		new GameScene());
-	RegisterScene(SceneIndex::WIN,		new WinScene());
-	RegisterScene(SceneIndex::CREDITS,	new CreditsScene());
+	RegisterScene(SceneIndex::INTRO, new IntroScene());
+	RegisterScene(SceneIndex::GAME_OVER, new GameOverScene());
+	RegisterScene(SceneIndex::GAME, new GameScene());
+	RegisterScene(SceneIndex::WIN, new WinScene());
+	RegisterScene(SceneIndex::CREDITS, new CreditsScene());
 
 	SaveHandler::RemoveSave();
 
@@ -110,7 +110,7 @@ void Engine::Run()
 				activeSceneIndex = sceneSwitch;
 				scenes[activeSceneIndex]->OnActivate();
 				sceneSwitch = -1;
-				
+
 				//std::cout << "switching scene" << std::endl;
 			}
 
@@ -180,9 +180,13 @@ void Engine::OnIMGUIFrame()
 	if (activeSceneIndex >= 0 && activeSceneIndex < SCENE_COUNT)
 	{
 		Scene* scene = scenes[activeSceneIndex];
-		ImGui::Begin("debug");           
-		scene->OnIMGUIFrame();
-		ImGui::End();
+
+		if (!scene->cleanView)
+		{
+			ImGui::Begin("debug");
+			scene->OnIMGUIFrame();
+			ImGui::End();
+		}
 	}
 }
 #endif

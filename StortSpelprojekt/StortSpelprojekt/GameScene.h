@@ -38,10 +38,15 @@ public:
 #endif
 	static bool immortal;
 	static bool drawColliders;
+
 	float VramUsage();
 	float RamUsage();
 
 	ALIGN16_ALLOC;
+
+
+	Object* axeObject;
+	Object* playerArms;
 	
 private:
 	void TransitionToNextSegment();

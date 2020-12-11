@@ -5,6 +5,9 @@
 #include "GUIFont.h"
 #include "PlayerComp.h"
 
+bool Scene::cleanView = false;
+bool Scene::cleanViewLastFrame = false;
+
 Scene::Scene(const std::string& debugName) : input(Input::Instance()), debugName(debugName)
 {
 	renderer = nullptr;
@@ -30,6 +33,11 @@ void Scene::SetDepedencies(ResourceManager* resources, Renderer* renderer, Physi
 
 void Scene::Update(const float& deltaTime)
 {
+	cleanViewLastFrame = cleanView;
+	if (KEY_DOWN(T))
+	{
+		cleanView = !cleanView;
+	}
 
 	while (!removeQueue.empty())
 	{

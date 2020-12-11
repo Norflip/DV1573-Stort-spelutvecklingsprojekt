@@ -61,6 +61,10 @@ public:
 #if USE_IMGUI
 	virtual void OnIMGUIFrame() {};
 #endif
+
+	static bool cleanView;
+	static bool cleanViewLastFrame;
+
 	// Add object to the scene hierarchy
 	void AddObjectToRoot(Object* object);
 	Object* GetRoot() const { return this->root; }

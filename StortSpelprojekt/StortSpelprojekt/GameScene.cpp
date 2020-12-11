@@ -13,8 +13,9 @@
 #include "Imgui\imgui_impl_dx11.h"
 #endif
 
-bool GameScene::immortal = false;
+bool GameScene::immortal = true;
 bool GameScene::drawColliders = false;
+
 #include <d3d11_4.h>
 #include <dxgi1_6.h>
 #include <psapi.h>
@@ -98,7 +99,7 @@ void GameScene::InitializeObjects()
 
 	//houseDoor->AddComponent<BoxColliderComponent>(dx::XMFLOAT3(0.3f, 0.85f, 0.3f), dx::XMFLOAT3(0,0,0));
 	//houseDoor->AddComponent<SphereColliderComponent>(1.0f, dx::XMFLOAT3(3.533f, 2.884f, 4.02f));
-	
+
 //	rigidDoor->AddComponent<SphereColliderComponent>(2.0f, dx::XMFLOAT3(0,0,0));
 
 	rigidDoor->AddComponent<BoxColliderComponent>(dx::XMFLOAT3(0.3f, 0.85f, 0.3f), dx::XMFLOAT3(0, 0, 0));
@@ -156,7 +157,7 @@ void GameScene::InitializeObjects()
 	AddObjectToRoot(sunLight);
 
 	//Player Arms
-	Object* playerArms = new Object("PlayerArms", ObjectFlag::DEFAULT | ObjectFlag::NO_CULL);
+	playerArms = new Object("PlayerArms", ObjectFlag::DEFAULT | ObjectFlag::NO_CULL);
 	SkeletonMeshComponent* armsSkeleton = resources->GetResource<SkeletonMeshComponent>("PlayerArmsSkeleton");
 	playerArms->AddComponent<SkeletonMeshComponent>(armsSkeleton);
 	playerArms->AddComponent<PlayerAnimHandlerComp>(playerArms->GetComponent<SkeletonMeshComponent>(), cameraObject, player);
@@ -164,7 +165,7 @@ void GameScene::InitializeObjects()
 	AddObjectToRoot(playerArms);
 
 	//Axe
-	Object* axeObject = resources->AssembleObject("Axe", "AxeMaterial", false, ObjectFlag::DEFAULT | ObjectFlag::NO_CULL);
+	axeObject = resources->AssembleObject("Axe", "AxeMaterial", false, ObjectFlag::DEFAULT | ObjectFlag::NO_CULL);
 	axeObject->GetTransform().SetPosition({ 21.0f, 1.0f, -16.0f });
 	axeObject->GetTransform().SetScale({ 1.0f, 1.0f, 1.0f });
 	axeObject->AddComponent<WeaponComponent>(playerArms->GetComponent<SkeletonMeshComponent>());
@@ -508,7 +509,7 @@ void GameScene::OnActivate()
 			player->GetComponent<RigidBodyComponent>()->SetPosition(playerPos);
 
 			player->GetComponent<ControllerComp>()->SetInside(true);
-			
+
 
 			Engine::Instance->start = false;
 
@@ -551,7 +552,7 @@ void GameScene::OnDeactivate()
 	delayTimer = 0.0f;
 
 	physicsDelay = 1000.0f;
-//	
+	//	
 	guiManager->GetGUIObject("loading")->SetVisible(true);
 
 
@@ -569,7 +570,7 @@ void GameScene::OnDeactivate()
 
 void GameScene::SetSignPositions(SaveState& state)
 {
-	
+
 	if (state.segment == 7)
 	{
 		end = true;
@@ -611,7 +612,7 @@ void GameScene::Update(const float& deltaTime)
 	//	text += "visible";
 	//else text += "not visible";
 	//std::cout << text<<std::endl;
-	
+
 	if (KEY_DOWN(U))
 		MetaProgress::Instance().Print();
 
@@ -623,7 +624,26 @@ void GameScene::Update(const float& deltaTime)
 	}
 
 	Scene::Update(deltaTime);
+
 	world.UpdateRelevantChunks(player->GetTransform(), camera);
+
+
+	guiManager->SetEnabled(!cleanView);
+
+	if (cleanView != cleanViewLastFrame)
+	{
+		if (cleanView)
+		{
+			axeObject->RemoveFlag(ObjectFlag::ENABLED);
+			playerArms->RemoveFlag(ObjectFlag::ENABLED);
+		}
+		else
+		{
+			axeObject->AddFlag(ObjectFlag::ENABLED);
+			playerArms->AddFlag(ObjectFlag::ENABLED);
+		}
+	}
+
 	//world.DrawDebug();
 
 	enemyManager->SpawnRandomEnemy(deltaTime);
@@ -652,7 +672,7 @@ void GameScene::Update(const float& deltaTime)
 		TransitionToNextSegment();
 		leftSign->GetComponent<SelectableComponent>()->SetActive(false);
 	}
-	
+
 
 
 	//Win
@@ -662,14 +682,14 @@ void GameScene::Update(const float& deltaTime)
 		{
 			SaveState& state = SaveHandler::LoadOrCreate();
 			state.nrOfGameWins++;
-			
+
 			SaveHandler::Save(state);
 
 			Engine::Instance->SwitchScene(SceneIndex::WIN);
-			
+
 		}
 	}
-	
+
 	static_cast<GUIFont*>(guiManager->GetGUIObject("vramSprite"))->SetString("vram: " + std::to_string(VramUsage()) + " mb");
 	static_cast<GUIFont*>(guiManager->GetGUIObject("ramSprite"))->SetString("ram: " + std::to_string(RamUsage()) + " mb");
 	//std::cout << "PlayerPos: " << player->GetTransform().GetPosition().m128_f32[0] << " " << player->GetTransform().GetPosition().m128_f32[1] << " " << player->GetTransform().GetPosition().m128_f32[2] << std::endl;
@@ -870,8 +890,8 @@ void GameScene::TransitionToNextSegment()
 	state.segment++;
 	MetaProgress::Instance().SetLevelsCleared(state.segment);
 	SaveHandler::Save(state);
-	
-	guiManager->GetGUIObject("loading")->SetVisible(true);	
+
+	guiManager->GetGUIObject("loading")->SetVisible(true);
 	renderer->RenderFrame(camera, (float)clock.GetSeconds(), player->GetComponent<PlayerComp>()->GetDangerDistance(), false);
 
 	OnDeactivate();
