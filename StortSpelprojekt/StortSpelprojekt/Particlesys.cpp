@@ -1,13 +1,11 @@
 #include "stdafx.h"
 #include "Particlesys.h"
 
-Particlesys::Particlesys(/*Shader* soShader, Shader* drawShader*/)
-	: initializeVB(0), drawVB(0), streamoutVB(0), particleSRV(0), randomNumberSRV(0), inputLayout(0)
+Particlesys::Particlesys(Shader* soShader, Shader* drawShader)
+	: initializeVB(0), drawVB(0), streamoutVB(0), particleSRV(0), randomNumberSRV(0)//, inputLayout(0)
 {
-	////streamoutShader = new Shader;
-	//streamoutShader = soShader;
-	////drawShader = new Shader;
-	//this->drawShader = drawShader;
+	this->streamoutShader = soShader;
+	this->drawShader = drawShader;
 
 	firstRun = true;
 	gameTimer = 0.0f;
@@ -24,12 +22,6 @@ Particlesys::Particlesys(/*Shader* soShader, Shader* drawShader*/)
 	particleSpreadMulti = dx::XMFLOAT3(0.5f, 1.0f, 0.5f);
 
 	usingTexture = false;
-
-	streamoutVS = L"Shaders/ParticleSO_vs.hlsl";
-	drawVS = L"Shaders/ParticleDraw_vs.hlsl";
-	streamoutGS = L"Shaders/ParticleSO_gs.hlsl";
-	drawGS = L"Shaders/ParticleDraw_gs.hlsl";
-	drawPS = L"Shaders/ParticleDraw_ps.hlsl";	
 }
 
 Particlesys::~Particlesys()
@@ -39,182 +31,6 @@ Particlesys::~Particlesys()
 	if (streamoutVB) { streamoutVB->Release(); }
 	if (particleSRV) { particleSRV->Release(); }
 	if (randomNumberSRV) { randomNumberSRV->Release(); }
-}
-
-bool Particlesys::InitializeParticleShaders(ID3D11Device* device, HWND hwnd)
-{
-	/* VS SHADERS */
-	hr = D3DCompileFromFile(streamoutVS, nullptr, D3D_COMPILE_STANDARD_FILE_INCLUDE, "main", "vs_5_0", D3DCOMPILE_ENABLE_STRICTNESS, NULL, &streamoutVSBlob, &ErrorBlob);
-	if (FAILED(hr)) {
-		if (ErrorBlob) {
-			OutputDebugStringA((char*)ErrorBlob->GetBufferPointer());
-			MessageBox(hwnd, streamoutVS, L"Missing Shader File", MB_OK);
-			ErrorBlob->Release();
-			//ReleasePtr(ErrorBlob);
-		}
-
-		if (streamoutVSBlob) {
-			streamoutVSBlob->Release();
-			//ReleasePtr(streamoutVSBlob);
-		}
-		assert(false);
-
-		return false;
-	}
-
-	hr = D3DCompileFromFile(drawVS, nullptr, D3D_COMPILE_STANDARD_FILE_INCLUDE, "main", "vs_5_0", D3DCOMPILE_ENABLE_STRICTNESS, NULL, &drawVSBlob, &ErrorBlob);
-	if (FAILED(hr)) {
-		if (ErrorBlob) {
-			OutputDebugStringA((char*)ErrorBlob->GetBufferPointer());
-			MessageBox(hwnd, drawVS, L"Missing Shader File", MB_OK);
-			ErrorBlob->Release();
-			//ReleasePtr(ErrorBlob);
-		}
-
-		if (drawVSBlob) {
-			drawVSBlob->Release();
-			//ReleasePtr(drawVSBlob);
-		}
-		assert(false);
-
-		return false;
-	}
-
-	/* VS SHADERS END */
-
-	/* GS SHADERS */
-	hr = D3DCompileFromFile(streamoutGS, nullptr, D3D_COMPILE_STANDARD_FILE_INCLUDE, "main", "gs_5_0", D3DCOMPILE_ENABLE_STRICTNESS, NULL, &streamoutGSBlob, &ErrorBlob);
-	if (FAILED(hr)) {
-		if (ErrorBlob) {
-			OutputDebugStringA((char*)ErrorBlob->GetBufferPointer());
-			MessageBox(hwnd, streamoutGS, L"Missing Shader File", MB_OK);
-			ErrorBlob->Release();
-			//ReleasePtr(ErrorBlob);
-		}
-
-		if (streamoutGSBlob) {
-			streamoutGSBlob->Release();
-			//ReleasePtr(streamoutGSBlob);
-		}
-		assert(false);
-
-		return false;
-	}
-
-	hr = D3DCompileFromFile(drawGS, nullptr, D3D_COMPILE_STANDARD_FILE_INCLUDE, "main", "gs_5_0", D3DCOMPILE_ENABLE_STRICTNESS, NULL, &drawGSBlob, &ErrorBlob);
-	if (FAILED(hr)) {
-		if (ErrorBlob) {
-			OutputDebugStringA((char*)ErrorBlob->GetBufferPointer());
-			MessageBox(hwnd, drawGS, L"Missing Shader File", MB_OK);
-			ErrorBlob->Release();
-			//ReleasePtr(ErrorBlob);
-		}
-
-		if (drawGSBlob) {
-			drawGSBlob->Release();
-			//ReleasePtr(drawGSBlob);
-		}
-		assert(false);
-
-		return false;
-	}
-
-	/* GS SHADERS END */
-
-	/* PS SHADERS */
-	hr = D3DCompileFromFile(drawPS, nullptr, D3D_COMPILE_STANDARD_FILE_INCLUDE, "main", "ps_5_0", D3DCOMPILE_ENABLE_STRICTNESS, NULL, &drawPSBlob, &ErrorBlob);
-	if (FAILED(hr)) {
-		if (ErrorBlob) {
-			OutputDebugStringA((char*)ErrorBlob->GetBufferPointer());
-			MessageBox(hwnd, drawPS, L"Missing Shader File", MB_OK);
-			ErrorBlob->Release();
-			//ReleasePtr(ErrorBlob);
-		}
-
-		if (drawPSBlob) {
-			drawPSBlob->Release();
-			//ReleasePtr(drawPSBlob);
-		}
-		assert(false);
-
-		return false;
-	}
-
-
-	hr = device->CreateVertexShader(streamoutVSBlob->GetBufferPointer(), streamoutVSBlob->GetBufferSize(), nullptr, &this->streamoutVertexShader);
-	if (FAILED(hr))
-	{
-		return false;
-	}
-
-	hr = device->CreateVertexShader(drawVSBlob->GetBufferPointer(), drawVSBlob->GetBufferSize(), nullptr, &this->drawVertexShader);
-	if (FAILED(hr))
-	{
-		return false;
-	}
-
-	D3D11_SO_DECLARATION_ENTRY soDeclaration[] = {
-
-			{0,"POSITION", 0, 0,3,0},
-			{0,"VELOCITY", 0, 0, 3, 0},
-			{0,"SIZE", 0, 0, 2, 0},
-			{0,"AGE", 0, 0, 1, 0},
-			{0,"TYPE", 0, 0, 1, 0}
-	};
-
-	UINT stride2 = sizeof(Particle);
-	hr = device->CreateGeometryShaderWithStreamOutput(streamoutGSBlob->GetBufferPointer(), streamoutGSBlob->GetBufferSize(), soDeclaration, _countof(soDeclaration), &stride2, 1, 0, NULL,
-		&streamoutGeometryShader);
-	assert(SUCCEEDED(hr));
-
-
-	hr = device->CreateGeometryShader(drawGSBlob->GetBufferPointer(), drawGSBlob->GetBufferSize(), nullptr, &this->drawGeometryShader);
-	if (FAILED(hr))
-	{
-		return false;
-	}
-
-	hr = device->CreatePixelShader(drawPSBlob->GetBufferPointer(), drawPSBlob->GetBufferSize(), nullptr, &this->drawPixelShader);
-	if (FAILED(hr))
-	{
-		return false;
-	}
-
-
-	/* PS SHADERS END*/
-
-	D3D11_INPUT_ELEMENT_DESC InputLayoutParticle[5] =
-	{
-		{"POSITION", 0, DXGI_FORMAT_R32G32B32_FLOAT, 0,  0, D3D11_INPUT_PER_VERTEX_DATA, 0},
-		{"VELOCITY", 0, DXGI_FORMAT_R32G32B32_FLOAT, 0, 12, D3D11_INPUT_PER_VERTEX_DATA, 0},
-		{"SIZE",     0, DXGI_FORMAT_R32G32_FLOAT,    0, 24, D3D11_INPUT_PER_VERTEX_DATA, 0},
-		{"AGE",      0, DXGI_FORMAT_R32_FLOAT,       0, 32, D3D11_INPUT_PER_VERTEX_DATA, 0},
-		{"TYPE",     0, DXGI_FORMAT_R32_UINT,        0, 36, D3D11_INPUT_PER_VERTEX_DATA, 0},
-	};
-
-	hr = device->CreateInputLayout(InputLayoutParticle, ARRAYSIZE(InputLayoutParticle), streamoutVSBlob->GetBufferPointer(), streamoutVSBlob->GetBufferSize(), &inputLayout);
-	if (FAILED(hr))
-	{
-		return false;
-	}	
-
-	D3D11_BUFFER_DESC cBufferDescription;
-	// Setup the description of the camera constant buffer that is in the vertex shader.
-	ZeroMemory(&cBufferDescription, sizeof(cBufferDescription));
-	cBufferDescription.Usage = D3D11_USAGE_DEFAULT;
-	cBufferDescription.ByteWidth = static_cast<uint32_t>(sizeof(cBufferPerFrame) + (16 - (sizeof(cBufferPerFrame) % 16)));
-	cBufferDescription.BindFlags = D3D11_BIND_CONSTANT_BUFFER;
-	cBufferDescription.CPUAccessFlags = 0;
-	cBufferDescription.MiscFlags = 0;
-	cBufferDescription.StructureByteStride = 0;
-
-	hr = device->CreateBuffer(&cBufferDescription, NULL, &cbufferPerFrame);
-	if (FAILED(hr))
-	{
-		return false;
-	}
-
-	return true;
 }
 
 void Particlesys::InitializeParticles(ID3D11Device* device, Renderer* renderer, Object* objectRef)
@@ -261,9 +77,20 @@ void Particlesys::InitializeParticles(ID3D11Device* device, Renderer* renderer, 
 	hr = device->CreateShaderResourceView(random, &viewDesc, &randomNumberSRV);
 	assert(SUCCEEDED(hr));
 	delete[] randomValues;
+	
 
-	/*hr = DirectX::CreateWICTextureFromFile(device, L"Textures/NoiseTextureColor2.jpg", nullptr, &randomSrv);
-	assert(SUCCEEDED(hr));	*/
+	D3D11_BUFFER_DESC cBufferDescription;
+	// Setup the description of the camera constant buffer that is in the vertex shader.
+	ZeroMemory(&cBufferDescription, sizeof(cBufferDescription));
+	cBufferDescription.Usage = D3D11_USAGE_DEFAULT;
+	cBufferDescription.ByteWidth = static_cast<uint32_t>(sizeof(cBufferPerFrame) + (16 - (sizeof(cBufferPerFrame) % 16)));
+	cBufferDescription.BindFlags = D3D11_BIND_CONSTANT_BUFFER;
+	cBufferDescription.CPUAccessFlags = 0;
+	cBufferDescription.MiscFlags = 0;
+	cBufferDescription.StructureByteStride = 0;
+
+	hr = device->CreateBuffer(&cBufferDescription, NULL, &cbufferPerFrame);
+	assert(SUCCEEDED(hr));
 
 	sampler = DXHelper::CreateSampler(D3D11_FILTER_MIN_MAG_MIP_LINEAR, D3D11_TEXTURE_ADDRESS_WRAP, device);
 
@@ -284,7 +111,7 @@ void Particlesys::Reset()
 	particleAge = 0.0f;
 }
 
-void Particlesys::Update(float deltaTime, float gameTime)
+void Particlesys::Update(float deltaTime, float gameTime, float fuel)
 {
 	gameTimer = gameTime;
 	ageTimeStep = deltaTime;
@@ -317,10 +144,27 @@ void Particlesys::Update(float deltaTime, float gameTime)
 
 	dx::XMFLOAT3 pos;
 	dx::XMStoreFloat3(&pos, objectRef->GetTransform().GetPosition());
-	pos.y += 0.2f;
+	pos.y += 0.1f;
 	pos.z += 0.f + a;
 	pos.x -= 0.2f;
 	SetEmitPos(pos);	
+
+
+	float m = fuel / 100.0f;
+	dx::XMFLOAT3 spread;
+	spread = particleSpreadMulti;
+	//spread.x *= m;
+	spread.y *= m;
+	//spread.z *= m;
+	particleSpreadModify = spread;
+
+	dx::XMFLOAT4 colorChange;
+	colorChange = particleColor;
+	colorChange.x *= m;
+	colorChange.y *= m;
+	colorChange.z *= m;
+	colorChange.w *= m;
+	particleColorModify = colorChange;
 }
 
 void Particlesys::Draw(ID3D11DeviceContext* context, CameraComponent* cam)
@@ -330,7 +174,7 @@ void Particlesys::Draw(ID3D11DeviceContext* context, CameraComponent* cam)
 	SetEyePos(eyeCam);
 	
 	DrawStreamOut(context, cam);
-	renderer->GetContext()->OMSetDepthStencilState(nullptr, 0);
+	renderer->GetContext()->OMSetDepthStencilState(renderer->GetDepthEnable(), 0);
 	renderer->EnableAlphaBlending();
 	DrawParticles(context, cam);
 	renderer->DisableAlphaBlending();
@@ -347,37 +191,32 @@ float Particlesys::RandomFloat(float a, float b)
 
 void Particlesys::DrawStreamOut(ID3D11DeviceContext* context, CameraComponent* cam)
 {
-	dx::XMMATRIX viewproj; // = view * projection;
+	dx::XMMATRIX viewproj; 
 	viewproj = XMMatrixMultiply(cam->GetViewMatrix(), cam->GetProjectionMatrix());
 
 	/* Streamout stuffy  */
-	cbPerFrame.emitDir = emitDir;	// GetEmitDir();
-	cbPerFrame.emitPos = emitPos;	// GetEmitPos();
-	cbPerFrame.eyePos = eyePos;		// GetEyePos();
+	cbPerFrame.emitDir = emitDir;	
+	cbPerFrame.emitPos = emitPos;	
+	cbPerFrame.eyePos = eyePos;		
 	cbPerFrame.gameTime = gameTimer;
 	cbPerFrame.ageTimeStep = ageTimeStep;
 	cbPerFrame.viewProjection = DirectX::XMMatrixTranspose(viewproj);
 	cbPerFrame.particleMaxAge = particleMaxAge;
-	cbPerFrame.particleColor = particleColor;
+	cbPerFrame.particleColor = particleColorModify;
 	cbPerFrame.usingTexture = usingTexture;
-	cbPerFrame.particleSpreadMulti = particleSpreadMulti;
+	cbPerFrame.particleSpreadMulti = particleSpreadModify;
 	cbPerFrame.particlesPerSecond = particlesPerSecond;
 
 	context->UpdateSubresource(cbufferPerFrame, 0, nullptr, &cbPerFrame, 0, 0);
 	context->GSSetConstantBuffers(0, 1, &cbufferPerFrame);
 
-	context->IASetInputLayout(inputLayout);
 	context->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_POINTLIST);
 
 	context->GSSetShaderResources(0, 1, &randomNumberSRV);
 	context->GSSetSamplers(0, 1, &sampler);
 
-	//streamoutShader->BindToContext(context);
-
-	context->VSSetShader(streamoutVertexShader, 0, 0);
-	context->GSSetShader(streamoutGeometryShader, 0, 0);
-	context->PSSetShader(nullptr, 0, 0);
-
+	streamoutShader->BindToContext(context);
+	
 
 	UINT stride = sizeof(Particle);
 	UINT offset = 0;
@@ -402,7 +241,6 @@ void Particlesys::DrawStreamOut(ID3D11DeviceContext* context, CameraComponent* c
 	// Ping-pong the vertex buffers
 	ID3D11Buffer* bufferArray[1] = { 0 };
 	context->SOSetTargets(1, bufferArray, &offset);
-
 	std::swap(drawVB, streamoutVB);
 
 	/* Clear */
@@ -412,7 +250,7 @@ void Particlesys::DrawStreamOut(ID3D11DeviceContext* context, CameraComponent* c
 	ID3D11SamplerState* nullSampler[1] = { nullptr };
 	context->GSSetSamplers(0, 1, nullSampler);
 
-	//streamoutShader->Unbind(context);
+	
 	context->GSSetConstantBuffers(0, 1, bufferArray);
 	context->VSSetShader(nullptr, 0, 0);
 	context->GSSetShader(nullptr, 0, 0);
@@ -434,12 +272,8 @@ void Particlesys::DrawParticles(ID3D11DeviceContext* context, CameraComponent* c
 	context->PSSetSamplers(0, 1, &sampler);
 
 	context->IASetVertexBuffers(0, 1, &drawVB, &stride, &offset);
-	// Sets pixel and vertex shader
-	context->VSSetShader(drawVertexShader, 0, 0);
-	context->GSSetShader(drawGeometryShader, 0, 0);
-	context->PSSetShader(drawPixelShader, 0, 0);
-
-	//drawShader->BindToContext(context);
+	
+	drawShader->BindToContext(context);
 
 	context->DrawAuto();
 

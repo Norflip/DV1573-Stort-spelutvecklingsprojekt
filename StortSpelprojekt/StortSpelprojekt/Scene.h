@@ -44,7 +44,7 @@ class Scene
 public:
 	Scene(const std::string& debugName = "[DEFAULT_SCENE]");
 	virtual ~Scene();
-
+	virtual void OnResize(size_t width, size_t height);
 	virtual void SetDepedencies(ResourceManager* manager, Renderer* renderer, Physics* physics, Window* window);
 
 	virtual void Initialize() = 0;
@@ -101,4 +101,5 @@ protected:
 	GUIManager* guiManager;		
 	std::string debugName;
 
+	bool resize;
 };

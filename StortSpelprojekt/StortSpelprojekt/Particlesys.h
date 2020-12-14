@@ -5,27 +5,16 @@
 const dx::XMFLOAT4 fireRedColor = dx::XMFLOAT4(0.5f, 0.2f, 0.2f, 1.0f);
 const dx::XMFLOAT4 grayColor = dx::XMFLOAT4(0.2f, 0.2f, 0.2f, 1.0f);
 
+
 class Particlesys
 {
 
-private:
-	/*__declspec(align(16))
-		struct cBufferPerObject
-	{
-		cBufferPerObject() { ZeroMemory(this, sizeof(this)); }
-
-		DirectX::XMMATRIX worldViewProj;
-		DirectX::XMMATRIX world;
-		DirectX::XMMATRIX view;
-		DirectX::XMMATRIX projection;
-		DirectX::XMMATRIX viewProjection;
-	};*/
+private:	
 
 	__declspec(align(16))
 		struct cBufferPerFrame
 	{
 		cBufferPerFrame() { ZeroMemory(this, sizeof(this)); }
-
 
 		dx::XMFLOAT4 particleColor;
 		dx::XMFLOAT3 eyePos;
@@ -62,11 +51,9 @@ public:
 	};
 
 public:
-	Particlesys(/*Shader* soShader, Shader* drawShader*/);
-	//NewParticleSystem(XMFLOAT3 emitPosition, XMFLOAT3 emitDirection, int maxParticles, );
+	Particlesys(Shader* soShader, Shader* drawShader);
 	~Particlesys();
 
-	bool InitializeParticleShaders(ID3D11Device* device, HWND hwnd);
 	void InitializeParticles(ID3D11Device* device, Renderer* renderer,Object* objectRef);
 
 	// Time elapsed since the system was reset.
@@ -100,7 +87,7 @@ public:
 	void SetTexture(ID3D11Device* device, LPCWSTR particleTexture);
 
 	void Reset();
-	void Update(float deltaTime, float gameTime);
+	void Update(float deltaTime, float gameTime, float fuel);
 	void Draw(ID3D11DeviceContext* context, CameraComponent* cam);
 
 	float RandomFloat(float a, float b);
@@ -127,11 +114,13 @@ private:
 	bool usingTexture;
 
 	dx::XMFLOAT4 particleColor;
+	dx::XMFLOAT4 particleColorModify;
 	dx::XMFLOAT3 eyePos;
 	dx::XMFLOAT3 emitPos;
 	dx::XMFLOAT3 emitDir;
 	dx::XMFLOAT2 particleSize;
 	dx::XMFLOAT3 particleSpreadMulti;
+	dx::XMFLOAT3 particleSpreadModify;
 
 	ID3D11Buffer* initializeVB;
 	ID3D11Buffer* drawVB;
@@ -140,39 +129,17 @@ private:
 	ID3D11ShaderResourceView* particleSRV;
 	ID3D11ShaderResourceView* randomNumberSRV;
 
-	HRESULT hr;
-
-	/****** Shader stuff ******/
-	ID3D11VertexShader* streamoutVertexShader;
-	ID3D11VertexShader* drawVertexShader;
-	ID3D11GeometryShader* streamoutGeometryShader;
-	ID3D11GeometryShader* drawGeometryShader;
-	ID3D11PixelShader* drawPixelShader;
-
-	ID3D11InputLayout* inputLayout;
+	HRESULT hr;	
 
 	ID3D11SamplerState* sampler;
-
-	ID3DBlob* ErrorBlob;
-	ID3DBlob* drawVSBlob;
-	ID3DBlob* streamoutVSBlob;
-	ID3DBlob* drawGSBlob;
-	ID3DBlob* streamoutGSBlob;
-	ID3DBlob* drawPSBlob;
-
+	
 	//cBufferPerObject cbPerObject;
 	cBufferPerFrame cbPerFrame;
 
 	//ID3D11Buffer* cbufferPerObject;
 	ID3D11Buffer* cbufferPerFrame;
 
-	ID3D11Device* device;
-
-	LPCWSTR streamoutVS;
-	LPCWSTR drawVS;
-	LPCWSTR streamoutGS;
-	LPCWSTR drawGS;
-	LPCWSTR drawPS;
+	ID3D11Device* device;	
 
 	/* Benchmark stuff */
 	int particlesPerSecond;	

@@ -161,11 +161,10 @@ void ResourceManager::ReadObjects(ID3D11Device* device)
 						skeletonMesh->SetAnimationTrack(animation, (SkeletonStateMachine)type);
 					}
 				}
-				
-					
-					//skeletonMesh->BlendAnimations();
-				
-				
+
+				skeletonMesh->BlendAnimations();
+				AddResource(name + "tempMesh", meshes[0]);
+				AddResource(name + "tempMat", materials[0]);
 				AddResource(name+"Skeleton", skeletonMesh);
 			}
 			// Ugly presumption that we load a Tree at some point
@@ -331,6 +330,20 @@ void ResourceManager::ReadShaders(ID3D11Device* device)
 						pos = line.find(delimiter);
 						pixelPath = line.substr(pos + 2, line.length() - pos - 2);
 					}
+					else if (type == "SOGS")
+					{
+						geometryPath = line.substr(pos + 2, line.length() - pos - 2);	
+						
+					}
+					else if (type == "GS")
+					{
+						geometryPath = line.substr(pos + 2, line.length() - pos - 2);
+
+						getline(file, line);
+						pos = line.find(delimiter);
+						
+						pixelPath = line.substr(pos + 2, line.length() - pos - 2);
+					}
 					else if(type == "PS")
 					{
 						pixelPath = line.substr(pos + 2, line.length() - pos - 2);
@@ -351,23 +364,39 @@ void ResourceManager::ReadShaders(ID3D11Device* device)
 					{
 						tempShader->SetInputLayoutStructure(3, tempShader->DEFAULT_INPUT_LAYOUTCOLOR);
 					}
+					else if (input == "particleSO" || input == "particleDraw")
+					{
+						tempShader->SetInputLayoutStructure(5, tempShader->DEFAULT_INPUT_LAYOUT_PARTICLE);
+					}
 					else 
 					{
 						tempShader->SetInputLayoutStructure(6, tempShader->DEFAULT_INPUT_LAYOUTd);
 					}
 					
+					if (input == "particleSO")
+					{
+						// Compile the shader
+						tempShader->SetVertexShader(vertexPath);
+						if (geometryPath != "")
+							tempShader->SetSOGeometryShader(geometryPath);
 
-					// Compile the shader
-					tempShader->SetVertexShader(vertexPath);
-					if(hullPath != "")
-						tempShader->SetHullShader(hullPath);
-					if (domainPath != "")
-						tempShader->SetDomainShader(domainPath);
-					if (geometryPath != "")
-						tempShader->SetGeometryShader(geometryPath);
+						//tempShader->SetPixelShader(pixelPath);
+						tempShader->Compile(device);
+					}
+					else
+					{
+						// Compile the shader
+						tempShader->SetVertexShader(vertexPath);
+						if (hullPath != "")
+							tempShader->SetHullShader(hullPath);
+						if (domainPath != "")
+							tempShader->SetDomainShader(domainPath);
+						if (geometryPath != "")
+							tempShader->SetGeometryShader(geometryPath);
 
-					tempShader->SetPixelShader(pixelPath);
-					tempShader->Compile(device);
+						tempShader->SetPixelShader(pixelPath);
+						tempShader->Compile(device);
+					}
 
 					AddShaderResource(name, tempShader);
 				}

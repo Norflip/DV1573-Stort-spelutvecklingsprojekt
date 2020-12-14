@@ -37,7 +37,6 @@ private:
 	IMFSample* sample;
 	IMFMediaBuffer* buffer;
 	BYTE* localAudioData;
-
 	
 	//X3DAUDIO_LISTENER listener;	// when player is
 	//X3DAUDIO_EMITTER emitter;	// where the sound comes from
