@@ -41,7 +41,8 @@ GrassComponent::GrassComponent(size_t chunkTriangleCount, ID3D11Device* device, 
 
 GrassComponent::~GrassComponent()
 {
-	
+	delete grassMesh;
+	delete grassMat;	
 }
 
 void GrassComponent::InitOnce(Mesh* chunkMesh, ID3D11Device* device, ID3D11Buffer** grassBfr, ID3D11ShaderResourceView** grassSrv, ID3D11Buffer** grassIndexBfr, ID3D11ShaderResourceView** grassIndexSrv, ID3D11Buffer** grassBCBfr, ID3D11ShaderResourceView** grassBCSRV)

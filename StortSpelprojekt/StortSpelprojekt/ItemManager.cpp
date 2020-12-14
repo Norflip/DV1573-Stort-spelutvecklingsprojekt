@@ -17,6 +17,7 @@ ItemManager::~ItemManager()
 		delete activeItems[i];
 	}
 
+	delete pooler;
 	activeItems.clear();
 }
 

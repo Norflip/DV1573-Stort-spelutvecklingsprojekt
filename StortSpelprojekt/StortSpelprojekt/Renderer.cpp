@@ -38,6 +38,15 @@ Renderer::~Renderer()
 	dss->Release();
 	rasterizerStateCCWO->Release();
 
+	for (int i = 0; i < particleList.size(); i++)
+	{
+		delete particleList[i];
+	}
+
+	if (screenQuadMaterial)
+		delete screenQuadMaterial;
+	if (screenQuadMesh)
+		delete screenQuadMesh;
 
 	delete[] tmpBatchInstanceData;
 	RELEASE(o_LightGrid_tex);

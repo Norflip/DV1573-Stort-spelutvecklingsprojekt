@@ -51,6 +51,7 @@ SkeletonMeshComponent::SkeletonMeshComponent(SkeletonMeshComponent* other)
 
 SkeletonMeshComponent::~SkeletonMeshComponent()
 {
+
 }
 
 void SkeletonMeshComponent::Update(const float& deltaTime)
