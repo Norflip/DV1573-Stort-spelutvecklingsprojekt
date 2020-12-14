@@ -1,4 +1,4 @@
-Shaders: 17
+Shaders: 18
 
 Name: default
 
@@ -74,3 +74,14 @@ PS: Shaders/Glow_ps.hlsl
 Name: EmissiveShader
 VS: Shaders/Default_vs.hlsl
 PS: Shaders/Emissive_ps.hlsl
+
+Name: ParticleShaderSO
+Input: particleSO
+VS: Shaders/ParticleSO_vs.hlsl
+SOGS: Shaders/ParticleSO_gs.hlsl
+
+Name: ParticleShaderDraw
+Input: particleDraw
+VS: Shaders/ParticleDraw_vs.hlsl
+GS: Shaders/ParticleDraw_gs.hlsl
+PS: Shaders/ParticleDraw_ps.hlsl

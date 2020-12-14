@@ -67,7 +67,7 @@ public:
 public:
 	Renderer();
 	virtual ~Renderer();
-
+	void OnResize();
 	void Initialize(Window* window);
 
 	void DrawQueueToTarget(RenderQueue& queue, CameraComponent* camera, bool bindMaterial = true, bool pop = true);
@@ -138,7 +138,7 @@ private:
 
 	void SetObjectBufferValues(const CameraComponent* camera, dx::XMMATRIX world, bool transpose);
 	Mesh* CreateScreenQuad();
-
+	
 
 private:
 	IDXGISwapChain* swapchain;
@@ -249,4 +249,13 @@ private:
 	ID3D11BlendState* particleBlendOff;
 	ID3D11DepthStencilState* dss_Off;
 	ID3D11DepthStencilState* dss_On;
+
+	ConstantBuffer<cb_grass> grassBuffer;
+
+	IDXGIAdapter* adapter;
+	IDXGIFactory* factory;
+	IDXGIDevice* dxDevice;
+	DXGI_MODE_DESC currentModeDescription;
+	BOOL currentlyInFullscreen = false;
+	void OnResizeFPlus();
 };

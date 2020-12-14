@@ -1,9 +1,9 @@
 #include "stdafx.h"
 #include "DXHelper.h"
-void DXHelper::CreateSwapchain(const Window& window, _Out_ ID3D11Device** device, _Out_ ID3D11DeviceContext** context, _Out_ IDXGISwapChain** swapchain)
 
+void DXHelper::CreateSwapchain(const Window& window, _Out_ ID3D11Device** device, _Out_ ID3D11DeviceContext** context, _Out_ IDXGISwapChain** swapchain,
+	_Out_ IDXGIAdapter** adapter, _Out_ IDXGIFactory** factory, _Out_ IDXGIDevice** dxDevice, DXGI_MODE_DESC& currentModeDescription)
 {
-
 	size_t width = window.GetWidth();
 	size_t height = window.GetHeight();
 
@@ -12,36 +12,73 @@ void DXHelper::CreateSwapchain(const Window& window, _Out_ ID3D11Device** device
 	swapchainFlags |= D3D11_CREATE_DEVICE_DEBUG;
 #endif
 
-	// Swapchain: swaps between two buffers
-	DXGI_SWAP_CHAIN_DESC swapChainDescription;
-	ZeroMemory(&swapChainDescription, sizeof(DXGI_SWAP_CHAIN_DESC));
-
-	swapChainDescription.BufferCount = 2;	 // one back buffer???
-	swapChainDescription.BufferDesc.Width = width;
-	swapChainDescription.BufferDesc.Height = height;
-	swapChainDescription.BufferDesc.Format = DXGI_FORMAT_R8G8B8A8_UNORM;
-	swapChainDescription.BufferDesc.RefreshRate.Numerator = 60; // sets framerate to 60 as max
-	swapChainDescription.BufferDesc.RefreshRate.Denominator = 1;
-	swapChainDescription.BufferDesc.ScanlineOrdering = DXGI_MODE_SCANLINE_ORDER_UNSPECIFIED;
-	swapChainDescription.BufferDesc.Scaling = DXGI_MODE_SCALING_UNSPECIFIED;
-
-	swapChainDescription.BufferUsage = DXGI_USAGE_RENDER_TARGET_OUTPUT | DXGI_USAGE_SHADER_INPUT; // DXGI_USAGE_SHADER_INPUT = can be used as a texture input in a hlsl file. 
-	swapChainDescription.OutputWindow = window.GetHWND();
-	swapChainDescription.SampleDesc.Count = 1;
-	swapChainDescription.SampleDesc.Quality = 0;
-	swapChainDescription.Windowed = TRUE;
-	swapChainDescription.SwapEffect = DXGI_SWAP_EFFECT_FLIP_SEQUENTIAL;
-	swapChainDescription.Flags = DXGI_SWAP_CHAIN_FLAG_ALLOW_MODE_SWITCH;
-
 	D3D_FEATURE_LEVEL featureLevel[] = { D3D_FEATURE_LEVEL_11_0 };
-	HRESULT resultCreateDevAndSwap = D3D11CreateDeviceAndSwapChain(nullptr, D3D_DRIVER_TYPE_HARDWARE, nullptr, swapchainFlags, featureLevel, 1, D3D11_SDK_VERSION, &swapChainDescription, swapchain, device, nullptr, context);
-	assert(SUCCEEDED(resultCreateDevAndSwap));
 
+	HRESULT hr = D3D11CreateDevice(NULL, D3D_DRIVER_TYPE_HARDWARE, 0, swapchainFlags, NULL, 0, D3D11_SDK_VERSION, device, featureLevel, context);
+
+	assert(SUCCEEDED(hr));
+
+	DXGI_SWAP_CHAIN_DESC scd;
+	scd.BufferDesc.Width = 0;
+	scd.BufferDesc.Height = 0;
+	scd.BufferDesc.RefreshRate.Numerator = 0;
+	scd.BufferDesc.RefreshRate.Denominator = 1;
+	scd.BufferDesc.Format = DXGI_FORMAT_R8G8B8A8_UNORM;
+	scd.BufferDesc.ScanlineOrdering = DXGI_MODE_SCANLINE_ORDER_UNSPECIFIED;
+	scd.BufferDesc.Scaling = DXGI_MODE_SCALING_UNSPECIFIED;
+	scd.SampleDesc.Count = 1;
+	scd.SampleDesc.Quality = 0;
+	scd.BufferUsage = DXGI_USAGE_RENDER_TARGET_OUTPUT;
+	scd.BufferCount = 2;
+	scd.OutputWindow = window.GetHWND();
+	scd.Windowed = true;
+	scd.SwapEffect = DXGI_SWAP_EFFECT_FLIP_DISCARD;
+	scd.Flags = DXGI_SWAP_CHAIN_FLAG_ALLOW_MODE_SWITCH;
+	IDXGIOutput* output = nullptr;
+	hr = (*device)->QueryInterface(dxDevice);
+	assert(SUCCEEDED(hr));
+	hr = (*dxDevice)->GetAdapter(adapter);
+	assert(SUCCEEDED(hr));
+	hr = (*adapter)->GetParent(__uuidof(IDXGIFactory), (void**)factory);
+	assert(SUCCEEDED(hr));
+	hr = (*factory)->CreateSwapChain(*device, &scd, swapchain);
+	assert(SUCCEEDED(hr));
 	ID3D11RasterizerState* rasterizerState = CreateRasterizerState(D3D11_CULL_BACK, D3D11_FILL_SOLID, *device);
 	(*context)->RSSetState(rasterizerState);
 
-}
 
+	hr = (*swapchain)->GetContainingOutput(&output);
+	assert(SUCCEEDED(hr));
+	unsigned int numberOfSupportedModes;
+	hr = output->GetDisplayModeList(DXGI_FORMAT_R8G8B8A8_UNORM, 0, &numberOfSupportedModes, NULL);
+	assert(SUCCEEDED(hr));
+	DXGI_MODE_DESC* supportedModes;
+	supportedModes = new DXGI_MODE_DESC[numberOfSupportedModes];
+	ZeroMemory(supportedModes, sizeof(DXGI_MODE_DESC) * numberOfSupportedModes);
+	hr = output->GetDisplayModeList(DXGI_FORMAT_R8G8B8A8_UNORM, 0, &numberOfSupportedModes, supportedModes);
+	assert(SUCCEEDED(hr));
+	output->Release();
+
+	bool supportedMode = false;
+
+	for (unsigned int i = 0; i < numberOfSupportedModes; i++)
+	{
+		if ((unsigned int)window.GetWidth() == supportedModes[i].Width && window.GetHeight() == supportedModes[i].Height)
+		{
+			supportedMode = true;
+			currentModeDescription = supportedModes[i];
+			break;
+		}
+	}
+	if (!supportedMode)
+	{
+
+		currentModeDescription = supportedModes[0];
+	}
+
+
+	delete[] supportedModes;
+}
 
 void DXHelper::CreateBlendState(ID3D11Device* device, ID3D11BlendState** blendOn, ID3D11BlendState** blendOff)
 {
@@ -128,6 +165,8 @@ void DXHelper::CreateRSState(ID3D11Device* device, ID3D11RasterizerState** cullB
 	resultCreateRasterizer = device->CreateRasterizerState(&rasterizerDescription, CCWO);
 	assert(SUCCEEDED(resultCreateRasterizer));
 }
+
+
 
 RenderTexture DXHelper::CreateBackbuffer(size_t width, size_t height, ID3D11Device* device,  IDXGISwapChain* swapchain)
 {
@@ -622,6 +661,48 @@ ID3D11RasterizerState* DXHelper::CreateRasterizerState(D3D11_CULL_MODE cullMode,
 	assert(SUCCEEDED(resultCreateRasterizer));
 
 	return rasterizerState;
+}
+
+void DXHelper::OnResize(IDXGISwapChain* swapchain, ID3D11DeviceContext* context, DXGI_MODE_DESC& currentModeDescription, BOOL& currentlyInFullscreen, const Window& window, ID3D11Device* device)
+{
+	HRESULT hr;
+	DXGI_MODE_DESC zeroRefreshRate = currentModeDescription;
+	zeroRefreshRate.RefreshRate.Numerator = 0;
+	zeroRefreshRate.RefreshRate.Denominator = 0;
+
+	BOOL inFullscreen = false;
+	swapchain->GetFullscreenState(&inFullscreen, NULL);
+
+	if (currentlyInFullscreen != inFullscreen)
+	{
+		if (inFullscreen)
+		{
+			hr = swapchain->ResizeTarget(&zeroRefreshRate);
+			assert(SUCCEEDED(hr));
+			hr = swapchain->SetFullscreenState(true, nullptr);
+			assert(SUCCEEDED(hr));
+		}
+		else
+		{
+			hr = swapchain->SetFullscreenState(false, nullptr);
+			assert(SUCCEEDED(hr));
+
+			RECT rect = { 0, 0, (long)currentModeDescription.Width,  (long)currentModeDescription.Height };
+			AdjustWindowRectEx(&rect, WS_OVERLAPPEDWINDOW, false, WS_EX_OVERLAPPEDWINDOW);
+			SetWindowPos(window.GetHWND(), HWND_TOP, 0, 0, rect.right - rect.left, rect.bottom - rect.top, SWP_NOMOVE);
+
+		}
+		currentlyInFullscreen = !currentlyInFullscreen;
+	}
+	hr = swapchain->ResizeTarget(&zeroRefreshRate);
+
+	assert(SUCCEEDED(hr));
+	UINT swapchainFlags = DXGI_SWAP_CHAIN_FLAG_ALLOW_MODE_SWITCH;
+
+	context->ClearState();
+	hr = swapchain->ResizeBuffers(0, 0, 0, DXGI_FORMAT_UNKNOWN, swapchainFlags); //These are 0 so the default settings are used.
+
+	assert(SUCCEEDED(hr));
 }
 
 

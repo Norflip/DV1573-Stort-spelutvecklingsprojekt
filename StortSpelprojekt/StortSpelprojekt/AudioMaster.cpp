@@ -38,6 +38,7 @@ AudioMaster::AudioMaster()
 	LoadFile(L"Sounds/windyLoop.mp3", "wind", windSound, AudioTypes::Environment, true);
 	//LoadFile(L"Sounds/choptree.mp3", "choptree", chop, AudioTypes::Sound, false);
 	LoadFile(L"Sounds/insideWalk.mp3", "insideWalk", insideWalk, AudioTypes::Sound, true);
+	LoadFile(L"Sounds/DarkAmbient.mp3", "ambient", ambientSound, AudioTypes::Music, true);
 
 	SetVolume(AudioTypes::Music, 0.7f);
 	SetVolume(AudioTypes::Sound, 0.7f);
