@@ -22,6 +22,15 @@ public:
 		ID3D11DepthStencilState* dss;
 
 		glowTarget = DXHelper::CreateRenderTexture(TMP_WIDTH, TMP_HEIGHT, device, &dss);
+		shader->SetVertexShader("Shaders/Default_vs.hlsl");
+		shader->SetPixelShader("Shaders/Emissive_ps.hlsl");
+		shader->Compile(device);
+		shaderInstanced->SetVertexShader("Shaders/Instance_vs.hlsl");
+		shaderInstanced->SetPixelShader("Shaders/Emissive_ps.hlsl");
+		shaderInstanced->Compile(device);
+
+		material = new Material(shader);
+		materialInstanced = new Material(shaderInstanced);
 	}
 
 	void Pass(Renderer* renderer, CameraComponent* camera, RenderTexture& current, RenderTexture& target) override
@@ -32,6 +41,8 @@ public:
 
 		// loop queue
 		Renderer::RenderQueue renderq = renderer->GetEmissiveQueue();
+
+		
 
 		for (auto i : renderq)
 		{
@@ -75,30 +86,42 @@ public:
 				/*item.material = new Material(shader);
 				renderer->GetContext()->PSSetShaderResources(0, 1, &target.srv);
 				renderer->DrawScreenQuad(item.material);*/
-
-
-
-				if (item.type == Renderer::RenderItem::Type::Instanced)
+				/*if (item.type == Renderer::RenderItem::Type::Instanced)
 				{
 					//shader->SetVertexShader("Shaders/Instance_vs.hlsl");
 					//shader->SetPixelShader("Shaders/Emissive_ps.hlsl");
 					//shader->SetPixelShader("Shaders/Default_ps.hlsl");
 					std::cout << "Get Into Instance case" << std::endl;
+					item.material = materialInstanced;
 
 				}
 				else if (item.type == Renderer::RenderItem::Type::Default)
 				{
-					shader->SetVertexShader("Shaders/Default_vs.hlsl");
-					shader->SetPixelShader("Shaders/Emissive_ps.hlsl");
+					//shader->SetVertexShader("Shaders/Default_vs.hlsl");
+					//shader->SetPixelShader("Shaders/Emissive_ps.hlsl");
 					std::cout << "Get Into default case" << std::endl;
+					item.material = material;
 				}
 				else
 				{
 					std::cout << "got nowhere" << std::endl;
+				}*/
 
+				switch (item.type)
+				{
+					case Renderer::RenderItem::Type::Instanced:
+						std::cout << "Get Into Instance case" << std::endl;
+						item.material = materialInstanced;
+						break;
+
+					case Renderer::RenderItem::Type::Default:
+					default:
+						std::cout << "Get Into default case" << std::endl;
+						item.material = material;
+						break;
 				}
 
-				item.material = new Material(shader);
+				//item.material = new Material(shader1);
 				renderer->GetContext()->PSSetShaderResources(0, 1, &target.srv);
 				renderer->DrawScreenQuad(item.material);
 
@@ -111,8 +134,8 @@ public:
 		}
 
 		// UNBINDA GLOWTARGET HÄR. Kommer ge fel annars
-		ID3D11RenderTargetView* null = nullptr;
-		renderer->GetContext()->OMSetRenderTargets(1, &glowTarget.rtv, glowTarget.dsv);
+		//ID3D11RenderTargetView* null = nullptr;
+		//renderer->GetContext()->OMSetRenderTargets(1, &glowTarget.rtv, glowTarget.dsv);
 
 
 
@@ -130,7 +153,9 @@ private:
 
 	RenderTexture glowTarget;
 	Shader* shader = new Shader;
+	Shader* shaderInstanced = new Shader;
 	Material* material;
+	Material* materialInstanced;
 };
 
 ALIGN16
