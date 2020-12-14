@@ -35,7 +35,8 @@ public:
 
 	void Pass(Renderer* renderer, CameraComponent* camera, RenderTexture& current, RenderTexture& target) override
 	{
-
+		ID3D11ShaderResourceView* nullSRV = nullptr;
+		renderer->GetContext()->PSSetShaderResources(2, 1, &nullSRV);
 		renderer->ClearRenderTarget(glowTarget, true);
 		renderer->SetRenderTarget(glowTarget, true);
 
@@ -123,7 +124,7 @@ public:
 
 				//item.material = new Material(shader1);
 				renderer->GetContext()->PSSetShaderResources(0, 1, &target.srv);
-				renderer->DrawScreenQuad(item.material);
+				//renderer->DrawScreenQuad(item.material);
 
 				// Denna drar ner prestandan.. men det visar att saker faktiskt finns i queuen.
 				//std::cout << "GLOWING? : " << item.mesh->GetMeshName()<< " " << i.second.size() << std::endl;
@@ -134,9 +135,9 @@ public:
 		}
 
 		// UNBINDA GLOWTARGET HÄR. Kommer ge fel annars
-		//ID3D11RenderTargetView* null = nullptr;
-		//renderer->GetContext()->OMSetRenderTargets(1, &glowTarget.rtv, glowTarget.dsv);
-
+		/*ID3D11RenderTargetView* nullrtv = nullptr;
+		renderer->GetContext()->OMSetRenderTargets(1, &glowTarget.rtv, glowTarget.dsv);*/
+		
 
 
 		// vi sparar glow texturer till renderer så vi sedan kan hämta den i nästa pass
@@ -175,14 +176,14 @@ public:
 
 	void Pass(Renderer* renderer, CameraComponent* camera, RenderTexture& current, RenderTexture& target) override
 	{
-		renderer->ClearRenderTarget(target, false);
-		renderer->SetRenderTarget(target, false);
+		renderer->ClearRenderTarget(current, false);
+		renderer->SetRenderTarget(current, false);
 
 		ID3D11ShaderResourceView* srv = renderer->LoadShaderResourceView("glow");
 
 		// I renderpass shadern GlowShader så blir första texturen scenen i sig och den andra all data från glow texturen som vi gjorde i tidigare GlowPreRenderPass
 
-		renderer->GetContext()->PSSetShaderResources(0, 1, &current.srv);
+		//renderer->GetContext()->PSSetShaderResources(0, 1, &current.srv);
 		renderer->GetContext()->PSSetShaderResources(1, 1, &srv);
 
 		renderer->DrawScreenQuad(material);

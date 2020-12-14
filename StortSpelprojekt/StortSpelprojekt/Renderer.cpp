@@ -75,9 +75,9 @@ void Renderer::OnResize()
 	dss->Release(); //just cus ut gets created again.
 	DXHelper::OnResize(swapchain, context, currentModeDescription, currentlyInFullscreen, *window, device);
 	this->backbuffer = DXHelper::CreateBackbuffer(window->GetWidth(), window->GetHeight(), device, swapchain);
-	this->midbuffer = DXHelper::CreateRenderTexture(window->GetWidth(), window->GetHeight(), device, context, &dss);
-	this->renderPassSwapBuffers[0] = DXHelper::CreateRenderTexture(window->GetWidth(), window->GetHeight(), device, context, &dss);
-	this->renderPassSwapBuffers[1] = DXHelper::CreateRenderTexture(window->GetWidth(), window->GetHeight(), device, context, &dss);
+	this->midbuffer = DXHelper::CreateRenderTexture(window->GetWidth(), window->GetHeight(), device, &dss);
+	this->renderPassSwapBuffers[0] = DXHelper::CreateRenderTexture(window->GetWidth(), window->GetHeight(), device, &dss);
+	this->renderPassSwapBuffers[1] = DXHelper::CreateRenderTexture(window->GetWidth(), window->GetHeight(), device, &dss);
 	OnResizeFPlus();
 	float pixelScale = tanf(0.5f * (dx::XM_PI / 2.0f)) / (float)(window->GetHeight());
 
@@ -293,7 +293,7 @@ void Renderer::RenderFrame(CameraComponent* camera, float time, float distance, 
 
 	// ----------
 
-
+	
 
 	//LightManager::Instance().UpdateBuffers(context,camera);
 
@@ -396,9 +396,8 @@ void Renderer::RenderFrame(CameraComponent* camera, float time, float distance, 
 	SetRenderTarget(target, false);
 
 	context->PSSetShaderResources(0, 1, &lastBuffer.srv);
+	//context->PSSetShaderResources(0, 1, &midbuffer.srv);
 	DrawScreenQuad(screenQuadMaterial);
-
-
 
 
 	if (drawGUI)

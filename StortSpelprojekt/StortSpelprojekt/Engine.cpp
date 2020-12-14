@@ -51,7 +51,7 @@ Engine::Engine(HINSTANCE hInstance) : window(hInstance), activeSceneIndex(-1), s
 	renderer->AddRenderPass(new FogRenderPass(0, resourceManager));
 	renderer->AddRenderPass(new FXAARenderPass(1, resourceManager));
 
-	//renderer->AddRenderPass(new GlowRenderPass(2, resourceManager));
+	renderer->AddRenderPass(new GlowRenderPass(2, resourceManager));
 	renderer->AddRenderPass(new GlowPreRenderPass(-5, resourceManager));
 
 	

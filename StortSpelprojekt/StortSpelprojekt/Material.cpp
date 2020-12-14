@@ -2,8 +2,8 @@
 #include "Material.h"
 
 
-Material::Material() {}
-Material::Material(Shader* shader) : shader(shader) {}
+Material::Material() : emissive(false) {}
+Material::Material(Shader* shader) : shader(shader), emissive(false) {}
 
 Material::~Material() 
 {

@@ -88,7 +88,7 @@ public:
 	void SetCullBack(bool);
 
 	ID3D11Device* GetDevice() const { return this->device; }
-	ID3D11DeviceContext* GetContext() const { return this->context; }
+	ID3D11DeviceContext* GetContext() /*const*/ { return this->context; }
 	Window* GetOutputWindow() const { return this->window; }
 
 	void DrawScreenQuad(const Material* Material);
