@@ -43,6 +43,11 @@ Renderer::~Renderer()
 		delete particleList[i];
 	}
 
+	if (screenQuadMaterial)
+		delete screenQuadMaterial;
+	if (screenQuadMesh)
+		delete screenQuadMesh;
+
 	delete[] tmpBatchInstanceData;
 	RELEASE(o_LightGrid_tex);
 	RELEASE(o_LightGrid_texSRV);
