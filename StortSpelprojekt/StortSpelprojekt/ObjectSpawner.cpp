@@ -8,10 +8,17 @@
 
 ObjectSpawner::ObjectSpawner()
 {
+	doOnce = true;
 }
 
 ObjectSpawner::~ObjectSpawner()
 {
+	RELEASE(grassBfr);
+	RELEASE(grassSrv);
+	RELEASE(grassIndexBfr);
+	RELEASE(grassIndexSrv);
+	RELEASE(grassBCBfr);
+	RELEASE(grassBCSRV);
 }
 
 void ObjectSpawner::Initialize(Object* root, World* world, ItemManager* items, Renderer* renderer)
@@ -42,6 +49,7 @@ void ObjectSpawner::Initialize(Object* root, World* world, ItemManager* items, R
 
 	baseTreeModel.discRadius = 3.0f; // with padding
 	baseTreeModel.segmentScaleFactor = 0.7f;
+	
 }
 
 void ObjectSpawner::Spawn(const SaveState& state, const Bounds& worldBounds, std::unordered_map<int, Chunk*>& chunkMap)
@@ -143,6 +151,17 @@ void ObjectSpawner::DrawDebug()
 	}
 }
 
+void ObjectSpawner::UpdateGrass(ID3D11DeviceContext* context)
+{
+	if (grassSrv)
+	{
+		ShaderBindFlag flag = ShaderBindFlag::VERTEX | ShaderBindFlag::HULL | ShaderBindFlag::DOMAINS;
+		DXHelper::BindStructuredBuffer(context, GRASS_STRAWS_SRV_SLOT, flag, &grassSrv);
+		DXHelper::BindStructuredBuffer(context, GRASS_INDICES_SRV_SLOT, flag, &grassIndexSrv);
+		DXHelper::BindStructuredBuffer(context, GRASS_COORD_SRV_SLOT, ShaderBindFlag::DOMAINS, &grassBCSRV);
+	}
+}
+
 
 void ObjectSpawner::AddTreesToChunk(const TreeModel& treeModel, Chunk* chunk, size_t segment) const
 {
@@ -231,7 +250,7 @@ void ObjectSpawner::AddTreesToChunk(const TreeModel& treeModel, Chunk* chunk, si
 	}
 }
 
-void ObjectSpawner::AddGrassToChunk(Chunk* chunk) const
+void ObjectSpawner::AddGrassToChunk(Chunk* chunk)
 {
 	Mesh* chunkMesh = chunk->GetOwner()->GetComponent<MeshComponent>()->GetMeshes()[0];
 	Shader* shader = Engine::Instance->GetResources()->GetShaderResource("grassShader");
@@ -244,8 +263,13 @@ void ObjectSpawner::AddGrassToChunk(Chunk* chunk) const
 	GrassComponent* grassComponent = chunk->GetOwner()->AddComponent<GrassComponent>(chunkMesh->GetTriangleCount(), renderer->GetDevice(), shader, bounds);
 	grassComponent->GetMaterial()->SetTexture(chunk->GetData().dataTexture, 6, ShaderBindFlag::HULL);
 	grassComponent->GetMaterial()->SetTexture(chunk->GetData().dataTexture, 6, ShaderBindFlag::DOMAINS);
+	if (doOnce)
+	{
+		grassComponent->InitOnce(chunkMesh, renderer->GetDevice(), &grassBfr, &grassSrv, &grassIndexBfr, &grassIndexSrv, &grassBCBfr, &grassBCSRV);
 
-	grassComponent->InitializeGrass(chunkMesh, renderer->GetDevice(), renderer->GetContext());
+		doOnce = false;
+	}
+	grassComponent->InitializeGrass(chunkMesh, renderer->GetDevice(), renderer->GetContext(), &grassBfr, &grassSrv, &grassIndexBfr, &grassIndexSrv, &grassBCBfr, &grassBCSRV);
 }
 
 bool ObjectSpawner::ValidSpawnPoint(const dx::XMFLOAT2& point, Chunk* chunk, float minInfluence) const

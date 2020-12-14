@@ -49,7 +49,7 @@ public:
 	bool start = true;
 private:
 	static void FixedUpdateLoop(Engine* engine);
-
+	void OnResize(size_t width, size_t height);
 private:
 	bool running;
 	Scene* scenes[SCENE_COUNT];
