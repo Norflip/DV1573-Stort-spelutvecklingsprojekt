@@ -30,7 +30,7 @@ class Texture : public Resource
 public:
 	Texture();
 	Texture(ID3D11ShaderResourceView* srv);
-	Texture(ID3D11ShaderResourceView* srv, unsigned char* buffer, size_t width, size_t height, size_t channels);
+	Texture(ID3D11ShaderResourceView* srv, size_t width, size_t height, size_t channels);
 	virtual ~Texture();
 
 	Texture* CreateRandom1DTexture(ID3D11Device* device);
@@ -46,7 +46,6 @@ private:
 
 private:
 	ID3D11ShaderResourceView* srv;	
-	unsigned char* buffer;
 	size_t width, height, channels;
 };
 

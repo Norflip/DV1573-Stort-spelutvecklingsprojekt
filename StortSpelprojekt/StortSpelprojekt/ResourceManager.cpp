@@ -1,7 +1,7 @@
 #include "stdafx.h"
 #include "ResourceManager.h"
 
-ResourceManager::ResourceManager()
+ResourceManager::ResourceManager() : missingTexture(nullptr)
 {
 }
 
@@ -17,8 +17,12 @@ ResourceManager::~ResourceManager()
 		delete i.second;
 	}
 
-	delete[] missingTexture;
-
+	if (missingTexture != nullptr)
+	{
+		delete missingTexture;
+		missingTexture = nullptr;
+	}
+	
 	resources.clear();
 	shaderResources.clear();
 }
@@ -83,11 +87,9 @@ void ResourceManager::RemoveResource(std::string key)
 
 void ResourceManager::InitializeResources(ID3D11Device* device)
 {
-	unsigned char* pixel = new unsigned char[4];
-	pixel[0] = pixel[2] = pixel[4] = 255;
-	pixel[1] = 0;
-
+	unsigned char* pixel = new unsigned char[4] { 0,0,255,255 };
 	missingTexture = Texture::CreateFromBuffer(pixel, 1, 1, 4, DXGI_FORMAT_R8G8B8A8_UNORM, device);
+	delete[] pixel;
 
 	ReadTextures(device);
 	ReadShaders(device);

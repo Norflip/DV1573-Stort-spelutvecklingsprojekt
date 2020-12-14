@@ -2,23 +2,23 @@
 #include "Texture.h"
 #include "Engine.h"
 
-Texture::Texture() 
-	: srv(nullptr), buffer(nullptr), width(-1), height(-1), channels(-1)
-{	
-}
-
-Texture::Texture(ID3D11ShaderResourceView* srv)
-	: srv(srv), buffer(nullptr), width(-1), height(-1), channels(-1)
+Texture::Texture()
+	: srv(nullptr), width(-1), height(-1), channels(-1)
 {
 }
 
-Texture::Texture(ID3D11ShaderResourceView* srv, unsigned char* buffer, size_t width, size_t height, size_t channels)
-	: srv(srv), buffer(buffer), width(width), height(height), channels(channels)
+Texture::Texture(ID3D11ShaderResourceView* srv)
+	: srv(srv), width(-1), height(-1), channels(-1)
+{
+}
+
+Texture::Texture(ID3D11ShaderResourceView* srv, size_t width, size_t height, size_t channels)
+	: srv(srv), width(width), height(height), channels(channels)
 {
 }
 
 Texture::~Texture()
-{		
+{
 	RELEASE(srv);
 }
 
@@ -100,7 +100,7 @@ Texture* Texture::CreateFromBuffer(unsigned char* buffer, size_t width, size_t h
 		texture = nullptr;
 	}
 
-	return new Texture(srv, buffer, width, height, channels);
+	return new Texture(srv, width, height, channels);
 }
 
 Texture* Texture::LoadTexture(ID3D11Device* device, LPCWSTR textureFilepath)
@@ -113,7 +113,7 @@ Texture* Texture::LoadTexture(ID3D11Device* device, LPCWSTR textureFilepath)
 	auto found = mTextureCache.find(key);
 	if (found != mTextureCache.end())
 	{
-	//	std::cout << key << " from cache" << std::endl;
+		//	std::cout << key << " from cache" << std::endl;
 		return found->second;
 	}
 	else

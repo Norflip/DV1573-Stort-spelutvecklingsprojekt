@@ -256,41 +256,8 @@ void Chunk::CreateChunkData(const WorldDescription& description, const Path& pat
 				}
 			}
 		}
-
-		
-
-
-		/*float average = 0.0f;
-
-
-		for (size_t y = 0; y < size; y++)
-		{
-			for (size_t x = 0; x < size; x++)
-			{
-				average += data.heightMap[x + size * y];
-			}
-		}
-
-		int smoothSize = 3;
-
-		average /= ((size - (smoothSize * 2)) * (size - (smoothSize * 2)));
-
-		for (size_t y = smoothSize; y < size - smoothSize; y++)
-		{
-			for (size_t x = smoothSize; x < size - smoothSize; x++)
-			{
-				float worldHeight = average;
-				float height = worldHeight / TERRAIN_SCALE;
-
-				int bufferIndex = x + size * y;
-
-				data.heightMap[x + size * y] = worldHeight;
-
-				buffer[bufferIndex * 4 + 0] = static_cast<unsigned char>(255 * height);
-			}
-		}*/
-
 	}
 
 	data.dataTexture = Texture::CreateFromBuffer(buffer, CHUNK_SIZE + 1, CHUNK_SIZE + 1, 4, DXGI_FORMAT_R8G8B8A8_UNORM, device);
+	delete[] buffer;
 }
