@@ -23,6 +23,8 @@ SkeletonMeshComponent::SkeletonMeshComponent(SkeletonMeshComponent* other)
 	this->mesh = other->GetMesh();
 	this->material = other->GetMaterial();
 	this->timeScale = other->GetTimeScale();
+	this->factor = 0;
+	this->blend = false;
 
 	for (size_t i = 0; i < other->GetAnimations().size(); i++)
 	{
@@ -67,20 +69,25 @@ void SkeletonMeshComponent::Draw(Renderer* renderer, CameraComponent* camera)
 	{
 		PlayOnce(componentDeltaTime);
 	}
-	else
+	else if (!playOnce)
 	{
 		RunAnimation(componentDeltaTime);
 	}
+	
 	//}
 }
 
 void SkeletonMeshComponent::RunAnimation(const float& deltaTime)
 {
+
 	elapsedTime += deltaTime;
 
 	float time = elapsedTime;
 
 	time *= timeScale;
+
+	if(blend)
+		PlayBlendAnimations(time);
 
 	if (elapsedTime >= 60.0f)
 	{
@@ -108,7 +115,7 @@ void SkeletonMeshComponent::RunAnimation(const float& deltaTime)
 	}
 	else if (currentAni == SkeletonStateMachine::BLENDED)
 	{
-		finalTransforms = skeletonAnimations[trackMap[SkeletonStateMachine::RUN]].Makeglobal(time, dx::XMMatrixIdentity(), *skeletonAnimations[trackMap[SkeletonStateMachine::RUN]].GetRootKeyJoints());
+		finalTransforms = GetBlendTransform();
 	}
 	else if (currentAni == SkeletonStateMachine::LOAD)
 	{
@@ -282,11 +289,10 @@ void SkeletonMeshComponent::CreateBlendedAnimation()
 	*/
 	//DO DIS
 
-	SkeletonAni blendedAnim;
 
-	blendedAnim = skeletonAnimations[0];
+	
 
-	SetAnimationTrack(blendedAnim, SkeletonStateMachine::BLENDED);
+	
 }
 
 void SkeletonMeshComponent::PlayOnce(const float& deltaTime)
@@ -578,42 +584,34 @@ void SkeletonMeshComponent::PlayOnce(const float& deltaTime)
 	}
 }
 
-void SkeletonMeshComponent::PlayBlendAnimations(SkeletonStateMachine state1, SkeletonStateMachine state2, float factor)
+void SkeletonMeshComponent::PlayBlendAnimations(const float& deltaTime)
 {
+
 	//A = A1 * (f - 1) + A2 * f
+	//std::cout << componentDeltaTime << std::endl;
+	//std::map<std::vector<dx::SimpleMath::Matrix>, unsigned int> map1;
 
-	std::cout << "before blend length: " << skeletonAnimations[trackMap[state1]].GetAniLength() << std::endl;
-	std::cout << "before blend fps: " << skeletonAnimations[trackMap[state1]].GetFPS() << std::endl;
+	//std::cout << "before blend length: " << skeletonAnimations[trackMap[state1]].GetAniLength() << std::endl;
+	//std::cout << "before blend fps: " << skeletonAnimations[trackMap[state1]].GetFPS() << std::endl;
 
-	skeletonAnimations[trackMap[state1]].SetBlendAnimLength(skeletonAnimations[trackMap[state2]].GetAniLength(), factor);
-	skeletonAnimations[trackMap[state1]].SetBlendFPS(skeletonAnimations[trackMap[state2]].GetFPS(), factor);
+	//skeletonAnimations[trackMap[state1]].SetBlendAnimLength(skeletonAnimations[trackMap[state2]].GetAniLength(), factor);
+	//skeletonAnimations[trackMap[state1]].SetBlendFPS(skeletonAnimations[trackMap[state2]].GetFPS(), factor);
 
-	std::cout << "after blend length: " << skeletonAnimations[trackMap[state1]].GetAniLength() << std::endl;
-	std::cout << "after blend fps: " << skeletonAnimations[trackMap[state1]].GetFPS() << std::endl;
+	//std::cout << "after blend length: " << skeletonAnimations[trackMap[state1]].GetAniLength() << std::endl;
+	//std::cout << "after blend fps: " << skeletonAnimations[trackMap[state1]].GetFPS() << std::endl;
 
-	float size = skeletonAnimations[trackMap[state1]].GetKeyFrames().size() * (1 - factor) + skeletonAnimations[trackMap[state2]].GetKeyFrames().size() * 1;
-
-	
-
-	//tror det är fel på hur jag räknar gameframe och ben
-	
-	
-		//std::cout << "size: " << i << std::endl;
-
-	skeletonAnimations[trackMap[state1]].MergeKeys(
-		skeletonAnimations[trackMap[state2]].GetKeyFrames(),
-		factor, size);
-
-	
-	
-	
-
-	//funkar inte som jag vill
+	//float size = skeletonAnimations[trackMap[state1]].GetKeyFrames().size() * (1 - factor) + skeletonAnimations[trackMap[state2]].GetKeyFrames().size() * factor;
+	//std::vector<dx::SimpleMath::Matrix> offsets(size);
 	//for (int i = 0; i < size; i++)
 	//{
-	//	skeletonAnimations[trackMap[state1]].MergeOffsets(skeletonAnimations[trackMap[state2]].GetOffsets(), factor, i);
+	//	offsets[i] = skeletonAnimations[trackMap[state1]].GetOffsets()[i] * (1 - factor) + skeletonAnimations[trackMap[state2]].GetOffsets()[i] * factor;
 	//}
-	
+
+	//skeletonAnimations[trackMap[state1]].SetOffsetsDirect(offsets);
+
+	//skeletonAnimations[trackMap[state1]].MergeKeys(
+	//	skeletonAnimations[trackMap[state2]].GetKeyFrames(),
+	//	factor, size);
 
 	//float animLength = skeletonAnimations[trackMap[state1]].GetAniLength() * (1 - factor) + skeletonAnimations[trackMap[state2]].GetAniLength() * factor;
 	//float fps = skeletonAnimations[trackMap[state1]].GetFPS() * (1 - factor) + skeletonAnimations[trackMap[state2]].GetFPS() * factor;
@@ -622,9 +620,23 @@ void SkeletonMeshComponent::PlayBlendAnimations(SkeletonStateMachine state1, Ske
 
 	//SetAnimationTrack(blendedAnim, SkeletonStateMachine::BLENDED);
 
-	finalTransforms = skeletonAnimations[trackMap[state1]].Makeglobal(componentDeltaTime, dx::XMMatrixIdentity(), *skeletonAnimations[trackMap[state1]].GetRootKeyJoints());
 
-	currentAni = state1;
+
+	//BLENDA MAKE GLOBALS ISTÄLLET REEEEEEEEEEE-
+	std::vector<dx::XMFLOAT4X4> anim1 = skeletonAnimations[trackMap[this->track1]].Makeglobal(deltaTime, dx::XMMatrixIdentity(), *skeletonAnimations[trackMap[this->track1]].GetRootKeyJoints());
+	std::vector<dx::XMFLOAT4X4> anim2 = skeletonAnimations[trackMap[this->track2]].Makeglobal(deltaTime, dx::XMMatrixIdentity(), *skeletonAnimations[trackMap[this->track2]].GetRootKeyJoints());
+
+/*	dx::XMMATRIX blendMat1 = dx::XMLoadFloat4x4(&anim1[0]);
+	dx::XMMATRIX blendMat2 = dx::XMLoadFloat4x4(&anim2[0]);
+	dx::XMMATRIX blendCalcMat = blendMat1 * (1 - factor) + blendMat2 * factor;
+
+	float blendIndex = skeletonAnimations[trackMap[state1]].GetftIndex() * (1 - factor) + skeletonAnimations[trackMap[state1]].GetftIndex() * factor;
+
+	std::vector<dx::XMFLOAT4X4> blendedAnim;
+	dx::XMStoreFloat4x4(&blendedAnim[0], blendCalcMat);
+
+	*/	
+	SetBlendTransform(anim1);
 }
 
 void SkeletonMeshComponent::BlendAnimations()
@@ -791,6 +803,19 @@ bool& SkeletonMeshComponent::SetAndGetDoneDown()
 bool& SkeletonMeshComponent::SetAndGetDoneUp()
 {
 	return doneUp;
+}
+
+void SkeletonMeshComponent::SetBlendTransform(std::vector<dx::XMFLOAT4X4> transform)
+{
+	this->blendTransform = transform;
+}
+
+void SkeletonMeshComponent::SetBlendingTracksAndFactor(SkeletonStateMachine track1, SkeletonStateMachine track2, float factor, bool blend)
+{
+	this->track1 = track1;
+	this->track2 = track2;
+	this->factor = factor;
+	this->blend = blend;
 }
 
 //void SkeletonMeshComponent::SetAnimationTransforms(std::vector<dx::XMFLOAT4X4> transform)

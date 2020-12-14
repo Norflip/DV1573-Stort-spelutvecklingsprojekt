@@ -55,7 +55,7 @@ public:
 
 	void SetTrack(const SkeletonStateMachine& type, bool playOnce);
 	
-	void PlayBlendAnimations(SkeletonStateMachine state1, SkeletonStateMachine state2, float factor);
+	void PlayBlendAnimations(const float& deltaTime);
 	void BlendAnimations();
 	void CreateCombinedAnimation(SkeletonStateMachine state1, SkeletonStateMachine state2, int startJoint, int endJoint);
 	void CreateBlendedAnimation();
@@ -75,6 +75,11 @@ public:
 	void SetTimeScale(float time) { this->timeScale = time; }
 	const EnemyType GetEnemyType() { return enemyType; }
 	void SetEnemyType(const EnemyType& enemyType) { this->enemyType = enemyType; }
+	std::vector<dx::XMFLOAT4X4> GetBlendTransform() { return this->blendTransform; }
+	void SetBlendTransform(std::vector<dx::XMFLOAT4X4> transform);
+
+	void SetBlendingTracksAndFactor(SkeletonStateMachine track1, SkeletonStateMachine track2, float factor, bool blend);
+
 	ALIGN16_ALLOC;
 
 private:
@@ -84,12 +89,10 @@ private:
 	std::vector<SkeletonAni> skeletonAnimations;
 	float elapsedTime = 0.0f;
 
-	float blendFactor = 1.0f;
-
 	std::unordered_map<SkeletonStateMachine, unsigned int> trackMap;
 
 	std::vector<dx::XMFLOAT4X4> finalTransforms;
-	std::vector<dx::XMFLOAT4X4> testTransform;
+	std::vector<dx::XMFLOAT4X4> blendTransform;
 
 	SkeletonStateMachine currentAni = SkeletonStateMachine::NONE;
 	Bounds bounds;
@@ -104,5 +107,11 @@ private:
 	bool doneDeath = false;
 	float count = 0.0f;
 	EnemyType enemyType = EnemyType::NONE;
+
+	//Blending
+	SkeletonStateMachine track1;
+	SkeletonStateMachine track2;
+	float factor;
+	bool blend;
 };
 

@@ -264,107 +264,100 @@ void SkeletonAni::SetTransVector(dx::SimpleMath::Vector3 transVec)
 void SkeletonAni::MergeKeys(std::vector<std::vector<Bone>> keys, float factor, float size)
 {
 
-    //float* kf1 = (float*)(&this->keyBones);
-    //float* kf2 = (float*)(&keys);
+   /* float* kf1 = (float*)(&this->keyBones);
+    float* kf2 = (float*)(&keys);
 
-    //const size_t elements = sizeof(Bone) / sizeof(float);
-    //float* result = new float[elements];
+    const size_t elements = sizeof(Bone) / sizeof(float);
+    float* result = new float[elements];
 
-    //for (size_t i = 0; i < elements; i++)
-    //{
-    //    result[i] = kf1[i] * (1 - factor) + kf2[i] * factor;
-    //}
-
-    //std::vector<std::vector<Bone>> newBones = *((std::vector<std::vector<Bone>>*)(result));
-    //delete[] result;
-
-    //this->keyBones = newBones;
-
-    //return newBones;
-
-    //FÖRSÖK 2
-    
-    std::cout << "length: " << this->length << std::endl;
-    std::cout << "fps: " << this->fps << std::endl;
-
-    dx::SimpleMath::Quaternion quatCalc;
-    dx::SimpleMath::Vector3 vecCalc;
-
-
-    for (float k = 0; k < size; k++)
+    for (size_t i = 0; i < elements; i++)
     {
-       
-       std::cout << "size: " << k << std::endl;
-
-       float* frame1 = &this->keyBones[k][0].frame;
-       float* frame2 = &keys[k][0].frame;
-
-       unsigned int* index1 = &this->keyBones[k][0].index;
-       unsigned int* index2 = &keys[k][0].index;
-
-       dx::SimpleMath::Quaternion* quat1 = &this->keyBones[k][0].rotationQuaternion;
-       dx::SimpleMath::Quaternion* quat2 = &keys[k][0].rotationQuaternion;
-
-       dx::SimpleMath::Vector3* vec1 = &this->keyBones[k][0].translationVector;
-       dx::SimpleMath::Vector3* vec2 = &keys[k][0].translationVector;
-
-
-
-       size_t frames = sizeof(size) / sizeof(float);
-       size_t indicies = sizeof(size) / sizeof(int);
-       size_t quaternions = sizeof(size) / sizeof(dx::SimpleMath::Quaternion);
-       size_t vectors = sizeof(size) / sizeof(dx::SimpleMath::Vector3);
-
-
-
-       float* frameResult = new float[frames];
-       int* indexResult = new int[indicies];
-       dx::SimpleMath::Quaternion* quatResult = new dx::SimpleMath::Quaternion[quaternions];
-       dx::SimpleMath::Vector3* vectorResult = new dx::SimpleMath::Vector3[vectors];
-
-
-
-       for (size_t i = 0; i < frames; i++)
-       {
-           frameResult[i] = frame1[i] * (1 - factor) + frame2[i] * factor;
-       }
-
-       for (size_t i = 0; i < indicies; i++)
-       {
-           indexResult[i] = index1[i] * (1 - factor) + index2[i] * factor;
-       }
-
-       for (size_t i = 0; i < quaternions; i++)
-       {
-           quatResult[i] = quatCalc.Slerp(quat1[i], quat2[i], factor);
-       }
-
-       for (size_t i = 0; i < vectors; i++)
-       {
-           vectorResult[i] = vecCalc.Lerp(vec1[i], vec2[i], factor);
-       }
-
-
-       Bone newBones;
-       newBones.frame = *frameResult;
-       newBones.index = *indexResult;
-       newBones.rotationQuaternion = *quatResult;
-       newBones.translationVector = *vectorResult;
-
-       this->keyBones[k][0] = newBones;
-
-       delete[] frameResult;
-       delete[] indexResult;
-       delete[] quatResult;
-       delete[] vectorResult;
+        result[i] = kf1[i] * (1 - factor) + kf2[i] * factor;
     }
 
+    std::vector<std::vector<Bone>> newBones = *((std::vector<std::vector<Bone>>*)(result));
+    delete[] result;
+
+    this->keyBones = newBones;*/
+
+    //FÖRSÖK 2
    
+    //std::cout << "length: " << this->length << std::endl;
+    //std::cout << "fps: " << this->fps << std::endl;
+
+    //dx::SimpleMath::Quaternion quatCalc;
+    //dx::SimpleMath::Vector3 vecCalc;
+
+
+    //for (auto k = 0; k < size; k++)
+    //{
+    //   
+    //   std::cout << "size: " << k << std::endl;
+
+    //   float* frame1 = &this->keyBones[k][0].frame;
+    //   float* frame2 = &keys[k][0].frame;
+
+    //   unsigned int* index1 = &this->keyBones[k][0].index;
+    //   unsigned int* index2 = &keys[k][0].index;
+
+    //   dx::SimpleMath::Quaternion* quat1 = &this->keyBones[k][0].rotationQuaternion;
+    //   dx::SimpleMath::Quaternion* quat2 = &keys[k][0].rotationQuaternion;
+
+    //   dx::SimpleMath::Vector3* vec1 = &this->keyBones[k][0].translationVector;
+    //   dx::SimpleMath::Vector3* vec2 = &keys[k][0].translationVector;
 
 
 
-   // return newBones;
-    
+    //   size_t frames = sizeof(size) / sizeof(float);
+    //   size_t indicies = sizeof(size) / sizeof(int);
+    //   size_t quaternions = sizeof(size) / sizeof(dx::SimpleMath::Quaternion);
+    //   size_t vectors = sizeof(size) / sizeof(dx::SimpleMath::Vector3);
+
+
+
+    //   float* frameResult = new float[frames];
+    //   int* indexResult = new int[indicies];
+    //   dx::SimpleMath::Quaternion* quatResult = new dx::SimpleMath::Quaternion[quaternions];
+    //   dx::SimpleMath::Vector3* vectorResult = new dx::SimpleMath::Vector3[vectors];
+
+
+
+    //   for (size_t i = 0; i < frames; i++)
+    //   {
+    //       frameResult[i] = frame1[i] * (1 - factor) + frame2[i] * factor;
+    //   }
+
+    //   for (size_t i = 0; i < indicies; i++)
+    //   {
+    //       indexResult[i] = index1[i] * (1 - factor) + index2[i] * factor;
+    //   }
+
+    //   for (size_t i = 0; i < quaternions; i++)
+    //   {
+    //       quatResult[i] = quatCalc.Slerp(quat1[i], quat2[i], factor);
+    //   }
+
+    //   for (size_t i = 0; i < vectors; i++)
+    //   {
+    //       vectorResult[i] = vecCalc.Lerp(vec1[i], vec2[i], factor);
+    //   }
+
+
+    //   //Bone newBones;
+    //   this->keyBones[k][0].frame = frameResult[k];
+    //   this->keyBones[k][0].index = indexResult[k];
+    //   this->keyBones[k][0].rotationQuaternion = quatResult[k];
+    //   this->keyBones[k][0].translationVector = vectorResult[k];
+
+    //   //this->keyBones[k][0] = newBones;
+
+    //   delete[] frameResult;
+    //   delete[] indexResult;
+    //   delete[] quatResult;
+    //   delete[] vectorResult;
+    //}
+
+   
     //FÖRSÖK 3
 
    /* float frame1;
