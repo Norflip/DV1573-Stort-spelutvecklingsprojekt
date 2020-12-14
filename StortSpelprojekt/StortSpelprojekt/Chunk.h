@@ -43,8 +43,9 @@ public:
 		float* heightMap;
 		float* influenceMap;
 		Texture* dataTexture;
+
 		Data() : heightMap(nullptr), influenceMap(nullptr), dataTexture(nullptr) {}
-		~Data() { delete heightMap; delete influenceMap; delete dataTexture; }
+		virtual ~Data() { delete[] heightMap; delete[] influenceMap; delete dataTexture; }
 	};
 
 public:

@@ -6,7 +6,7 @@ class FogRenderPass : public RenderPass
 {
 public:
 	FogRenderPass(int priority, ResourceManager* resources) : RenderPass(priority, RenderPass::PassType::POST_PROCESSING), resources(resources)  {}
-	~FogRenderPass()
+	virtual ~FogRenderPass()
 	{
 		delete fogMaterial;
 
