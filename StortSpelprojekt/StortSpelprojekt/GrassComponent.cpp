@@ -41,15 +41,25 @@ GrassComponent::GrassComponent(size_t chunkTriangleCount, ID3D11Device* device, 
 
 GrassComponent::~GrassComponent()
 {
-	RELEASE(grassBfr);
-	RELEASE(grassSrv);
-	RELEASE(grassIndexBfr);
-	RELEASE(grassIndexSrv);
-	RELEASE(grassBCBfr);
-	RELEASE(grassBCSRV);
+	
 }
 
-void GrassComponent::InitializeGrass(Mesh* chunkMesh, ID3D11Device* device, ID3D11DeviceContext* context)
+void GrassComponent::InitOnce(Mesh* chunkMesh, ID3D11Device* device, ID3D11Buffer** grassBfr, ID3D11ShaderResourceView** grassSrv, ID3D11Buffer** grassIndexBfr, ID3D11ShaderResourceView** grassIndexSrv, ID3D11Buffer** grassBCBfr, ID3D11ShaderResourceView** grassBCSRV)
+{
+	std::vector<Mesh::Vertex>& vertices = chunkMesh->GetVertices();
+	std::vector<unsigned int>& indices = chunkMesh->GetIndices();
+	std::vector<dx::XMFLOAT4> bcData(MAX_STRANDS);
+	std::vector<GrassStraw> pData(vertices.size());
+	std::vector<dx::XMFLOAT4> indexData(indices.size());
+
+	DXHelper::CreateStructuredBuffer(device, grassBfr, pData.data(), sizeof(GrassStraw), pData.size(), grassSrv);
+
+	DXHelper::CreateStructuredBuffer(device, grassIndexBfr, indexData.data(), sizeof(dx::XMFLOAT4), indices.size(), grassIndexSrv);
+
+	DXHelper::CreateStructuredBuffer(device, grassBCBfr, bcData.data(), sizeof(dx::XMFLOAT4), MAX_STRANDS, grassBCSRV);
+}
+
+void GrassComponent::InitializeGrass(Mesh* chunkMesh, ID3D11Device* device, ID3D11DeviceContext* context, ID3D11Buffer** grassBfr, ID3D11ShaderResourceView** grassSrv, ID3D11Buffer** grassIndexBfr, ID3D11ShaderResourceView** grassIndexSrv, ID3D11Buffer** grassBCBfr, ID3D11ShaderResourceView** grassBCSRV)
 {
 	std::vector<Mesh::Vertex>& vertices = chunkMesh->GetVertices();
 	std::vector<unsigned int>& indices = chunkMesh->GetIndices();
@@ -77,16 +87,16 @@ void GrassComponent::InitializeGrass(Mesh* chunkMesh, ID3D11Device* device, ID3D
 
 	ShaderBindFlag flag = ShaderBindFlag::VERTEX | ShaderBindFlag::HULL | ShaderBindFlag::DOMAINS;
 
-	DXHelper::CreateStructuredBuffer(device, &grassBfr, pData.data(), sizeof(GrassStraw), pData.size(), &grassSrv);
-	DXHelper::BindStructuredBuffer(context, grassBfr, pData.data(), GRASS_STRAWS_SRV_SLOT, flag, &grassSrv);
+
+	DXHelper::BindStructuredBuffer(context, *grassBfr, pData.data(), GRASS_STRAWS_SRV_SLOT, flag, grassSrv);
 
 	for (size_t i = 0; i < indices.size(); i++)
 	{
 		indexData[i].x = (float)indices[i];
 	}
 
-	DXHelper::CreateStructuredBuffer(device, &grassIndexBfr, indexData.data(), sizeof(dx::XMFLOAT4), indices.size(), &grassIndexSrv);
-	DXHelper::BindStructuredBuffer(context, grassIndexBfr, indexData.data(), GRASS_INDICES_SRV_SLOT, flag, &grassIndexSrv);
+
+	DXHelper::BindStructuredBuffer(context, *grassIndexBfr, indexData.data(), GRASS_INDICES_SRV_SLOT, flag, grassIndexSrv);
 
 	std::vector<dx::XMFLOAT4> bcData(MAX_STRANDS);
 	for (size_t i = 0; i < MAX_STRANDS; i++) //maximum strands per triangle.
@@ -111,22 +121,11 @@ void GrassComponent::InitializeGrass(Mesh* chunkMesh, ID3D11Device* device, ID3D
 		bcData[i] = barycentricCoord;
 	}
 
-	DXHelper::CreateStructuredBuffer(device, &grassBCBfr, bcData.data(), sizeof(dx::XMFLOAT4), MAX_STRANDS, &grassBCSRV);
-	DXHelper::BindStructuredBuffer(context, grassBCBfr, bcData.data(), GRASS_COORD_SRV_SLOT, ShaderBindFlag::DOMAINS, &grassBCSRV);
-	//Window sice needed here
-	float pixelScale = tanf(0.5f * (dx::XM_PI / 2.0f)) / (float)(900); //the height of the window.
 
-	cb_grass grassCBufferData;
-	grassCBufferData.pixelSize = pixelScale;
-	grassCBufferData.grassDisplacement = 2;
-	grassCBufferData.grassRadius = 0.5;
-	grassCBufferData.grassWidth = 1.5;
-
-
-	grassBuffer.Initialize(CB_GRASS_PARAMETERS_SLOT, ShaderBindFlag::DOMAINS | ShaderBindFlag::GEOMETRY, device);
-	grassBuffer.SetData(grassCBufferData);
-	grassBuffer.UpdateBuffer(context);
+	DXHelper::BindStructuredBuffer(context, *grassBCBfr, bcData.data(), GRASS_COORD_SRV_SLOT, ShaderBindFlag::DOMAINS, grassBCSRV);
 }
+
+
 
 void GrassComponent::Draw(Renderer* renderer, CameraComponent* camera)
 {

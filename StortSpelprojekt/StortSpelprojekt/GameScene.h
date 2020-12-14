@@ -17,7 +17,7 @@ class GameScene : public Scene
 public:
 	GameScene();
 	virtual ~GameScene();
-
+	
 	void Initialize() override;
 	void InitializeObjects() override;
 	void InitializeGUI() override;

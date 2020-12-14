@@ -10,12 +10,19 @@ Scene::Scene(const std::string& debugName) : input(Input::Instance()), debugName
 	renderer = nullptr;
 	camera = nullptr;
 	this->root = new Object("root");
+	resize = false;
 }
 
 Scene::~Scene()
 {
 	delete root;
 	root = nullptr;
+}
+
+void Scene::OnResize(size_t width, size_t height)
+{
+	this->camera->UpdateProjectionMatrix(width, height, this->camera->GetFOV(), this->camera->GetNearZ(), this->camera->GetFarZ());
+	resize = true;
 }
 
 void Scene::SetDepedencies(ResourceManager* resources, Renderer* renderer, Physics* physics, Window* window)
