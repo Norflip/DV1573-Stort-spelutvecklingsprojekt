@@ -7,10 +7,13 @@
 
 WorldGenerator::WorldGenerator() : constructed(false), treePoints(dx::XMFLOAT2(0, 0), dx::XMFLOAT2(0, 0))
 {
+
 }
 
 WorldGenerator::~WorldGenerator()
 {
+	Object::RemoveFromHierarchy(container);
+	delete container;
 }
 
 void WorldGenerator::Initialize(Object* root, World* world, ItemManager* items, Renderer* renderer)
@@ -136,9 +139,13 @@ void WorldGenerator::Construct(const SaveState& state, const WorldDescription& d
 
 		AddEnvironmentProps(state.segment, description, minIndex, maxIndex, chunks);
 
+
+		container = new Object("CONTAINER", ObjectFlag::ENABLED);
+		Object::AddToHierarchy(root, container);
+
 		for (auto i : chunks)
 		{
-			CreateChunk(i.second, root, description);
+			CreateChunk(i.second, container, description);
 		}
 
 		Bounds worldBounds(dx::XMFLOAT3(wmin.x, 0, wmin.y), dx::XMFLOAT3(wmax.x, 0.0f, wmax.y));
@@ -169,8 +176,6 @@ void WorldGenerator::Deconstruct()
 {
 	if (constructed)
 	{
-		std::cout << "CHUNKS: " << chunkMap.size() << std::endl;
-
 		for (auto i : chunkMap)
 		{
 			i.second->PhysicRelease();
@@ -178,7 +183,8 @@ void WorldGenerator::Deconstruct()
 			delete i.second->GetOwner();
 		}
 
-
+		Object::RemoveFromHierarchy(container);
+		delete container;
 
 		spawner->Despawn();
 		constructed = false;

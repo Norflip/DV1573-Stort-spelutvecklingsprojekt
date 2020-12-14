@@ -60,6 +60,7 @@ public:
 
 	size_t RegisterEnviromentProp (std::string key, size_t minSegment, size_t maxSegment, size_t queueCount, PropFactory factory);
 	//size_t RegisterRoadObstacle(size_t minSegment, size_t maxSegment);
+	Object* GetContainer() const { return this->container; }
 
 private:
 	void SetPathPointsToChunkType(const Path& path, std::unordered_map<int, ChunkIndexInfo>& chunkInformation);
@@ -78,6 +79,7 @@ private:
 	bool constructed, initialized;
 	ObjectSpawner* spawner;
 	ItemManager* items;
+	Object* container;
 
 	cb_Material materialData;
 	Shader* grassShader;

@@ -9,7 +9,7 @@
 class World
 {
 	typedef std::unordered_map<int, Chunk*> ChunkMap;
-	const int RELEVANT_RADIUS = 2;
+	const int RELEVANT_RADIUS = 20;
 	const int DEFAULT_RELEVANT_INDEX = -100000;
 
 public:
@@ -37,6 +37,7 @@ public:
 
 	dx::XMFLOAT3 GetPlayerPositionFromHouse(Object* house)const;
 
+	Object* GetContainer() const { return generator.GetContainer(); }
 
 private:
 	WorldDescription DescriptionFromState(const SaveState& state) const;

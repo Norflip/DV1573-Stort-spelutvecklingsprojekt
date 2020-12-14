@@ -57,7 +57,7 @@ void ObjectSpawner::Spawn(const SaveState& state, const Bounds& worldBounds, std
 		AddGrassToChunk(i.second);
 
 #if SPAWN_ITEMS
-		SpawnItem(i.second);
+		//SpawnItem(i.second);
 #endif
 	}
 }

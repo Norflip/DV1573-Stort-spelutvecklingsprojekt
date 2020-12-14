@@ -43,12 +43,8 @@ float4 main(PixelInputType input) : SV_TARGET
     float depth = depthTexture.Sample(defaultSampleType, input.uv).x;
 
     const float start = 1; // FOG START
-    float end = 120;
-    if(distanceToHouse == 0)
-    { 
-      end = 10000; // FOG END
-    }
-
+    const float end = 500;
+    
     const float near = 0.01f; // NEAR PLANE
     const float far = 500.0f; // FAR PLANE
 
@@ -111,19 +107,8 @@ float4 main(PixelInputType input) : SV_TARGET
    //Math to multiply colors
    fogColor = float4((((pow(f,4) + .6 * pow(f,3) + .5 * f * f) * color) + pow(color, 3)).xyz, 1.0f);
 
-
-   const float amount = 0.2f;  // higher = more intensity 
-   const float power = (1 / distanceToHouse) * 100;   // higher = less space on screen
-   const float4 vignetteColor = float4(.8f, .3f, 0, 3.f); 
-   float dis = length(input.uv * 2 - 1);
-   dis = dis / 1.41421;
-   dis = pow(dis, power);
-   
    float4 result = lerp(diffuseColor, fogColor, fogFactor);
-   float4 vigcolor = float4(lerp(result, vignetteColor, 1.0f - pow(1 - dis * amount, 2)).rgb, 1.0f);
 
-
-
-   return vigcolor;
+    return result;
 
 }

@@ -118,7 +118,7 @@ void GameScene::InitializeObjects()
 	Object* playerObject = new Object("player", ObjectFlag::ENABLED);
 	Object* cameraObject = new Object("camera", ObjectFlag::ENABLED);
 	this->player = playerObject;
-	camera = cameraObject->AddComponent<CameraComponent>(window->GetWidth(), window->GetHeight(), Config::GetInt("FOV", 70));
+	camera = cameraObject->AddComponent<CameraComponent>(window->GetWidth(), window->GetHeight(), 30);// Config::GetInt("FOV", 30));
 
 
 	cameraObject->GetTransform().SetPosition(playerSpawnVec);
@@ -150,7 +150,7 @@ void GameScene::InitializeObjects()
 	sunLight->GetTransform().SetPosition(dx::XMLoadFloat3(&sunTranslation));
 	LightComponent* sunComponent = sunLight->AddComponent<LightComponent>(2, dx::XMFLOAT4(0.5f, 0.5f, 0.5f, 1.0f), 7.f);
 	sunComponent->SetEnabled(true);
-	sunComponent->SetIntensity(0.2f);
+	sunComponent->SetIntensity(0.5f);
 	dx::XMFLOAT3 sunDirection;
 	dx::XMStoreFloat3(&sunDirection, dx::XMVector3Normalize(dx::XMVectorSet(0, -1, 1, 0)));
 	sunComponent->SetDirection(sunDirection);
@@ -437,6 +437,9 @@ void GameScene::InitializeInterior()
 
 }
 
+
+
+
 void GameScene::OnActivate()
 {
 	//guiManager->GetGUIObject("loading")->SetVisible(true);
@@ -605,6 +608,17 @@ void GameScene::SetSignPositions(SaveState& state)
 	}
 }
 
+
+static int s_state = 0;
+
+static float accum_delay = 0.0f;
+std::vector<std::vector<Chunk*>> chunks;
+static size_t spawnIndex = 0;
+
+static const size_t RADIUS = 20;
+static const float DELAY = 0.2f;
+static const float TREE_DELAY = 0.6f;
+
 void GameScene::Update(const float& deltaTime)
 {
 	//std::string text = "cursor is "; 
@@ -625,11 +639,128 @@ void GameScene::Update(const float& deltaTime)
 
 	Scene::Update(deltaTime);
 
-	world.UpdateRelevantChunks(player->GetTransform(), camera);
+	if (KEY_DOWN(M))
+	{
+		std::cout << "key_down" << std::endl;
 
+		if (s_state == 0)
+		{
+			SaveState& state = SaveHandler::LoadOrCreate();
+			state.seed = Random::GenerateSeed();
+			SaveHandler::Save(state);
+
+			chunks.clear();
+			s_state = 1;
+			spawnIndex = 0;
+			dx::XMFLOAT3 position;
+			dx::XMStoreFloat3(&position, player->GetTransform().GetWorldPosition());
+
+
+
+
+			dx::XMINT2 index = Chunk::WorldToIndex(position.x, position.z);
+			std::vector<Chunk*> tmp_chunk;
+
+			for (size_t i = 1; i <= RADIUS; i++)
+			{
+				world.GetChunksInRadius(index, i, tmp_chunk);
+				chunks.push_back(tmp_chunk);
+			}
+		}
+		else
+		{
+			s_state = 0;
+			Object* o = world.GetContainer();
+			size_t c = o->CountChildren();
+			for (size_t i = 0; i < c; i++)
+			{
+				o->GetChild(i)->RemoveFlag(ObjectFlag::ENABLED);
+				auto cc = o->GetChildren();
+				for (auto j : cc)
+				{
+					j->RemoveFlag(ObjectFlag::ENABLED);
+				}
+			}
+		}
+	}
+
+	std::cout << s_state << std::endl;
+
+	if (s_state == 1)
+	{
+		accum_delay += deltaTime;
+
+		// börja med träden
+		std::cout << spawnIndex << " / " << chunks.size() << std::endl;
+		if (spawnIndex >= chunks.size())
+		{
+			accum_delay = -TREE_DELAY + DELAY;
+			s_state = 2;
+			spawnIndex = 0;
+		}
+
+		while (accum_delay > DELAY)
+		{
+			std::vector<Chunk*>& cchunks = chunks[spawnIndex];
+			for (size_t i = 0; i < cchunks.size(); i++)
+			{
+				cchunks[i]->GetOwner()->AddFlag(ObjectFlag::ENABLED);
+				auto cc = cchunks[i]->GetOwner()->GetChildren();
+				for (auto j : cc)
+				{
+					j->RemoveFlag(ObjectFlag::ENABLED);
+				}
+			}
+
+			spawnIndex++;
+			accum_delay -= DELAY;
+		}
+	}
+	else if (s_state == 2)
+	{
+		accum_delay += deltaTime;
+
+		std::cout << accum_delay << std::endl;
+
+		if (spawnIndex >= chunks.size())
+		{
+			s_state = 0;
+		}
+
+		while (accum_delay > DELAY)
+		{
+			std::vector<Chunk*>& cchunks = chunks[spawnIndex];
+
+			for (auto i : cchunks)
+			{
+				auto children = i->GetOwner()->GetChildren();
+				for (auto k : children)
+				{
+					k->AddFlag(ObjectFlag::ENABLED);
+				}
+			}
+
+			spawnIndex++;
+			accum_delay -= DELAY;
+		}
+	}
+
+	if (KEY_DOWN(N))
+	{
+		dx::XMVECTOR playerPos = player->GetTransform().GetPosition();
+		dx::XMVECTOR playerRot = player->GetTransform().GetRotation();
+
+		TransitionToNextSegment();
+
+
+		player->GetTransform().SetPosition(playerPos);
+		player->GetTransform().SetRotation(playerRot);
+	}
+
+
+	//world.UpdateRelevantChunks(player->GetTransform(), camera);
 
 	guiManager->SetEnabled(!cleanView);
-
 	if (cleanView != cleanViewLastFrame)
 	{
 		if (cleanView)
@@ -646,7 +777,13 @@ void GameScene::Update(const float& deltaTime)
 
 	//world.DrawDebug();
 
-	enemyManager->SpawnRandomEnemy(deltaTime);
+
+
+
+	//enemyManager->SpawnRandomEnemy(deltaTime);
+
+
+
 
 	// Something CP with controllerComp/player wont allow this to happen inside the playerComp
 	if (player->GetComponent<ControllerComp>()->GetInRange())
