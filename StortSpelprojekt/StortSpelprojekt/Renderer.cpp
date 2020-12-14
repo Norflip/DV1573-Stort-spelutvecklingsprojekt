@@ -198,7 +198,7 @@ void Renderer::RenderFrame(CameraComponent* camera, float time, float distance, 
 		ImGui_ImplDX11_RenderDrawData(ImGui::GetDrawData());
 	}
 #endif
-	HRESULT hr = swapchain->Present(0, 0); //1 here?
+	HRESULT hr = swapchain->Present(1, 0); //1 here?
 	//swapchain->SetFullscreenState(isFullScreen, nullptr);
 	assert(SUCCEEDED(hr));
 }
