@@ -380,7 +380,7 @@ void ObjectSpawner::SpawnItem(Chunk* chunk)
 	{
 		dx::XMINT2 index = chunk->GetIndex();
 		PickupType priorityType = PickupType::Food;
-		if (index.x & 2 == 0 && index.y & 2 == 0)
+		if ((index.x % 2) == 0 && (index.y % 2) == 0)
 			priorityType = PickupType::Fuel;
 		
 		const size_t MIN_ITEMS_PER_CHUNK = 2;

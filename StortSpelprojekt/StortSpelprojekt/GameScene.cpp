@@ -119,7 +119,7 @@ void GameScene::InitializeObjects()
 	Object* playerObject = new Object("player", ObjectFlag::ENABLED);
 	Object* cameraObject = new Object("camera", ObjectFlag::ENABLED);
 	this->player = playerObject;
-	camera = cameraObject->AddComponent<CameraComponent>(window->GetWidth(), window->GetHeight(), Config::GetInt("FOV", 70));
+	camera = cameraObject->AddComponent<CameraComponent>(window->GetWidth(), window->GetHeight(), FCAST(Config::GetInt("FOV", 70)));
 
 
 	cameraObject->GetTransform().SetPosition(playerSpawnVec);
@@ -477,7 +477,7 @@ void GameScene::OnActivate()
 		if (!Engine::Instance->start)
 		{
 			fogCol += 0.5f;
-			fogId += 0.5f;
+			fogId += 1;
 
 			if (fogCol >= 1.0f)
 			{
@@ -494,7 +494,7 @@ void GameScene::OnActivate()
 		else if (Engine::Instance->start) 		// INUTI HUSET I GUESS
 		{
 			fogCol = 0.0f;
-			fogId = 0.0f;
+			fogId = 0;
 			renderer->SetIdAndColor(fogId, fogCol);
 
 			player->GetComponent<PlayerComp>()->SetStatsFromState(state);
@@ -695,7 +695,7 @@ void GameScene::Update(const float& deltaTime)
 	for (auto i : renderer->GetParticleList())
 	{
 		i->SetEyePos(eyeCam);
-		i->Update(deltaTime, GameClock::Instance().GetSeconds(), fuel);
+		i->Update(deltaTime, FCAST(GameClock::Instance().GetSeconds()), fuel);
 	}
 	//renderer->GetParticlesys(testParticles);
 	if (resize)

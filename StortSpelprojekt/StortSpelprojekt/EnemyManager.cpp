@@ -103,7 +103,7 @@ void EnemyManager::RemoveEnemy(Object* enemy)
 		nrOfChargeEnemies--;
 	}
 	enemyPool->ReturnItem(enemy);
-	for (int i = 0; i < enemyVector.size(); i++)
+	for (size_t i = 0; i < enemyVector.size(); i++)
 	{
 		if (enemyVector.at(i) == enemy)
 			enemyVector.erase(enemyVector.begin()+i);
@@ -150,7 +150,7 @@ void EnemyManager::SpawnRandomEnemy(const float& deltaTime)
 
 			//total number of enemies is increased depending on how far and length from house
 			float houseProgress = house->GetComponent<NodeWalkerComp>()->GetHouseProgress();
-			this->nrOfEnemiesTotal = ENEMY_BASE_TOTAL + (this->currentLevel * 1.5) + (double(lengthPH) * 0.02f) + (double(houseProgress) * 4.f); // lengthPH/50
+			this->nrOfEnemiesTotal = ENEMY_BASE_TOTAL + UICAST((this->currentLevel * 1.5f) + (lengthPH * 0.02f) + houseProgress * 4.f); // lengthPH/50
 			//std::cout << "Level: " << this->currentLevel <<", potential enemies: "<<nrOfEnemiesTotal<<", current nr: "<< enemyVector.size()<< std::endl;
 
 			//check if player is above -10, a length from player is above value, a length from house is above value, coord is inside cam-view

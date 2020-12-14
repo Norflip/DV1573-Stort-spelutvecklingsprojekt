@@ -143,27 +143,27 @@ void MetaProgress::SetLevelsCleared(const int& currentLevel)
 void MetaProgress::IncFuelUsed(int value)
 {
 	this->score += SCORE_FUEL_USED + value;
-	this->currencyEarned += ((SCORE_FUEL_USED + value) * SCORE_TO_CURRENCY);
+	this->currencyEarned += UICAST(((SCORE_FUEL_USED + value) * SCORE_TO_CURRENCY));
 	this->fuelUsed++;
 }
 
 void MetaProgress::IncFoodUsed(int value)
 {
 	this->score += SCORE_FOOD_USED + value;
-	this->currencyEarned += ((SCORE_FOOD_USED + value) * SCORE_TO_CURRENCY);
+	this->currencyEarned += UICAST(((SCORE_FOOD_USED + value) * SCORE_TO_CURRENCY));
 	this->foodUsed++;
 }
 
 void MetaProgress::IncHealUsed(int value)
 {
 	this->score += SCORE_HEAL_USED + value;
-	this->currencyEarned += ((SCORE_HEAL_USED + value) * SCORE_TO_CURRENCY);
+	this->currencyEarned += UICAST(((SCORE_HEAL_USED + value) * SCORE_TO_CURRENCY));
 	this->healUsed++;
 }
 
 void MetaProgress::IncPuzzleSolved(int value)
 {
 	this->score += SCORE_PUZZLE_SOLVED + value;
-	this->currencyEarned += ((SCORE_PUZZLE_SOLVED + value) * SCORE_TO_CURRENCY);
+	this->currencyEarned += UICAST(((SCORE_PUZZLE_SOLVED + value) * SCORE_TO_CURRENCY));
 	this->puzzleSolved++;
 }

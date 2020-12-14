@@ -80,7 +80,7 @@ void Scene::FixedUpdate(const float& fixedDeltaTime)
 
 			}
 		}
-		delayTimer += GameClock::Instance().GetFixedFrameTime();
+		delayTimer += FCAST(GameClock::Instance().GetFixedFrameTime());
 	}
 
 }

@@ -46,8 +46,8 @@ void Pathfinding::Update(const float& deltaTime)
 	dx::XMStoreFloat3(&enemyGridPos, GetOwner()->GetTransform().GetPosition());
 	dx::XMFLOAT3 playerGridPos;
 	dx::XMStoreFloat3(&playerGridPos, player->GetOwner()->GetTransform().GetPosition());
-	playerGridPos.x = (abs((int)playerGridPos.x) - abs((int)enemyGridPos.x)) + (cols / 2);
-	playerGridPos.z = (abs((int)playerGridPos.z) - abs((int)enemyGridPos.z)) + (rows / 2);
+	playerGridPos.x = fabs(floorf(playerGridPos.x)) - fabs(floorf(enemyGridPos.x)) + (cols / 2);
+	playerGridPos.z = fabs(floorf(playerGridPos.z)) - fabs(floorf(enemyGridPos.z)) + (rows / 2);
 
 	if (timer.GetSeconds() > 1.0f)
 	{
@@ -105,10 +105,10 @@ void Pathfinding::AStar()
 	dx::XMStoreFloat3(&enemyGridPos, GetOwner()->GetTransform().GetPosition());
 	dx::XMFLOAT3 playerGridPos;
 	dx::XMStoreFloat3(&playerGridPos, player->GetOwner()->GetTransform().GetPosition());
-	playerGridPos.x = (int)playerGridPos.x - (int)enemyGridPos.x + (cols / 2);		//player worldpos to gridPos
-	playerGridPos.z = (int)playerGridPos.z - (int)enemyGridPos.z + (rows / 2);
-	enemyGridPos.x =  cols / 2;																	//enemy worldpos to gridCenterPos
-	enemyGridPos.z = rows / 2;
+	playerGridPos.x = floorf(playerGridPos.x) - floorf(enemyGridPos.x) + (cols / 2);		//player worldpos to gridPos
+	playerGridPos.z = floorf(playerGridPos.z) - floorf(enemyGridPos.z) + (rows / 2);
+	enemyGridPos.x =  FCAST(cols / 2);																	//enemy worldpos to gridCenterPos
+	enemyGridPos.z = FCAST(rows / 2);
 
 	if ((int)playerGridPos.x >= 0 && (int)playerGridPos.z >= 0 && 
 		(int)playerGridPos.x < (cols-1) && (int)playerGridPos.z < (rows - 1))
@@ -162,7 +162,7 @@ void Pathfinding::AStar()
 				closedSet.push_back(current);
 				grid[(int)current->pos.x][(int)current->pos.y]->closedSet = true;
 
-				for (int i = 0; i < current->neighbors.size(); i++)								//Check all neighbors to current
+				for (size_t i = 0; i < current->neighbors.size(); i++)								//Check all neighbors to current
 				{
 					if ((closedSet.empty() || std::find(closedSet.begin(), closedSet.end(), current->neighbors[i]) == closedSet.end())
 						&& !current->neighbors[i]->obstacle)		//if currents neighbor isn't in closedSet, update costs
@@ -244,12 +244,12 @@ void Pathfinding::AddNeighbors2(Node* node)
 
 int Pathfinding::GetDistance(Node* nodeA, Node* nodeB)
 {
-	return abs(nodeA->pos.x - nodeB->pos.x) + abs(nodeA->pos.y - nodeB->pos.y);
+	return ICAST(fabs(nodeA->pos.x - nodeB->pos.x) + fabs(nodeA->pos.y - nodeB->pos.y));
 }
 
 void Pathfinding::AddObstacles()
 {
-	srand(time(NULL));
+	srand(UICAST(time(NULL)));
 	for (int x = 0; x < cols; x++)
 	{
 		for (int y = 0; y < rows; y++)
@@ -302,7 +302,7 @@ void Pathfinding::ResetPath()
 	{
 		for (int y = 0; y < rows; y++)
 		{
-			grid[x][y]->pos = dx::XMFLOAT2(x, y);
+			grid[x][y]->pos = dx::XMFLOAT2(FCAST(x), FCAST(y));
 			grid[x][y]->gCost = 0;
 			grid[x][y]->hCost = 0;
 			grid[x][y]->fCost = 0;

@@ -15,7 +15,13 @@ struct WorldDescription
 	std::map<std::string, int> queueModifier;
 	Noise::Settings noiseSettings;
 
-	WorldDescription() {}
+	WorldDescription() 
+	{
+	
+	
+	}
+
+
 	WorldDescription(int noiseSeed)
 	{
 		this->noiseSettings = Noise::Settings (noiseSeed);

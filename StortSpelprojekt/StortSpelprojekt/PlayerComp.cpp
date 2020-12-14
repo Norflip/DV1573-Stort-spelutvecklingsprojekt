@@ -246,7 +246,7 @@ void PlayerComp::PickUpObject()
 
 						if (!healthTutorial)
 							healthTutorial = true;
-						MetaProgress::Instance().IncHealUsed(value);
+						MetaProgress::Instance().IncHealUsed(ICAST(value));
 					}
 					else if (pickupType == PickupType::Food)
 					{
@@ -257,7 +257,7 @@ void PlayerComp::PickUpObject()
 
 						if (!foodTutorial)
 							foodTutorial = true;
-						MetaProgress::Instance().IncFoodUsed(value);
+						MetaProgress::Instance().IncFoodUsed(ICAST(value));
 					}
 					/*else if (pickupType == PickupType::Fuel)
 					{
@@ -374,7 +374,7 @@ void PlayerComp::RayCast(const float& deltaTime)
 				if (holding->HasComponent<ParticleSystemComponent>())
 					holding->GetComponent<ParticleSystemComponent>()->SetActive(false);
 
-				MetaProgress::Instance().IncFuelUsed(refill);
+				MetaProgress::Instance().IncFuelUsed(ICAST(refill));
 				holding->GetComponent<PickupComponent>()->SetActive(false);
 				holding = nullptr;
 				currentWeapon->AddFlag(ObjectFlag::ENABLED);

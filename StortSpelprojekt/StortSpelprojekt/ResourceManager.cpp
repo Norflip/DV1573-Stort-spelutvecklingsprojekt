@@ -17,7 +17,7 @@ ResourceManager::~ResourceManager()
 		delete i.second;
 	}
 
-	delete missingTexture;
+	delete[] missingTexture;
 
 	resources.clear();
 	shaderResources.clear();

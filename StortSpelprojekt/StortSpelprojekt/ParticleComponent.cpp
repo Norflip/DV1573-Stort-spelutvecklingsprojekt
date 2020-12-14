@@ -14,7 +14,7 @@ ParticleComponent::ParticleComponent(Shader* soShader, Shader* drawShader)
 	ageTimeStep = 0.0f;
 	particleAge = 0.0f;
 	particleMaxAge = 1.0f;
-	maxParticles = 200.0f;
+	maxParticles = 200;
 
 	particleColor = dx::XMFLOAT4(1, 1, 1, 1);
 	eyePos = dx::XMFLOAT3(0.0f, 0.0f, 0.0f);

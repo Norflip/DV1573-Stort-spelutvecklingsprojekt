@@ -8,7 +8,7 @@
 constexpr float ENEMY_SPAWN_RATE_MAX = 9.f; //how fast enemies spawn
 constexpr float ENEMY_SPAWN_RATE_MIN = 2.f; 
 constexpr float ENEMY_SPAWN_RADIUS = 10.f; //distance from player
-constexpr int ENEMY_BASE_TOTAL = 12; //base value of max nr of enemies
+constexpr size_t ENEMY_BASE_TOTAL = 12; //base value of max nr of enemies
 
 //multiplier per level/segment
 constexpr float ENEMY_HEALTH_MULTIPLIER = 0.2f;  
@@ -48,7 +48,7 @@ class EnemyManager
 		int currentLevel;
 
 		//size_t nrOfEnemies; //total
-		int nrOfEnemiesTotal;
+		size_t nrOfEnemiesTotal;
 		float enemySpawnRate;
 		size_t nrOfBaseEnemies;
 		size_t nrOfChargeEnemies;

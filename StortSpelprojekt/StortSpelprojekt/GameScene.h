@@ -56,7 +56,7 @@ private:
 	NodeWalkerComp* nodeWalker;
 	ItemManager* items;
 	float fogCol;
-	float fogId;
+	int fogId;
 
 	bool onceTest = true;
 	bool end;
