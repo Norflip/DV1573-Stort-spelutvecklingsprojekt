@@ -543,7 +543,7 @@ void GameScene::OnActivate()
 	house->GetComponent<NodeWalkerComp>()->Reset();
 
 	AudioMaster::Instance().PlaySoundEvent("wind");
-	AudioMaster::Instance().PlaySoundEvent("ambient");
+	//AudioMaster::Instance().PlaySoundEvent("ambient");
 
 }
 

@@ -114,6 +114,10 @@ public:
 	void DisableAlphaBlending();	
 	ID3D11DepthStencilState* GetDepthEnable() { return this->dss_On; }
 	ID3D11DepthStencilState* GetDepthDisable() { return this->dss_Off; }
+	ID3D11RasterizerState* GetCullBack() { return this->rasterizerStateCullBack; }
+	ID3D11RasterizerState* GetCullNone() { return this->rasterizerStateCullNone; }
+	ID3D11RasterizerState* GetCullCCWO() { return this->rasterizerStateCCWO; }
+
 
 	ALIGN16_ALLOC;
 

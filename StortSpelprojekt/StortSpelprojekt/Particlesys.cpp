@@ -31,13 +31,16 @@ Particlesys::~Particlesys()
 	if (streamoutVB) { streamoutVB->Release(); }
 	if (particleSRV) { particleSRV->Release(); }
 	if (randomNumberSRV) { randomNumberSRV->Release(); }
+	if (sampler) { sampler->Release(); }
+	if (cbufferPerFrame) { cbufferPerFrame->Release(); }
+	if (drawShader) { delete drawShader; }
+	if (streamoutShader) { delete streamoutShader; }
 }
 
 void Particlesys::InitializeParticles(ID3D11Device* device, Renderer* renderer, Object* objectRef)
 {
 	this->renderer = renderer;
 	this->objectRef = objectRef;
-	//mMaxParticles = maxParticles;
 	
 	ID3D11Texture1D* random;
 	DirectX::XMFLOAT4* randomValues = new DirectX::XMFLOAT4[1024];
@@ -165,6 +168,12 @@ void Particlesys::Update(float deltaTime, float gameTime, float fuel)
 	colorChange.z *= m;
 	colorChange.w *= m;
 	particleColorModify = colorChange;
+
+	/*dx::XMFLOAT2 size;
+	size = particleSize;
+	size.x *= m;
+	size.y *= m;
+	particleSizeModify = size;*/
 }
 
 void Particlesys::Draw(ID3D11DeviceContext* context, CameraComponent* cam)
@@ -172,10 +181,14 @@ void Particlesys::Draw(ID3D11DeviceContext* context, CameraComponent* cam)
 	dx::XMFLOAT3 eyeCam;
 	dx::XMStoreFloat3(&eyeCam, cam->GetOwner()->GetTransform().GetPosition());
 	SetEyePos(eyeCam);
-	
-	DrawStreamOut(context, cam);
+
+
+	//context->RSSetState(rasterizerStateCullNone);
+	renderer->GetContext()->RSSetState(renderer->GetCullNone());
 	renderer->GetContext()->OMSetDepthStencilState(renderer->GetDepthEnable(), 0);
 	renderer->EnableAlphaBlending();
+	DrawStreamOut(context, cam);
+	
 	DrawParticles(context, cam);
 	renderer->DisableAlphaBlending();
 	renderer->GetContext()->OMSetDepthStencilState(renderer->GetDepthDisable(), 0);
@@ -206,15 +219,15 @@ void Particlesys::DrawStreamOut(ID3D11DeviceContext* context, CameraComponent* c
 	cbPerFrame.usingTexture = usingTexture;
 	cbPerFrame.particleSpreadMulti = particleSpreadModify;
 	cbPerFrame.particlesPerSecond = particlesPerSecond;
+	cbPerFrame.particleSize = particleSize;
 
 	context->UpdateSubresource(cbufferPerFrame, 0, nullptr, &cbPerFrame, 0, 0);
 	context->GSSetConstantBuffers(0, 1, &cbufferPerFrame);
 
 	context->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_POINTLIST);
-
 	context->GSSetShaderResources(0, 1, &randomNumberSRV);
 	context->GSSetSamplers(0, 1, &sampler);
-
+	context->PSSetShader(NULL, 0, 0);
 	streamoutShader->BindToContext(context);
 	
 
@@ -249,7 +262,6 @@ void Particlesys::DrawStreamOut(ID3D11DeviceContext* context, CameraComponent* c
 
 	ID3D11SamplerState* nullSampler[1] = { nullptr };
 	context->GSSetSamplers(0, 1, nullSampler);
-
 	
 	context->GSSetConstantBuffers(0, 1, bufferArray);
 	context->VSSetShader(nullptr, 0, 0);

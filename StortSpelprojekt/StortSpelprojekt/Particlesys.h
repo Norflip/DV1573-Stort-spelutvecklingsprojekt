@@ -37,6 +37,8 @@ private:
 		dx::XMFLOAT3 particleSpreadMulti;
 
 		int particlesPerSecond;
+		dx::XMFLOAT2 particleSize;
+		float padding4;
 	};
 
 public:
@@ -119,6 +121,7 @@ private:
 	dx::XMFLOAT3 emitPos;
 	dx::XMFLOAT3 emitDir;
 	dx::XMFLOAT2 particleSize;
+	dx::XMFLOAT2 particleSizeModify;
 	dx::XMFLOAT3 particleSpreadMulti;
 	dx::XMFLOAT3 particleSpreadModify;
 
