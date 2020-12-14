@@ -25,7 +25,10 @@ public:
 	GrassComponent(size_t chunkTriangleCount, ID3D11Device* device, Shader* shader, Bounds bounds);
 	virtual ~GrassComponent();
 
-	void InitializeGrass(Mesh* chunkMesh, ID3D11Device* device, ID3D11DeviceContext* context);
+	void InitOnce(Mesh* chunkMesh, ID3D11Device* device, ID3D11Buffer** grassBfr, ID3D11ShaderResourceView** grassSrv, ID3D11Buffer** grassIndexBfr, ID3D11ShaderResourceView** grassIndexSrv
+		, ID3D11Buffer** grassBCBfr, ID3D11ShaderResourceView** grassBCSRV);
+	void InitializeGrass(Mesh* chunkMesh, ID3D11Device* device, ID3D11DeviceContext* context, ID3D11Buffer** grassBfr, ID3D11ShaderResourceView** grassSrv, ID3D11Buffer** grassIndexBfr
+		, ID3D11ShaderResourceView** grassIndexSrv, ID3D11Buffer** grassBCBfr, ID3D11ShaderResourceView** grassBCSRV);
 	void Draw(Renderer* renderer, CameraComponent* camera) override;
 
 	Material* GetMaterial() const { return this->grassMat; }
@@ -37,18 +40,6 @@ private:
 	Texture noise;
 	Material* grassMat;
 	Mesh* grassMesh;
-
-	ID3D11Buffer* grassBfr = nullptr;
-	ID3D11ShaderResourceView* grassSrv = nullptr;
-
-	ID3D11Buffer* grassIndexBfr = nullptr;
-	ID3D11ShaderResourceView* grassIndexSrv = nullptr;
-
-	ID3D11Buffer* grassBCBfr = nullptr;
-
-	ID3D11ShaderResourceView* grassBCSRV = nullptr;
-
-	ConstantBuffer<cb_grass> grassBuffer;
 
 	Bounds bounds;
 	//ChunkType chunkType;

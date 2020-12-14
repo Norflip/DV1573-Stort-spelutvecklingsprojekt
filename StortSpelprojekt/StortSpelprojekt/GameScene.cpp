@@ -31,6 +31,8 @@ GameScene::~GameScene()
 {
 }
 
+
+
 void GameScene::Initialize()
 {
 	items = new ItemManager();
@@ -694,6 +696,12 @@ void GameScene::Update(const float& deltaTime)
 	{
 		i->SetEyePos(eyeCam);
 		i->Update(deltaTime, GameClock::Instance().GetSeconds(), fuel);
+	}
+	//renderer->GetParticlesys(testParticles);
+	if (resize)
+	{
+		world.UpdateGrass(renderer->GetContext());
+		resize = false;
 	}
 }
 
