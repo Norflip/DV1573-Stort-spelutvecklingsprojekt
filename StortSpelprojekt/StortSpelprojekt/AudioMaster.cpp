@@ -129,15 +129,7 @@ void AudioMaster::PlaySoundEvent(std::string soundName)
 		if (FAILED(playSound))
 			OutputDebugStringW(L"Critical error: Unable to submit source buffer!");
 
-		soundEvent.sourceVoice->Start();
-
-		/*for (auto& i : soundTracks)
-		{
-			if (i.first == soundName)
-			{
-				i.second.playing = true;
-			}
-		}*/
+		soundEvent.sourceVoice->Start();		
 	}
 }
 
@@ -211,4 +203,3 @@ void AudioMaster::PlayerOutside(bool state)
 	else
 		environmentSubmix->SetVolume(0.2f * soundEffectsVolume);
 }
-
