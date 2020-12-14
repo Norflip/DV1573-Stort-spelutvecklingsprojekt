@@ -148,6 +148,11 @@ dx::XMFLOAT3 World::GetPlayerPositionFromHouse(Object* house) const
 	return worldPos;
 }
 
+void World::UpdateGrass(ID3D11DeviceContext* context)
+{
+	generator.GetSpawner()->UpdateGrass(context);
+}
+
 WorldDescription World::DescriptionFromState(const SaveState& state) const
 {
 	WorldDescription description(state.GetSegmentedSeed());

@@ -19,6 +19,12 @@ GUICompass::GUICompass(Renderer& renderer, Window* window, Object* houseObj, Obj
 	this->distance = 0;
 	cam = playerObj->GetComponent<PlayerComp>()->GetCamera();
 }
+GUICompass::~GUICompass()
+{
+	delete backgroundBar;
+	delete house;
+}
+
 void GUICompass::Update()
 {
 	//Update Compass variables         

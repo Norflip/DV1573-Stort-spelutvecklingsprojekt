@@ -29,7 +29,11 @@ GameScene::GameScene() : Scene("GameScene")
 
 GameScene::~GameScene()
 {
+	delete items;
+	delete enemyManager;
 }
+
+
 
 void GameScene::Initialize()
 {
@@ -694,6 +698,12 @@ void GameScene::Update(const float& deltaTime)
 	{
 		i->SetEyePos(eyeCam);
 		i->Update(deltaTime, GameClock::Instance().GetSeconds(), fuel);
+	}
+	//renderer->GetParticlesys(testParticles);
+	if (resize)
+	{
+		world.UpdateGrass(renderer->GetContext());
+		resize = false;
 	}
 }
 
