@@ -33,8 +33,8 @@ Particlesys::~Particlesys()
 	if (randomNumberSRV) { randomNumberSRV->Release(); }
 	if (sampler) { sampler->Release(); }
 	if (cbufferPerFrame) { cbufferPerFrame->Release(); }
-	if (drawShader) { delete drawShader; }
-	if (streamoutShader) { delete streamoutShader; }
+	//if (drawShader) { delete drawShader; }
+	//if (streamoutShader) { delete streamoutShader; }
 }
 
 void Particlesys::InitializeParticles(ID3D11Device* device, Renderer* renderer, Object* objectRef)
