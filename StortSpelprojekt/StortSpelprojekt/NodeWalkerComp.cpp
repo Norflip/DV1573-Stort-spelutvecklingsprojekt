@@ -121,7 +121,7 @@ void NodeWalkerComp::Update(const float& deltaTime)
 	dx::XMVECTOR posVec = GetOwner()->GetTransform().GetPosition();
 	dx::XMFLOAT3 pos;
 	dx::XMStoreFloat3(&pos, posVec);
-	if (pos.y < 0.0f || pos.y > 30)//|| y < 0.0f || y > 30)
+	if (pos.y < 0.0f || pos.y > 3)//|| y < 0.0f || y > 30)
 	{
 		std::cout << "pos.y: " << pos.y << std::endl
 			<<"fixing house pos...."<<std::endl; //", y: " << y << std::endl;
