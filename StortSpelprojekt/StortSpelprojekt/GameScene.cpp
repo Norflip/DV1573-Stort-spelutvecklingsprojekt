@@ -641,7 +641,7 @@ void GameScene::Update(const float& deltaTime)
 
 	if (KEY_DOWN(M))
 	{
-		std::cout << "key_down" << std::endl;
+		std::cout << "m key_down" << std::endl;
 
 		if (s_state == 0)
 		{
