@@ -38,6 +38,7 @@ public:
 	dx::XMFLOAT3 GetPlayerPositionFromHouse(Object* house)const;
 
 	Object* GetContainer() const { return generator.GetContainer(); }
+	void UpdateGrass(ID3D11DeviceContext* context);
 
 private:
 	WorldDescription DescriptionFromState(const SaveState& state) const;

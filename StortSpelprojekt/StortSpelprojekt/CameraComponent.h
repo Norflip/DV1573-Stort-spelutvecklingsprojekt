@@ -18,7 +18,9 @@ class CameraComponent : public Component, public VirtualCamera
 public:
 	CameraComponent(size_t width, size_t height, float fieldOfView);
 	virtual ~CameraComponent();
-
+	const float GetFOV() { return fov; }
+	const float GetNearZ() { return CAMERA_NEAR_Z; }
+	const float GetFarZ() { return CAMERA_FAR_Z; }
 	void SetFOV(float fov);
 	dx::XMMATRIX GetViewMatrix() const;
 
@@ -30,5 +32,6 @@ public:
 	dx::XMINT2 GetWinSize()const;
 private:
 	std::vector<dx::XMFLOAT4> planes;
+	float fov;
 };
 
