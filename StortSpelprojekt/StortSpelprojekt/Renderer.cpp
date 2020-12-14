@@ -37,6 +37,10 @@ Renderer::~Renderer()
 	dss->Release();
 	rasterizerStateCCWO->Release();
 
+	for (int i = 0; i < particleList.size(); i++)
+	{
+		delete particleList[i];
+	}
 
 	delete[] tmpBatchInstanceData;
 	RELEASE(o_LightGrid_tex);

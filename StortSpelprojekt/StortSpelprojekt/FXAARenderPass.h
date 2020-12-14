@@ -6,7 +6,11 @@ class FXAARenderPass : public RenderPass
 {
 public:
 	FXAARenderPass(int priority, ResourceManager* resources) : RenderPass(priority, RenderPass::PassType::POST_PROCESSING), resources(resources) {}
-	virtual ~FXAARenderPass() {}
+
+	~FXAARenderPass()
+	{
+		delete material;
+	}
 
 	void m_Initialize(ID3D11Device* device) override
 	{

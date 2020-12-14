@@ -25,6 +25,8 @@ EnemyManager::EnemyManager()
 
 EnemyManager::~EnemyManager()
 {
+	if (enemyPool)
+		delete enemyPool;
 }
 
 void EnemyManager::Initialize(Object* playerObj, Object* houseObj, PlayerComp* playerComp,CameraComponent* camComp, Object* rootObj)

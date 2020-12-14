@@ -29,6 +29,8 @@ GameScene::GameScene() : Scene("GameScene")
 
 GameScene::~GameScene()
 {
+	delete items;
+	delete enemyManager;
 }
 
 void GameScene::Initialize()

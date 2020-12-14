@@ -12,6 +12,7 @@ class GUICompass : public GUIObject
 {
 public:
     GUICompass(Renderer& renderer, Window* window, Object* houseObj, Object* playerObj);
+    ~GUICompass();
     void Update() override;
     virtual void Draw(DirectX::SpriteBatch*) override;
     float GetDistance()const { return distance; }

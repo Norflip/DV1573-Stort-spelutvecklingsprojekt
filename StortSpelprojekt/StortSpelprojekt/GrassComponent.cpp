@@ -47,6 +47,9 @@ GrassComponent::~GrassComponent()
 	RELEASE(grassIndexSrv);
 	RELEASE(grassBCBfr);
 	RELEASE(grassBCSRV);
+
+	delete grassMesh;
+	delete grassMat;
 }
 
 void GrassComponent::InitializeGrass(Mesh* chunkMesh, ID3D11Device* device, ID3D11DeviceContext* context)

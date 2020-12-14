@@ -55,6 +55,7 @@ class GUIManager : public RenderPass
 {
 public:
 	GUIManager(Renderer* renderer, int priority);
+	~GUIManager();
 	void AddGUIObject(GUIObject* addObj, std::string name);
 	void AddGUIObject(GUIObject* addObj, std::string name, float x, float y);
 	void AddGUIObject(std::string texture, std::string name, float x, float y);
