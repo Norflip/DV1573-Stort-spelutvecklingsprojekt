@@ -165,6 +165,8 @@ void ResourceManager::ReadObjects(ID3D11Device* device)
 				}
 
 				skeletonMesh->BlendAnimations();
+				AddResource(name + "tempMesh", meshes[0]);
+				AddResource(name + "tempMat", materials[0]);
 				AddResource(name+"Skeleton", skeletonMesh);
 			}
 			// Ugly presumption that we load a Tree at some point
