@@ -122,6 +122,12 @@ void Material::SetTexture(Texture* texture, size_t slot, ShaderBindFlag flag)
 
 }
 
+Texture* Material::GetTexture()
+{
+	//FORTSÄTT HÄR!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+	return nullptr;
+}
+
 void Material::SetSampler(ID3D11SamplerState* state, size_t slot, ShaderBindFlag flag)
 {
 	int flagKey = static_cast<int>(flag);

@@ -28,6 +28,7 @@ public:
 	void BindToContext(ID3D11DeviceContext*) const;
 	
 	void SetTexture(Texture* texture, size_t slot, ShaderBindFlag flag);
+	Texture* GetTexture();
 	void SetSampler (ID3D11SamplerState* state, size_t slot, ShaderBindFlag flag);
 
 	void SetMaterialData(const cb_Material& materialData);

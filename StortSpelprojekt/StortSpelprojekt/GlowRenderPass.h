@@ -22,11 +22,13 @@ public:
 		ID3D11DepthStencilState* dss;
 
 		glowTarget = DXHelper::CreateRenderTexture(TMP_WIDTH, TMP_HEIGHT, device, &dss);
+		shader = new Shader;
 		shader->SetVertexShader("Shaders/Default_vs.hlsl");
 		shader->SetPixelShader("Shaders/Emissive_ps.hlsl");
 		shader->Compile(device);
+		shaderInstanced = new Shader;
 		shaderInstanced->SetVertexShader("Shaders/Instance_vs.hlsl");
-		//shaderInstanced->SetInputLayoutStructure(9, shaderInstanced->INSTANCE_INPUT_LAYOUTd);
+		shaderInstanced->SetInputLayoutStructure(9, shaderInstanced->INSTANCE_INPUT_LAYOUTd);
 		shaderInstanced->SetPixelShader("Shaders/Emissive_ps.hlsl");
 		shaderInstanced->Compile(device);
 
@@ -107,6 +109,10 @@ public:
 				{
 					std::cout << "got nowhere" << std::endl;
 				}*/
+
+
+				
+
 				switch (item.type)
 				{
 					case Renderer::RenderItem::Type::Instanced:
@@ -120,7 +126,7 @@ public:
 						renderer->DrawRenderItem(item, camera);
 						break;
 				}
-
+				
 				renderer->GetContext()->PSSetShaderResources(0, 1, &target.srv);
 				// Denna drar ner prestandan.. men det visar att saker faktiskt finns i queuen.
 				//std::cout << "GLOWING? : " << item.mesh->GetMeshName()<< " " << i.second.size() << std::endl;
