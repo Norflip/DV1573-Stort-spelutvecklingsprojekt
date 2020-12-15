@@ -54,17 +54,6 @@ public:
 	void SetOffsetsDirect(std::vector<dx::SimpleMath::Matrix>& directOffsets);
 	void SetKeyFramesDirect(std::vector<std::vector<Bone>>& directKeys);
 
-	//BLEND GREJJS VIKTOR
-	void SetQuaternionsDirect(dx::SimpleMath::Quaternion directQuat);
-	void SetTransVector(dx::SimpleMath::Vector3 transVec);
-
-	void MergeKeys(std::vector<std::vector<Bone>> keys, float factor, float size);
-	void MergeOffsets(std::vector<dx::SimpleMath::Matrix> offset, float factor, float i);
-	void SetBlendAnimLength(float animLength, float factor);
-	void SetBlendFPS(float fps, float factor);
-
-	unsigned int GetftIndex() { return this->ftIndex; }
-
 	std::vector<dx::XMFLOAT4X4> GetBones() { return this->bones; }
 	dx::SimpleMath::Matrix& Lerp(float elapsedTime, std::vector<Bone>& keys);
 
