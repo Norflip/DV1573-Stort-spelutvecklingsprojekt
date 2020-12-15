@@ -56,5 +56,7 @@ private:
     EnemyStatsComp* statsComponent;
     EnemyPatrolComp* enemyPatrolComp;
     Object* player;
+
+    float fac = 0.0f;
     
 };

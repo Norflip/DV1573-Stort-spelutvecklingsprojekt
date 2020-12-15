@@ -76,7 +76,15 @@ void EnemySMComp::Animate()
 	{
 		if (currentState == EnemyState::ATTACK)
 		{
-			skeletonComponent->SetBlendingTracksAndFactor(SkeletonStateMachine::RUN, SkeletonStateMachine::ATTACK, 0.5f, true);
+		
+			//TEST FAKTOR
+			fac += 0.01f;
+			if (fac > 1.0f)
+			{
+				fac = 0.0f;
+			}
+
+			skeletonComponent->SetBlendingTracksAndFactor(SkeletonStateMachine::RUN, SkeletonStateMachine::ATTACK, fac, true);
 			skeletonComponent->SetTrack(SkeletonStateMachine::BLENDED, false);
 
 			if (attackComponent->GetIsAttacking())

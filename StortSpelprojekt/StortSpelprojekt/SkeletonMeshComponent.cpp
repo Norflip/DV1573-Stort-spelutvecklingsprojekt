@@ -587,7 +587,6 @@ void SkeletonMeshComponent::PlayOnce(const float& deltaTime)
 
 void SkeletonMeshComponent::PlayBlendAnimations(const float& deltaTime)
 {
-	//BLENDA MAKE GLOBALS ISTÄLLET REEEEEEEEEEE-
 	std::vector<dx::XMFLOAT4X4> anim1 = skeletonAnimations[trackMap[this->track1]].Makeglobal(deltaTime, dx::XMMatrixIdentity(), *skeletonAnimations[trackMap[this->track1]].GetRootKeyJoints());
 	std::vector<dx::XMFLOAT4X4> anim2 = skeletonAnimations[trackMap[this->track2]].Makeglobal(deltaTime, dx::XMMatrixIdentity(), *skeletonAnimations[trackMap[this->track2]].GetRootKeyJoints());
 
@@ -601,7 +600,7 @@ void SkeletonMeshComponent::PlayBlendAnimations(const float& deltaTime)
 	{
 		blendMat1.push_back(dx::XMLoadFloat4x4(&anim1[i]));
 		blendMat2.push_back(dx::XMLoadFloat4x4(&anim2[i]));
-		blendCalcMat.push_back(blendMat1[i] * (1 - factor) + blendMat2[i] * factor);
+		blendCalcMat.push_back(blendMat1[i] * (1 - this->factor) + blendMat2[i] * this->factor);
 
 		dx::XMStoreFloat4x4(&storeFloat, blendCalcMat[i]);
 
