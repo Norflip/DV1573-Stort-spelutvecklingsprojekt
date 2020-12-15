@@ -6,6 +6,7 @@ CameraComponent::CameraComponent(size_t width, size_t height, float fieldOfView)
 {
 	planes.resize(0);
 	//planes.clear();
+	fov = fieldOfView;
 }
 
 CameraComponent::~CameraComponent()
@@ -14,6 +15,7 @@ CameraComponent::~CameraComponent()
 
 void CameraComponent::SetFOV(float fov)
 {
+	this->fov = fov;
 	UpdateProjectionMatrix(width, height, fov, CAMERA_NEAR_Z, CAMERA_FAR_Z);
 }
 

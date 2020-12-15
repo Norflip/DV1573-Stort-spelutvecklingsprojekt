@@ -61,19 +61,26 @@ public:
 	void RegisterInstancedItem(std::string key, float yOffsetFactor, size_t queueCount, dx::XMUINT3 rotationAxis);
 	void RegisterInstancedItem(Mesh* mesh, Material* material, float yOffset, size_t queueCount, dx::XMUINT3 rotationAxis);
 	void DrawDebug();
-
+	void UpdateGrass(ID3D11DeviceContext* context);
 private:
 	void SpawnStatic(Chunk* chunk);
 	void SpawnItem(Chunk* chunk);
 
 	bool ValidSpawnPoint(const dx::XMFLOAT2& point, Chunk* chunk, float minInfluence) const;
 	void AddTreesToChunk(const TreeModel& treeModel, Chunk* chunk, size_t segment) const;
-	void AddGrassToChunk(Chunk* chunk) const;
+	void AddGrassToChunk(Chunk* chunk);
 
 private:
 	std::vector<dx::XMFLOAT2> CreateSpawnPositions(QuadTree* tree, float spawnRadius, float itemRadius, std::unordered_map<int, Chunk*>& chunkMap) const;
 	template <typename T>
 	void ShuffleVector(std::vector<T>& v) const;
+	bool doOnce;
+	ID3D11Buffer* grassBfr = nullptr;
+	ID3D11ShaderResourceView* grassSrv = nullptr;
+	ID3D11Buffer* grassIndexBfr = nullptr;
+	ID3D11ShaderResourceView* grassIndexSrv = nullptr;
+	ID3D11Buffer* grassBCBfr = nullptr;
+	ID3D11ShaderResourceView* grassBCSRV = nullptr;
 
 private:
 	std::vector<Object*> props;

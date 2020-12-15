@@ -11,6 +11,11 @@ DShape::~DShape()
 	inputLayout->Release();
 
 	lineVBuffer->Release();
+
+	if (boxMesh)
+		delete boxMesh;
+	if (sphereMesh)
+		delete sphereMesh;
 }
 
 void DShape::DrawLine(dx::XMFLOAT3 a, dx::XMFLOAT3 b, dx::XMFLOAT3 color)

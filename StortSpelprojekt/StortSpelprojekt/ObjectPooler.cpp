@@ -4,6 +4,7 @@
 ObjectPooler::ObjectPooler(ResourceManager* resources) : resourceManager(resources) {}
 ObjectPooler::~ObjectPooler()
 {
+
 	Clear();
 }
 
