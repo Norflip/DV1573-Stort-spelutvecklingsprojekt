@@ -76,7 +76,7 @@ void EnemyManager::InitChargerEnemy()
 
 		SkeletonMeshComponent* skeleton = object->AddComponent<SkeletonMeshComponent>(resources->GetResource<SkeletonMeshComponent>("ChargerSkeleton"));
 		skeleton->SetEnemyType(EnemyType::CHARGER);
-		object->AddComponent<EnemyStatsComp>(100.f, 2.0f, 25.f, 5.f, 10.f, 2.f, 3.f);
+		object->AddComponent<EnemyStatsComp>(100.f, 2.0f, 25.f, 1.f/*5*/, 10.f, 2.f, 3.f);
 		dx::XMFLOAT3 zero = { 0.f, 0.f, 0.f };
 		object->AddComponent<CapsuleColliderComponent>(0.8f, 0.8f, zero);
 		object->AddComponent<RigidBodyComponent>(100.f, FilterGroups::ENEMIES, (FilterGroups::EVERYTHING & ~FilterGroups::PICKUPS) & ~FilterGroups::HOLDABLE, BodyType::KINEMATIC, true);

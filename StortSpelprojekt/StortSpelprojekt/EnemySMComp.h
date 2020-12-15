@@ -57,6 +57,8 @@ private:
     EnemyPatrolComp* enemyPatrolComp;
     Object* player;
 
-    float fac = 0.0f;
-    
+    float finalFactor = 0.f;
+    float factorValue = 0.f;
+    float factorRange = 0.f;
+
 };

@@ -76,27 +76,46 @@ void EnemySMComp::Animate()
 	{
 		if (currentState == EnemyState::ATTACK)
 		{
-		
-			//TEST FAKTOR
-			fac += 0.01f;
-			if (fac > 1.0f)
-			{
-				fac = 0.0f;
-			}
 
-			skeletonComponent->SetBlendingTracksAndFactor(SkeletonStateMachine::RUN, SkeletonStateMachine::ATTACK, fac, true);
+			//FIXA FAKTOOOOOOOOOORN
+
+			factorValue = (15.f - 0.f);
+			factorRange = (1.f - 0.f);
+			finalFactor = (((length - 0.f) * factorRange) / factorValue) + 0.f;
+			std::cout << "Factor Loop 1: " << finalFactor << std::endl;
+
+			skeletonComponent->SetBlendingTracksAndFactor(SkeletonStateMachine::ATTACK, SkeletonStateMachine::RUN, finalFactor, true);
 			skeletonComponent->SetTrack(SkeletonStateMachine::BLENDED, false);
-
-			if (attackComponent->GetIsAttacking())
+			if (finalFactor <= 0.f)
 			{
-				skeletonComponent->SetTrack(SkeletonStateMachine::ATTACK, false);
+				factorValue = (5.f - 0.f);
+				factorRange = (1.f - 0.f);
+				finalFactor = (((length - 0.f) * factorRange) / factorValue) + 0.f;
+
+				std::cout << "Factor Loop 2: " << finalFactor << std::endl;
+
+	
 			}
+		
+		/*	else
+			{
+				skeletonComponent->SetTrack(SkeletonStateMachine::RUN, false);
+			}*/
+
+
 		}
 		else if (currentState == EnemyState::PATROL)
 		{
+
 			if (skeletonComponent->GetEnemyType() == EnemyType::BASE)
 			{
-				skeletonComponent->SetTrack(SkeletonStateMachine::WALK, false);
+				factorValue = (20.f - 15.f);
+				factorRange = (1.f - 0.f);
+				finalFactor = (((length - 15.f) * factorRange) / factorValue) + 0.f;
+
+
+				skeletonComponent->SetBlendingTracksAndFactor(SkeletonStateMachine::RUN, SkeletonStateMachine::WALK, finalFactor, true);
+				skeletonComponent->SetTrack(SkeletonStateMachine::BLENDED, false);
 			}
 			else
 			{
@@ -107,7 +126,21 @@ void EnemySMComp::Animate()
 
 		else
 		{
-			skeletonComponent->SetTrack(SkeletonStateMachine::IDLE, false);
+
+			if (skeletonComponent->GetEnemyType() == EnemyType::BASE)
+			{
+				factorValue = (25.f - 20.f);
+				factorRange = (1.f - 0.f);
+				finalFactor = (((length - 20.f) * factorRange) / factorValue) + 0.f;
+				
+				skeletonComponent->SetBlendingTracksAndFactor(SkeletonStateMachine::WALK, SkeletonStateMachine::IDLE, finalFactor, true);
+				skeletonComponent->SetTrack(SkeletonStateMachine::BLENDED, false);
+			}
+			
+			else
+			{
+				skeletonComponent->SetTrack(SkeletonStateMachine::IDLE, false);
+			}
 		}
 	}
 	
