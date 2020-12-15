@@ -22,11 +22,12 @@ public:
 		ID3D11DepthStencilState* dss;
 
 		glowTarget = DXHelper::CreateRenderTexture(TMP_WIDTH, TMP_HEIGHT, device, &dss);
-		shader = new Shader;
+
+		shader = new Shader();
 		shader->SetVertexShader("Shaders/Default_vs.hlsl");
 		shader->SetPixelShader("Shaders/Emissive_ps.hlsl");
 		shader->Compile(device);
-		shaderInstanced = new Shader;
+		shaderInstanced = new Shader();
 		shaderInstanced->SetVertexShader("Shaders/Instance_vs.hlsl");
 		shaderInstanced->SetInputLayoutStructure(9, shaderInstanced->INSTANCE_INPUT_LAYOUTd);
 		shaderInstanced->SetPixelShader("Shaders/Emissive_ps.hlsl");
@@ -142,7 +143,7 @@ public:
 
 		// vi sparar glow texturer till renderer så vi sedan kan hämta den i nästa pass
 		renderer->StoreShaderResourceView("glow", target.srv);
-		renderer->GetContext()->PSSetShaderResources(0, 1, nullptr);
+		//renderer->GetContext()->PSSetShaderResources(0, 1, nullptr);
 
 		// vi sätter tillbaka till det vanliga render target för att renderar resten av scenen
 		renderer->SetRenderTarget(current, true);
