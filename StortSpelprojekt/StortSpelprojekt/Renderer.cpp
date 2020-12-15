@@ -286,7 +286,7 @@ void Renderer::RenderFrame(CameraComponent* camera, float time, float distance, 
 
 	// ----------
 
-
+	
 
 	//LightManager::Instance().UpdateBuffers(context,camera);
 
@@ -304,7 +304,7 @@ void Renderer::RenderFrame(CameraComponent* camera, float time, float distance, 
 
 	ClearRenderTarget(midbuffer);
 	SetRenderTarget(midbuffer);
-
+	
 	for (auto i = passes.begin(); i < passes.end(); i++)
 	{
 		RenderPass* pass = *i;
@@ -313,7 +313,7 @@ void Renderer::RenderFrame(CameraComponent* camera, float time, float distance, 
 			pass->Pass(this, camera, renderPassSwapBuffers[0], renderPassSwapBuffers[0]);
 		}
 	}
-
+	
 	context->OMSetDepthStencilState(dss, 0);
 	DXHelper::BindStructuredBuffer(context, 10, ShaderBindFlag::PIXEL, &o_LightIndexList_srv);
 	context->PSSetShaderResources(11, 1, &o_LightGrid_texSRV);
@@ -341,15 +341,15 @@ void Renderer::RenderFrame(CameraComponent* camera, float time, float distance, 
 
 
 
-	//context->OMSetDepthStencilState(dss_Off, 0);
+	context->OMSetDepthStencilState(dss_Off, 0);
 	//EnableAlphaBlending();
 	for (auto i : particleList)
 		i->Draw(context, camera);
 	//DisableAlphaBlending();
 	context->OMSetBlendState(blendStateOff, BLENDSTATEMASK, 0xffffffff);
 	context->OMSetDepthStencilState(dss, 0);
-
-
+	//SetCullBack(false);
+	
 
 	//SetCullBack(true);
 	size_t passCount = 0;
@@ -362,6 +362,9 @@ void Renderer::RenderFrame(CameraComponent* camera, float time, float distance, 
 			RenderPass* pass = *i;
 			if (pass->IsEnabled() && pass->GetType() == RenderPass::PassType::POST_PROCESSING)
 			{
+
+				
+
 				size_t nextBufferIndex = 1 - bufferIndex;
 				RenderTexture& passTarget = renderPassSwapBuffers[nextBufferIndex];
 				RenderTexture& previous = (passCount == 0) ? midbuffer : renderPassSwapBuffers[bufferIndex];
@@ -377,7 +380,7 @@ void Renderer::RenderFrame(CameraComponent* camera, float time, float distance, 
 		}
 	}
 
-
+	
 
 
 	RenderTexture& lastBuffer = (passCount == 0) ? midbuffer : renderPassSwapBuffers[bufferIndex];
@@ -387,8 +390,8 @@ void Renderer::RenderFrame(CameraComponent* camera, float time, float distance, 
 	context->PSSetShaderResources(0, 1, &lastBuffer.srv);
 	DrawScreenQuad(screenQuadMaterial);
 
-
-
+	
+	
 
 	if (drawGUI)
 	{
