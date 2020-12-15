@@ -12,6 +12,7 @@ WinScene::WinScene() : Scene("WinScene")
 
 WinScene::~WinScene()
 {
+	delete guiManager;
 }
 
 void WinScene::Initialize()
@@ -28,8 +29,6 @@ void WinScene::InitializeObjects()
 	this->player = cameraObject;
 	//cameraObject3->AddComponent<ControllerComponent>();
 	AddObjectToRoot(cameraObject);
-
-
 }
 
 void WinScene::InitializeGUI()

@@ -7,7 +7,7 @@ class FXAARenderPass : public RenderPass
 public:
 	FXAARenderPass(int priority, ResourceManager* resources) : RenderPass(priority, RenderPass::PassType::POST_PROCESSING), resources(resources) {}
 
-	~FXAARenderPass()
+	virtual ~FXAARenderPass()
 	{
 		delete material;
 	}

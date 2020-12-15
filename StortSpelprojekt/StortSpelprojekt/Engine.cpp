@@ -63,12 +63,15 @@ Engine::Engine(HINSTANCE hInstance) : window(hInstance), activeSceneIndex(-1), s
 
 Engine::~Engine()
 {
+	GUIManager* temp = scenes[activeSceneIndex]->GetGuiManager();
+
 	for (size_t i = 0; i < SCENE_COUNT; i++)
 	{
 		delete scenes[i];
 		scenes[i] = nullptr;
 	}
 
+	renderer->RemoveRenderPass(temp);
 	delete renderer;
 	delete resourceManager;
 	delete physics;
