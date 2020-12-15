@@ -258,8 +258,8 @@ void GameScene::InitializeGUI()
 	GUIFont* vramDisplay = new GUIFont(*renderer, "vram", 30, 60);
 	GUIFont* ramDisplay = new GUIFont(*renderer, "ram", 30, 90);
 
-	GUISprite* restartButton = new GUISprite(*renderer, "Textures/EquipmentBox.png", (windowWidth / 2), 400, 0, DrawDirection::Default, ClickFunction::Clickable);
-	GUISprite* quitButton = new GUISprite(*renderer, "Textures/EquipmentBox.png", (windowWidth / 2), 600, 0, DrawDirection::Default, ClickFunction::Clickable);
+	GUISprite* restartButton = new GUISprite(*renderer, "Textures/Restart.png", (windowWidth / 2)-150, 400, 0, DrawDirection::Default, ClickFunction::Clickable);
+	GUISprite* quitButton = new GUISprite(*renderer, "Textures/Exit.png", (windowWidth / 2) - 150, 600, 0, DrawDirection::Default, ClickFunction::Clickable);
 	
 	crosshair->SetVisible(false);
 	doorSprite->SetVisible(false);
@@ -696,10 +696,16 @@ void GameScene::Update(const float& deltaTime)
 	//static_cast<GUIFont*>(guiManager->GetGUIObject("playerPos"))->SetString("Player pos x:" + std::to_string((int)playerPosF.x)
 	//+ " y: " + std::to_string((int)playerPosF.z));
 	if (KEY_DOWN(Escape))
-		showMenu = !showMenu;		
-
+	{
+		showMenu = !showMenu;
+		player->GetComponent<ControllerComp>()->SwapCamMode();
+	}
+		
 	if (showMenu)
 	{
+		
+		//ShowCursor(!this->canRotate);
+
 		static_cast<GUISprite*>(guiManager->GetGUIObject("restartButton"))->SetVisible(true);
 		static_cast<GUISprite*>(guiManager->GetGUIObject("quitButton"))->SetVisible(true);
 
@@ -707,6 +713,9 @@ void GameScene::Update(const float& deltaTime)
 				Engine::Instance->Exit();
 		if (static_cast<GUISprite*>(guiManager->GetGUIObject("restartButton"))->IsClicked())
 		{
+			showMenu = false;
+			static_cast<GUISprite*>(guiManager->GetGUIObject("restartButton"))->SetVisible(false);
+			static_cast<GUISprite*>(guiManager->GetGUIObject("quitButton"))->SetVisible(false);
 			Engine::Instance->start = true;
 			Engine::Instance->SwitchScene(SceneIndex::GAME);
 			return;
@@ -714,9 +723,8 @@ void GameScene::Update(const float& deltaTime)
 	}
 	else
 	{
-
 		static_cast<GUISprite*>(guiManager->GetGUIObject("restartButton"))->SetVisible(false);
-		static_cast<GUISprite*>(guiManager->GetGUIObject("restartButton"))->SetVisible(false);
+		static_cast<GUISprite*>(guiManager->GetGUIObject("quitButton"))->SetVisible(false);
 	}
 
 	guiManager->UpdateAll();

@@ -90,6 +90,7 @@ void GameOverScene::Update(const float& deltaTime)
 
 	if(static_cast<GUISprite*>(guiManager->GetGUIObject("quit"))->IsClicked())
 	{
+
 		Engine::Instance->Exit();
 	}
 
