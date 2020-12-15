@@ -15,5 +15,5 @@ float4 main(VS_OUTPUT input) : SV_TARGET
     //}
     
     return emissiveColor;
-    //return float4(0, 0, 0, 0);
+    //return float4(0, 0, 0, 1.0f);
 }

@@ -26,6 +26,7 @@ public:
 		shader->SetPixelShader("Shaders/Emissive_ps.hlsl");
 		shader->Compile(device);
 		shaderInstanced->SetVertexShader("Shaders/Instance_vs.hlsl");
+		shaderInstanced->SetInputLayoutStructure(9, shaderInstanced->INSTANCE_INPUT_LAYOUTd);
 		shaderInstanced->SetPixelShader("Shaders/Emissive_ps.hlsl");
 		shaderInstanced->Compile(device);
 
@@ -39,7 +40,7 @@ public:
 		renderer->GetContext()->PSSetShaderResources(2, 1, &nullSRV);
 		renderer->ClearRenderTarget(glowTarget, true);
 		renderer->SetRenderTarget(glowTarget, true);
-
+		
 		// loop queue
 		Renderer::RenderQueue renderq = renderer->GetEmissiveQueue();
 
@@ -51,6 +52,9 @@ public:
 			//while (i.second.size() != 0)
 			{
 				Renderer::RenderItem item = i.second.front();
+
+				//i.second.pop();
+
 
 				// Om item är instancable.. kör en Instanceable_vs + emissive_ps t.ex
 				// OM item är vanlig... kör en Default_vs + emissive_ps.
@@ -176,21 +180,24 @@ public:
 
 	void Pass(Renderer* renderer, CameraComponent* camera, RenderTexture& current, RenderTexture& target) override
 	{
-		renderer->ClearRenderTarget(current, false);
-		renderer->SetRenderTarget(current, false);
+		renderer->ClearRenderTarget(target, false);
+		renderer->SetRenderTarget(target, false);
+		/*renderer->ClearRenderTarget(current, false);
+		renderer->SetRenderTarget(current, false);*/
+		
 
-		ID3D11ShaderResourceView* srv = renderer->LoadShaderResourceView("glow");
+		//ID3D11ShaderResourceView* srv = renderer->LoadShaderResourceView("glow");
 
 		// I renderpass shadern GlowShader så blir första texturen scenen i sig och den andra all data från glow texturen som vi gjorde i tidigare GlowPreRenderPass
 
-		//renderer->GetContext()->PSSetShaderResources(0, 1, &current.srv);
-		renderer->GetContext()->PSSetShaderResources(1, 1, &srv);
+		renderer->GetContext()->PSSetShaderResources(0, 1, &current.srv);
+		renderer->GetContext()->PSSetShaderResources(2, 1, &current.srv);
 
 		renderer->DrawScreenQuad(material);
 
 		ID3D11ShaderResourceView* nullSRV[1] = { nullptr };
-		renderer->GetContext()->PSSetShaderResources(0, 1, nullSRV);
-		renderer->GetContext()->PSSetShaderResources(1, 1, nullSRV);
+		//renderer->GetContext()->PSSetShaderResources(0, 1, nullSRV);
+		renderer->GetContext()->PSSetShaderResources(2, 1, nullSRV);
 	}
 
 	ALIGN16_ALLOC;
