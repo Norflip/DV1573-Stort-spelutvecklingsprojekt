@@ -29,10 +29,6 @@ void IntroScene::InitializeObjects()
 	//cameraObject2->AddComponent<ControllerComponent>();
 	this->player = cameraObject;
 	AddObjectToRoot(cameraObject);
-
-	
-
-	AudioMaster::Instance().PlaySoundEvent("menusound");
 }
 
 void IntroScene::InitializeGUI()
@@ -195,6 +191,8 @@ void IntroScene::OnActivate()
 	static_cast<GUISprite*>(guiManager->GetGUIObject("volumeBarFillSoundeffects"))->SetScale(soundVolume, 1);
 
 	configChanged = false;
+
+	AudioMaster::Instance().PlaySoundEvent("menusound");
 }
 
 void IntroScene::OnDeactivate()

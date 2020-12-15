@@ -304,6 +304,7 @@ void Shader::CompileSOGS(ID3D11Device* device)
 			NULL, NULL
 		};
 
+
 		HRESULT GSCompileResult = D3DCompileFromFile
 		(
 			wPath.c_str(),
@@ -333,7 +334,7 @@ void Shader::CompileSOGS(ID3D11Device* device)
 		
 		UINT stride = sizeof(Mesh::Particle);
 		HRESULT hr = device->CreateGeometryShaderWithStreamOutput(GSBlob->GetBufferPointer(), GSBlob->GetBufferSize(), 
-			soDeclaration, _countof(soDeclaration), &stride, 1, 0, NULL, &geometryShader);
+			soDeclaration, _countof(soDeclaration), &stride, 1, D3D11_SO_NO_RASTERIZED_STREAM, NULL, &geometryShader);
 		assert(SUCCEEDED(hr));
 	}
 }

@@ -8,8 +8,6 @@ AudioMaster::AudioMaster()
 		engine = new AudioEngine;
 	engine->Initialize();
 
-	//engine->Initialize3DAudio();
-
 	/* Create different soundchannels */
 	engine->GetAudioMaster()->CreateSubmixVoice(&soundsSubmix, 1, 44100, 0, 0, 0, 0);
 	engine->GetAudioMaster()->CreateSubmixVoice(&musicSubmix, 1, 44100, 0, 0, 0, 0);
@@ -36,9 +34,7 @@ AudioMaster::AudioMaster()
 	LoadFile(L"Sounds/walking.wav", "walk", walkSound, AudioTypes::Sound, true);
 	LoadFile(L"Sounds/running.mp3", "run", runSound, AudioTypes::Sound, true);
 	LoadFile(L"Sounds/windyLoop.mp3", "wind", windSound, AudioTypes::Environment, true);
-	//LoadFile(L"Sounds/choptree.mp3", "choptree", chop, AudioTypes::Sound, false);
 	LoadFile(L"Sounds/insideWalk.mp3", "insideWalk", insideWalk, AudioTypes::Sound, true);
-	LoadFile(L"Sounds/DarkAmbient.mp3", "ambient", ambientSound, AudioTypes::Music, true);
 
 	SetVolume(AudioTypes::Music, 0.7f);
 	SetVolume(AudioTypes::Sound, 0.7f);
@@ -55,8 +51,6 @@ AudioMaster::~AudioMaster()
 
 void AudioMaster::LoadFile(const std::wstring fileName, std::string name, SoundEvent& soundEvent, const AudioTypes& soundType, bool loop)
 {
-	//ZeroMemory(&soundEvent, sizeof(SoundEvent));
-
 	/* Load soundfile with engine into a wave and make it playable */	
 	engine->LoadFile(fileName, soundEvent.audioData, &waveFormatEx, soundEvent.waveLength);
 	soundEvent.waveFormat = *waveFormatEx;
@@ -102,7 +96,8 @@ void AudioMaster::PlaySoundEvent(std::string soundName)
 		if (i.first == soundName)
 		{
 			//i.second.playing = true;
-			soundEvent = i.second;
+			soundEvent = i.second;			
+
 		}
 	}
 
@@ -134,15 +129,7 @@ void AudioMaster::PlaySoundEvent(std::string soundName)
 		if (FAILED(playSound))
 			OutputDebugStringW(L"Critical error: Unable to submit source buffer!");
 
-		soundEvent.sourceVoice->Start();
-
-		/*for (auto& i : soundTracks)
-		{
-			if (i.first == soundName)
-			{
-				i.second.playing = true;
-			}
-		}*/
+		soundEvent.sourceVoice->Start();		
 	}
 }
 
@@ -216,4 +203,3 @@ void AudioMaster::PlayerOutside(bool state)
 	else
 		environmentSubmix->SetVolume(0.2f * soundEffectsVolume);
 }
-
