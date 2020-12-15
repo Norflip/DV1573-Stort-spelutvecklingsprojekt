@@ -125,7 +125,7 @@ public:
 	RenderQueue& GetEmissiveQueue() { return this->emissiveItemQueue; }
 	const RenderQueue& GetEmissiveQueue() const  { return this->emissiveItemQueue; }
 
-private:
+//private:
 
 	void AddItem(const RenderItem& item, bool transparent, bool cullDepth, bool emissive = false);
 	void DrawRenderItem(const RenderItem& item, CameraComponent* camera);

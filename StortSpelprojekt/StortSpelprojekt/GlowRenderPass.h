@@ -26,7 +26,7 @@ public:
 		shader->SetPixelShader("Shaders/Emissive_ps.hlsl");
 		shader->Compile(device);
 		shaderInstanced->SetVertexShader("Shaders/Instance_vs.hlsl");
-		shaderInstanced->SetInputLayoutStructure(9, shaderInstanced->INSTANCE_INPUT_LAYOUTd);
+		//shaderInstanced->SetInputLayoutStructure(9, shaderInstanced->INSTANCE_INPUT_LAYOUTd);
 		shaderInstanced->SetPixelShader("Shaders/Emissive_ps.hlsl");
 		shaderInstanced->Compile(device);
 
@@ -44,17 +44,13 @@ public:
 		// loop queue
 		Renderer::RenderQueue renderq = renderer->GetEmissiveQueue();
 
-		
-
 		for (auto i : renderq)
 		{
 			while (!i.second.empty())
-			//while (i.second.size() != 0)
 			{
 				Renderer::RenderItem item = i.second.front();
 
 				//i.second.pop();
-
 
 				// Om item är instancable.. kör en Instanceable_vs + emissive_ps t.ex
 				// OM item är vanlig... kör en Default_vs + emissive_ps.
@@ -111,42 +107,36 @@ public:
 				{
 					std::cout << "got nowhere" << std::endl;
 				}*/
-
 				switch (item.type)
 				{
 					case Renderer::RenderItem::Type::Instanced:
-						std::cout << "Get Into Instance case" << std::endl;
-						item.material = materialInstanced;
+						//std::cout << "Get Into Instance case" << std::endl;
+						renderer->DrawRenderItemInstanced(item, camera);
 						break;
 
 					case Renderer::RenderItem::Type::Default:
 					default:
-						std::cout << "Get Into default case" << std::endl;
-						item.material = material;
+						//std::cout << "Get Into default case" << std::endl;
+						renderer->DrawRenderItem(item, camera);
 						break;
 				}
 
-				//item.material = new Material(shader1);
 				renderer->GetContext()->PSSetShaderResources(0, 1, &target.srv);
-				//renderer->DrawScreenQuad(item.material);
-
 				// Denna drar ner prestandan.. men det visar att saker faktiskt finns i queuen.
 				//std::cout << "GLOWING? : " << item.mesh->GetMeshName()<< " " << i.second.size() << std::endl;
-
 				i.second.pop();
 
 			}
 		}
 
 		// UNBINDA GLOWTARGET HÄR. Kommer ge fel annars
-		/*ID3D11RenderTargetView* nullrtv = nullptr;
-		renderer->GetContext()->OMSetRenderTargets(1, &glowTarget.rtv, glowTarget.dsv);*/
-		
+		//material->UnbindToContext(renderer->GetContext());
+		//materialInstanced->UnbindToContext(renderer->GetContext());
 
 
 		// vi sparar glow texturer till renderer så vi sedan kan hämta den i nästa pass
 		renderer->StoreShaderResourceView("glow", target.srv);
-		//renderer->GetContext()->PSSetShaderResources(0, 1, nullptr);
+		renderer->GetContext()->PSSetShaderResources(0, 1, nullptr);
 
 		// vi sätter tillbaka till det vanliga render target för att renderar resten av scenen
 		renderer->SetRenderTarget(current, true);
@@ -157,8 +147,8 @@ public:
 private:
 
 	RenderTexture glowTarget;
-	Shader* shader = new Shader;
-	Shader* shaderInstanced = new Shader;
+	Shader* shader;
+	Shader* shaderInstanced;
 	Material* material;
 	Material* materialInstanced;
 };
