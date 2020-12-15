@@ -57,7 +57,7 @@ private:
 	ItemManager* items;
 	float fogCol;
 	float fogId;
-
+	bool showMenu = false;
 	bool onceTest = true;
 	bool end;
 };
