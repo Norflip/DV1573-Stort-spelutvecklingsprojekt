@@ -713,7 +713,11 @@ void GameScene::Update(const float& deltaTime)
 		static_cast<GUISprite*>(guiManager->GetGUIObject("quitButton"))->SetVisible(true);
 
 		if (static_cast<GUISprite*>(guiManager->GetGUIObject("quitButton"))->IsClicked())
-				Engine::Instance->Exit();
+		{
+			OnDeactivate();
+			Engine::Instance->Exit();
+		}
+				
 		if (static_cast<GUISprite*>(guiManager->GetGUIObject("restartButton"))->IsClicked())
 		{
 			showMenu = false;

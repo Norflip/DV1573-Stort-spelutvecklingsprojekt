@@ -218,7 +218,6 @@ void IntroScene::Update(const float& deltaTime)
 		return;
 	}
 
-	//
 	if (static_cast<GUISprite*>(guiManager->GetGUIObject("credits"))->IsClicked())
 	{
 		//guiManager->ChangeGuiGroup(GuiGroup::Load);
@@ -230,11 +229,11 @@ void IntroScene::Update(const float& deltaTime)
 		//return;
 
 	}
-	//
 
 	if (static_cast<GUISprite*>(guiManager->GetGUIObject("quitSprite"))->IsClicked())
 	{
 		AudioMaster::Instance().StopSoundEvent("menusound");
+		OnDeactivate();
 		Engine::Instance->Exit();
 		return;
 	}
