@@ -157,7 +157,7 @@ namespace ZWEBLoader
 		return meshes;
 	}
 
-	inline std::vector<Material*> LoadMaterials(std::string scenePath, Shader* shader, ID3D11Device* device) //Each mesh has a material name there might be 5 meshes and 3 materials.
+	inline std::vector<Material*> LoadMaterials(std::string scenePath, Shader* shader, ID3D11Device* device, std::vector<Texture*>& textures) //Each mesh has a material name there might be 5 meshes and 3 materials.
 	{
 		ZWEB::ZWEBImporter importer;
 
@@ -193,6 +193,8 @@ namespace ZWEBLoader
 				Texture* texture = Texture::LoadTexture(device, pathWSTR.c_str());
 				mat->SetTexture(texture, 0, ShaderBindFlag::PIXEL);
 				materialData.hasAlbedo = 1;
+				texture->SetName(diffuseTName);
+				textures.push_back(texture);
 			}
 			else
 			{
@@ -206,6 +208,8 @@ namespace ZWEBLoader
 				Texture* texture = Texture::LoadTexture(device, pathWSTR.c_str());
 				mat->SetTexture(texture, 1, ShaderBindFlag::PIXEL); //This is default but can be manually changed afterwards.
 				materialData.hasNormalMap = 1;
+				texture->SetName(normalTName);
+				textures.push_back(texture);
 			}
 			else
 			{
@@ -218,6 +222,8 @@ namespace ZWEBLoader
 				
 				Texture* texture = Texture::LoadTexture(device, pathWSTR.c_str());
 				mat->SetTexture(texture, 3, ShaderBindFlag::PIXEL); //This is default but can be manually changed afterwards.
+				texture->SetName(opacityName);
+				textures.push_back(texture);
 			}
 
 			mat->SetMaterialData(materialData);

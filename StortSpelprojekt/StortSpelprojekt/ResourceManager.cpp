@@ -7,6 +7,7 @@ ResourceManager::ResourceManager()
 
 ResourceManager::~ResourceManager()
 {
+
 	for (auto i : resources)
 	{
 		delete i.second;
@@ -18,7 +19,7 @@ ResourceManager::~ResourceManager()
 	}
 
 	
-	delete missingTexture;
+	//delete missingTexture;
 	delete[] pixel;
 
 	resources.clear();
@@ -119,6 +120,8 @@ void ResourceManager::ReadObjects(ID3D11Device* device)
 
 		for (int i = 0; i < nrOfObjects; i++)
 		{
+			std::vector<Texture*> textures;
+
 			getline(file, line);
 			
 			int pos = line.find(delimiter);
@@ -134,7 +137,7 @@ void ResourceManager::ReadObjects(ID3D11Device* device)
 
 			if (shader == "skeletonShader" || shader == "houseShader")
 			{
-				std::vector<Material*> materials = ZWEBLoader::LoadMaterials(filepath, GetShaderResource(shader), device);
+				std::vector<Material*> materials = ZWEBLoader::LoadMaterials(filepath, GetShaderResource(shader), device, textures);
 				std::vector<Mesh*> meshes = ZWEBLoader::LoadMeshes(ZWEBLoadType::SkeletonAnimation, filepath, device);
 
 				std::getline(file, line);
@@ -168,12 +171,14 @@ void ResourceManager::ReadObjects(ID3D11Device* device)
 				AddResource(name + "tempMesh", meshes[0]);
 				AddResource(name + "tempMat", materials[0]);
 				AddResource(name+"Skeleton", skeletonMesh);
+				for (int i = 0; i < textures.size(); i++)
+					AddResource(textures[i]->GetName(), textures[i]);
 			}
 			// Ugly presumption that we load a Tree at some point
 			else if (name == "Tree")
 			{
 				// Load instanced tree models
-				std::vector<Material*> instancedmaterials = ZWEBLoader::LoadMaterials(filepath, GetShaderResource(shader), device);
+				std::vector<Material*> instancedmaterials = ZWEBLoader::LoadMaterials(filepath, GetShaderResource(shader), device, textures);
 				std::vector<Mesh*> instancedmeshes = ZWEBLoader::LoadMeshes(ZWEBLoadType::NoAnimation, filepath, device);
 				instancedmaterials[0]->SetSampler(sampler, 0, ShaderBindFlag::PIXEL);
 				instancedmaterials[1]->SetSampler(sampler, 0, ShaderBindFlag::PIXEL);
@@ -182,9 +187,11 @@ void ResourceManager::ReadObjects(ID3D11Device* device)
 				AddResource("instanced" + instancedmeshes[1]->GetMeshName(), instancedmeshes[1]);
 				AddResource("instanced" + name + "Material", instancedmaterials[0]);
 				AddResource("instanced" + instancedmeshes[1]->GetMeshName() + "Material", instancedmaterials[1]);
+				for (int i = 0; i < textures.size(); i++)
+					AddResource(textures[i]->GetName(), textures[i]);
 
 				//Load non instanced tree models
-				std::vector<Material*> materials = ZWEBLoader::LoadMaterials(filepath, GetShaderResource("defaultShader"), device);
+				std::vector<Material*> materials = ZWEBLoader::LoadMaterials(filepath, GetShaderResource("defaultShader"), device, textures);
 				std::vector<Mesh*> meshes = ZWEBLoader::LoadMeshes(ZWEBLoadType::NoAnimation, filepath, device);
 				materials[0]->SetSampler(sampler, 0, ShaderBindFlag::PIXEL);
 				materials[1]->SetSampler(sampler, 0, ShaderBindFlag::PIXEL);
@@ -196,13 +203,15 @@ void ResourceManager::ReadObjects(ID3D11Device* device)
 			}
 			else
 			{
-				std::vector<Material*> materials = ZWEBLoader::LoadMaterials(filepath, GetShaderResource(shader), device);
+				std::vector<Material*> materials = ZWEBLoader::LoadMaterials(filepath, GetShaderResource(shader), device, textures);
 				std::vector<Mesh*> meshes = ZWEBLoader::LoadMeshes(ZWEBLoadType::NoAnimation, filepath, device);
 
 				materials[0]->SetSampler(sampler, 0, ShaderBindFlag::PIXEL);
 
 				AddResource(name, meshes[0]);
 				AddResource(name + "Material", materials[0]);
+				for (int i = 0; i < textures.size(); i++)
+					AddResource(textures[i]->GetName(), textures[i]);
 			}
 
 			std::getline(file, line);
@@ -230,7 +239,7 @@ void ResourceManager::ReadTextures(ID3D11Device* device)
 		int pos = line.find(delimiter);
 
 		// Amount of textures in the file
-		int nrOfTextures = std::stoi(line.substr(pos + 2, 1), &sz);
+		int nrOfTextures = std::stoi(line.substr(pos + 2, line.length() - pos - 2), &sz);
 
 		std::getline(file, line);
 

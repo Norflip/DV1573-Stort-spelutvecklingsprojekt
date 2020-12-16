@@ -194,6 +194,8 @@ void GameScene::InitializeObjects()
 	leftSign->AddComponent<SelectableComponent>();
 	leftSign->AddComponent<RigidBodyComponent>(0.0f, FilterGroups::CLICKABLE, (FilterGroups::EVERYTHING & ~FilterGroups::PLAYER), BodyType::STATIC, true);
 
+	//leftSign->GetTransform().SetRotation(dx::XMVECTOR({ 0, 90.0f, 0, 0 }));
+
 	AddObjectToRoot(rightSign);
 	AddObjectToRoot(leftSign);
 
