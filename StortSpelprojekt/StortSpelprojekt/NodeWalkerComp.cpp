@@ -86,6 +86,8 @@ void NodeWalkerComp::Stop()
 
 void NodeWalkerComp::StartAnim()
 {
+
+
 	//if (canWalk)
 	//{
 		//std::cout << "start Animation<" << std::endl;
@@ -102,6 +104,9 @@ void NodeWalkerComp::StartAnim()
 
 void NodeWalkerComp::StopAnim()
 {
+	std::cout << playerComp->GetDistance() << std::endl;// BLEND
+
+	//minimum 10, max 40
 	//if (canWalk)
 	//{
 		//std::cout << "stop Animation<" << std::endl;

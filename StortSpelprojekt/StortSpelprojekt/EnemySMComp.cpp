@@ -69,82 +69,49 @@ void EnemySMComp::Animate()
 			std::cout << "enemy died.. health: " << statsComponent->GetHealth() << ", y: " << enemyPos.y <<", length from player: "<<length<< std::endl;
 			statsComponent->GetManager()->RemoveEnemy(GetOwner());
 		}
-
-
 	}
 	else
 	{
 		if (currentState == EnemyState::ATTACK)
 		{
-
-			//FIXA FAKTOOOOOOOOOORN
-
-			factorValue = (15.f - 0.f);
-			factorRange = (1.f - 0.f);
-			finalFactor = (((length - 0.f) * factorRange) / factorValue) + 0.f;
-			std::cout << "Factor Loop 1: " << finalFactor << std::endl;
-
-			skeletonComponent->SetBlendingTracksAndFactor(SkeletonStateMachine::ATTACK, SkeletonStateMachine::RUN, finalFactor, true);
-			skeletonComponent->SetTrack(SkeletonStateMachine::BLENDED, false);
-			if (finalFactor <= 0.f)
+			if (length < 5)
 			{
-				factorValue = (5.f - 0.f);
+				factorValue = (5.f - 2.f);
 				factorRange = (1.f - 0.f);
-				finalFactor = (((length - 0.f) * factorRange) / factorValue) + 0.f;
+				finalFactor = (((length - 2.f) * factorRange) / factorValue) + 0.f;
 
-				std::cout << "Factor Loop 2: " << finalFactor << std::endl;
-
-	
+				skeletonComponent->SetBlendingTracksAndFactor(SkeletonStateMachine::ATTACK, SkeletonStateMachine::RUN, finalFactor, true);
+				skeletonComponent->SetTrack(SkeletonStateMachine::BLENDED, false);
 			}
-		
-		/*	else
+			else
 			{
 				skeletonComponent->SetTrack(SkeletonStateMachine::RUN, false);
-			}*/
-
-
+			}
 		}
 		else if (currentState == EnemyState::PATROL)
 		{
-
 			if (skeletonComponent->GetEnemyType() == EnemyType::BASE)
 			{
-				factorValue = (20.f - 15.f);
-				factorRange = (1.f - 0.f);
-				finalFactor = (((length - 15.f) * factorRange) / factorValue) + 0.f;
+				if (length > 25.f)
+				{
+					factorValue = (50.f - 25.f);
+					factorRange = (1.f - 0.f);
+					finalFactor = (((length - 25.f) * factorRange) / factorValue) + 0.f;
 
-
-				skeletonComponent->SetBlendingTracksAndFactor(SkeletonStateMachine::RUN, SkeletonStateMachine::WALK, finalFactor, true);
-				skeletonComponent->SetTrack(SkeletonStateMachine::BLENDED, false);
+					skeletonComponent->SetBlendingTracksAndFactor(SkeletonStateMachine::RUN, SkeletonStateMachine::WALK, finalFactor, true);
+					skeletonComponent->SetTrack(SkeletonStateMachine::BLENDED, false);
+				}
 			}
 			else
 			{
 				skeletonComponent->SetTrack(SkeletonStateMachine::RUN, false);
 			}
-			
 		}
-
 		else
 		{
-
-			if (skeletonComponent->GetEnemyType() == EnemyType::BASE)
-			{
-				factorValue = (25.f - 20.f);
-				factorRange = (1.f - 0.f);
-				finalFactor = (((length - 20.f) * factorRange) / factorValue) + 0.f;
-				
-				skeletonComponent->SetBlendingTracksAndFactor(SkeletonStateMachine::WALK, SkeletonStateMachine::IDLE, finalFactor, true);
-				skeletonComponent->SetTrack(SkeletonStateMachine::BLENDED, false);
-			}
-			
-			else
-			{
-				skeletonComponent->SetTrack(SkeletonStateMachine::IDLE, false);
-			}
+			skeletonComponent->SetTrack(SkeletonStateMachine::IDLE, false);
 		}
 	}
-	
-
 }
 
 void EnemySMComp::Update(const float& deltaTime)

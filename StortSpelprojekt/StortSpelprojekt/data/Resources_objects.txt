@@ -15,8 +15,8 @@ Shader: skeletonShader
 Animations: 5
 0: Animations/BaseEnemy/baseMonsterIdle.ZWEB
 1: Animations/BaseEnemy/baseMonsterWalk.ZWEB
-2: Animations/BaseEnemy/Basic_enemy_Arms_Down_Anim.ZWEB
-3: Animations/BaseEnemy/Basic_enemy_Arms_Up_Anim.ZWEB
+2: Animations/BaseEnemy/baseMonsterRun.ZWEB
+3: Animations/BaseEnemy/baseMonsterAttack.ZWEB
 5: Animations/BaseEnemy/baseMonsterDeath.ZWEB
 
 PlayerArms: Models/Player/Player_Arms.ZWEB
