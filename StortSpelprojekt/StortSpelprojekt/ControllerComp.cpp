@@ -58,7 +58,7 @@ ControllerComp::ControllerComp(Object* cameraObject, Object* houseObject, World*
 
 	this->freeCam = false;
 	//this->showCursor = false;
-	this->canRotate = true;
+	//this->canRotate = true;
 	this->isGrounded = false;
 	//this->houseVelocity = { 0.f,0.f,0.f };
 	this->jumpDir = { 0.f,0.f,0.f };
@@ -82,16 +82,16 @@ ControllerComp::ControllerComp(Object* cameraObject, Object* houseObject, World*
 ControllerComp::~ControllerComp()
 {
 }
-void ControllerComp::SwapCamMode()
+void ControllerComp::SwapCamMode(bool pause)
 {
-		this->canRotate = !this->canRotate;
-		rbComp->SetLinearVelocity({ 0.f, 0.f, 0.f });
-		//rbComp->EnableGravity(!this->canRotate);
-		if (this->canRotate)
-			Input::Instance().SetMouseMode(dx::Mouse::MODE_RELATIVE);
-		else
-			Input::Instance().SetMouseMode(dx::Mouse::MODE_ABSOLUTE);
-		//ShowCursor(!this->canRotate);
+	this->canRotate = !pause;//!this->canRotate;
+	rbComp->SetLinearVelocity({ 0.f, 0.f, 0.f });
+	//rbComp->EnableGravity(!this->canRotate);
+	if (this->canRotate)
+		Input::Instance().SetMouseMode(dx::Mouse::MODE_RELATIVE);
+	else
+		Input::Instance().SetMouseMode(dx::Mouse::MODE_ABSOLUTE);
+	//ShowCursor(!this->canRotate);
 	
 
 }
@@ -105,12 +105,12 @@ void ControllerComp::Initialize()
 	this->capsuleComp = GetOwner()->GetComponent<CapsuleColliderComponent>();
 	this->playerComp = GetOwner()->GetComponent<PlayerComp>();
 	
-	this->canRotate = true;
-	if (this->canRotate)
-		Input::Instance().SetMouseMode(dx::Mouse::MODE_RELATIVE);
-	else
-		Input::Instance().SetMouseMode(dx::Mouse::MODE_ABSOLUTE);
-	ShowCursor(!this->canRotate);
+	//this->canRotate = true;
+	//if (this->canRotate)
+	//	Input::Instance().SetMouseMode(dx::Mouse::MODE_RELATIVE);
+	//else
+	//	Input::Instance().SetMouseMode(dx::Mouse::MODE_ABSOLUTE);
+	//ShowCursor(!this->canRotate);
 
 	this->camComp->SetFOV(WALK_FOV);
 	this->rbComp->LockRotation(true);
@@ -125,15 +125,15 @@ void ControllerComp::Initialize()
 	this->cameraObject->GetTransform().SetRotation(reset);
 }
 
-void ControllerComp::Reset()
-{
-	this->canRotate = true;
-	if (this->canRotate)
-		Input::Instance().SetMouseMode(dx::Mouse::MODE_RELATIVE);
-	else
-		Input::Instance().SetMouseMode(dx::Mouse::MODE_ABSOLUTE);
-	ShowCursor(!this->canRotate);
-}
+//void ControllerComp::Reset()
+//{
+//	this->canRotate = true;
+//	if (this->canRotate)
+//		Input::Instance().SetMouseMode(dx::Mouse::MODE_RELATIVE);
+//	else
+//		Input::Instance().SetMouseMode(dx::Mouse::MODE_ABSOLUTE);
+//	ShowCursor(!this->canRotate);
+//}
 
 
 void ControllerComp::Update(const float& deltaTime)
@@ -177,17 +177,17 @@ void ControllerComp::Update(const float& deltaTime)
 		rbComp->EnableGravity(!this->freeCam);
 	}
 
-	if (KEY_DOWN(F))
-	{
-		this->canRotate = !this->canRotate;
-		rbComp->SetLinearVelocity({ 0.f, 0.f, 0.f });
-		//rbComp->EnableGravity(!this->canRotate);
-		if (this->canRotate)
-			Input::Instance().SetMouseMode(dx::Mouse::MODE_RELATIVE);
-		else
-			Input::Instance().SetMouseMode(dx::Mouse::MODE_ABSOLUTE);
-		//ShowCursor(!this->canRotate);
-	}
+	//if (KEY_DOWN(F))
+	//{
+	//	this->canRotate = !this->canRotate;
+	//	rbComp->SetLinearVelocity({ 0.f, 0.f, 0.f });
+	//	//rbComp->EnableGravity(!this->canRotate);
+	//	if (this->canRotate)
+	//		Input::Instance().SetMouseMode(dx::Mouse::MODE_RELATIVE);
+	//	else
+	//		Input::Instance().SetMouseMode(dx::Mouse::MODE_ABSOLUTE);
+	//	//ShowCursor(!this->canRotate);
+	//}
 	
 	float length = 0.f;
 	dx::XMVECTOR lengthVec;

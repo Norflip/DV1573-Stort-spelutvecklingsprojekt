@@ -3,7 +3,7 @@
 
 MetaProgress::MetaProgress()
 {
-	this->currencyTotal = 0;
+	this->currencyTotal = 500;
 	this->highscore = 0;
 	this->nrOfGameWins = 0;
 
@@ -22,6 +22,14 @@ MetaProgress::MetaProgress()
 	this->healUsed = 0;
 	this->puzzleSolved = 0;
 	this->deathReason = "unknown.";
+
+
+
+	this->fuelLossRed = 1.f;
+	this->foodLossRed = 1.f;
+	this->hpLossInFogRed = 1.f;
+	this->damageRed = 1.f;
+	this->damageBoost = 1.f;
 
 }
 

@@ -16,6 +16,13 @@ struct SaveState
 	unsigned int highscore;
 	unsigned int nrOfGameWins;
 	unsigned int segmentRecord;
+
+	//reduction/boost
+	float fuelLossRed;
+	float foodLossRed;
+	float hpLossInFogRed;
+	float damageRed;
+	float damageBoost;
 	static SaveState Default ()
 	{
 		SaveState state;
@@ -25,11 +32,16 @@ struct SaveState
 		state.showTutortial = true;
 		state.segment = 0;
 		state.seed = rand();
-		state.upgradeCurrency = 0;
+		state.upgradeCurrency = 1000;
 		state.highscore = 0;
 		state.nrOfGameWins = 0;
 		state.segmentRecord = 0;
 
+		state.fuelLossRed = 1.f;
+		state.foodLossRed = 1.f;
+		state.hpLossInFogRed = 1.f;
+		state.damageRed = 1.f;
+		state.damageBoost = 1.f;
 		return state;
 	}
 

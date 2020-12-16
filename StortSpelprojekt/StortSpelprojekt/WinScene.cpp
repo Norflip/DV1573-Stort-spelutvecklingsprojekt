@@ -39,9 +39,11 @@ void WinScene::InitializeGUI()
 	GUISprite* win = new GUISprite(*renderer, "Textures/Win.png", windowWidth / 2 - 120, 100, 0, DrawDirection::Default, ClickFunction::NotClickable);
 	GUISprite* restart = new GUISprite(*renderer, "Textures/Restart.png", 100, 200, 0, DrawDirection::Default, ClickFunction::Clickable);
 	GUISprite* quit = new GUISprite(*renderer, "Textures/Exit.png", 100, 400, 0, DrawDirection::Default, ClickFunction::Clickable);
+	GUISprite* returnToMenu = new GUISprite(*renderer, "Textures/BackButton.png", 100, 600, 0, DrawDirection::Default, ClickFunction::Clickable);
 	GUIFont* fpsDisplay = new GUIFont(*renderer, "fps", windowWidth / 2, 50);
 	restart->SetActivated();
 	quit->SetActivated();
+	returnToMenu->SetActivated();
 	GUIFont* scoreDisplay = new GUIFont(*renderer, "info", windowWidth / 2 - 460, windowHeight / 2 - 200);
 	scoreDisplay->SetFontSize({ 0.6f,0.6f });
 
@@ -51,6 +53,7 @@ void WinScene::InitializeGUI()
 	guiManager->AddGUIObject(win, "win");
 	guiManager->AddGUIObject(restart, "restart");
 	guiManager->AddGUIObject(quit, "quit");
+	guiManager->AddGUIObject(returnToMenu, "returnToMenu");
 
 	guiManager->AddGUIObject(scoreDisplay, "scoreDisplay");
 }
@@ -94,7 +97,12 @@ void WinScene::Update(const float& deltaTime)
 		//Engine::Instance->SwitchScene(SceneIndex::INTRO);
 		//return;
 	}
-
+	if (static_cast<GUISprite*>(guiManager->GetGUIObject("returnToMenu"))->IsClicked())
+	{
+		AudioMaster::Instance().PlaySoundEvent("menusound");
+		Engine::Instance->SwitchScene(SceneIndex::INTRO);
+		return;
+	}
 	guiManager->UpdateAll();
 }
 

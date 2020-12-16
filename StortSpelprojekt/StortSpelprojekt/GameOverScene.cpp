@@ -38,6 +38,8 @@ void GameOverScene::InitializeGUI()
 	GUISprite* lose = new GUISprite(*renderer, "Textures/Died.png", windowWidth / 2 - 120, 100, 0, DrawDirection::Default, ClickFunction::NotClickable);
 	GUISprite* restart = new GUISprite(*renderer, "Textures/Restart.png", 100, 200, 0, DrawDirection::Default, ClickFunction::Clickable);
 	GUISprite* quit = new GUISprite(*renderer, "Textures/Exit.png", 100, 400, 0, DrawDirection::Default, ClickFunction::Clickable);
+	GUISprite* returnToMenu = new GUISprite(*renderer, "Textures/BackButton.png", 100, 600, 0, DrawDirection::Default, ClickFunction::Clickable);
+	
 	GUIFont* fpsDisplay = new GUIFont(*renderer, "fps", windowWidth / 2, 50);
 	GUIFont* deathReason = new GUIFont(*renderer, "death", windowWidth / 2-240, 250);
 	deathReason->SetFontSize({ 1,1 });
@@ -46,12 +48,14 @@ void GameOverScene::InitializeGUI()
 
 	restart->SetActivated();
 	quit->SetActivated();
+	returnToMenu->SetActivated();
 
 	guiManager = new GUIManager(renderer, 100);
 	guiManager->AddGUIObject(lose, "lose");
 	guiManager->AddGUIObject(fpsDisplay, "fps");
 	guiManager->AddGUIObject(restart, "restart");
 	guiManager->AddGUIObject(quit, "quit");
+	guiManager->AddGUIObject(returnToMenu, "returnToMenu");
 
 	guiManager->AddGUIObject(deathReason, "death");
 	guiManager->AddGUIObject(scoreDisplay, "scoreDisplay");
@@ -98,6 +102,12 @@ void GameOverScene::Update(const float& deltaTime)
 	{
 		Engine::Instance->start = true;
 		Engine::Instance->SwitchScene(SceneIndex::GAME);
+		return;
+	}
+	if (static_cast<GUISprite*>(guiManager->GetGUIObject("returnToMenu"))->IsClicked())
+	{
+		AudioMaster::Instance().PlaySoundEvent("menusound");
+		Engine::Instance->SwitchScene(SceneIndex::INTRO);
 		return;
 	}
 

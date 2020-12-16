@@ -47,7 +47,7 @@ public:
 	dx::XMFLOAT3 GetMoveVec();
 	bool GetIsWalking() const { return isWalking; }
 	void SetWorld(World* world) { this->world = world; }
-	int GetCurrentNode()const { return this->currentNode; }
+	//int GetCurrentNode()const { return this->currentNode; }
 	float GetHouseProgress(); //returns how far the house has gone between 0 and 1 (0 is 0% and 1 is 100%) 
 };
 

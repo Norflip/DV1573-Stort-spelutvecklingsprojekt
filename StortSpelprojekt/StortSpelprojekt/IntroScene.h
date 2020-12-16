@@ -26,4 +26,6 @@ public:
 private:
 	bool configChanged;
 	float sensitivity;
+
+	void ChangeBarColor();
 };

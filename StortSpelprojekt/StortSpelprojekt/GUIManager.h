@@ -16,8 +16,9 @@ enum class GuiGroup : unsigned int
 	HowToPlay = 1 << 3,
 	Intro = 1 << 4,
 	Font = 1 << 5,
-	Load = 1 << 6
-	
+	Load = 1 << 6,
+	Pause = 1 << 7,
+	Upgrades = 1 << 8
 };
 DEFINE_ENUM_FLAG_OPERATORS(GuiGroup)
 

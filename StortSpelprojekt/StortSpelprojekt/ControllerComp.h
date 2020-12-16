@@ -96,12 +96,12 @@ public:
 
 	RigidBodyComponent* GetRigidBodyComp() { return this->rbComp; }
 	void Initialize();
-	void Reset();
+	//void Reset();
 	void Update(const float& deltaTime);
 	float GetVelocity()const { return this->velocity; }
 	bool GetInRange()const { return this->inDoorRange; }
 	void SetInRange(bool state) { this->inDoorRange = state; }
 	bool GetInside()const { return this->inside; }
 	void SetInside(bool state) { this->inside = state; }
-	void SwapCamMode();
+	void SwapCamMode(bool pause);
 };

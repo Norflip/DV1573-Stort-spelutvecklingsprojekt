@@ -41,6 +41,19 @@ public:
 	unsigned int GetCurrencyTotal()const { return currencyTotal; }
 	unsigned int GetCurrencyEarned()const { return currencyEarned; }
 	unsigned int GetNrOfGameWins()const { return nrOfGameWins; }
+	void UseCurrency(int amount) { this->currencyTotal += amount; }
+
+	void ChangeFuelLossRed(float value) { this->fuelLossRed += value; }
+	void ChangeFoodLossRed(float value) { this->foodLossRed += value; }
+	void ChangeHpLossFogRed(float value) { this->hpLossInFogRed += value; }
+	void ChangeEnemyDamageRed(float value) { this->damageRed += value; }
+	void ChangePlayerDamageBoost(float value) { this->damageBoost += value; }
+
+	float GetFuelLossRed()const { return this->fuelLossRed; }
+	float GetFoodLossRed()const { return this->foodLossRed; }
+	float GetHpLossInFogRed()const { return this->hpLossInFogRed; }
+	float GetDamageRed()const { return this->damageRed; }
+	float GetDamageBoost()const { return this->damageBoost; }
 
 	void IncFuelUsed(int value); //done
 	void IncFoodUsed(int value); //done
@@ -76,6 +89,13 @@ private:
 	unsigned int foodUsed;
 	unsigned int healUsed;
 	unsigned int puzzleSolved;
+
+	//reduction/boost
+	float fuelLossRed;
+	float foodLossRed;
+	float hpLossInFogRed;
+	float damageRed;
+	float damageBoost;
 
 	std::string deathReason;
 	
