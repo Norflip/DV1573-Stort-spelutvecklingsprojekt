@@ -170,7 +170,7 @@ void WorldGenerator::Deconstruct()
 {
 	if (constructed)
 	{
-		std::cout << "CHUNKS: " << chunkMap.size() << std::endl;
+		std::cout << "chunk count to remove: " << chunkMap.size() << std::endl;
 
 		for (auto i : chunkMap)
 		{

@@ -825,6 +825,12 @@ void GameScene::OnIMGUIFrame()
 	{
 		TransitionToNextSegment();
 	}
+
+	if (ImGui::Button("restart"))
+	{
+		Engine::Instance->start = true;
+		Engine::Instance->SwitchScene(SceneIndex::GAME);
+	}
 }
 #endif
 float GameScene::VramUsage()
