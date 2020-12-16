@@ -63,13 +63,13 @@ void World::UpdateRelevantChunks(const Transform& transform, CameraComponent* ca
 
 			lastRelevantIndex = newIndex;
 			for (size_t i = 0; i < currentRelevantCount; i++)
-				relevant[i]->GetOwner()->RemoveFlag(ObjectFlag::ENABLED);
+				relevant[i]->GetOwner()->RemoveFlag(ObjectFlag::ENABLED, false);
 
 			GetChunksInRadius(lastRelevantIndex, TERRAIN_RELEVANT_RADIUS, relevant, currentRelevantCount);
 
 			//std::cout << "new relevant count: " << relevant.size() <<  std::endl;
 			for (size_t i = 0; i < currentRelevantCount; i++)
-				relevant[i]->GetOwner()->AddFlag(ObjectFlag::ENABLED);
+				relevant[i]->GetOwner()->AddFlag(ObjectFlag::ENABLED, false);
 		}
 	}
 }

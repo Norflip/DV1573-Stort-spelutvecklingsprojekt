@@ -70,8 +70,8 @@ public:
 	std::vector<T*> GetComponentsOfSubType() const;
 
 	bool HasFlag(ObjectFlag flag) const;
-	void AddFlag(ObjectFlag flag);
-	void RemoveFlag(ObjectFlag flag);
+	void AddFlag(ObjectFlag flag, bool sendMsg = true);
+	void RemoveFlag(ObjectFlag flag, bool sendMsg = true);
 
 	void SetName(const std::string& name) { this->name = name; }
 	std::string GetName() const { return this->name; }
