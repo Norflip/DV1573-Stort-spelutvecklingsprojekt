@@ -126,7 +126,7 @@ void EnemyAttackComp::UpdateAttackPlayer(const float& deltaTime)
 		if (timer.GetSeconds() >= enemyStatsComp->GetAttackSpeed())
 		{
 			timer.Restart();
-			player->LoseHealth(enemyStatsComp->GetAttack());
+			player->LoseHealth(enemyStatsComp->GetAttack()*MetaProgress::Instance().GetCalcDamageRed());
 			
 			std::string text = GetOwner()->GetName();
 			text.resize(text.size() - 5);

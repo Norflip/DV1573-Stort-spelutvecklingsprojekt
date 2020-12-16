@@ -87,7 +87,7 @@ namespace SaveHandler
 	}
 
 	inline bool RemoveSave()
-	{
+ 	{
 		TryLoad(m_loadedState);
 		m_loadedState.segment = 0;
 		Save(m_loadedState);

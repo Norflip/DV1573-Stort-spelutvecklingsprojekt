@@ -276,13 +276,13 @@ void GameScene::InitializeGUI()
 	// INSERTIONS
 	guiManager = new GUIManager(renderer, 0);
 	restartButton->SetVisible(false);
-	restartButton->AddGroup(GuiGroup::Pause);
+	//restartButton->AddGroup(GuiGroup::Pause);
 	//restartButton->RemoveGroup(GuiGroup::Default);
 	quitButton->SetVisible(false);
-	quitButton->AddGroup(GuiGroup::Pause);
+	//quitButton->AddGroup(GuiGroup::Pause);
 	//quitButton->RemoveGroup(GuiGroup::Default);
 	returnToMenu->SetVisible(false);
-	returnToMenu->AddGroup(GuiGroup::Pause);
+	//returnToMenu->AddGroup(GuiGroup::Pause);
 	//returnToMenu->RemoveGroup(GuiGroup::Default);
 
 	//pause Menu
@@ -554,7 +554,7 @@ void GameScene::OnActivate()
 
 	renderer->AddRenderPass(guiManager);
 	player->GetComponent<ControllerComp>()->SwapCamMode(false);
-	guiManager->ChangeGuiGroup(GuiGroup::None);
+	//guiManager->ChangeGuiGroup(GuiGroup::None);
 	//this->PrintSceneHierarchy(root, 0);
 	//enemyManager->SpawnEnemies();
 
@@ -697,7 +697,9 @@ void GameScene::Update(const float& deltaTime)
 		{
 			SaveState& state = SaveHandler::LoadOrCreate();
 			state.nrOfGameWins++;
-			
+			//MetaProgress::Instance().LoadSave(state);
+			MetaProgress::Instance().SaveScore();
+			MetaProgress::Instance().SaveProgress(state);
 			SaveHandler::Save(state);
 
 			Engine::Instance->SwitchScene(SceneIndex::WIN);
@@ -717,21 +719,21 @@ void GameScene::Update(const float& deltaTime)
 	if (KEY_DOWN(Escape))
 	{
 		showMenu = !showMenu;
-		if (showMenu)
-			guiManager->ChangeGuiGroup(GuiGroup::Pause);
-		else
-			guiManager->ChangeGuiGroup(GuiGroup::None);
+		//if (showMenu)
+		//	guiManager->ChangeGuiGroup(GuiGroup::Pause);
+		//else
+		//	guiManager->ChangeGuiGroup(GuiGroup::None);
 		player->GetComponent<ControllerComp>()->SwapCamMode(showMenu);
 	}
 		
-	//if (showMenu)
-	//{
-	//	
+	if (showMenu)
+	{
+		
 		//ShowCursor(!this->canRotate);
 
-		//static_cast<GUISprite*>(guiManager->GetGUIObject("restartButton"))->SetVisible(true);
-		//static_cast<GUISprite*>(guiManager->GetGUIObject("quitButton"))->SetVisible(true);
-		//static_cast<GUISprite*>(guiManager->GetGUIObject("returnToMenu"))->SetVisible(true);
+		static_cast<GUISprite*>(guiManager->GetGUIObject("restartButton"))->SetVisible(true);
+		static_cast<GUISprite*>(guiManager->GetGUIObject("quitButton"))->SetVisible(true);
+		static_cast<GUISprite*>(guiManager->GetGUIObject("returnToMenu"))->SetVisible(true);
 
 		if (static_cast<GUISprite*>(guiManager->GetGUIObject("quitButton"))->IsClicked())
 		{
@@ -741,10 +743,10 @@ void GameScene::Update(const float& deltaTime)
 				
 		if (static_cast<GUISprite*>(guiManager->GetGUIObject("restartButton"))->IsClicked())
 		{
-			//showMenu = false;
-			//static_cast<GUISprite*>(guiManager->GetGUIObject("restartButton"))->SetVisible(false);
-			//static_cast<GUISprite*>(guiManager->GetGUIObject("quitButton"))->SetVisible(false);
-			//static_cast<GUISprite*>(guiManager->GetGUIObject("returnToMenu"))->SetVisible(true);
+			showMenu = false;
+			static_cast<GUISprite*>(guiManager->GetGUIObject("restartButton"))->SetVisible(false);
+			static_cast<GUISprite*>(guiManager->GetGUIObject("quitButton"))->SetVisible(false);
+			static_cast<GUISprite*>(guiManager->GetGUIObject("returnToMenu"))->SetVisible(true);
 			SaveHandler::RemoveSave();
 			Engine::Instance->start = true;
 			Engine::Instance->SwitchScene(SceneIndex::GAME);
@@ -752,22 +754,22 @@ void GameScene::Update(const float& deltaTime)
 		}
 		if (static_cast<GUISprite*>(guiManager->GetGUIObject("returnToMenu"))->IsClicked())
 		{
-			//showMenu = false;
-			//static_cast<GUISprite*>(guiManager->GetGUIObject("restartButton"))->SetVisible(false);
-			//static_cast<GUISprite*>(guiManager->GetGUIObject("quitButton"))->SetVisible(false);
-			//static_cast<GUISprite*>(guiManager->GetGUIObject("returnToMenu"))->SetVisible(true);
+			showMenu = false;
+			static_cast<GUISprite*>(guiManager->GetGUIObject("restartButton"))->SetVisible(false);
+			static_cast<GUISprite*>(guiManager->GetGUIObject("quitButton"))->SetVisible(false);
+			static_cast<GUISprite*>(guiManager->GetGUIObject("returnToMenu"))->SetVisible(true);
 			AudioMaster::Instance().PlaySoundEvent("menusound");
 			Engine::Instance->start = true;
 			Engine::Instance->SwitchScene(SceneIndex::INTRO);
 			return;
 		}
-	//}
-	//else
-	//{
-	//	static_cast<GUISprite*>(guiManager->GetGUIObject("restartButton"))->SetVisible(false);
-	//	static_cast<GUISprite*>(guiManager->GetGUIObject("quitButton"))->SetVisible(false);
-	//	static_cast<GUISprite*>(guiManager->GetGUIObject("returnToMenu"))->SetVisible(false);
-	//}
+	}
+	else
+	{
+		static_cast<GUISprite*>(guiManager->GetGUIObject("restartButton"))->SetVisible(false);
+		static_cast<GUISprite*>(guiManager->GetGUIObject("quitButton"))->SetVisible(false);
+		static_cast<GUISprite*>(guiManager->GetGUIObject("returnToMenu"))->SetVisible(false);
+	}
 
 	guiManager->UpdateAll();
 

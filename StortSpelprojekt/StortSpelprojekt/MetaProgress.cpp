@@ -3,7 +3,7 @@
 
 MetaProgress::MetaProgress()
 {
-	this->currencyTotal = 500;
+	this->currencyTotal = 00;
 	this->highscore = 0;
 	this->nrOfGameWins = 0;
 
@@ -96,6 +96,13 @@ void MetaProgress::SaveProgress(SaveState& theSave)
 	theSave.nrOfGameWins = this->nrOfGameWins;
 	theSave.segment = this->levelsCleared;
 	theSave.segmentRecord = this->levelsRecord;
+
+	theSave.fuelLossRed = this->fuelLossRed;
+	theSave.foodLossRed = this->foodLossRed;
+	theSave.hpLossInFogRed = this->hpLossInFogRed;
+	theSave.damageRed = this->damageRed;
+	theSave.damageBoost = this->damageBoost;
+
 	LoadSave(theSave);
 }
 
@@ -106,6 +113,12 @@ void MetaProgress::LoadSave(SaveState& theSave)
 	this->nrOfGameWins = theSave.nrOfGameWins;
 	this->levelsCleared = theSave.segment;
 	this->levelsRecord = theSave.segmentRecord;
+
+	this->fuelLossRed = theSave.fuelLossRed;
+	this->foodLossRed = theSave.foodLossRed;
+	this->hpLossInFogRed = theSave.hpLossInFogRed;
+	this->damageRed = theSave.damageRed;
+	this->damageBoost = theSave.damageBoost;
 }
 
 void MetaProgress::Reset()

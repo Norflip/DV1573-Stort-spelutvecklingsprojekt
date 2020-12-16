@@ -40,7 +40,7 @@ void IntroScene::InitializeGUI()
 	GUISprite* titleSprite = new GUISprite(*renderer, "Textures/OnceUponATime.png", windowWidth / 2 - 100, titlePosH, 0, DrawDirection::Default, ClickFunction::NotClickable);
 	GUISprite* startSprite = new GUISprite(*renderer, "Textures/Start.png", 100, titlePosH, 0, DrawDirection::Default, ClickFunction::Clickable);
 	GUISprite* howToPlaySprite = new GUISprite(*renderer, "Textures/howToPlay.png", 20, titlePosH+titleSpacing, 0, DrawDirection::Default, ClickFunction::Clickable);
-	GUISprite* upgradesSprite = new GUISprite(*renderer, "Textures/Lore.png", 100, titlePosH + titleSpacing*2, 0, DrawDirection::Default, ClickFunction::Clickable);
+	GUISprite* upgradesSprite = new GUISprite(*renderer, "Textures/upgrades.png", 100, titlePosH + titleSpacing*2, 0, DrawDirection::Default, ClickFunction::Clickable);
 	GUISprite* optionSprite = new GUISprite(*renderer, "Textures/Options.png", 100, titlePosH + titleSpacing*3, 0, DrawDirection::Default, ClickFunction::Clickable);
 	GUISprite* loreSprite = new GUISprite(*renderer, "Textures/Lore.png", 100, titlePosH + titleSpacing*4, 0, DrawDirection::Default, ClickFunction::Clickable);
 	GUISprite* credits = new GUISprite(*renderer, "Textures/credits.png", 100, titlePosH + titleSpacing*5, 0, DrawDirection::Default, ClickFunction::Clickable);
@@ -95,21 +95,24 @@ void IntroScene::InitializeGUI()
 
 	//upgrades
 	GUIFont* upgradeTitle = new GUIFont(*renderer, "Upgrades", windowWidth / 2-350, 100);
-	
 	upgradeTitle->SetFontSize({ 1.2f,1.2f });
 	upgradeTitle->SetVisible(false);
 	upgradeTitle->AddGroup(GuiGroup::Upgrades);
 	upgradeTitle->RemoveGroup(GuiGroup::Default);
+	GUISprite* reset = new GUISprite(*renderer, "Textures/BackButton.png", windowWidth / 2 + 450, 100, 0, DrawDirection::Default, ClickFunction::Clickable, GuiGroup::Upgrades);
+	reset->AddGroup(GuiGroup::Upgrades);
+	reset->RemoveGroup(GuiGroup::Default);
+	reset->SetVisible(false);
 	GUIFont* currencyAmount = new GUIFont(*renderer, "U-Currency: ", windowWidth / 2 - 550, 170);
 	currencyAmount->SetFontSize({ 0.8f,0.8f });
 	currencyAmount->SetVisible(false);
 	currencyAmount->AddGroup(GuiGroup::Upgrades);
 	currencyAmount->RemoveGroup(GuiGroup::Default);
-	unsigned int uSpacing = 100;
-	unsigned int uPos = 150;
+	unsigned int uSpacing = 150;
+	unsigned int uPos = 80;
 	float fontsize = 0.8f;
 	GUISprite* barFillFuelLoss = new GUISprite(*renderer, "Textures/blueBarFill.png", 900, uPos + uSpacing, 0, DrawDirection::Default, ClickFunction::NotClickable, GuiGroup::Upgrades);
-	barFillFuelLoss->SetScale(MetaProgress::Instance().GetFuelLossRed() - 0.5f, 1.f);
+	barFillFuelLoss->SetScale(MetaProgress::Instance().GetFuelLossRed()-SCALE, 1.f);// MetaProgress::Instance().GetFuelLossRed() - 0.5f, 1.f);
 	GUISprite* lowerFuelLossSprite = new GUISprite(*renderer, "Textures/lowerVolume.png", 800, uPos+uSpacing, 0, DrawDirection::Default, ClickFunction::Clickable, GuiGroup::Upgrades);
 	GUISprite* higherFuelLossSprite = new GUISprite(*renderer, "Textures/higherVolume.png", 1150, uPos + uSpacing, 0, DrawDirection::Default, ClickFunction::Clickable, GuiGroup::Upgrades);
 	GUIFont* fuelLossDisplay = new GUIFont(*renderer, "Fuel-Loss Reduction lv. ", 50 , uPos + uSpacing);
@@ -119,7 +122,7 @@ void IntroScene::InitializeGUI()
 	fuelLossDisplay->RemoveGroup(GuiGroup::Default);
 
 	GUISprite* barFillFoodLoss = new GUISprite(*renderer, "Textures/blueBarFill.png", 900, uPos + uSpacing*2, 0, DrawDirection::Default, ClickFunction::NotClickable, GuiGroup::Upgrades);
-	barFillFoodLoss->SetScale(MetaProgress::Instance().GetFoodLossRed() - 0.5f, 1.f);
+	barFillFoodLoss->SetScale(MetaProgress::Instance().GetFoodLossRed()-SCALE, 1.f);// (MetaProgress::Instance().GetFoodLossRed() - 0.5f, 1.f);
 	GUISprite* lowerFoodLossSprite = new GUISprite(*renderer, "Textures/lowerVolume.png", 800, uPos + uSpacing*2, 0, DrawDirection::Default, ClickFunction::Clickable, GuiGroup::Upgrades);
 	GUISprite* higherFoodLossSprite = new GUISprite(*renderer, "Textures/higherVolume.png", 1150, uPos + uSpacing*2, 0, DrawDirection::Default, ClickFunction::Clickable, GuiGroup::Upgrades);
 	GUIFont* foodLossDisplay = new GUIFont(*renderer, "Food-Loss Reduction lv. ", 50, uPos + uSpacing*2);
@@ -129,7 +132,7 @@ void IntroScene::InitializeGUI()
 	foodLossDisplay->RemoveGroup(GuiGroup::Default);
 
 	GUISprite* barFillHpInFog = new GUISprite(*renderer, "Textures/blueBarFill.png", 900, uPos + uSpacing*3, 0, DrawDirection::Default, ClickFunction::NotClickable, GuiGroup::Upgrades);
-	barFillHpInFog->SetScale(MetaProgress::Instance().GetHpLossInFogRed() - 0.5f, 1.f);
+	barFillHpInFog->SetScale(MetaProgress::Instance().GetHpLossInFogRed()-SCALE,1.f);// MetaProgress::Instance().GetHpLossInFogRed() - 0.5f, 1.f);
 	GUISprite* lowerHpInFogSprite = new GUISprite(*renderer, "Textures/lowerVolume.png", 800, uPos + uSpacing*3, 0, DrawDirection::Default, ClickFunction::Clickable, GuiGroup::Upgrades);
 	GUISprite* higherHpInFogSprite = new GUISprite(*renderer, "Textures/higherVolume.png", 1150, uPos + uSpacing*3, 0, DrawDirection::Default, ClickFunction::Clickable, GuiGroup::Upgrades);
 	GUIFont* hpInFogDisplay = new GUIFont(*renderer, "Fog-Resistance lv. ", 50, uPos + uSpacing * 3);
@@ -139,7 +142,7 @@ void IntroScene::InitializeGUI()
 	hpInFogDisplay->RemoveGroup(GuiGroup::Default);
 
 	GUISprite* barFillHpFromEnemies = new GUISprite(*renderer, "Textures/blueBarFill.png", 900, uPos + uSpacing*4, 0, DrawDirection::Default, ClickFunction::NotClickable, GuiGroup::Upgrades);
-	barFillHpFromEnemies->SetScale(MetaProgress::Instance().GetDamageRed() - 0.5f, 1.f);
+	barFillHpFromEnemies->SetScale(MetaProgress::Instance().GetDamageRed()-SCALE, 1.f);//MetaProgress::Instance().GetDamageRed() - 0.5f, 1.f);
 	GUISprite* lowerHpFromEnemiesSprite = new GUISprite(*renderer, "Textures/lowerVolume.png", 800, uPos + uSpacing*4, 0, DrawDirection::Default, ClickFunction::Clickable, GuiGroup::Upgrades);
 	GUISprite* higherHpFromEnemiesSprite = new GUISprite(*renderer, "Textures/higherVolume.png", 1150, uPos + uSpacing*4, 0, DrawDirection::Default, ClickFunction::Clickable, GuiGroup::Upgrades);
 	GUIFont* enemyDamageRedDisplay = new GUIFont(*renderer, "Enemy Damage Reduction lv.", 50, uPos + uSpacing * 4);
@@ -149,7 +152,7 @@ void IntroScene::InitializeGUI()
 	enemyDamageRedDisplay->RemoveGroup(GuiGroup::Default);
 
 	GUISprite* barFillPlayerDamage = new GUISprite(*renderer, "Textures/blueBarFill.png", 900, uPos + uSpacing*5, 0, DrawDirection::Default, ClickFunction::NotClickable, GuiGroup::Upgrades);
-	barFillPlayerDamage->SetScale(MetaProgress::Instance().GetDamageBoost() - 0.5f, 1.f);
+	barFillPlayerDamage->SetScale(MetaProgress::Instance().GetDamageBoost() - SCALE, 1.f);//MetaProgress::Instance().GetDamageBoost() - 0.5f, 1.f);
 	GUISprite* lowerPlayerDamageSprite = new GUISprite(*renderer, "Textures/lowerVolume.png", 800, uPos + uSpacing * 5, 0, DrawDirection::Default, ClickFunction::Clickable, GuiGroup::Upgrades);
 	GUISprite* higherPlayerDamageSprite = new GUISprite(*renderer, "Textures/higherVolume.png", 1150, uPos + uSpacing * 5,0 , DrawDirection::Default, ClickFunction::Clickable, GuiGroup::Upgrades);
 	GUIFont* playerDamageBoost = new GUIFont(*renderer, "Player Damage Boost lv.", 50, uPos + uSpacing * 5);
@@ -251,6 +254,7 @@ void IntroScene::InitializeGUI()
 
 	//upgrademenu
 	guiManager->AddGUIObject(upgradeTitle, "upgradeTitle");
+	guiManager->AddGUIObject(reset, "reset");
 	guiManager->AddGUIObject(currencyAmount, "currencyAmount");
 	//guiManager->AddGUIObject(upgradeReset, "upgradeReset");
 	guiManager->AddGUIObject(barFillFuelLoss, "barFillFuelLoss");
@@ -290,6 +294,10 @@ void IntroScene::OnActivate()
 	float musicVolume = Config::GetFloat("volumeMusic", 0.5f);
 	AudioMaster::Instance().SetVolume(AudioTypes::Music, musicVolume);
 	static_cast<GUISprite*>(guiManager->GetGUIObject("volumeBarFillMusic"))->SetScale(musicVolume, 1);
+	SaveState state;
+	SaveHandler::TryLoad(state);
+	MetaProgress::Instance().LoadSave(state);
+
 
 	float soundVolume = Config::GetFloat("volumeSound", 0.5f);
 	AudioMaster::Instance().SetVolume(AudioTypes::Sound, soundVolume);
@@ -461,40 +469,43 @@ void IntroScene::Update(const float& deltaTime)
 	std::string uText = "U-Currency: ";
 	uText += std::to_string(MetaProgress::Instance().GetCurrencyTotal());
 	static_cast<GUIFont*>(guiManager->GetGUIObject("currencyAmount"))->SetString(uText);
-
-	//SaveState& state = SaveHandler::LoadOrCreate();
+	float max = 1 + SCALE;
+	float mult = 1 / INCREASE;
 	
-	float inc = 0.2f;
-	float scale = inc * 5;
-	float max = 1 + scale;
-	float mult = 1 / inc;
-	int COST = 50;
 	unsigned int currency = MetaProgress::Instance().GetCurrencyTotal();
 
-
+	
+	if (static_cast<GUISprite*>(guiManager->GetGUIObject("reset"))->IsClicked())
+	{
+		//reset us scuffed atm
+		SaveState state = SaveHandler::CreateNew();
+		MetaProgress::Instance().LoadSave(state);
+		MetaProgress::Instance().SaveProgress(state);
+	}
+	bool saving = false;
 	//fuel loss reduction
 	std::string text;
-	text = "Fuel-Loss Reduction lv." + std::to_string(int((MetaProgress::Instance().GetFuelLossRed() - 1.f) * mult)) + " -> Cost: " + std::to_string(int(COST * MetaProgress::Instance().GetFuelLossRed()));
+	text = "Fuel-Loss Reduction lv." + std::to_string(int((MetaProgress::Instance().GetFuelLossRed()-1.f) * mult)) + " -> Cost: " + std::to_string(int(COST * MetaProgress::Instance().GetFuelLossRed()));
 	static_cast<GUIFont*>(guiManager->GetGUIObject("fuelLossDisplay"))->SetString(text);
 	if (static_cast<GUISprite*>(guiManager->GetGUIObject("lowerFuelLossSprite"))->IsClicked())
 	{
 		if (MetaProgress::Instance().GetFuelLossRed()> 1.f)
 		{
 			MetaProgress::Instance().UseCurrency(COST * MetaProgress::Instance().GetFuelLossRed());
-			MetaProgress::Instance().ChangeFuelLossRed(-inc);
-			//"FuelLossDisplay"
+			MetaProgress::Instance().ChangeFuelLossRed(-INCREASE);
+			saving = true;
 		}
-		static_cast<GUISprite*>(guiManager->GetGUIObject("barFillFuelLoss"))->SetScale(MetaProgress::Instance().GetFuelLossRed() - scale, 1.f);
+		static_cast<GUISprite*>(guiManager->GetGUIObject("barFillFuelLoss"))->SetScale(MetaProgress::Instance().GetFuelLossRed() - SCALE, 1.f);
 	}
 	if (static_cast<GUISprite*>(guiManager->GetGUIObject("higherFuelLossSprite"))->IsClicked())
 	{
 		if (currency >= COST * MetaProgress::Instance().GetFuelLossRed() && MetaProgress::Instance().GetFuelLossRed() < max )
 		{
+			MetaProgress::Instance().ChangeFuelLossRed(INCREASE);
 			MetaProgress::Instance().UseCurrency(-COST * MetaProgress::Instance().GetFuelLossRed());
-			MetaProgress::Instance().ChangeFuelLossRed(inc);
-			
+			saving = true;
 		}
-		static_cast<GUISprite*>(guiManager->GetGUIObject("barFillFuelLoss"))->SetScale(MetaProgress::Instance().GetFuelLossRed() - scale, 1.f);
+		static_cast<GUISprite*>(guiManager->GetGUIObject("barFillFuelLoss"))->SetScale(MetaProgress::Instance().GetFuelLossRed() - SCALE, 1.f);
 	}
 	//food loss reduction
 	//std::string foodtext;
@@ -505,20 +516,21 @@ void IntroScene::Update(const float& deltaTime)
 		if (MetaProgress::Instance().GetFoodLossRed() > 1.f)
 		{
 			MetaProgress::Instance().UseCurrency(COST * MetaProgress::Instance().GetFoodLossRed());
-			MetaProgress::Instance().ChangeFoodLossRed(-inc);
-			
+			MetaProgress::Instance().ChangeFoodLossRed(-INCREASE);
+			saving = true;
 		}
-		static_cast<GUISprite*>(guiManager->GetGUIObject("barFillFoodLoss"))->SetScale(MetaProgress::Instance().GetFoodLossRed() - scale, 1.f);
+		static_cast<GUISprite*>(guiManager->GetGUIObject("barFillFoodLoss"))->SetScale(MetaProgress::Instance().GetFoodLossRed() - SCALE, 1.f);
 	}
 	if (static_cast<GUISprite*>(guiManager->GetGUIObject("higherFoodLossSprite"))->IsClicked())
 	{
 		if (currency >= + COST * MetaProgress::Instance().GetFoodLossRed() && MetaProgress::Instance().GetFoodLossRed() < max )
 		{
+			MetaProgress::Instance().ChangeFoodLossRed(INCREASE);
 			MetaProgress::Instance().UseCurrency(-COST * MetaProgress::Instance().GetFoodLossRed());
-			MetaProgress::Instance().ChangeFoodLossRed(inc);
 			
+			saving = true;
 		}
-		static_cast<GUISprite*>(guiManager->GetGUIObject("barFillFoodLoss"))->SetScale(MetaProgress::Instance().GetFoodLossRed() - scale, 1.f);
+		static_cast<GUISprite*>(guiManager->GetGUIObject("barFillFoodLoss"))->SetScale(MetaProgress::Instance().GetFoodLossRed() - SCALE, 1.f);
 	}
 	//hploss in fog reduction
 	text = "Fog-Resistance lv. " + std::to_string(int((MetaProgress::Instance().GetHpLossInFogRed() - 1.f) * mult)) + " -> Cost: " + std::to_string(int(COST * MetaProgress::Instance().GetHpLossInFogRed()));
@@ -528,20 +540,21 @@ void IntroScene::Update(const float& deltaTime)
 		if (MetaProgress::Instance().GetHpLossInFogRed() > 1.f)
 		{
 			MetaProgress::Instance().UseCurrency(COST * MetaProgress::Instance().GetHpLossInFogRed());
-			MetaProgress::Instance().ChangeHpLossFogRed(-inc);
-			
+			MetaProgress::Instance().ChangeHpLossFogRed(-INCREASE);
+			saving = true;
 		}
-		static_cast<GUISprite*>(guiManager->GetGUIObject("barFillHpInFog"))->SetScale(MetaProgress::Instance().GetHpLossInFogRed() - scale, 1.f);
+		static_cast<GUISprite*>(guiManager->GetGUIObject("barFillHpInFog"))->SetScale(MetaProgress::Instance().GetHpLossInFogRed() - SCALE, 1.f);
 	}
 	if (static_cast<GUISprite*>(guiManager->GetGUIObject("higherHpInFogSprite"))->IsClicked())
 	{
 		if (currency >= COST * MetaProgress::Instance().GetHpLossInFogRed() && MetaProgress::Instance().GetHpLossInFogRed()<max)
 		{
+			MetaProgress::Instance().ChangeHpLossFogRed(INCREASE);
 			MetaProgress::Instance().UseCurrency(-COST * MetaProgress::Instance().GetHpLossInFogRed());
-			MetaProgress::Instance().ChangeHpLossFogRed(inc);
 			
+			saving = true;
 		}
-		static_cast<GUISprite*>(guiManager->GetGUIObject("barFillHpInFog"))->SetScale(MetaProgress::Instance().GetHpLossInFogRed() - scale, 1.f);
+		static_cast<GUISprite*>(guiManager->GetGUIObject("barFillHpInFog"))->SetScale(MetaProgress::Instance().GetHpLossInFogRed() - SCALE, 1.f);
 	}
 	//hp from enemies reduction
 	text = "Enemy Damage Reduction lv." + std::to_string(int((MetaProgress::Instance().GetDamageRed() - 1.f) * mult)) + " -> Cost: " + std::to_string(int(COST * MetaProgress::Instance().GetDamageRed()));
@@ -551,20 +564,21 @@ void IntroScene::Update(const float& deltaTime)
 		if (MetaProgress::Instance().GetDamageRed() > 1.f)
 		{
 			MetaProgress::Instance().UseCurrency(COST* MetaProgress::Instance().GetDamageRed());
-			MetaProgress::Instance().ChangeEnemyDamageRed(-inc);
-			
+			MetaProgress::Instance().ChangeEnemyDamageRed(-INCREASE);
+			saving = true;
 		}
-		static_cast<GUISprite*>(guiManager->GetGUIObject("barFillHpFromEnemies"))->SetScale(MetaProgress::Instance().GetDamageRed() - scale, 1.f);
+		static_cast<GUISprite*>(guiManager->GetGUIObject("barFillHpFromEnemies"))->SetScale(MetaProgress::Instance().GetDamageRed() - SCALE, 1.f);
 	}
 	if (static_cast<GUISprite*>(guiManager->GetGUIObject("higherHpFromEnemiesSprite"))->IsClicked())
 	{
 		if (currency >= COST * MetaProgress::Instance().GetDamageRed() && MetaProgress::Instance().GetDamageRed()<max)
 		{
+			MetaProgress::Instance().ChangeEnemyDamageRed(INCREASE);
 			MetaProgress::Instance().UseCurrency(-COST * MetaProgress::Instance().GetDamageRed());
-			MetaProgress::Instance().ChangeEnemyDamageRed(inc);
-
+			
+			saving = true;
 		}
-		static_cast<GUISprite*>(guiManager->GetGUIObject("barFillHpFromEnemies"))->SetScale(MetaProgress::Instance().GetDamageRed() - scale, 1.f);
+		static_cast<GUISprite*>(guiManager->GetGUIObject("barFillHpFromEnemies"))->SetScale(MetaProgress::Instance().GetDamageRed() - SCALE, 1.f);
 	}
 	//damage boost
 	text = "Player Damage Boost lv." + std::to_string(int((MetaProgress::Instance().GetDamageBoost() - 1.f) * mult)) + " -> Cost: " + std::to_string(int(COST * MetaProgress::Instance().GetDamageBoost()));
@@ -574,19 +588,29 @@ void IntroScene::Update(const float& deltaTime)
 		if (MetaProgress::Instance().GetDamageBoost() > 1.f)
 		{
 			MetaProgress::Instance().UseCurrency(COST * MetaProgress::Instance().GetDamageBoost());
-			MetaProgress::Instance().ChangePlayerDamageBoost(-inc);
-			
+			MetaProgress::Instance().ChangePlayerDamageBoost(-INCREASE);
+			saving = true;
 		}
-		static_cast<GUISprite*>(guiManager->GetGUIObject("barFillPlayerDamage"))->SetScale(MetaProgress::Instance().GetDamageBoost() - scale, 1.f);
+		static_cast<GUISprite*>(guiManager->GetGUIObject("barFillPlayerDamage"))->SetScale(MetaProgress::Instance().GetDamageBoost() - SCALE, 1.f);
 	}
 	if (static_cast<GUISprite*>(guiManager->GetGUIObject("higherPlayerDamageSprite"))->IsClicked())
 	{
 		if (currency >= COST * MetaProgress::Instance().GetDamageBoost() && MetaProgress::Instance().GetDamageBoost()<max)
 		{
+			MetaProgress::Instance().ChangePlayerDamageBoost(INCREASE);
 			MetaProgress::Instance().UseCurrency(-COST * MetaProgress::Instance().GetDamageBoost());
-			MetaProgress::Instance().ChangePlayerDamageBoost(inc);
+			
+			saving = true;
 		}
-		static_cast<GUISprite*>(guiManager->GetGUIObject("barFillPlayerDamage"))->SetScale(MetaProgress::Instance().GetDamageBoost() - scale, 1.f);
+		static_cast<GUISprite*>(guiManager->GetGUIObject("barFillPlayerDamage"))->SetScale(MetaProgress::Instance().GetDamageBoost() - SCALE, 1.f);
+	}
+
+	if (saving)
+	{
+		SaveState state;
+		SaveHandler::TryLoad(state);
+		MetaProgress::Instance().SaveProgress(state);
+		SaveHandler::Save(state);
 	}
 
 	guiManager->UpdateAll();

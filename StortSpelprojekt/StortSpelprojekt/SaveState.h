@@ -32,7 +32,7 @@ struct SaveState
 		state.showTutortial = true;
 		state.segment = 0;
 		state.seed = rand();
-		state.upgradeCurrency = 1000;
+		state.upgradeCurrency = 0;
 		state.highscore = 0;
 		state.nrOfGameWins = 0;
 		state.segmentRecord = 0;

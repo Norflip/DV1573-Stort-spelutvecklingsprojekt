@@ -1,9 +1,13 @@
 #pragma once
 #include "Scene.h"
 #include "AudioMaster.h"
+
+constexpr int COST = 50;
+constexpr float INCREASE = 0.2f;
+constexpr float SCALE = INCREASE * 5;
+
 class GUIFont;
 class SpriteRenderPass;
-
 ALIGN16
 class IntroScene : public Scene
 {

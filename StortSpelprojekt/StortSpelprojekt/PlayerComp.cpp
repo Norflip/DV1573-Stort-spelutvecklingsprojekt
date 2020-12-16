@@ -120,7 +120,7 @@ void PlayerComp::FixedUpdate(const float& fixedDeltaTime)
 			if (!GetOwner()->GetComponent<ControllerComp>()->GetInside() && fuel > 0.0f)
 			{
 				if (house->GetComponent<NodeWalkerComp>()->GetIsWalking())
-					fuel -= (TARGET_FIXED_DELTA * fuelBurnPerMeter) * STILL_REDUCTION;
+					fuel -= (TARGET_FIXED_DELTA * fuelBurnPerMeter) * STILL_REDUCTION * MetaProgress::Instance().GetCalcFuelLoss(); 
 
 				else
 					fuel -= (TARGET_FIXED_DELTA * fuelBurnPerMeter);
@@ -130,13 +130,14 @@ void PlayerComp::FixedUpdate(const float& fixedDeltaTime)
 			if (!GameScene::immortal)
 			{
 				// lose food
-				food -= TARGET_FIXED_DELTA * foodLossPerSecond;
+				food -= TARGET_FIXED_DELTA * foodLossPerSecond * MetaProgress::Instance().GetCalcFoodLoss();
 
 				if ((health <= 0))
 				{
 					MetaProgress::Instance().SaveScore();
-					SaveState & save = SaveHandler::LoadOrCreate();
+					SaveState& save= SaveHandler::LoadOrCreate();
 					MetaProgress::Instance().SaveProgress(save);
+					SaveHandler::Save(save);
 					Engine::Instance->SwitchScene(SceneIndex::GAME_OVER);
 				}
 
@@ -160,7 +161,7 @@ void PlayerComp::FixedUpdate(const float& fixedDeltaTime)
 
 				if (distance > hpLossDist && !GetOwner()->GetComponent<ControllerComp>()->GetInside())
 				{
-					health -= distance * hpLossPerDistance;
+					health -= distance * hpLossPerDistance * MetaProgress::Instance().GetCalcHpLoss();
 					MetaProgress::Instance().SetKilledBy("fog intoxication.");
 				}
 
@@ -496,7 +497,7 @@ void PlayerComp::RayCast(const float& deltaTime)
 
 		if (attackTimer >= 0.3f)
 		{
-			stats->LoseHealth(attack);
+			stats->LoseHealth(attack * MetaProgress::Instance().GetCalcDamageBoost());
 			AudioMaster::Instance().PlaySoundEvent("punch");
 			attackTimer = 0.0f;
 			enemyHit = false;

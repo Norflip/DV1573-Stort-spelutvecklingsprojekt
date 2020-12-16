@@ -50,10 +50,15 @@ public:
 	void ChangePlayerDamageBoost(float value) { this->damageBoost += value; }
 
 	float GetFuelLossRed()const { return this->fuelLossRed; }
-	float GetFoodLossRed()const { return this->foodLossRed; }
+	float GetCalcFuelLoss() { return 1 / this->fuelLossRed; }
+	float GetFoodLossRed() const{ return this->foodLossRed; }
+	float GetCalcFoodLoss() { return 1 / this->foodLossRed; }
 	float GetHpLossInFogRed()const { return this->hpLossInFogRed; }
-	float GetDamageRed()const { return this->damageRed; }
+	float GetCalcHpLoss() { return 1 / this->hpLossInFogRed; }
+	float GetDamageRed() const { return this->damageRed; }
+	float GetCalcDamageRed() { return 1 / this->damageRed; }
 	float GetDamageBoost()const { return this->damageBoost; }
+	float GetCalcDamageBoost() { return 1 / this->damageBoost; }
 
 	void IncFuelUsed(int value); //done
 	void IncFoodUsed(int value); //done
