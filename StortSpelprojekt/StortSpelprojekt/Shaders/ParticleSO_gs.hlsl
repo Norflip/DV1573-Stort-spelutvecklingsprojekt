@@ -48,39 +48,38 @@ void main(point Particle gin[1], inout PointStream<Particle> ptStream)
 
 	
 	if (gin[0].Type == PT_EMITTER)
-	{
-		if (active)
+	{		
+		
+		// Emit a new particle
+		if (gin[0].Age > 0.005f /*(1.0f / (float)particlesPerSecond)*/ /* 0.005f */)	// particlesPerSecond
 		{
-			// Emit a new particle
-			if (gin[0].Age > 0.005f /*(1.0f / (float)particlesPerSecond)*/ /* 0.005f */)	// particlesPerSecond
-			{
-				float3 vRandom = RandUnitVec3(0.0f);
-				vRandom *= particleSpreadMulti;
+			float3 vRandom = RandUnitVec3(0.0f);
+			vRandom *= particleSpreadMulti;
 
-				Particle p;
-				p.InitialPosW = emitPosW.xyz + vRandom;		// gEmitPosW.xyz;
-				p.InitialVelW = emitDirW + vRandom;			// 3.0f * vRandom;		float3(0, 1, 0) + vRandom
-				p.SizeW = particleSize;							// float2(3.0f, 3.0f);
-				p.Age = gin[0].Age;
-				p.Type = PT_FLARE;
+			Particle p;
+			p.InitialPosW = emitPosW.xyz + vRandom;		// gEmitPosW.xyz;
+			p.InitialVelW = emitDirW + vRandom;			// 3.0f * vRandom;		float3(0, 1, 0) + vRandom
+			p.SizeW = particleSize;						// float2(3.0f, 3.0f);
+			p.Age = gin[0].Age;
+			p.Type = PT_FLARE;
 
-				ptStream.Append(p);
+			ptStream.Append(p);
 
-				// reset the time to emit
-				gin[0].Age = 0.0f;
-			}
+			// reset the time to emit
+			gin[0].Age = 0.0f;
 		}
-			// always keep emitters
-			ptStream.Append(gin[0]);
+		
+		// always keep emitters
+		ptStream.Append(gin[0]);
 		
 	}
 	else
 	{
 		if (active)
 		{
-		// Specify conditions to keep particle
-		if (gin[0].Age <= particleMaxAge)		// max age
-			ptStream.Append(gin[0]);
+			// Specify conditions to keep particle
+			if (gin[0].Age <= particleMaxAge)		// max age
+				ptStream.Append(gin[0]);
 		}
 	}
 	
