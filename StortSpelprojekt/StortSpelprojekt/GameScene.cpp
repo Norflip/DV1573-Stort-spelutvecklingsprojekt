@@ -717,6 +717,8 @@ void GameScene::Update(const float& deltaTime)
 			showMenu = false;
 			static_cast<GUISprite*>(guiManager->GetGUIObject("restartButton"))->SetVisible(false);
 			static_cast<GUISprite*>(guiManager->GetGUIObject("quitButton"))->SetVisible(false);
+
+			SaveHandler::RemoveSave();
 			Engine::Instance->start = true;
 			Engine::Instance->SwitchScene(SceneIndex::GAME);
 			return;
@@ -826,6 +828,7 @@ void GameScene::OnIMGUIFrame()
 
 	if (ImGui::Button("restart"))
 	{
+		SaveHandler::RemoveSave();
 		Engine::Instance->start = true;
 		Engine::Instance->SwitchScene(SceneIndex::GAME);
 	}
