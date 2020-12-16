@@ -78,6 +78,7 @@ void WinScene::Update(const float& deltaTime)
 	if (static_cast<GUISprite*>(guiManager->GetGUIObject("quit"))->IsClicked())
 	{
 		AudioMaster::Instance().StopSoundEvent("menusound");
+		OnDeactivate();
 		Engine::Instance->Exit();
 		return;
 	}
