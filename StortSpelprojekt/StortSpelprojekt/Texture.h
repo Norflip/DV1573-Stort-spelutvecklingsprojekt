@@ -38,6 +38,8 @@ public:
 	void SetSRV(ID3D11ShaderResourceView* srv) { this->srv = srv; }
 	ID3D11ShaderResourceView* GetSRV() const { return this->srv; }
 	
+	void SetName(std::string name) { this->name = name; }
+	std::string GetName() { return this->name; }
 	ALIGN16_ALLOC;
 private:
 	float RandomFloat(float a, float b);
@@ -46,6 +48,7 @@ private:
 	ID3D11ShaderResourceView* srv;	
 	unsigned char* buffer;
 	size_t width, height, channels;
+	std::string name;
 };
 
 static std::unordered_map<std::string, Texture*> mTextureCache;

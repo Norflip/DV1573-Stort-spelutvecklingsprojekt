@@ -95,7 +95,7 @@ namespace PossionDiscSampler
 				spawnPoints.erase(spawnPoints.begin() + index);
 			}
 		}
-
+		delete[] grid;
 		return points;
 	}
 }
