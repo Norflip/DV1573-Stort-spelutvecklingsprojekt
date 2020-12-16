@@ -99,7 +99,7 @@ void IntroScene::InitializeGUI()
 	upgradeTitle->SetVisible(false);
 	upgradeTitle->AddGroup(GuiGroup::Upgrades);
 	upgradeTitle->RemoveGroup(GuiGroup::Default);
-	GUISprite* reset = new GUISprite(*renderer, "Textures/BackButton.png", windowWidth / 2 + 450, 100, 0, DrawDirection::Default, ClickFunction::Clickable, GuiGroup::Upgrades);
+	GUISprite* reset = new GUISprite(*renderer, "Textures/resetButton.png", windowWidth / 2 + 450, 100, 0, DrawDirection::Default, ClickFunction::Clickable, GuiGroup::Upgrades);
 	reset->AddGroup(GuiGroup::Upgrades);
 	reset->RemoveGroup(GuiGroup::Default);
 	reset->SetVisible(false);
