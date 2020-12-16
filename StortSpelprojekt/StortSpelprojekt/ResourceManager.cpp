@@ -20,7 +20,7 @@ ResourceManager::~ResourceManager()
 
 	
 	//delete missingTexture;
-	delete[] pixel;
+	//delete[] pixel;
 
 	resources.clear();
 	shaderResources.clear();
@@ -86,7 +86,7 @@ void ResourceManager::RemoveResource(std::string key)
 
 void ResourceManager::InitializeResources(ID3D11Device* device)
 {
-	pixel = new unsigned char[4];
+	unsigned char* pixel = new unsigned char[4];
 	pixel[0] = pixel[2] = pixel[3] = 255;
 	pixel[1] = 0;
 
@@ -95,6 +95,8 @@ void ResourceManager::InitializeResources(ID3D11Device* device)
 	ReadTextures(device);
 	ReadShaders(device);
 	ReadObjects(device);
+
+	delete[] pixel;
 }
 
 void ResourceManager::ReadObjects(ID3D11Device* device)
