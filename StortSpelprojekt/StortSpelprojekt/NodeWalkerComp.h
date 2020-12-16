@@ -4,6 +4,7 @@
 #include "Input.h"
 #include "World.h"
 #include "MetaProgress.h"
+#include <algorithm>
 
 // why are these global?
 constexpr float HEIGHT = 0.6f; //height from ground
@@ -27,6 +28,11 @@ private:
 	RigidBodyComponent* rbComp;
 	PlayerComp* playerComp;
 	World* world;
+
+	//Blending
+	float finalFactor = 0.f;
+	float factorValue = 0.f;
+	float factorRange = 0.f;
 
 	void StartAnim();
 	void StopAnim();

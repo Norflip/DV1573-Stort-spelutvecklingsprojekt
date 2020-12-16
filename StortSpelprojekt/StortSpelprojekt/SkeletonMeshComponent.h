@@ -56,9 +56,9 @@ public:
 	void SetTrack(const SkeletonStateMachine& type, bool playOnce);
 	
 	void PlayBlendAnimations(const float& deltaTime);
-	void BlendAnimations();
+	
 	void CreateCombinedAnimation(SkeletonStateMachine state1, SkeletonStateMachine state2, int startJoint, int endJoint);
-	void CreateBlendedAnimation();
+
 	bool GetIsDone();
 	void SetisDone(bool);
 	bool& SetAndGetDoneDown();
@@ -75,8 +75,14 @@ public:
 	void SetTimeScale(float time) { this->timeScale = time; }
 	const EnemyType GetEnemyType() { return enemyType; }
 	void SetEnemyType(const EnemyType& enemyType) { this->enemyType = enemyType; }
+
+	//BLEND
 	std::vector<dx::XMFLOAT4X4> GetBlendTransform() { return this->blendTransform; }
 	void SetBlendTransform(std::vector<dx::XMFLOAT4X4> transform);
+	void SetBlendedAnimTime(SkeletonStateMachine track1, SkeletonStateMachine track2);
+	float GetBlendedAnimTime() { return this->blendAnimTime; }
+	bool SetBlendedDown(bool trufal);
+	bool SetBlendedUp(bool trufal);
 
 	void SetBlendingTracksAndFactor(SkeletonStateMachine track1, SkeletonStateMachine track2, float factor, bool blend);
 
@@ -102,7 +108,6 @@ private:
 	bool done = false;
 	void PlayOnce(const float& deltaTime);
 	void RunAnimation(const float& deltaTime);
-	void FindChildren(SkeletonAni& track, int index, std::map<std::string, unsigned int>& map, std::string& name, std::string& secondName);
 	bool doneUp, doneDown;
 	bool doneDeath = false;
 	float count = 0.0f;
@@ -113,5 +118,8 @@ private:
 	SkeletonStateMachine track2;
 	float factor;
 	bool blend;
+	float blendAnimTime;
+	bool blendedDown;
+	bool blendedUp;
 };
 

@@ -33,7 +33,7 @@ Animations: 4
 0: Animations/House/HouseBaseIdle.ZWEB
 1: Animations/House/HouseBaseWalk.ZWEB
 7: Animations/House/HouseBaseSitDown.ZWEB
-6: Animations/House/HouseBaseStandUp.ZWEB
+6: Animations/House/House_No_Backside_Standing_Idle.ZWEB
 
 HouseLegs: Models/House/House_Legs.ZWEB
 Shader: skeletonShader
@@ -41,7 +41,7 @@ Animations: 4
 0: Animations/House/HouseLegsIdle.ZWEB
 1: Animations/House/HouseLegsWalk.ZWEB
 7: Animations/House/HouseLegsSitDown.ZWEB
-6: Animations/House/HouseLegsStandUp.ZWEB
+6: Animations/House/house_Legs-Stading_Idle.ZWEB
 
 Lamp: Models/Props/lampa.ZWEB
 Shader: defaultShader

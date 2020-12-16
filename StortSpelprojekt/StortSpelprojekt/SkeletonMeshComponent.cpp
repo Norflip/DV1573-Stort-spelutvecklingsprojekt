@@ -445,10 +445,15 @@ void SkeletonMeshComponent::PlayOnce(const float& deltaTime)
 		}
 		else
 		{
+			//kan bli wack
 			elapsedTime = 0.0f;
 			if (blendedDown)
 			{
 				doneDown = true;
+			}
+			else if (blendedUp)
+			{
+				doneUp = true;
 			}
 			else
 			{
@@ -546,11 +551,17 @@ void SkeletonMeshComponent::SetBlendedAnimTime(SkeletonStateMachine track1, Skel
 {
 	float anim1Time = skeletonAnimations[trackMap[track1]].GetAniLength() / skeletonAnimations[trackMap[track1]].GetFPS();
 	float anim2Time = skeletonAnimations[trackMap[track2]].GetAniLength() / skeletonAnimations[trackMap[track2]].GetFPS();
-	this->blendedAnimTime = anim1Time * (1 - this->factor) + anim2Time * this->factor;
+	this->blendAnimTime = anim1Time * (1 - this->factor) + anim2Time * this->factor;
 }
 
 bool SkeletonMeshComponent::SetBlendedDown(bool trufal)
 {
 	this->blendedDown = trufal;
 	return this->blendedDown;
+}
+
+bool SkeletonMeshComponent::SetBlendedUp(bool trufal)
+{
+	this->blendedUp = trufal;
+	return blendedUp;
 }

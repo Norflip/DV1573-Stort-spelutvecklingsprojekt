@@ -1,6 +1,8 @@
 #include "NodeWalkerComp.h"
 #include "PlayerComp.h"
 
+#define CLAMP(x, low, high)  (((x) > (high)) ? (high) : (((x) < (low)) ? (low) : (x)))
+
 NodeWalkerComp::NodeWalkerComp()
 {
 	this->speed = 3.0f;// 16.2f;
@@ -81,7 +83,7 @@ void NodeWalkerComp::Stop()
 {
 	//std::cout << "stop <" << std::endl;
 	isWalking = false;
-	StopAnim();
+	//StopAnim();
 }
 
 void NodeWalkerComp::StartAnim()
@@ -104,20 +106,43 @@ void NodeWalkerComp::StartAnim()
 
 void NodeWalkerComp::StopAnim()
 {
-	std::cout << playerComp->GetDistance() << std::endl;// BLEND
+	std::cout <<"Player distance: "<< playerComp->GetDistance() << std::endl;// BLEND
 
 	//minimum 10, max 40
+	if (playerComp->GetDistance() <= 10.f)
+	{
+		this->factorValue = (10.f - 8.f);
+		this->factorRange = (1.f - 0.f);
+		this->finalFactor = (((playerComp->GetDistance() - 8.f) * factorRange) / factorValue) + 0.f;
+
+		finalFactor = CLAMP(finalFactor, 0.f, 1.f);
+
+		std::cout << "Final Factor: " << finalFactor << std::endl;
+		base->SetBlendingTracksAndFactor(SkeletonStateMachine::IDLE, SkeletonStateMachine::UP, finalFactor, true);
+		base->SetTrack(SkeletonStateMachine::BLENDED, false);
+		legs->SetBlendingTracksAndFactor(SkeletonStateMachine::IDLE, SkeletonStateMachine::UP, finalFactor, true);
+		legs->SetTrack(SkeletonStateMachine::BLENDED, false);
+	}
+	else
+	{
+		this->factorValue = (80.f - 40.f);
+		this->factorRange = (1.f - 0.f);
+		this->finalFactor = (((playerComp->GetDistance() - 40.f) * factorRange) / factorValue) + 0.f;
+
+		base->SetBlendingTracksAndFactor(SkeletonStateMachine::WALK, SkeletonStateMachine::IDLE, finalFactor, true);
+		base->SetTrack(SkeletonStateMachine::BLENDED, false);
+		legs->SetBlendingTracksAndFactor(SkeletonStateMachine::WALK, SkeletonStateMachine::IDLE, finalFactor, true);
+		legs->SetTrack(SkeletonStateMachine::BLENDED, false);
+	}
+
+	
+
+	
+
 	//if (canWalk)
 	//{
 		//std::cout << "stop Animation<" << std::endl;
-		base->SetisDone(false);
-		legs->SetisDone(false);
-		base->SetTrack(SkeletonStateMachine::DOWN, true);
-		legs->SetTrack(SkeletonStateMachine::DOWN, true);
-		base->SetAndGetDoneDown() = false;
-		legs->SetAndGetDoneDown() = false;
-		base->SetAndGetDoneUp() = false;
-		legs->SetAndGetDoneUp() = false;
+		
 	//}
 }
 
@@ -155,6 +180,7 @@ void NodeWalkerComp::Update(const float& deltaTime)
 		{
 			if (canWalk)
 			{
+
 				dx::XMFLOAT3 nextPoint = { thePath.GetPoint(this->currentNode).x, HEIGHT, thePath.GetPoint(this->currentNode).z };
 				dx::XMVECTOR vdir = dx::XMVectorSubtract(dx::XMLoadFloat3(&nextPoint), GetOwner()->GetTransform().GetPosition());
 				dx::XMStoreFloat(&this->length, dx::XMVector3Length(vdir));
@@ -199,6 +225,12 @@ void NodeWalkerComp::Update(const float& deltaTime)
 				}
 
 			}
+			
+		}
+
+		else
+		{
+			StopAnim();
 		}
 	}
 	else
