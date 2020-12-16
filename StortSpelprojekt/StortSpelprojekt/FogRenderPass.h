@@ -9,7 +9,6 @@ public:
 	virtual ~FogRenderPass()
 	{
 		delete fogMaterial;
-
 	}
 
 	void m_Initialize(ID3D11Device* device) override

@@ -11,6 +11,7 @@ WorldGenerator::WorldGenerator() : constructed(false), treePoints(dx::XMFLOAT2(0
 
 WorldGenerator::~WorldGenerator()
 {
+	delete spawner;
 }
 
 void WorldGenerator::Initialize(Object* root, World* world, ItemManager* items, Renderer* renderer)

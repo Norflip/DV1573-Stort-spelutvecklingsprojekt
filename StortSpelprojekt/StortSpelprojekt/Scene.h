@@ -58,6 +58,7 @@ public:
 	virtual void FixedUpdate(const float& fixedDeltaTime);
 	virtual void Render();
 	
+	GUIManager* GetGuiManager() { return this->guiManager; }
 #if USE_IMGUI
 	virtual void OnIMGUIFrame() {};
 #endif

@@ -31,6 +31,7 @@ GameScene::~GameScene()
 {
 	delete items;
 	delete enemyManager;
+	delete guiManager;
 }
 
 
