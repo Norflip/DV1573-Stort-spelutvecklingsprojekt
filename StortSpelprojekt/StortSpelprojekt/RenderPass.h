@@ -35,10 +35,15 @@ class PSRenderPass : public RenderPass
 {
 public:
 	PSRenderPass(int priority, std::string pixelShaderPath, LPCSTR pixelShaderEntry = "main") : RenderPass(priority, RenderPass::PassType::POST_PROCESSING), path(pixelShaderPath), entry(pixelShaderEntry) {}
-	virtual ~PSRenderPass() { delete material; }
+	virtual ~PSRenderPass()
+	{ 
+		delete material; 
+		delete shader;
+	}
+
 	void m_Initialize(ID3D11Device* device) override 
 	{
-		Shader* shader = new Shader;
+		shader = new Shader;
 		shader->SetPixelShader(path, entry);
 		shader->SetVertexShader("Shaders/ScreenQuad_vs.hlsl");
 		shader->Compile(device);
@@ -55,6 +60,7 @@ public:
 	}
 
 private:
+	Shader* shader;
 	Material* material;
 
 	//LPCWSTR path;

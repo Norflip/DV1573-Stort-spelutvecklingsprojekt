@@ -12,6 +12,12 @@ WorldGenerator::WorldGenerator() : constructed(false), treePoints(dx::XMFLOAT2(0
 WorldGenerator::~WorldGenerator()
 {
 	delete spawner;
+
+	// GALFI
+	for (int i = 0; i < meshDeletes.size(); i++)
+		delete meshDeletes[i];
+	for (int i = 0; i < materialDeletes.size(); i++)
+		delete materialDeletes[i];
 }
 
 void WorldGenerator::Initialize(Object* root, World* world, ItemManager* items, Renderer* renderer)
@@ -34,6 +40,9 @@ void WorldGenerator::Construct(const SaveState& state, const WorldDescription& d
 	if (!constructed)
 	{
 		chunkMesh = GetChunkMesh(renderer->GetDevice());
+
+		meshDeletes.push_back(chunkMesh);
+		//Engine::Instance->GetResources()->AddResource("chunk", chunkMesh);
 
 		std::vector<dx::XMINT2> indexes;
 		std::unordered_map<int, ChunkIndexInfo> chunks;
@@ -339,6 +348,8 @@ Chunk* WorldGenerator::CreateChunk(ChunkIndexInfo& indexInfo, Object* root, cons
 
 	Bounds bounds(dx::XMFLOAT3(0, 0, 0), dx::XMFLOAT3(CHUNK_SIZE, TERRAIN_SCALE + 1.0f, CHUNK_SIZE));
 	chunkObject->AddComponent<MeshComponent>(chunkMesh, material, bounds);
+
+	materialDeletes.push_back(material);
 
 	chunkMap.insert({ HASH2D_I(indexInfo.index.x, indexInfo.index.y), chunk });
 	return chunk;

@@ -289,4 +289,5 @@ void Chunk::CreateChunkData(const WorldDescription& description, const Path& pat
 	}
 
 	data.dataTexture = Texture::CreateFromBuffer(buffer, CHUNK_SIZE + 1, CHUNK_SIZE + 1, 4, DXGI_FORMAT_R8G8B8A8_UNORM, device);
+	delete[] buffer; // GALFI
 }
