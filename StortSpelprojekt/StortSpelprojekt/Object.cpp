@@ -104,18 +104,22 @@ bool Object::HasFlag(ObjectFlag flag) const
 	return (int)(flag & flags) != 0;
 }
 
-void Object::AddFlag(ObjectFlag flag)
+void Object::AddFlag(ObjectFlag flag, bool sendMsg)
 {
 	ObjectFlag old = flags;
 	flags |= flag;
-	this->SendMsg((int)MessageType::SET_FLAG, std::to_string((int)flag), this, true);
+
+	if (sendMsg)
+		this->SendMsg((int)MessageType::SET_FLAG, std::to_string((int)flag), this, true);
 }
 
-void Object::RemoveFlag(ObjectFlag flag)
+void Object::RemoveFlag(ObjectFlag flag, bool sendMsg)
 {
 	ObjectFlag old = this->flags;
 	this->flags &= ~flag;
-	this->SendMsg((int)MessageType::REM_FLAG, std::to_string((int)flag), this, true);
+
+	if (sendMsg)
+		this->SendMsg((int)MessageType::REM_FLAG, std::to_string((int)flag), this, true);
 }
 
 void Object::SetParent(Object* parent)

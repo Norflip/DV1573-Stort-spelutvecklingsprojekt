@@ -6,10 +6,12 @@
 #include "SaveState.h"
 #include "ItemManager.h"
 
+constexpr int TERRAIN_RELEVANT_RADIUS = 2;
+constexpr int MAX_RELEVANT = (TERRAIN_RELEVANT_RADIUS * 2 + 1) * (TERRAIN_RELEVANT_RADIUS * 2 + 1);
+
 class World
 {
 	typedef std::unordered_map<int, Chunk*> ChunkMap;
-	const int RELEVANT_RADIUS = 2;
 	const int DEFAULT_RELEVANT_INDEX = -100000;
 
 public:
@@ -29,7 +31,7 @@ public:
 	float SampleHeight(const float& x, const float& z) const;
 	float SampleRoadInfluence(const float& x, const float& z) const;
 	void SampleNormal(const float& x, const float& z, dx::XMFLOAT3& normal) const;
-	void GetChunksInRadius(const dx::XMINT2& index, int radius, std::vector<Chunk*>& chunks) const;
+	void GetChunksInRadius(const dx::XMINT2& index, int radius, Chunk* chunks[], size_t& count) const;
 
 	Path& GetPath() { return this->generator.GetPath(); }
 	WorldDescription& GetDescription() { return this->description; }
@@ -56,6 +58,10 @@ private:
 	Renderer* renderer;
 	ResourceManager* resources;
 	ItemManager* items;
-	std::vector<Chunk*> relevant;	
+
+	Chunk* relevant[MAX_RELEVANT];
+	size_t currentRelevantCount;
+
+	//std::vector<Chunk*> relevant;	
 	dx::XMINT2 lastRelevantIndex;
 };
