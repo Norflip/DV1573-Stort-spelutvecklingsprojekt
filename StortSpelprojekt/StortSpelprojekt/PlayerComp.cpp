@@ -171,8 +171,6 @@ void PlayerComp::FixedUpdate(const float& fixedDeltaTime)
 					MetaProgress::Instance().SetKilledBy("fog insta-death.");
 				}
 			}
-
-
 		}
 	}
 }

@@ -103,6 +103,7 @@ CreditsScene::CreditsScene() : Scene("CreditsScene")
 
 CreditsScene::~CreditsScene()
 {
+	delete guiManager;
 }
 
 void CreditsScene::Initialize()

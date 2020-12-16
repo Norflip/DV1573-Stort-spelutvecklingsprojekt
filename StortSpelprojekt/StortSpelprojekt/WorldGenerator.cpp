@@ -11,6 +11,7 @@ WorldGenerator::WorldGenerator() : constructed(false), treePoints(dx::XMFLOAT2(0
 
 WorldGenerator::~WorldGenerator()
 {
+	delete spawner;
 }
 
 void WorldGenerator::Initialize(Object* root, World* world, ItemManager* items, Renderer* renderer)
@@ -169,7 +170,7 @@ void WorldGenerator::Deconstruct()
 {
 	if (constructed)
 	{
-		std::cout << "CHUNKS: " << chunkMap.size() << std::endl;
+		std::cout << "chunk count to remove: " << chunkMap.size() << std::endl;
 
 		for (auto i : chunkMap)
 		{
@@ -177,8 +178,6 @@ void WorldGenerator::Deconstruct()
 			Object::RemoveFromHierarchy(i.second->GetOwner());
 			delete i.second->GetOwner();
 		}
-
-
 
 		spawner->Despawn();
 		constructed = false;

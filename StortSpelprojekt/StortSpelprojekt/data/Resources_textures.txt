@@ -1,4 +1,4 @@
-Textures: 5
+Textures: 11
 
 Grass: Textures/grassTexture.png
 
@@ -7,3 +7,17 @@ Road: Textures/Stone_Floor_003_COLOR.jpg
 Fire1: Textures/fire1.png
 
 Particle: Textures/particle3.png
+
+Day: Textures/Ramp_Day2.png
+
+Dusk: Textures/Ramp_Dusk.png
+
+Night: Textures/Ramp_Night.png
+
+End: Textures/Ramp_End.png
+
+GrassHeight: Textures/grassHeight.png
+
+GrassDiff: Textures/grassDiff.png
+
+GrassNoise: Textures/noise.png

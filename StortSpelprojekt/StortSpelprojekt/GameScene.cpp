@@ -31,6 +31,7 @@ GameScene::~GameScene()
 {
 	delete items;
 	delete enemyManager;
+	delete guiManager;
 }
 
 
@@ -192,6 +193,8 @@ void GameScene::InitializeObjects()
 	leftSign->AddComponent<BoxColliderComponent>(dx::XMFLOAT3{ 1.0f, 1.0f, 1.0f }, dx::XMFLOAT3{ 0, 0, 0 });
 	leftSign->AddComponent<SelectableComponent>();
 	leftSign->AddComponent<RigidBodyComponent>(0.0f, FilterGroups::CLICKABLE, (FilterGroups::EVERYTHING & ~FilterGroups::PLAYER), BodyType::STATIC, true);
+
+	//leftSign->GetTransform().SetRotation(dx::XMVECTOR({ 0, 90.0f, 0, 0 }));
 
 	AddObjectToRoot(rightSign);
 	AddObjectToRoot(leftSign);
@@ -731,13 +734,18 @@ void GameScene::Update(const float& deltaTime)
 		//static_cast<GUISprite*>(guiManager->GetGUIObject("returnToMenu"))->SetVisible(true);
 
 		if (static_cast<GUISprite*>(guiManager->GetGUIObject("quitButton"))->IsClicked())
-				Engine::Instance->Exit();
+		{
+			OnDeactivate();
+			Engine::Instance->Exit();
+		}
+				
 		if (static_cast<GUISprite*>(guiManager->GetGUIObject("restartButton"))->IsClicked())
 		{
 			//showMenu = false;
 			//static_cast<GUISprite*>(guiManager->GetGUIObject("restartButton"))->SetVisible(false);
 			//static_cast<GUISprite*>(guiManager->GetGUIObject("quitButton"))->SetVisible(false);
 			//static_cast<GUISprite*>(guiManager->GetGUIObject("returnToMenu"))->SetVisible(true);
+			SaveHandler::RemoveSave();
 			Engine::Instance->start = true;
 			Engine::Instance->SwitchScene(SceneIndex::GAME);
 			return;
@@ -855,6 +863,13 @@ void GameScene::OnIMGUIFrame()
 	if (ImGui::Button("EASY WIN BBY"))
 	{
 		TransitionToNextSegment();
+	}
+
+	if (ImGui::Button("restart"))
+	{
+		SaveHandler::RemoveSave();
+		Engine::Instance->start = true;
+		Engine::Instance->SwitchScene(SceneIndex::GAME);
 	}
 }
 #endif

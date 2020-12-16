@@ -19,6 +19,11 @@ ObjectSpawner::~ObjectSpawner()
 	RELEASE(grassIndexSrv);
 	RELEASE(grassBCBfr);
 	RELEASE(grassBCSRV);
+
+	if (pooler)
+		delete pooler;
+	if (environmentQT)
+		delete environmentQT;
 }
 
 void ObjectSpawner::Initialize(Object* root, World* world, ItemManager* items, Renderer* renderer)

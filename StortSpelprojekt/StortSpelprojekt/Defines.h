@@ -25,4 +25,4 @@
 			}} \
 
 #define MULTITHREAD_PHYSICS FALSE
-#define USE_IMGUI TRUE
+#define USE_IMGUI FALSE

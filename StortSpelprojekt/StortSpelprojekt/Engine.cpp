@@ -63,12 +63,15 @@ Engine::Engine(HINSTANCE hInstance) : window(hInstance), activeSceneIndex(-1), s
 
 Engine::~Engine()
 {
+	//GUIManager* temp = scenes[activeSceneIndex]->GetGuiManager();
+
 	for (size_t i = 0; i < SCENE_COUNT; i++)
 	{
 		delete scenes[i];
 		scenes[i] = nullptr;
 	}
 
+	//renderer->RemoveRenderPass(temp);
 	delete renderer;
 	delete resourceManager;
 	delete physics;
@@ -96,10 +99,11 @@ void Engine::Run()
 			DispatchMessage(&msg);
 
 			if (msg.message == WM_QUIT)
+			{
+				scenes[activeSceneIndex]->OnDeactivate();
 				Exit();
+			}
 			
-
-
 			if (activeSceneIndex != -1)
 			{
 				if (window.GetShouldResize())
