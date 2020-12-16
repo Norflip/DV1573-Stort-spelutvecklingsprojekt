@@ -12,6 +12,7 @@ GameOverScene::GameOverScene() : Scene("GameOverScene")
 
 GameOverScene::~GameOverScene()
 {
+	delete guiManager;
 }
 
 void GameOverScene::Initialize()
@@ -90,7 +91,7 @@ void GameOverScene::Update(const float& deltaTime)
 
 	if(static_cast<GUISprite*>(guiManager->GetGUIObject("quit"))->IsClicked())
 	{
-
+		OnDeactivate();
 		Engine::Instance->Exit();
 	}
 

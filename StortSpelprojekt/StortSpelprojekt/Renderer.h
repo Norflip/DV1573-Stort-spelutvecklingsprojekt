@@ -139,6 +139,7 @@ private:
 	RenderTexture midbuffer;
 	RenderTexture renderPassSwapBuffers [2];
 	
+	Shader* screenQuadShader;
 	Material* screenQuadMaterial;
 	Mesh* screenQuadMesh;
 	Shader forwardPlusShader;

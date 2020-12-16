@@ -27,6 +27,7 @@ Renderer::~Renderer()
 	renderPassSwapBuffers[0].Release();
 	renderPassSwapBuffers[1].Release();
 
+
 	for (auto i = passes.begin(); i < passes.end(); i++)
 		delete (*i);
 
@@ -47,6 +48,8 @@ Renderer::~Renderer()
 		delete screenQuadMaterial;
 	if (screenQuadMesh)
 		delete screenQuadMesh;
+	if (screenQuadShader)
+		delete screenQuadShader;
 
 	delete[] tmpBatchInstanceData;
 	RELEASE(o_LightGrid_tex);
@@ -133,7 +136,7 @@ void Renderer::Initialize(Window* window)
 	DXHelper::CreateDepthStencilStates(device, &dss_On, &dss_Off);
 
 	/* Screenquad shader */
-	Shader* screenQuadShader = new Shader;
+	screenQuadShader = new Shader;
 	//screenQuadShader->SetPixelShader("Shaders/ScreenQuad_ps.hlsl");
 	//screenQuadShader->SetVertexShader("Shaders/ScreenQuad_vs.hlsl");
 	screenQuadShader->Compile(device);
