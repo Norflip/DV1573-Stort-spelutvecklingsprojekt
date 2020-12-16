@@ -34,6 +34,15 @@ ParticleComponent::~ParticleComponent()
 	if (initializeVB) { initializeVB->Release(); }
 	if (drawVB) { drawVB->Release(); }
 	if (streamoutVB) { streamoutVB->Release(); }	
+
+	if (texture)
+		delete texture;
+	if (particleMesh)
+		delete particleMesh;
+	if (drawMat)
+		delete drawMat;
+	if (streamoutMat)
+		delete streamoutMat;
 }
 
 void ParticleComponent::InitializeParticles(ID3D11Device* device)
@@ -75,8 +84,10 @@ void ParticleComponent::InitializeParticles(ID3D11Device* device)
 	hr = device->CreateShaderResourceView(random, &viewDesc, &randomNumberSRV);
 	assert(SUCCEEDED(hr));
 	delete[] randomValues;
-		
-	streamoutMat->SetTexture(new Texture(randomNumberSRV), TEXTURE_DIFFUSE_SLOT, ShaderBindFlag::SOGEOMETRY);
+	
+	texture = new Texture(randomNumberSRV);
+
+	streamoutMat->SetTexture(texture, TEXTURE_DIFFUSE_SLOT, ShaderBindFlag::SOGEOMETRY);
 	streamoutMat->SetSampler(DXHelper::CreateSampler(D3D11_FILTER_MIN_MAG_MIP_LINEAR, D3D11_TEXTURE_ADDRESS_WRAP, device), 0, ShaderBindFlag::SOGEOMETRY);
 	
 	/* Particle cb stuffy */
@@ -144,7 +155,11 @@ void ParticleComponent::SetTexture(ID3D11Device* device, LPCWSTR textureFilename
 	if (FAILED(hr))
 		MessageBox(0, L"Failed to 'Load WIC Texture'", L"Graphics scene Initialization Message", MB_ICONERROR);
 
-	drawMat->SetTexture(new Texture(particleSRV), TEXTURE_DIFFUSE_SLOT, ShaderBindFlag::PIXEL);
+	if (texture)
+		delete texture;
+
+	texture = new Texture(particleSRV);
+	drawMat->SetTexture(texture, TEXTURE_DIFFUSE_SLOT, ShaderBindFlag::PIXEL);
 	drawMat->SetSampler(DXHelper::CreateSampler(D3D11_FILTER_MIN_MAG_MIP_LINEAR, D3D11_TEXTURE_ADDRESS_WRAP, device), 0, ShaderBindFlag::PIXEL);
 
 	usingTexture = true;

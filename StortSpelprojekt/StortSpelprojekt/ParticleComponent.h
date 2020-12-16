@@ -59,6 +59,7 @@ private:
 	Material* drawMat;
 	Shader* soShader;
 	Shader* drawShader;
+	Texture* texture;
 
 	bool active;
 	int particlesPerSecond;
