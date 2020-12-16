@@ -171,11 +171,17 @@ void Particlesys::Update(float deltaTime, float gameTime, float fuel)
 	colorChange.w *= m;
 	particleColorModify = colorChange;
 
-	/*dx::XMFLOAT2 size;
+
+	/*
+	dx::XMFLOAT2 size;
 	size = particleSize;
 	size.x *= m;
 	size.y *= m;
-	particleSizeModify = size;*/
+	particleSizeModify = size;
+	*/
+
+
+	/*
 	if (KEY_DOWN(NumPad1))
 	{
 		particlesActivated = false;
@@ -186,6 +192,7 @@ void Particlesys::Update(float deltaTime, float gameTime, float fuel)
 		particlesActivated = true;
 
 	}
+	*/
 }
 
 void Particlesys::Draw(ID3D11DeviceContext* context, CameraComponent* cam)
