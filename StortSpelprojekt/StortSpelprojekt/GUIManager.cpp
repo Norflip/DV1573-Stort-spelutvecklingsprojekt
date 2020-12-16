@@ -80,6 +80,7 @@ GUIManager::~GUIManager()
 	{
 		delete i.second;
 	}
+
 }
 
 void GUIManager::AddGUIObject(GUIObject* addObj, std::string name)
@@ -162,8 +163,8 @@ void GUIManager::UpdateAll()
 {
 	for (auto i : GUIObjects)
 	{
-		if(i.second ->GetVisible())
-		i.second->Update();
+		if(i.second->GetVisible())
+			i.second->Update();
 	}
 }
 

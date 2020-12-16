@@ -12,6 +12,7 @@ GameOverScene::GameOverScene() : Scene("GameOverScene")
 
 GameOverScene::~GameOverScene()
 {
+	delete guiManager;
 }
 
 void GameOverScene::Initialize()

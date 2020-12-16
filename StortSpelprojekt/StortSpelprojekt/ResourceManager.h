@@ -16,6 +16,7 @@ private:
 	Resource* GetResource(std::string key);
 
 	Texture* missingTexture;
+	unsigned char* pixel;
 
 public:
 	ResourceManager();

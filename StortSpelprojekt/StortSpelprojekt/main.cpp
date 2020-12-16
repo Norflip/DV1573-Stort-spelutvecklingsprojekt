@@ -8,9 +8,11 @@ int WINAPI wWinMain(HINSTANCE hInstance, HINSTANCE, PWSTR pCmdLine, int nCmdShow
 #endif // _DEBUG
 
 	// Use this to search for memory leak locations
-	//_crtBreakAlloc = 10439;
+	//_crtBreakAlloc = 1288;
+	
 
 	Engine engine(hInstance);
+
 	engine.Run();
 
 	return 0;

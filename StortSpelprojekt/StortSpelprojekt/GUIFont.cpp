@@ -28,6 +28,8 @@ GUIFont::GUIFont(Renderer& renderer, const std::string& display, float x, float 
 
 GUIFont::~GUIFont()
 {
+	if (spriteFont)
+		delete spriteFont;
 }
 
 void GUIFont::Draw(DirectX::SpriteBatch* spriteBatch)
@@ -59,6 +61,9 @@ void GUIFont::Translate(float x, float y)
 
 void GUIFont::SetFont(const wchar_t* font)
 {
+	delete this->spriteFont;
+	this->spriteFont = nullptr;
+
 	this->spriteFont = new DirectX::SpriteFont(this->renderer->GetDevice(), font);
 }
 
