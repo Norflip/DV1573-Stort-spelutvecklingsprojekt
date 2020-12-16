@@ -17,7 +17,7 @@ NodeWalkerComp::~NodeWalkerComp()
 {
 }
 
-void NodeWalkerComp::InitializePath(Path thePath)
+void NodeWalkerComp::InitializePath(Path &thePath)
 {
 	this->rbComp = GetOwner()->GetComponent<RigidBodyComponent>();
 	this->thePath = thePath;

@@ -50,8 +50,8 @@ class EnemyManager
 		//size_t nrOfEnemies; //total
 		int nrOfEnemiesTotal;
 		float enemySpawnRate;
-		size_t nrOfBaseEnemies;
-		size_t nrOfChargeEnemies;
+		//size_t nrOfBaseEnemies;
+		//size_t nrOfChargeEnemies;
 		//size_t aliveEnemies; //current number of enemies //can use vector size
 		float enemySpawnTimer;
 

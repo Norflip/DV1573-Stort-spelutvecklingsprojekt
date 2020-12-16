@@ -35,7 +35,7 @@ public:
 	//bool canWalk;
 	NodeWalkerComp();
 	virtual ~NodeWalkerComp();
-	void InitializePath(Path thePath);
+	void InitializePath(Path& thePath);
 	void InitAnimation();
 	//void Reset(); 
 	void Start();

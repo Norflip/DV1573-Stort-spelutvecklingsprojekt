@@ -258,9 +258,14 @@ void GameScene::InitializeGUI()
 	GUIFont* vramDisplay = new GUIFont(*renderer, "vram", 30, 60);
 	GUIFont* ramDisplay = new GUIFont(*renderer, "ram", 30, 90);
 
+
 	GUISprite* restartButton = new GUISprite(*renderer, "Textures/Restart.png", (windowWidth / 2)-150, 400, 0, DrawDirection::Default, ClickFunction::Clickable);
 	GUISprite* quitButton = new GUISprite(*renderer, "Textures/Exit.png", (windowWidth / 2) - 150, 600, 0, DrawDirection::Default, ClickFunction::Clickable);
-	
+	GUISprite* returnToMenu = new GUISprite(*renderer, "Textures/BackButton.png", 100, 200, 0, DrawDirection::Default, ClickFunction::Clickable);
+	returnToMenu->SetVisible(false);
+	returnToMenu->SetActivated();
+
+
 	crosshair->SetVisible(false);
 	doorSprite->SetVisible(false);
 	fuel->SetVisible(false);
@@ -273,6 +278,7 @@ void GameScene::InitializeGUI()
 	guiManager->AddGUIObject(restartButton, "restartButton");
 	guiManager->AddGUIObject(quitButton, "quitButton");
 	guiManager->AddGUIObject(fpsDisplay, "fps");
+	guiManager->AddGUIObject(returnToMenu, "returnToMenu");
 	//guiManager->AddGUIObject(playerPosDisplay, "playerPos");
 	//guiManager->AddGUIObject(healthDisplay, "playerHealth");
 	//guiManager->AddGUIObject(enemyDisplay, "enemyHealth");
@@ -708,6 +714,7 @@ void GameScene::Update(const float& deltaTime)
 
 		static_cast<GUISprite*>(guiManager->GetGUIObject("restartButton"))->SetVisible(true);
 		static_cast<GUISprite*>(guiManager->GetGUIObject("quitButton"))->SetVisible(true);
+		static_cast<GUISprite*>(guiManager->GetGUIObject("returnToMenu"))->SetVisible(true);
 
 		if (static_cast<GUISprite*>(guiManager->GetGUIObject("quitButton"))->IsClicked())
 				Engine::Instance->Exit();
@@ -720,11 +727,19 @@ void GameScene::Update(const float& deltaTime)
 			Engine::Instance->SwitchScene(SceneIndex::GAME);
 			return;
 		}
+		if (static_cast<GUISprite*>(guiManager->GetGUIObject("returnToMenu"))->IsClicked())
+		{
+			
+			AudioMaster::Instance().PlaySoundEvent("menusound");
+			Engine::Instance->SwitchScene(SceneIndex::INTRO);
+			return;
+		}
 	}
 	else
 	{
 		static_cast<GUISprite*>(guiManager->GetGUIObject("restartButton"))->SetVisible(false);
 		static_cast<GUISprite*>(guiManager->GetGUIObject("quitButton"))->SetVisible(false);
+		static_cast<GUISprite*>(guiManager->GetGUIObject("returnToMenu"))->SetVisible(false);
 	}
 
 	guiManager->UpdateAll();
