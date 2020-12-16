@@ -169,7 +169,7 @@ void WorldGenerator::Deconstruct()
 {
 	if (constructed)
 	{
-		std::cout << "CHUNKS: " << chunkMap.size() << std::endl;
+		std::cout << "chunk count to remove: " << chunkMap.size() << std::endl;
 
 		for (auto i : chunkMap)
 		{
@@ -177,8 +177,6 @@ void WorldGenerator::Deconstruct()
 			Object::RemoveFromHierarchy(i.second->GetOwner());
 			delete i.second->GetOwner();
 		}
-
-
 
 		spawner->Despawn();
 		constructed = false;
