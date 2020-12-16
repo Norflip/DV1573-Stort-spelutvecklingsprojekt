@@ -135,7 +135,6 @@ Texture* Texture::LoadTexture(ID3D11Device* device, LPCWSTR textureFilepath)
 			mTextureCache.insert({ key, texture });
 		}
 	}
-
 	return texture;
 }
 
