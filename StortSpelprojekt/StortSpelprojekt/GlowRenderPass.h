@@ -58,62 +58,6 @@ public:
 				// Om item är instancable.. kör en Instanceable_vs + emissive_ps t.ex
 				// OM item är vanlig... kör en Default_vs + emissive_ps.
 
-				//switch (item.type)
-				//{
-				//	case Renderer::RenderItem::Type::Instanced:
-				//		/*shader->SetVertexShader("Shaders/Instance_vs.hlsl");
-				//		shader->SetPixelShader("Shaders/Emissive_ps.hlsl");
-				//		material = new Material(shader);
-				//		renderer->GetContext()->PSSetShaderResources(0, 1, &target.srv);
-				//		renderer->DrawScreenQuad(material);*/
-				//		//shader->SetVertexShader("Shaders/Instance_vs.hlsl");
-				//		//shader->SetPixelShader("Shaders/Emissive_ps.hlsl");
-				//		//renderer->LoadShaderResourceView("glow");
-				//		std::cout << "Get Into Instance case" << std::endl;
-				//		
-				//		break;
-				//
-				//	case Renderer::RenderItem::Type::Default:
-				//	default:
-				//		/*shader->SetVertexShader("Shaders/Default_vs.hlsl");
-				//		shader->SetPixelShader("Shaders/Default_ps.hlsl");
-				//		material = new Material(shader);
-				//		renderer->GetContext()->PSSetShaderResources(0, 1, &target.srv);
-				//		renderer->DrawScreenQuad(material);*/
-				//		//shader->SetVertexShader("Shaders/Default_vs.hlsl");
-				//		//shader->SetPixelShader("Shaders/Emissive_ps.hlsl");
-				//		//renderer->LoadShaderResourceView("default");
-				//		
-				//		break;
-				//
-				//}
-				/*item.material = new Material(shader);
-				renderer->GetContext()->PSSetShaderResources(0, 1, &target.srv);
-				renderer->DrawScreenQuad(item.material);*/
-				/*if (item.type == Renderer::RenderItem::Type::Instanced)
-				{
-					//shader->SetVertexShader("Shaders/Instance_vs.hlsl");
-					//shader->SetPixelShader("Shaders/Emissive_ps.hlsl");
-					//shader->SetPixelShader("Shaders/Default_ps.hlsl");
-					std::cout << "Get Into Instance case" << std::endl;
-					item.material = materialInstanced;
-
-				}
-				else if (item.type == Renderer::RenderItem::Type::Default)
-				{
-					//shader->SetVertexShader("Shaders/Default_vs.hlsl");
-					//shader->SetPixelShader("Shaders/Emissive_ps.hlsl");
-					std::cout << "Get Into default case" << std::endl;
-					item.material = material;
-				}
-				else
-				{
-					std::cout << "got nowhere" << std::endl;
-				}*/
-
-
-				
-
 				switch (item.type)
 				{
 					case Renderer::RenderItem::Type::Instanced:
@@ -183,12 +127,13 @@ public:
 		renderer->SetRenderTarget(current, false);*/
 		
 
-		//ID3D11ShaderResourceView* srv = renderer->LoadShaderResourceView("glow");
+		ID3D11ShaderResourceView* srv = renderer->LoadShaderResourceView("glow");
 
 		// I renderpass shadern GlowShader så blir första texturen scenen i sig och den andra all data från glow texturen som vi gjorde i tidigare GlowPreRenderPass
 
 		renderer->GetContext()->PSSetShaderResources(0, 1, &current.srv);
 		renderer->GetContext()->PSSetShaderResources(2, 1, &current.srv);
+		//renderer->GetContext()->PSSetShaderResources(2, 1, &srv);
 
 		renderer->DrawScreenQuad(material);
 
