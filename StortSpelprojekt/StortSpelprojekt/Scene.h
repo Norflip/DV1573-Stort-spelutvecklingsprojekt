@@ -29,8 +29,6 @@
 #include "PlayerAnimHandlerComp.h"
 #include "HousePartsComponent.h"
 
-#include "ParticleComponent.h"
-
 #include "Particlesys.h"
 
 

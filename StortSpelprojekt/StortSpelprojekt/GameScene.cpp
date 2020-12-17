@@ -585,6 +585,8 @@ void GameScene::OnDeactivate()
 	//ShowCursor(true);
 	//this->PrintSceneHierarchy(root, 0);
 	player->GetComponent<PlayerComp>()->GetArms()->GetComponent< PlayerAnimHandlerComp>()->SetStarted(false);
+
+	AudioMaster::Instance().StopAllSoundEffects();
 }
 
 void GameScene::SetSignPositions(SaveState& state)
