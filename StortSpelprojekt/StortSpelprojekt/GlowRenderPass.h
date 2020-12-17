@@ -64,18 +64,18 @@ public:
 				{
 					case Renderer::RenderItem::Type::Instanced:
 						//std::cout << "Get Into Instance case" << std::endl;
-						renderer->DrawRenderItemInstanced(item, camera);
 						materialInstanced->SetTexture(item.material->GetTexture(2, ShaderBindFlag::PIXEL), 2, ShaderBindFlag::PIXEL);
 						materialInstanced->BindToContext(renderer->GetContext());
+						renderer->DrawRenderItemInstanced(item, camera);
 						break;
 
 					case Renderer::RenderItem::Type::Default:
 					default:
 						//std::cout << "Get Into default case" << std::endl;
-						renderer->DrawRenderItem(item, camera);
 						//item.material->GetTexture(2, ShaderBindFlag::PIXEL);
 						material->SetTexture(item.material->GetTexture(2, ShaderBindFlag::PIXEL), 2, ShaderBindFlag::PIXEL);
 						material->BindToContext(renderer->GetContext());
+						renderer->DrawRenderItem(item, camera);
 						break;
 				}
 				
@@ -88,9 +88,8 @@ public:
 		}
 
 		// UNBINDA GLOWTARGET HÄR. Kommer ge fel annars
-		//material->UnbindToContext(renderer->GetContext());
-		//materialInstanced->UnbindToContext(renderer->GetContext());
-
+		material->UnbindToContext(renderer->GetContext());
+		materialInstanced->UnbindToContext(renderer->GetContext());
 
 		// vi sparar glow texturer till renderer så vi sedan kan hämta den i nästa pass
 		renderer->StoreShaderResourceView("glow", target.srv);
@@ -130,9 +129,6 @@ public:
 	{
 		renderer->ClearRenderTarget(target, false);
 		renderer->SetRenderTarget(target, false);
-		/*renderer->ClearRenderTarget(current, false);
-		renderer->SetRenderTarget(current, false);*/
-		
 
 		ID3D11ShaderResourceView* srv = renderer->LoadShaderResourceView("glow");
 

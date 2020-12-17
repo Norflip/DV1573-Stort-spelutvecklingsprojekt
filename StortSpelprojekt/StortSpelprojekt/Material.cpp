@@ -125,15 +125,11 @@ void Material::SetTexture(Texture* texture, size_t slot, ShaderBindFlag flag)
 Texture* Material::GetTexture(size_t slot, ShaderBindFlag flag) const
 {
 	int flagKey = static_cast<int>(flag);
-
-
-
 	const auto & flagMap = textures.find(flagKey);
 
 	if (flagMap == textures.end())
 		return nullptr;
-
-	//std::unordered_map<size_t, Texture*>& flagMap2 = flagMap.find(slot);
+	
 	const auto& flagMap2 = flagMap->second.find(slot);
 
 	if (flagMap2 == flagMap->second.end())
