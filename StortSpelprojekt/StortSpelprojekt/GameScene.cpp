@@ -533,9 +533,9 @@ void GameScene::OnActivate()
 
 	std::cout << "FogCol: " << fogCol << " FogId: " << fogId << std::endl;
 
-	items->SpawnSpecific("Fruits", { -5.65f, INTERIOR_POSITION.y + 1.0f, -4.6f, 0.0f }, root);
-	items->SpawnSpecific("Health_kit", { -5.0f, INTERIOR_POSITION.y + 1.0f, -4.4f, 0.0f }, root);
-	items->SpawnSpecific("FuelRed", { -5.0f, INTERIOR_POSITION.y + 3.0f, 0.11f, 0.0f }, root);
+	//items->SpawnSpecific("Fruits", { -5.65f, INTERIOR_POSITION.y + 1.0f, -4.6f, 0.0f }, root);
+	//items->SpawnSpecific("Health_kit", { -5.0f, INTERIOR_POSITION.y + 1.0f, -4.4f, 0.0f }, root);
+	//items->SpawnSpecific("FuelRed", { -5.0f, INTERIOR_POSITION.y + 3.0f, 0.11f, 0.0f }, root);
 
 	renderer->AddRenderPass(guiManager);
 

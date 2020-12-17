@@ -36,7 +36,6 @@ void WorldGenerator::Construct(const SaveState& state, const WorldDescription& d
 	{
 		chunkMesh = GetChunkMesh(renderer->GetDevice());
 
-		meshDeletes.push_back(chunkMesh);
 		//Engine::Instance->GetResources()->AddResource("chunk", chunkMesh);
 
 		std::vector<dx::XMINT2> indexes;
@@ -147,13 +146,13 @@ void WorldGenerator::Construct(const SaveState& state, const WorldDescription& d
 		}
 
 		Bounds worldBounds(dx::XMFLOAT3(wmin.x, 0, wmin.y), dx::XMFLOAT3(wmax.x, 0.0f, wmax.y));
-		spawner->Spawn(state, worldBounds, chunkMap);
+		//spawner->Spawn(state, worldBounds, chunkMap);
 
 		std::vector<dx::XMFLOAT2> positions;
 		std::vector<float> angles;
 		path.GetLanternInformation(positions, angles);
 
-		spawner->SpawnSpecific(positions, { 0,1,0 }, angles, "Lamp", chunkMap, [](Object* obj)
+		/*spawner->SpawnSpecific(positions, { 0,1,0 }, angles, "Lamp", chunkMap, [](Object* obj)
 			{
 				obj->GetTransform().SetScale({ 1.2f, 1.2f, 1.2f });
 
@@ -164,7 +163,7 @@ void WorldGenerator::Construct(const SaveState& state, const WorldDescription& d
 				lc->SetIntensity(0.7f);
 				Object::AddToHierarchy(obj, light);
 
-			});
+			});*/
 
 		constructed = true;
 	}
@@ -344,8 +343,6 @@ Chunk* WorldGenerator::CreateChunk(ChunkIndexInfo& indexInfo, Object* root, cons
 
 	Bounds bounds(dx::XMFLOAT3(0, 0, 0), dx::XMFLOAT3(CHUNK_SIZE, TERRAIN_SCALE + 1.0f, CHUNK_SIZE));
 	chunkObject->AddComponent<MeshComponent>(chunkMesh, material, bounds);
-
-	materialDeletes.push_back(material);
 
 	chunkMap.insert({ HASH2D_I(indexInfo.index.x, indexInfo.index.y), chunk });
 	return chunk;

@@ -68,13 +68,13 @@ void ObjectSpawner::Spawn(const SaveState& state, const Bounds& worldBounds, std
 
 	for (auto i : chunkMap)
 	{
-		SpawnStatic(i.second);
+		//SpawnStatic(i.second);
 
 		AddTreesToChunk(baseTreeModel, i.second, state.segment);
 		AddGrassToChunk(i.second);
 
 #if SPAWN_ITEMS
-		SpawnItem(i.second);
+		//SpawnItem(i.second);
 #endif
 	}
 }

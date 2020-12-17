@@ -95,6 +95,4 @@ private:
 	Object* root;
 	Renderer* renderer;
 
-	std::vector<Mesh*> meshDeletes;
-	std::vector<Material*> materialDeletes;
 };

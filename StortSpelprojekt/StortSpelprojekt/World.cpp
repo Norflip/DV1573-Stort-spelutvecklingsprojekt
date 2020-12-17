@@ -27,11 +27,11 @@ void World::ConstructSegment(const SaveState& state)
 	this->description = DescriptionFromState(state);
 
 	ObjectSpawner* spawner = generator.GetSpawner();
-	RegisterFood(spawner, description.queueModifier);
-	RegisterFuel(spawner, description.queueModifier);
-	RegisterHealth(spawner, description.queueModifier);
-	RegisterWeapon(spawner, description.queueModifier);
-	RegisterStatic(spawner, description.queueModifier);
+	//RegisterFood(spawner, description.queueModifier);
+	//RegisterFuel(spawner, description.queueModifier);
+	//RegisterHealth(spawner, description.queueModifier);
+	//RegisterWeapon(spawner, description.queueModifier);
+	//RegisterStatic(spawner, description.queueModifier);
 
 	generator.Construct(state, description);
 }
