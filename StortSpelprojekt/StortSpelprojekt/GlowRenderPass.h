@@ -41,6 +41,7 @@ public:
 	{
 		ID3D11ShaderResourceView* nullSRV = nullptr;
 		renderer->GetContext()->PSSetShaderResources(2, 1, &nullSRV);
+		material->GetTexture(2, ShaderBindFlag::VERTEX);
 		renderer->ClearRenderTarget(glowTarget, true);
 		renderer->SetRenderTarget(glowTarget, true);
 		
