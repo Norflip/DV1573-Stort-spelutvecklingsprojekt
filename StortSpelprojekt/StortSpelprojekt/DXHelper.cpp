@@ -8,9 +8,9 @@ void DXHelper::CreateSwapchain(const Window& window, _Out_ ID3D11Device** device
 	size_t height = window.GetHeight();
 
 	UINT swapchainFlags = D3D11_CREATE_DEVICE_BGRA_SUPPORT;
-//#ifdef  _DEBUG
-//	swapchainFlags |= D3D11_CREATE_DEVICE_DEBUG;
-//#endif
+#ifdef  _DEBUG
+	swapchainFlags |= D3D11_CREATE_DEVICE_DEBUG;
+#endif
 
 	D3D_FEATURE_LEVEL featureLevel[] = { D3D_FEATURE_LEVEL_11_0 };
 
