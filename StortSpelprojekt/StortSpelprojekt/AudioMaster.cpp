@@ -92,7 +92,7 @@ void AudioMaster::PlaySoundEvent(std::string soundName)
 	{
 		if (i.first == soundName)
 		{			
-			if (!i.second.playing)
+			if (!i.second.looping)
 			{
 				if (!i.second.playing)
 				{
