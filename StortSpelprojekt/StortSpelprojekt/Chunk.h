@@ -7,6 +7,7 @@
 #include "Texture.h"
 #include "WorldDescription.h"
 #include "Path.h"
+#include "Material.h"
 
 enum class ChunkType
 {
@@ -71,8 +72,10 @@ public:
 
 	void PhysicRelease();
 
-	const Data& GetData() const { return this->data; }
-	Data& GetData() { return this->data; }
+	const Data* GetData() const { return this->data; }
+	Data* GetData() { return this->data; }
+
+	void StoreMaterial(Material* material) { this->material = material; }
 
 private:
 	void SetupCollisionObject();
@@ -84,7 +87,9 @@ private:
 	rp::RigidBody* body;
 	rp::HeightFieldShape* shape;
 
-	Data data;
+	Data* data;
 	dx::XMINT2 index;
 	ChunkType type;
+
+	Material* material;
 };
