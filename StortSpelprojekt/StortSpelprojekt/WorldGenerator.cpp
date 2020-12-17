@@ -36,8 +36,6 @@ void WorldGenerator::Construct(const SaveState& state, const WorldDescription& d
 	{
 		chunkMesh = GetChunkMesh(renderer->GetDevice());
 
-		//Engine::Instance->GetResources()->AddResource("chunk", chunkMesh);
-
 		std::vector<dx::XMINT2> indexes;
 		std::unordered_map<int, ChunkIndexInfo> chunks;
 
@@ -61,21 +59,6 @@ void WorldGenerator::Construct(const SaveState& state, const WorldDescription& d
 
 		AddChunksFromPath(indexes, chunks);
 		AddPadding(CHUNK_PADDING, indexes, chunks, minIndex, maxIndex);
-
-		//RegisterEnviromentProp("test", 0, 10, 4, [](Chunk* chunk, dx::XMVECTOR rootPosition)  
-		//	{
-		//		Object* root = new Object("puzzel_root");
-		//		Object* puzzelModel = Engine::Instance->GetResources()->AssembleObject("Propane", "PropaneMaterial");
-		//		Object::AddToHierarchy(root, puzzelModel);
-		//		puzzelModel->GetTransform().SetLocalPosition({ CHUNK_SIZE / 2.0f, 5.0f, CHUNK_SIZE / 2.0f });
-		//		puzzelModel->GetTransform().SetScale({ 10, 10, 10 });
-
-		//		//dx::XMFLOAT3 pos;
-		//		//dx::XMStoreFloat3(&pos, rootPosition);
-		//		//std::cout << "PAAZZL: " << pos.x << ", " << pos.y << ", " << pos.z << "\n";
-
-		//		return root;
-		//	});
 
 		// Ugly ass spawn for tree/frog puzzle
 		RegisterEnviromentProp("PuzzleTree", 0, 5, 1, [](Chunk* chunk, dx::XMVECTOR rootPosition)
@@ -146,13 +129,13 @@ void WorldGenerator::Construct(const SaveState& state, const WorldDescription& d
 		}
 
 		Bounds worldBounds(dx::XMFLOAT3(wmin.x, 0, wmin.y), dx::XMFLOAT3(wmax.x, 0.0f, wmax.y));
-		//spawner->Spawn(state, worldBounds, chunkMap);
+		spawner->Spawn(state, worldBounds, chunkMap);
 
 		std::vector<dx::XMFLOAT2> positions;
 		std::vector<float> angles;
 		path.GetLanternInformation(positions, angles);
 
-		/*spawner->SpawnSpecific(positions, { 0,1,0 }, angles, "Lamp", chunkMap, [](Object* obj)
+		spawner->SpawnSpecific(positions, { 0,1,0 }, angles, "Lamp", chunkMap, [](Object* obj)
 			{
 				obj->GetTransform().SetScale({ 1.2f, 1.2f, 1.2f });
 
@@ -163,7 +146,7 @@ void WorldGenerator::Construct(const SaveState& state, const WorldDescription& d
 				lc->SetIntensity(0.7f);
 				Object::AddToHierarchy(obj, light);
 
-			});*/
+			});
 
 		constructed = true;
 	}

@@ -18,7 +18,7 @@ QuadTree::QuadTree(size_t level, dx::XMFLOAT2 min, dx::XMFLOAT2 max, size_t maxL
 	SetMinMax(min, max);
 }
 
-QuadTree::~QuadTree() {}
+QuadTree::~QuadTree() { Clear(); }
 
 void QuadTree::Insert(const Bounds& bounds, const dx::XMMATRIX& transform, void* data)
 {

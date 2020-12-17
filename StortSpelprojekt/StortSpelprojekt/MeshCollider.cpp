@@ -16,7 +16,6 @@ MeshCollider::MeshCollider(Mesh* mesh, std::vector<dx::XMFLOAT3> positions)
 
 MeshCollider::~MeshCollider()
 {
-
 }
 
 void MeshCollider::DeleteShapes()
@@ -94,6 +93,7 @@ void MeshCollider::InitializeCollider(Physics* physics)
 
 		polyhedronMeshes.push_back(polyhedronMesh);
 		colliderInformations[i].shape = convexMeshShape;
+
 	}
 }
 
