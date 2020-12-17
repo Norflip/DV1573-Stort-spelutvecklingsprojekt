@@ -109,6 +109,7 @@ void GameOverScene::Update(const float& deltaTime)
 	if (static_cast<GUISprite*>(guiManager->GetGUIObject("returnToMenu"))->IsClicked())
 	{
 		AudioMaster::Instance().PlaySoundEvent("menusound");
+		Engine::Instance->start = true;
 		Engine::Instance->SwitchScene(SceneIndex::INTRO);
 		return;
 	}
