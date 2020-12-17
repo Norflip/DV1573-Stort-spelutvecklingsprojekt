@@ -13,6 +13,7 @@ cbuffer cbPerFrame : register(b0)
 	float3 particleSpreadMulti;
 	int particlesPerSecond;
 	float2 particleSize;
+	bool active;
 };
 
 struct VertexOut
@@ -39,7 +40,8 @@ struct GeoOut
 [maxvertexcount(4)]
 void main(point VertexOut gin[1],
 	inout TriangleStream<GeoOut> triStream)
-{	
+{		
+
 	if (gin[0].Type != PT_EMITTER) {
 
 		// Compute world matrix so that billboard faces the camera		
@@ -81,6 +83,6 @@ void main(point VertexOut gin[1],
 		for (int i = 0; i < 4; ++i)
 		{
 			triStream.Append(gOut[i]);
-		}		
-	}
+		}
+	}	
 }
