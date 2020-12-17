@@ -266,8 +266,8 @@ void ObjectSpawner::AddGrassToChunk(Chunk* chunk)
 	bounds.SetMinMax(dx::XMFLOAT3(0, 0, 0), dx::XMFLOAT3(CHUNK_SIZE, TERRAIN_SCALE + 1.0f, CHUNK_SIZE));
 
 	GrassComponent* grassComponent = chunk->GetOwner()->AddComponent<GrassComponent>(chunkMesh->GetTriangleCount(), renderer->GetDevice(), shader, bounds);
-	grassComponent->GetMaterial()->SetTexture(chunk->GetData().dataTexture, 6, ShaderBindFlag::HULL);
-	grassComponent->GetMaterial()->SetTexture(chunk->GetData().dataTexture, 6, ShaderBindFlag::DOMAINS);
+	grassComponent->GetMaterial()->SetTexture(chunk->GetData()->dataTexture, 6, ShaderBindFlag::HULL);
+	grassComponent->GetMaterial()->SetTexture(chunk->GetData()->dataTexture, 6, ShaderBindFlag::DOMAINS);
 	if (doOnce)
 	{
 		grassComponent->InitOnce(chunkMesh, renderer->GetDevice(), &grassBfr, &grassSrv, &grassIndexBfr, &grassIndexSrv, &grassBCBfr, &grassBCSRV);
@@ -285,7 +285,7 @@ bool ObjectSpawner::ValidSpawnPoint(const dx::XMFLOAT2& point, Chunk* chunk, flo
 	bool valid = false;
 	if (dx + dy * (CHUNK_SIZE + 1) < (CHUNK_SIZE + 1) * (CHUNK_SIZE + 1))
 	{
-		float v = chunk->GetData().influenceMap[dx + dy * (CHUNK_SIZE + 1)];
+		float v = chunk->GetData()->influenceMap[dx + dy * (CHUNK_SIZE + 1)];
 		valid = chunk->GetType() != ChunkType::PUZZEL && chunk->GetType() != ChunkType::PATH && v > minInfluence;
 	}
 
