@@ -126,8 +126,20 @@ Texture* Material::GetTexture(size_t slot, ShaderBindFlag flag) const
 {
 	int flagKey = static_cast<int>(flag);
 
-	std::unordered_map<size_t, Texture*>& flagMap = textures[flagKey];
-	return flagMap[slot];
+
+
+	const auto & flagMap = textures.find(flagKey);
+
+	if (flagMap == textures.end())
+		return nullptr;
+
+	//std::unordered_map<size_t, Texture*>& flagMap2 = flagMap.find(slot);
+	const auto& flagMap2 = flagMap->second.find(slot);
+
+	if (flagMap2 == flagMap->second.end())
+		return nullptr;
+	else
+		return flagMap->second.at(slot);
 }
 
 void Material::SetSampler(ID3D11SamplerState* state, size_t slot, ShaderBindFlag flag)
