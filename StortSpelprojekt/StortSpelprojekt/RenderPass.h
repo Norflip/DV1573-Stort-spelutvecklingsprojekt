@@ -35,7 +35,7 @@ class PSRenderPass : public RenderPass
 {
 public:
 	PSRenderPass(int priority, std::string pixelShaderPath, LPCSTR pixelShaderEntry = "main") : RenderPass(priority, RenderPass::PassType::POST_PROCESSING), path(pixelShaderPath), entry(pixelShaderEntry) {}
-
+	virtual ~PSRenderPass() { delete material; }
 	void m_Initialize(ID3D11Device* device) override 
 	{
 		Shader* shader = new Shader;

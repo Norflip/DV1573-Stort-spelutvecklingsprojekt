@@ -29,6 +29,9 @@ GameScene::GameScene() : Scene("GameScene")
 
 GameScene::~GameScene()
 {
+	delete items;
+	delete enemyManager;
+	delete guiManager;
 }
 
 
@@ -191,6 +194,8 @@ void GameScene::InitializeObjects()
 	leftSign->AddComponent<SelectableComponent>();
 	leftSign->AddComponent<RigidBodyComponent>(0.0f, FilterGroups::CLICKABLE, (FilterGroups::EVERYTHING & ~FilterGroups::PLAYER), BodyType::STATIC, true);
 
+	//leftSign->GetTransform().SetRotation(dx::XMVECTOR({ 0, 90.0f, 0, 0 }));
+
 	AddObjectToRoot(rightSign);
 	AddObjectToRoot(leftSign);
 
@@ -212,11 +217,12 @@ void GameScene::InitializeGUI()
 	//INFO, WE ARE DRAWING BACK TO FRONT. IF YOU WANT SOMETHING TO BE IN FRONT. SET VALUE TO 0. IF YOU WANT IT IN BACK USE 0.1 -> 1
 
 	//BUTTONS AT LEFT SIDE
+	/*
 	GUISprite* equimpmentSprite1 = new GUISprite(*renderer, "Textures/EquipmentBox.png", 10, 10, 0, DrawDirection::BottomLeft, ClickFunction::NotClickable);
 	GUISprite* equimpmentSprite2 = new GUISprite(*renderer, "Textures/EquipmentBox.png", 90, 10, 0, DrawDirection::BottomLeft, ClickFunction::NotClickable);
 	GUISprite* equimpmentSprite3 = new GUISprite(*renderer, "Textures/EquipmentBox.png", 170, 10, 0, DrawDirection::BottomLeft, ClickFunction::NotClickable);
 	GUISprite* equimpmentSprite4 = new GUISprite(*renderer, "Textures/EquipmentBox.png", 250, 10, 0, DrawDirection::BottomLeft, ClickFunction::NotClickable);
-
+	*/
 	//BARS THAT SCALE
 	GUISprite* fuelScalingBar = new GUISprite(*renderer, "Textures/DippingBar.png", 170, 10, 0.5, DrawDirection::BottomRight, ClickFunction::NotClickable);
 	GUISprite* foodScalingBar = new GUISprite(*renderer, "Textures/DippingBar.png", 90, 10, 0.5, DrawDirection::BottomRight, ClickFunction::NotClickable);
@@ -255,6 +261,9 @@ void GameScene::InitializeGUI()
 	GUIFont* vramDisplay = new GUIFont(*renderer, "vram", 30, 60);
 	GUIFont* ramDisplay = new GUIFont(*renderer, "ram", 30, 90);
 
+	GUISprite* restartButton = new GUISprite(*renderer, "Textures/Restart.png", (windowWidth / 2)-150, 400, 0, DrawDirection::Default, ClickFunction::Clickable);
+	GUISprite* quitButton = new GUISprite(*renderer, "Textures/Exit.png", (windowWidth / 2) - 150, 600, 0, DrawDirection::Default, ClickFunction::Clickable);
+	
 	crosshair->SetVisible(false);
 	doorSprite->SetVisible(false);
 	fuel->SetVisible(false);
@@ -262,6 +271,10 @@ void GameScene::InitializeGUI()
 
 	// INSERTIONS
 	guiManager = new GUIManager(renderer, 0);
+	restartButton->SetVisible(false);
+	quitButton->SetVisible(false);
+	guiManager->AddGUIObject(restartButton, "restartButton");
+	guiManager->AddGUIObject(quitButton, "quitButton");
 	guiManager->AddGUIObject(fpsDisplay, "fps");
 	//guiManager->AddGUIObject(playerPosDisplay, "playerPos");
 	//guiManager->AddGUIObject(healthDisplay, "playerHealth");
@@ -272,11 +285,12 @@ void GameScene::InitializeGUI()
 	// Loading
 	guiManager->AddGUIObject(loadSprite, "loading");
 	//BASE OF EQUIPMENT
+	/*
 	guiManager->AddGUIObject(equimpmentSprite1, "equimpmentSprite1");
 	guiManager->AddGUIObject(equimpmentSprite2, "equimpmentSprite2");
 	guiManager->AddGUIObject(equimpmentSprite3, "equimpmentSprite3");
 	guiManager->AddGUIObject(equimpmentSprite4, "equimpmentSprite4");
-
+	*/
 	//BASE OF DIPPING BARS
 	foodScalingBar->SetScale(1.0f, 0.0f);
 	healthScalingBar->SetScale(1.0f, 0.0f);
@@ -565,7 +579,7 @@ void GameScene::OnActivate()
 	house->GetComponent<NodeWalkerComp>()->Reset();
 
 	AudioMaster::Instance().PlaySoundEvent("wind");
-	AudioMaster::Instance().PlaySoundEvent("ambient");
+	//AudioMaster::Instance().PlaySoundEvent("ambient");
 
 }
 
@@ -591,6 +605,8 @@ void GameScene::OnDeactivate()
 	//ShowCursor(true);
 	//this->PrintSceneHierarchy(root, 0);
 	player->GetComponent<PlayerComp>()->GetArms()->GetComponent< PlayerAnimHandlerComp>()->SetStarted(false);
+
+	AudioMaster::Instance().StopAllSoundEffects();
 }
 
 void GameScene::SetSignPositions(SaveState& state)
@@ -704,6 +720,44 @@ void GameScene::Update(const float& deltaTime)
 	//dx::XMStoreFloat3(&playerPosF, player->GetTransform().GetPosition());
 	//static_cast<GUIFont*>(guiManager->GetGUIObject("playerPos"))->SetString("Player pos x:" + std::to_string((int)playerPosF.x)
 	//+ " y: " + std::to_string((int)playerPosF.z));
+	if (KEY_DOWN(Escape))
+	{
+		showMenu = !showMenu;
+		player->GetComponent<ControllerComp>()->SwapCamMode();
+	}
+		
+	if (showMenu)
+	{
+		
+		//ShowCursor(!this->canRotate);
+
+		static_cast<GUISprite*>(guiManager->GetGUIObject("restartButton"))->SetVisible(true);
+		static_cast<GUISprite*>(guiManager->GetGUIObject("quitButton"))->SetVisible(true);
+
+		if (static_cast<GUISprite*>(guiManager->GetGUIObject("quitButton"))->IsClicked())
+		{
+			OnDeactivate();
+			Engine::Instance->Exit();
+		}
+				
+		if (static_cast<GUISprite*>(guiManager->GetGUIObject("restartButton"))->IsClicked())
+		{
+			showMenu = false;
+			static_cast<GUISprite*>(guiManager->GetGUIObject("restartButton"))->SetVisible(false);
+			static_cast<GUISprite*>(guiManager->GetGUIObject("quitButton"))->SetVisible(false);
+
+			SaveHandler::RemoveSave();
+			Engine::Instance->start = true;
+			Engine::Instance->SwitchScene(SceneIndex::GAME);
+			return;
+		}
+	}
+	else
+	{
+		static_cast<GUISprite*>(guiManager->GetGUIObject("restartButton"))->SetVisible(false);
+		static_cast<GUISprite*>(guiManager->GetGUIObject("quitButton"))->SetVisible(false);
+	}
+
 	guiManager->UpdateAll();
 
 	
@@ -798,6 +852,13 @@ void GameScene::OnIMGUIFrame()
 	if (ImGui::Button("EASY WIN BBY"))
 	{
 		TransitionToNextSegment();
+	}
+
+	if (ImGui::Button("restart"))
+	{
+		SaveHandler::RemoveSave();
+		Engine::Instance->start = true;
+		Engine::Instance->SwitchScene(SceneIndex::GAME);
 	}
 }
 #endif

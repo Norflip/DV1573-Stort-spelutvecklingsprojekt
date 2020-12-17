@@ -37,6 +37,8 @@ private:
 		dx::XMFLOAT3 particleSpreadMulti;
 
 		int particlesPerSecond;
+		dx::XMFLOAT2 particleSize;
+		int active;
 	};
 
 public:
@@ -68,6 +70,7 @@ public:
 	void SetMaxParticleAge(float particlesMaxAge) { particleMaxAge = particlesMaxAge; }
 	void SetParticleSize(dx::XMFLOAT2 particleSize) { this->particleSize = particleSize; }
 	void SetParticlesPerSecond(int particlesPerSec) { this->particlesPerSecond = particlesPerSec; }
+	void SetParticlesActive(bool active) { this->particlesActivated = active; }
 
 	dx::XMFLOAT3 GetEyePos() { return this->eyePos; }
 	dx::XMFLOAT3 GetEmitPos() { return this->emitPos; }
@@ -119,8 +122,11 @@ private:
 	dx::XMFLOAT3 emitPos;
 	dx::XMFLOAT3 emitDir;
 	dx::XMFLOAT2 particleSize;
+	dx::XMFLOAT2 particleSizeModify;
 	dx::XMFLOAT3 particleSpreadMulti;
 	dx::XMFLOAT3 particleSpreadModify;
+
+	bool particlesActivated;
 
 	ID3D11Buffer* initializeVB;
 	ID3D11Buffer* drawVB;

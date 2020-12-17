@@ -12,24 +12,22 @@ AudioEngine::~AudioEngine()
 	masterVoice->DestroyVoice();
 	audioMaster->StopEngine();
 
-	/*if (localAudioData)
+	if (localAudioData)
 		delete localAudioData;
-	if (sample)
-		delete sample;
-	if (partialType)
-		delete partialType;
-	if (uncompressedAudioFile)
-		delete uncompressedAudioFile;
-	if (nativeMediaType)
-		delete nativeMediaType;
-	if (sourceReader)
-		delete sourceReader;*/
-	/*if (audioMaster)
-		delete audioMaster;
-	if(masterVoice)
-		delete masterVoice;*/
-	/*if(!audio && !masterVoice)
-		OutputDebugStringW(L"Ok delete motherfakka");*/
+	//if (sample)
+	//	delete sample;
+	//if (partialType)
+	//	delete partialType;
+	//if (uncompressedAudioFile)
+	//	delete uncompressedAudioFile;
+	//if (nativeMediaType)
+	//	delete nativeMediaType;
+	//if (sourceReader)
+	//	delete sourceReader;
+	//if (audioMaster)
+	//	delete audioMaster;
+	//if(masterVoice)
+	//	delete masterVoice;
 }
 
 void AudioEngine::Initialize()
@@ -55,44 +53,6 @@ void AudioEngine::Initialize()
 		OutputDebugStringW(L"Unable to create mastering voice for xAudio");
 }
 
-void AudioEngine::Initialize3DAudio()
-{
-	/*DWORD dwChannel;
-	masterVoice->GetChannelMask(&dwChannel);
-	bool fucki1 = 0;*/
-	/*X3DAUDIO_HANDLE X3DInstance;
-	HRESULT hr = X3DAudioInitialize(dwChannel, X3DAUDIO_SPEED_OF_SOUND, X3DInstance);
-	if (FAILED(hr))
-		OutputDebugStringW(L"Fuck it, blablabla");
-	bool fucki = 0;
-	emitter = { 0 };
-	emitter.ChannelCount = 2;
-	emitter.CurveDistanceScaler = FLT_MIN;
-
-	dspSettings = { 0 };
-	FLOAT32* matrix = new FLOAT32[1];
-	dspSettings.SrcChannelCount = 1;
-	dspSettings.DstChannelCount = 1;
-	dspSettings.pMatrixCoefficients = matrix;
-
-
-	emitter.OrientFront = X3DAUDIO_VECTOR(0, 0, 1);
-	emitter.OrientTop = X3DAUDIO_VECTOR(0, 1, 0);
-	emitter.Position = X3DAUDIO_VECTOR(-15, 0, 0);
-	emitter.Velocity = X3DAUDIO_VECTOR(1, 0, 0);
-
-	listener.OrientFront = X3DAUDIO_VECTOR(0, 0, 1);
-	listener.OrientTop = X3DAUDIO_VECTOR(0, 1, 0);
-	listener.Position = X3DAUDIO_VECTOR(0, 0, 0);
-	listener.Velocity = X3DAUDIO_VECTOR(1, 0, 0);
-
-	X3DAudioCalculate(X3DInstance, &listener, &emitter,
-		X3DAUDIO_CALCULATE_MATRIX | X3DAUDIO_CALCULATE_DOPPLER | X3DAUDIO_CALCULATE_LPF_DIRECT | X3DAUDIO_CALCULATE_REVERB,
-		&dspSettings);
-
-	masterVoice->SetOutputMatrix(masterVoice, 1, 1, matrix);*/
-	//sourceVoice->SetFrequencyRatio(XAUDIO2_MIN_FREQ_RATIO, XAUDIO2_COMMIT_NOW);
-}
 
 void AudioEngine::LoadFile(const std::wstring& filename, std::vector<BYTE>& audioData, WAVEFORMATEX** waveFormatEx, unsigned int& waveLength)
 {	

@@ -70,7 +70,7 @@ std::string CreditsScene::GetCreditsString()
 	theCredits += roleMusicSound + "\n"+tab + m_Patrik + "\n\n";
 	theCredits += roleScrumMaster + "\n"+tab + m_Patrik + "\n"+tab + m_Emil + "\n\n";
 	theCredits += thirdParty + "\n\n";
-	theCredits += specialThanks + "\n" +tab+ "Everyone who tested our game during the internal and external testing phase" + "\n\n";
+	theCredits += specialThanks + "\n" +tab+ "Everyone who tested our game during the internal\nand external testing phase" + "\n\n";
 	theCredits += tab + "Teachers in the course" + "\n"
 		+ tab + "Hans Tap" + "\n" + tab + "Stefan Petersson" + "\n" + tab + "Erik Wadstein"+ "\n"
 		+ tab + "Marcus Holmberg" + "\n\n";
@@ -103,6 +103,7 @@ CreditsScene::CreditsScene() : Scene("CreditsScene")
 
 CreditsScene::~CreditsScene()
 {
+	delete guiManager;
 }
 
 void CreditsScene::Initialize()
@@ -132,7 +133,7 @@ void CreditsScene::InitializeGUI()
 	quit->SetActivated();
 
 	guiManager = new GUIManager(renderer, 100);
-	creditsPos = { windowWidth / 2 - 200, 1080 };
+	creditsPos = { windowWidth / 2 - 500, 1080 };
 	std::string text = GetCreditsString();
 
 	GUIFont* title_credits = new GUIFont(*renderer, text, creditsPos.x, creditsPos.y);//gameName, credits,course, school, //change text
@@ -146,7 +147,7 @@ void CreditsScene::InitializeGUI()
 	//	title
 	//	//content etc.
 
-
+	title_credits->SetFontSize(dx::XMFLOAT2(0.7f, 0.7f));
 	guiManager->AddGUIObject(fpsDisplay, "fps");
 	guiManager->AddGUIObject(returnToMenu, "returnToMenu");
 	guiManager->AddGUIObject(quit, "quit");

@@ -8,9 +8,9 @@ void DXHelper::CreateSwapchain(const Window& window, _Out_ ID3D11Device** device
 	size_t height = window.GetHeight();
 
 	UINT swapchainFlags = D3D11_CREATE_DEVICE_BGRA_SUPPORT;
-#ifdef  _DEBUG
-	swapchainFlags |= D3D11_CREATE_DEVICE_DEBUG;
-#endif
+//#ifdef  _DEBUG
+//	swapchainFlags |= D3D11_CREATE_DEVICE_DEBUG;
+//#endif
 
 	D3D_FEATURE_LEVEL featureLevel[] = { D3D_FEATURE_LEVEL_11_0 };
 
@@ -118,7 +118,7 @@ void DXHelper::CreateParticleBlendState(ID3D11Device* device, ID3D11BlendState**
 	D3D11_BLEND_DESC blendStateDesc;
 	ZeroMemory(&blendStateDesc, sizeof(D3D11_BLEND_DESC));
 	blendStateDesc.AlphaToCoverageEnable = true;
-	blendStateDesc.IndependentBlendEnable = false;
+	blendStateDesc.IndependentBlendEnable = true;	 // can be true 
 	blendStateDesc.RenderTarget[0].BlendEnable = true;
 	blendStateDesc.RenderTarget[0].SrcBlend = D3D11_BLEND_SRC_ALPHA;
 	blendStateDesc.RenderTarget[0].DestBlend = D3D11_BLEND_ONE;
@@ -374,12 +374,12 @@ void DXHelper::CreateDepthStencilStates(ID3D11Device* device, ID3D11DepthStencil
 	depthStencilDesc.StencilWriteMask = 0xFF;
 
 	depthStencilDesc.FrontFace.StencilFailOp = D3D11_STENCIL_OP_KEEP;
-	depthStencilDesc.FrontFace.StencilDepthFailOp = D3D11_STENCIL_OP_KEEP;
+	depthStencilDesc.FrontFace.StencilDepthFailOp = D3D11_STENCIL_OP_INCR;
 	depthStencilDesc.FrontFace.StencilPassOp = D3D11_STENCIL_OP_KEEP;
 	depthStencilDesc.FrontFace.StencilFunc = D3D11_COMPARISON_ALWAYS;
 
 	depthStencilDesc.BackFace.StencilFailOp = D3D11_STENCIL_OP_KEEP;
-	depthStencilDesc.BackFace.StencilDepthFailOp = D3D11_STENCIL_OP_KEEP;
+	depthStencilDesc.BackFace.StencilDepthFailOp = D3D11_STENCIL_OP_DECR;
 	depthStencilDesc.BackFace.StencilPassOp = D3D11_STENCIL_OP_KEEP;
 	depthStencilDesc.BackFace.StencilFunc = D3D11_COMPARISON_ALWAYS;
 

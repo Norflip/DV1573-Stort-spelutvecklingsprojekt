@@ -34,7 +34,7 @@ class GUISprite :public GUIObject
 public:
 	GUISprite();
 	GUISprite(Renderer& renderer, std::string path, float xPos, float yPos , float layerDepth = 0, DrawDirection dir = DrawDirection::Default, ClickFunction clickFunc = ClickFunction::NotClickable, GuiGroup group = GuiGroup::Default);
-	~GUISprite();
+	virtual ~GUISprite();
 	virtual void Draw(DirectX::SpriteBatch*) override;
 	virtual void Draw();
 	void SetPosition(float xPos, float yPos);

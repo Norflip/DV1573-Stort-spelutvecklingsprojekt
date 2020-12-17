@@ -14,6 +14,8 @@ cbuffer cbPerFrame : register(b0)
 	bool usingTexture;
 	float3 particleSpreadMulti;
 	int particlesPerSecond;
+	float2 particleSize;
+	bool active;
 };
 
 struct GeoOut

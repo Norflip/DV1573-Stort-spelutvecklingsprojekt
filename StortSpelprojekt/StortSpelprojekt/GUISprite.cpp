@@ -68,6 +68,7 @@ GUISprite::~GUISprite()
 	}
 
 	if (spriteBatch != nullptr) {
+		spriteBatch.reset();
 		spriteBatch = nullptr;
 		spriteBatch = 0;
 	}

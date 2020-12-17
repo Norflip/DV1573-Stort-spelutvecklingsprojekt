@@ -4,7 +4,7 @@
 #include "PickupComponent.h"
 #include "Engine.h"
 
-World::World()
+World::World() : currentRelevantCount(0)
 {
 }
 
@@ -38,8 +38,8 @@ void World::ConstructSegment(const SaveState& state)
 
 void World::DeconstructSegment()
 {
-	relevant.clear();
 	generator.Deconstruct();
+	currentRelevantCount = 0;
 }
 
 void World::ResetRelevanceIndex()
@@ -49,8 +49,6 @@ void World::ResetRelevanceIndex()
 
 void World::UpdateRelevantChunks(const Transform& transform, CameraComponent* camera)
 {
-	const float offset = 0.1f;
-
 	// check player index
 	// if not the same as the current one, loop relevant and enable other chunks
 	if (generator.IsConstructed())
@@ -61,18 +59,17 @@ void World::UpdateRelevantChunks(const Transform& transform, CameraComponent* ca
 
 		if (lastRelevantIndex.x != newIndex.x || lastRelevantIndex.y != newIndex.y)
 		{
+			//std::cout << "\nLoading new chunks. count: " << relevant.size() << std::endl;
+
 			lastRelevantIndex = newIndex;
+			for (size_t i = 0; i < currentRelevantCount; i++)
+				relevant[i]->GetOwner()->RemoveFlag(ObjectFlag::ENABLED, false);
 
-			for (auto i : relevant)
-				i->GetOwner()->RemoveFlag(ObjectFlag::ENABLED);
+			GetChunksInRadius(lastRelevantIndex, TERRAIN_RELEVANT_RADIUS, relevant, currentRelevantCount);
 
-			relevant.clear();
-			GetChunksInRadius(lastRelevantIndex, RELEVANT_RADIUS, relevant);
-
-			for (auto i : relevant)
-			{
-				i->GetOwner()->AddFlag(ObjectFlag::ENABLED);
-			}
+			//std::cout << "new relevant count: " << relevant.size() <<  std::endl;
+			for (size_t i = 0; i < currentRelevantCount; i++)
+				relevant[i]->GetOwner()->AddFlag(ObjectFlag::ENABLED, false);
 		}
 	}
 }
@@ -115,18 +112,24 @@ void World::SampleNormal(const float& x, const float& z, dx::XMFLOAT3& normal) c
 		normal = chunk->SampleNormal(x, z);
 }
 
-void World::GetChunksInRadius(const dx::XMINT2& index, int radius, std::vector<Chunk*>& chunks) const
+void World::GetChunksInRadius(const dx::XMINT2& index, int radius, Chunk* chunks[], size_t& count) const
 {
 	if (generator.IsConstructed())
 	{
+		const World::ChunkMap& map = generator.GetChunkMap();
+		count = 0;
+		//std::cout << "getting chunks in radius | items: " << map.size() << ", radius: " << radius << std::endl;
+
 		for (int y = -radius; y <= radius; y++)
 		{
 			for (int x = -radius; x <= radius; x++)
 			{
 				int i = HASH2D_I(index.x + x, index.y + y);
-				auto find = generator.GetChunkMap().find(i);
-				if (find != generator.GetChunkMap().end())
-					chunks.push_back((*find).second);
+				auto find = map.find(i);
+				if (find != map.end())
+				{
+					chunks[count++] = (*find).second;
+				}
 			}
 		}
 	}

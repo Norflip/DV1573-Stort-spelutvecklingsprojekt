@@ -1,6 +1,6 @@
 #include "stdafx.h"
 #include "GrassComponent.h"
-
+#include "Engine.h"
 
 GrassComponent::GrassComponent(size_t chunkTriangleCount, ID3D11Device* device, Shader* shader, Bounds bounds)
 	: grassMat(new Material(shader)), bounds(bounds)
@@ -24,9 +24,13 @@ GrassComponent::GrassComponent(size_t chunkTriangleCount, ID3D11Device* device, 
 	grassMesh = new Mesh(grassV, grassI, D3D11_PRIMITIVE_TOPOLOGY_1_CONTROL_POINT_PATCHLIST);
 	grassMesh->Initialize(device);
 
-	Texture* height = Texture::LoadTexture(device, L"Textures/grassHeight.png");
+	/*Texture* height = Texture::LoadTexture(device, L"Textures/grassHeight.png");
 	Texture* diffuse = Texture::LoadTexture(device, L"Textures/grassDiff.png");
-	Texture* noise = Texture::LoadTexture(device, L"Textures/noise.png");
+	Texture* noise = Texture::LoadTexture(device, L"Textures/noise.png");*/
+
+	Texture* height = Engine::Instance->GetResources()->GetResource<Texture>("GrassHeight");
+	Texture* diffuse = Engine::Instance->GetResources()->GetResource<Texture>("GrassDiff");
+	Texture* noise = Engine::Instance->GetResources()->GetResource<Texture>("GrassNoise");
 
 	grassMat->SetTexture(diffuse, TEXTURE_DIFFUSE_SLOT, ShaderBindFlag::DOMAINS);
 	grassMat->SetTexture(noise, TEXTURE_NOISE_SLOT, ShaderBindFlag::DOMAINS);
@@ -36,12 +40,12 @@ GrassComponent::GrassComponent(size_t chunkTriangleCount, ID3D11Device* device, 
 	grassMat->SetSampler(sampler, 0, ShaderBindFlag::HULL);
 	grassMat->SetSampler(sampler, 0, ShaderBindFlag::DOMAINS);
 	grassMat->SetSampler(sampler, 0, ShaderBindFlag::PIXEL);
-
 }
 
 GrassComponent::~GrassComponent()
 {
-	
+	delete grassMesh;
+	delete grassMat;	
 }
 
 void GrassComponent::InitOnce(Mesh* chunkMesh, ID3D11Device* device, ID3D11Buffer** grassBfr, ID3D11ShaderResourceView** grassSrv, ID3D11Buffer** grassIndexBfr, ID3D11ShaderResourceView** grassIndexSrv, ID3D11Buffer** grassBCBfr, ID3D11ShaderResourceView** grassBCSRV)

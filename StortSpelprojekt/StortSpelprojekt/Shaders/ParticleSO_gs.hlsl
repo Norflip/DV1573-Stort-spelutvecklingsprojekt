@@ -15,6 +15,8 @@ cbuffer cbPerFrame : register(b0)
 	bool usingTexture;
 	float3 particleSpreadMulti;
 	int particlesPerSecond;
+	float2 particleSize;
+	bool active;
 }
 
 float3 RandUnitVec3(float offset)
@@ -35,30 +37,29 @@ struct Particle
 	float3 InitialPosW : POSITION;
 	float3 InitialVelW : VELOCITY;
 	float2 SizeW       : SIZE;
-	float Age : AGE;
+	float Age		   : AGE;
 	uint Type          : TYPE;
 };
 
 [maxvertexcount(4)]
 void main(point Particle gin[1], inout PointStream<Particle> ptStream)
-{
+{	
 	gin[0].Age += timeStep;
 
+	
 	if (gin[0].Type == PT_EMITTER)
-	{
+	{		
+		
 		// Emit a new particle
 		if (gin[0].Age > 0.005f /*(1.0f / (float)particlesPerSecond)*/ /* 0.005f */)	// particlesPerSecond
 		{
 			float3 vRandom = RandUnitVec3(0.0f);
-			//vRandom.x *= 0.5f;	// 0.5
-			//vRandom.y *= 0.0f;
-			//vRandom.z *= 0.5f;	// 0.5
 			vRandom *= particleSpreadMulti;
 
 			Particle p;
 			p.InitialPosW = emitPosW.xyz + vRandom;		// gEmitPosW.xyz;
 			p.InitialVelW = emitDirW + vRandom;			// 3.0f * vRandom;		float3(0, 1, 0) + vRandom
-			p.SizeW = gin[0].SizeW;							// float2(3.0f, 3.0f);
+			p.SizeW = particleSize;						// float2(3.0f, 3.0f);
 			p.Age = gin[0].Age;
 			p.Type = PT_FLARE;
 
@@ -67,16 +68,21 @@ void main(point Particle gin[1], inout PointStream<Particle> ptStream)
 			// reset the time to emit
 			gin[0].Age = 0.0f;
 		}
-
+		
 		// always keep emitters
 		ptStream.Append(gin[0]);
+		
 	}
 	else
 	{
-		// Specify conditions to keep particle
-		if (gin[0].Age <= particleMaxAge)		// max age
-			ptStream.Append(gin[0]);
+		if (active)
+		{
+			// Specify conditions to keep particle
+			if (gin[0].Age <= particleMaxAge)		// max age
+				ptStream.Append(gin[0]);
+		}
 	}
+	
 }
 
 GeometryShader gsStreamOut = ConstructGSWithSO(

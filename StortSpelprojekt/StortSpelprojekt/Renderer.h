@@ -49,9 +49,6 @@ public:
 
 		const Mesh* mesh;
 		const Material* material;
-		const Material* streamoutMaterial;	// New
-		
-		cb_particle* particles; // new
 
 		Type type;		
 
@@ -81,7 +78,6 @@ public:
 	void DrawSkeleton(const Mesh* mesh, const Material* material, const dx::XMMATRIX& model, std::vector<dx::XMFLOAT4X4>& bones);
 	void DrawGrass(const Mesh* mesh, const Material* material, const dx::XMMATRIX& model);
 	void DrawParticles(const Mesh* mesh, const Material* material, const dx::XMMATRIX& model);
-	void DrawNewParticles(const Mesh* particleMesh, const Material* drawMat, const Material* streamoutMat, cb_particle* particleData);
 	void DrawImmediate(const Mesh* mesh, const Material* material, const CameraComponent* camera, const dx::XMMATRIX& model);
 	//void DrawEmissive(const Mesh* mesh, const Material* material, const dx::XMMATRIX& model);
 	
@@ -116,6 +112,10 @@ public:
 	void DisableAlphaBlending();	
 	ID3D11DepthStencilState* GetDepthEnable() { return this->dss_On; }
 	ID3D11DepthStencilState* GetDepthDisable() { return this->dss_Off; }
+	ID3D11RasterizerState* GetCullBack() { return this->rasterizerStateCullBack; }
+	ID3D11RasterizerState* GetCullNone() { return this->rasterizerStateCullNone; }
+	ID3D11RasterizerState* GetCullCCWO() { return this->rasterizerStateCCWO; }
+
 
 	ALIGN16_ALLOC;
 
@@ -133,7 +133,6 @@ public:
 	void DrawRenderItemSkeleton(const RenderItem& item, CameraComponent* camera);
 	void DrawRenderItemGrass(const RenderItem& item, CameraComponent* camera);
 	void DrawRenderItemParticles(const RenderItem& item, CameraComponent* camera);
-	void DrawRenderItemNewParticles(const RenderItem& item, CameraComponent* camera);
 	void DrawBatch(const Batch& batch, CameraComponent* camera);
 
 	void SetObjectBufferValues(const CameraComponent* camera, dx::XMMATRIX world, bool transpose);
@@ -149,12 +148,12 @@ private:
 	RenderTexture midbuffer;
 	RenderTexture renderPassSwapBuffers [2];
 	
+	Shader* screenQuadShader;
 	Material* screenQuadMaterial;
 	Mesh* screenQuadMesh;
 	Shader forwardPlusShader;
 	bool forwardPlusInitialized;
 
-	ConstantBuffer<cb_particle> particleBuffer;
 	ConstantBuffer<cb_Object> objectBuffer;
 	ConstantBuffer<cb_Scene> sceneBuffer;
 	ConstantBuffer<cb_Material> materialBuffer;

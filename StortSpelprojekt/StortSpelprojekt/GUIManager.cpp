@@ -72,6 +72,17 @@ GUIManager::GUIManager(Renderer* renderer, int priority) : RenderPass(priority, 
 	assert(SUCCEEDED(hr2));
 }
 
+GUIManager::~GUIManager()
+{
+	delete spriteBatch;
+
+	for (auto i : GUIObjects)
+	{
+		delete i.second;
+	}
+
+}
+
 void GUIManager::AddGUIObject(GUIObject* addObj, std::string name)
 {
 	GUIObjects.insert({ name,addObj });
@@ -152,8 +163,8 @@ void GUIManager::UpdateAll()
 {
 	for (auto i : GUIObjects)
 	{
-		if(i.second ->GetVisible())
-		i.second->Update();
+		if(i.second->GetVisible())
+			i.second->Update();
 	}
 }
 

@@ -8,8 +8,6 @@ AudioMaster::AudioMaster()
 		engine = new AudioEngine;
 	engine->Initialize();
 
-	//engine->Initialize3DAudio();
-
 	/* Create different soundchannels */
 	engine->GetAudioMaster()->CreateSubmixVoice(&soundsSubmix, 1, 44100, 0, 0, 0, 0);
 	engine->GetAudioMaster()->CreateSubmixVoice(&musicSubmix, 1, 44100, 0, 0, 0, 0);
@@ -36,9 +34,7 @@ AudioMaster::AudioMaster()
 	LoadFile(L"Sounds/walking.wav", "walk", walkSound, AudioTypes::Sound, true);
 	LoadFile(L"Sounds/running.mp3", "run", runSound, AudioTypes::Sound, true);
 	LoadFile(L"Sounds/windyLoop.mp3", "wind", windSound, AudioTypes::Environment, true);
-	//LoadFile(L"Sounds/choptree.mp3", "choptree", chop, AudioTypes::Sound, false);
 	LoadFile(L"Sounds/insideWalk.mp3", "insideWalk", insideWalk, AudioTypes::Sound, true);
-	LoadFile(L"Sounds/DarkAmbient.mp3", "ambient", ambientSound, AudioTypes::Music, true);
 
 	SetVolume(AudioTypes::Music, 0.7f);
 	SetVolume(AudioTypes::Sound, 0.7f);
@@ -49,18 +45,14 @@ AudioMaster::~AudioMaster()
 {
 	if (engine)
 		delete engine;
-
 	soundTracks.clear();
 }
 
 void AudioMaster::LoadFile(const std::wstring fileName, std::string name, SoundEvent& soundEvent, const AudioTypes& soundType, bool loop)
 {
-	//ZeroMemory(&soundEvent, sizeof(SoundEvent));
-
 	/* Load soundfile with engine into a wave and make it playable */	
 	engine->LoadFile(fileName, soundEvent.audioData, &waveFormatEx, soundEvent.waveLength);
 	soundEvent.waveFormat = *waveFormatEx;
-
 
 	/* Create source voice */
 	HRESULT loadFile;
@@ -96,82 +88,60 @@ void AudioMaster::LoadFile(const std::wstring fileName, std::string name, SoundE
 
 void AudioMaster::PlaySoundEvent(std::string soundName)
 {
-	SoundEvent soundEvent;
 	for (auto& i : soundTracks)
 	{
 		if (i.first == soundName)
-		{
-			//i.second.playing = true;
-			soundEvent = i.second;
-		}
-	}
-
-	/* Submit the audio buffer from soundevent to the source voice and start it */
-	if (soundEvent.looping)
-	{	
-		if (!soundEvent.playing)
-		{
-			HRESULT playSound;
-			playSound = soundEvent.sourceVoice->SubmitSourceBuffer(&soundEvent.audioBuffer);
-			if (FAILED(playSound))
-				OutputDebugStringW(L"Critical error: Unable to submit source buffer!");
-
-			soundEvent.sourceVoice->Start();
-
-			for (auto& i : soundTracks)
+		{			
+			if (!i.second.looping)
 			{
-				if (i.first == soundName)
+				if (!i.second.playing)
 				{
-					i.second.playing = true;
+					HRESULT playSound;
+					playSound = i.second.sourceVoice->SubmitSourceBuffer(&i.second.audioBuffer);
+					if (FAILED(playSound))
+						OutputDebugStringW(L"Critical error: Unable to submit source buffer!");
+
+					i.second.sourceVoice->Start();
+					i.second.playing = true;					
 				}
 			}
-		}
-	}
-	else
-	{
-		HRESULT playSound;
-		playSound = soundEvent.sourceVoice->SubmitSourceBuffer(&soundEvent.audioBuffer);
-		if (FAILED(playSound))
-			OutputDebugStringW(L"Critical error: Unable to submit source buffer!");
+			else
+			{				
+				HRESULT playSound;
+				playSound = i.second.sourceVoice->SubmitSourceBuffer(&i.second.audioBuffer);
+				if (FAILED(playSound))
+					OutputDebugStringW(L"Critical error: Unable to submit source buffer!");
 
-		soundEvent.sourceVoice->Start();
-
-		/*for (auto& i : soundTracks)
-		{
-			if (i.first == soundName)
-			{
-				i.second.playing = true;
+				i.second.sourceVoice->Start();
+				i.second.playing = true;				
 			}
-		}*/
+		}
 	}
 }
 
 void AudioMaster::StopSoundEvent(std::string name)
 {
-	SoundEvent soundEvent;
 	for (auto& i : soundTracks)
 	{
 		if (i.first == name)
-			soundEvent = i.second;
-	}
-
-	if (soundEvent.looping)
-	{
-		if (soundEvent.playing)
 		{
-			soundEvent.sourceVoice->Stop();
-			for (auto& i : soundTracks)
+			if (i.second.looping)
 			{
-				if (i.first == name)
+				if (i.second.playing)
 				{
+					i.second.sourceVoice->Stop();
+					i.second.playing = false;					
+				}
+			}
+			else
+			{
+				if (i.second.playing)
+				{
+					i.second.sourceVoice->Stop();
 					i.second.playing = false;
 				}
 			}
-		}
-	}
-	else
-	{
-		soundEvent.sourceVoice->Stop();
+		}			
 	}
 }
 
@@ -187,6 +157,11 @@ void AudioMaster::SetVolume(const AudioTypes& audioType, const float volume)
 		soundEffectsVolume = volume;
 		soundsSubmix->SetVolume(volume);
 	}
+	else if (audioType == AudioTypes::Environment)
+	{
+		environmentVolume = volume;
+		environmentSubmix->SetVolume(volume);
+	}
 }
 
 float AudioMaster::GetVolume(const AudioTypes& audioType) const
@@ -195,17 +170,20 @@ float AudioMaster::GetVolume(const AudioTypes& audioType) const
 		return musicVolume;
 	else if (audioType == AudioTypes::Sound)
 		return soundEffectsVolume;
+	else if (audioType == AudioTypes::Environment)
+		return environmentVolume;
 	return 1.0f;
 }
 
 void AudioMaster::StopAllSoundEffects()
 {
-	SoundEvent soundEvent;
 	for (auto& i : soundTracks)
 	{		
-		soundEvent = i.second;
-		soundEvent.playing = false;
-		soundEvent.sourceVoice->Stop();
+		if (i.second.playing)
+		{
+			i.second.playing = false;
+			i.second.sourceVoice->Stop();
+		}	
 	}	
 }
 
@@ -216,4 +194,3 @@ void AudioMaster::PlayerOutside(bool state)
 	else
 		environmentSubmix->SetVolume(0.2f * soundEffectsVolume);
 }
-

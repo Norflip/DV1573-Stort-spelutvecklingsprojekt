@@ -1,15 +1,3 @@
-//Texture2D textureshit : register(t0);
-//SamplerState samLinear : register(s0);
-
-//cbuffer cbPerObject : register(b0)
-//{
-//	row_major matrix worldViewProjection;
-//	row_major matrix worldspace;
-//	row_major matrix viewspace;
-//	row_major matrix projectionspace;
-//	row_major float4x4 viewProjection;
-//	
-//};
 
 cbuffer cbPerFrame : register(b0)
 {
@@ -24,12 +12,9 @@ cbuffer cbPerFrame : register(b0)
 	bool usingTexture;
 	float3 particleSpreadMulti;
 	int particlesPerSecond;
+	float2 particleSize;
+	bool active;
 };
-
-//cbuffer cbFixed
-//{
-//	float3 accelerationW = { 0.0f, 7.8f, 0.0f };
-//};
 
 struct VertexOut
 {
@@ -45,7 +30,7 @@ struct GeoOut
 	float4 PosH  : SV_Position;
 	float4 Color : COLOR;
 	float2 Tex   : TEXCOORD;
-	float Age : AGE;
+	float Age	 : AGE;
 };
 
 #define PT_EMITTER 0
@@ -55,8 +40,8 @@ struct GeoOut
 [maxvertexcount(4)]
 void main(point VertexOut gin[1],
 	inout TriangleStream<GeoOut> triStream)
-{
-	// do not draw "emitter" particles.
+{		
+
 	if (gin[0].Type != PT_EMITTER) {
 
 		// Compute world matrix so that billboard faces the camera		
@@ -73,7 +58,6 @@ void main(point VertexOut gin[1],
 		v[1] = float4(gin[0].PosW + halfWidth * right + halfHeight * up, 1.0f);
 		v[2] = float4(gin[0].PosW - halfWidth * right - halfHeight * up, 1.0f);
 		v[3] = float4(gin[0].PosW - halfWidth * right + halfHeight * up, 1.0f);
-
 
 		GeoOut gOut[4];
 		gOut[0].PosH = mul(viewProj, v[0]);
@@ -100,18 +84,5 @@ void main(point VertexOut gin[1],
 		{
 			triStream.Append(gOut[i]);
 		}
-
-		// Transform quad vertices to world space and output 
-		// them as a triangle strip.		
-
-		/*GeoOut gout;
-		[unroll]
-		for (int i = 0; i < 4; ++i)
-		{
-			gout.PosH = mul(viewProj, v[i]);
-			gout.Tex = gQuadTexC[i];
-			gout.Color = gin[0].Color;
-			triStream.Append(gout);
-		}*/
-	}
+	}	
 }

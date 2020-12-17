@@ -82,6 +82,19 @@ ControllerComp::ControllerComp(Object* cameraObject, Object* houseObject, World*
 ControllerComp::~ControllerComp()
 {
 }
+void ControllerComp::SwapCamMode()
+{
+		this->canRotate = !this->canRotate;
+		rbComp->SetLinearVelocity({ 0.f, 0.f, 0.f });
+		//rbComp->EnableGravity(!this->canRotate);
+		if (this->canRotate)
+			Input::Instance().SetMouseMode(dx::Mouse::MODE_RELATIVE);
+		else
+			Input::Instance().SetMouseMode(dx::Mouse::MODE_ABSOLUTE);
+		//ShowCursor(!this->canRotate);
+	
+
+}
 
 void ControllerComp::Initialize()
 {
@@ -231,6 +244,8 @@ void ControllerComp::Update(const float& deltaTime)
 			}
 		}
 	}
+
+
 	
 	if (!inside)	
 		AudioMaster::Instance().PlayerOutside(true);	

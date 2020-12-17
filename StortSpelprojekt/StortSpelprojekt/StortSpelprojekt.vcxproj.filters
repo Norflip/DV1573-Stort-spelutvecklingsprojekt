@@ -83,6 +83,20 @@
       <Filter>Resource Files</Filter>
     </FxCompile>
     <FxCompile Include="Shaders\Emissive_ps.hlsl">
+	  <Filter>Resource Files</Filter>
+    <FxCompile Include="Shaders\ParticleDraw_gs.hlsl">
+      <Filter>Resource Files</Filter>
+    </FxCompile>
+    <FxCompile Include="Shaders\ParticleDraw_ps.hlsl">
+      <Filter>Resource Files</Filter>
+    </FxCompile>
+    <FxCompile Include="Shaders\ParticleDraw_vs.hlsl">
+      <Filter>Resource Files</Filter>
+    </FxCompile>
+    <FxCompile Include="Shaders\ParticleSO_gs.hlsl">
+      <Filter>Resource Files</Filter>
+    </FxCompile>
+    <FxCompile Include="Shaders\ParticleSO_vs.hlsl">
       <Filter>Resource Files</Filter>
     </FxCompile>
   </ItemGroup>
@@ -313,9 +327,6 @@
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="CreditsScene.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="ParticleComponent.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="Particlesys.cpp">
@@ -651,9 +662,6 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="CreditsScene.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="ParticleComponent.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="Particlesys.h">

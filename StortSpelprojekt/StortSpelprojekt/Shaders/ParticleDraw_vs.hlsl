@@ -16,6 +16,8 @@ cbuffer cbPerFrame : register(b0)
 	bool usingTexture;
 	float3 particleSpreadMulti;
 	int particlesPerSecond;
+	float2 particleSize;
+	bool active;
 };
 
 struct Particle
@@ -23,7 +25,7 @@ struct Particle
 	float3 InitialPosW : POSITION;
 	float3 InitialVelW : VELOCITY;
 	float2 SizeW       : SIZE;
-	float Age : AGE;
+	float Age		   : AGE;
 	uint Type          : TYPE;
 };
 
@@ -33,7 +35,7 @@ struct VertexOut
 	float2 SizeW : SIZE;
 	float4 Color : COLOR;
 	uint   Type  : TYPE;
-	float Age : AGE;
+	float Age	 : AGE;
 };
 
 VertexOut main(Particle vin)

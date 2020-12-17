@@ -13,7 +13,7 @@ IntroScene::IntroScene() : Scene("IntroScene")
 
 IntroScene::~IntroScene()
 {
-
+	delete guiManager;
 }
 
 void IntroScene::Initialize()
@@ -29,10 +29,6 @@ void IntroScene::InitializeObjects()
 	//cameraObject2->AddComponent<ControllerComponent>();
 	this->player = cameraObject;
 	AddObjectToRoot(cameraObject);
-
-	
-
-	AudioMaster::Instance().PlaySoundEvent("menusound");
 }
 
 void IntroScene::InitializeGUI()
@@ -79,8 +75,6 @@ void IntroScene::InitializeGUI()
 	volumeBarFillSoundeffects->SetVisible(false);
 	volumeBarFillSoundeffects->SetScale(AudioMaster::Instance().GetVolume(AudioTypes::Sound), 1.0f);
 
-
-	
 	GUISprite* lowerSensitivitySprite = new GUISprite(*renderer, "Textures/lowerVolume.png", 800, 550, 0, DrawDirection::Default, ClickFunction::Clickable, GuiGroup::Options);
 	GUISprite* higherSensitivitySprite = new GUISprite(*renderer, "Textures/higherVolume.png", 1150, 550, 0, DrawDirection::Default, ClickFunction::Clickable, GuiGroup::Options);	
 
@@ -195,6 +189,8 @@ void IntroScene::OnActivate()
 	static_cast<GUISprite*>(guiManager->GetGUIObject("volumeBarFillSoundeffects"))->SetScale(soundVolume, 1);
 
 	configChanged = false;
+
+	AudioMaster::Instance().PlaySoundEvent("menusound");
 }
 
 void IntroScene::OnDeactivate()
@@ -222,7 +218,6 @@ void IntroScene::Update(const float& deltaTime)
 		return;
 	}
 
-	//
 	if (static_cast<GUISprite*>(guiManager->GetGUIObject("credits"))->IsClicked())
 	{
 		//guiManager->ChangeGuiGroup(GuiGroup::Load);
@@ -234,11 +229,11 @@ void IntroScene::Update(const float& deltaTime)
 		//return;
 
 	}
-	//
 
 	if (static_cast<GUISprite*>(guiManager->GetGUIObject("quitSprite"))->IsClicked())
 	{
 		AudioMaster::Instance().StopSoundEvent("menusound");
+		OnDeactivate();
 		Engine::Instance->Exit();
 		return;
 	}

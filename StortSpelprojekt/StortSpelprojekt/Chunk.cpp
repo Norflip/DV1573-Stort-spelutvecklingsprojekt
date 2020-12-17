@@ -204,8 +204,6 @@ void Chunk::CreateChunkData(const WorldDescription& description, const Path& pat
 			float influence = path.SampleInfluence(tilePos);
 			//distance = std::min(distance, MAX_DISTANCE) / MAX_DISTANCE;
 
-
-
 			float sampledHeight = Noise::Sample(chunkPosXZ.x + x, chunkPosXZ.y + y, description.noiseSettings);
 			float worldHeight = sampledHeight * influence * TERRAIN_SCALE;
 			worldHeight = std::max(worldHeight, MIN_TERRAIN_HEIGHT);
@@ -215,8 +213,6 @@ void Chunk::CreateChunkData(const WorldDescription& description, const Path& pat
 
 			data.heightMap[bufferIndex] = worldHeight;
 			data.influenceMap[bufferIndex] = influence;
-
-
 			buffer[bufferIndex * 4 + 0] = static_cast<unsigned char>(255 * height);
 			buffer[bufferIndex * 4 + 1] = static_cast<unsigned char>(255 * sampledHeight);
 			buffer[bufferIndex * 4 + 2] = static_cast<unsigned char>(255 * influence);

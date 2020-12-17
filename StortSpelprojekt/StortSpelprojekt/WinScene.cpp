@@ -12,6 +12,7 @@ WinScene::WinScene() : Scene("WinScene")
 
 WinScene::~WinScene()
 {
+	delete guiManager;
 }
 
 void WinScene::Initialize()
@@ -28,8 +29,6 @@ void WinScene::InitializeObjects()
 	this->player = cameraObject;
 	//cameraObject3->AddComponent<ControllerComponent>();
 	AddObjectToRoot(cameraObject);
-
-
 }
 
 void WinScene::InitializeGUI()
@@ -79,6 +78,7 @@ void WinScene::Update(const float& deltaTime)
 	if (static_cast<GUISprite*>(guiManager->GetGUIObject("quit"))->IsClicked())
 	{
 		AudioMaster::Instance().StopSoundEvent("menusound");
+		OnDeactivate();
 		Engine::Instance->Exit();
 		return;
 	}

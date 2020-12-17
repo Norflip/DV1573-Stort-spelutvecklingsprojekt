@@ -103,4 +103,5 @@ public:
 	void SetInRange(bool state) { this->inDoorRange = state; }
 	bool GetInside()const { return this->inside; }
 	void SetInside(bool state) { this->inside = state; }
+	void SwapCamMode();
 };
