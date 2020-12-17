@@ -79,6 +79,7 @@ void EnemySMComp::Animate()
 				factorValue = (5.f - 2.f);
 				factorRange = (1.f - 0.f);
 				finalFactor = (((length - 2.f) * factorRange) / factorValue) + 0.f;
+				finalFactor = CLAMP(finalFactor, 0.f, 1.f);
 
 				skeletonComponent->SetBlendingTracksAndFactor(SkeletonStateMachine::ATTACK, SkeletonStateMachine::RUN, finalFactor, true);
 				skeletonComponent->SetTrack(SkeletonStateMachine::BLENDED, false);
@@ -94,9 +95,10 @@ void EnemySMComp::Animate()
 			{
 				if (length > 25.f)
 				{
-					factorValue = (50.f - 25.f);
+					factorValue = (30.f - 25.f);
 					factorRange = (1.f - 0.f);
 					finalFactor = (((length - 25.f) * factorRange) / factorValue) + 0.f;
+					finalFactor = CLAMP(finalFactor, 0.f, 1.f);
 
 					skeletonComponent->SetBlendingTracksAndFactor(SkeletonStateMachine::RUN, SkeletonStateMachine::WALK, finalFactor, true);
 					skeletonComponent->SetTrack(SkeletonStateMachine::BLENDED, false);

@@ -33,9 +33,10 @@ private:
 	float finalFactor = 0.f;
 	float factorValue = 0.f;
 	float factorRange = 0.f;
+	float animDeltaTime = 0.f;
 
-	void StartAnim();
-	void StopAnim();
+	void StartWalking();
+	void StopWalking();
 public:
 	//int currentNode;
 	//bool canWalk;
