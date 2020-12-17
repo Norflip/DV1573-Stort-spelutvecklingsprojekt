@@ -12,12 +12,7 @@ WorldGenerator::WorldGenerator() : constructed(false), treePoints(dx::XMFLOAT2(0
 WorldGenerator::~WorldGenerator()
 {
 	delete spawner;
-
-	// GALFI
-	for (int i = 0; i < meshDeletes.size(); i++)
-		delete meshDeletes[i];
-	for (int i = 0; i < materialDeletes.size(); i++)
-		delete materialDeletes[i];
+	delete chunkMesh;
 }
 
 void WorldGenerator::Initialize(Object* root, World* world, ItemManager* items, Renderer* renderer)
@@ -337,7 +332,7 @@ Chunk* WorldGenerator::CreateChunk(ChunkIndexInfo& indexInfo, Object* root, cons
 	Texture* grassTexture = resources->GetResource<Texture>("Grass");
 	Texture* roadTexture = resources->GetResource<Texture>("Road");
 
-	material->SetTexture(chunk->GetData().dataTexture, 0, ShaderBindFlag::PIXEL | ShaderBindFlag::VERTEX);
+	material->SetTexture(chunk->GetData()->dataTexture, 0, ShaderBindFlag::PIXEL | ShaderBindFlag::VERTEX);
 	material->SetTexture(grassTexture, 1, ShaderBindFlag::PIXEL);
 	material->SetTexture(roadTexture, 2, ShaderBindFlag::PIXEL);
 
@@ -345,6 +340,7 @@ Chunk* WorldGenerator::CreateChunk(ChunkIndexInfo& indexInfo, Object* root, cons
 	auto textureSampler = DXHelper::CreateSampler(D3D11_FILTER_MIN_MAG_MIP_LINEAR, D3D11_TEXTURE_ADDRESS_WRAP, renderer->GetDevice());
 	material->SetSampler(dataSampler, 0, ShaderBindFlag::PIXEL | ShaderBindFlag::VERTEX);
 	material->SetSampler(textureSampler, 1, ShaderBindFlag::PIXEL);
+	chunk->StoreMaterial(material);
 
 	Bounds bounds(dx::XMFLOAT3(0, 0, 0), dx::XMFLOAT3(CHUNK_SIZE, TERRAIN_SCALE + 1.0f, CHUNK_SIZE));
 	chunkObject->AddComponent<MeshComponent>(chunkMesh, material, bounds);

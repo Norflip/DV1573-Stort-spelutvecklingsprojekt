@@ -5,13 +5,16 @@
 #include "Engine.h"
 #include <algorithm>
 
-Chunk::Chunk(dx::XMINT2 index, ChunkType type) : index(index), type(type)
+Chunk::Chunk(dx::XMINT2 index, ChunkType type) : index(index), type(type), data(nullptr)
 {
 
 }
 
 Chunk::~Chunk()
 {
+	if (data != nullptr)
+		delete data;
+	delete material;
 }
 
 void Chunk::Update(const float& deltaTime)
@@ -57,7 +60,7 @@ float Chunk::SampleInfluence(const float& x, const float& z) const
 	int col, row;
 	float influence = -1.0f;
 	if (TryGetLocalColRow(x, z, col, row))
-		influence = data.influenceMap[col + row * (CHUNK_SIZE + 1)];
+		influence = data->influenceMap[col + row * (CHUNK_SIZE + 1)];
 	
 	return influence;
 }
@@ -161,7 +164,7 @@ void Chunk::SetupCollisionObject()
 	max = TERRAIN_SCALE;
 
 	rp::PhysicsCommon& common = physics->GetCommon();
-	shape = common.createHeightFieldShape(gridSize, gridSize, min, max, static_cast<void*>(data.heightMap), rp::HeightFieldShape::HeightDataType::HEIGHT_FLOAT_TYPE);
+	shape = common.createHeightFieldShape(gridSize, gridSize, min, max, static_cast<void*>(data->heightMap), rp::HeightFieldShape::HeightDataType::HEIGHT_FLOAT_TYPE);
 
 	float origin = (max - min) * 0.5f;
 	const float offset = CHUNK_SIZE / 2.0f;
@@ -190,10 +193,11 @@ void Chunk::CreateChunkData(const WorldDescription& description, const Path& pat
 	dx::XMFLOAT2 chunkPosXZ = Chunk::IndexToWorldXZ(index);
 
 	const float MIN_TERRAIN_HEIGHT = 0.3f;
+	data = new Data();
 
 	unsigned char* buffer = new unsigned char[size * size * 4];
-	data.heightMap = new float[size * size];
-	data.influenceMap = new float[size * size];
+	data->heightMap = new float[size * size];
+	data->influenceMap = new float[size * size];
 
 	for (size_t y = 0; y < size; y++)
 	{
@@ -211,8 +215,8 @@ void Chunk::CreateChunkData(const WorldDescription& description, const Path& pat
 
 			int bufferIndex = x + size * y;
 
-			data.heightMap[bufferIndex] = worldHeight;
-			data.influenceMap[bufferIndex] = influence;
+			data->heightMap[bufferIndex] = worldHeight;
+			data->influenceMap[bufferIndex] = influence;
 			buffer[bufferIndex * 4 + 0] = static_cast<unsigned char>(255 * height);
 			buffer[bufferIndex * 4 + 1] = static_cast<unsigned char>(255 * sampledHeight);
 			buffer[bufferIndex * 4 + 2] = static_cast<unsigned char>(255 * influence);
@@ -239,7 +243,7 @@ void Chunk::CreateChunkData(const WorldDescription& description, const Path& pat
 					{
 						for (int dx = -SAMPLE_SIZE; dx <= SAMPLE_SIZE; dx++)
 						{
-							average += data.heightMap[(x + dx) + size * (y + dy)];
+							average += data->heightMap[(x + dx) + size * (y + dy)];
 							samples++;
 						}
 					}
@@ -247,47 +251,13 @@ void Chunk::CreateChunkData(const WorldDescription& description, const Path& pat
 					average /= samples;
 					float height01 = (average / TERRAIN_SCALE);
 					int bufferIndex = x + size * y;
-					data.heightMap[bufferIndex] = average;
+					data->heightMap[bufferIndex] = average;
 					buffer[bufferIndex * 4 + 0] = static_cast<unsigned char>(255 * height01);
 				}
 			}
 		}
-
-		
-
-
-		/*float average = 0.0f;
-
-
-		for (size_t y = 0; y < size; y++)
-		{
-			for (size_t x = 0; x < size; x++)
-			{
-				average += data.heightMap[x + size * y];
-			}
-		}
-
-		int smoothSize = 3;
-
-		average /= ((size - (smoothSize * 2)) * (size - (smoothSize * 2)));
-
-		for (size_t y = smoothSize; y < size - smoothSize; y++)
-		{
-			for (size_t x = smoothSize; x < size - smoothSize; x++)
-			{
-				float worldHeight = average;
-				float height = worldHeight / TERRAIN_SCALE;
-
-				int bufferIndex = x + size * y;
-
-				data.heightMap[x + size * y] = worldHeight;
-
-				buffer[bufferIndex * 4 + 0] = static_cast<unsigned char>(255 * height);
-			}
-		}*/
-
 	}
 
-	data.dataTexture = Texture::CreateFromBuffer(buffer, CHUNK_SIZE + 1, CHUNK_SIZE + 1, 4, DXGI_FORMAT_R8G8B8A8_UNORM, device);
-	delete[] buffer; // GALFI
+	data->dataTexture = Texture::CreateFromBuffer(buffer, CHUNK_SIZE + 1, CHUNK_SIZE + 1, 4, DXGI_FORMAT_R8G8B8A8_UNORM, device);
+	delete[] buffer;
 }

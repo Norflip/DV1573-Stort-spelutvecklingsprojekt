@@ -9,8 +9,6 @@
 #pragma comment(lib, "mfuuid")
 #pragma comment(lib, "XAudio2.lib")
 
-
-//#include <x3daudio.h>
 #include <xaudio2.h>
 #include <string>
 #include <vector>

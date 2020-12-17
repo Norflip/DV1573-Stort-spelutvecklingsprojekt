@@ -12,24 +12,22 @@ AudioEngine::~AudioEngine()
 	masterVoice->DestroyVoice();
 	audioMaster->StopEngine();
 
-	/*if (localAudioData)
+	if (localAudioData)
 		delete localAudioData;
-	if (sample)
-		delete sample;
-	if (partialType)
-		delete partialType;
-	if (uncompressedAudioFile)
-		delete uncompressedAudioFile;
-	if (nativeMediaType)
-		delete nativeMediaType;
-	if (sourceReader)
-		delete sourceReader;*/
-	/*if (audioMaster)
-		delete audioMaster;
-	if(masterVoice)
-		delete masterVoice;*/
-	/*if(!audio && !masterVoice)
-		OutputDebugStringW(L"Ok delete motherfakka");*/
+	//if (sample)
+	//	delete sample;
+	//if (partialType)
+	//	delete partialType;
+	//if (uncompressedAudioFile)
+	//	delete uncompressedAudioFile;
+	//if (nativeMediaType)
+	//	delete nativeMediaType;
+	//if (sourceReader)
+	//	delete sourceReader;
+	//if (audioMaster)
+	//	delete audioMaster;
+	//if(masterVoice)
+	//	delete masterVoice;
 }
 
 void AudioEngine::Initialize()
