@@ -303,6 +303,13 @@ void IntroScene::OnActivate()
 	AudioMaster::Instance().SetVolume(AudioTypes::Sound, soundVolume);
 	static_cast<GUISprite*>(guiManager->GetGUIObject("volumeBarFillSoundeffects"))->SetScale(soundVolume, 1);
 
+		
+	static_cast<GUISprite*>(guiManager->GetGUIObject("barFillFuelLoss"))->SetScale(MetaProgress::Instance().GetFuelLossRed() - SCALE, 1.f);
+	static_cast<GUISprite*>(guiManager->GetGUIObject("barFillFoodLoss"))->SetScale(MetaProgress::Instance().GetFoodLossRed() - SCALE, 1.f);
+	static_cast<GUISprite*>(guiManager->GetGUIObject("barFillHpInFog"))->SetScale(MetaProgress::Instance().GetHpLossInFogRed() - SCALE, 1.f);
+	static_cast<GUISprite*>(guiManager->GetGUIObject("barFillHpFromEnemies"))->SetScale(MetaProgress::Instance().GetDamageRed() - SCALE, 1.f);
+	static_cast<GUISprite*>(guiManager->GetGUIObject("barFillPlayerDamage"))->SetScale(MetaProgress::Instance().GetDamageBoost() - SCALE, 1.f);
+
 	configChanged = false;
 
 	AudioMaster::Instance().PlaySoundEvent("menusound");
@@ -477,11 +484,19 @@ void IntroScene::Update(const float& deltaTime)
 	
 	if (static_cast<GUISprite*>(guiManager->GetGUIObject("reset"))->IsClicked())
 	{
-		//reset us scuffed atm
+		// reset is scuffed atm ..
 		SaveState state = SaveHandler::CreateNew();
+
 		MetaProgress::Instance().LoadSave(state);
 		MetaProgress::Instance().SaveProgress(state);
+
+		static_cast<GUISprite*>(guiManager->GetGUIObject("barFillFuelLoss"))->SetScale(MetaProgress::Instance().GetFuelLossRed() - SCALE, 1.f);
+		static_cast<GUISprite*>(guiManager->GetGUIObject("barFillFoodLoss"))->SetScale(MetaProgress::Instance().GetFoodLossRed() - SCALE, 1.f);
+		static_cast<GUISprite*>(guiManager->GetGUIObject("barFillHpInFog"))->SetScale(MetaProgress::Instance().GetHpLossInFogRed() - SCALE, 1.f);
+		static_cast<GUISprite*>(guiManager->GetGUIObject("barFillHpFromEnemies"))->SetScale(MetaProgress::Instance().GetDamageRed() - SCALE, 1.f);
+		static_cast<GUISprite*>(guiManager->GetGUIObject("barFillPlayerDamage"))->SetScale(MetaProgress::Instance().GetDamageBoost() - SCALE, 1.f);
 	}
+
 	bool saving = false;
 	//fuel loss reduction
 	std::string text;
