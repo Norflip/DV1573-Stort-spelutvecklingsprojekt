@@ -748,7 +748,7 @@ void GameScene::Update(const float& deltaTime)
 			showMenu = false;
 			static_cast<GUISprite*>(guiManager->GetGUIObject("restartButton"))->SetVisible(false);
 			static_cast<GUISprite*>(guiManager->GetGUIObject("quitButton"))->SetVisible(false);
-			static_cast<GUISprite*>(guiManager->GetGUIObject("returnToMenu"))->SetVisible(true);
+			static_cast<GUISprite*>(guiManager->GetGUIObject("returnToMenu"))->SetVisible(false);
 			SaveHandler::RemoveSave();
 			Engine::Instance->start = true;
 			Engine::Instance->SwitchScene(SceneIndex::GAME);
@@ -759,7 +759,7 @@ void GameScene::Update(const float& deltaTime)
 			showMenu = false;
 			static_cast<GUISprite*>(guiManager->GetGUIObject("restartButton"))->SetVisible(false);
 			static_cast<GUISprite*>(guiManager->GetGUIObject("quitButton"))->SetVisible(false);
-			static_cast<GUISprite*>(guiManager->GetGUIObject("returnToMenu"))->SetVisible(true);
+			static_cast<GUISprite*>(guiManager->GetGUIObject("returnToMenu"))->SetVisible(false);
 			AudioMaster::Instance().PlaySoundEvent("menusound");
 			Engine::Instance->start = true;
 			Engine::Instance->SwitchScene(SceneIndex::INTRO);
