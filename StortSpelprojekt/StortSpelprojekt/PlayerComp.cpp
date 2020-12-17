@@ -419,7 +419,7 @@ void PlayerComp::RayCast(const float& deltaTime)
 						guiMan->GetGUIObject("infoSprite")->SetVisible(false);
 						guiMan->GetGUIObject("dot")->SetVisible(true);
 						reading = false;
-					}
+					} 
 					else
 					{
 						guiMan->GetGUIObject("infoSprite")->SetVisible(true);

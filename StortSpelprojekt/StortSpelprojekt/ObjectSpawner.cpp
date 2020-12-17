@@ -6,7 +6,7 @@
 #include "MeshCollider.h"
 #include "World.h"
 
-ObjectSpawner::ObjectSpawner()
+ObjectSpawner::ObjectSpawner() : environmentQT(nullptr)
 {
 	doOnce = true;
 }
@@ -60,6 +60,10 @@ void ObjectSpawner::Initialize(Object* root, World* world, ItemManager* items, R
 void ObjectSpawner::Spawn(const SaveState& state, const Bounds& worldBounds, std::unordered_map<int, Chunk*>& chunkMap)
 {
 	QuadTree tree(worldBounds);
+
+	if(environmentQT != nullptr)
+		delete environmentQT;
+
 	environmentQT = new QuadTree(worldBounds);
 
 	for (auto i : chunkMap)
