@@ -10,6 +10,16 @@ Material::~Material()
 
 }
 
+void Material::RemoveFlag(const ShaderBindFlag& shaderBindFlag) const
+{
+	shader->RemoveFlag(shaderBindFlag);
+}
+
+void Material::AddFlag(const ShaderBindFlag& shaderBindFlag) const
+{
+	shader->AddFlag(shaderBindFlag);
+}
+
 void Material::UnbindToContext(ID3D11DeviceContext* context) const
 {
 	shader->Unbind(context);

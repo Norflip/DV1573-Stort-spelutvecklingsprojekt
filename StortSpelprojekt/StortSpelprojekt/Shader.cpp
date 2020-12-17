@@ -22,6 +22,27 @@ Shader::~Shader()
 	RELEASE(computeShader);
 }
 
+void Shader::RemoveFlag(const ShaderBindFlag& shaderBindFlag)
+{
+	int flag = static_cast<int>(shaderFlags);
+
+	if ((flag & (int)shaderBindFlag) != 0)
+	{
+		shaderFlags &= ~shaderBindFlag;
+	}
+	
+}
+
+void Shader::AddFlag(const ShaderBindFlag& shaderBindFlag)
+{
+	int flag = static_cast<int>(shaderFlags);
+
+	if ((flag & (int)shaderBindFlag) == 0)
+	{
+		shaderFlags |= shaderBindFlag;
+	}
+}
+
 void Shader::SetPixelShader(std::string path, LPCSTR entry)
 {
 	this->pixelPath = path;

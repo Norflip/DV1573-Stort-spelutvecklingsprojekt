@@ -22,7 +22,8 @@ public:
 	Material();
 	Material (Shader* shader);
 	virtual ~Material();
-	
+	void RemoveFlag(const ShaderBindFlag& shaderBindFlag) const;
+	void AddFlag(const ShaderBindFlag& shaderBindFlag) const;
 	void SetShader(Shader* shader) { this->shader = shader; }
 	void UnbindToContext(ID3D11DeviceContext* context) const;
 	void BindToContext(ID3D11DeviceContext*) const;

@@ -68,7 +68,8 @@ public:
 public:
 	Shader();
 	virtual ~Shader();
-
+	void RemoveFlag(const ShaderBindFlag& shaderBindFlag);
+	void AddFlag(const ShaderBindFlag& shaderBindFlag);
 	void Unbind(ID3D11DeviceContext* context) const;
 
 	// Changed from LPCWSTR to regular string

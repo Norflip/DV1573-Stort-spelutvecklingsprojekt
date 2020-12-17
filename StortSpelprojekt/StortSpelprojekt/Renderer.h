@@ -66,7 +66,7 @@ public:
 	void OnResize();
 	void Initialize(Window* window);
 
-	void DrawQueueToTarget(RenderQueue& queue, CameraComponent* camera);
+	void DrawQueueToTarget(RenderQueue& queue, CameraComponent* camera, bool depthPass);
 	void RenderFrame(CameraComponent* camera, float time, float distance = 1.f, bool useImgui = true);
 	void RenderFrame(CameraComponent* camera, float time, float distance, RenderTexture& target, bool drawGUI = false, bool applyRenderPasses = true);
 
@@ -124,7 +124,7 @@ private:
 	void DrawRenderItemSkeleton(const RenderItem& item, CameraComponent* camera);
 	void DrawRenderItemGrass(const RenderItem& item, CameraComponent* camera);
 	void DrawRenderItemParticles(const RenderItem& item, CameraComponent* camera);
-	void DrawBatch(const Batch& batch, CameraComponent* camera);
+	void DrawBatch(const Batch& batch, CameraComponent* camera, bool depthPass);
 
 	void SetObjectBufferValues(const CameraComponent* camera, dx::XMMATRIX world, bool transpose);
 	Mesh* CreateScreenQuad();

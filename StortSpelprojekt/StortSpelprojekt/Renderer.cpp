@@ -173,7 +173,7 @@ void Renderer::Initialize(Window* window)
 }
 
 
-void Renderer::DrawQueueToTarget(RenderQueue& queue, CameraComponent* camera)
+void Renderer::DrawQueueToTarget(RenderQueue& queue, CameraComponent* camera, bool depthPass)
 {
 	for (auto i : queue)
 	{
@@ -182,10 +182,18 @@ void Renderer::DrawQueueToTarget(RenderQueue& queue, CameraComponent* camera)
 		if (!queue.empty())
 		{
 			const Material* mat = queue.front().material;
+			if (depthPass)
+			{
+				mat->RemoveFlag(ShaderBindFlag::PIXEL);
+			}
+			else
+			{
+				mat->AddFlag(ShaderBindFlag::PIXEL);
+			}
 			mat->BindToContext(context);
 			materialBuffer.SetData(mat->GetMaterialData());
 			materialBuffer.UpdateBuffer(context);
-
+			
 			while (!queue.empty())
 			{
 				auto item = queue.front();
@@ -319,24 +327,24 @@ void Renderer::RenderFrame(CameraComponent* camera, float time, float distance, 
 	context->PSSetShaderResources(11, 1, &o_LightGrid_texSRV);
 	SetCullBack(true);
 
-	DrawQueueToTarget(opaqueItemQueue, camera);
+	DrawQueueToTarget(opaqueItemQueue, camera, false);
 	opaqueItemQueue.clear();
 
 	DShape::Instance().m_Draw(camera->GetViewMatrix() * camera->GetProjectionMatrix(), context);
 
 	for (auto i : opaqueBatches)
-		DrawBatch(i.second, camera);
+		DrawBatch(i.second, camera,false);
 	opaqueBatches.clear();
 
 	DXHelper::BindStructuredBuffer(context, 10, ShaderBindFlag::PIXEL, &t_LightIndexList_srv);
 	context->PSSetShaderResources(11, 1, &t_LightGrid_texSRV);
 	SetCullBack(false);
 
-	DrawQueueToTarget(transparentItemQueue, camera);
+	DrawQueueToTarget(transparentItemQueue, camera, false);
 	transparentItemQueue.clear();
 
 	for (auto i : transparentBatches)
-		DrawBatch(i.second, camera);
+		DrawBatch(i.second, camera,false);
 	transparentBatches.clear();
 
 
@@ -693,8 +701,18 @@ void Renderer::DrawRenderItemParticles(const RenderItem& item, CameraComponent* 
 	context->DrawIndexed(item.mesh->GetIndexCountPart(), 0, 0);
 }
 
-void Renderer::DrawBatch(const Batch& batch, CameraComponent* camera)
+void Renderer::DrawBatch(const Batch& batch, CameraComponent* camera, bool depthPass)
 {
+
+	if (depthPass)
+	{
+		batch.material->RemoveFlag(ShaderBindFlag::PIXEL);
+	}
+	else
+	{
+		batch.material->AddFlag(ShaderBindFlag::PIXEL);
+	}
+
 	// Skapa indexbuffer
 
 	size_t instanceCount = std::min(batch.transformations.size(), UICAST(MAX_BATCH_COUNT));
@@ -1014,16 +1032,11 @@ void Renderer::UpdateForwardPlus(CameraComponent* camera)
 
 	//std::cout << opaqueItemQueue.size() << std::endl;
 
-	DrawQueueToTarget(opaqueItemQueue, camera);
+	DrawQueueToTarget(opaqueItemQueue, camera, true);
 	for (auto i : opaqueBatches)
-		DrawBatch(i.second, camera);
+		DrawBatch(i.second, camera,true);
 
-	SetCullBack(false);
-	DrawQueueToTarget(transparentItemQueue, camera);
-	for (auto i : transparentBatches)
-		DrawBatch(i.second, camera);
-
-	SetCullBack(true);
+	
 
 	depthPass.BindNull(context);
 	//////DEPTH PASS END-----------------------------------------------
