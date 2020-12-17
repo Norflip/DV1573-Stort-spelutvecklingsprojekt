@@ -35,7 +35,7 @@ float4 main(PS_INPUT_GLOW input) : SV_TARGET
             //length(tempColor.rgb) becomes vector for checking of brightness
             
             if (length(tempGlowColor.rgb) >= brightness && tempGlowColor.r != 0.f)
-            //if (length(tempColor.rgb) >= brightness && tempColor.a != 0.f)
+            //if (length(tempColor.rgb) >= brightness && tempColor.r != 0.f)
             {
                 brightPixelFound = true;
             }

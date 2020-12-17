@@ -19,6 +19,7 @@ public:
 		*/
 		size_t TMP_WIDTH = 800;
 		size_t TMP_HEIGHT = 800;
+
 		ID3D11DepthStencilState* dss;
 
 		glowTarget = DXHelper::CreateRenderTexture(TMP_WIDTH, TMP_HEIGHT, device, &dss);
@@ -41,7 +42,7 @@ public:
 	{
 		ID3D11ShaderResourceView* nullSRV = nullptr;
 		renderer->GetContext()->PSSetShaderResources(2, 1, &nullSRV);
-		material->GetTexture(2, ShaderBindFlag::VERTEX);
+		Texture* tex = material->GetTexture(2, ShaderBindFlag::PIXEL);
 		renderer->ClearRenderTarget(glowTarget, true);
 		renderer->SetRenderTarget(glowTarget, true);
 		
@@ -64,12 +65,17 @@ public:
 					case Renderer::RenderItem::Type::Instanced:
 						//std::cout << "Get Into Instance case" << std::endl;
 						renderer->DrawRenderItemInstanced(item, camera);
+						materialInstanced->SetTexture(item.material->GetTexture(2, ShaderBindFlag::PIXEL), 2, ShaderBindFlag::PIXEL);
+						materialInstanced->BindToContext(renderer->GetContext());
 						break;
 
 					case Renderer::RenderItem::Type::Default:
 					default:
 						//std::cout << "Get Into default case" << std::endl;
 						renderer->DrawRenderItem(item, camera);
+						//item.material->GetTexture(2, ShaderBindFlag::PIXEL);
+						material->SetTexture(item.material->GetTexture(2, ShaderBindFlag::PIXEL), 2, ShaderBindFlag::PIXEL);
+						material->BindToContext(renderer->GetContext());
 						break;
 				}
 				
