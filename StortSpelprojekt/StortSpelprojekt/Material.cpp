@@ -7,7 +7,8 @@ Material::Material(Shader* shader) : shader(shader) {}
 
 Material::~Material() 
 {
-
+	textures.clear();
+	samplers.clear();
 }
 
 void Material::UnbindToContext(ID3D11DeviceContext* context) const
@@ -77,29 +78,6 @@ void Material::BindToContext(ID3D11DeviceContext* context) const
 void Material::SetMaterialData(const cb_Material& materialData)
 {
 	cb_material_data = materialData;
-}
-
-void Material::ChangeTextureBindFlags(size_t slot, ShaderBindFlag oldFlag, ShaderBindFlag newFlag)
-{
-	/*int flagKey = static_cast<int>(oldFlag);
-	auto ff = textures.find(static_cast<int>(flagKey));
-	if (ff != textures.end())
-	{
-		auto findSlot = textures[flagKey].find(slot);
-		if (findSlot != textures[flagKey].end())
-		{
-
-		}
-	}
-
-	for (int textureNr = 0; textureNr < textures.size(); textureNr++)
-	{
-		if (textures[textureNr].slot == slot && textures[textureNr].flag == oldFlag)
-		{
-			textures[textureNr].flag = newFlag;
-			break;
-		}
-	}*/
 }
 
 const cb_Material& Material::GetMaterialData() const
