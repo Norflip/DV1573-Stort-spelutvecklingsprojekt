@@ -5,6 +5,7 @@
 #include "Pathfinding.h"
 #include "Math.h"
 #include "Random.h"
+
 constexpr float ENEMY_SPAWN_RATE_MAX = 9.f; //how fast enemies spawn
 constexpr float ENEMY_SPAWN_RATE_MIN = 2.f; 
 constexpr float ENEMY_SPAWN_RADIUS = 10.f; //distance from player

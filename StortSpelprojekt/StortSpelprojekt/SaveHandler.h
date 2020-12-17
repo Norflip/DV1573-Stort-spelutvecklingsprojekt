@@ -90,6 +90,10 @@ namespace SaveHandler
  	{
 		TryLoad(m_loadedState);
 		m_loadedState.segment = 0;
+		m_loadedState.playerHealth = PLAYER_DEFAULT_HEALTH;
+		m_loadedState.playerFuel = PLAYER_DEFAULT_FUEL;
+		m_loadedState.playerFood = PLAYER_DEFAULT_FOOD;
+		m_loadedState.seed = rand();
 		Save(m_loadedState);
 		std::cout << "REMOVING" << std::endl;
 

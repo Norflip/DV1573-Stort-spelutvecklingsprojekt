@@ -60,6 +60,23 @@ void EnemyManager::InitBaseEnemy()
 		stateMachine->RegisterState(EnemyState::IDLE, object->AddComponent<EnemyIdleComp>());
 		stateMachine->RegisterState(EnemyState::ATTACK, object->AddComponent<EnemyAttackComp>(nullptr));
 		object->AddComponent<Pathfinding>(nullptr);
+
+
+		//Particlesys* enemPart = new Particlesys(Engine::Instance->GetResources()->GetShaderResource("ParticleShaderSO"), Engine::Instance->GetResources()->GetShaderResource("ParticleShaderDraw"));
+		////testParticles->InitializeParticleShaders(renderer->GetDevice(), window->GetHWND());
+		//
+		//enemPart->SetTexture(Engine::Instance->GetRenderer()->GetDevice(), L"Textures/fire.png");
+		//enemPart->SetMaxParticles(200);
+		//enemPart->SetParticleColor(dx::XMFLOAT4(fireRedColor));
+		//enemPart->SetParticleSize(dx::XMFLOAT2(0.8f, 0.8f));
+		////testParticles->SetEmitPos(dx::XMFLOAT3(28, 1.7f, 50));
+		//enemPart->SetEmitDir(dx::XMFLOAT3(0.0f, 0.5f, 0.0f));
+		//enemPart->SetParticleSpreadMulti(dx::XMFLOAT3(0.25f, 0.35f, 0.25f)); // testParticles->SetParticleSpreadMulti(dx::XMFLOAT3(0.15f, 0.3f, 0.15f));
+
+		//enemPart->InitializeParticles(Engine::Instance->GetRenderer()->GetDevice(), Engine::Instance->GetRenderer(), object);
+		//Engine::Instance->GetRenderer()->ListParticle(enemPart);
+
+
 		return object;
 	});
 

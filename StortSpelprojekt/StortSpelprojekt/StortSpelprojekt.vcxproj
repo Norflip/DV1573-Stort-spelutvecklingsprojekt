@@ -187,7 +187,6 @@
     <ClCompile Include="Pathfinding.cpp" />
     <ClCompile Include="CreditsScene.cpp" />
     <ClCompile Include="DepthPass.cpp" />
-    <ClCompile Include="ParticleComponent.cpp" />
     <ClCompile Include="Particlesys.cpp" />
     <ClCompile Include="Resource.cpp" />
     <ClCompile Include="SelectableComponent.cpp" />
@@ -285,7 +284,6 @@
     <ClInclude Include="MetaProgress.h" />
     <ClInclude Include="Pathfinding.h" />
     <ClInclude Include="CreditsScene.h" />
-    <ClInclude Include="ParticleComponent.h" />
     <ClInclude Include="Particlesys.h" />
     <ClInclude Include="SaveHandler.h" />
     <ClInclude Include="SelectableComponent.h" />

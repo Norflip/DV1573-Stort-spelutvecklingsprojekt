@@ -71,7 +71,10 @@ Engine::~Engine()
 		scenes[i] = nullptr;
 	}
 
-	//renderer->RemoveRenderPass(temp);
+	for (auto i : DXHelper::m_samplerCache)
+		i.second->Release();
+	DXHelper::m_samplerCache.clear();
+
 	delete renderer;
 	delete resourceManager;
 	delete physics;
