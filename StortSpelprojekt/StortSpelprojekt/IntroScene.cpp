@@ -479,30 +479,13 @@ void IntroScene::Update(const float& deltaTime)
 	static_cast<GUIFont*>(guiManager->GetGUIObject("currencyAmount"))->SetString(uText);
 	float max = 1 + SCALE;
 	float mult = 1 / INCREASE;
-	
+
 	unsigned int currency = MetaProgress::Instance().GetCurrencyTotal();
-
-	
-	if (static_cast<GUISprite*>(guiManager->GetGUIObject("reset"))->IsClicked())
-	{
-		// reset is scuffed atm ..
-		SaveState state = SaveHandler::CreateNew();
-
-		MetaProgress::Instance().LoadSave(state);
-		MetaProgress::Instance().SaveProgress(state);
-
-		static_cast<GUISprite*>(guiManager->GetGUIObject("barFillFuelLoss"))->SetScale(MetaProgress::Instance().GetFuelLossRed() - SCALE, 1.f);
-		static_cast<GUISprite*>(guiManager->GetGUIObject("barFillFoodLoss"))->SetScale(MetaProgress::Instance().GetFoodLossRed() - SCALE, 1.f);
-		static_cast<GUISprite*>(guiManager->GetGUIObject("barFillHpInFog"))->SetScale(MetaProgress::Instance().GetHpLossInFogRed() - SCALE, 1.f);
-		static_cast<GUISprite*>(guiManager->GetGUIObject("barFillHpFromEnemies"))->SetScale(MetaProgress::Instance().GetDamageRed() - SCALE, 1.f);
-		static_cast<GUISprite*>(guiManager->GetGUIObject("barFillPlayerDamage"))->SetScale(MetaProgress::Instance().GetDamageBoost() - SCALE, 1.f);
-	}
 
 	bool saving = false;
 	//fuel loss reduction
-	std::string text;
-	text = "Fuel-Loss Reduction lv." + std::to_string(int((MetaProgress::Instance().GetFuelLossRed()-1.f) * mult)) + " -> Cost: " + std::to_string(int(COST * MetaProgress::Instance().GetFuelLossRed()));
-	static_cast<GUIFont*>(guiManager->GetGUIObject("fuelLossDisplay"))->SetString(text);
+	std::string fuellossText = "Fuel-Loss Reduction lv." + std::to_string(int((MetaProgress::Instance().GetFuelLossRed()-1.f) * mult)) + " -> Cost: " + std::to_string(int(COST * MetaProgress::Instance().GetFuelLossRed()));
+	static_cast<GUIFont*>(guiManager->GetGUIObject("fuelLossDisplay"))->SetString(fuellossText);
 	if (static_cast<GUISprite*>(guiManager->GetGUIObject("lowerFuelLossSprite"))->IsClicked())
 	{
 		if (MetaProgress::Instance().GetFuelLossRed()> 1.f)
@@ -525,8 +508,8 @@ void IntroScene::Update(const float& deltaTime)
 	}
 	//food loss reduction
 	//std::string foodtext;
-	text = "Food-Loss Reduction lv. " + std::to_string(int((MetaProgress::Instance().GetFoodLossRed() - 1.f) * mult)) + " -> Cost: " + std::to_string(int(COST * MetaProgress::Instance().GetFoodLossRed()));
-	static_cast<GUIFont*>(guiManager->GetGUIObject("foodLossDisplay"))->SetString(text);
+	std::string foodlossText = "Food-Loss Reduction lv. " + std::to_string(int((MetaProgress::Instance().GetFoodLossRed() - 1.f) * mult)) + " -> Cost: " + std::to_string(int(COST * MetaProgress::Instance().GetFoodLossRed()));
+	static_cast<GUIFont*>(guiManager->GetGUIObject("foodLossDisplay"))->SetString(foodlossText);
 	if (static_cast<GUISprite*>(guiManager->GetGUIObject("lowerFoodLossSprite"))->IsClicked())
 	{
 		if (MetaProgress::Instance().GetFoodLossRed() > 1.f)
@@ -549,8 +532,8 @@ void IntroScene::Update(const float& deltaTime)
 		static_cast<GUISprite*>(guiManager->GetGUIObject("barFillFoodLoss"))->SetScale(MetaProgress::Instance().GetFoodLossRed() - SCALE, 1.f);
 	}
 	//hploss in fog reduction
-	text = "Fog-Resistance lv. " + std::to_string(int((MetaProgress::Instance().GetHpLossInFogRed() - 1.f) * mult)) + " -> Cost: " + std::to_string(int(COST * MetaProgress::Instance().GetHpLossInFogRed()));
-	static_cast<GUIFont*>(guiManager->GetGUIObject("hpInFogDisplay"))->SetString(text);
+	std::string fogResText = "Fog-Resistance lv. " + std::to_string(int((MetaProgress::Instance().GetHpLossInFogRed() - 1.f) * mult)) + " -> Cost: " + std::to_string(int(COST * MetaProgress::Instance().GetHpLossInFogRed()));
+	static_cast<GUIFont*>(guiManager->GetGUIObject("hpInFogDisplay"))->SetString(fogResText);
 	if (static_cast<GUISprite*>(guiManager->GetGUIObject("lowerHpInFogSprite"))->IsClicked())
 	{
 		if (MetaProgress::Instance().GetHpLossInFogRed() > 1.f)
@@ -573,8 +556,8 @@ void IntroScene::Update(const float& deltaTime)
 		static_cast<GUISprite*>(guiManager->GetGUIObject("barFillHpInFog"))->SetScale(MetaProgress::Instance().GetHpLossInFogRed() - SCALE, 1.f);
 	}
 	//hp from enemies reduction
-	text = "Enemy Damage Reduction lv." + std::to_string(int((MetaProgress::Instance().GetDamageRed() - 1.f) * mult)) + " -> Cost: " + std::to_string(int(COST * MetaProgress::Instance().GetDamageRed()));
-	static_cast<GUIFont*>(guiManager->GetGUIObject("enemyDamageRedDisplay"))->SetString(text);
+	std::string enemyDamageText = "Enemy Damage Reduction lv." + std::to_string(int((MetaProgress::Instance().GetDamageRed() - 1.f) * mult)) + " -> Cost: " + std::to_string(int(COST * MetaProgress::Instance().GetDamageRed()));
+	static_cast<GUIFont*>(guiManager->GetGUIObject("enemyDamageRedDisplay"))->SetString(enemyDamageText);
 	if (static_cast<GUISprite*>(guiManager->GetGUIObject("lowerHpFromEnemiesSprite"))->IsClicked())
 	{
 		if (MetaProgress::Instance().GetDamageRed() > 1.f)
@@ -597,8 +580,8 @@ void IntroScene::Update(const float& deltaTime)
 		static_cast<GUISprite*>(guiManager->GetGUIObject("barFillHpFromEnemies"))->SetScale(MetaProgress::Instance().GetDamageRed() - SCALE, 1.f);
 	}
 	//damage boost
-	text = "Player Damage Boost lv." + std::to_string(int((MetaProgress::Instance().GetDamageBoost() - 1.f) * mult)) + " -> Cost: " + std::to_string(int(COST * MetaProgress::Instance().GetDamageBoost()));
-	static_cast<GUIFont*>(guiManager->GetGUIObject("playerDamageBoost"))->SetString(text);
+	std::string playerDamageText = "Player Damage Boost lv." + std::to_string(int((MetaProgress::Instance().GetDamageBoost() - 1.f) * mult)) + " -> Cost: " + std::to_string(int(COST * MetaProgress::Instance().GetDamageBoost()));
+	static_cast<GUIFont*>(guiManager->GetGUIObject("playerDamageBoost"))->SetString(playerDamageText);
 	if (static_cast<GUISprite*>(guiManager->GetGUIObject("lowerPlayerDamageSprite"))->IsClicked())
 	{
 		if (MetaProgress::Instance().GetDamageBoost() > 1.f)
@@ -620,6 +603,29 @@ void IntroScene::Update(const float& deltaTime)
 		}
 		static_cast<GUISprite*>(guiManager->GetGUIObject("barFillPlayerDamage"))->SetScale(MetaProgress::Instance().GetDamageBoost() - SCALE, 1.f);
 	}
+
+	
+
+	if (static_cast<GUISprite*>(guiManager->GetGUIObject("reset"))->IsClicked())
+	{
+		// reset is scuffed atm ..
+		SaveState state = SaveHandler::CreateNew();
+		MetaProgress::Instance().LoadSave(state);
+		MetaProgress::Instance().SaveProgress(state);
+
+		static_cast<GUISprite*>(guiManager->GetGUIObject("barFillFuelLoss"))->SetScale(MetaProgress::Instance().GetFuelLossRed() - SCALE, 1.f);
+		static_cast<GUISprite*>(guiManager->GetGUIObject("barFillFoodLoss"))->SetScale(MetaProgress::Instance().GetFoodLossRed() - SCALE, 1.f);
+		static_cast<GUISprite*>(guiManager->GetGUIObject("barFillHpInFog"))->SetScale(MetaProgress::Instance().GetHpLossInFogRed() - SCALE, 1.f);
+		static_cast<GUISprite*>(guiManager->GetGUIObject("barFillHpFromEnemies"))->SetScale(MetaProgress::Instance().GetDamageRed() - SCALE, 1.f);
+		static_cast<GUISprite*>(guiManager->GetGUIObject("barFillPlayerDamage"))->SetScale(MetaProgress::Instance().GetDamageBoost() - SCALE, 1.f);
+		static_cast<GUIFont*>(guiManager->GetGUIObject("playerDamageBoost"))->SetString(playerDamageText);
+		static_cast<GUIFont*>(guiManager->GetGUIObject("enemyDamageRedDisplay"))->SetString(enemyDamageText);
+		static_cast<GUIFont*>(guiManager->GetGUIObject("hpInFogDisplay"))->SetString(fogResText);
+		static_cast<GUIFont*>(guiManager->GetGUIObject("foodLossDisplay"))->SetString(foodlossText);
+		static_cast<GUIFont*>(guiManager->GetGUIObject("fuelLossDisplay"))->SetString(fuellossText);
+		static_cast<GUIFont*>(guiManager->GetGUIObject("currencyAmount"))->SetString(uText);
+	}
+
 
 	if (saving)
 	{
