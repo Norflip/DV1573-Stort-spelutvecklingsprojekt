@@ -54,6 +54,9 @@ public:
 	void SetguiMan(GUIManager* guiMan) { this->guiMan = guiMan; }
 	void InsertWeapon(WeaponComponent* weapon, std::string name);
 
+	//blend
+	float GetDistance() { return this->distance; }
+
 	//void SetInteriorPosition(float x, float y, float z);
 	//dx::XMFLOAT3 GetInteriorPosition() { return this->interiorPosition; }
 	//void SetStartPosition(dx::XMVECTOR pos);

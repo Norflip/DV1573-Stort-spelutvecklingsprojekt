@@ -168,8 +168,6 @@ void ResourceManager::ReadObjects(ID3D11Device* device)
 						skeletonMesh->SetAnimationTrack(animation, (SkeletonStateMachine)type);
 					}
 				}
-
-				skeletonMesh->BlendAnimations();
 				AddResource(name + "tempMesh", meshes[0]);
 				AddResource(name + "tempMat", materials[0]);
 				AddResource(name+"Skeleton", skeletonMesh);

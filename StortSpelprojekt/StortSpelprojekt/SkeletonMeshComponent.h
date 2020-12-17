@@ -8,6 +8,7 @@
 #include "Object.h"
 #include "GameClock.h"
 #include "Resource.h"
+#include <cmath>
 
 enum class EnemyType
 {
@@ -28,6 +29,7 @@ enum class SkeletonStateMachine
 	BLENDED,
 	LOAD,
 	UNLOAD,
+	COMBINED,
 };
 
 
@@ -52,7 +54,11 @@ public:
 	std::vector<dx::XMFLOAT4X4>& GetFinalTransforms() { return this->finalTransforms; }
 
 	void SetTrack(const SkeletonStateMachine& type, bool playOnce);
-	void BlendAnimations();
+	
+	void PlayBlendAnimations(const float& deltaTime);
+	
+	void CreateCombinedAnimation(SkeletonStateMachine state1, SkeletonStateMachine state2, int startJoint, int endJoint);
+
 	bool GetIsDone();
 	void SetisDone(bool);
 	bool& SetAndGetDoneDown();
@@ -61,6 +67,7 @@ public:
 	const bool GetDoneDeath() { return doneDeath; }
 	void SetDoneDeath(bool doneDeath) { this->doneDeath = doneDeath; }
 	std::vector<dx::XMFLOAT4X4> GetAnimationTransforms() { return this->finalTransforms; }
+	//void SetAnimationTransforms(std::vector<dx::XMFLOAT4X4> transform);
 	std::vector<SkeletonAni> GetAnimations() { return this->skeletonAnimations; }
 	std::unordered_map<SkeletonStateMachine, unsigned int> GetTrackMap() { return this->trackMap; }
 	SkeletonStateMachine GetCurrentAnimation() { return this->currentAni; }
@@ -68,6 +75,17 @@ public:
 	void SetTimeScale(float time) { this->timeScale = time; }
 	const EnemyType GetEnemyType() { return enemyType; }
 	void SetEnemyType(const EnemyType& enemyType) { this->enemyType = enemyType; }
+
+	//BLEND
+	std::vector<dx::XMFLOAT4X4> GetBlendTransform() { return this->blendTransform; }
+	void SetBlendTransform(std::vector<dx::XMFLOAT4X4> transform);
+	void SetBlendedAnimTime(SkeletonStateMachine track1, SkeletonStateMachine track2);
+	float GetBlendedAnimTime() { return this->blendAnimTime; }
+	bool SetBlendedDown(bool trufal);
+	bool SetBlendedUp(bool trufal);
+
+	void SetBlendingTracksAndFactor(SkeletonStateMachine track1, SkeletonStateMachine track2, float factor, bool blend);
+
 	ALIGN16_ALLOC;
 
 private:
@@ -76,8 +94,12 @@ private:
 	Material* material;
 	std::vector<SkeletonAni> skeletonAnimations;
 	float elapsedTime = 0.0f;
+
 	std::unordered_map<SkeletonStateMachine, unsigned int> trackMap;
+
 	std::vector<dx::XMFLOAT4X4> finalTransforms;
+	std::vector<dx::XMFLOAT4X4> blendTransform;
+
 	SkeletonStateMachine currentAni = SkeletonStateMachine::NONE;
 	Bounds bounds;
 	float componentDeltaTime = 0.0f;
@@ -86,10 +108,18 @@ private:
 	bool done = false;
 	void PlayOnce(const float& deltaTime);
 	void RunAnimation(const float& deltaTime);
-	void FindChildren(SkeletonAni& track, unsigned int& index, std::map<std::string, unsigned int>& map, std::string& name, std::string& secondName);
 	bool doneUp, doneDown;
 	bool doneDeath = false;
 	float count = 0.0f;
 	EnemyType enemyType = EnemyType::NONE;
+
+	//Blending
+	SkeletonStateMachine track1;
+	SkeletonStateMachine track2;
+	float factor;
+	bool blend;
+	float blendAnimTime;
+	bool blendedDown;
+	bool blendedUp;
 };
 
