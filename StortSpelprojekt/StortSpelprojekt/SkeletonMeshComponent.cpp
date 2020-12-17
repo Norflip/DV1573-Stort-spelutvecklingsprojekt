@@ -193,6 +193,8 @@ void SkeletonMeshComponent::PlayOnce(const float& deltaTime)
 	bool doneOnce = false;
 	doneDeath = false;
 
+	
+
 	if (currentAni == SkeletonStateMachine::IDLE)
 	{
 		if (!doneOnce)
@@ -429,39 +431,32 @@ void SkeletonMeshComponent::PlayOnce(const float& deltaTime)
 
 	else if (currentAni == SkeletonStateMachine::BLENDED)
 	{
-	if (!doneOnce)
-	{
-		elapsedTime += deltaTime;
-		time = elapsedTime;
-		time *= timeScale;
-
-		//Get the playtime for the animation in seconds.
-		float animLength = GetBlendedAnimTime();
-
-		if (time <= animLength)
+		if (!doneOnce)
 		{
-			//std::cout << time << std::endl;
-			finalTransforms = GetBlendTransform();
-		}
-		else
-		{
-			//kan bli wack
-			elapsedTime = 0.0f;
-			if (blendedDown)
+			elapsedTime += deltaTime;
+			time = elapsedTime;
+			time *= timeScale;
+
+			if (blend)
+				PlayBlendAnimations(time);
+
+			//Get the playtime for the animation in seconds.
+			float animLength = blendAnimTime;
+
+			if (time <= animLength)
 			{
-				doneDown = true;
-			}
-			else if (blendedUp)
-			{
-				doneUp = true;
+
+				finalTransforms = GetBlendTransform();
 			}
 			else
 			{
-				doneOnce = true;
-			}
+				//kan bli wack
+				elapsedTime = 0.0f;
 			
+				doneOnce = true;
+			
+			}
 		}
-	}
 	}
 
 	else if (currentAni == SkeletonStateMachine::COMBINED)
