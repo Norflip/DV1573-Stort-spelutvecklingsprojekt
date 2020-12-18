@@ -1,4 +1,5 @@
-#include "CommonBuffers.hlsl"
+//#include "CommonBuffers.hlsl"
+//#include "CommonBuffers.hlsl"
 
 struct ComputeShaderInput
 {
@@ -7,6 +8,13 @@ struct ComputeShaderInput
     uint3 dispatchThreadID  : SV_DispatchThreadID;  // 3D index of global thread ID in the dispatch.
     uint groupIndex         : SV_GroupIndex;        // Flattened local index of the thread within a thread group.
 };
+
+// Global variables
+cbuffer DispatchParams : register(b5)
+{
+    uint4 numthreadGroups;
+    uint4 numThreads;
+}
 
 [numthreads(1, 1, 1)]
 void main( uint3 DTid : SV_DispatchThreadID )
