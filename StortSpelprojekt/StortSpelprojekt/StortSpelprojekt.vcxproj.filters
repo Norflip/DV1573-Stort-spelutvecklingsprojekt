@@ -70,20 +70,12 @@
     <FxCompile Include="Shaders\FractionalBrownianMotion.hlsl">
       <Filter>Resource Files</Filter>
     </FxCompile>
-    <FxCompile Include="Shaders\Glow_ps.hlsl">
-      <Filter>Resource Files</Filter>
-    </FxCompile>
-    <FxCompile Include="Shaders\Glow_vs.hlsl">
-      <Filter>Resource Files</Filter>
-    </FxCompile>
     <FxCompile Include="Shaders\ForwardPlusRendering.hlsl">
       <Filter>Resource Files</Filter>
     </FxCompile>
     <FxCompile Include="Shaders\Leaf_vs.hlsl">
       <Filter>Resource Files</Filter>
     </FxCompile>
-    <FxCompile Include="Shaders\Emissive_ps.hlsl">
-	  <Filter>Resource Files</Filter>
     <FxCompile Include="Shaders\ParticleDraw_gs.hlsl">
       <Filter>Resource Files</Filter>
     </FxCompile>
@@ -97,6 +89,15 @@
       <Filter>Resource Files</Filter>
     </FxCompile>
     <FxCompile Include="Shaders\ParticleSO_vs.hlsl">
+      <Filter>Resource Files</Filter>
+    </FxCompile>
+    <FxCompile Include="Shaders\Glow_vs.hlsl">
+      <Filter>Resource Files</Filter>
+    </FxCompile>
+    <FxCompile Include="Shaders\Glow_ps.hlsl">
+      <Filter>Resource Files</Filter>
+    </FxCompile>
+    <FxCompile Include="Shaders\Emissive_ps.hlsl">
       <Filter>Resource Files</Filter>
     </FxCompile>
   </ItemGroup>
@@ -330,9 +331,6 @@
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="AnimationController.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="ParticleComponent.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="Particlesys.cpp">
@@ -652,9 +650,6 @@
     <ClInclude Include="SelectableComponent.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="GlowRenderPass.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
     <ClInclude Include="Pathfinding.h">
       <Filter>Header Files</Filter>
     </ClInclude>
@@ -671,9 +666,6 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="AnimationController.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="ParticleComponent.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="Particlesys.h">
@@ -710,6 +702,9 @@
       <Filter>Source Files\SpawnSystems</Filter>
     </ClInclude>
     <ClInclude Include="MetaProgress.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="GlowRenderPass.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>
