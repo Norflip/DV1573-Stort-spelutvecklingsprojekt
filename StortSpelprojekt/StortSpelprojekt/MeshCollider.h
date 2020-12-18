@@ -9,6 +9,13 @@ namespace qh = quickhull;
 
 class MeshCollider : public Component, public Collider
 {
+	struct MeshColliderData
+	{
+		rp::PolyhedronMesh* polyhedronMesh;
+		rp::PolygonVertexArray* vertexArray;
+		rp::PolygonVertexArray::PolygonFace* faces;
+	};
+
 public:
 	MeshCollider(Mesh* mesh, dx::XMFLOAT3 position);
 	MeshCollider(Mesh* mesh, std::vector<dx::XMFLOAT3> positions);
@@ -20,7 +27,8 @@ public:
 	
 private:
 	Mesh* mesh;
-	std::vector<rp::PolyhedronMesh*> polyhedronMeshes;
+	std::vector<MeshColliderData> meshData;
+	//std::vector<rp::PolyhedronMesh*> polyhedronMeshes;
 };
 
 static std::unordered_map<Mesh*, qh::ConvexHull<float>> m_hullCache;

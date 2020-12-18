@@ -33,8 +33,6 @@ public:
 	void SetMaterialData(const cb_Material& materialData);
 	const cb_Material& GetMaterialData() const;
 
-	void ChangeTextureBindFlags(size_t slot, ShaderBindFlag oldFlag, ShaderBindFlag newFlag);
-
 	bool IsTransparent() const { return this->transparent; }
 	void SetTransparent(bool transparent) { this->transparent = transparent; }
 

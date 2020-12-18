@@ -359,8 +359,8 @@ void ObjectSpawner::SpawnStatic(Chunk* chunk)
 					dx::XMFLOAT3 tmpPos;
 					dx::XMStoreFloat3(&tmpPos, props->GetTransform().GetLocalPosition());
 
-					//MeshCollider* meshCollider = props->AddComponent<MeshCollider>(prop.mesh, dx::XMFLOAT3(0, 0, 0));
-					props->AddComponent<BoxColliderComponent>(dx::XMFLOAT3({ 0.5, 0.5, 0.5 }), dx::XMFLOAT3({ 0, 0, 0 }));
+					MeshCollider* meshCollider = props->AddComponent<MeshCollider>(prop.mesh, dx::XMFLOAT3(0, 0, 0));
+					//props->AddComponent<BoxColliderComponent>(dx::XMFLOAT3({ 0.5, 0.5, 0.5 }), dx::XMFLOAT3({ 0, 0, 0 }));
 
 					dx::XMFLOAT4 rot;
 					dx::XMStoreFloat4(&rot, randomYRotation);

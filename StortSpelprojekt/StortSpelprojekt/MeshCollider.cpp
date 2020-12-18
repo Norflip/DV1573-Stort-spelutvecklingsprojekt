@@ -27,9 +27,11 @@ void MeshCollider::DeleteShapes()
 		common.destroyConvexMeshShape(static_cast<rp::ConvexMeshShape*>(colliderInformations[i].shape));
 	}
 
-	for (size_t i = 0; i < polyhedronMeshes.size(); i++)
+	for (size_t i = 0; i < meshData.size(); i++)
 	{
-		common.destroyPolyhedronMesh(polyhedronMeshes[i]);
+		common.destroyPolyhedronMesh(meshData[i].polyhedronMesh);
+		delete meshData[i].vertexArray;
+		delete[] meshData[i].faces;
 	}
 }
 
@@ -76,24 +78,26 @@ void MeshCollider::InitializeCollider(Physics* physics)
 		rp::PhysicsCommon& common = physics->GetCommon();
 
 		size_t faceCount = indexBuffer.size() / 3;
-		rp::PolygonVertexArray::PolygonFace* faces = new rp::PolygonVertexArray::PolygonFace[faceCount];
+		
+		MeshColliderData data;
+		
+		data.faces = new rp::PolygonVertexArray::PolygonFace[faceCount];
 
 		for (size_t i = 0; i < faceCount; i++)
 		{
-			faces[i].indexBase = i * 3;
-			faces[i].nbVertices = 3;
+			data.faces[i].indexBase = i * 3;
+			data.faces[i].nbVertices = 3;
 		}
 
-		rp::PolygonVertexArray* vertexArray = new rp::PolygonVertexArray(vertexBuffer.size(), flatVertexBuffer, 3 * sizeof(float), indexBuffer.data(), sizeof(int), faceCount, faces,
+		data.vertexArray = new rp::PolygonVertexArray(vertexBuffer.size(), flatVertexBuffer, 3 * sizeof(float), indexBuffer.data(), sizeof(int), faceCount, data.faces,
 			rp::PolygonVertexArray::VertexDataType::VERTEX_FLOAT_TYPE,
 			rp::PolygonVertexArray::IndexDataType::INDEX_INTEGER_TYPE);
 
-		rp::PolyhedronMesh* polyhedronMesh = common.createPolyhedronMesh(vertexArray);
-		rp::ConvexMeshShape* convexMeshShape = common.createConvexMeshShape(polyhedronMesh);
+		data.polyhedronMesh = common.createPolyhedronMesh(data.vertexArray);
+		rp::ConvexMeshShape* convexMeshShape = common.createConvexMeshShape(data.polyhedronMesh);
 
-		polyhedronMeshes.push_back(polyhedronMesh);
+		meshData.push_back(data);
 		colliderInformations[i].shape = convexMeshShape;
-
 	}
 }
 
