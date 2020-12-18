@@ -60,6 +60,28 @@ dx::SimpleMath::Matrix& SkeletonAni::Lerp(float elapsedTime, std::vector<Bone>& 
 
 }
 
+dx::SimpleMath::Quaternion SkeletonAni::sLerpQuaternions(dx::SimpleMath::Quaternion quat, dx::SimpleMath::Quaternion quat2)
+{
+    dx::SimpleMath::Quaternion slerpQuat = slerpQuat.Slerp(quat, quat2, t);
+
+    return slerpQuat;
+}
+
+void SkeletonAni::FindChildren(float elapsedTime, const DirectX::XMMATRIX& globalParent, std::vector<Bone>& keys, std::map<std::string, unsigned int>& map, int startJoint, int endJoint)
+{
+
+    for (unsigned int i = startJoint; i < endJoint + 1; i++) //recursively find all the children and repeat.
+    {
+        if (keyBones[i][0].parentName == keys[0].name)
+        {
+            FindChildren(elapsedTime, globalParent, keyBones[i], map, startJoint, endJoint);
+
+            map.insert({ keyBones[i][0].name, i });
+          //  std::cout << keyBones[i][0].name << std::endl;
+        }
+    }
+}
+
 SkeletonAni::SkeletonAni()
 {
    
@@ -71,7 +93,7 @@ std::vector<dx::XMFLOAT4X4>& SkeletonAni::Makeglobal(float elapsedTime, const Di
 {
     DirectX::SimpleMath::Matrix toRoot = Lerp(elapsedTime, keys) * globalParent; //These matrices are local, need to make them global recursively.
 
-    unsigned int ftIndex = keys[0].index; //all of these indices have the same index number.
+    ftIndex = keys[0].index; //all of these indices have the same index number.
 
     DirectX::SimpleMath::Matrix finalTransform = offsetM[ftIndex] * toRoot;
 
@@ -102,7 +124,6 @@ std::string SkeletonAni::GetRootName()
             break;
         }
     }
-
     return rootNode;
 }
 
@@ -229,9 +250,3 @@ void SkeletonAni::SetKeyFramesDirect(std::vector<std::vector<Bone>>& directKeys)
 {
     this->keyBones = directKeys;
 }
-
-
-
-
-
-
