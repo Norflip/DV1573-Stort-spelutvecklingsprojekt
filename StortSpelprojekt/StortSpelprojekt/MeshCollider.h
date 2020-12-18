@@ -14,6 +14,7 @@ class MeshCollider : public Component, public Collider
 		rp::PolyhedronMesh* polyhedronMesh;
 		rp::PolygonVertexArray* vertexArray;
 		rp::PolygonVertexArray::PolygonFace* faces;
+		float* flat;
 	};
 
 public:

@@ -30,6 +30,7 @@ void MeshCollider::DeleteShapes()
 	for (size_t i = 0; i < meshData.size(); i++)
 	{
 		common.destroyPolyhedronMesh(meshData[i].polyhedronMesh);
+		delete[] meshData[i].flat;
 		delete meshData[i].vertexArray;
 		delete[] meshData[i].faces;
 	}
@@ -81,6 +82,7 @@ void MeshCollider::InitializeCollider(Physics* physics)
 		
 		MeshColliderData data;
 		
+		data.flat = flatVertexBuffer;
 		data.faces = new rp::PolygonVertexArray::PolygonFace[faceCount];
 
 		for (size_t i = 0; i < faceCount; i++)
