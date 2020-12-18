@@ -366,7 +366,7 @@ void ControllerComp::Update(const float& deltaTime)
 				if (isMoving == IDLE)
 				{
 					if (this->velocity > 0.f) //is more decrease
-						acceleration = -WALK_ACCELERATION;
+						acceleration = -WALK_ACCELERATION * 5;
 					if (!inside)
 					{
 						AudioMaster::Instance().StopSoundEvent("insideWalk");
@@ -507,11 +507,12 @@ void ControllerComp::Update(const float& deltaTime)
 
 		float acceleration = 0.0f;
 		float jumpVelocity = 0.0f;
+		
+		//if (this->velocity > 0.f) //is more decrease
+		//	acceleration = (-WALK_ACCELERATION * 100);
 
-		if (this->velocity > 0.f) //is more decrease
-			acceleration = -WALK_ACCELERATION;
+		//this->CalcVelocity(acceleration);
 
-		this->CalcVelocity(acceleration);
 		AudioMaster::Instance().StopSoundEvent("walk");
 		AudioMaster::Instance().StopSoundEvent("run");
 		AudioMaster::Instance().StopSoundEvent("insideWalk");
@@ -547,6 +548,6 @@ void ControllerComp::Update(const float& deltaTime)
 		rbComp->SetRotation(capsule);
 	}
 	
-	phy->MutexUnlock();
+	//phy->MutexUnlock();
 
 }
