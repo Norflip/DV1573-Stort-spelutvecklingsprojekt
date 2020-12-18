@@ -2,6 +2,7 @@
 #include "PlayerAnimHandlerComp.h"
 #include "ControllerComp.h"
 #include "SkeletonMeshComponent.h"
+#include "PlayerComp.h"
 PlayerAnimHandlerComp::PlayerAnimHandlerComp(SkeletonMeshComponent* skeletonMeshComp, Object* object, Object* playerObject)
 	:skeletonMeshComp(skeletonMeshComp), camObject(object), playerObject(playerObject)
 {
@@ -18,6 +19,7 @@ void PlayerAnimHandlerComp::Initialize()
 {
 	camComp = camObject->GetComponent<CameraComponent>();
 	controlComp = playerObject->GetComponent<ControllerComp>();
+	pComponent = playerObject->GetComponent<PlayerComp>();
 }
 
 void PlayerAnimHandlerComp::Update(const float& deltaTime)
@@ -32,43 +34,59 @@ void PlayerAnimHandlerComp::Animate(const float& time)
 {
 	attackTimer += time;
 	attackCooldown += time;
-
+	skeletonMeshComp->SetBlendedAnimTime(SkeletonStateMachine::ATTACK, SkeletonStateMachine::BLENDED);
 	
-	if (LMOUSE_DOWN && attackCooldown > 1.0f)
+	if (LMOUSE_DOWN && attackCooldown > skeletonMeshComp->GetBlendedAnimTime() + 0.4f)
 	{
-		skeletonMeshComp->SetTrack(SkeletonStateMachine::ATTACK, true);
+		attacking = true;
 		attackTimer = 0;
 		attackCooldown = 0;
-		attacking = true;
-				
+
+		this->factorValue = (skeletonMeshComp->GetBlendedAnimTime() - 0.f);
+		this->factorRange = (1.f - 0.f);
+
+		this->finalFactor = (((attackTimer - 0.f) * factorRange) / factorValue) + 0.f;
+		finalFactor = CLAMP(finalFactor, 0.f, 1.f);
+
+		std::cout << "Blended animtime : " << skeletonMeshComp->GetBlendedAnimTime() << std::endl;
+
+		skeletonMeshComp->SetBlendingTracksAndFactor(SkeletonStateMachine::ATTACK, SkeletonStateMachine::BLENDED, finalFactor, true);
+		skeletonMeshComp->SetTrack(SkeletonStateMachine::BLENDED, true);
+
 		AudioMaster::Instance().PlaySoundEvent("axeSwing");
 	}
-	else if (attacking && attackTimer > 0.83f)
+
+	else if (attacking && attackTimer > skeletonMeshComp->GetBlendedAnimTime())
 	{
 		attacking = false;
 	}
 
 	else if (!attacking)
 	{
-		if (controlComp->GetRigidBodyComp()->GetLinearVelocity().x > 0 || controlComp->GetRigidBodyComp()->GetLinearVelocity().x < 0 ||
-			controlComp->GetRigidBodyComp()->GetLinearVelocity().z > 0 || controlComp->GetRigidBodyComp()->GetLinearVelocity().z < 0)
-		{
-			if (KEY_PRESSED(LeftShift))
-			{
-				skeletonMeshComp->SetTrack(SkeletonStateMachine::RUN, false);
-			}
-			else
-			{
-				skeletonMeshComp->SetTrack(SkeletonStateMachine::WALK, false);
-			}
-		}
 
-		else if (controlComp->GetRigidBodyComp()->GetLinearVelocity().x == 0 && controlComp->GetRigidBodyComp()->GetLinearVelocity().z == 0)
+		this->factorValue = (4.f - 0.f);
+		this->factorRange = (1.f - 0.f);
+
+		this->finalFactor = (((controlComp->GetVelocity() - 0.f) * factorRange) / factorValue) + 0.f;
+		finalFactor = CLAMP(finalFactor, 0.f, 1.f);
+
+		std::cout << "Velocity x: " << controlComp->GetVelocity() << std::endl;
+
+		skeletonMeshComp->SetBlendingTracksAndFactor(SkeletonStateMachine::IDLE, SkeletonStateMachine::WALK, finalFactor, true);
+		skeletonMeshComp->SetTrack(SkeletonStateMachine::BLENDED, false);
+
+		if (controlComp->GetVelocity() >= 4.f)
 		{
-			skeletonMeshComp->SetTrack(SkeletonStateMachine::IDLE, false);
+			this->factorValue = (7.f - 4.f);
+			this->factorRange = (1.f - 0.f);
+
+			this->finalFactor = (((controlComp->GetVelocity() - 4.f) * factorRange) / factorValue) + 0.f;
+			finalFactor = CLAMP(finalFactor, 0.f, 1.f);
+
+			skeletonMeshComp->SetBlendingTracksAndFactor(SkeletonStateMachine::WALK, SkeletonStateMachine::RUN, finalFactor, true);
+			skeletonMeshComp->SetTrack(SkeletonStateMachine::BLENDED, false);
 		}
 	}
-	
 }
 
 //Makes the players arms follow the camera.

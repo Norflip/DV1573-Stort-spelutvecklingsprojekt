@@ -247,7 +247,7 @@ void RigidBodyComponent::AddForceAtPoint(const dx::XMFLOAT3& force, const dx::XM
 {
 	rp::Vector3 rpForce(force.x, force.y, force.z);
 	rp::Vector3 rpOffset(offset.x, offset.y, offset.z);
-
+	
 	if (local)
 		body->applyForceAtLocalPosition(rpForce, rpOffset);
 	else

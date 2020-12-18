@@ -6,6 +6,7 @@
 #include "DXHelper.h"
 class ControllerComp;
 class SkeletonMeshComponent;
+class PlayerComp;
 
 class PlayerAnimHandlerComp : public Component
 {
@@ -24,6 +25,7 @@ public:
 private:
 	CameraComponent* camComp;
 	ControllerComp* controlComp;
+	PlayerComp* pComponent;
 
 	Object* camObject;
 	Object* playerObject;
@@ -33,4 +35,12 @@ private:
 	float attackTimer = 0;
 	float attackCooldown = 0;
 	bool gameStarted = false;
+
+	//Blending
+	float finalFactor = 0.f;
+	float factorValue = 0.f;
+	float factorRange = 0.f;
+	float playerMoveSpeed = 0;
+	float sprintSpeedFactor = 0;
+	float walkSpeedFactor = 0;
 };

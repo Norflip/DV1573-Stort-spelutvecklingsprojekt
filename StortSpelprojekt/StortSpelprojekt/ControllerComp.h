@@ -76,7 +76,6 @@ private:
 	Object* house;
 
 	void CheckGrounded();
-
 	MoveState isMoving; 
 
 	void CalcVelocity(float acceleration)

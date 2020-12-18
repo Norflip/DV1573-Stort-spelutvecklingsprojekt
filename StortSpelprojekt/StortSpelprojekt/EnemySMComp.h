@@ -56,5 +56,9 @@ private:
     EnemyStatsComp* statsComponent;
     EnemyPatrolComp* enemyPatrolComp;
     Object* player;
-    
+
+    float finalFactor = 0.f;
+    float factorValue = 0.f;
+    float factorRange = 0.f;
+
 };
