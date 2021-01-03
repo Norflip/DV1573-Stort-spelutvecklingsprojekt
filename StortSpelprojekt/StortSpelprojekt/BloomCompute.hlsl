@@ -1,5 +1,4 @@
 //#include "CommonBuffers.hlsl"
-//#include "CommonBuffers.hlsl"
 
 struct ComputeShaderInput
 {
@@ -16,8 +15,10 @@ cbuffer DispatchParams : register(b5)
     uint4 numThreads;
 }
 
+Texture2D glowTexture : register(t2);
+
 [numthreads(1, 1, 1)]
-void main( uint3 DTid : SV_DispatchThreadID )
+void main( ComputeShaderInput IN)
 {
 
 }
