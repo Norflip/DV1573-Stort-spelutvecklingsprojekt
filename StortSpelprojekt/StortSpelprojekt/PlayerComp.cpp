@@ -419,7 +419,7 @@ void PlayerComp::RayCast(const float& deltaTime)
 						guiMan->GetGUIObject("infoSprite")->SetVisible(false);
 						guiMan->GetGUIObject("dot")->SetVisible(true);
 						reading = false;
-					}
+					} 
 					else
 					{
 						guiMan->GetGUIObject("infoSprite")->SetVisible(true);
@@ -433,7 +433,7 @@ void PlayerComp::RayCast(const float& deltaTime)
 
 	physics->RaytestSingle(ray, rayDistance, hit, FilterGroups::CLICKABLE);
 	//Click signs
-	if (KEY_DOWN(E) && hit.object != nullptr && house->GetComponent<NodeWalkerComp>()->GetHouseProgress()==1.f)
+	if (KEY_DOWN(E) && hit.object != nullptr && house->GetComponent<NodeWalkerComp>()->GetHouseProgress()>0.9f)
 	{
 		clickable = hit.object;
 		AudioMaster::Instance().PlaySoundEvent("punch");

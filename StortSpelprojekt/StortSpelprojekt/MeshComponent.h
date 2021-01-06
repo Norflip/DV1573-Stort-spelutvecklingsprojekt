@@ -47,10 +47,8 @@ private:
 	std::vector<Material*> materials;
 	Bounds bounds;
 
-
 	std::vector<dx::XMFLOAT4X4> instanceData;
 	ID3D11Buffer* instanceBuffer;
 	bool instanced, batchable;
 	size_t instanceCount;
-
 };

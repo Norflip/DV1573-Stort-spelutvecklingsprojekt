@@ -6,7 +6,7 @@
 #include "MeshCollider.h"
 #include "World.h"
 
-ObjectSpawner::ObjectSpawner()
+ObjectSpawner::ObjectSpawner() : environmentQT(nullptr)
 {
 	doOnce = true;
 }
@@ -60,6 +60,10 @@ void ObjectSpawner::Initialize(Object* root, World* world, ItemManager* items, R
 void ObjectSpawner::Spawn(const SaveState& state, const Bounds& worldBounds, std::unordered_map<int, Chunk*>& chunkMap)
 {
 	QuadTree tree(worldBounds);
+
+	if(environmentQT != nullptr)
+		delete environmentQT;
+
 	environmentQT = new QuadTree(worldBounds);
 
 	for (auto i : chunkMap)
@@ -96,8 +100,6 @@ void ObjectSpawner::SpawnSpecific(std::vector<dx::XMFLOAT2> positions, dx::XMVEC
 			obj->GetTransform().SetWorldRotation(dx::XMQuaternionRotationNormal(axis, angles[i]));
 
 			modifier(obj);
-
-
 		}
 	}
 }
@@ -184,6 +186,7 @@ void ObjectSpawner::AddTreesToChunk(const TreeModel& treeModel, Chunk* chunk, si
 		}
 
 		size_t nrOfInstancedStyTrees = validPoints.size();
+
 		if (nrOfInstancedStyTrees > 0)
 		{
 			std::vector<dx::XMFLOAT4X4> treesInstanced(nrOfInstancedStyTrees);
@@ -357,10 +360,11 @@ void ObjectSpawner::SpawnStatic(Chunk* chunk)
 					dx::XMStoreFloat3(&tmpPos, props->GetTransform().GetLocalPosition());
 
 					MeshCollider* meshCollider = props->AddComponent<MeshCollider>(prop.mesh, dx::XMFLOAT3(0, 0, 0));
+					//props->AddComponent<BoxColliderComponent>(dx::XMFLOAT3({ 0.5, 0.5, 0.5 }), dx::XMFLOAT3({ 0, 0, 0 }));
 
 					dx::XMFLOAT4 rot;
 					dx::XMStoreFloat4(&rot, randomYRotation);
-					meshCollider->SetRotation(0, rot);
+					//meshCollider->SetRotation(0, rot);
 
 					props->AddComponent<RigidBodyComponent>(0.f, FilterGroups::PROPS, FilterGroups::EVERYTHING, BodyType::STATIC, true);
 					break;
