@@ -94,4 +94,5 @@ private:
 	QuadTree treePoints;
 	Object* root;
 	Renderer* renderer;
+
 };

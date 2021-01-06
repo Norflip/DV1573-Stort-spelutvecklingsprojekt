@@ -58,18 +58,6 @@ void ParticleSystemComponent::Shutdown()
 		srv = 0;
 	}
 
-	if (indexBuffer)
-	{
-		indexBuffer->Release();
-		indexBuffer = 0;
-	}
-
-	if (vertexBuffer)
-	{
-		vertexBuffer->Release();
-		vertexBuffer = 0;
-	}
-
 	if (particleList) {
 		delete[] particleList;
 		particleList = 0;
@@ -79,6 +67,11 @@ void ParticleSystemComponent::Shutdown()
 		delete vertices;
 		vertices = 0;
 	}
+
+	if (mat)
+		delete mat;
+	if (mesh)
+		delete mesh;
 }
 
 void ParticleSystemComponent::InitializeParticles(ID3D11Device* device, const std::string& texureKey)

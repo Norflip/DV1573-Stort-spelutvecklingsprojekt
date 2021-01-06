@@ -115,6 +115,7 @@ Object* ItemManager::DefaultCreateItem(std::string key, PickupType type, float v
 	}
 
 	Renderer* renderer = Engine::Instance->GetRenderer();
+
 	ParticleSystemComponent* particles = object->AddComponent<ParticleSystemComponent>(renderer, Engine::Instance->GetResources()->GetShaderResource("particleShader"));
 	particles->InitializeParticles(renderer->GetDevice(), "Particle");
 

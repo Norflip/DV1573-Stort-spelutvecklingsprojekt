@@ -60,21 +60,6 @@ void WorldGenerator::Construct(const SaveState& state, const WorldDescription& d
 		AddChunksFromPath(indexes, chunks);
 		AddPadding(CHUNK_PADDING, indexes, chunks, minIndex, maxIndex);
 
-		//RegisterEnviromentProp("test", 0, 10, 4, [](Chunk* chunk, dx::XMVECTOR rootPosition)  
-		//	{
-		//		Object* root = new Object("puzzel_root");
-		//		Object* puzzelModel = Engine::Instance->GetResources()->AssembleObject("Propane", "PropaneMaterial");
-		//		Object::AddToHierarchy(root, puzzelModel);
-		//		puzzelModel->GetTransform().SetLocalPosition({ CHUNK_SIZE / 2.0f, 5.0f, CHUNK_SIZE / 2.0f });
-		//		puzzelModel->GetTransform().SetScale({ 10, 10, 10 });
-
-		//		//dx::XMFLOAT3 pos;
-		//		//dx::XMStoreFloat3(&pos, rootPosition);
-		//		//std::cout << "PAAZZL: " << pos.x << ", " << pos.y << ", " << pos.z << "\n";
-
-		//		return root;
-		//	});
-
 		// Ugly ass spawn for tree/frog puzzle
 		RegisterEnviromentProp("PuzzleTree", 0, 5, 1, [](Chunk* chunk, dx::XMVECTOR rootPosition)
 		{

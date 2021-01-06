@@ -83,8 +83,6 @@ private:
 	ID3D11ShaderResourceView* grassBCSRV = nullptr;
 
 private:
-	std::vector<Object*> props;
-
 	//std::vector<dx::XMFLOAT3> TMP_POS;
 
 	ObjectPooler* pooler;
