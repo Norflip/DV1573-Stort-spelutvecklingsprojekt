@@ -131,17 +131,6 @@ void ParticleSystemComponent::SetDifference(float x, float y, float z)
 
 	cullBounds.SetMinMax(dx::XMFLOAT3(-differenceOnX, -differenceOnY, -differenceOnZ), dx::XMFLOAT3(differenceOnX, differenceOnY, differenceOnZ));
 }
-//
-//void ParticleSystemComponent::LoadTexture(ID3D11Device* device, LPCWSTR textureFilename)
-//{
-//	HRESULT hr = dx::CreateWICTextureFromFile(device, textureFilename, nullptr, &srv);
-//	if (FAILED(hr))
-//		MessageBox(0, L"Failed to 'Load WIC Texture'", L"Graphics scene Initialization Message", MB_ICONERROR);
-//
-//	/* Mat info */
-//	mat->SetTexture(new Texture(srv), TEXTURE_DIFFUSE_SLOT, ShaderBindFlag::PIXEL);
-//	mat->SetSampler(DXHelper::CreateSampler(D3D11_FILTER_MIN_MAG_MIP_LINEAR, D3D11_TEXTURE_ADDRESS_WRAP, device), 0, ShaderBindFlag::PIXEL);
-//}
 
 void ParticleSystemComponent::InitializeBuffers(ID3D11Device* device)
 {
@@ -206,13 +195,12 @@ void ParticleSystemComponent::CreateParticle(float frameTime)
 	accumulatedTime += frameTime;
 	bool emitParticle = false;
 
-	// Check if it is time to emit a new particle or not.
+	// Check if it is time to emit a new particle 
 	if (accumulatedTime > 0.1f) {
 		accumulatedTime = 0.0f;
 		emitParticle = true;
 	}
-
-	// If there are particles to emit then emit one per frame.
+		
 	if ((emitParticle == true) && (currentParticleCount < (maxParticles - 1)))
 	{
 		currentParticleCount++;
@@ -227,9 +215,7 @@ void ParticleSystemComponent::CreateParticle(float frameTime)
 		float alpha = 0.95f;
 
 		/*
-			Sort the listarray and find a place for the new particle.
-			if a particle is not active or has a different depth than the other searched particle-place
-			mark that as found and copy the array over by one position from
+			Sort the listarray and find a place for the new particle
 		*/
 
 		int index = 0;
@@ -288,8 +274,7 @@ void ParticleSystemComponent::UpdateParticles(float frameTime)
 }
 
 void ParticleSystemComponent::DeleteParticles()
-{
-	/* Kill all the particles that have gone over a certain height range */
+{	
 	for (int i = 0; i < maxParticles; i++)
 	{
 		if (/*(particleList[i].active == true) && (particleList[i].posy > 0.5f) ||*/ ((particleList[i].active == true) && particleList[i].alpha <= 0.0f))
@@ -316,12 +301,7 @@ void ParticleSystemComponent::DeleteParticles()
 void ParticleSystemComponent::UpdateBuffers()
 {
 	/*	Build the vertex array from the particle list array. Each particle is a quad made out of two triangles	*/
-
-	/*
-		Resource is mapped for writing, the previous contents of the resource will be undefined.
-		Map/Unmap is a common use with temporary buffers. - Dynamic usage of our vertexbuffer. (It is at least prefered)
-	*/
-
+		
 	D3D11_MAPPED_SUBRESOURCE mappedResource;
 	HRESULT result = renderer->GetContext()->Map(vertexBuffer, 0, D3D11_MAP_WRITE_DISCARD, 0, &mappedResource);
 	assert(SUCCEEDED(result));
@@ -377,14 +357,6 @@ void ParticleSystemComponent::UpdateBuffers()
 
 void ParticleSystemComponent::Update(const float& deltaTime)
 {
-
-
-	/*
-		Delete old particles that reaches a height. Create new particles after some time.
-		Update the created particles so they fall from a centerposition to a -y position until they disappear.
-		Update the dynamic vertexbuffer with the new position of each particle
-	*/
-
 	DeleteParticles();
 	CreateParticle(deltaTime);
 	UpdateParticles(deltaTime);
@@ -406,7 +378,6 @@ void ParticleSystemComponent::Draw(Renderer* renderer, CameraComponent* camera)
 			dx::XMStoreFloat3(&pos, camera->GetOwner()->GetTransform().GetPosition());
 
 			float rotationPart = atan2(particlesPosition.x - pos.x, particlesPosition.z - pos.z);// *(180.0 / dx::XM_PI);
-			//float rotationPart = (float)anglepart * Math::ToRadians;
 
 			dx::XMMATRIX worldParticles = dx::XMMatrixIdentity();
 			dx::XMMATRIX particlesRotationY = dx::XMMatrixRotationY(rotationPart);

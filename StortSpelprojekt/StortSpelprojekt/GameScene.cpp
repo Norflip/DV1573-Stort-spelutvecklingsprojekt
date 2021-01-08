@@ -409,19 +409,17 @@ void GameScene::InitializeInterior()
 	fLight->SetIntensity(1.f);
 	AddObjectToRoot(fireLight);
 
-	testParticles = new Particlesys(Engine::Instance->GetResources()->GetShaderResource("ParticleShaderSO"), Engine::Instance->GetResources()->GetShaderResource("ParticleShaderDraw"));
-	//testParticles->InitializeParticleShaders(renderer->GetDevice(), window->GetHWND());
-
-	testParticles->SetTexture(renderer->GetDevice(), L"Textures/fire.png");
-	testParticles->SetMaxParticles(200);
+	fireParticles = new Particlesys(Engine::Instance->GetResources()->GetShaderResource("ParticleShaderSO"), Engine::Instance->GetResources()->GetShaderResource("ParticleShaderDraw"));
+	fireParticles->SetTexture(renderer->GetDevice(), L"Textures/fire.png");
+	fireParticles->SetMaxParticles(200);
 	//testParticles->SetParticleColor(dx::XMFLOAT4(fireRedColor));
-	testParticles->SetParticleSize(dx::XMFLOAT2(0.8f, 0.8f));
+	fireParticles->SetParticleSize(dx::XMFLOAT2(0.8f, 0.8f));
 	//testParticles->SetEmitPos(dx::XMFLOAT3(28, 1.7f, 50));
-	testParticles->SetEmitDir(dx::XMFLOAT3(0.0f, 0.5f, 0.0f));
-	testParticles->SetParticleSpreadMulti(dx::XMFLOAT3(0.25f, 0.35f, 0.25f)); // testParticles->SetParticleSpreadMulti(dx::XMFLOAT3(0.15f, 0.3f, 0.15f));
+	fireParticles->SetEmitDir(dx::XMFLOAT3(0.0f, 0.5f, 0.0f));
+	fireParticles->SetParticleSpreadMulti(dx::XMFLOAT3(0.25f, 0.35f, 0.25f)); 
 
-	testParticles->InitializeParticles(renderer->GetDevice(), renderer, fireLight);
-	renderer->ListParticle(testParticles);
+	fireParticles->InitializeParticles(renderer->GetDevice(), renderer, fireLight);
+	renderer->ListParticle(fireParticles);
 
 
 	Object* windowLight = new Object("windowLight");
