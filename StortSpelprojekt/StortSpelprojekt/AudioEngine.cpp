@@ -13,21 +13,7 @@ AudioEngine::~AudioEngine()
 	audioMaster->StopEngine();
 
 	if (localAudioData)
-		delete localAudioData;
-	//if (sample)
-	//	delete sample;
-	//if (partialType)
-	//	delete partialType;
-	//if (uncompressedAudioFile)
-	//	delete uncompressedAudioFile;
-	//if (nativeMediaType)
-	//	delete nativeMediaType;
-	//if (sourceReader)
-	//	delete sourceReader;
-	//if (audioMaster)
-	//	delete audioMaster;
-	//if(masterVoice)
-	//	delete masterVoice;
+		delete localAudioData;	
 }
 
 void AudioEngine::Initialize()

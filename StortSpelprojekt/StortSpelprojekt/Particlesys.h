@@ -137,14 +137,9 @@ private:
 
 	HRESULT hr;	
 
-	ID3D11SamplerState* sampler;
-	
-	//cBufferPerObject cbPerObject;
+	ID3D11SamplerState* sampler;	
 	cBufferPerFrame cbPerFrame;
-
-	//ID3D11Buffer* cbufferPerObject;
 	ID3D11Buffer* cbufferPerFrame;
-
 	ID3D11Device* device;	
 
 	/* Benchmark stuff */

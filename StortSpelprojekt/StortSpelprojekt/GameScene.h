@@ -48,7 +48,7 @@ private:
 
 	World world;
 	Object* house;
-	Particlesys* testParticles;
+	Particlesys* fireParticles;
 
 	Object* leftSign;
 	Object* rightSign;

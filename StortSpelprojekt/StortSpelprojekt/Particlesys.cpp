@@ -222,79 +222,75 @@ float Particlesys::RandomFloat(float a, float b)
 }
 
 void Particlesys::DrawStreamOut(ID3D11DeviceContext* context, CameraComponent* cam)
-{	
-	
-		dx::XMMATRIX viewproj;
-		viewproj = XMMatrixMultiply(cam->GetViewMatrix(), cam->GetProjectionMatrix());
+{		
+	dx::XMMATRIX viewproj;
+	viewproj = XMMatrixMultiply(cam->GetViewMatrix(), cam->GetProjectionMatrix());
 
-		/* Streamout stuffy  */
-		cbPerFrame.emitDir = emitDir;
-		cbPerFrame.emitPos = emitPos;
-		cbPerFrame.eyePos = eyePos;
-		cbPerFrame.gameTime = gameTimer;
-		cbPerFrame.ageTimeStep = ageTimeStep;
-		cbPerFrame.viewProjection = DirectX::XMMatrixTranspose(viewproj);
-		cbPerFrame.particleMaxAge = particleMaxAge;
-		cbPerFrame.particleColor = particleColorModify;
-		cbPerFrame.usingTexture = usingTexture;
-		cbPerFrame.particleSpreadMulti = particleSpreadModify;
-		cbPerFrame.particlesPerSecond = particlesPerSecond;
-		cbPerFrame.particleSize = particleSize;
-		cbPerFrame.active = particlesActivated;
+	/* Streamout stuffy  */
+	cbPerFrame.emitDir = emitDir;
+	cbPerFrame.emitPos = emitPos;
+	cbPerFrame.eyePos = eyePos;
+	cbPerFrame.gameTime = gameTimer;
+	cbPerFrame.ageTimeStep = ageTimeStep;
+	cbPerFrame.viewProjection = DirectX::XMMatrixTranspose(viewproj);
+	cbPerFrame.particleMaxAge = particleMaxAge;
+	cbPerFrame.particleColor = particleColorModify;
+	cbPerFrame.usingTexture = usingTexture;
+	cbPerFrame.particleSpreadMulti = particleSpreadModify;
+	cbPerFrame.particlesPerSecond = particlesPerSecond;
+	cbPerFrame.particleSize = particleSize;
+	cbPerFrame.active = particlesActivated;
 
-		context->UpdateSubresource(cbufferPerFrame, 0, nullptr, &cbPerFrame, 0, 0);
-		context->GSSetConstantBuffers(0, 1, &cbufferPerFrame);
+	context->UpdateSubresource(cbufferPerFrame, 0, nullptr, &cbPerFrame, 0, 0);
+	context->GSSetConstantBuffers(0, 1, &cbufferPerFrame);
 
-		context->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_POINTLIST);
-		context->GSSetShaderResources(0, 1, &randomNumberSRV);
-		context->GSSetSamplers(0, 1, &sampler);
-		context->PSSetShader(NULL, 0, 0);
-		streamoutShader->BindToContext(context);
+	context->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_POINTLIST);
+	context->GSSetShaderResources(0, 1, &randomNumberSRV);
+	context->GSSetSamplers(0, 1, &sampler);
+	context->PSSetShader(NULL, 0, 0);
+	streamoutShader->BindToContext(context);
 
 
-		UINT stride = sizeof(Particle);
-		UINT offset = 0;
+	UINT stride = sizeof(Particle);
+	UINT offset = 0;
 
-		if (firstRun)
-			context->IASetVertexBuffers(0, 1, &initializeVB, &stride, &offset);
-		else
-			context->IASetVertexBuffers(0, 1, &drawVB, &stride, &offset);
+	if (firstRun)
+		context->IASetVertexBuffers(0, 1, &initializeVB, &stride, &offset);
+	else
+		context->IASetVertexBuffers(0, 1, &drawVB, &stride, &offset);
 
-		context->SOSetTargets(1, &streamoutVB, &offset);
+	context->SOSetTargets(1, &streamoutVB, &offset);
 
-		if (firstRun)
-		{
-			context->Draw(1, 0);
-			firstRun = false;
-		}
-		else
-		{
-			context->DrawAuto();
-		}
+	if (firstRun)
+	{
+		context->Draw(1, 0);
+		firstRun = false;
+	}
+	else
+	{
+		context->DrawAuto();
+	}
 
-		// Ping-pong the vertex buffers
-		ID3D11Buffer* bufferArray[1] = { 0 };
-		context->SOSetTargets(1, bufferArray, &offset);
-		std::swap(drawVB, streamoutVB);
+	// Ping-pong the vertex buffers
+	ID3D11Buffer* bufferArray[1] = { 0 };
+	context->SOSetTargets(1, bufferArray, &offset);
+	std::swap(drawVB, streamoutVB);
 
-		/* Clear */
-		ID3D11ShaderResourceView* nullSRV[1] = { nullptr };
-		context->GSSetShaderResources(0, 1, nullSRV);
+	/* Clear */
+	ID3D11ShaderResourceView* nullSRV[1] = { nullptr };
+	context->GSSetShaderResources(0, 1, nullSRV);
 
-		ID3D11SamplerState* nullSampler[1] = { nullptr };
-		context->GSSetSamplers(0, 1, nullSampler);
+	ID3D11SamplerState* nullSampler[1] = { nullptr };
+	context->GSSetSamplers(0, 1, nullSampler);
 
-		context->GSSetConstantBuffers(0, 1, bufferArray);
-		context->VSSetShader(nullptr, 0, 0);
-		context->GSSetShader(nullptr, 0, 0);
-		context->PSSetShader(nullptr, 0, 0);
-	
+	context->GSSetConstantBuffers(0, 1, bufferArray);
+	context->VSSetShader(nullptr, 0, 0);
+	context->GSSetShader(nullptr, 0, 0);
+	context->PSSetShader(nullptr, 0, 0);	
 }
 
 void Particlesys::DrawParticles(ID3D11DeviceContext* context, CameraComponent* cam)
-{	
-	/*if (particlesActivated)
-	{*/
+{		
 	UINT stride = sizeof(Particle);
 	UINT offset = 0;
 
@@ -329,7 +325,6 @@ void Particlesys::DrawParticles(ID3D11DeviceContext* context, CameraComponent* c
 	context->VSSetShader(nullptr, 0, 0);
 	context->GSSetShader(nullptr, 0, 0);
 	context->PSSetShader(nullptr, 0, 0);
-	//}
 }
 
 void Particlesys::BuildVB(ID3D11Device* device)
