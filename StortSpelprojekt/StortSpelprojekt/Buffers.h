@@ -13,6 +13,7 @@ constexpr size_t CB_SCREEN_TOVIEW_PARAMS_SLOT = 6;
 
 //constexpr size_t POINT_LIGHT_COUNT = 32;
 //constexpr size_t LIGHT_COUNT = 40;
+constexpr size_t BLUR_RADIUS = 15;
 
 ALIGN16
 struct cb_Object
@@ -117,4 +118,13 @@ struct cb_grass
 	float grassWidth;
 	float grassRadius;
 	float grassDisplacement;
+};
+
+
+ALIGN16
+struct cb_blur
+{
+	float weights[BLUR_RADIUS];
+	int radius;
+	int direction;
 };

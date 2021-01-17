@@ -48,8 +48,8 @@ Engine::Engine(HINSTANCE hInstance) : window(hInstance), activeSceneIndex(-1), s
 #endif
 
 	//renderer->AddRenderPass(new SkyboxRenderPass(-10, resourceManager));
-	renderer->AddRenderPass(new FogRenderPass(0, resourceManager));
-	renderer->AddRenderPass(new FXAARenderPass(1, resourceManager));
+	//renderer->AddRenderPass(new FogRenderPass(0, resourceManager));
+	//renderer->AddRenderPass(new FXAARenderPass(1, resourceManager));
 
 	renderer->AddRenderPass(new GlowRenderPass(2, resourceManager));
 	renderer->AddRenderPass(new GlowPreRenderPass(-5, resourceManager));

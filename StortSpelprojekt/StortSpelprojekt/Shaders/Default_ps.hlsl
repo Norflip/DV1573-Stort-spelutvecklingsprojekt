@@ -44,6 +44,6 @@ float4 main(VS_OUTPUT input) : SV_TARGET
 	finalColor.a = 1.0f;
 
 	//return float4(input.normal, 1.0f);
-    return finalColor + emissiveColor;
+    return finalColor /* + emissiveColor*/;
     //return emissiveColor;
 }

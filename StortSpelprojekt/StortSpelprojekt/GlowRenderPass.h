@@ -17,8 +17,11 @@ public:
 		/*
 			Sätt till en vettig width / height. 
 		*/
-		size_t TMP_WIDTH = 800;
-		size_t TMP_HEIGHT = 800;
+		/*size_t TMP_WIDTH = 800;
+		size_t TMP_HEIGHT = 800;*/
+
+		size_t TMP_WIDTH = 960; // 1920 / 2
+		size_t TMP_HEIGHT = 540; // 1080 / 2
 
 		ID3D11DepthStencilState* dss;
 
@@ -27,11 +30,13 @@ public:
 		shader = new Shader();
 		shader->SetVertexShader("Shaders/Default_vs.hlsl");
 		shader->SetPixelShader("Shaders/Emissive_ps.hlsl");
+		shader->SetComputeShader("Shaders/FirstPassBloom.hlsl");
 		shader->Compile(device);
 		shaderInstanced = new Shader();
 		shaderInstanced->SetVertexShader("Shaders/Instance_vs.hlsl");
 		shaderInstanced->SetInputLayoutStructure(9, shaderInstanced->INSTANCE_INPUT_LAYOUTd);
 		shaderInstanced->SetPixelShader("Shaders/Emissive_ps.hlsl");
+		shaderInstanced->SetComputeShader("Shaders/FirstPassBloom.hlsl");
 		shaderInstanced->Compile(device);
 
 		material = new Material(shader);
@@ -42,7 +47,6 @@ public:
 	{
 		ID3D11ShaderResourceView* nullSRV = nullptr;
 		renderer->GetContext()->PSSetShaderResources(2, 1, &nullSRV);
-		Texture* tex = material->GetTexture(2, ShaderBindFlag::PIXEL);
 		renderer->ClearRenderTarget(glowTarget, true);
 		renderer->SetRenderTarget(glowTarget, true);
 		
