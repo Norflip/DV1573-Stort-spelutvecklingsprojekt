@@ -24,7 +24,8 @@ ALIGN16
 class Renderer
 {
 	//const FLOAT DEFAULT_BG_COLOR[4] = { 0.3f, 0.1f, 0.2f, 1.0f };
-	const FLOAT DEFAULT_BG_COLOR[4] = { 0.2f, 0.2f, 0.2f, 1.0f };
+	//const FLOAT DEFAULT_BG_COLOR[4] = { 0.2f, 0.2f, 0.2f, 1.0f };
+	const FLOAT DEFAULT_BG_COLOR[4] = { 0.f, 0.f, 0.f, 1.0f };
 
 	static const int MAX_BATCH_COUNT = 64;
 	struct Batch

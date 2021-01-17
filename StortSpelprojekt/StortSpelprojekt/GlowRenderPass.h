@@ -30,13 +30,13 @@ public:
 		shader = new Shader();
 		shader->SetVertexShader("Shaders/Default_vs.hlsl");
 		shader->SetPixelShader("Shaders/Emissive_ps.hlsl");
-		shader->SetComputeShader("Shaders/FirstPassBloom.hlsl");
+		//shader->SetComputeShader("Shaders/FirstPassBloom.hlsl");
 		shader->Compile(device);
 		shaderInstanced = new Shader();
 		shaderInstanced->SetVertexShader("Shaders/Instance_vs.hlsl");
 		shaderInstanced->SetInputLayoutStructure(9, shaderInstanced->INSTANCE_INPUT_LAYOUTd);
 		shaderInstanced->SetPixelShader("Shaders/Emissive_ps.hlsl");
-		shaderInstanced->SetComputeShader("Shaders/FirstPassBloom.hlsl");
+		//shaderInstanced->SetComputeShader("Shaders/FirstPassBloom.hlsl");
 		shaderInstanced->Compile(device);
 
 		material = new Material(shader);
@@ -96,7 +96,7 @@ public:
 		materialInstanced->UnbindToContext(renderer->GetContext());
 
 		// vi sparar glow texturer till renderer så vi sedan kan hämta den i nästa pass
-		renderer->StoreShaderResourceView("glow", target.srv);
+		renderer->StoreShaderResourceView("glow", glowTarget.srv);
 		//renderer->GetContext()->PSSetShaderResources(0, 1, nullptr);
 
 		// vi sätter tillbaka till det vanliga render target för att renderar resten av scenen
@@ -136,10 +136,12 @@ public:
 
 		ID3D11ShaderResourceView* srv = renderer->LoadShaderResourceView("glow");
 
+		
+
 		// I renderpass shadern GlowShader så blir första texturen scenen i sig och den andra all data från glow texturen som vi gjorde i tidigare GlowPreRenderPass
 
 		renderer->GetContext()->PSSetShaderResources(0, 1, &current.srv);
-		renderer->GetContext()->PSSetShaderResources(2, 1, &current.srv);
+		renderer->GetContext()->PSSetShaderResources(2, 1, &srv);
 		//renderer->GetContext()->PSSetShaderResources(2, 1, &srv);
 
 		renderer->DrawScreenQuad(material);
@@ -147,6 +149,13 @@ public:
 		ID3D11ShaderResourceView* nullSRV[1] = { nullptr };
 		//renderer->GetContext()->PSSetShaderResources(0, 1, nullSRV);
 		renderer->GetContext()->PSSetShaderResources(2, 1, nullSRV);
+	}
+
+	void executeComputeShader(ID3D11DeviceContext* context, ID3D11ComputeShader* shader, UINT uinputNum, ID3D11UnorderedAccessView** UAVInputsPtrPtr, UINT x, UINT y, UINT z)
+	{
+		context->CSSetShader(shader, nullptr, 0);
+
+		//context->CSSetShaderResources(0, )
 	}
 
 	ALIGN16_ALLOC;
