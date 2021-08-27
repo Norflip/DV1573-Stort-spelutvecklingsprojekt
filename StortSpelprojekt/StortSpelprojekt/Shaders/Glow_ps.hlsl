@@ -17,8 +17,8 @@ struct PS_INPUT_GLOW
 float4 main(PS_INPUT_GLOW input) : SV_TARGET
 {
     float4 albedo = rgbTexture.Sample(glowSampler, input.uv);
-    float4 emissive = emssiveTexture.Sample(glowSampler, input.uv);
     float4 glow = glowTexture.Sample(glowSampler, input.uv);
+    float4 emissive = emssiveTexture.Sample(glowSampler, input.uv);
        
     return albedo + emissive + glow;
 }

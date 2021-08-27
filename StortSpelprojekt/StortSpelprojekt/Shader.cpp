@@ -124,7 +124,7 @@ void Shader::BindToContext(ID3D11DeviceContext* context) const
 	}
 	if ((flag & (int)ShaderBindFlag::COMPUTE) != 0)
 	{
-		context->CSSetShader(computeShader, 0, 0);
+		context->CSSetShader(computeShader, nullptr, 0);
 	}
 }
 

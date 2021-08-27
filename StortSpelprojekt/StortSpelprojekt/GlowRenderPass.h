@@ -20,27 +20,23 @@ public:
 		/*size_t TMP_WIDTH = 800;
 		size_t TMP_HEIGHT = 800;*/
 
-		size_t TMP_WIDTH = 960; // 1920 / 2
-		size_t TMP_HEIGHT = 540; // 1080 / 2
+		size_t TMP_WIDTH = window->GetWidth(); // 1920 / 2
+		size_t TMP_HEIGHT = window->GetHeight(); // 1080 / 2
 
-		
 		// HÄMTA FRÅN WINDOW
 
 		ID3D11DepthStencilState* dss;
-
 		glowTarget = DXHelper::CreateRenderTexture(TMP_WIDTH, TMP_HEIGHT, device, &dss);
 
 		shader = new Shader();
 		shader->SetVertexShader("Shaders/Default_vs.hlsl");
 		shader->SetPixelShader("Shaders/Emissive_ps.hlsl");
-		//shader->SetComputeShader("Shaders/FirstPassBloom.hlsl");
 		shader->Compile(device);
 
 		shaderInstanced = new Shader();
 		shaderInstanced->SetVertexShader("Shaders/Instance_vs.hlsl");
 		shaderInstanced->SetInputLayoutStructure(9, shaderInstanced->INSTANCE_INPUT_LAYOUTd);
 		shaderInstanced->SetPixelShader("Shaders/Emissive_ps.hlsl");
-		//shaderInstanced->SetComputeShader("Shaders/FirstPassBloom.hlsl");
 		shaderInstanced->Compile(device);
 
 		material = new Material(shader);
@@ -61,10 +57,11 @@ public:
 		// spara depth från föregående frame och jämför? kanske fuckar med olika resolutions, dunno
 		// ett alternativ är att rendera varje objekt till ytterligare en buffer och sedan köra detta efter. hade varit det bästa
 
-		//renderer->GetContext()->OMSetRenderTargets(1, &glowTarget.rtv, depth);
+		
+		renderer->GetContext()->OMSetRenderTargets(1, &glowTarget.rtv, depth);
 		//renderer->GetContext()->RSSetViewports(1, &glowTarget.viewport);
-		renderer->SetRenderTarget(glowTarget, true);
-
+		
+		//renderer->SetRenderTarget(glowTarget, true);
 
 		// loop queue
 		Renderer::RenderQueue renderq = renderer->GetEmissiveQueue();
@@ -148,8 +145,8 @@ public:
 		csshader->SetComputeShader("Shaders/FirstPassBloom.hlsl");
 		csshader->Compile(device);
 
-		size_t TMP_WIDTH = 960; // 1920 / 2
-		size_t TMP_HEIGHT = 540; // 1080 / 2
+		size_t TMP_WIDTH = window->GetWidth() / 2; // 1920 / 2
+		size_t TMP_HEIGHT = window->GetHeight() / 2; // 1080 / 2
 
 		D3D11_TEXTURE2D_DESC tdesc;
 		ZeroMemory(&tdesc, sizeof(tdesc));
@@ -165,15 +162,27 @@ public:
 		tdesc.CPUAccessFlags = 0;
 		tdesc.MiscFlags = 0;
 
+		float* d = new float[4 * TMP_WIDTH * TMP_HEIGHT];
+		for (size_t i = 0; i < 4 * TMP_WIDTH * TMP_HEIGHT; i++)
+		{
+			d[i] = 0.8f;
+		}
+
+		D3D11_SUBRESOURCE_DATA InitData;
+		InitData.pSysMem = d;
+		InitData.SysMemPitch = sizeof(float) * 4;
+
+
 		HRESULT hr;
-		hr = device->CreateTexture2D(&tdesc, 0, &tex);
+		hr = device->CreateTexture2D(&tdesc, &InitData, &tex);
 		assert(SUCCEEDED(hr));
 
+		delete d;
 
 		// Unordered access view
 		D3D11_UNORDERED_ACCESS_VIEW_DESC uavdesc;
 		ZeroMemory(&uavdesc, sizeof(uavdesc));
-		uavdesc.Format = DXGI_FORMAT_UNKNOWN;
+		uavdesc.Format = tdesc.Format;
 		uavdesc.ViewDimension = D3D11_UAV_DIMENSION_TEXTURE2D;
 		uavdesc.Texture2D.MipSlice = 0;
 		hr = device->CreateUnorderedAccessView(tex, &uavdesc, &uav);
@@ -181,10 +190,12 @@ public:
 
 		// shader resource view
 		D3D11_SHADER_RESOURCE_VIEW_DESC srvdesc;
+		ZeroMemory(&srvdesc, sizeof(srvdesc));
 		srvdesc.Format = tdesc.Format;
 		srvdesc.ViewDimension = D3D11_SRV_DIMENSION_TEXTURE2D;
 		srvdesc.Texture2D.MostDetailedMip = 0;
 		srvdesc.Texture2D.MipLevels = 1;
+
 		hr = device->CreateShaderResourceView(tex, &srvdesc, &srv);
 		assert(SUCCEEDED(hr));
 
@@ -199,16 +210,13 @@ public:
 
 	
 		// BLURRA HÄR
-		size_t TMP_WIDTH = 960; // 1920 / 2
-		size_t TMP_HEIGHT = 540; // 1080 / 2
-
+		size_t TMP_WIDTH = window->GetWidth() / 2;
+		size_t TMP_HEIGHT = window->GetHeight() / 2;
 		ID3D11DeviceContext* ctx = renderer->GetContext();
-
-
 
 		csshader->BindToContext(ctx);
 		ctx->CSSetShaderResources(0, 1, &emissive_srv);
-		ctx->CSSetUnorderedAccessViews(1, 1, &uav, nullptr);
+		ctx->CSSetUnorderedAccessViews(0, 1, &uav, nullptr);
 
 		const int numthreads_x = TMP_WIDTH / 8;
 		const int numthreads_y = TMP_HEIGHT / 8;
@@ -216,7 +224,6 @@ public:
 
 		// kom ihåg att SRV och UAV kan inte vara bindade samtidigt
 		
-
 		// UNBIND SHIET
 		csshader->Unbind(ctx);
 
@@ -227,11 +234,9 @@ public:
 		ctx->CSSetUnorderedAccessViews(1, 1, nulluav, nullptr);
 
 
-
-		// I renderpass shadern GlowShader så blir första texturen scenen i sig och den andra all data från glow texturen som vi gjorde i tidigare GlowPreRenderPass
-		
-		
+		// I renderpass shadern GlowShader så blir första texturen scenen i sig och den andra all data från glow texturen som vi gjorde i tidigare GlowPreRenderPass		
 		// BINDA DEN NYA TEXTUREN ISTÄLLET FÖR GLOW_SRV
+
 		ctx->PSSetShaderResources(0, 1, &current.srv);
 		ctx->PSSetShaderResources(2, 1, &srv);
 		ctx->PSSetShaderResources(3, 1, &emissive_srv);
@@ -243,6 +248,8 @@ public:
 		ID3D11ShaderResourceView* nullSRV[1] = { nullptr };
 		//renderer->GetContext()->PSSetShaderResources(0, 1, nullSRV);
 		ctx->PSSetShaderResources(2, 1, nullSRV);
+		ctx->PSSetShaderResources(3, 1, nullSRV);
+
 	}
 
 	void executeComputeShader(ID3D11DeviceContext* context, ID3D11ComputeShader* shader, UINT uinputNum,

@@ -1,6 +1,6 @@
 
 Texture2D<float4> glowTexture : register(t0);
-RWTexture2D<float4> outTexture : register(u1);
+RWTexture2D<float4> outTexture : register(t1);
 
 [numthreads(8, 8, 1)]
 void main( uint3 DTid : SV_DispatchThreadID)
