@@ -57,8 +57,8 @@ float4 main(PS_INPUT_GLOW input) : SV_TARGET
     
     //emissiveTexture = glowTexture.Sample(glowSampler, input.uv);
     
-    colorTexture = rgbTexture.Sample(glowSampler, input.uv);
     
+    colorTexture = rgbTexture.Sample(glowSampler, input.uv);
     emissiveTexture = glowTexture.Sample(glowSampler, input.uv);
     
     //return /*emissiveTexture + */colorTexture;

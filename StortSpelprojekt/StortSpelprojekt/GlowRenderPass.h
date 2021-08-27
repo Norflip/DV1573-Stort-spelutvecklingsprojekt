@@ -23,6 +23,9 @@ public:
 		size_t TMP_WIDTH = 960; // 1920 / 2
 		size_t TMP_HEIGHT = 540; // 1080 / 2
 
+		
+		// HÄMTA FRÅN WINDOW
+
 		ID3D11DepthStencilState* dss;
 
 		glowTarget = DXHelper::CreateRenderTexture(TMP_WIDTH, TMP_HEIGHT, device, &dss);
@@ -32,6 +35,7 @@ public:
 		shader->SetPixelShader("Shaders/Emissive_ps.hlsl");
 		//shader->SetComputeShader("Shaders/FirstPassBloom.hlsl");
 		shader->Compile(device);
+
 		shaderInstanced = new Shader();
 		shaderInstanced->SetVertexShader("Shaders/Instance_vs.hlsl");
 		shaderInstanced->SetInputLayoutStructure(9, shaderInstanced->INSTANCE_INPUT_LAYOUTd);
@@ -50,6 +54,12 @@ public:
 		renderer->ClearRenderTarget(glowTarget, true);
 		renderer->SetRenderTarget(glowTarget, true);
 		
+
+		// SÄTT DEPTH TILL DEN SOM RITADE UT OPAQUE
+		// gör så att saker som inte ska synas inte syns
+
+
+
 		// loop queue
 		Renderer::RenderQueue renderq = renderer->GetEmissiveQueue();
 
@@ -87,7 +97,6 @@ public:
 				// Denna drar ner prestandan.. men det visar att saker faktiskt finns i queuen.
 				//std::cout << "GLOWING? : " << item.mesh->GetMeshName()<< " " << i.second.size() << std::endl;
 				i.second.pop();
-
 			}
 		}
 
@@ -127,6 +136,52 @@ public:
 		// denna är bara renderpass shadern.
 		Shader* shader = resources->GetShaderResource("GlowShader");
 		material = new Material(shader);
+
+		csshader = new Shader();
+		csshader->SetComputeShader("Shaders/FirstPassBloom.hlsl");
+		csshader->Compile(device);
+
+		size_t TMP_WIDTH = 960; // 1920 / 2
+		size_t TMP_HEIGHT = 540; // 1080 / 2
+
+		D3D11_TEXTURE2D_DESC tdesc;
+		ZeroMemory(&tdesc, sizeof(tdesc));
+		tdesc.Width = TMP_WIDTH;
+		tdesc.Height = TMP_HEIGHT;
+		tdesc.MipLevels = 1;
+		tdesc.ArraySize = 1;
+		tdesc.Format = DXGI_FORMAT_R32G32B32A32_FLOAT;
+		tdesc.SampleDesc.Count = 1;
+		tdesc.SampleDesc.Quality = 0;
+		tdesc.Usage = D3D11_USAGE_DEFAULT;
+		tdesc.BindFlags = D3D11_BIND_SHADER_RESOURCE | D3D11_BIND_UNORDERED_ACCESS;
+		tdesc.CPUAccessFlags = 0;
+		tdesc.MiscFlags = 0;
+
+		HRESULT hr;
+		hr = device->CreateTexture2D(&tdesc, 0, &tex);
+		assert(SUCCEEDED(hr));
+
+
+		// Unordered access view
+		D3D11_UNORDERED_ACCESS_VIEW_DESC uavdesc;
+		ZeroMemory(&uavdesc, sizeof(uavdesc));
+		uavdesc.Format = DXGI_FORMAT_UNKNOWN;
+		uavdesc.ViewDimension = D3D11_UAV_DIMENSION_TEXTURE2D;
+		uavdesc.Texture2D.MipSlice = 0;
+		hr = device->CreateUnorderedAccessView(tex, &uavdesc, &uav);
+		assert(SUCCEEDED(hr));
+
+
+		// shader resource view
+		D3D11_SHADER_RESOURCE_VIEW_DESC srvdesc;
+		srvdesc.Format = tdesc.Format;
+		srvdesc.ViewDimension = D3D11_SRV_DIMENSION_TEXTURE2D;
+		srvdesc.Texture2D.MostDetailedMip = 0;
+		srvdesc.Texture2D.MipLevels = 1;
+		hr = device->CreateShaderResourceView(tex, &srvdesc, &srv);
+		assert(SUCCEEDED(hr));
+
 	}
 
 	void Pass(Renderer* renderer, CameraComponent* camera, RenderTexture& current, RenderTexture& target) override
@@ -134,14 +189,47 @@ public:
 		renderer->ClearRenderTarget(target, false);
 		renderer->SetRenderTarget(target, false);
 
-		ID3D11ShaderResourceView* srv = renderer->LoadShaderResourceView("glow");
+		ID3D11ShaderResourceView* glow_srv = renderer->LoadShaderResourceView("glow");
 
+	
+		// BLURRA HÄR
+		size_t TMP_WIDTH = 960; // 1920 / 2
+		size_t TMP_HEIGHT = 540; // 1080 / 2
+
+		ID3D11DeviceContext* ctx = renderer->GetContext();
+
+
+
+		csshader->BindToContext(ctx);
+
+		ctx->CSSetShaderResources(0, 1, &glow_srv);
+		ctx->CSSetUnorderedAccessViews(0, 1, &uav, nullptr);
+
+		const int numthreads_x = TMP_WIDTH / 8;
+		const int numthreads_y = TMP_HEIGHT / 8;
+		ctx->Dispatch(numthreads_x, numthreads_y, 1);
+
+		// kom ihåg att SRV och UAV kan inte vara bindade samtidigt
 		
 
-		// I renderpass shadern GlowShader så blir första texturen scenen i sig och den andra all data från glow texturen som vi gjorde i tidigare GlowPreRenderPass
+		// UNBIND SHIET
+		csshader->Unbind(ctx);
 
+		ID3D11ShaderResourceView* nullsrv[1] = { nullptr };
+		ctx->CSSetShaderResources(0, 1, nullsrv);
+
+		ID3D11UnorderedAccessView* nulluav[1] = { nullptr };
+		ctx->CSSetUnorderedAccessViews(0, 1, nulluav, nullptr);
+
+
+
+		// I renderpass shadern GlowShader så blir första texturen scenen i sig och den andra all data från glow texturen som vi gjorde i tidigare GlowPreRenderPass
+		
+		
+		// BINDA DEN NYA TEXTUREN ISTÄLLET FÖR GLOW_SRV
 		renderer->GetContext()->PSSetShaderResources(0, 1, &current.srv);
 		renderer->GetContext()->PSSetShaderResources(2, 1, &srv);
+
 		//renderer->GetContext()->PSSetShaderResources(2, 1, &srv);
 
 		renderer->DrawScreenQuad(material);
@@ -165,8 +253,8 @@ public:
 
 		context->CSGetUnorderedAccessViews(0, uinputNum, UAVInputsPtrPtr);
 
-		context->UpdateSubresource(bufferptr, 0, nullptr, , 0, 0);
-		context->
+		//context->UpdateSubresource(bufferptr, 0, nullptr, , 0, 0);
+		//context->
 
 		//DXHelper::CreateStructuredBuffer(renderer.GetDevice(),)
 
@@ -196,7 +284,12 @@ public:
 
 private:
 	Shader* shader;
+	Shader* csshader;
 	Material* material;
 	ResourceManager* resources;
+
+	ID3D11Texture2D* tex;
+	ID3D11UnorderedAccessView* uav;
+	ID3D11ShaderResourceView* srv;
 
 };

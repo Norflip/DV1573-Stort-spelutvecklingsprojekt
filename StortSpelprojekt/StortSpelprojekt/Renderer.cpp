@@ -338,6 +338,10 @@ void Renderer::RenderFrame(CameraComponent* camera, float time, float distance, 
 	DrawQueueToTarget(opaqueItemQueue, camera);
 	opaqueItemQueue.clear();
 
+	//hämta depthbuffern och skicka till GlowPreRenderPass
+
+
+
 	DShape::Instance().m_Draw(camera->GetViewMatrix() * camera->GetProjectionMatrix(), context);
 
 	for (auto i : opaqueBatches)
@@ -355,12 +359,18 @@ void Renderer::RenderFrame(CameraComponent* camera, float time, float distance, 
 		DrawBatch(i.second, camera);
 	transparentBatches.clear();
 
+
+
+
 	DrawQueueToTarget(emissiveItemQueue, camera);
 	emissiveItemQueue.clear();
 
 	for (auto i : emissiveBatches)
 		DrawBatch(i.second, camera);
 	emissiveItemQueue.clear();
+
+
+
 
 	SetCullBack(true);
 
