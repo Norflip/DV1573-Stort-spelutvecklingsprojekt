@@ -172,7 +172,6 @@ public:
 		hr = device->CreateUnorderedAccessView(tex, &uavdesc, &uav);
 		assert(SUCCEEDED(hr));
 
-
 		// shader resource view
 		D3D11_SHADER_RESOURCE_VIEW_DESC srvdesc;
 		srvdesc.Format = tdesc.Format;
@@ -189,7 +188,7 @@ public:
 		renderer->ClearRenderTarget(target, false);
 		renderer->SetRenderTarget(target, false);
 
-		ID3D11ShaderResourceView* glow_srv = renderer->LoadShaderResourceView("glow");
+		ID3D11ShaderResourceView* emissive_srv = renderer->LoadShaderResourceView("glow");
 
 	
 		// BLURRA HÄR
@@ -202,8 +201,8 @@ public:
 
 		csshader->BindToContext(ctx);
 
-		ctx->CSSetShaderResources(0, 1, &glow_srv);
-		ctx->CSSetUnorderedAccessViews(1, 1, &uav, nullptr);
+		ctx->CSSetShaderResources(0, 1, &emissive_srv);
+		ctx->CSSetUnorderedAccessViews(0, 1, &uav, nullptr);
 
 		const int numthreads_x = TMP_WIDTH / 8;
 		const int numthreads_y = TMP_HEIGHT / 8;
@@ -219,7 +218,7 @@ public:
 		ctx->CSSetShaderResources(0, 1, nullsrv);
 
 		ID3D11UnorderedAccessView* nulluav[1] = { nullptr };
-		ctx->CSSetUnorderedAccessViews(1, 1, nulluav, nullptr);
+		ctx->CSSetUnorderedAccessViews(0, 1, nulluav, nullptr);
 
 
 
@@ -229,6 +228,7 @@ public:
 		// BINDA DEN NYA TEXTUREN ISTÄLLET FÖR GLOW_SRV
 		ctx->PSSetShaderResources(0, 1, &current.srv);
 		ctx->PSSetShaderResources(2, 1, &srv);
+		ctx->PSSetShaderResources(3, 1, &emissive_srv);
 
 		//renderer->GetContext()->PSSetShaderResources(2, 1, &srv);
 
