@@ -9,8 +9,8 @@ class GlowPreRenderPass : public RenderPass
 {
 public:
 
-	GlowPreRenderPass(int priority, ResourceManager* resources)
-		: RenderPass(priority, RenderPass::PassType::PRE_PASS) {}
+	GlowPreRenderPass(int priority, ResourceManager* resources, Window* window)
+		: window(window), RenderPass(priority, RenderPass::PassType::PRE_PASS) {}
 
 	void m_Initialize(ID3D11Device* device) override
 	{
@@ -51,13 +51,19 @@ public:
 	{
 		ID3D11ShaderResourceView* nullSRV = nullptr;
 		renderer->GetContext()->PSSetShaderResources(2, 1, &nullSRV);
-		renderer->ClearRenderTarget(glowTarget, true);
-		renderer->SetRenderTarget(glowTarget, true);
-		
+		renderer->ClearRenderTarget(glowTarget, true);		
 
 		// SÄTT DEPTH TILL DEN SOM RITADE UT OPAQUE
 		// gör så att saker som inte ska synas inte syns
 
+		// sets i renderer.cpp i RenderFrame
+		ID3D11DepthStencilView* depth = (ID3D11DepthStencilView*)renderer->LoadValue("depthdsv");
+		// spara depth från föregående frame och jämför? kanske fuckar med olika resolutions, dunno
+		// ett alternativ är att rendera varje objekt till ytterligare en buffer och sedan köra detta efter. hade varit det bästa
+
+		//renderer->GetContext()->OMSetRenderTargets(1, &glowTarget.rtv, depth);
+		//renderer->GetContext()->RSSetViewports(1, &glowTarget.viewport);
+		renderer->SetRenderTarget(glowTarget, true);
 
 
 		// loop queue
@@ -105,7 +111,7 @@ public:
 		materialInstanced->UnbindToContext(renderer->GetContext());
 
 		// vi sparar glow texturer till renderer så vi sedan kan hämta den i nästa pass
-		renderer->StoreShaderResourceView("glow", glowTarget.srv);
+		renderer->StoreValue("glow", glowTarget.srv);
 		//renderer->GetContext()->PSSetShaderResources(0, 1, nullptr);
 
 		// vi sätter tillbaka till det vanliga render target för att renderar resten av scenen
@@ -121,6 +127,7 @@ private:
 	Shader* shaderInstanced;
 	Material* material;
 	Material* materialInstanced;
+	Window* window;
 };
 
 ALIGN16
@@ -128,8 +135,8 @@ class GlowRenderPass : public RenderPass
 {
 public:
 
-	GlowRenderPass(int priority, ResourceManager* resources)
-		: RenderPass(priority, RenderPass::PassType::POST_PROCESSING), resources(resources), material(nullptr) {}
+	GlowRenderPass(int priority, ResourceManager* resources, Window* window)
+		: window(window), RenderPass(priority, RenderPass::PassType::POST_PROCESSING), resources(resources), material(nullptr) {}
 
 	void m_Initialize(ID3D11Device* device) override
 	{
@@ -188,7 +195,7 @@ public:
 		renderer->ClearRenderTarget(target, false);
 		renderer->SetRenderTarget(target, false);
 
-		ID3D11ShaderResourceView* emissive_srv = renderer->LoadShaderResourceView("glow");
+		ID3D11ShaderResourceView* emissive_srv = (ID3D11ShaderResourceView*)renderer->LoadValue("glow");
 
 	
 		// BLURRA HÄR
@@ -200,9 +207,8 @@ public:
 
 
 		csshader->BindToContext(ctx);
-
 		ctx->CSSetShaderResources(0, 1, &emissive_srv);
-		ctx->CSSetUnorderedAccessViews(0, 1, &uav, nullptr);
+		ctx->CSSetUnorderedAccessViews(1, 1, &uav, nullptr);
 
 		const int numthreads_x = TMP_WIDTH / 8;
 		const int numthreads_y = TMP_HEIGHT / 8;
@@ -218,7 +224,7 @@ public:
 		ctx->CSSetShaderResources(0, 1, nullsrv);
 
 		ID3D11UnorderedAccessView* nulluav[1] = { nullptr };
-		ctx->CSSetUnorderedAccessViews(0, 1, nulluav, nullptr);
+		ctx->CSSetUnorderedAccessViews(1, 1, nulluav, nullptr);
 
 
 
@@ -291,5 +297,6 @@ private:
 	ID3D11Texture2D* tex;
 	ID3D11UnorderedAccessView* uav;
 	ID3D11ShaderResourceView* srv;
+	Window* window;
 
 };

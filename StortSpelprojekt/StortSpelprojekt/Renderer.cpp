@@ -321,14 +321,6 @@ void Renderer::RenderFrame(CameraComponent* camera, float time, float distance, 
 	ClearRenderTarget(midbuffer);
 	SetRenderTarget(midbuffer);
 
-	for (auto i = passes.begin(); i < passes.end(); i++)
-	{
-		RenderPass* pass = *i;
-		if (pass->IsEnabled() && pass->GetType() == RenderPass::PassType::PRE_PASS)
-		{
-			pass->Pass(this, camera, midbuffer, midbuffer);
-		}
-	}
 	
 	context->OMSetDepthStencilState(dss, 0);
 	DXHelper::BindStructuredBuffer(context, 10, ShaderBindFlag::PIXEL, &o_LightIndexList_srv);
@@ -338,6 +330,18 @@ void Renderer::RenderFrame(CameraComponent* camera, float time, float distance, 
 	DrawQueueToTarget(opaqueItemQueue, camera);
 	opaqueItemQueue.clear();
 
+
+	for (auto i = passes.begin(); i < passes.end(); i++)
+	{
+		RenderPass* pass = *i;
+		if (pass->IsEnabled() && pass->GetType() == RenderPass::PassType::PRE_PASS)
+		{
+			pass->Pass(this, camera, midbuffer, midbuffer);
+		}
+	}
+
+	this->StoreValue("depthdsv", midbuffer.dsv);
+
 	//hämta depthbuffern och skicka till GlowPreRenderPass
 
 
@@ -346,6 +350,7 @@ void Renderer::RenderFrame(CameraComponent* camera, float time, float distance, 
 
 	for (auto i : opaqueBatches)
 		DrawBatch(i.second, camera);
+
 	opaqueBatches.clear();
 
 	DXHelper::BindStructuredBuffer(context, 10, ShaderBindFlag::PIXEL, &t_LightIndexList_srv);
@@ -362,13 +367,14 @@ void Renderer::RenderFrame(CameraComponent* camera, float time, float distance, 
 
 
 
+	/*
 	DrawQueueToTarget(emissiveItemQueue, camera);
 	emissiveItemQueue.clear();
 
 	for (auto i : emissiveBatches)
 		DrawBatch(i.second, camera);
 	emissiveItemQueue.clear();
-
+	*/
 
 
 
@@ -599,20 +605,20 @@ void Renderer::SetIdAndColor(int id, float color)
 }
 
 
-void Renderer::StoreShaderResourceView(const std::string& key, ID3D11ShaderResourceView* srv)
+void Renderer::StoreValue(const std::string& key, void* srv)
 {
-	auto find = storedSRVs.find(key);
-	if (find != storedSRVs.end())
-		storedSRVs[key] = srv;
+	auto find = valueStorage.find(key);
+	if (find != valueStorage.end())
+		valueStorage[key] = srv;
 	else
-		storedSRVs.insert({ key, srv });
+		valueStorage.insert({ key, srv });
 }
 
-ID3D11ShaderResourceView* Renderer::LoadShaderResourceView(const std::string& key) const
+void* Renderer::LoadValue(const std::string& key) const
 {
-	ID3D11ShaderResourceView* srv = nullptr;
-	auto find = storedSRVs.find(key);
-	if (find != storedSRVs.end())
+	void* srv = nullptr;
+	auto find = valueStorage.find(key);
+	if (find != valueStorage.end())
 		srv = find->second;
 	return srv;
 }

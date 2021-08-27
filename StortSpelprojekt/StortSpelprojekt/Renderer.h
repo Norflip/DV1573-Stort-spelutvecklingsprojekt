@@ -120,8 +120,8 @@ public:
 
 	ALIGN16_ALLOC;
 
-	void StoreShaderResourceView(const std::string& key, ID3D11ShaderResourceView* srv);
-	ID3D11ShaderResourceView* LoadShaderResourceView(const std::string& key) const;
+	void StoreValue(const std::string& key, void* ptr);
+	void* LoadValue(const std::string& key) const;
 
 	RenderQueue& GetEmissiveQueue() { return this->emissiveItemQueue; }
 	const RenderQueue& GetEmissiveQueue() const  { return this->emissiveItemQueue; }
@@ -216,7 +216,7 @@ private:
 	RenderQueue emissiveItemQueue;
 
 	std::vector<RenderPass*> passes;
-	std::unordered_map<std::string, ID3D11ShaderResourceView*> storedSRVs;
+	std::unordered_map<std::string, void*> valueStorage;
 	//blendstate
 	ID3D11BlendState* blendStateOn;
 	ID3D11BlendState* blendStateOff;

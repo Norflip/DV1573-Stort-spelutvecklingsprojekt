@@ -458,6 +458,7 @@ void Shader::CompileCS(ID3D11Device* device)
 	#endif
 				NULL, NULL
 		};
+
 		HRESULT CSCompileResult = D3DCompileFromFile
 		(
 			wPath.c_str(),
