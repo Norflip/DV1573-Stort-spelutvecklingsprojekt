@@ -203,7 +203,7 @@ public:
 		csshader->BindToContext(ctx);
 
 		ctx->CSSetShaderResources(0, 1, &glow_srv);
-		ctx->CSSetUnorderedAccessViews(0, 1, &uav, nullptr);
+		ctx->CSSetUnorderedAccessViews(1, 1, &uav, nullptr);
 
 		const int numthreads_x = TMP_WIDTH / 8;
 		const int numthreads_y = TMP_HEIGHT / 8;
@@ -219,7 +219,7 @@ public:
 		ctx->CSSetShaderResources(0, 1, nullsrv);
 
 		ID3D11UnorderedAccessView* nulluav[1] = { nullptr };
-		ctx->CSSetUnorderedAccessViews(0, 1, nulluav, nullptr);
+		ctx->CSSetUnorderedAccessViews(1, 1, nulluav, nullptr);
 
 
 
@@ -227,8 +227,8 @@ public:
 		
 		
 		// BINDA DEN NYA TEXTUREN ISTÄLLET FÖR GLOW_SRV
-		renderer->GetContext()->PSSetShaderResources(0, 1, &current.srv);
-		renderer->GetContext()->PSSetShaderResources(2, 1, &srv);
+		ctx->PSSetShaderResources(0, 1, &current.srv);
+		ctx->PSSetShaderResources(2, 1, &srv);
 
 		//renderer->GetContext()->PSSetShaderResources(2, 1, &srv);
 
@@ -236,7 +236,7 @@ public:
 
 		ID3D11ShaderResourceView* nullSRV[1] = { nullptr };
 		//renderer->GetContext()->PSSetShaderResources(0, 1, nullSRV);
-		renderer->GetContext()->PSSetShaderResources(2, 1, nullSRV);
+		ctx->PSSetShaderResources(2, 1, nullSRV);
 	}
 
 	void executeComputeShader(ID3D11DeviceContext* context, ID3D11ComputeShader* shader, UINT uinputNum,

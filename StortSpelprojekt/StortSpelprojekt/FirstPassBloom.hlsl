@@ -1,11 +1,19 @@
 
-Texture2D/*MS*/<float4> glowTexture : register(t0);
-RWTexture2D<float4> outTexture : register(u0);
+Texture2D<float4> glowTexture : register(t0);
+RWTexture2D<float4> outTexture : register(u1);
 
 [numthreads(8, 8, 1)]
 void main( uint3 DTid : SV_DispatchThreadID)
 {
     uint2 currentPixel = uint2(DTid.xy);
+    
+    outTexture[currentPixel] = float4(1, 0, 0, 1);
+    return;
+    
+    
+    
+    
+    
     int range = 5;
     int2 direction = int2(-1, 0);
     float4 blurrColor = float4(0, 0, 0, 0);
@@ -23,8 +31,5 @@ void main( uint3 DTid : SV_DispatchThreadID)
     //    blurrColor += weights[weightIndex] * glowTexture[mad(i, direction, currentPixel)];
     //}
     
-    //outTexture[currentPixel] = blurrColor;
-    
-    outTexture[currentPixel] = float4(1, 0, 0, 1);
-
+    outTexture[currentPixel] = blurrColor;
 }
