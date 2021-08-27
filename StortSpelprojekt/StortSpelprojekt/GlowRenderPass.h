@@ -151,11 +151,45 @@ public:
 		renderer->GetContext()->PSSetShaderResources(2, 1, nullSRV);
 	}
 
-	void executeComputeShader(ID3D11DeviceContext* context, ID3D11ComputeShader* shader, UINT uinputNum, ID3D11UnorderedAccessView** UAVInputsPtrPtr, UINT x, UINT y, UINT z)
+	void executeComputeShader(ID3D11DeviceContext* context, ID3D11ComputeShader* shader, UINT uinputNum,
+		ID3D11UnorderedAccessView** UAVInputsPtrPtr, UINT x, UINT y, UINT z, RenderTexture& srv, Renderer renderer, ID3D11Buffer* bufferptr)
 	{
 		context->CSSetShader(shader, nullptr, 0);
 
-		//context->CSSetShaderResources(0, )
+		context->CSSetShaderResources(0, 1, &srv.srv);
+
+		D3D11_UNORDERED_ACCESS_VIEW_DESC uavDesc = {};
+		uavDesc.Format = DXGI_FORMAT_R32G32_UINT;
+		uavDesc.ViewDimension = D3D11_UAV_DIMENSION_TEXTURE2D;
+		
+
+		context->CSGetUnorderedAccessViews(0, uinputNum, UAVInputsPtrPtr);
+
+		context->UpdateSubresource(bufferptr, 0, nullptr, , 0, 0);
+		context->
+
+		//DXHelper::CreateStructuredBuffer(renderer.GetDevice(),)
+
+		/*
+		
+		D3D11_UNORDERED_ACCESS_VIEW_DESC uavDesc = {};
+		uavDesc.Format = DXGI_FORMAT_R32G32_UINT;
+		uavDesc.ViewDimension = D3D11_UAV_DIMENSION_TEXTURE2D;
+		D3D11_SHADER_RESOURCE_VIEW_DESC srvDesc = {};
+		srvDesc.Format = DXGI_FORMAT_R32G32_UINT;
+		srvDesc.ViewDimension = D3D11_SRV_DIMENSION_TEXTURE2D;
+		srvDesc.Texture2D.MostDetailedMip = 0;
+		srvDesc.Texture2D.MipLevels = desc.MipLevels;
+
+		device->CreateUnorderedAccessView(tex2D, &uavDesc, &o_LightGrid_tex);
+		device->CreateUnorderedAccessView(tex2D2, &uavDesc, &t_LightGrid_tex);
+		device->CreateShaderResourceView(tex2D, &srvDesc, &o_LightGrid_texSRV);
+		device->CreateShaderResourceView(tex2D, &srvDesc, &t_LightGrid_texSRV);
+		tex2D->Release();
+		tex2D2->Release();
+		
+		*/
+
 	}
 
 	ALIGN16_ALLOC;
