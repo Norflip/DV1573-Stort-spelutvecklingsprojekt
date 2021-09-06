@@ -7,13 +7,14 @@ void main( uint3 DTid : SV_DispatchThreadID)
 {
     uint2 currentPixel = DTid.xy;
 
-
-    const int range = 128;
+    float dst = glowTexture[currentPixel].a;
+    
+    const int range = max(1, 128 * (1.0f - dst));
+    
     int2 direction = int2(1, 1);
     float4 blurrColor = float4(0, 0, 0, 0);
     float weights[5] = { 0.227027, 0.1945946, 0.1216216, 0.054054, 0.016216 };
     
-    [unroll]
     for (int i = -range; i <= range; i++)
     {
         // HACK med mod%
