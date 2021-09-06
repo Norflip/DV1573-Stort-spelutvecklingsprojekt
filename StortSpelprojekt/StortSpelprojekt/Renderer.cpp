@@ -946,8 +946,8 @@ void Renderer::OnResizeFPlus()
 
 void Renderer::DrawScreenQuad(const Material* material)
 {
-
 	material->BindToContext(context);
+
 	UINT stride = sizeof(Mesh::Vertex);
 	UINT offset = 0;
 	ID3D11Buffer* vertexBuffer = screenQuadMesh->GetVertexBuffer();

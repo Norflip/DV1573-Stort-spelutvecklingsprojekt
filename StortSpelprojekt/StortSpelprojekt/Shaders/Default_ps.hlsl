@@ -8,6 +8,7 @@ Texture2D emissiveTexture : register(t2);
 //TextureCube skymap : register(t2); //just testing
 SamplerState defaultSampleType : register (s0);
 
+
 float4 main(VS_OUTPUT input) : SV_TARGET
 {	
 	float4 textureColor = float4(0.5f, 0.5f, 0.5f, 1.0f);

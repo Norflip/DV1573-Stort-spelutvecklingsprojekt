@@ -40,7 +40,10 @@ public:
 		shaderInstanced->Compile(device);
 
 		material = new Material(shader);
+		material->SetSampler(DXHelper::CreateSampler(D3D11_FILTER_MIN_MAG_MIP_LINEAR, D3D11_TEXTURE_ADDRESS_WRAP, device), 0, ShaderBindFlag::PIXEL);
+
 		materialInstanced = new Material(shaderInstanced);
+		materialInstanced->SetSampler(DXHelper::CreateSampler(D3D11_FILTER_MIN_MAG_MIP_LINEAR, D3D11_TEXTURE_ADDRESS_WRAP, device), 0, ShaderBindFlag::PIXEL);
 	}
 
 	void Pass(Renderer* renderer, CameraComponent* camera, RenderTexture& current, RenderTexture& target) override
@@ -58,10 +61,10 @@ public:
 		// ett alternativ är att rendera varje objekt till ytterligare en buffer och sedan köra detta efter. hade varit det bästa
 
 		
-		renderer->GetContext()->OMSetRenderTargets(1, &glowTarget.rtv, depth);
+		//renderer->GetContext()->OMSetRenderTargets(1, &glowTarget.rtv, depth);
 		//renderer->GetContext()->RSSetViewports(1, &glowTarget.viewport);
 		
-		//renderer->SetRenderTarget(glowTarget, true);
+		renderer->SetRenderTarget(glowTarget, true);
 
 		// loop queue
 		Renderer::RenderQueue renderq = renderer->GetEmissiveQueue();
@@ -81,7 +84,7 @@ public:
 				{
 					case Renderer::RenderItem::Type::Instanced:
 						//std::cout << "Get Into Instance case" << std::endl;
-						materialInstanced->SetTexture(item.material->GetTexture(2, ShaderBindFlag::PIXEL), 2, ShaderBindFlag::PIXEL);
+						materialInstanced->SetTexture(item.material->GetTexture(2, ShaderBindFlag::PIXEL), 0, ShaderBindFlag::PIXEL);
 						materialInstanced->BindToContext(renderer->GetContext());
 						renderer->DrawRenderItemInstanced(item, camera);
 						break;
@@ -90,7 +93,7 @@ public:
 					default:
 						//std::cout << "Get Into default case" << std::endl;
 						//item.material->GetTexture(2, ShaderBindFlag::PIXEL);
-						material->SetTexture(item.material->GetTexture(2, ShaderBindFlag::PIXEL), 2, ShaderBindFlag::PIXEL);
+						material->SetTexture(item.material->GetTexture(2, ShaderBindFlag::PIXEL), 0, ShaderBindFlag::PIXEL);
 						material->BindToContext(renderer->GetContext());
 						renderer->DrawRenderItem(item, camera);
 						break;
@@ -140,13 +143,15 @@ public:
 		// denna är bara renderpass shadern.
 		Shader* shader = resources->GetShaderResource("GlowShader");
 		material = new Material(shader);
+		material->SetSampler(DXHelper::CreateSampler(D3D11_FILTER_MIN_MAG_MIP_LINEAR, D3D11_TEXTURE_ADDRESS_WRAP, device), 0, ShaderBindFlag::PIXEL);
+
 
 		csshader = new Shader();
-		csshader->SetComputeShader("Shaders/FirstPassBloom.hlsl");
+		csshader->SetComputeShader("Shaders/FirstPassBloom.hlsl", "main");
 		csshader->Compile(device);
 
-		size_t TMP_WIDTH = window->GetWidth() / 2; // 1920 / 2
-		size_t TMP_HEIGHT = window->GetHeight() / 2; // 1080 / 2
+		size_t TMP_WIDTH = window->GetWidth(); // 1920 / 2
+		size_t TMP_HEIGHT = window->GetHeight(); // 1080 / 2
 
 		D3D11_TEXTURE2D_DESC tdesc;
 		ZeroMemory(&tdesc, sizeof(tdesc));
@@ -162,30 +167,36 @@ public:
 		tdesc.CPUAccessFlags = 0;
 		tdesc.MiscFlags = 0;
 
+		HRESULT hr;
+#if 0
 		float* d = new float[4 * TMP_WIDTH * TMP_HEIGHT];
-		for (size_t i = 0; i < 4 * TMP_WIDTH * TMP_HEIGHT; i++)
+		for (size_t i = 0; i < TMP_WIDTH * TMP_HEIGHT; i++)
 		{
-			d[i] = 0.8f;
+			d[i * 4 + 0] = 1;
+			d[i * 4 + 1] = 0;
+			d[i * 4 + 2] = 0;
+			d[i * 4 + 3] = 1;
 		}
 
 		D3D11_SUBRESOURCE_DATA InitData;
 		InitData.pSysMem = d;
 		InitData.SysMemPitch = sizeof(float) * 4;
 
-
-		HRESULT hr;
+		
 		hr = device->CreateTexture2D(&tdesc, &InitData, &tex);
 		assert(SUCCEEDED(hr));
-
 		delete d;
+#else
+		hr = device->CreateTexture2D(&tdesc, 0, &tex);
+#endif
 
 		// Unordered access view
 		D3D11_UNORDERED_ACCESS_VIEW_DESC uavdesc;
 		ZeroMemory(&uavdesc, sizeof(uavdesc));
-		uavdesc.Format = tdesc.Format;
+		uavdesc.Format = DXGI_FORMAT_UNKNOWN;
 		uavdesc.ViewDimension = D3D11_UAV_DIMENSION_TEXTURE2D;
 		uavdesc.Texture2D.MipSlice = 0;
-		hr = device->CreateUnorderedAccessView(tex, &uavdesc, &uav);
+		hr = device->CreateUnorderedAccessView(tex, &uavdesc, &glow_uav);
 		assert(SUCCEEDED(hr));
 
 		// shader resource view
@@ -196,7 +207,7 @@ public:
 		srvdesc.Texture2D.MostDetailedMip = 0;
 		srvdesc.Texture2D.MipLevels = 1;
 
-		hr = device->CreateShaderResourceView(tex, &srvdesc, &srv);
+		hr = device->CreateShaderResourceView(tex, &srvdesc, &glow_srv);
 		assert(SUCCEEDED(hr));
 
 	}
@@ -207,16 +218,15 @@ public:
 		renderer->SetRenderTarget(target, false);
 
 		ID3D11ShaderResourceView* emissive_srv = (ID3D11ShaderResourceView*)renderer->LoadValue("glow");
-
 	
 		// BLURRA HÄR
-		size_t TMP_WIDTH = window->GetWidth() / 2;
-		size_t TMP_HEIGHT = window->GetHeight() / 2;
+		size_t TMP_WIDTH = window->GetWidth();
+		size_t TMP_HEIGHT = window->GetHeight();
 		ID3D11DeviceContext* ctx = renderer->GetContext();
 
 		csshader->BindToContext(ctx);
 		ctx->CSSetShaderResources(0, 1, &emissive_srv);
-		ctx->CSSetUnorderedAccessViews(0, 1, &uav, nullptr);
+		ctx->CSSetUnorderedAccessViews(1, 1, &glow_uav, nullptr);
 
 		const int numthreads_x = TMP_WIDTH / 8;
 		const int numthreads_y = TMP_HEIGHT / 8;
@@ -232,14 +242,14 @@ public:
 
 		ID3D11UnorderedAccessView* nulluav[1] = { nullptr };
 		ctx->CSSetUnorderedAccessViews(1, 1, nulluav, nullptr);
-
+		
 
 		// I renderpass shadern GlowShader så blir första texturen scenen i sig och den andra all data från glow texturen som vi gjorde i tidigare GlowPreRenderPass		
 		// BINDA DEN NYA TEXTUREN ISTÄLLET FÖR GLOW_SRV
 
 		ctx->PSSetShaderResources(0, 1, &current.srv);
-		ctx->PSSetShaderResources(2, 1, &srv);
-		ctx->PSSetShaderResources(3, 1, &emissive_srv);
+		ctx->PSSetShaderResources(1, 1, &glow_srv);
+		ctx->PSSetShaderResources(2, 1, &emissive_srv);
 
 		//renderer->GetContext()->PSSetShaderResources(2, 1, &srv);
 
@@ -247,50 +257,9 @@ public:
 
 		ID3D11ShaderResourceView* nullSRV[1] = { nullptr };
 		//renderer->GetContext()->PSSetShaderResources(0, 1, nullSRV);
+		ctx->PSSetShaderResources(0, 1, nullSRV);
+		ctx->PSSetShaderResources(1, 1, nullSRV);
 		ctx->PSSetShaderResources(2, 1, nullSRV);
-		ctx->PSSetShaderResources(3, 1, nullSRV);
-
-	}
-
-	void executeComputeShader(ID3D11DeviceContext* context, ID3D11ComputeShader* shader, UINT uinputNum,
-		ID3D11UnorderedAccessView** UAVInputsPtrPtr, UINT x, UINT y, UINT z, RenderTexture& srv, Renderer renderer, ID3D11Buffer* bufferptr)
-	{
-		context->CSSetShader(shader, nullptr, 0);
-
-		context->CSSetShaderResources(0, 1, &srv.srv);
-
-		D3D11_UNORDERED_ACCESS_VIEW_DESC uavDesc = {};
-		uavDesc.Format = DXGI_FORMAT_R32G32_UINT;
-		uavDesc.ViewDimension = D3D11_UAV_DIMENSION_TEXTURE2D;
-		
-
-		context->CSGetUnorderedAccessViews(0, uinputNum, UAVInputsPtrPtr);
-
-		//context->UpdateSubresource(bufferptr, 0, nullptr, , 0, 0);
-		//context->
-
-		//DXHelper::CreateStructuredBuffer(renderer.GetDevice(),)
-
-		/*
-		
-		D3D11_UNORDERED_ACCESS_VIEW_DESC uavDesc = {};
-		uavDesc.Format = DXGI_FORMAT_R32G32_UINT;
-		uavDesc.ViewDimension = D3D11_UAV_DIMENSION_TEXTURE2D;
-		D3D11_SHADER_RESOURCE_VIEW_DESC srvDesc = {};
-		srvDesc.Format = DXGI_FORMAT_R32G32_UINT;
-		srvDesc.ViewDimension = D3D11_SRV_DIMENSION_TEXTURE2D;
-		srvDesc.Texture2D.MostDetailedMip = 0;
-		srvDesc.Texture2D.MipLevels = desc.MipLevels;
-
-		device->CreateUnorderedAccessView(tex2D, &uavDesc, &o_LightGrid_tex);
-		device->CreateUnorderedAccessView(tex2D2, &uavDesc, &t_LightGrid_tex);
-		device->CreateShaderResourceView(tex2D, &srvDesc, &o_LightGrid_texSRV);
-		device->CreateShaderResourceView(tex2D, &srvDesc, &t_LightGrid_texSRV);
-		tex2D->Release();
-		tex2D2->Release();
-		
-		*/
-
 	}
 
 	ALIGN16_ALLOC;
@@ -302,8 +271,8 @@ private:
 	ResourceManager* resources;
 
 	ID3D11Texture2D* tex;
-	ID3D11UnorderedAccessView* uav;
-	ID3D11ShaderResourceView* srv;
+	ID3D11UnorderedAccessView* glow_uav;
+	ID3D11ShaderResourceView* glow_srv;
 	Window* window;
 
 };

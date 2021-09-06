@@ -100,7 +100,7 @@
     <FxCompile Include="Shaders\Emissive_ps.hlsl">
       <Filter>Resource Files</Filter>
     </FxCompile>
-    <FxCompile Include="FirstPassBloom.hlsl">
+    <FxCompile Include="Shaders\FirstPassBloom.hlsl">
       <Filter>Resource Files</Filter>
     </FxCompile>
   </ItemGroup>

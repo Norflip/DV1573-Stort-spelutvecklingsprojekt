@@ -1,12 +1,11 @@
 #include "CommonBuffers.hlsl"
+#include "IO.hlsl"
 
 Texture2D rgbTexture : register(t0);
-Texture2D glowTexture : register(t2);
-Texture2D emssiveTexture : register(t3);
-
+Texture2D glowTexture : register(t1);
+Texture2D emssiveTexture : register(t2);
 
 SamplerState glowSampler;
-#include "IO.hlsl"
 
 struct PS_INPUT_GLOW
 {

@@ -1,6 +1,6 @@
 #include "IO.hlsl"
 
-Texture2D emissiveTexture : register(t2);
+Texture2D emissiveTexture : register(t0);
 SamplerState emissiveSampler;
 
 float4 main(VS_OUTPUT input) : SV_TARGET

@@ -1,19 +1,15 @@
 
 Texture2D<float4> glowTexture : register(t0);
-RWTexture2D<float4> outTexture : register(t1);
+RWTexture2D<float4> outTexture : register(u1);
 
 [numthreads(8, 8, 1)]
 void main( uint3 DTid : SV_DispatchThreadID)
 {
     uint2 currentPixel = DTid.xy;
     
-    outTexture[currentPixel] = float4(1, 0, 1, 1);
+    //outTexture[currentPixel] = float4(1, 0, 0, 1);
     
-    
-
-
-    
-    return;
+    //return;
 
     int range = 5;
     int2 direction = int2(-1, 0);

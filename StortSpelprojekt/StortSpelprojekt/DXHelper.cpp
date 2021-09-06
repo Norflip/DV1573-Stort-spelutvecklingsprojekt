@@ -9,7 +9,7 @@ void DXHelper::CreateSwapchain(const Window& window, _Out_ ID3D11Device** device
 
 	UINT swapchainFlags = D3D11_CREATE_DEVICE_BGRA_SUPPORT;
 //#ifdef  _DEBUG
-//	swapchainFlags |= D3D11_CREATE_DEVICE_DEBUG;
+	swapchainFlags |= D3D11_CREATE_DEVICE_DEBUG;
 //#endif
 
 	D3D_FEATURE_LEVEL featureLevel[] = { D3D_FEATURE_LEVEL_11_0 };
@@ -204,7 +204,8 @@ RenderTexture DXHelper::CreateBackbuffer(size_t width, size_t height, ID3D11Devi
 	hr = (device)->CreateDepthStencilView(depthTexture, &dsvDesc, &rt.dsv);
 	assert(SUCCEEDED(hr));
 
-	depthTexture->Release();
+	if(depthTexture != nullptr)
+		depthTexture->Release();
 	depthTexture = nullptr;
 
 	ID3D11Texture2D* backBufferPtr;

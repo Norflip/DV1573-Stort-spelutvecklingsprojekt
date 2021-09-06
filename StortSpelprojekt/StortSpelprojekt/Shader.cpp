@@ -4,9 +4,9 @@
 Shader::Shader() : pixelShader(nullptr), vertexShader(nullptr), inputLayout(nullptr), geometryShader(nullptr), hullShader(nullptr), domainShader(nullptr), computeShader(nullptr)
 {
 	shaderCompilationFlag = D3DCOMPILE_ENABLE_STRICTNESS;
-#ifdef _DEBUG
+//#ifdef _DEBUG
 	shaderCompilationFlag = shaderCompilationFlag | D3DCOMPILE_DEBUG;
-#endif
+//#endif
 
 	SetInputLayoutStructure(6, DEFAULT_INPUT_LAYOUTd);
 }
