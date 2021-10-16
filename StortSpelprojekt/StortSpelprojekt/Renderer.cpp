@@ -317,7 +317,7 @@ void Renderer::RenderFrame(CameraComponent* camera, float time, float distance, 
 
 	//	ID3D11ShaderResourceView* nullSRV[1] = { nullptr };
 	//	context->PSSetShaderResources(0, 1, nullSRV);
-
+	
 	ClearRenderTarget(midbuffer);
 	SetRenderTarget(midbuffer);
 
@@ -341,7 +341,7 @@ void Renderer::RenderFrame(CameraComponent* camera, float time, float distance, 
 	}
 
 	this->StoreValue("depthdsv", midbuffer.dsv);
-
+	
 	//hämta depthbuffern och skicka till GlowPreRenderPass
 
 

@@ -103,6 +103,9 @@
     <FxCompile Include="Shaders\FirstPassBloom.hlsl">
       <Filter>Resource Files</Filter>
     </FxCompile>
+    <FxCompile Include="SecondPassBloom.hlsl">
+      <Filter>Resource Files</Filter>
+    </FxCompile>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="BoxColliderComponent.cpp">

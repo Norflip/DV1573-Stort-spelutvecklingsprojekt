@@ -56,11 +56,14 @@ public:
 		// gör så att saker som inte ska synas inte syns
 
 		// sets i renderer.cpp i RenderFrame
+
 		ID3D11DepthStencilView* depth = (ID3D11DepthStencilView*)renderer->LoadValue("depthdsv");
+
 		// spara depth från föregående frame och jämför? kanske fuckar med olika resolutions, dunno
 		// ett alternativ är att rendera varje objekt till ytterligare en buffer och sedan köra detta efter. hade varit det bästa
 
 		
+
 		//renderer->GetContext()->OMSetRenderTargets(1, &glowTarget.rtv, depth);
 		//renderer->GetContext()->RSSetViewports(1, &glowTarget.viewport);
 		
@@ -149,6 +152,11 @@ public:
 		csshader = new Shader();
 		csshader->SetComputeShader("Shaders/FirstPassBloom.hlsl", "main");
 		csshader->Compile(device);
+
+
+		csshader2 = new Shader();
+		csshader2->SetComputeShader("Shaders/SecondPassBloom.hlsl", "main");
+		csshader2->Compile(device);
 
 		size_t TMP_WIDTH = window->GetWidth(); // 1920 / 2
 		size_t TMP_HEIGHT = window->GetHeight(); // 1080 / 2
@@ -267,6 +275,7 @@ public:
 private:
 	Shader* shader;
 	Shader* csshader;
+	Shader* csshader2;
 	Material* material;
 	ResourceManager* resources;
 
