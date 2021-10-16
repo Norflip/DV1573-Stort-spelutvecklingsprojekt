@@ -20,7 +20,7 @@ void main( uint3 DTid : SV_DispatchThreadID)
         // HACK med mod%
         uint weightIndex = (uint) (abs(i) % 5);
         
-        int2 index = (direction * i) + int2(currentPixel);        
+        int2 index = (direction * i) + int2(currentPixel);
         blurrColor += weights[weightIndex] * glowTexture[index];
     }
     

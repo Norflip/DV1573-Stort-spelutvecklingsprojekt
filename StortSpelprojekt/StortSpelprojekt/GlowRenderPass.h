@@ -153,10 +153,9 @@ public:
 		csshader->SetComputeShader("Shaders/FirstPassBloom.hlsl", "main");
 		csshader->Compile(device);
 
-
-		csshader2 = new Shader();
-		csshader2->SetComputeShader("Shaders/SecondPassBloom.hlsl", "main");
-		csshader2->Compile(device);
+		//csshader2 = new Shader();
+		//csshader2->SetComputeShader("Shaders/SecondPassBloom.hlsl", "main");
+		//csshader2->Compile(device);
 
 		size_t TMP_WIDTH = window->GetWidth(); // 1920 / 2
 		size_t TMP_HEIGHT = window->GetHeight(); // 1080 / 2
@@ -245,6 +244,17 @@ public:
 		// UNBIND SHIET
 		csshader->Unbind(ctx);
 
+		//csshader2->BindToContext(ctx);
+		//ctx->CSSetShaderResources(0, 1, &emissive_srv);
+		//ctx->CSSetUnorderedAccessViews(1, 1, &glow_uav, nullptr);
+
+		/*const int numthreads_x = TMP_WIDTH / 8;
+		const int numthreads_y = TMP_HEIGHT / 8;
+		ctx->Dispatch(numthreads_x, numthreads_y, 1);*/
+
+		//csshader2->Unbind(ctx);
+
+
 		ID3D11ShaderResourceView* nullsrv[1] = { nullptr };
 		ctx->CSSetShaderResources(0, 1, nullsrv);
 
@@ -254,6 +264,8 @@ public:
 
 		// I renderpass shadern GlowShader så blir första texturen scenen i sig och den andra all data från glow texturen som vi gjorde i tidigare GlowPreRenderPass		
 		// BINDA DEN NYA TEXTUREN ISTÄLLET FÖR GLOW_SRV
+
+		renderer->StoreValue("glow", &glow_srv);
 
 		ctx->PSSetShaderResources(0, 1, &current.srv);
 		ctx->PSSetShaderResources(1, 1, &glow_srv);
@@ -275,7 +287,7 @@ public:
 private:
 	Shader* shader;
 	Shader* csshader;
-	Shader* csshader2;
+	//Shader* csshader2;
 	Material* material;
 	ResourceManager* resources;
 
