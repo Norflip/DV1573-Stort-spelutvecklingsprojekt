@@ -232,6 +232,7 @@ public:
 		ID3D11DeviceContext* ctx = renderer->GetContext();
 
 		csshader->BindToContext(ctx);
+
 		ctx->CSSetShaderResources(0, 1, &emissive_srv);
 		ctx->CSSetUnorderedAccessViews(1, 1, &glow_uav, nullptr);
 
@@ -265,7 +266,7 @@ public:
 		// I renderpass shadern GlowShader så blir första texturen scenen i sig och den andra all data från glow texturen som vi gjorde i tidigare GlowPreRenderPass		
 		// BINDA DEN NYA TEXTUREN ISTÄLLET FÖR GLOW_SRV
 
-		renderer->StoreValue("glow", &glow_srv);
+		//renderer->StoreValue("glow", &glow_srv);
 
 		ctx->PSSetShaderResources(0, 1, &current.srv);
 		ctx->PSSetShaderResources(1, 1, &glow_srv);
